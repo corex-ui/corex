@@ -326,6 +326,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
         end
 
     port_str = to_string(port)
+    dev_env = [{"MIX_ENV", "dev"} | dev_database_env_from_system()]
+
+    mix_run!(["ecto.create"], app_root_path, env: dev_env)
+    mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
+
+    server_env = [{"PORT", port_str} | dev_env]
 
     _pid =
       spawn_link(fn ->
@@ -341,12 +347,24 @@ defmodule Corex.Integration.CodeGeneratorCase do
               "phx.server"
             ],
             cd: Path.expand(app_root_path),
-            env: [{"PORT", port_str}]
+            env: server_env
           )
       end)
 
     Process.sleep(10_000)
     port
+  end
+
+  defp dev_database_env_from_system do
+    Enum.flat_map(
+      ~w(DATABASE_URL PGHOST PGUSER PGPASSWORD PGPORT PGDATABASE),
+      fn key ->
+        case System.get_env(key) do
+          nil -> []
+          val -> [{key, val}]
+        end
+      end
+    )
   end
 
   def request_with_retries(_url, 0), do: {:error, :out_of_retries}
@@ -406,8 +424,13 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, ~r{/\* corex:design-imports \*/})
-    assert_file(app_css, ~r{\.\./corex/main\.css})
+
+    assert_file(app_css, fn c ->
+      assert c =~ ~s(@import "../corex/main.css";)
+      assert c =~ ~s(@import "../corex/theme/neo.css";)
+      refute c =~ "toggle-group.css"
+      refute c =~ "select.css"
+    end)
 
     assert_file(app_css, fn c ->
       refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
@@ -449,7 +472,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   @doc """
   Replace mode with design off (`--no-design`): ESM hooks + wrapped home, no
-  `assets/corex` and no `corex:design-imports` in `app.css`.
+  `assets/corex` and no Corex design `@import` block in `app.css`.
   """
   def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
@@ -468,7 +491,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, fn c -> refute c =~ "corex:design-imports" end)
+    assert_file(app_css, fn c -> refute c =~ ~s(@import "../corex/main.css") end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
 

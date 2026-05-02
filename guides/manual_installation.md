@@ -147,16 +147,14 @@ Pass `--designex` to also copy the design token sources (`assets/corex/design/`)
 Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
 ```css
-/* corex:design-imports */
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
 @import "../corex/components/typo.css";
 @import "../corex/components/layout.css";
 @import "../corex/components/accordion.css";
-/* corex:design-imports */
 ```
 
-Keep the `/* corex:design-imports */` markers — they're the agreed-upon block Corex generators recognize when updating imports later.
+Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`, and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 

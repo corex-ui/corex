@@ -10,19 +10,19 @@
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
 <%= if @design do %>
-/* corex:design-imports */
 @import "../corex/main.css";
 <%= for theme <- @themes do %>@import "../corex/theme/<%= theme %>.css";
-<% end %>@import "../corex/components/toggle-group.css";
+<% end %><%= if @mode do %>
+@import "../corex/components/toggle-group.css";
+<% end %><%= if @theme or @lang do %>
 @import "../corex/components/select.css";
-@import "../corex/components/toast.css";
+<% end %>@import "../corex/components/toast.css";
 @import "../corex/components/layout-heading.css";
 @import "../corex/components/layout.css";
 @import "../corex/components/typo.css";
 @import "../corex/components/icon.css";
 @import "../corex/components/link.css";
 @import "../corex/components/button.css";
-/* corex:design-imports */
 <% end %>
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);

@@ -130,13 +130,53 @@ defmodule Corex.New.TemplatesTest do
   describe "app_css/1" do
     test "includes corex design imports when design: true" do
       out = Templates.app_css(@base_assigns)
-      assert out =~ "/* corex:design-imports */"
       assert out =~ "@import \"../corex/main.css\""
+      assert out =~ "@import \"../corex/theme/neo.css\""
+      refute out =~ "toggle-group.css"
+      refute out =~ "select.css"
+    end
+
+    test "includes toggle-group import when mode without theme or lang" do
+      out =
+        Templates.app_css(
+          @base_assigns
+          |> Keyword.put(:mode, true)
+          |> Keyword.put(:themes, ["neo"])
+        )
+
+      assert out =~ "@import \"../corex/components/toggle-group.css\""
+      refute out =~ "select.css"
+    end
+
+    test "includes select import when theme without mode" do
+      out =
+        Templates.app_css(
+          @base_assigns
+          |> Keyword.put(:theme, true)
+          |> Keyword.put(:themes, ["neo", "uno", "duo", "leo"])
+        )
+
+      assert out =~ "@import \"../corex/theme/neo.css\""
+      assert out =~ "@import \"../corex/theme/leo.css\""
+      refute out =~ "toggle-group.css"
+      assert out =~ "@import \"../corex/components/select.css\""
+    end
+
+    test "includes select import when lang without theme" do
+      out =
+        Templates.app_css(
+          @base_assigns
+          |> Keyword.put(:lang, true)
+          |> Keyword.put(:themes, ["neo"])
+        )
+
+      refute out =~ "toggle-group.css"
+      assert out =~ "@import \"../corex/components/select.css\""
     end
 
     test "omits design imports when design: false" do
       out = Templates.app_css(Keyword.put(@base_assigns, :design, false))
-      refute out =~ "/* corex:design-imports */"
+      refute out =~ "@import \"../corex/main.css\""
     end
   end
 end

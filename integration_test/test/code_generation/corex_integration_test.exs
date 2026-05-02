@@ -222,9 +222,13 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_assets_build_pass(app_root_path)
 
         assert_file(Path.join(app_root_path, "assets/css/app.css"), fn content ->
-          assert content =~ "/* corex:design-imports */"
           assert content =~ ~s(@import "../corex/main.css";)
           assert content =~ ~s(@import "../corex/theme/neo.css";)
+          assert content =~ ~s(@import "../corex/theme/uno.css";)
+          assert content =~ ~s(@import "../corex/theme/duo.css";)
+          assert content =~ ~s(@import "../corex/theme/leo.css";)
+          assert content =~ ~s(@import "../corex/components/toggle-group.css";)
+          assert content =~ ~s(@import "../corex/components/select.css";)
           assert content =~ ~s(@import "../corex/components/typo.css";)
           refute content =~ "../vendor/daisyui"
           refute content =~ "daisyui-theme"
