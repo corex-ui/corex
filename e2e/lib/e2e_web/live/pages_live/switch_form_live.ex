@@ -37,10 +37,12 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"preferences" => params}, socket) do
+  def handle_event("validate", params, socket) when is_map(params) do
+    prefs = preferences_form_params(params, "preferences")
+
     changeset =
       %Preferences{}
-      |> Preferences.changeset(params)
+      |> Preferences.changeset(prefs)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -56,8 +58,10 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"preferences" => params}, socket) do
-    case Preferences.changeset(%Preferences{}, params) do
+  def handle_event("save", params, socket) when is_map(params) do
+    prefs = preferences_form_params(params, "preferences")
+
+    case Preferences.changeset(%Preferences{}, prefs) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: notifications=#{data.notifications}"
@@ -88,10 +92,12 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("validate_strict", %{"preferences_strict" => params}, socket) do
+  def handle_event("validate_strict", params, socket) when is_map(params) do
+    prefs = preferences_form_params(params, "preferences_strict")
+
     changeset =
       %Preferences{}
-      |> Preferences.changeset_validate(params)
+      |> Preferences.changeset_validate(prefs)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -107,8 +113,10 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("save_strict", %{"preferences_strict" => params}, socket) do
-    case Preferences.changeset_validate(%Preferences{}, params) do
+  def handle_event("save_strict", params, socket) when is_map(params) do
+    prefs = preferences_form_params(params, "preferences_strict")
+
+    case Preferences.changeset_validate(%Preferences{}, prefs) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: notifications=#{data.notifications}"
@@ -136,6 +144,13 @@ defmodule E2eWeb.SwitchFormLive do
              id: "switch-strict-form-live"
            )
          )}
+    end
+  end
+
+  defp preferences_form_params(params, key) when is_map(params) and is_binary(key) do
+    case Map.get(params, key) do
+      %{} = nested -> nested
+      _ -> %{}
     end
   end
 
