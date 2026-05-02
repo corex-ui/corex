@@ -114,10 +114,10 @@ defmodule Corex.Accordion.Connect do
   end
 
   @spec content(Item.t(), String.t()) :: map()
-  def content(assigns, _animation \\ "instant") do
+  def content(assigns, animation \\ "instant") do
     expanded = assigns.value in assigns.values
 
-    %{
+    base = %{
       "data-scope" => "accordion",
       "data-part" => "item-content",
       "role" => "region",
@@ -126,10 +126,20 @@ defmodule Corex.Accordion.Connect do
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
       "dir" => assigns.dir,
-      "aria-label" => "Accordion #{assigns.id} · #{assigns.value}",
-      "hidden" => !expanded,
+      "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "id" => content_id(assigns.id, assigns.value)
     }
+
+    cond do
+      expanded ->
+        base
+
+      animation in ["js", "custom"] ->
+        base
+
+      true ->
+        Map.put(base, "hidden", true)
+    end
   end
 
   @spec ignore_content(Item.t()) :: JS.t()

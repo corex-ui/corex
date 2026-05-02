@@ -16,7 +16,6 @@ export class Dialog extends Component<Props, Api> {
   render(): void {
     const rootEl = this.el;
     const animation = rootEl.dataset.animation ?? "instant";
-    const open = this.api.open;
 
     const triggerEl = rootEl.querySelector<HTMLElement>(
       '[data-scope="dialog"][data-part="trigger"]'
@@ -30,13 +29,9 @@ export class Dialog extends Component<Props, Api> {
       const rawBackdrop = this.api.getBackdropProps() as Record<string, unknown>;
       if (animation === "instant") {
         this.spreadProps(backdropEl, rawBackdrop);
-      } else {
+      } else if (animation === "js" || animation === "custom") {
         this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-        if (open) {
-          backdropEl.removeAttribute("hidden");
-        } else if (rootEl.dataset.exitAnim !== "running") {
-          backdropEl.setAttribute("hidden", "");
-        }
+        backdropEl.removeAttribute("hidden");
       }
     }
 
@@ -52,12 +47,11 @@ export class Dialog extends Component<Props, Api> {
       const rawContent = this.api.getContentProps() as Record<string, unknown>;
       if (animation === "instant") {
         this.spreadProps(contentEl, rawContent);
-      } else {
+      } else if (animation === "js" || animation === "custom") {
         this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-        if (open) {
-          contentEl.removeAttribute("hidden");
-        } else if (rootEl.dataset.exitAnim !== "running") {
-          contentEl.setAttribute("hidden", "");
+        contentEl.removeAttribute("hidden");
+        if (!this.api.open) {
+          contentEl.style.removeProperty("pointer-events");
         }
       }
     }
@@ -74,30 +68,5 @@ export class Dialog extends Component<Props, Api> {
       '[data-scope="dialog"][data-part="close-trigger"]'
     );
     if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
-
-    if (animation !== "instant") {
-      if (rootEl.dataset.animInteractionLocked === "true") {
-        if (backdropEl) backdropEl.style.pointerEvents = "auto";
-        if (positionerEl) positionerEl.style.pointerEvents = "auto";
-        if (contentEl) contentEl.style.pointerEvents = "none";
-      } else {
-        if (contentEl) contentEl.style.removeProperty("pointer-events");
-
-        if (open) {
-          if (backdropEl) backdropEl.style.pointerEvents = "auto";
-          if (positionerEl) positionerEl.style.pointerEvents = "auto";
-        } else if (animation === "js") {
-          const pe: "auto" | "none" = rootEl.dataset.exitAnim === "running" ? "auto" : "none";
-          if (backdropEl) backdropEl.style.pointerEvents = pe;
-          if (positionerEl) positionerEl.style.pointerEvents = pe;
-        } else if (animation === "custom") {
-          if (backdropEl) backdropEl.style.pointerEvents = "none";
-          if (positionerEl) positionerEl.style.pointerEvents = "none";
-        } else {
-          if (backdropEl) backdropEl.style.pointerEvents = "none";
-          if (positionerEl) positionerEl.style.pointerEvents = "none";
-        }
-      }
-    }
   }
 }

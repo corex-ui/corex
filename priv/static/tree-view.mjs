@@ -13,7 +13,7 @@ import {
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
   stripHiddenFromProps
-} from "./chunks/chunk-7NPJK3FE.mjs";
+} from "./chunks/chunk-4PSVMPGM.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1355,7 +1355,7 @@ var TreeView = class extends Component {
   }
   updateExistingTree(treeEl) {
     this.spreadProps(treeEl, this.api.getTreeProps());
-    const animation = this.el.dataset.animation ?? "js";
+    const animation = this.el.dataset.animation ?? "instant";
     const isOwnedByTree = (el) => el.closest('[data-scope="tree-view"][data-part="tree"]') === treeEl;
     const branches = treeEl.querySelectorAll(
       '[data-scope="tree-view"][data-part="branch"]'
@@ -1388,7 +1388,7 @@ var TreeView = class extends Component {
         const contentPropsRaw = this.api.getBranchContentProps(nodeProps);
         if (animation === "instant") {
           this.spreadProps(contentEl, contentPropsRaw);
-        } else {
+        } else if (animation === "js" || animation === "custom") {
           this.spreadProps(
             contentEl,
             stripHiddenFromProps(contentPropsRaw)
@@ -1623,6 +1623,11 @@ var TreeViewHook = {
       emitExpandedValue(parseRespondTo(payload));
     });
   },
+  beforeUpdate() {
+    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+      this.previousExpanded = getStringList(this.el, "expandedValue") ?? [];
+    }
+  },
   updated() {
     const el = this.el;
     const tv = this.treeView;
@@ -1645,8 +1650,25 @@ var TreeViewHook = {
     this.lastExpandedAttr = expandedAttr;
     this.lastSelectedAttr = selectedAttr;
     if (controlled) {
+      const prevExpanded = this.previousExpanded ?? this.lastExpanded ?? [];
+      this.previousExpanded = void 0;
       if (expandedAttrChanged) this.lastExpanded = expanded;
       if (selectedAttrChanged) this.lastSelected = selected;
+      if (el.dataset.animation === "js") {
+        runOpenStateTransitionsHeight({
+          rootEl: el,
+          selector: '[data-scope="tree-view"][data-part="branch-content"]',
+          opts: readHeightAnimationOptions(el),
+          wasOpen: (contentEl) => {
+            const value = contentEl.dataset.value;
+            return !!value && prevExpanded.includes(value);
+          },
+          isOpen: (contentEl) => {
+            const value = contentEl.dataset.value;
+            return !!value && expanded.includes(value);
+          }
+        });
+      }
       tv.updateProps({
         expandedValue: expanded,
         selectedValue: selected,

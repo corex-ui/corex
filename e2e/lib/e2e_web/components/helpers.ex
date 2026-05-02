@@ -544,20 +544,20 @@ defmodule E2eWeb.Helpers do
           id: "timer",
           style: true,
           anatomy_to: ~p"/timer/anatomy",
+          pattern: false,
           playground_to: ~p"/timer/playground",
           api_to: ~p"/timer/api",
           events_to: ~p"/timer/events",
-          patterns_to: ~p"/timer/patterns",
           style_to: ~p"/timer/style"
         },
         %{
           label: "Toast",
           id: "toast",
+          pattern: false,
           anatomy_to: ~p"/toast/anatomy",
           event: false,
           playground_to: ~p"/toast/playground",
-          api_to: ~p"/toast/api",
-          patterns_to: ~p"/toast/patterns"
+          api_to: ~p"/toast/api"
         },
         %{
           label: "Toggle group",
@@ -574,11 +574,10 @@ defmodule E2eWeb.Helpers do
           label: "Tooltip",
           id: "tooltip",
           style: true,
+          playground: false,
           anatomy_to: ~p"/tooltip/anatomy",
-          playground_to: ~p"/tooltip/playground",
           api_to: ~p"/tooltip/api",
           events_to: ~p"/tooltip/events",
-          patterns_to: ~p"/tooltip/patterns",
           style_to: ~p"/tooltip/style"
         },
         %{

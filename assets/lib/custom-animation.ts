@@ -12,10 +12,22 @@ export type AnimateHeightOptions = {
   opacityEnd?: number;
 };
 
+export type AnimateScaleOptions = {
+  animator: Animator;
+  duration?: number;
+  easing?: string | number[];
+  opacityStart?: number;
+  opacityEnd?: number;
+  scaleStart?: number;
+  scaleEnd?: number;
+};
+
 const DEFAULT_DURATION = 0.3;
 const DEFAULT_EASING: string = "ease-out";
 const DEFAULT_OPACITY_START = 0;
 const DEFAULT_OPACITY_END = 1;
+const DEFAULT_SCALE_START = 0.96;
+const DEFAULT_SCALE_END = 1;
 
 function reducedMotion(): boolean {
   return (
@@ -49,25 +61,32 @@ export function findTreeBranch(rootEl: HTMLElement, value: string): HTMLElement 
   );
 }
 
-export function initCustomCollections(): void {
-  document
-    .querySelectorAll<HTMLElement>('[data-animation="custom"][phx-hook="Accordion"]')
-    .forEach((host) => {
-      host
-        .querySelectorAll<HTMLElement>('[data-scope="accordion"][data-part="item-content"]')
-        .forEach((el) => {
-          if (el.dataset.state !== "open") applyClosedHeight(el);
-        });
-    });
-  document
-    .querySelectorAll<HTMLElement>('[data-animation="custom"][phx-hook="TreeView"]')
-    .forEach((host) => {
-      host
-        .querySelectorAll<HTMLElement>('[data-scope="tree-view"][data-part="branch-content"]')
-        .forEach((el) => {
-          if (el.dataset.state !== "open") applyClosedHeight(el);
-        });
-    });
+export function findDialogBackdrop(rootEl: HTMLElement): HTMLElement | null {
+  return rootEl.querySelector<HTMLElement>('[data-scope="dialog"][data-part="backdrop"]');
+}
+
+export function findDialogContent(rootEl: HTMLElement): HTMLElement | null {
+  return rootEl.querySelector<HTMLElement>('[data-scope="dialog"][data-part="content"]');
+}
+
+export function applyClosedScale(
+  el: HTMLElement,
+  opts: { scaleStart?: number; opacityStart?: number } = {}
+): void {
+  const isBackdrop = el.dataset.part === "backdrop";
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  el.style.opacity = String(opacityStart);
+  if (!isBackdrop && scaleStart !== 1) {
+    el.style.transform = `scale(${scaleStart})`;
+  } else {
+    el.style.removeProperty("transform");
+  }
+}
+
+export function applyOpenScale(el: HTMLElement): void {
+  el.style.opacity = "";
+  el.style.removeProperty("transform");
 }
 
 export function animateHeightOpen(el: HTMLElement, opts: AnimateHeightOptions): Promise<void> {
@@ -121,5 +140,59 @@ export function animateHeightClose(el: HTMLElement, opts: AnimateHeightOptions):
       .finished.then(() => {
         applyClosedHeight(el);
       })
+  ).then(() => undefined);
+}
+
+export function animateScaleOpen(el: HTMLElement, opts: AnimateScaleOptions): Promise<void> {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyOpenScale(el);
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+
+  const keyframes: Record<string, (number | string)[]> = {
+    opacity: [opacityStart, opacityEnd],
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleStart})`, `scale(${scaleEnd})`];
+  }
+
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyOpenScale(el);
+    })
+  ).then(() => undefined);
+}
+
+export function animateScaleClose(el: HTMLElement, opts: AnimateScaleOptions): Promise<void> {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyClosedScale(el, { scaleStart: opts.scaleStart, opacityStart: opts.opacityStart });
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+
+  const keyframes: Record<string, (number | string)[]> = {
+    opacity: [opacityEnd, opacityStart],
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleEnd})`, `scale(${scaleStart})`];
+  }
+
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyClosedScale(el, { scaleStart, opacityStart });
+    })
   ).then(() => undefined);
 }

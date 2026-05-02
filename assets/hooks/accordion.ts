@@ -212,7 +212,10 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   },
 
   beforeUpdate(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    if (getBoolean(this.el, "controlled")) {
+    if (
+      getBoolean(this.el, "controlled") &&
+      this.el.dataset.animation === "js"
+    ) {
       this.previousValue = getStringList(this.el, "value") ?? [];
     }
   },

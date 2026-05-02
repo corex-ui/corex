@@ -177,22 +177,4 @@ defmodule E2eWeb.Demos.ToastDemo do
       push_toast_server_elixir: api_push_toast_server_elixir()
     }
   end
-
-  def patterns_form_code do
-    ~S"""
-    <.form for={@form} as={:toast} phx-submit="create_flash" id={@form.id}>
-      <.native_input field={@form[:title]} type="text" required><:label>Title</:label></.native_input>
-      <.native_input field={@form[:message]} type="text" required><:label>Message</:label></.native_input>
-      <.select class="select" field={@form[:type]} items={[...]}>
-        <:label>Type</:label>
-        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-      </.select>
-      <.action type="submit" class="button button--accent">Create</.action>
-    </.form>
-    """
-  end
-
-  def patterns_client_actions_code do
-    api_client_binding_code()
-  end
 end

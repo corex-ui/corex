@@ -77,7 +77,6 @@ defmodule E2eWeb.TooltipEventsLive do
                 class="tooltip"
                 on_open_change="tooltip_open_changed"
                 on_open_change_client="tooltip-open-changed"
-                show_arrow
               >
                 <:trigger>Hover me</:trigger>
                 <:content>Tooltip content</:content>

@@ -14,9 +14,6 @@ defmodule E2e.Application do
       E2e.Repo,
       {DNSCluster, query: Application.get_env(:corex_web, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: E2e.PubSub},
-      # Start a worker by calling: E2e.Worker.start_link(arg)
-      # {E2e.Worker, arg},
-      # Start to serve requests, typically the last entry
       E2eWeb.Endpoint
     ]
 

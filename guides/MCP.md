@@ -4,11 +4,11 @@ Corex ships a built-in [Model Context Protocol](https://modelcontextprotocol.io/
 
 This lets assistants **discover, inspect, and generate UI code** based on the components actually installed in your project — not stale snapshots from training data.
 
-It is intended for **development only**. Mount it in `dev` (and optionally `test`), never in `prod`.
+It is intended for **development only**, never in `prod`.
 
 ## 1. Install Corex
 
-If you generated the project with `mix corex.new`, the MCP plug is already wired and you can skip to step 3. Otherwise, follow [Installation](installation.html) or [Manual installation](manual_installation.html) to get Corex into your app:
+If you generated the project with `mix corex.new`, the MCP plug may already be wired; otherwise follow [Installation](installation.html) or [Manual installation](manual_installation.html):
 
 ```elixir
 def deps do
@@ -22,11 +22,11 @@ end
 mix deps.get
 ```
 
-The MCP server is part of the `:corex` package — no extra dependency is needed.
+The MCP implementation lives in the `:corex` package.
 
 ## 2. Mount the MCP plug
 
-In `lib/my_app_web/endpoint.ex`, mount Corex MCP inside a `dev`-only block. Place it after the `Plug.Static` line (or, if you prefer, after the `socket` declarations) so it does not interfere with static asset serving:
+Add `plug Corex.MCP` to `lib/my_app_web/endpoint.ex` **before** the `if code_reloading? do` block, and after `Plug.Static` (and sockets) so static files and MCP routing behave correctly.
 
 ```elixir
 if Mix.env() == :dev do
@@ -34,17 +34,17 @@ if Mix.env() == :dev do
 end
 ```
 
-This exposes a small HTTP surface under `/corex`:
+Use `Mix.env() in [:dev, :test]` instead if you want `ConnCase` tests to hit `/corex/...` without extra setup.
 
-- `GET /corex` — JSON registry summary
-- `GET /corex/config` — generator config snapshot
-- `POST /corex/mcp` — JSON-RPC endpoint speaking the MCP protocol
+MCP is served by the **same** HTTP server and **same port** as your Phoenix app. URLs use your endpoint port (often `4000`, or whatever `PORT` sets).
 
-The default development port is whatever your endpoint listens on (`4000` for `phx.new`, `4005` for the Corex `e2e` app, …) — substitute it everywhere below.
+Routes:
+
+- `GET /corex` — MCP landing page (HTML)
+- `GET /corex/config` — generator config snapshot (JSON)
+- `POST /corex/mcp` — JSON-RPC for MCP
 
 ## 3. Verify
-
-Start the server and hit the registry endpoint:
 
 ```bash
 mix phx.server
@@ -54,11 +54,11 @@ mix phx.server
 curl http://localhost:4000/corex
 ```
 
-A successful response is JSON with a `components` key listing every Corex function component the app knows about. If you get `404`, the plug isn't mounted; if you get HTML, the request hit your router's catch-all instead of the MCP plug — make sure `plug Corex.MCP` is **above** any catch-all in the endpoint.
+Use your real dev port if it is not `4000`. You should see HTML mentioning Corex MCP. If you get `404`, the plug is not mounted or sits below a catch-all—keep `plug Corex.MCP` above parsers and the router’s catch-all.
 
 ## 4. Configure your MCP client
 
-Add Corex as an HTTP MCP server in whichever AI tool you use. The URL is always `http://localhost:<port>/corex/mcp`.
+Use `http://localhost:<your-phoenix-port>/corex/mcp` (same host and port as the running Phoenix server).
 
 ### Cursor
 
@@ -107,8 +107,6 @@ Add Corex as an HTTP MCP server in whichever AI tool you use. The URL is always 
 
 ### Generic MCP client
 
-Most clients that speak the HTTP transport need just the name and URL:
-
 ```json
 {
   "name": "corex",
@@ -118,27 +116,37 @@ Most clients that speak the HTTP transport need just the name and URL:
 
 ## 5. Available tools
 
-Corex MCP exposes the following tools over JSON-RPC. The names are stable; the arguments and return shapes are documented per-tool below.
+Corex MCP exposes the following tools over JSON-RPC. Clients discover names via `tools/list`; arguments use JSON objects as described below.
 
-### `corex_list_components`
+### `list_components`
 
-Returns every registered Corex component id in kebab-case (e.g. `accordion`, `combobox`, `date-picker`). Use this to discover what's available before drilling into a specific component.
+No arguments.
 
-### `corex_get_component`
+Returns JSON `{ "components": ["accordion", "date_picker", …] }` — stable ids stringified from the Corex registry. Call this before `get_component` when you need the allowed ids.
 
-Returns module metadata and English docs for **one** component, looked up by the kebab-case id from `corex_list_components`. The payload includes attributes, slots, and rendered moduledoc — enough for an assistant to write a correct `<.component …>` invocation without guessing.
+### `get_component`
 
-### `corex_installation`
+Arguments: `{ "id": "<string>" }` — use an id from `list_components`.
 
-Read-only JSON describing how to install Corex into:
+Returns JSON including:
 
-- A **new project** — the `mix archive.install hex corex_new && mix corex.new my_app` flow.
-- An **existing project** — `mix igniter.install corex` flow.
+- `id`, `module`, `function_components` — registry metadata (`function_components` lists `{ "name", "arity" }` entries you import via `use Corex`).
+- `docs` — markdown module documentation when available (`Code.fetch_docs/1`), prefixed with `# ModuleName`; otherwise `null`.
+- `docs_note` — short explanation when `docs` is absent or not markdown-shaped (for example hidden `@moduledoc`).
+- `source_path`, `source_line` — primary module source path and annotation line when available.
 
-Pass `scenario: "new_project"`, `"existing_project"`, or `"all"` (default). The tool never executes shell commands; it only returns the recommended steps.
+Slot and attribute introspection beyond what appears in markdown is not exposed yet.
+
+### `installation_guide`
+
+Optional argument: `{ "scenario": "new_project" | "existing_project" | "all" }` (default `all`).
+
+Read-only JSON with archive commands for greenfield apps (`mix corex.new`) and `minimal_steps` for existing Phoenix apps (deps, Esbuild ESM hooks, layout script module, `use Corex`, verify commands, optional MCP plug). Full prose guides remain on Hexdocs; use `reference_urls` when you need links.
+
+The tool never executes shell commands.
 
 ## Notes
 
-- Intended for **development only** — do not mount Corex.MCP in `prod`.
-- Requires your Phoenix server running locally so AI tools can reach `localhost`.
-- Corex MCP is based on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix) and is distributed under the Apache License 2.0. See `LICENSES/TIDWAVE_MCP_BASELINE.md` in the repo for the upstream-tracking notes.
+- Intended for **development only** — do not mount `Corex.MCP` in `prod`.
+- Requires the Phoenix dev server running locally so clients can reach `localhost` on your app port.
+- Third-party notices for adapted MCP-related code are listed in the repository `LICENSE` file. Corex MCP is distributed under the Apache License 2.0.

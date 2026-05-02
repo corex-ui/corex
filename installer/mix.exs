@@ -26,7 +26,7 @@ defmodule Corex.New.MixProject do
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib mix.exs README.md)
+        files: ~w(lib templates mix.exs README.md)
       ],
       source_url: @scm_url,
       docs: docs(),
@@ -34,8 +34,9 @@ defmodule Corex.New.MixProject do
       description: """
       Corex greenfield helper archive.
 
-      Provides `mix corex.new`, which runs `mix igniter.new` with Phoenix (`--with phx.new`)
-      and installs Corex via Igniter. Install `phx_new` and `igniter_new` archives first.
+      Provides `mix corex.new`, which runs `mix phx.new --no-install` with
+      forwarded Phoenix flags and renders Corex-owned files from templates
+      directly into the generated app. Install the `phx_new` archive first.
       """
     ]
   end

@@ -25,14 +25,15 @@ defmodule Corex.TooltipTest do
       assert html =~ ~s(data-scope="tooltip")
       assert html =~ "Hover"
       assert html =~ "Details"
+      assert html =~ ~s(data-part="arrow")
     end
 
-    test "renders with arrow when show_arrow" do
+    test "omits arrow when show_arrow is false" do
       html =
         render_component(
           fn assigns ->
             ~H"""
-            <.tooltip id="tip-arrow" show_arrow>
+            <.tooltip id="tip-no-arrow" show_arrow={false}>
               <:trigger>T</:trigger>
               <:content>C</:content>
             </.tooltip>
@@ -41,7 +42,7 @@ defmodule Corex.TooltipTest do
           %{}
         )
 
-      assert html =~ ~s(data-part="arrow")
+      refute html =~ ~s(data-part="arrow")
     end
   end
 

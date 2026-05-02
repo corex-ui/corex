@@ -62,9 +62,6 @@
 @import "./card.css";
 @import "./home.css";
 
-.layout__menu-doc-link:hover {
-  background: color-mix(in oklab, var(--color-brand) 10%, var(--color-layer));
-}
 
 .layout__aside-tree [data-scope="tree-view"][data-part="branch-text"],
 .layout__aside-tree [data-scope="tree-view"][data-part="item-text"] {

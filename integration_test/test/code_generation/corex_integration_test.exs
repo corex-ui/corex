@@ -99,19 +99,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --no-replace and --lang" do
-    test "keeps stock home, adds /home with Layouts.corex, def corex, and Plugs.Path" do
-      with_installer_tmp("corex_no_replace_lang", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--no-replace", "--lang"])
-
-        assert_corex_no_replace_file_invariants!(app_root_path, "my_app")
-        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
-        assert_no_compilation_warnings(app_root_path)
-      end)
-    end
-  end
-
   describe "app with --designex" do
     test "keeps design folder, compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_designex", fn tmp_dir ->
@@ -121,30 +108,14 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_dir(Path.join(app_root_path, "assets/corex/design"))
+        assert_file(Path.join([app_root_path, "assets", "corex", "design", "build.mjs"]))
+        mix_exs = File.read!(Path.join(app_root_path, "mix.exs"))
+        assert mix_exs =~ ~r/\{:designex,/
+        assert mix_exs =~ "designex corex"
+        cfg = File.read!(Path.join(app_root_path, "config/config.exs"))
+        assert cfg =~ "config :designex"
+        assert_assets_build_pass(app_root_path)
         assert_tests_pass(app_root_path)
-      end)
-    end
-  end
-
-  describe "dev plug defaults" do
-    test "adds plug Corex.MCP" do
-      with_installer_tmp("corex_dev_plugs", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
-
-        ep = File.read!(Path.join([app_root_path, "lib", "my_app_web", "endpoint.ex"]))
-        assert ep =~ "plug Corex.MCP"
-      end)
-    end
-  end
-
-  describe "app with --no-mcp" do
-    test "omits plug Corex.MCP" do
-      with_installer_tmp("corex_no_mcp", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--no-mcp"])
-
-        ep = File.read!(Path.join([app_root_path, "lib", "my_app_web", "endpoint.ex"]))
-        refute ep =~ "plug Corex.MCP"
       end)
     end
   end
@@ -163,6 +134,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+
+        web = Path.join(app_root_path, "lib/my_app_web")
+
+        for rel <- ["plugs/mode.ex", "plugs/theme.ex", "plugs/path.ex"] do
+          assert File.exists?(Path.join(web, rel))
+        end
+
+        layouts = File.read!(Path.join(web, "components/layouts.ex"))
+        assert layouts =~ "def language_switch"
       end)
     end
 
@@ -182,18 +162,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
-      end)
-    end
-  end
-
-  describe "app with --no-replace" do
-    test "keeps stock home, adds GET /home, and still patches app.js" do
-      with_installer_tmp("corex_no_replace", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--no-replace"])
-
-        assert_corex_no_replace_file_invariants!(app_root_path, "my_app")
-        assert_no_compilation_warnings(app_root_path)
       end)
     end
   end
@@ -242,77 +210,11 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "installer safe default (no --replace)" do
-    test "adds /home without overriding /" do
-      with_installer_tmp("corex_safe_default", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
-
-        mix_run!(
-          ["igniter.install", "corex", "--yes", "--no-design"],
-          app_root_path
-        )
-
-        assert_no_compilation_warnings(app_root_path)
-
-        port = run_phx_server(app_root_path)
-
-        :inets.start()
-        {:ok, home} = request_with_retries("http://localhost:#{port}", 20)
-        assert home.status_code == 200
-        refute home.body =~ "Corex"
-
-        {:ok, home_corex} = request_with_retries("http://localhost:#{port}/home", 20)
-        assert home_corex.status_code == 200
-        assert home_corex.body =~ "Corex"
-      end)
-    end
-  end
-
-  describe "installer replace mode (--replace)" do
-    test "patches / with Corex layout; stock / is not /home" do
-      with_installer_tmp("corex_replace", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
-
-        mix_run!(
-          [
-            "igniter.install",
-            "corex",
-            "--yes",
-            "--replace",
-            "--no-design"
-          ],
-          app_root_path
-        )
-
-        assert_no_compilation_warnings(app_root_path)
-
-        port = run_phx_server(app_root_path)
-
-        :inets.start()
-        {:ok, home} = request_with_retries("http://localhost:#{port}", 20)
-        assert home.status_code == 200
-        assert home.body =~ "layout-toast" or home.body =~ "phx-"
-      end)
-    end
-  end
-
-  describe "installer basic design install (from local corex path)" do
-    test "compile + assets.build succeed; removes daisy and sets html data attrs" do
-      with_installer_tmp("corex_local_design", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
-
-        corex_root = Path.expand("../../..", __DIR__)
-        corex_target = "corex@path:#{corex_root}"
-
-        mix_run!(
-          [
-            "igniter.install",
-            corex_target,
-            "--yes",
-            "--replace"
-          ],
-          app_root_path
-        )
+  describe "mix corex.new with --mode and --theme (design assets)" do
+    test "compile + assets.build succeed; design imports and root layout data attrs" do
+      with_installer_tmp("corex_mode_theme_design", [autoremove?: false], fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--mode", "--theme"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_assets_build_pass(app_root_path)
@@ -354,26 +256,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
                  response.body =~ "mode"
-      end)
-    end
-  end
-
-  describe "corex.new.web inside umbrella" do
-    test "creates web app and injects config" do
-      with_installer_tmp("corex_new_web", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_umb", ["--umbrella"])
-        apps_dir = Path.join(app_root_path, "apps")
-
-        mix_run!(
-          ["corex.new.web", "extra_web", "--install"],
-          apps_dir
-        )
-
-        assert_file(Path.join(app_root_path, "apps/extra_web/mix.exs"))
-
-        assert_file(Path.join(app_root_path, "config/config.exs"), fn file ->
-          assert file =~ "extra_web" or file =~ "import_config"
-        end)
       end)
     end
   end

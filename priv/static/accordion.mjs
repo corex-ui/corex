@@ -6,7 +6,7 @@ import {
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
   stripHiddenFromProps
-} from "./chunks/chunk-7NPJK3FE.mjs";
+} from "./chunks/chunk-4PSVMPGM.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -555,7 +555,7 @@ var AccordionHook = {
     );
   },
   beforeUpdate() {
-    if (getBoolean(this.el, "controlled")) {
+    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
       this.previousValue = getStringList(this.el, "value") ?? [];
     }
   },

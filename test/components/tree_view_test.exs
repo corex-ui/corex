@@ -48,6 +48,27 @@ defmodule Corex.TreeViewTest do
       end
     end
 
+    test "merges :label slot class onto data-part label host" do
+      items = Corex.Tree.new([%{label: "A", id: "a"}])
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_view id="t-label-class" items={@items}>
+              <:label class="sr-only">Docs</:label>
+            </Corex.TreeView.tree_view>
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ ~s(data-part="label")
+      assert html =~ ~s(class="sr-only")
+    end
+
     test "renders expanded and selected values" do
       items =
         Corex.Tree.new([

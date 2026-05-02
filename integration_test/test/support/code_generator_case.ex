@@ -14,17 +14,17 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_root_path = get_app_root_path(tmp_dir, app_name, opts)
     local_corex = Path.expand("../../..", __DIR__)
 
-    dev_corex_argv =
-      if "--dev_corex" in opts or "--dev-corex" in opts do
+    dev_argv =
+      if "--dev_corex" in opts or "--dev-corex" in opts or "--dev" in opts do
         []
       else
-        ["--dev-corex", local_corex]
+        ["--dev", local_corex]
       end
 
     output =
       mix_run!(
         ["corex.new", app_path, "--no-install", "--no-version-check"] ++
-          dev_corex_argv ++ opts,
+          dev_argv ++ opts,
         integration_test_root_path
       )
 
@@ -35,6 +35,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     inject_corex_path_dep(app_root_path, opts)
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
+    mix_run!(["format"], app_root_path)
 
     {app_root_path, output}
   end
@@ -60,19 +61,20 @@ defmodule Corex.Integration.CodeGeneratorCase do
           "--no-install",
           "--no-version-check",
           "--no-design",
-          "--dev-corex",
+          "--dev",
           corex_root
         ] ++ opts,
         integration_test_root_path
       )
 
-    unless output =~ "mix igniter.new" and output =~ "igniter" do
-      raise "expected corex.new to run igniter.new and igniter install, but output did not include it"
+    unless output =~ "mix phx.new" and output =~ "installing Corex" do
+      raise "expected corex.new to run phx.new and install Corex, but output did not include it"
     end
 
     inject_corex_path_dep(app_root_path, opts)
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
+    mix_run!(["format"], app_root_path)
 
     {app_root_path, output}
   end
@@ -80,34 +82,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def generate_phoenix_app(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     generate_corex_app(tmp_dir, app_name, opts)
-  end
-
-  def generate_plain_phoenix_app(tmp_dir, app_name, phx_opts \\ [])
-      when is_binary(app_name) and is_list(phx_opts) do
-    app_path = Path.expand(app_name, tmp_dir)
-    integration_test_root_path = Path.expand("../../", __DIR__)
-
-    output =
-      mix_run!(
-        [
-          "igniter.new",
-          app_path,
-          "--yes",
-          "--with",
-          "phx.new",
-          "--with-args=--no-install --no-version-check"
-        ] ++ phx_opts,
-        integration_test_root_path
-      )
-
-    mix_lock_src = Path.join(integration_test_root_path, "mix.lock")
-    mix_lock_dst = Path.join(app_path, "mix.lock")
-    File.cp!(mix_lock_src, mix_lock_dst)
-
-    mix_run!(["deps.get"], app_path)
-    mix_run!(["compile"], app_path)
-
-    {app_path, output}
   end
 
   def mix_run!(args, app_path, opts \\ [])
@@ -133,40 +107,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def mix_run(args, app_path, opts \\ [])
       when is_list(args) and is_binary(app_path) and is_list(opts) do
-    maybe_ensure_igniter_new_archive(args, app_path)
     System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path)] ++ opts)
-  end
-
-  defp maybe_ensure_igniter_new_archive(["corex.new" | _], app_path) do
-    ensure_igniter_new_archive(Path.expand(app_path))
-  end
-
-  defp maybe_ensure_igniter_new_archive(["igniter.new" | _], app_path) do
-    ensure_igniter_new_archive(Path.expand(app_path))
-  end
-
-  defp maybe_ensure_igniter_new_archive(_, _), do: :ok
-
-  defp ensure_igniter_new_archive(_cwd) do
-    key = {__MODULE__, :igniter_new_archive_installed}
-
-    case :persistent_term.get(key, false) do
-      true ->
-        :ok
-
-      false ->
-        {out, code} =
-          System.cmd("mix", ["archive.install", "hex", "igniter_new", "--force"],
-            stderr_to_stdout: true
-          )
-
-        if code != 0 do
-          raise "failed to install igniter_new archive:\n\n#{out}"
-        end
-
-        :persistent_term.put(key, true)
-        :ok
-    end
   end
 
   def assert_dir(path) do
@@ -399,7 +340,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
           )
       end)
 
-    Process.sleep(3_000)
+    Process.sleep(5_000)
     port
   end
 
@@ -449,7 +390,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
     web = "#{app_name}_web"
 
     app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c ->
+      assert c =~ ~r/import corex from /
+      assert c =~ ~r/"corex"|corex\.mjs/
+    end)
+
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
@@ -462,6 +407,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     design_dir = Path.join([base, "assets", "corex"])
     assert_dir(design_dir)
+    refute_dir(Path.join(design_dir, "design"))
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
 
@@ -470,42 +416,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
       refute c =~ "Layouts.flash_group"
       refute c =~ "Layouts.theme_toggle"
     end)
-  end
-
-  @doc """
-  `mix corex.new …` with replace off (`--no-replace`): stock home at `/`, router adds `GET /home`; JS is still patched.
-  """
-  def assert_corex_no_replace_file_invariants!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-
-    app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
-    assert_file(app_js, ~r/\.\.\.corex/)
-
-    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, fn c -> assert c =~ ~r/<Layouts\.flash_group/ end)
-
-    router = Path.join([base, "lib", web, "router.ex"])
-
-    assert_file(router, fn c ->
-      assert c =~ "PageController, :corex"
-      assert c =~ ~s[get "/home"]
-    end)
-
-    assert_corex_starter_page_and_layout_invariants!(app_root, app_name, opts)
-  end
-
-  def assert_corex_starter_page_and_layout_invariants!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-    corex = Path.join([base, "lib", web, "controllers", "page_html", "corex.html.heex"])
-    assert_file(corex, fn c -> assert c =~ ~r/<Layouts\.corex[\s\n]/ end)
-
-    layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
-    assert_file(layouts, fn c -> assert c =~ ~r/def\s+corex\s*\(/ end)
   end
 
   def assert_corex_lang_path_plug_invariants!(app_root, app_name, opts \\ [])
@@ -541,7 +451,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
     web = "#{app_name}_web"
 
     app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c ->
+      assert c =~ ~r/import corex from /
+      assert c =~ ~r/"corex"|corex\.mjs/
+    end)
+
     assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
 
     app_css = Path.join([base, "assets", "css", "app.css"])
@@ -561,118 +475,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     else
       app_root
     end
-  end
-
-  @doc """
-  Snapshot the project file tree as a map of `relative_path => sha256(content)` for
-  idempotency assertions. Skips noisy/build directories.
-  """
-  def snapshot_app_tree(app_path) when is_binary(app_path) do
-    base = Path.expand(app_path)
-
-    base
-    |> walk_files(base)
-    |> Map.new(fn rel ->
-      hash = :crypto.hash(:sha256, File.read!(Path.join(base, rel))) |> Base.encode16()
-      {rel, hash}
-    end)
-  end
-
-  defp walk_files(root, base) do
-    root
-    |> File.ls!()
-    |> Enum.flat_map(fn entry ->
-      full = Path.join(root, entry)
-
-      cond do
-        skip_entry?(entry) ->
-          []
-
-        File.dir?(full) ->
-          walk_files(full, base)
-
-        File.regular?(full) ->
-          [Path.relative_to(full, base)]
-
-        true ->
-          []
-      end
-    end)
-  end
-
-  defp skip_entry?(name) do
-    name in [
-      "_build",
-      "deps",
-      ".elixir_ls",
-      ".lexical",
-      ".git",
-      "node_modules",
-      "tmp",
-      "cover"
-    ] or String.starts_with?(name, ".")
-  end
-
-  @doc """
-  Run `mix igniter.install corex --yes` (with extra args) again in `app_path` and assert
-  the tree snapshot did not change.
-  """
-  def assert_no_diff_after_rerun!(app_path, install_args \\ [])
-      when is_binary(app_path) and is_list(install_args) do
-    before = snapshot_app_tree(app_path)
-
-    args =
-      ["igniter.install", "corex", "--yes"] ++ install_args
-
-    mix_run!(args, app_path)
-
-    after_snapshot = snapshot_app_tree(app_path)
-
-    assert before == after_snapshot,
-           "Re-running #{Enum.join(args, " ")} changed the project tree:\n\n#{inspect(diff_snapshots(before, after_snapshot), pretty: true)}"
-  end
-
-  defp diff_snapshots(before, after_) do
-    added = for {p, _} <- after_, not Map.has_key?(before, p), do: {:added, p}
-    removed = for {p, _} <- before, not Map.has_key?(after_, p), do: {:removed, p}
-
-    changed =
-      for {p, h1} <- before, h2 = Map.get(after_, p), h2 && h2 != h1, do: {:changed, p}
-
-    added ++ removed ++ changed
-  end
-
-  @doc """
-  Asserts that the generated `corex.html.heex` and `Layouts.corex` definition contain
-  no design `class=` strings (only structural attrs are allowed).
-  """
-  def assert_corex_design_off_starter_no_class!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-
-    starter = Path.join([base, "lib", web, "controllers", "page_html", "corex.html.heex"])
-
-    assert_file(starter, fn c ->
-      refute c =~ ~s(class="layout__),
-             "starter.html.heex contains design layout classes when --no-design"
-
-      refute c =~ ~s(class="accordion"),
-             "starter.html.heex contains design accordion class when --no-design"
-
-      refute c =~ ~s(class="toast"),
-             "starter.html.heex contains design toast class when --no-design"
-    end)
-
-    layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
-
-    assert_file(layouts, fn c ->
-      refute c =~ ~r/def\s+corex[\s\S]*?class="layout__/,
-             "Layouts.corex contains layout__ classes when --no-design"
-
-      refute c =~ ~r/def\s+corex[\s\S]*?class="toast"/,
-             "Layouts.corex contains class=\"toast\" when --no-design"
-    end)
   end
 
   @doc """

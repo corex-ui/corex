@@ -1267,7 +1267,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ~S"""
     import { animate } from "motion"
     import {
-      initCustomCollections,
       findTreeBranch,
       animateHeightOpen,
       animateHeightClose,
@@ -1275,9 +1274,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
     const reducedMotion = () =>
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-    document.addEventListener("DOMContentLoaded", initCustomCollections)
-    window.addEventListener("phx:page-loading-stop", initCustomCollections)
 
     document.addEventListener("my-tree-view-changed", (e) => {
       const root = document.getElementById(e.detail.id)

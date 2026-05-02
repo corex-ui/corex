@@ -182,7 +182,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
@@ -233,7 +233,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
         <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>

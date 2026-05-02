@@ -6,7 +6,7 @@ This guide walks through wiring a **theme picker** (skins like `neo`, `uno`, `du
 
 Theme is **independent** from light/dark mode. The Corex Design tokens combine the two: a CSS rule like `[data-theme="neo"][data-mode="dark"]` is what you'd target if you wanted Neo's dark variant. Mode is covered in [Dark mode](dark_mode.html); this guide is theme-only, but they share the same bridge script and slot together cleanly.
 
-If you ran `mix corex.new my_app --theme` (or `mix igniter.install corex --yes --theme`), the installer wrote everything below for you. Use this guide to understand what that produced, or to wire it by hand.
+If you ran `mix corex.new my_app --theme`, the installer wrote everything below for you. Use this guide to understand what that produced, or to wire it by hand in an existing app.
 
 For the underlying Corex install, see [Manual installation](manual_installation.html).
 

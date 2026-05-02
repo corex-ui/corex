@@ -106,6 +106,9 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
       closeOnScroll: getBoolean(this.el, "closeOnScroll"),
       interactive: getBoolean(this.el, "interactive"),
     });
+    queueMicrotask(() => {
+      this.tooltip?.api.reposition?.();
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TooltipHookState) {

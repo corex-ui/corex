@@ -2,11 +2,28 @@ defmodule Corex.MCP do
   @moduledoc false
   @behaviour Plug
 
+  require Logger
+
   @impl true
-  def init(opts) do
+  def init(opts) when is_list(opts) do
+    maybe_silence_mcp_server_logs()
+
     %{
       allow_remote_access: Keyword.get(opts, :allow_remote_access, false)
     }
+  end
+
+  def init(%{} = opts) do
+    maybe_silence_mcp_server_logs()
+    Map.merge(%{allow_remote_access: false}, opts)
+  end
+
+  defp maybe_silence_mcp_server_logs do
+    if Application.get_env(:corex, :debug) do
+      :ok
+    else
+      Logger.put_module_level(Corex.MCP.Server, :none)
+    end
   end
 
   @impl true

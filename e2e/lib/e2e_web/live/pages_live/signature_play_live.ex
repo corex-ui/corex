@@ -79,6 +79,7 @@ defmodule E2eWeb.SignaturePlayLive do
             items={@size_theme_items}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Style"}}
+            positioning={%Corex.Positioning{same_width: true}}
           >
             <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Style</:label>

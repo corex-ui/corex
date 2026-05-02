@@ -9,7 +9,7 @@ This guide walks through wiring **locale-aware URLs and content** into a Phoenix
 - A `<.select>` language switcher that swaps locales while preserving the current page
 - Gettext-driven translations for component labels and your own strings
 
-If you ran `mix corex.new my_app --lang` (or `mix igniter.install corex --yes --lang`), the installer wrote everything below for you. Use this guide to understand what that produced, or to wire it by hand.
+If you ran `mix corex.new my_app --lang`, the installer wrote the modules and layout wiring described here. Use this guide to understand what that produced, or to wire it by hand in an existing app.
 
 For the underlying Corex install, see [Manual installation](manual_installation.html).
 
@@ -24,12 +24,12 @@ You want to:
 
 ### The solution
 
-`localize_web` provides the URL-routing layer (`Localize.Routes`, `Localize.VerifiedRoutes`) and the per-request locale resolution plugs (`Localize.Plug.PutLocale`, `Localize.Plug.PutSession`). Corex layers on top:
+`localize_web` provides the URL-routing layer (`Localize.Routes`) and the per-request locale resolution plugs (`Localize.Plug.PutLocale`, `Localize.Plug.PutSession`). Corex layers on top:
 
-- A small **`MyAppWeb.Path`** helper that strips the locale prefix from `conn.request_path` so the language switcher can rebuild URLs in any locale.
-- A **`MyAppWeb.Plugs.Path`** that assigns `:path` (the locale-stripped request path) for layouts.
-- A **`MyAppWeb.LocalizeLayout`** module exposing `html_lang/1` and `html_dir/1` for the root layout, with `dir` derived from CLDR (so RTL is automatic).
-- A **`<.language_switch>`** component on `Layouts` that renders a Corex `<.select>` populated from `Gettext.known_locales/1`.
+- A **`MyAppWeb.Path`** helper that strips the locale prefix from request paths, exposes the active locale segment for verified routes (optional), and builds localized URLs for the switcher.
+- A **`MyAppWeb.Plugs.Path`** plug that assigns `:path` (locale-stripped) and mirrors it into the session.
+- A **`MyAppWeb.Locale`** module with **`lang/0`**, **`dir/0`**, **`locales/0`**, and **`label/1`** for the root layout and language switcher labels (CLDR-backed `dir`, non-bang display names with fallback).
+- A **`<.language_switch>`** component on `Layouts` that renders a Corex `<.select redirect>` whose items use **`Corex.List.Item`** and **`MyAppWeb.Locale`** / **`MyAppWeb.Path`**.
 
 ## Prerequisites
 
@@ -86,7 +86,7 @@ config :corex,
 
 ### Download CLDR locale files (`mix localize.download_locales`)
 
-The [`localize`](https://hex.pm/packages/localize) dependency (pulled in by `localize_web`) serves formatting, validation, and locale display names from Unicode CLDR data stored in an **on-disk cache**. Until a locale’s data is present there, APIs such as `Localize.Locale.display_name/2`, `Localize.Locale.get/3` (used for RTL `dir` in step 7), and `Localize.Locale.display_name!/2` in the language switcher (step 9) cannot resolve that locale and may error or fall back.
+The [`localize`](https://hex.pm/packages/localize) dependency (pulled in by `localize_web`) serves formatting, validation, and locale display names from Unicode CLDR data stored in an **on-disk cache**. Until a locale’s data is present there, APIs such as `Localize.Locale.display_name/2`, `Localize.Locale.get/3` (used for RTL `dir` in **`MyAppWeb.Locale.dir/0`**), and `Locale.label/1` in the language switcher may not resolve that locale cleanly and may fall back.
 
 Download the locales that match `:supported_locales` at least once after adding dependencies or changing supported locales:
 
@@ -104,23 +104,29 @@ Files are written under the app’s build output (for example `_build/dev/lib/lo
 
 You can hook the task into setup-style pipelines—for example `mix setup`—alongside asset tooling so new clones get CLDR data without an extra manual step.
 
-## 3. Use Phoenix verified routes via `Localize.VerifiedRoutes`
+## 3. Phoenix verified routes (default vs optional `path_prefixes`)
 
-`Localize.VerifiedRoutes` is a drop-in replacement for `Phoenix.VerifiedRoutes` that injects the active locale into `~p` paths. In `lib/my_app_web.ex`, swap the `verified_routes/0` helper:
+[`mix corex.new --lang`](installation.html) keeps the stock **`Phoenix.VerifiedRoutes`** setup: **`endpoint`**, **`router`**, and **`statics`** only — **no** [`path_prefixes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html#module-localized-routes-and-path-prefixes). Static assets and route helpers behave like a typical Phoenix app; localized page URLs still come from your router (`localize do … end`) and plugs.
+
+### Optional: prefix `~p` with the active locale
+
+If you want `~p"/foo"` to expand to paths that include the leading locale segment (for example when matching bookmarked `/fr/...` URLs), add a **`path_prefixes`** entry whose function returns the same segment **`MyAppWeb.Path.locale_segment/0`** uses (derived from `Localize.get_locale()` with a Gettext fallback):
 
 ```elixir
 def verified_routes do
   quote do
-    use Localize.VerifiedRoutes,
+    use Phoenix.VerifiedRoutes,
       endpoint: MyAppWeb.Endpoint,
       router: MyAppWeb.Router,
-      gettext: MyAppWeb.Gettext,
-      statics: MyAppWeb.static_paths()
+      statics: MyAppWeb.static_paths(),
+      path_prefixes: [{MyAppWeb.Path, :locale_segment, []}]
   end
 end
 ```
 
-Phoenix's stock helper generation flag (`use Phoenix.Router, helpers: false`) is incompatible with `Localize.VerifiedRoutes`. In the same file, flip it on:
+Confirm against [`Phoenix.VerifiedRoutes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version; the MFA shape must match what `path_prefixes` expects.
+
+Phoenix's stock helper generation flag (`use Phoenix.Router, helpers: false`) is incompatible with `Localize.Routes` (which expects route helpers). In `lib/my_app_web.ex`, ensure:
 
 ```elixir
 def router do
@@ -129,8 +135,6 @@ def router do
   end
 end
 ```
-
-After this swap, `~p"/home"` inside a request scoped to French automatically renders as `/fr/home`.
 
 ## 4. Router: `use Localize.Routes`, plugs, and `localize do … end`
 
@@ -159,7 +163,7 @@ pipeline :browser do
   plug MyAppWeb.Plugs.Theme
 
   plug Localize.Plug.PutLocale,
-    from: [:route, :session, :accept_language, :query, :path],
+    from: [:path, :session, :accept_language],
     gettext: MyAppWeb.Gettext
 
   plug Localize.Plug.PutSession, as: :string
@@ -172,11 +176,11 @@ pipeline :browser do
 end
 ```
 
-The `from:` list is the resolution priority: the route segment wins first, then the session (so the choice survives across requests), then the `Accept-Language` header, then the query string, and finally the path. This matches the Corex installer default and works for both bookmarked URLs and first-time visitors.
+The `from:` list matches **`mix corex.new --lang`**: leading URL segment, then session, then `Accept-Language`. You can add **` :route`**, **`:query`**, or reorder if your app needs different priority — see [`localize_web`](https://hex.pm/packages/localize_web).
 
-`Localize.Plug.PutSession, as: :string` writes the active locale into the session as a string so LiveViews can read it.
+`Localize.Plug.PutSession, as: :string` writes the active locale into the session so LiveViews can read it.
 
-`MyAppWeb.Plugs.Path` is created in step 6 — it assigns `:path` (the request path with the locale segment stripped). The language switcher uses this.
+`MyAppWeb.Plugs.Path` is created in step 6 — it assigns `:path` (locale-stripped) and stores it in the session. The language switcher and **`Layouts.app`** use this.
 
 **c)** Wrap the routes that should gain a locale prefix in `localize do … end`. The simplest setup is to wrap the home route:
 
@@ -194,16 +198,76 @@ Visiting `/` now redirects to `/en` (or whichever locale the resolver picked). T
 
 ## 5. Create `MyAppWeb.Path`
 
-`Localize.Plug.PutLocale` exposes the active locale, but the language switcher needs to rebuild the **same** path under a different locale. Create `lib/my_app_web/path.ex` with helpers for stripping and rejoining the locale segment:
+Create `lib/my_app_web/path.ex`:
 
 ```elixir
 defmodule MyAppWeb.Path do
   @moduledoc false
 
+  @gettext_backend MyAppWeb.Gettext
+
+  def locale_segment do
+    case Localize.get_locale() do
+      %{cldr_locale_id: id} when is_atom(id) ->
+        Atom.to_string(id)
+
+      %{cldr_locale_id: id} when is_binary(id) ->
+        id
+
+      _ ->
+        Gettext.get_locale(@gettext_backend)
+    end
+  end
+
+  def request_path_from_uri(uri) when is_binary(uri) do
+    case URI.parse(uri) do
+      %URI{path: nil} -> "/"
+      %URI{path: ""} -> "/"
+      %URI{path: path} -> path
+    end
+  end
+
+  def request_path_from_uri(%URI{} = uri), do: uri.path || "/"
+
   def strip_after_locale(request_path) when is_binary(request_path) do
-    loc = locale_leading_from_path(request_path) || Gettext.get_locale(MyAppWeb.Gettext)
+    loc = locale_leading_from_path(request_path) || Gettext.get_locale(@gettext_backend)
     after_locale(request_path, loc)
   end
+
+  def join_locale_path(locale, after_path) when is_atom(locale) do
+    join_locale_path(Atom.to_string(locale), after_path)
+  end
+
+  def join_locale_path(locale, after_path)
+      when is_binary(locale) and (is_binary(after_path) or after_path in ["", nil]) do
+    base = "/" <> locale
+
+    cond do
+      after_path == "" or after_path == nil ->
+        base
+
+      String.starts_with?(after_path, "/") ->
+        base <> after_path
+
+      true ->
+        base <> "/" <> after_path
+    end
+  end
+
+  def with_current_locale(after_path) when is_binary(after_path) or after_path in ["", nil] do
+    join_locale_path(locale_segment(), after_path)
+  end
+
+  def locale_string(%Localize.LanguageTag{} = tag) do
+    case tag.cldr_locale_id do
+      id when is_atom(id) -> Atom.to_string(id)
+      id when is_binary(id) -> id
+      _ -> Gettext.get_locale(@gettext_backend)
+    end
+  end
+
+  def locale_string(loc) when is_atom(loc), do: Atom.to_string(loc)
+  def locale_string(loc) when is_binary(loc), do: loc
 
   defp locale_leading_from_path(path) do
     first =
@@ -216,7 +280,7 @@ defmodule MyAppWeb.Path do
         s -> s
       end
 
-    if is_binary(first) and first in Gettext.known_locales(MyAppWeb.Gettext),
+    if is_binary(first) and first in Gettext.known_locales(@gettext_backend),
       do: first,
       else: nil
   end
@@ -230,33 +294,12 @@ defmodule MyAppWeb.Path do
       true -> path
     end
   end
-
-  def join_locale_path(locale, after_path)
-      when is_binary(locale) and (is_binary(after_path) or after_path == "") do
-    base = "/" <> locale
-
-    cond do
-      after_path == "" or after_path == nil -> base
-      String.starts_with?(after_path, "/") -> base <> after_path
-      true -> base <> "/" <> after_path
-    end
-  end
-
-  def with_current_locale(after_path) when is_binary(after_path) or after_path == "" do
-    join_locale_path(Gettext.get_locale(MyAppWeb.Gettext), after_path)
-  end
 end
 ```
 
-The three public functions are:
-
-- `strip_after_locale/1` — `"/en/products"` → `"/products"` (used by `Plugs.Path` below).
-- `join_locale_path/2` — `("fr", "/products")` → `"/fr/products"` (used by the switcher to build options).
-- `with_current_locale/1` — `"/products"` → `"/en/products"` for the active request locale (used to mark the current option).
-
 ## 6. Create `MyAppWeb.Plugs.Path`
 
-Create `lib/my_app_web/plugs/path.ex`. It runs after `Localize.Plug.PutSession` and assigns `:path` for the layout:
+Create `lib/my_app_web/plugs/path.ex`:
 
 ```elixir
 defmodule MyAppWeb.Plugs.Path do
@@ -268,68 +311,65 @@ defmodule MyAppWeb.Plugs.Path do
 
   def call(conn, _opts) do
     path = MyAppWeb.Path.strip_after_locale(conn.request_path)
-    assign(conn, :path, path)
+
+    conn
+    |> assign(:path, path)
+    |> put_session(:path, path)
   end
 end
 ```
 
-It's already mounted by step 4. From here on, `assigns[:path]` in any layout is the locale-stripped path (`"/products"`, never `"/en/products"`), exactly what the language switcher needs to build target URLs.
+From here on, **`assigns[:path]`** on controller-backed pages is the locale-stripped path (`"/products"`, not `"/en/products"`). LiveViews do not get plug assigns automatically unless you add an **`on_mount`** hook (step 10).
 
-## 7. Create `MyAppWeb.LocalizeLayout`
+## 7. Create `MyAppWeb.Locale`
 
-The root layout's `lang` and `dir` come from `localize_web`'s CLDR data, not from a hand-maintained list. Create `lib/my_app_web/localize_layout.ex`:
+The root layout’s effective language and direction come from **`Localize.get_locale()`** and CLDR **`Localize.Locale.get/3`**, matching the installer. Create `lib/my_app_web/locale.ex`:
 
 ```elixir
-defmodule MyAppWeb.LocalizeLayout do
+defmodule MyAppWeb.Locale do
   @moduledoc false
 
-  def html_lang(conn) do
-    case Localize.Plug.PutLocale.get_locale(conn) do
-      %Localize.LanguageTag{} = tag ->
-        Localize.LanguageTag.to_string(tag)
+  @gettext_backend MyAppWeb.Gettext
 
-      _ ->
-        Gettext.get_locale(MyAppWeb.Gettext)
+  def locales do
+    case Application.get_env(:localize, :supported_locales) do
+      list when is_list(list) and list != [] -> Enum.map(list, &to_string/1)
+      _ -> Gettext.known_locales(@gettext_backend)
     end
   end
 
-  def html_dir(conn) do
-    locale_id =
-      case Localize.Plug.PutLocale.get_locale(conn) do
-        %Localize.LanguageTag{} = tag ->
-          Localize.Locale.to_locale_id(tag)
+  def label(loc) when is_binary(loc) do
+    case Localize.Locale.display_name(loc, locale: loc) do
+      {:ok, name} -> name
+      _ -> String.upcase(loc)
+    end
+  end
 
-        _ ->
-          Gettext.get_locale(MyAppWeb.Gettext)
-          |> Localize.Locale.locale_id_from_posix()
-          |> Localize.LanguageTag.parse!()
-          |> Localize.Locale.to_locale_id()
-      end
+  def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
 
-    case Localize.Locale.get(locale_id, [:layout, :character_order], fallback: true) do
+  def lang do
+    Localize.get_locale()
+  end
+
+  def dir do
+    case Localize.Locale.get(Localize.get_locale(), [:layout, :character_order], fallback: true) do
       {:ok, :rtl} -> "rtl"
       {:ok, :ltr} -> "ltr"
-      {:ok, "right-to-left"} -> "rtl"
       _ -> "ltr"
     end
   end
 end
 ```
 
-`html_dir/1` queries the CLDR `:layout / :character_order` for the active locale, so adding `ar` to your Gettext locales is all it takes for `<html dir="rtl">` to start rendering — there is **no separate RTL guide** to follow.
+Adding `ar` (and downloading CLDR data) is enough for **`dir="rtl"`** where the locale metadata says RTL — there is **no separate RTL guide**.
 
 ## 8. Root layout: `lang` + `dir`
 
-Update `lib/my_app_web/components/layouts/root.html.heex` to source `lang` and `dir` from `LocalizeLayout`:
+Update `lib/my_app_web/components/layouts/root.html.heex` so localized apps set **`lang`** and **`dir`** from **`MyAppWeb.Locale`** (values must work as HTML attributes; adjust if `lang/0` returns a structured locale in your stack):
 
 ```heex
 <!DOCTYPE html>
-<html
-  lang={MyAppWeb.LocalizeLayout.html_lang(@conn)}
-  dir={MyAppWeb.LocalizeLayout.html_dir(@conn)}
-  data-theme={assigns[:theme] || "neo"}
-  data-mode={assigns[:mode] || "light"}
->
+<html lang={MyAppWeb.Locale.lang()} dir={MyAppWeb.Locale.dir()} data-theme={assigns[:theme] || "neo"} data-mode={assigns[:mode] || "light"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -346,51 +386,34 @@ Update `lib/my_app_web/components/layouts/root.html.heex` to source `lang` and `
 </html>
 ```
 
-Drop `data-theme` / `data-mode` if you have not enabled [Theming](theming.html) or [Dark mode](dark_mode.html) — they're shown here for completeness because most apps wire all three together.
+Drop **`data-theme`** / **`data-mode`** / **`class="typo layout"`** if you have not enabled [Theming](theming.html), [Dark mode](dark_mode.html), or Corex Design — the generator turns those pieces on only when the matching flags are set.
 
 ## 9. `Layouts.app`: pass `path` and add the language switch
 
-The language switcher needs the locale-stripped path so it can build `/fr/products`, `/en/products`, etc. Add a `:path` attr on `app/1` and a `language_switch/1` component to `lib/my_app_web/components/layouts.ex`:
+The language switcher needs the locale-stripped path so it can build targets like **`MyAppWeb.Path.join_locale_path("fr", suffix)`**. Add a **`:path`** attr on **`app/1`** (default **`""`** in the installer) and a **`language_switch/1`** component.
+
+**Placement:** `mix corex.new --lang` renders **`<.language_switch>`** in the **layout footer** next to other actions; you can move it (for example into a header row) as long as you pass **`path={@path}`**.
+
+Example **`language_switch`** aligned with the installer (Corex list items with **`to:`** for navigation):
 
 ```elixir
-attr :flash, :map, required: true, doc: "the map of flash messages"
-attr :path, :string, default: nil, doc: "locale-stripped path (from Plugs.Path)"
-attr :mode, :string, default: "light", doc: "current mode (light or dark)"
-attr :theme, :string, default: "neo", doc: "current theme"
-attr :current_scope, :map, default: nil
-
-slot :inner_block, required: true
-
-def app(assigns) do
-  ~H"""
-  <header class="layout__header flex items-center gap-2">
-    <.language_switch path={@path} />
-    <.theme_toggle theme={@theme} />
-    <.mode_toggle mode={@mode} />
-  </header>
-  <main class="layout__main">
-    <div class="layout__content">
-      {render_slot(@inner_block)}
-    </div>
-  </main>
-  """
-end
-
-attr :path, :string, default: nil, doc: "locale-stripped path (from Plugs.Path)"
+attr :path, :string, default: "", doc: "locale-stripped request path (from Plugs.Path)"
 
 def language_switch(assigns) do
-  backend = MyAppWeb.Gettext
-  p = assigns.path || ""
+  suffix = assigns.path || ""
 
   items =
-    for loc <- Gettext.known_locales(backend), into: [] do
-      %{
-        id: MyAppWeb.Path.join_locale_path(loc, p),
-        label: Localize.Locale.display_name!(loc, locale: loc)
-      }
+    for locale <- MyAppWeb.Locale.locales(), into: Corex.List.new([]) do
+      loc_str = to_string(locale)
+
+      Corex.List.Item.new(%{
+        id: loc_str,
+        label: MyAppWeb.Locale.label(locale),
+        to: MyAppWeb.Path.join_locale_path(loc_str, suffix)
+      })
     end
 
-  value = [MyAppWeb.Path.with_current_locale(p)]
+  value = [MyAppWeb.Path.locale_segment()]
 
   assigns =
     assigns
@@ -400,7 +423,7 @@ def language_switch(assigns) do
   ~H"""
   <.select
     id="corex-language-switch"
-    class="select select--sm w-4xs"
+    class="select select--sm max-w-5xs"
     items={@items}
     value={@value}
     redirect
@@ -418,28 +441,19 @@ def language_switch(assigns) do
 end
 ```
 
-A few things worth calling out:
-
-- **`Localize.Locale.display_name!(loc, locale: loc)`** renders each locale in **its own language** ("English", "Français", "العربية") rather than translating them all into the active locale.
-- **Each option's `id` is a full path** like `"/fr/products"`. Combined with `redirect` on `<.select>`, picking a locale issues a real navigation to that URL, which re-runs the `:browser` pipeline and re-resolves the locale.
-- **`value` is the current localized path**, so the matching option is always pre-selected.
+Call **`<.language_switch path={@path} />`** from **`app/1`** wherever you want the control.
 
 ## 10. Pass `path` from your pages
 
-Every template that renders `Layouts.app` has to pass `path={assigns[:path]}` so the switcher knows where to send the user when they pick a different locale:
+**Controllers / HEEx** — pass the plug assign through:
 
 ```heex
-<Layouts.app
-  flash={@flash}
-  path={assigns[:path]}
-  theme={assigns[:theme] || "neo"}
-  mode={assigns[:mode] || "light"}
->
+<Layouts.app flash={@flash} path={@path}>
   <h1>{gettext("Home")}</h1>
 </Layouts.app>
 ```
 
-For LiveViews, attach a small `on_mount` hook that pulls `:path` (and `:locale`, if you want it on the socket) from `connect_info` or `params`:
+**LiveViews** — the installer does **not** add a global **`PathLive`** hook. Add your own **`on_mount`** if LiveViews render **`Layouts.app`** with a switcher, so **`assigns.path`** tracks **`live_patch`** / **`live_navigate`**:
 
 ```elixir
 defmodule MyAppWeb.PathLive do
@@ -452,9 +466,7 @@ defmodule MyAppWeb.PathLive do
       |> attach_hook(:path, :handle_params, fn _params, uri, socket ->
         path =
           uri
-          |> URI.parse()
-          |> Map.get(:path)
-          |> Kernel.||("/")
+          |> MyAppWeb.Path.request_path_from_uri()
           |> MyAppWeb.Path.strip_after_locale()
 
         {:cont, assign(socket, :path, path)}
@@ -477,8 +489,6 @@ def live_view do
   end
 end
 ```
-
-`attach_hook(:handle_params, ...)` keeps `:path` in sync across `live_patch` and `live_navigate` without a full page reload.
 
 ## 11. Translate strings
 
@@ -508,20 +518,20 @@ Corex components that expose translatable labels (Select, Editable, Dialog, …)
 
 ## Summary
 
-1. **`localize_web` dep + Gettext** — Gettext is the source of truth for the locale list; `config :localize, :supported_locales` derives from it at runtime. Run **`mix localize.download_locales`** so CLDR data exists on disk for every supported locale (language switcher labels, `html dir`, and other Localize APIs).
-2. **`Localize.VerifiedRoutes`** — `~p"/foo"` automatically prefixes the active locale, so links never need manual locale handling.
-3. **Router** — `use Localize.Routes`, `Localize.Plug.PutLocale` + `Localize.Plug.PutSession` after `:fetch_live_flash`, and `localize do … end` around the routes that gain a locale prefix.
-4. **`MyAppWeb.Path`** — three small helpers (`strip_after_locale/1`, `join_locale_path/2`, `with_current_locale/1`) the switcher uses to rebuild URLs.
-5. **`MyAppWeb.Plugs.Path`** — assigns `:path` (locale-stripped) for layouts.
-6. **`MyAppWeb.LocalizeLayout`** — `html_lang/1` and CLDR-driven `html_dir/1`, so `<html dir="rtl">` is automatic for Arabic, Hebrew, Persian, …
-7. **`Layouts.app`** — accepts `path={@path}` and renders `<.language_switch>`, a `<.select redirect>` populated from `Gettext.known_locales/1`.
-8. **Translations** — `mix gettext.extract && mix gettext.merge priv/gettext`, then fill in the `.po` files.
+1. **`localize_web` dep + Gettext** — Gettext lists locales; `config :localize, :supported_locales` derives from it at runtime when present. Run **`mix localize.download_locales`** so CLDR data exists for **`Locale.dir/0`**, **`Locale.label/1`**, and related APIs.
+2. **`Phoenix.VerifiedRoutes`** — **`mix corex.new --lang`** does not add **`path_prefixes`**; optionally add **`path_prefixes: [{MyAppWeb.Path, :locale_segment, []}]`** if you need locale-prefixed **`~p`** expansion (verify against Phoenix docs).
+3. **Router** — **`use Localize.Routes`**, **`Localize.Plug.PutLocale`** with **`from: [:path, :session, :accept_language]`**, **`Localize.Plug.PutSession`**, **`Plugs.Path`**, and **`localize do … end`** around localized routes.
+4. **`MyAppWeb.Path`** — locale segment, strip/join helpers, URI path helper for LiveViews.
+5. **`MyAppWeb.Plugs.Path`** — **`assign(:path, …)`** and **`put_session(:path, …)`**.
+6. **`MyAppWeb.Locale`** — **`lang/0`**, **`dir/0`**, **`locales/0`**, **`label/1`** for root layout and switcher labels.
+7. **`Layouts.app`** — **`path={@path}`** and **`<.language_switch>`** using **`Corex.List.Item`** + **`<.select redirect>`**.
+8. **Translations** — **`mix gettext.extract`** && **`mix gettext.merge priv/gettext`**, then edit **`.po`** files.
 
-This gives you URL-driven locales with a persistent user choice, RTL handling for free, and Corex components that speak the user's language out of the box.
+This gives you URL-driven locales with a persistent user choice, RTL handling where CLDR says so, and Corex components that follow your Gettext backend.
 
 ## Related
 
-- [Installation](installation.html) — the `--lang` flag wires all of the above automatically.
-- [Dark mode](dark_mode.html) and [Theming](theming.html) — orthogonal preferences; the same browser pipeline carries them.
-- [Phoenix verified routes](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) — what `~p` does under the hood.
+- [Installation](installation.html) — the **`--lang`** flag wires the generated files for you.
+- [Dark mode](dark_mode.html) and [Theming](theming.html) — orthogonal preferences; the same browser pipeline can carry Mode/Theme plugs alongside localize plugs.
+- [Phoenix verified routes](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) — what **`~p`** does under the hood.
 - [`localize_web`](https://hex.pm/packages/localize_web) — full docs for the routing and CLDR layer.

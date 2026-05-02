@@ -1,7 +1,7 @@
 defmodule Corex.New.PostGenerate do
   @moduledoc false
 
-  alias Corex.New.Cli
+  alias Corex.New.{Cli, PhxWrapper}
 
   def copy_cached_build(project_path) do
     case System.fetch_env("COREX_NEW_CACHE_DIR") do
@@ -14,24 +14,6 @@ defmodule Corex.New.PostGenerate do
       :error ->
         :ok
     end
-  end
-
-  def seed_starter_gettext!(install_dir) do
-    for name <- ~w(default.po errors.po) do
-      en = Path.join([install_dir, "priv", "gettext", "en", "LC_MESSAGES", name])
-
-      if File.exists?(en) do
-        text = File.read!(en)
-
-        for code <- ~w(fr ar) do
-          out = Path.join([install_dir, "priv", "gettext", code, "LC_MESSAGES", name])
-          File.mkdir_p!(Path.dirname(out))
-          File.write!(out, String.replace(text, "Language: en", "Language: #{code}"))
-        end
-      end
-    end
-
-    :ok
   end
 
   def init_git(project_path) do
@@ -57,11 +39,9 @@ defmodule Corex.New.PostGenerate do
     cd_hint = Cli.relative_to_cwd_hint(phx_root)
 
     if install? do
-      Mix.shell().info([:green, "* running ", :reset, "mix deps.get"])
-      {_, 0} = System.cmd("mix", ["deps.get"], cd: phx_root, stderr_to_stdout: true)
-
-      Mix.shell().info([:green, "* running ", :reset, "mix assets.setup"])
-      {_, 0} = System.cmd("mix", ["assets.setup"], cd: install_dir, stderr_to_stdout: true)
+      PhxWrapper.run_deps_get!(phx_root)
+      PhxWrapper.run_format!(install_dir)
+      PhxWrapper.run_assets_setup!(install_dir)
     else
       Mix.shell().info("""
 

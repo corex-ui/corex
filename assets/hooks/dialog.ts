@@ -18,24 +18,31 @@ type DialogHookState = {
   dialog?: Dialog;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  closePointerT?: ReturnType<typeof setTimeout>;
   lastOpen?: boolean;
 };
 
 function getDialogUpdatePropsFromEl(el: HTMLElement) {
-  const softLock = el.dataset.animInteractionLocked === "true";
   return {
     id: el.id,
     ...(getBoolean(el, "controlled")
       ? { open: getBoolean(el, "open") }
       : { defaultOpen: getBoolean(el, "defaultOpen") }),
     modal: getBoolean(el, "modal"),
-    closeOnInteractOutside: softLock ? false : getBoolean(el, "closeOnInteractOutside"),
-    closeOnEscape: softLock ? false : getBoolean(el, "closeOnEscapeKeyDown"),
+    closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+    closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
     preventScroll: getBoolean(el, "preventScroll"),
     restoreFocus: getBoolean(el, "restoreFocus"),
     dir: getDir(el),
   };
+}
+
+function runDialogScaleTransitions(el: HTMLElement, isOpen: boolean): void {
+  const opts = readScaleAnimationOptions(el);
+  const blockRoot = opts.blockInteraction ? el : undefined;
+  const backdrop = el.querySelector<HTMLElement>('[data-scope="dialog"][data-part="backdrop"]');
+  const content = el.querySelector<HTMLElement>('[data-scope="dialog"][data-part="content"]');
+  if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
+  if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
 }
 
 const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
@@ -62,46 +69,6 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
       dir: getDir(el),
 
       onOpenChange: (details: OpenChangeDetails) => {
-        if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
-          if (self.closePointerT !== undefined) clearTimeout(self.closePointerT);
-          el.setAttribute("data-exit-anim", "running");
-
-          if (el.dataset.animation === "js") {
-            const closeOpts = readScaleAnimationOptions(el);
-            self.closePointerT = window.setTimeout(
-              () => {
-                el.setAttribute("data-exit-anim", "complete");
-                const backdrop = el.querySelector<HTMLElement>(
-                  '[data-scope="dialog"][data-part="backdrop"]'
-                );
-                const positioner = el.querySelector<HTMLElement>(
-                  '[data-scope="dialog"][data-part="positioner"]'
-                );
-                if (backdrop) backdrop.style.pointerEvents = "none";
-                if (positioner) positioner.style.pointerEvents = "none";
-                self.closePointerT = undefined;
-                dialog.render();
-              },
-              Math.max(0, closeOpts.duration * 1000)
-            );
-          } else {
-            self.closePointerT = window.setTimeout(() => {
-              el.setAttribute("data-exit-anim", "complete");
-              self.closePointerT = undefined;
-              dialog.render();
-            }, 0);
-          }
-        } else if (details.open) {
-          if (self.closePointerT !== undefined) {
-            clearTimeout(self.closePointerT);
-            self.closePointerT = undefined;
-          }
-          el.removeAttribute("data-exit-anim");
-          el.removeAttribute("data-anim-interaction-locked");
-          dialog.updateProps(getDialogUpdatePropsFromEl(el));
-          dialog.render();
-        }
-
         const previousOpen = self.lastOpen ?? false;
         self.lastOpen = details.open;
 
@@ -120,45 +87,15 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
           clientEventName: getString(el, "onOpenChangeClient"),
         });
 
-        if (el.dataset.animation === "js") {
-          const animOpts = readScaleAnimationOptions(el);
-          if (animOpts.blockInteraction) {
-            el.dataset.animInteractionLocked = "true";
-            dialog.updateProps(getDialogUpdatePropsFromEl(el));
-            dialog.render();
-          }
-          const backdrop = el.querySelector<HTMLElement>(
-            '[data-scope="dialog"][data-part="backdrop"]'
-          );
-          const content = el.querySelector<HTMLElement>(
-            '[data-scope="dialog"][data-part="content"]'
-          );
-          const a1 = backdrop ? runScaleAnimation(backdrop, details.open, animOpts) : null;
-          const a2 = content ? runScaleAnimation(content, details.open, animOpts) : null;
-          const onDone = () => {
-            if (animOpts.blockInteraction) {
-              el.removeAttribute("data-anim-interaction-locked");
-              dialog.updateProps(getDialogUpdatePropsFromEl(el));
-              dialog.render();
-            }
-          };
-          const promises: Promise<Animation | void>[] = [];
-          if (a1) promises.push(a1.finished);
-          if (a2) promises.push(a2.finished);
-          if (promises.length > 0) {
-            void Promise.all(promises).then(onDone, onDone);
-          } else {
-            onDone();
-          }
+        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+          runDialogScaleTransitions(el, details.open);
         }
-        // "custom" mode: external animator handles everything via on_open_change_client event
       },
     });
 
     dialog.init();
     this.dialog = dialog;
 
-    // Only prepare initial scale state for "js" mode
     if (el.dataset.animation === "js") {
       const opts = readScaleAnimationOptions(el);
       prepareInitialScaleState(
@@ -200,20 +137,20 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    if (getBoolean(this.el, "controlled")) {
-      this.lastOpen = getBoolean(this.el, "open") ?? false;
+    const el = this.el;
+    const controlled = getBoolean(el, "controlled");
+    if (controlled) {
+      const nextOpen = getBoolean(el, "open") ?? false;
+      const prevOpen = this.lastOpen ?? false;
+      this.lastOpen = nextOpen;
+      if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
+        runDialogScaleTransitions(el, nextOpen);
+      }
     }
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(el));
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    const self = this as object & HookInterface<HTMLElement> & DialogHookState;
-    if (self.closePointerT !== undefined) {
-      clearTimeout(self.closePointerT);
-      self.closePointerT = undefined;
-    }
-    this.el.removeAttribute("data-exit-anim");
-    this.el.removeAttribute("data-anim-interaction-locked");
     this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();

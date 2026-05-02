@@ -1,14 +1,38 @@
 {
   "theme": {
     "radius": {
-      "xs": { "value": "0.12rem", "type": "borderRadius" },
-      "sm": { "value": "0.23rem", "type": "borderRadius" },
-      "md": { "value": "0.34rem", "type": "borderRadius" },
-      "lg": { "value": "0.47rem", "type": "borderRadius" },
-      "xl": { "value": "0.71rem", "type": "borderRadius" },
-      "2xl": { "value": "0.96rem", "type": "borderRadius" },
-      "3xl": { "value": "1.44rem", "type": "borderRadius" },
-      "4xl": { "value": "1.9rem", "type": "borderRadius" }
+      "2xl": {
+        "type": "borderRadius",
+        "value": "1.55rem"
+      },
+      "3xl": {
+        "type": "borderRadius",
+        "value": "2.325rem"
+      },
+      "4xl": {
+        "type": "borderRadius",
+        "value": "3.1rem"
+      },
+      "lg": {
+        "type": "borderRadius",
+        "value": "0.775rem"
+      },
+      "md": {
+        "type": "borderRadius",
+        "value": "0.581rem"
+      },
+      "sm": {
+        "type": "borderRadius",
+        "value": "0.388rem"
+      },
+      "xl": {
+        "type": "borderRadius",
+        "value": "1.1625rem"
+      },
+      "xs": {
+        "type": "borderRadius",
+        "value": "0.194rem"
+      }
     }
   }
 }

@@ -2,19 +2,20 @@
 
 This project contains integration tests for Phoenix-generated projects and Corex.
 
-### Current default (`--dev-corex`)
+### Current default (`--dev`)
 
-Until new Corex / `corex_new` versions are published to Hex, CI runs a single end-to-end test that
-generates an app with **`mix corex.new ... --dev-corex <repo>`** and asserts esbuild ESM flags,
-JS hooks, `config :corex`, `use Corex` in the web module, `config :localize` in `config/runtime.exs` from
-`Gettext.known_locales/1`, and a starter `priv/gettext/fr/.../default.po`.
+Until new Corex / `corex_new` versions are published to Hex, CI can run an end-to-end test that
+generates an app with **`mix corex.new ... --dev <repo>`** and asserts esbuild ESM flags,
+JS hooks, `config :corex`, `use Corex` in the web module, and `corex.mjs` imports in `app.js`.
 
-From the **repository root**, install Mix archives (`phx_new`, `igniter_new`, local `corex_new`),
-then:
+From the **repository root**, install Mix archives **`phx_new`** and local **`corex_new`**
+(`mix archive.build` in `installer/`, then `mix archive.install` the generated `.ez`), then:
 
     $ cd integration_test
     $ mix deps.get
     $ mix test test/code_generation/dev_corex_new_test.exs
+
+The test module filename keeps `dev_corex` for history; the CLI flag is **`--dev <repo>`**, not `--dev-corex`.
 
 Older database-backed code generation tests are kept under `test/code_generation/` but are not
 run in CI until the suite is re-enabled after publish.
@@ -25,11 +26,11 @@ To install dependencies, run:
 
     $ mix deps.get
 
-Then run the focused dev_corex test (recommended):
+Then run the focused dev checkout test (recommended):
 
     $ mix test test/code_generation/dev_corex_new_test.exs
 
-To run the full legacy suite with tests that target a specific database:
+To run the full suite with tests that target a specific database:
 
     $ mix test --include database:postgresql
     $ mix test --include database:mysql
@@ -57,3 +58,6 @@ It is also important to note that dependencies are initially compiled with
 `MIX_ENV=test` and then copied to `_build/dev_` to improve test speed.
 Therefore, dependencies should not be listed in `mix.exs` with an `only: <env>`
 option.
+
+All generator scenarios use **`mix corex.new`** (Phoenix `phx.new` under the hood). There is no
+`igniter_new` archive requirement for these tests.

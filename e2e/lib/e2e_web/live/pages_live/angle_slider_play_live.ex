@@ -189,6 +189,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
               %{id: "degree", label: "Degree"},
               %{id: "raw", label: "Raw"}
             ]}
+            positioning={%Corex.Positioning{same_width: true}}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Value format"}}
           >

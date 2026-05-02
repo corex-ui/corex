@@ -473,7 +473,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action
           phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}
@@ -546,7 +546,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_client_js_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4" id="select-api-cjs-wrap">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center" id="select-api-cjs-wrap">
       <div class="layout__row">
         <button
           type="button"
@@ -604,7 +604,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action
           phx-click={JS.push("select_api_server_set", value: %{value: "fra"})}

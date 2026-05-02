@@ -1,62 +1,94 @@
 {
   "theme": {
     "font": {
-      "sans": {
+      "display": {
+        "type": "fontFamily",
         "value": [
-          "Seravek",
-          "Gill Sans Nova",
-          "Ubuntu",
-          "Calibri",
-          "DejaVu Sans",
-          "source-sans-pro",
-          "sans-serif"
-        ],
-        "type": "fontFamily"
-      },
-      "serif": {
-        "value": [
-          "Iowan Old Style",
-          "Palatino Linotype",
-          "URW Palladio L",
-          "P052",
-          "serif"
-        ],
-        "type": "fontFamily"
+          "Nunito Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
       },
       "mono": {
+        "type": "fontFamily",
         "value": [
           "ui-monospace",
-          "DM Mono",
-          "Liberation Mono",
+          "SFMono-Regular",
           "Menlo",
+          "Monaco",
           "Consolas",
-          "DejaVu Sans Mono",
+          "Liberation Mono",
+          "Courier New",
           "monospace"
-        ],
-        "type": "fontFamily"
+        ]
       },
-      "display": {
+      "sans": {
+        "type": "fontFamily",
         "value": [
-          "Rockwell",
-          "Rockwell Nova",
-          "Roboto Slab",
-          "DejaVu Serif",
-          "Sitka Small",
+          "Nunito Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
+      },
+      "serif": {
+        "type": "fontFamily",
+        "value": [
+          "ui-serif",
+          "Georgia",
+          "Cambria",
+          "Times New Roman",
+          "Times",
           "serif"
-        ],
-        "type": "fontFamily"
+        ]
       }
     },
     "font-weight": {
-      "thin": { "value": 100, "type": "fontWeights" },
-      "extralight": { "value": 200, "type": "fontWeights" },
-      "light": { "value": 300, "type": "fontWeights" },
-      "normal": { "value": 400, "type": "fontWeights" },
-      "medium": { "value": 500, "type": "fontWeights" },
-      "semibold": { "value": 600, "type": "fontWeights" },
-      "bold": { "value": 700, "type": "fontWeights" },
-      "extrabold": { "value": 800, "type": "fontWeights" },
-      "black": { "value": 900, "type": "fontWeights" }
+      "black": {
+        "type": "fontWeights",
+        "value": 900
+      },
+      "bold": {
+        "type": "fontWeights",
+        "value": 700
+      },
+      "extrabold": {
+        "type": "fontWeights",
+        "value": 800
+      },
+      "extralight": {
+        "type": "fontWeights",
+        "value": 200
+      },
+      "light": {
+        "type": "fontWeights",
+        "value": 300
+      },
+      "medium": {
+        "type": "fontWeights",
+        "value": 500
+      },
+      "normal": {
+        "type": "fontWeights",
+        "value": 400
+      },
+      "semibold": {
+        "type": "fontWeights",
+        "value": 600
+      },
+      "thin": {
+        "type": "fontWeights",
+        "value": 100
+      }
     }
   }
 }

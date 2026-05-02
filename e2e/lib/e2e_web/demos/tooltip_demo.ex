@@ -68,19 +68,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_variants_code do
     ~S"""
     <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm" show_arrow>
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Small</:trigger>
         <:content>Small tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" show_arrow>
+      <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Default tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg" show_arrow>
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Large</:trigger>
         <:content>Large tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent" show_arrow>
+      <.tooltip class="tooltip tooltip--accent">
         <:trigger>Accent</:trigger>
         <:content>Accent tooltip</:content>
       </.tooltip>
@@ -91,19 +91,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_variants_example(assigns) do
     ~H"""
     <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm" show_arrow>
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Small</:trigger>
         <:content>Small tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip" show_arrow>
+      <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Default tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg" show_arrow>
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Large</:trigger>
         <:content>Large tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent" show_arrow>
+      <.tooltip class="tooltip tooltip--accent">
         <:trigger>Accent</:trigger>
         <:content>Accent tooltip</:content>
       </.tooltip>
@@ -128,7 +128,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click={Corex.Tooltip.set_open("tooltip-api-cb", true)} class="button button--sm">
           Open
@@ -147,13 +147,22 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def api_set_open_client_js_heex do
     ~S"""
-    <button
-      type="button"
-      class="button button--sm"
-      onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
-    >
-      Open (client JS)
-    </button>
+    <div class="layout__row">
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
+      >
+        Open
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
+      >
+        Close
+      </button>
+    </div>
     <.tooltip id="tooltip-api-cjs" class="tooltip">
       <:trigger>Target</:trigger>
       <:content>Tooltip</:content>
@@ -178,14 +187,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
           class="button button--sm"
           onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: true } }))"
         >
-          Open (client JS)
+          Open
+        </button>
+        <button
+          type="button"
+          class="button button--sm"
+          onclick="document.getElementById('tooltip-api-cjs')?.dispatchEvent(new CustomEvent('corex:tooltip:set-open', {bubbles: false, detail: { open: false } }))"
+        >
+          Close
         </button>
       </div>
       <.tooltip id="tooltip-api-cjs" class="tooltip">
@@ -225,7 +241,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="tooltip_api_open" class="button button--sm">Open</.action>
         <.action phx-click="tooltip_api_close" class="button button--sm">Close</.action>
@@ -330,11 +346,71 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
-  def styling_size_color_code do
-    anatomy_variants_code()
+  def styling_sizes_code do
+    ~S"""
+    <div class="layout__row gap-2">
+      <.tooltip class="tooltip tooltip--sm">
+        <:trigger>Small</:trigger>
+        <:content>Small tooltip</:content>
+      </.tooltip>
+      <.tooltip class="tooltip">
+        <:trigger>Default</:trigger>
+        <:content>Default size</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--lg">
+        <:trigger>Large</:trigger>
+        <:content>Large tooltip</:content>
+      </.tooltip>
+    </div>
+    """
   end
 
-  def styling_size_color_example(assigns) do
-    anatomy_variants_example(assigns)
+  def styling_sizes_example(assigns) do
+    ~H"""
+    <div class="layout__row gap-2">
+      <.tooltip class="tooltip tooltip--sm">
+        <:trigger>Small</:trigger>
+        <:content>Small tooltip</:content>
+      </.tooltip>
+      <.tooltip class="tooltip">
+        <:trigger>Default</:trigger>
+        <:content>Default size</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--lg">
+        <:trigger>Large</:trigger>
+        <:content>Large tooltip</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_colors_code do
+    ~S"""
+    <div class="layout__row gap-2">
+      <.tooltip class="tooltip">
+        <:trigger>Default</:trigger>
+        <:content>Neutral surface</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--accent">
+        <:trigger>Accent</:trigger>
+        <:content>Accent surface</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_colors_example(assigns) do
+    ~H"""
+    <div class="layout__row gap-2">
+      <.tooltip class="tooltip">
+        <:trigger>Default</:trigger>
+        <:content>Neutral surface</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--accent">
+        <:trigger>Accent</:trigger>
+        <:content>Accent surface</:content>
+      </.tooltip>
+    </div>
+    """
   end
 end

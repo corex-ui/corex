@@ -766,6 +766,9 @@ var TooltipHook = {
       closeOnScroll: getBoolean(this.el, "closeOnScroll"),
       interactive: getBoolean(this.el, "interactive")
     });
+    queueMicrotask(() => {
+      this.tooltip?.api.reposition?.();
+    });
   },
   destroyed() {
     if (this.onSetOpen) {

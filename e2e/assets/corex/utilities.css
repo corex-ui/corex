@@ -1,17 +1,3 @@
-/*
-  Approved semantic token families for e2e component CSS (prefer these over ad-hoc names):
-
-  - Spacing: var(--spacing-space), var(--spacing-space-*), var(--spacing-size), var(--spacing-size-*)
-  - Radius: var(--radius-sm), var(--radius-md), var(--radius-full), …
-  - Color: var(--color-ink), var(--color-ink-muted), var(--color-ui), var(--color-ui-hover), var(--color-border), var(--color-selected), var(--color-alert), …
-  - Typography: var(--text-xs) … var(--text-xl) with matching --line-height tokens
-  - Layout width: var(--container-5xs) … var(--container-xl)
-  - Shadow: var(--shadow-ui)
-  - Effects: tokens under semantic/effect in design tokens
-
-  Loading shimmer: use animation `corex-skeleton` from `e2e/assets/corex/components/keyframes.css` only.
-*/
-
 @utility ui-root {
   display: flex;
   flex-direction: column;
@@ -106,6 +92,7 @@
     gap: var(--spacing-space);
     width: 100%;
     text-align: start;
+    align-items: center;
   }
 }
 
@@ -194,7 +181,6 @@
   }
 }
 
-/* ── Icon ────────────────────────────────────────────────── */
 
 @utility ui-icon {
   display: flex;
@@ -215,7 +201,6 @@
   line-height: --value(--text-*--line-height, [length]);
 }
 
-/* ── Content (panels, popovers, dropdowns) ───────────────── */
 
 @utility ui-content {
   display: flex;
@@ -301,7 +286,6 @@
   }
 }
 
-/* ── Item (list item, menu item, select option…) ─────────── */
 
 @utility ui-item {
   width: 100%;
@@ -444,6 +428,8 @@
     gap: var(--spacing-space);
     width: 100%;
     text-align: start;
+    align-items: center;
+    justify-content: space-between;
   }
 }
 
@@ -507,26 +493,30 @@
   }
 }
 
-/* ── Link ────────────────────────────────────────────────── */
 
 @utility ui-link {
   display: inline-flex;
   justify-content: start;
   align-items: center;
   cursor: pointer;
-  width: auto;
-  color: var(--color-ink-brand);
-  height: inherit;
+  position: relative;
+  color: var(--color-link);
+  height: auto;
   font-size: inherit;
   line-height: inherit;
-  gap: --spacing(1);
+  gap: var(--spacing-space);
+  padding-inline: var(--spacing-space);
   border-radius: var(--radius-md);
-  text-decoration: none;
-  text-wrap-mode: nowrap;
-  text-underline-offset: 2px;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  max-width: fit-content;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration-thickness: 2px;
   }
 
   &:focus-visible {
@@ -549,8 +539,7 @@
   }
 
   & .icon,
-  & svg,
-  & img {
+  & [class^="hero-"] {
     @apply ui-icon;
   }
 }
@@ -562,7 +551,6 @@
   gap: calc(--value(--spacing-*, [length]) * 0.5);
 }
 
-/* ── Error message ───────────────────────────────────────── */
 
 @utility ui-error {
   display: inline-flex;
@@ -577,9 +565,8 @@
   color: var(--color-ink-alert);
 }
 
-/* ── Read-only indicator overlay ─────────────────────────── */
 
-@utility ui-readonly-overlay {
+@utility ui-readonly {
   &::after {
     content: "";
     position: absolute;

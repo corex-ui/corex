@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html<%= if @lang do %>
+  lang={<%= @web_module %>.Locale.lang()}
+  dir={<%= @web_module %>.Locale.dir()}
+<% else %> lang="en"<% end %><%= if @design do %>
+  data-theme="<%= @default_theme %>"
+  data-mode="light"
+<% end %>>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="<%= @app_module %>" suffix=" · Phoenix Framework">
+      {assigns[:page_title]}
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
+    </script>
+    <%= if @mode or @theme do %>
+    <script>
+      (() => {<%= if @mode do %>
+        const getSystemMode = () =>
+          window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        const setMode = (mode) => {
+          const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
+          localStorage.setItem("phx:mode", resolved);
+          document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-mode", resolved);
+        };
+
+        setMode(
+          localStorage.getItem("phx:mode") ||
+            document.documentElement.getAttribute("data-mode") ||
+            getSystemMode()
+        );
+
+        window.addEventListener(
+          "storage",
+          (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue)
+        );
+
+        window.addEventListener("phx:set-mode", (e) => {
+          const value = e.detail?.value;
+          const mode = Array.isArray(value) && value[0] ? value[0] : "light";
+          setMode(mode);
+        });
+<% end %><%= if @theme do %>
+        const validThemes = <%= inspect(@themes) %>;
+        const setTheme = (theme) => {
+          const resolved = validThemes.includes(theme) ? theme : "<%= @default_theme %>";
+          localStorage.setItem("phx:theme", resolved);
+          document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-theme", resolved);
+        };
+
+        setTheme(
+          localStorage.getItem("phx:theme") ||
+            document.documentElement.getAttribute("data-theme") ||
+            "<%= @default_theme %>"
+        );
+
+        window.addEventListener(
+          "storage",
+          (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
+        );
+
+        window.addEventListener("phx:set-theme", (e) => {
+          const value = e.detail?.value;
+          const theme = Array.isArray(value) && value[0] ? value[0] : "<%= @default_theme %>";
+          setTheme(theme);
+        });
+<% end %>      })();
+    </script>
+<% end %>
+  </head>
+  <body<%= if @design do %> class="typo layout"<% end %>>
+    {@inner_content}
+  </body>
+</html>

@@ -17,7 +17,7 @@ defmodule Corex.Dialog.Anatomy do
       dir: "ltr",
       on_open_change: nil,
       on_open_change_client: nil,
-      animation: "instant",
+      animation: "js",
       animation_options: %Corex.Animation.Scale{scale_start: 0.96, scale_end: 1.0}
     ]
 
@@ -66,13 +66,12 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Backdrop do
     @moduledoc false
-    defstruct [:id, :dir, :open, animation: "instant"]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            animation: String.t()
+            open: boolean()
           }
 
     @ignored_attrs [
@@ -112,13 +111,12 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open, animation: "instant"]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            animation: String.t()
+            open: boolean()
           }
 
     @ignored_attrs [

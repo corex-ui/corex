@@ -200,7 +200,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
@@ -245,7 +245,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="switch_api_on" class="button button--sm">On</.action>
         <.action phx-click="switch_api_off" class="button button--sm">Off</.action>

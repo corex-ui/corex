@@ -34,6 +34,7 @@ type TreeViewHookState = {
   lastSelected?: string[];
   lastExpandedAttr?: string;
   lastSelectedAttr?: string;
+  previousExpanded?: string[];
 };
 
 function readExpandedAttr(el: HTMLElement): string {
@@ -256,6 +257,12 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     });
   },
 
+  beforeUpdate(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
+    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+      this.previousExpanded = getStringList(this.el, "expandedValue") ?? [];
+    }
+  },
+
   updated(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
     const el = this.el;
     const tv = this.treeView;
@@ -287,8 +294,25 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     this.lastSelectedAttr = selectedAttr;
 
     if (controlled) {
+      const prevExpanded = this.previousExpanded ?? this.lastExpanded ?? [];
+      this.previousExpanded = undefined;
       if (expandedAttrChanged) this.lastExpanded = expanded;
       if (selectedAttrChanged) this.lastSelected = selected;
+      if (el.dataset.animation === "js") {
+        runOpenStateTransitionsHeight({
+          rootEl: el,
+          selector: '[data-scope="tree-view"][data-part="branch-content"]',
+          opts: readHeightAnimationOptions(el),
+          wasOpen: (contentEl) => {
+            const value = contentEl.dataset.value;
+            return !!value && prevExpanded.includes(value);
+          },
+          isOpen: (contentEl) => {
+            const value = contentEl.dataset.value;
+            return !!value && expanded.includes(value);
+          },
+        });
+      }
       tv.updateProps({
         expandedValue: expanded,
         selectedValue: selected,

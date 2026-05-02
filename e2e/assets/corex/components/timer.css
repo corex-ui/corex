@@ -75,6 +75,15 @@
   max-width: --value(--container-*, [length]);
 
   [data-scope="timer"][data-part="item"] {
+    background: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
+    border-color: --value(--color-border, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: --value(--color-ink, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -82,6 +91,5 @@
   [data-scope="timer"][data-part="action-trigger"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    
   }
 }

@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 Dashbit
-# Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/mcp/tools/logs.ex) tidewave v0.5.5
 
 defmodule Corex.MCP.Tools.Components do
   @moduledoc false
@@ -8,9 +7,9 @@ defmodule Corex.MCP.Tools.Components do
   def tools do
     [
       %{
-        name: "corex_list_components",
+        name: "list_components",
         description:
-          "List all Corex component ids from the project registry (kebab-style atoms such as :accordion, :combobox).",
+          "List all Corex component ids from the package registry (atoms serialized as strings, e.g. accordion, date_picker).",
         inputSchema: %{
           type: "object",
           properties: %{}
@@ -19,11 +18,10 @@ defmodule Corex.MCP.Tools.Components do
         callback: &list_components/1
       },
       %{
-        name: "corex_get_component",
+        name: "get_component",
         description: """
-        Return the Elixir module and function component names/arity for one Corex component.
-        The id is a string matching the component key (e.g. "accordion", "date_picker").
-        The JSON includes the full English @moduledoc for the component module as `docs`.
+        Return the Elixir module, function component names/arity, optional markdown module docs, source path when known, and docs_note when docs are absent or non-markdown.
+        Pass id as from list_components (e.g. accordion, date_picker).
         """,
         inputSchema: %{
           type: "object",
@@ -50,26 +48,84 @@ defmodule Corex.MCP.Tools.Components do
     case Corex.component_module_for_mcp_id(id) do
       {:ok, mod} ->
         {:ok, spec} = Corex.component_spec(String.to_existing_atom(id))
-        out = Map.put(spec, :docs, raw_moduledoc(mod))
-        {:ok, Corex.Json.encode!(out)}
+        payload = enrich_with_docs(spec, mod)
+        {:ok, Corex.Json.encode!(payload)}
 
       :error ->
-        {:error, "Unknown component id. Use corex_list_components for valid ids."}
+        {:error, "Unknown component id. Use list_components for valid ids."}
     end
   end
 
   def get_component(_), do: {:error, :invalid_arguments}
 
-  defp raw_moduledoc(mod) do
+  defp enrich_with_docs(spec, mod) do
     case Code.fetch_docs(mod) do
-      {:docs_v1, _, _, _mime, %{"en" => doc}, _anno, _rest} when is_binary(doc) ->
-        doc
+      {:docs_v1, line, _beam_lang, format, doc_blob, meta, _} ->
+        meta_map =
+          case meta do
+            %{} = m -> m
+            _ -> %{}
+          end
 
-      {:docs_v1, _, _, _mime, doc_map, _anno, _rest} when is_map(doc_map) ->
-        Map.get(doc_map, "en", "No en documentation in docs chunk.")
+        source_path = source_path_from_meta(meta_map)
 
-      _other ->
-        "No module documentation could be read for #{inspect(mod)} (docs may be stripped or unavailable)."
+        case moduledoc_markdown(doc_blob, format, mod) do
+          {:ok, docs} ->
+            spec
+            |> Map.put(:docs, docs)
+            |> Map.put(:docs_note, nil)
+            |> Map.put(:source_path, source_path)
+            |> Map.put(:source_line, line)
+
+          {:missing, note} ->
+            spec
+            |> Map.put(:docs, nil)
+            |> Map.put(:docs_note, note)
+            |> Map.put(:source_path, source_path)
+            |> Map.put(:source_line, line)
+        end
+
+      _ ->
+        spec
+        |> Map.put(:docs, nil)
+        |> Map.put(
+          :docs_note,
+          "Code.fetch_docs/1 returned no documentation bundle for this module."
+        )
+        |> Map.put(:source_path, nil)
+        |> Map.put(:source_line, nil)
     end
+  end
+
+  defp source_path_from_meta(meta) do
+    case Map.get(meta, :source_path) do
+      p when is_list(p) -> List.to_string(p)
+      p when is_binary(p) -> p
+      _ -> nil
+    end
+  end
+
+  defp moduledoc_markdown(%{"en" => content}, "text/markdown", mod)
+       when is_binary(content) do
+    {:ok, "# #{inspect(mod)}\n\n#{content}"}
+  end
+
+  defp moduledoc_markdown(%{"en" => content}, format, mod)
+       when is_binary(content) do
+    {:ok,
+     "# #{inspect(mod)}\n\n#{content}" <>
+       "\n\n_(documentation format: #{inspect(format)}, not text/markdown)_\n"}
+  end
+
+  defp moduledoc_markdown(:hidden, _format, _mod) do
+    {:missing, "Module documentation is hidden (@moduledoc false)."}
+  end
+
+  defp moduledoc_markdown(:none, _format, _mod) do
+    {:missing, "No module-level documentation."}
+  end
+
+  defp moduledoc_markdown(_, _format, _mod) do
+    {:missing, "Module documentation format or shape is not recognized."}
   end
 end

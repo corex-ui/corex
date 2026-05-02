@@ -25,13 +25,11 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     ~S"""
     <div class="layout__row">
       <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])} class="button button--sm">Lorem</.action>
-      <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem", "donec"])} class="button button--sm">Lorem+Donec</.action>
       <.action phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", [])} class="button button--sm">Clear</.action>
     </div>
     <.toggle_group id="toggle-group-api-cb" class="toggle-group" multiple>
       <:item value="lorem">Lorem</:item>
       <:item value="duis">Duis</:item>
-      <:item value="donec">Donec</:item>
     </.toggle_group>
     """
   end
@@ -40,19 +38,13 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem"])}
           class="button button--sm"
         >
           Lorem
-        </.action>
-        <.action
-          phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", ["lorem", "donec"])}
-          class="button button--sm"
-        >
-          Lorem+Donec
         </.action>
         <.action
           phx-click={Corex.ToggleGroup.set_value("toggle-group-api-cb", [])}
@@ -64,7 +56,6 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
       <.toggle_group id="toggle-group-api-cb" class="toggle-group" multiple>
         <:item value="lorem">Lorem</:item>
         <:item value="duis">Duis</:item>
-        <:item value="donec">Donec</:item>
       </.toggle_group>
     </div>
     """
@@ -103,7 +94,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
@@ -150,7 +141,7 @@ defmodule E2eWeb.Demos.ToggleGroupDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="tg_api_lorem" class="button button--sm">Lorem</.action>
         <.action phx-click="tg_api_clear" class="button button--sm">Clear</.action>

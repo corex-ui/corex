@@ -263,7 +263,8 @@ export function runHeightPanelAnimation(
 export function runScaleAnimation(
   targetEl: HTMLElement,
   isOpening: boolean,
-  opts: CorexScaleAnimationOptions
+  opts: CorexScaleAnimationOptions,
+  blockRoot?: HTMLElement
 ): Animation {
   targetEl.getAnimations().forEach((a) => a.cancel());
 
@@ -284,20 +285,26 @@ export function runScaleAnimation(
     toFrame.transform = `scale(${toS})`;
   }
 
+  if (blockRoot && opts.blockInteraction) {
+    beginRootPointerBlock(blockRoot);
+  }
+
   const anim = targetEl.animate([fromFrame, toFrame], {
     duration: opts.duration * 1000,
     easing: opts.easing,
     fill: "forwards",
   });
-  anim.onfinish = () => {
+  let finished = false;
+  const finish = (): void => {
+    if (finished) return;
+    finished = true;
     anim.cancel();
+    if (blockRoot && opts.blockInteraction) {
+      endRootPointerBlock(blockRoot);
+    }
     if (isOpening) {
       targetEl.style.opacity = "";
-      if (useScale) {
-        targetEl.style.removeProperty("transform");
-      } else {
-        targetEl.style.removeProperty("transform");
-      }
+      targetEl.style.removeProperty("transform");
     } else {
       targetEl.style.opacity = String(opts.opacityStart);
       if (isBackdrop) {
@@ -308,6 +315,12 @@ export function runScaleAnimation(
         targetEl.style.removeProperty("transform");
       }
     }
+  };
+  anim.onfinish = () => {
+    finish();
+  };
+  anim.oncancel = () => {
+    finish();
   };
   return anim;
 }

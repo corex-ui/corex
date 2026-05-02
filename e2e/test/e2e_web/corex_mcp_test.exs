@@ -5,7 +5,7 @@ defmodule E2eWeb.CorexMcpTest do
   @base_path "/corex"
   @config_path "/corex/config"
 
-  describe "GET (tidewave_phoenix-aligned routes)" do
+  describe "GET routes" do
     test "GET /corex serves landing HTML", %{conn: conn} do
       conn = get(conn, @base_path)
       assert response(conn, 200) =~ "Corex Model Context Protocol"
@@ -35,15 +35,16 @@ defmodule E2eWeb.CorexMcpTest do
       assert response(conn, 200)
       assert %{"result" => %{"tools" => tools}} = json_response(conn, 200)
       names = Enum.map(tools, & &1["name"])
-      assert "corex_list_components" in names
-      assert "corex_get_component" in names
+      assert "list_components" in names
+      assert "get_component" in names
+      assert "installation_guide" in names
 
       for tool <- tools do
         assert %{"annotations" => %{"readOnlyHint" => true}} = tool
       end
     end
 
-    test "prompts/list, resources/list, resources/templates/list return empty (tidewave parity)",
+    test "prompts/list, resources/list, resources/templates/list return empty",
          %{
            conn: conn
          } do
@@ -70,13 +71,13 @@ defmodule E2eWeb.CorexMcpTest do
       end
     end
 
-    test "tools/call corex_list_components", %{conn: conn} do
+    test "tools/call list_components", %{conn: conn} do
       body = %{
         "jsonrpc" => "2.0",
         "id" => 2,
         "method" => "tools/call",
         "params" => %{
-          "name" => "corex_list_components",
+          "name" => "list_components",
           "arguments" => %{}
         }
       }
@@ -92,13 +93,13 @@ defmodule E2eWeb.CorexMcpTest do
       assert text =~ "combobox"
     end
 
-    test "tools/call corex_get_component for accordion includes docs", %{conn: conn} do
+    test "tools/call get_component for accordion includes docs", %{conn: conn} do
       body = %{
         "jsonrpc" => "2.0",
         "id" => 3,
         "method" => "tools/call",
         "params" => %{
-          "name" => "corex_get_component",
+          "name" => "get_component",
           "arguments" => %{"id" => "accordion"}
         }
       }
@@ -117,7 +118,7 @@ defmodule E2eWeb.CorexMcpTest do
       assert decoded["docs"] != ""
     end
 
-    test "rejects request with Origin header (aligned with tidewave_phoenix router)", %{
+    test "rejects request with Origin header", %{
       conn: conn
     } do
       body = %{

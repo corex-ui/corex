@@ -145,6 +145,7 @@ defmodule E2eWeb.SignatureFormLive do
             >
               <.signature_pad
                 id="signature-form-signature"
+                class="signature-pad"
                 field={@form[:signature]}
                 on_draw_end="signature_drawn"
               >

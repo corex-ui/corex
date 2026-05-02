@@ -27,13 +27,13 @@ defmodule Corex.New.Cli do
       )
     end
 
-    case opts[:dev_corex] do
+    case opts[:dev] do
       nil ->
         :ok
 
       v when is_binary(v) ->
         if String.trim(v) == "" do
-          Mix.raise("--dev_corex requires a non-empty path (for example: --dev_corex ../corex)")
+          Mix.raise("--dev requires a non-empty path (for example: --dev ../corex)")
         end
 
       _ ->
@@ -102,7 +102,7 @@ defmodule Corex.New.Cli do
 
       Corex requires a standard Phoenix HTML/assets setup (esbuild + HTML) and requires Ecto in generated apps.
       `--lang` requires Phoenix Gettext (cannot be combined with `--no-gettext`).
-      If you need a highly customized Phoenix app, generate it first with `mix phx.new`, then run `mix igniter.install corex`.
+      If you need a highly customized Phoenix app, generate it first with `mix phx.new`, then follow `guides/manual_installation.md`.
       """)
     end
 

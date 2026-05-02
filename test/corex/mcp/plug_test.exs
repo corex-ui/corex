@@ -11,6 +11,11 @@ defmodule Corex.MCPTest do
     test "honours allow_remote_access" do
       assert %{allow_remote_access: true} = Corex.MCP.init(allow_remote_access: true)
     end
+
+    test "accepts already-normalized map opts" do
+      first = Corex.MCP.init([])
+      assert first == Corex.MCP.init(first)
+    end
   end
 
   describe "call/2 non-corex paths" do

@@ -76,6 +76,11 @@
         "type": "color",
         "value": "#821b20"
       },
+      "link": {
+        "description": "6.0:1 contrast against ui (#f7f7f7)",
+        "type": "color",
+        "value": "#005eb5"
+      },
       "brand-active": {
         "description": "Semantic brand active fill at 40% lightness (chroma #32479C).",
         "type": "color",

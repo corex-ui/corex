@@ -118,7 +118,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
@@ -163,7 +163,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="signature_api_clear" class="button button--sm">
           Clear (server)
@@ -274,7 +274,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       method="post"
       id={@form.id}
     >
-      <.signature_pad field={f[:signature]}>
+      <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -313,7 +313,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       method="post"
       id={@form.id}
     >
-      <.signature_pad field={f[:signature]}>
+      <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here (stricter)</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -355,7 +355,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
-      <.signature_pad field={f[:signature]}>
+      <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -384,7 +384,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
-      <.signature_pad field={f[:signature]}>
+      <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here (stricter)</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />

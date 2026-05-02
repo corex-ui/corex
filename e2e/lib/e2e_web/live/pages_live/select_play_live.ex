@@ -106,6 +106,7 @@ defmodule E2eWeb.SelectPlayLive do
           <.select
             id="select-playground-disabled-items"
             class="select select--accent w-4xs"
+            positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
             close_on_select={false}
@@ -146,6 +147,7 @@ defmodule E2eWeb.SelectPlayLive do
           <.select
             id="select-playground"
             class="select"
+            positioning={%Corex.Positioning{same_width: true}}
             items={@items}
             dir={@controls.dir}
             value={@value}

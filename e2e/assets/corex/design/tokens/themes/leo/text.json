@@ -1,43 +1,154 @@
 {
   "theme": {
     "text": {
-      "xs": { "value": "0.74rem", "type": "fontSizes" },
-      "xs--line-height": { "value": "calc(1.01 / 0.74)", "type": "dimension" },
-      "sm": { "value": "0.88125rem", "type": "fontSizes" },
-      "sm--line-height": { "value": "calc(1.26 / 0.88125)", "type": "dimension" },
-      "base": { "value": "1rem", "type": "fontSizes" },
-      "base--line-height": { "value": "calc(1.52 / 1)", "type": "dimension" },
-      "lg": { "value": "1.13rem", "type": "fontSizes" },
-      "lg--line-height": { "value": "calc(1.76 / 1.13)", "type": "dimension" },
-      "xl": { "value": "1.255rem", "type": "fontSizes" },
-      "xl--line-height": { "value": "calc(1.76 / 1.255)", "type": "dimension" },
-      "2xl": { "value": "1.48rem", "type": "fontSizes" },
-      "2xl--line-height": { "value": "calc(2.02 / 1.48)", "type": "dimension" },
-      "3xl": { "value": "1.86rem", "type": "fontSizes" },
-      "3xl--line-height": { "value": "calc(2.28 / 1.86)", "type": "dimension" },
-      "4xl": { "value": "2.22rem", "type": "fontSizes" },
-      "4xl--line-height": { "value": "calc(2.52 / 2.22)", "type": "dimension" },
-      "5xl": { "value": "2.95rem", "type": "fontSizes" },
-      "5xl--line-height": { "value": "calc(3.18 / 2.95)", "type": "dimension" },
-      "6xl": { "value": "3.7rem", "type": "fontSizes" },
-      "6xl--line-height": { "value": "calc(3.92 / 3.7)", "type": "dimension" },
-      "7xl": { "value": "4.42rem", "type": "fontSizes" },
-      "7xl--line-height": { "value": "calc(4.68 / 4.42)", "type": "dimension" },
-      "8xl": { "value": "5.92rem", "type": "fontSizes" },
-      "8xl--line-height": { "value": "calc(6.2 / 5.92)", "type": "dimension" },
-      "9xl": { "value": "7.9rem", "type": "fontSizes" },
-      "9xl--line-height": { "value": "calc(8.2 / 7.9)", "type": "dimension" },
-      "tracking-tighter": { "value": "-0.058em", "type": "dimension" },
-      "tracking-tight": { "value": "-0.029em", "type": "dimension" },
-      "tracking-normal": { "value": "0em", "type": "dimension" },
-      "tracking-wide": { "value": "0.028em", "type": "dimension" },
-      "tracking-wider": { "value": "0.056em", "type": "dimension" },
-      "tracking-widest": { "value": "0.108em", "type": "dimension" },
-      "leading-tight": { "value": "1.24", "type": "dimension" },
-      "leading-snug": { "value": "1.365", "type": "dimension" },
-      "leading-normal": { "value": "1.52", "type": "dimension" },
-      "leading-relaxed": { "value": "1.69", "type": "dimension" },
-      "leading-loose": { "value": "2.02", "type": "dimension" }
+      "leading-relaxed": {
+        "type": "dimension",
+        "value": "1.65"
+      },
+      "7xl": {
+        "type": "fontSizes",
+        "value": "4.86rem"
+      },
+      "xs--line-height": {
+        "type": "dimension",
+        "value": "calc(1 / 0.81)"
+      },
+      "2xl--line-height": {
+        "type": "dimension",
+        "value": "calc(2 / 1.62)"
+      },
+      "3xl--line-height": {
+        "type": "dimension",
+        "value": "calc(2.25 / 2.025)"
+      },
+      "tracking-wide": {
+        "type": "dimension",
+        "value": "0.027em"
+      },
+      "xl--line-height": {
+        "type": "dimension",
+        "value": "calc(1.75 / 1.35)"
+      },
+      "8xl--line-height": {
+        "type": "dimension",
+        "value": "1"
+      },
+      "5xl--line-height": {
+        "type": "dimension",
+        "value": "1"
+      },
+      "leading-snug": {
+        "type": "dimension",
+        "value": "1.4"
+      },
+      "5xl": {
+        "type": "fontSizes",
+        "value": "3.24rem"
+      },
+      "leading-normal": {
+        "type": "dimension",
+        "value": "1.54"
+      },
+      "8xl": {
+        "type": "fontSizes",
+        "value": "6.48rem"
+      },
+      "base--line-height": {
+        "type": "dimension",
+        "value": "calc(1.5 / 1.08)"
+      },
+      "7xl--line-height": {
+        "type": "dimension",
+        "value": "1"
+      },
+      "9xl--line-height": {
+        "type": "dimension",
+        "value": "1"
+      },
+      "sm": {
+        "type": "fontSizes",
+        "value": "0.945rem"
+      },
+      "6xl--line-height": {
+        "type": "dimension",
+        "value": "1"
+      },
+      "xl": {
+        "type": "fontSizes",
+        "value": "1.35rem"
+      },
+      "6xl": {
+        "type": "fontSizes",
+        "value": "4.05rem"
+      },
+      "2xl": {
+        "type": "fontSizes",
+        "value": "1.62rem"
+      },
+      "tracking-wider": {
+        "type": "dimension",
+        "value": "0.051em"
+      },
+      "base": {
+        "type": "fontSizes",
+        "value": "1.08rem"
+      },
+      "sm--line-height": {
+        "type": "dimension",
+        "value": "calc(1.25 / 0.945)"
+      },
+      "9xl": {
+        "type": "fontSizes",
+        "value": "8.64rem"
+      },
+      "lg--line-height": {
+        "type": "dimension",
+        "value": "calc(1.75 / 1.215)"
+      },
+      "4xl--line-height": {
+        "type": "dimension",
+        "value": "calc(2.5 / 2.43)"
+      },
+      "leading-tight": {
+        "type": "dimension",
+        "value": "1.28"
+      },
+      "leading-loose": {
+        "type": "dimension",
+        "value": "2.05"
+      },
+      "4xl": {
+        "type": "fontSizes",
+        "value": "2.43rem"
+      },
+      "xs": {
+        "type": "fontSizes",
+        "value": "0.81rem"
+      },
+      "tracking-tighter": {
+        "type": "dimension",
+        "value": "-0.048em"
+      },
+      "tracking-widest": {
+        "type": "dimension",
+        "value": "0.098em"
+      },
+      "tracking-normal": {
+        "type": "dimension",
+        "value": "0em"
+      },
+      "3xl": {
+        "type": "fontSizes",
+        "value": "2.025rem"
+      },
+      "tracking-tight": {
+        "type": "dimension",
+        "value": "-0.023em"
+      },
+      "lg": {
+        "type": "fontSizes",
+        "value": "1.215rem"
+      }
     }
   }
 }

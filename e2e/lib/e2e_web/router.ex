@@ -181,21 +181,17 @@ defmodule E2eWeb.Router do
       live "/timer/playground", TimerPlayLive
       live "/timer/api", TimerApiLive
       live "/timer/events", TimerEventsLive
-      live "/timer/patterns", TimerPatternsLive
 
       live "/toast/playground", ToastPlayLive
       live "/toast/api", ToastApiLive
-      live "/toast/patterns", ToastPatternsLive
 
       live "/toggle-group/playground", ToggleGroupPlayLive
       live "/toggle-group/api", ToggleGroupApiLive
       live "/toggle-group/events", ToggleGroupEventsLive
       live "/toggle-group/patterns", ToggleGroupPatternsLive
 
-      live "/tooltip/playground", TooltipPlayLive
       live "/tooltip/api", TooltipApiLive
       live "/tooltip/events", TooltipEventsLive
-      live "/tooltip/patterns", TooltipPatternsLive
 
       live "/", HomeLive, :index
     end

@@ -1,0 +1,33 @@
+defmodule <%= @web_module %>.Locale do
+  @moduledoc false
+
+  @gettext_backend <%= @web_module %>.Gettext
+
+  def locales do
+    case Application.get_env(:localize, :supported_locales) do
+      list when is_list(list) and list != [] -> Enum.map(list, &to_string/1)
+      _ -> Gettext.known_locales(@gettext_backend)
+    end
+  end
+
+  def label(loc) when is_binary(loc) do
+    case Localize.Locale.display_name(loc, locale: loc) do
+      {:ok, name} -> name
+      _ -> String.upcase(loc)
+    end
+  end
+
+  def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
+
+  def lang do
+    Localize.get_locale()
+  end
+
+  def dir do
+    case Localize.Locale.get(Localize.get_locale(), [:layout, :character_order], fallback: true) do
+      {:ok, :rtl} -> "rtl"
+      {:ok, :ltr} -> "ltr"
+      _ -> "ltr"
+    end
+  end
+end

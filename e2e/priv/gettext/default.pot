@@ -11,90 +11,30 @@
 msgid ""
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:334
-#, elixir-autogen, elixir-format
-msgid "100% open source"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:382
-#, elixir-autogen, elixir-format
-msgid "Blocks and composition"
-msgstr ""
-
-#: lib/e2e_web/components/app/header.ex:133
+#: lib/e2e_web/components/app/header.ex:136
 #, elixir-autogen, elixir-format
 msgid "Components"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:385
-#, elixir-autogen, elixir-format
-msgid "Compose higher-level blocks and layouts on top of primitives."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:312
-#, elixir-autogen, elixir-format
-msgid "Controllers and LiveView, same building blocks"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:322
-#, elixir-autogen, elixir-format
-msgid "Corex MCP for component documentation"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:349
-#, elixir-autogen, elixir-format
-msgid "Corex ships a design system with design tokens, themes, and Tailwind CSS v4 usage patterns."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:374
-#, elixir-autogen, elixir-format
-msgid "Create palettes and map them into the token pipeline."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:346
-#, elixir-autogen, elixir-format
-msgid "Design system and Tailwind v4"
-msgstr ""
-
-#: lib/e2e_web/components/app/header.ex:98
+#: lib/e2e_web/components/app/header.ex:101
 #, elixir-autogen, elixir-format
 msgid "Display settings"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:73
-#: lib/e2e_web/components/app/header.ex:140
+#: lib/e2e_web/components/app/header.ex:75
+#: lib/e2e_web/components/app/header.ex:143
 #, elixir-autogen, elixir-format
 msgid "Documentation"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:361
-#, elixir-autogen, elixir-format
-msgid "Fits a classic Phoenix app and works alongside Tableau Elixir for static site generation."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:143
+#: lib/e2e_web/live/pages_live/home_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "Interactive preview"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:127
+#: lib/e2e_web/components/app/header.ex:130
 #, elixir-autogen, elixir-format
 msgid "Main"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:337
-#, elixir-autogen, elixir-format
-msgid "No paid add-ons, no paywalled components, and that commitment holds for the future of the project."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:371
-#, elixir-autogen, elixir-format
-msgid "Palette and theme generation"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:302
-#, elixir-autogen, elixir-format
-msgid "Platform and roadmap"
 msgstr ""
 
 #: lib/e2e_web/controllers/user_html/show.html.heex:15
@@ -106,22 +46,6 @@ msgstr ""
 #: lib/e2e_web/live/admin_live/form.ex:44
 #, elixir-autogen, elixir-format
 msgid "Select a country"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:369
-#: lib/e2e_web/live/pages_live/home_live.ex:380
-#, elixir-autogen, elixir-format
-msgid "Soon"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:358
-#, elixir-autogen, elixir-format
-msgid "Tableau Elixir for static sites"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:315
-#, elixir-autogen, elixir-format
-msgid "Use the same component APIs on controller-backed pages and LiveView."
 msgstr ""
 
 #: lib/e2e_web/components/layouts.ex:64
@@ -136,48 +60,53 @@ msgstr ""
 msgid "We're trying to reconnect you..."
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:325
-#, elixir-autogen, elixir-format
-msgid "Stream detailed component docs into your editor via the Corex MCP; installation and client setup are documented on Hexdocs."
-msgstr ""
-
 #: lib/e2e_web/components/app/header.ex:66
 #, elixir-autogen, elixir-format
 msgid "Documentation links"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:80
-#: lib/e2e_web/components/app/header.ex:147
+#: lib/e2e_web/components/app/header.ex:150
 #, elixir-autogen, elixir-format
 msgid "MCP"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:305
-#, elixir-autogen, elixir-format
-msgid "Production-ready primitives, open licensing, and a clear forward direction."
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:300
-#, elixir-autogen, elixir-format
-msgid "Why Corex"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:399
+#: lib/e2e_web/live/pages_live/home_live.ex:142
+#: lib/e2e_web/live/pages_live/home_live.ex:288
 #, elixir-autogen, elixir-format
 msgid "Browse components"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:395
+#: lib/e2e_web/live/pages_live/home_live.ex:280
 #, elixir-autogen, elixir-format
 msgid "Get started"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:415
+#: lib/e2e_web/live/pages_live/home_live.ex:304
 #, elixir-autogen, elixir-format
 msgid "Visit GitHub"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:407
+#: lib/e2e_web/live/pages_live/home_live.ex:296
 #, elixir-autogen, elixir-format
 msgid "Visit Hexdocs"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:185
+#, elixir-autogen, elixir-format
+msgid "Dark Mode"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:167
+#, elixir-autogen, elixir-format
+msgid "Installation"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:173
+#, elixir-autogen, elixir-format
+msgid "Localize"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:179
+#, elixir-autogen, elixir-format
+msgid "Theming"
 msgstr ""

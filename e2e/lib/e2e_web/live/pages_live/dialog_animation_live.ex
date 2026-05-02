@@ -260,7 +260,6 @@ defmodule E2eWeb.DialogAnimationLive do
             <.dialog
               id="dialog-custom-animate"
               class="dialog"
-              modal
               animation="custom"
               on_open_change_client="my-dialog-open-changed"
             >

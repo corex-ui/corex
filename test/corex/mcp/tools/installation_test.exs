@@ -10,7 +10,11 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert is_map(decoded["new_project"])
     assert is_map(decoded["existing_project"])
     assert decoded["new_project"]["commands"]
-    assert decoded["existing_project"]["commands"]
+    assert is_list(decoded["existing_project"]["minimal_steps"])
+    assert length(decoded["existing_project"]["minimal_steps"]) >= 7
+
+    assert decoded["existing_project"]["mcp_mount_optional_dev"]["routes"]["mcp_rpc"] =~
+             "corex/mcp"
   end
 
   test "installation_guide new_project is scoped" do
@@ -27,10 +31,18 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert decoded["scenario"] == "existing_project"
     assert decoded["intent"]
     refute Map.has_key?(decoded, "new_project")
+    assert decoded["corex_version_constraint"] =~ "~>"
+
+    titles =
+      decoded["minimal_steps"]
+      |> Enum.map(& &1["title"])
+
+    assert Enum.any?(titles, &(&1 =~ "dependency"))
+    assert Enum.any?(titles, &(&1 =~ "MCP"))
   end
 
-  test "tools/0 includes corex_installation" do
+  test "tools/0 includes installation_guide" do
     names = for t <- Installation.tools(), do: t.name
-    assert "corex_installation" in names
+    assert "installation_guide" in names
   end
 end

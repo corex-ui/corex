@@ -185,7 +185,7 @@ defmodule Corex.Accordion do
 
   <!-- tabs-close -->
 
-  ## Patterns`
+  ## Patterns
 
   <!-- tabs-open -->
 
@@ -396,7 +396,6 @@ defmodule Corex.Accordion do
   ```javascript
   import { animate } from "motion"
   import {
-    initCustomCollections,
     findAccordionContent,
     animateHeightOpen,
     animateHeightClose,
@@ -404,9 +403,6 @@ defmodule Corex.Accordion do
 
   const reducedMotion = () =>
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-  document.addEventListener("DOMContentLoaded", initCustomCollections)
-  window.addEventListener("phx:page-loading-stop", initCustomCollections)
 
   document.addEventListener("my-accordion-changed", (e) => {
     const root = document.getElementById(e.detail.id)
@@ -832,7 +828,6 @@ defmodule Corex.Accordion do
   />
   ```
 
-  See [Corex Design — Accordion](https://corex-ui.com/components/accordion#modifiers).
   '''
 
   @doc type: :component

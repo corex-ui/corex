@@ -2703,7 +2703,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-7NPJK3FE.mjs
+  // ../priv/static/chunks/chunk-4PSVMPGM.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2886,7 +2886,7 @@ var Corex = (() => {
     };
     return anim;
   }
-  function runScaleAnimation(targetEl, isOpening, opts) {
+  function runScaleAnimation(targetEl, isOpening, opts, blockRoot) {
     targetEl.getAnimations().forEach((a2) => a2.cancel());
     const isBackdrop = targetEl.dataset.part === "backdrop";
     const useScale = !isBackdrop && (opts.scaleStart !== opts.scaleEnd || opts.scaleStart !== 1 || opts.scaleEnd !== 1);
@@ -2900,20 +2900,25 @@ var Corex = (() => {
       fromFrame.transform = `scale(${fromS})`;
       toFrame.transform = `scale(${toS})`;
     }
+    if (blockRoot && opts.blockInteraction) {
+      beginRootPointerBlock(blockRoot);
+    }
     const anim = targetEl.animate([fromFrame, toFrame], {
       duration: opts.duration * 1e3,
       easing: opts.easing,
       fill: "forwards"
     });
-    anim.onfinish = () => {
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
       anim.cancel();
+      if (blockRoot && opts.blockInteraction) {
+        endRootPointerBlock(blockRoot);
+      }
       if (isOpening) {
         targetEl.style.opacity = "";
-        if (useScale) {
-          targetEl.style.removeProperty("transform");
-        } else {
-          targetEl.style.removeProperty("transform");
-        }
+        targetEl.style.removeProperty("transform");
       } else {
         targetEl.style.opacity = String(opts.opacityStart);
         if (isBackdrop) {
@@ -2925,11 +2930,17 @@ var Corex = (() => {
         }
       }
     };
+    anim.onfinish = () => {
+      finish();
+    };
+    anim.oncancel = () => {
+      finish();
+    };
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_7NPJK3FE = __esm({
-    "../priv/static/chunks/chunk-7NPJK3FE.mjs"() {
+  var init_chunk_4PSVMPGM = __esm({
+    "../priv/static/chunks/chunk-4PSVMPGM.mjs"() {
       "use strict";
       init_chunk_OVJ3SUQN();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
@@ -3212,7 +3223,7 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_7NPJK3FE();
+      init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
       init_chunk_UGQ3K46R();
       init_chunk_OVJ3SUQN();
@@ -3594,7 +3605,7 @@ var Corex = (() => {
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled")) {
+          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
             this.previousValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
           }
         },
@@ -20675,17 +20686,24 @@ var Corex = (() => {
     };
   }
   function getDialogUpdatePropsFromEl(el) {
-    const softLock = el.dataset.animInteractionLocked === "true";
     return __spreadProps(__spreadValues({
       id: el.id
     }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
       modal: getBoolean(el, "modal"),
-      closeOnInteractOutside: softLock ? false : getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscape: softLock ? false : getBoolean(el, "closeOnEscapeKeyDown"),
+      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getDir(el)
     });
+  }
+  function runDialogScaleTransitions(el, isOpen) {
+    const opts = readScaleAnimationOptions(el);
+    const blockRoot = opts.blockInteraction ? el : void 0;
+    const backdrop = el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    const content = el.querySelector('[data-scope="dialog"][data-part="content"]');
+    if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
+    if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
   }
   var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
   var init_dialog = __esm({
@@ -20693,7 +20711,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_FXKWDXRF();
       init_chunk_AOJTHBPA();
-      init_chunk_7NPJK3FE();
+      init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
       init_chunk_UGQ3K46R();
       init_chunk_OVJ3SUQN();
@@ -21684,7 +21702,6 @@ var Corex = (() => {
           var _a4;
           const rootEl = this.el;
           const animation = (_a4 = rootEl.dataset.animation) != null ? _a4 : "instant";
-          const open = this.api.open;
           const triggerEl = rootEl.querySelector(
             '[data-scope="dialog"][data-part="trigger"]'
           );
@@ -21696,13 +21713,9 @@ var Corex = (() => {
             const rawBackdrop = this.api.getBackdropProps();
             if (animation === "instant") {
               this.spreadProps(backdropEl, rawBackdrop);
-            } else {
+            } else if (animation === "js" || animation === "custom") {
               this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-              if (open) {
-                backdropEl.removeAttribute("hidden");
-              } else if (rootEl.dataset.exitAnim !== "running") {
-                backdropEl.setAttribute("hidden", "");
-              }
+              backdropEl.removeAttribute("hidden");
             }
           }
           const positionerEl = rootEl.querySelector(
@@ -21716,12 +21729,11 @@ var Corex = (() => {
             const rawContent = this.api.getContentProps();
             if (animation === "instant") {
               this.spreadProps(contentEl, rawContent);
-            } else {
+            } else if (animation === "js" || animation === "custom") {
               this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-              if (open) {
-                contentEl.removeAttribute("hidden");
-              } else if (rootEl.dataset.exitAnim !== "running") {
-                contentEl.setAttribute("hidden", "");
+              contentEl.removeAttribute("hidden");
+              if (!this.api.open) {
+                contentEl.style.removeProperty("pointer-events");
               }
             }
           }
@@ -21735,29 +21747,6 @@ var Corex = (() => {
             '[data-scope="dialog"][data-part="close-trigger"]'
           );
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
-          if (animation !== "instant") {
-            if (rootEl.dataset.animInteractionLocked === "true") {
-              if (backdropEl) backdropEl.style.pointerEvents = "auto";
-              if (positionerEl) positionerEl.style.pointerEvents = "auto";
-              if (contentEl) contentEl.style.pointerEvents = "none";
-            } else {
-              if (contentEl) contentEl.style.removeProperty("pointer-events");
-              if (open) {
-                if (backdropEl) backdropEl.style.pointerEvents = "auto";
-                if (positionerEl) positionerEl.style.pointerEvents = "auto";
-              } else if (animation === "js") {
-                const pe = rootEl.dataset.exitAnim === "running" ? "auto" : "none";
-                if (backdropEl) backdropEl.style.pointerEvents = pe;
-                if (positionerEl) positionerEl.style.pointerEvents = pe;
-              } else if (animation === "custom") {
-                if (backdropEl) backdropEl.style.pointerEvents = "none";
-                if (positionerEl) positionerEl.style.pointerEvents = "none";
-              } else {
-                if (backdropEl) backdropEl.style.pointerEvents = "none";
-                if (positionerEl) positionerEl.style.pointerEvents = "none";
-              }
-            }
-          }
         }
       };
       DialogHook = {
@@ -21779,44 +21768,6 @@ var Corex = (() => {
             dir: getDir(el),
             onOpenChange: (details) => {
               var _a5;
-              if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
-                if (self2.closePointerT !== void 0) clearTimeout(self2.closePointerT);
-                el.setAttribute("data-exit-anim", "running");
-                if (el.dataset.animation === "js") {
-                  const closeOpts = readScaleAnimationOptions(el);
-                  self2.closePointerT = window.setTimeout(
-                    () => {
-                      el.setAttribute("data-exit-anim", "complete");
-                      const backdrop = el.querySelector(
-                        '[data-scope="dialog"][data-part="backdrop"]'
-                      );
-                      const positioner = el.querySelector(
-                        '[data-scope="dialog"][data-part="positioner"]'
-                      );
-                      if (backdrop) backdrop.style.pointerEvents = "none";
-                      if (positioner) positioner.style.pointerEvents = "none";
-                      self2.closePointerT = void 0;
-                      dialog.render();
-                    },
-                    Math.max(0, closeOpts.duration * 1e3)
-                  );
-                } else {
-                  self2.closePointerT = window.setTimeout(() => {
-                    el.setAttribute("data-exit-anim", "complete");
-                    self2.closePointerT = void 0;
-                    dialog.render();
-                  }, 0);
-                }
-              } else if (details.open) {
-                if (self2.closePointerT !== void 0) {
-                  clearTimeout(self2.closePointerT);
-                  self2.closePointerT = void 0;
-                }
-                el.removeAttribute("data-exit-anim");
-                el.removeAttribute("data-anim-interaction-locked");
-                dialog.updateProps(getDialogUpdatePropsFromEl(el));
-                dialog.render();
-              }
               const previousOpen = (_a5 = self2.lastOpen) != null ? _a5 : false;
               self2.lastOpen = details.open;
               const payload = {
@@ -21832,36 +21783,8 @@ var Corex = (() => {
                 serverEventName: getString(el, "onOpenChange"),
                 clientEventName: getString(el, "onOpenChangeClient")
               });
-              if (el.dataset.animation === "js") {
-                const animOpts = readScaleAnimationOptions(el);
-                if (animOpts.blockInteraction) {
-                  el.dataset.animInteractionLocked = "true";
-                  dialog.updateProps(getDialogUpdatePropsFromEl(el));
-                  dialog.render();
-                }
-                const backdrop = el.querySelector(
-                  '[data-scope="dialog"][data-part="backdrop"]'
-                );
-                const content = el.querySelector(
-                  '[data-scope="dialog"][data-part="content"]'
-                );
-                const a1 = backdrop ? runScaleAnimation(backdrop, details.open, animOpts) : null;
-                const a2 = content ? runScaleAnimation(content, details.open, animOpts) : null;
-                const onDone = () => {
-                  if (animOpts.blockInteraction) {
-                    el.removeAttribute("data-anim-interaction-locked");
-                    dialog.updateProps(getDialogUpdatePropsFromEl(el));
-                    dialog.render();
-                  }
-                };
-                const promises = [];
-                if (a1) promises.push(a1.finished);
-                if (a2) promises.push(a2.finished);
-                if (promises.length > 0) {
-                  void Promise.all(promises).then(onDone, onDone);
-                } else {
-                  onDone();
-                }
+              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+                runDialogScaleTransitions(el, details.open);
               }
             }
           }));
@@ -21902,21 +21825,21 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4, _b;
-          if (getBoolean(this.el, "controlled")) {
-            this.lastOpen = (_a4 = getBoolean(this.el, "open")) != null ? _a4 : false;
+          var _a4, _b, _c;
+          const el = this.el;
+          const controlled = getBoolean(el, "controlled");
+          if (controlled) {
+            const nextOpen = (_a4 = getBoolean(el, "open")) != null ? _a4 : false;
+            const prevOpen = (_b = this.lastOpen) != null ? _b : false;
+            this.lastOpen = nextOpen;
+            if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
+              runDialogScaleTransitions(el, nextOpen);
+            }
           }
-          (_b = this.dialog) == null ? void 0 : _b.updateProps(getDialogUpdatePropsFromEl(this.el));
+          (_c = this.dialog) == null ? void 0 : _c.updateProps(getDialogUpdatePropsFromEl(el));
         },
         destroyed() {
           var _a4, _b, _c, _d;
-          const self2 = this;
-          if (self2.closePointerT !== void 0) {
-            clearTimeout(self2.closePointerT);
-            self2.closePointerT = void 0;
-          }
-          this.el.removeAttribute("data-exit-anim");
-          this.el.removeAttribute("data-anim-interaction-locked");
           (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(getDialogUpdatePropsFromEl(this.el));
           (_b = this.domRegistry) == null ? void 0 : _b.teardown();
           (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
@@ -36857,6 +36780,10 @@ var Corex = (() => {
             closeOnScroll: getBoolean(this.el, "closeOnScroll"),
             interactive: getBoolean(this.el, "interactive")
           }));
+          queueMicrotask(() => {
+            var _a5, _b, _c;
+            (_c = (_a5 = this.tooltip) == null ? void 0 : (_b = _a5.api).reposition) == null ? void 0 : _c.call(_b);
+          });
         },
         destroyed() {
           var _a4;
@@ -37926,7 +37853,7 @@ var Corex = (() => {
       init_chunk_5YSYSNPK();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_7NPJK3FE();
+      init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
       init_chunk_UGQ3K46R();
       init_chunk_OVJ3SUQN();
@@ -38638,7 +38565,7 @@ var Corex = (() => {
         updateExistingTree(treeEl) {
           var _a4;
           this.spreadProps(treeEl, this.api.getTreeProps());
-          const animation = (_a4 = this.el.dataset.animation) != null ? _a4 : "js";
+          const animation = (_a4 = this.el.dataset.animation) != null ? _a4 : "instant";
           const isOwnedByTree = (el) => el.closest('[data-scope="tree-view"][data-part="tree"]') === treeEl;
           const branches = treeEl.querySelectorAll(
             '[data-scope="tree-view"][data-part="branch"]'
@@ -38671,7 +38598,7 @@ var Corex = (() => {
               const contentPropsRaw = this.api.getBranchContentProps(nodeProps);
               if (animation === "instant") {
                 this.spreadProps(contentEl, contentPropsRaw);
-              } else {
+              } else if (animation === "js" || animation === "custom") {
                 this.spreadProps(
                   contentEl,
                   stripHiddenFromProps(contentPropsRaw)
@@ -38889,8 +38816,14 @@ var Corex = (() => {
             emitExpandedValue(parseRespondTo(payload));
           });
         },
+        beforeUpdate() {
+          var _a4;
+          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+            this.previousExpanded = (_a4 = getStringList(this.el, "expandedValue")) != null ? _a4 : [];
+          }
+        },
         updated() {
-          var _a4, _b, _c, _d, _e;
+          var _a4, _b, _c, _d, _e, _f, _g;
           const el = this.el;
           const tv = this.treeView;
           if (!tv) return;
@@ -38912,8 +38845,25 @@ var Corex = (() => {
           this.lastExpandedAttr = expandedAttr;
           this.lastSelectedAttr = selectedAttr;
           if (controlled) {
+            const prevExpanded = (_g = (_f = this.previousExpanded) != null ? _f : this.lastExpanded) != null ? _g : [];
+            this.previousExpanded = void 0;
             if (expandedAttrChanged) this.lastExpanded = expanded;
             if (selectedAttrChanged) this.lastSelected = selected;
+            if (el.dataset.animation === "js") {
+              runOpenStateTransitionsHeight({
+                rootEl: el,
+                selector: '[data-scope="tree-view"][data-part="branch-content"]',
+                opts: readHeightAnimationOptions(el),
+                wasOpen: (contentEl) => {
+                  const value = contentEl.dataset.value;
+                  return !!value && prevExpanded.includes(value);
+                },
+                isOpen: (contentEl) => {
+                  const value = contentEl.dataset.value;
+                  return !!value && expanded.includes(value);
+                }
+              });
+            }
             tv.updateProps({
               expandedValue: expanded,
               selectedValue: selected,
@@ -38947,13 +38897,18 @@ var Corex = (() => {
     Hooks: () => Hooks,
     animateHeightClose: () => animateHeightClose,
     animateHeightOpen: () => animateHeightOpen,
+    animateScaleClose: () => animateScaleClose,
+    animateScaleOpen: () => animateScaleOpen,
     applyClosedHeight: () => applyClosedHeight,
+    applyClosedScale: () => applyClosedScale,
     applyOpenHeight: () => applyOpenHeight,
+    applyOpenScale: () => applyOpenScale,
     default: () => corex_default,
     findAccordionContent: () => findAccordionContent,
+    findDialogBackdrop: () => findDialogBackdrop,
+    findDialogContent: () => findDialogContent,
     findTreeBranch: () => findTreeBranch,
-    hooks: () => hooks,
-    initCustomCollections: () => initCustomCollections
+    hooks: () => hooks
   });
 
   // lib/custom-animation.ts
@@ -38961,6 +38916,8 @@ var Corex = (() => {
   var DEFAULT_EASING = "ease-out";
   var DEFAULT_OPACITY_START = 0;
   var DEFAULT_OPACITY_END = 1;
+  var DEFAULT_SCALE_START = 0.96;
+  var DEFAULT_SCALE_END = 1;
   function reducedMotion() {
     return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
@@ -38984,17 +38941,27 @@ var Corex = (() => {
       `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`
     );
   }
-  function initCustomCollections() {
-    document.querySelectorAll('[data-animation="custom"][phx-hook="Accordion"]').forEach((host) => {
-      host.querySelectorAll('[data-scope="accordion"][data-part="item-content"]').forEach((el) => {
-        if (el.dataset.state !== "open") applyClosedHeight(el);
-      });
-    });
-    document.querySelectorAll('[data-animation="custom"][phx-hook="TreeView"]').forEach((host) => {
-      host.querySelectorAll('[data-scope="tree-view"][data-part="branch-content"]').forEach((el) => {
-        if (el.dataset.state !== "open") applyClosedHeight(el);
-      });
-    });
+  function findDialogBackdrop(rootEl) {
+    return rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+  }
+  function findDialogContent(rootEl) {
+    return rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+  }
+  function applyClosedScale(el, opts = {}) {
+    var _a4, _b;
+    const isBackdrop = el.dataset.part === "backdrop";
+    const opacityStart = (_a4 = opts.opacityStart) != null ? _a4 : DEFAULT_OPACITY_START;
+    const scaleStart = (_b = opts.scaleStart) != null ? _b : DEFAULT_SCALE_START;
+    el.style.opacity = String(opacityStart);
+    if (!isBackdrop && scaleStart !== 1) {
+      el.style.transform = `scale(${scaleStart})`;
+    } else {
+      el.style.removeProperty("transform");
+    }
+  }
+  function applyOpenScale(el) {
+    el.style.opacity = "";
+    el.style.removeProperty("transform");
   }
   function animateHeightOpen(el, opts) {
     var _a4, _b, _c, _d;
@@ -39039,6 +39006,56 @@ var Corex = (() => {
         { duration, easing }
       ).finished.then(() => {
         applyClosedHeight(el);
+      })
+    ).then(() => void 0);
+  }
+  function animateScaleOpen(el, opts) {
+    var _a4, _b, _c, _d, _e, _f;
+    const isBackdrop = el.dataset.part === "backdrop";
+    if (reducedMotion()) {
+      applyOpenScale(el);
+      return Promise.resolve();
+    }
+    const duration = (_a4 = opts.duration) != null ? _a4 : DEFAULT_DURATION;
+    const easing = (_b = opts.easing) != null ? _b : DEFAULT_EASING;
+    const opacityStart = (_c = opts.opacityStart) != null ? _c : DEFAULT_OPACITY_START;
+    const opacityEnd = (_d = opts.opacityEnd) != null ? _d : DEFAULT_OPACITY_END;
+    const scaleStart = (_e = opts.scaleStart) != null ? _e : DEFAULT_SCALE_START;
+    const scaleEnd = (_f = opts.scaleEnd) != null ? _f : DEFAULT_SCALE_END;
+    const keyframes = {
+      opacity: [opacityStart, opacityEnd]
+    };
+    if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+      keyframes.transform = [`scale(${scaleStart})`, `scale(${scaleEnd})`];
+    }
+    return Promise.resolve(
+      opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+        applyOpenScale(el);
+      })
+    ).then(() => void 0);
+  }
+  function animateScaleClose(el, opts) {
+    var _a4, _b, _c, _d, _e, _f;
+    const isBackdrop = el.dataset.part === "backdrop";
+    if (reducedMotion()) {
+      applyClosedScale(el, { scaleStart: opts.scaleStart, opacityStart: opts.opacityStart });
+      return Promise.resolve();
+    }
+    const duration = (_a4 = opts.duration) != null ? _a4 : DEFAULT_DURATION;
+    const easing = (_b = opts.easing) != null ? _b : DEFAULT_EASING;
+    const opacityStart = (_c = opts.opacityStart) != null ? _c : DEFAULT_OPACITY_START;
+    const opacityEnd = (_d = opts.opacityEnd) != null ? _d : DEFAULT_OPACITY_END;
+    const scaleStart = (_e = opts.scaleStart) != null ? _e : DEFAULT_SCALE_START;
+    const scaleEnd = (_f = opts.scaleEnd) != null ? _f : DEFAULT_SCALE_END;
+    const keyframes = {
+      opacity: [opacityEnd, opacityStart]
+    };
+    if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+      keyframes.transform = [`scale(${scaleEnd})`, `scale(${scaleStart})`];
+    }
+    return Promise.resolve(
+      opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+        applyClosedScale(el, { scaleStart, opacityStart });
       })
     ).then(() => void 0);
   }

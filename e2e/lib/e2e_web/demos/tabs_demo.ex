@@ -121,7 +121,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">
           Lorem
@@ -180,7 +180,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <button
           type="button"
@@ -231,7 +231,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
         <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
@@ -324,7 +324,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-8 w-full max-w-4xl items-start">
+    <div class="flex flex-wrap gap-8 w-full max-w-4xl justify-center items-start">
       <.tabs
         id="tabs-style-baseline"
         class="tabs w-full max-w-md"

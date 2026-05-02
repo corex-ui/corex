@@ -621,7 +621,61 @@ defmodule Corex.AccordionTest do
       assert content_attrs["data-disabled"] == nil
       assert content_attrs["data-focus"] == nil
       assert content_attrs["data-orientation"] == "vertical"
-      assert content_attrs["hidden"] == false
+      assert content_attrs["aria-labelledby"] == "accordion:test-accordion:trigger:item-1"
+      refute Map.has_key?(content_attrs, "hidden")
+    end
+
+    test "content closed instant uses hidden attribute" do
+      assigns = %{
+        id: "test-accordion",
+        value: "item-1",
+        values: [],
+        disabled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        changed: nil
+      }
+
+      content_attrs = Connect.content(assigns, "instant")
+
+      assert content_attrs["data-state"] == "closed"
+      assert content_attrs["hidden"] == true
+      assert content_attrs["aria-labelledby"] == "accordion:test-accordion:trigger:item-1"
+    end
+
+    test "content closed js omits hidden for SSR parity with client stripHiddenFromProps" do
+      assigns = %{
+        id: "test-accordion",
+        value: "item-1",
+        values: [],
+        disabled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        changed: nil
+      }
+
+      content_attrs = Connect.content(assigns, "js")
+
+      assert content_attrs["data-state"] == "closed"
+      refute Map.has_key?(content_attrs, "hidden")
+      assert content_attrs["aria-labelledby"] == "accordion:test-accordion:trigger:item-1"
+    end
+
+    test "content closed custom omits hidden" do
+      assigns = %{
+        id: "test-accordion",
+        value: "item-1",
+        values: [],
+        disabled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        changed: nil
+      }
+
+      content_attrs = Connect.content(assigns, "custom")
+
+      assert content_attrs["data-state"] == "closed"
+      refute Map.has_key?(content_attrs, "hidden")
     end
 
     test "computes indicator data structure" do

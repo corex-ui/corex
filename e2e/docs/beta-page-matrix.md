@@ -38,7 +38,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | timer | Zag | yes | — | — | yes | yes | yes | yes | — | — |
 | toast | Zag | yes | — | — | yes | yes | — | yes | — | — |
 | toggle-group | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| tooltip | Zag | yes | — | — | yes | yes | yes | yes | — | — |
+| tooltip | Zag | yes | — | — | yes | yes | yes | — | — | — |
 | tree-view | Zag | yes | yes | — | yes | yes | yes | yes | yes | — |
 
 ## Events pages (Zag)

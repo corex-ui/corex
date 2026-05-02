@@ -7,16 +7,21 @@ export type {
   DialogOpenChangedDetail,
 } from "../lib/event-details";
 
-export type { Animator, AnimateHeightOptions } from "../lib/custom-animation";
+export type { Animator, AnimateHeightOptions, AnimateScaleOptions } from "../lib/custom-animation";
 
 export {
   applyClosedHeight,
   applyOpenHeight,
   animateHeightOpen,
   animateHeightClose,
-  initCustomCollections,
+  applyClosedScale,
+  applyOpenScale,
+  animateScaleOpen,
+  animateScaleClose,
   findAccordionContent,
   findTreeBranch,
+  findDialogBackdrop,
+  findDialogContent,
 } from "../lib/custom-animation";
 
 type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;

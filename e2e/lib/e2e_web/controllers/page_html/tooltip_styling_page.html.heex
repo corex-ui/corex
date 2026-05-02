@@ -7,15 +7,25 @@
   <.demo_page
     id="tooltip-styling-page"
     title="Tooltip · Style"
-    subtitle="Size and semantic color on the root."
+    subtitle="Size and color modifiers on the root."
   >
     <.demo_section
-      id="tooltip-styling-variants"
-      title="Size and color"
-      code={E2eWeb.Demos.TooltipDemo.styling_size_color_code()}
+      id="tooltip-styling-sizes"
+      title="Sizes"
+      code={E2eWeb.Demos.TooltipDemo.styling_sizes_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TooltipDemo.styling_size_color_example />
+        <E2eWeb.Demos.TooltipDemo.styling_sizes_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tooltip-styling-colors"
+      title="Colors"
+      code={E2eWeb.Demos.TooltipDemo.styling_colors_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TooltipDemo.styling_colors_example />
       </:preview>
     </.demo_section>
   </.demo_page>

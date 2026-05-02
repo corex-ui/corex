@@ -1,14 +1,14 @@
 defmodule E2e.DesignPalette do
   @moduledoc false
 
-  @default_config_path "assets/corex/design/palette_config.json"
+  @default_design_dir "assets/corex/design"
 
   def run(opts \\ []) do
     design_dir =
       Keyword.get(
         opts,
         :design_dir,
-        Path.expand(@default_config_path, File.cwd!()) |> Path.dirname()
+        Path.expand(@default_design_dir, File.cwd!())
       )
 
     quiet = Keyword.get(opts, :quiet, false)
@@ -19,10 +19,13 @@ defmodule E2e.DesignPalette do
           c
 
         :error ->
-          config_path =
-            Keyword.get(opts, :config_path, Path.join(design_dir, "palette_config.json"))
+          case Keyword.fetch(opts, :config_path) do
+            {:ok, path} ->
+              load_config!(path)
 
-          load_config!(config_path)
+            :error ->
+              E2e.DesignPalette.Config.defaults()
+          end
       end
 
     tokens_base = Path.join(design_dir, "tokens")
@@ -71,16 +74,20 @@ defmodule E2e.DesignPalette do
   end
 
   def build_style_dictionary(global, _theme_id, theme) do
-    seeds = global["seeds"]
+    seeds = theme_seeds(global, theme)
     surface = theme["surface"]
     utility = theme["utility"] || %{}
     ink = theme["ink"] || %{}
     semantic = theme["semantic"] || %{}
 
-    state_order = global["state_order"] || ~w(default muted hover active)
-    ui_ratio_base = string_key_map(global["ui_ratio_base"] || %{})
-    semantic_ratio_base = string_key_map(global["semantic_ratio_base"] || %{})
-    offsets = string_key_map(global["state_lightness_offsets"] || %{})
+    state_order = theme["state_order"] || global["state_order"] || ~w(default muted hover active)
+    ui_ratio_base = string_key_map(theme["ui_ratio_base"] || global["ui_ratio_base"] || %{})
+
+    semantic_ratio_base =
+      string_key_map(theme["semantic_ratio_base"] || global["semantic_ratio_base"] || %{})
+
+    offsets =
+      string_key_map(theme["state_lightness_offsets"] || global["state_lightness_offsets"] || %{})
 
     tokens =
       %{}
@@ -108,6 +115,16 @@ defmodule E2e.DesignPalette do
     names = Map.keys(tokens) |> Enum.sort()
     sd = to_style_dictionary(tokens)
     {sd, names}
+  end
+
+  defp theme_seeds(global, theme) do
+    case Map.get(theme, "seeds") do
+      %{} = t when map_size(t) > 0 ->
+        string_key_map(t)
+
+      _ ->
+        string_key_map(global["seeds"] || %{})
+    end
   end
 
   defp string_key_map(map) do
@@ -191,6 +208,7 @@ defmodule E2e.DesignPalette do
   end
 
   defp ink_output_key("default"), do: "ink"
+  defp ink_output_key("link"), do: "link"
   defp ink_output_key(other), do: "ink-#{other}"
 
   defp ink_reference(surface) do

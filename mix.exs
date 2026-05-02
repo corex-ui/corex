@@ -39,7 +39,7 @@ defmodule Corex.MixProject do
     ]
   end
 
-  defp elixirc_paths_base(:test), do: ["lib", "test/support"]
+  defp elixirc_paths_base(:test), do: ["lib", "installer/lib", "test/support"]
   defp elixirc_paths_base(:docs), do: ["lib", "installer/lib"]
   defp elixirc_paths_base(_), do: ["lib"]
 
@@ -59,10 +59,8 @@ defmodule Corex.MixProject do
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
-      {:tidewave, "~> 0.5.5", only: :dev},
       {:bandit, "~> 1.0", only: :dev},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:igniter, "~> 0.6", optional: true}
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -90,6 +88,24 @@ defmodule Corex.MixProject do
     ]
   end
 
+  defp copy_design_to_installer(_) do
+    source = Path.join(__DIR__, "priv/design")
+    destination = Path.join(__DIR__, "installer/templates/corex_design")
+
+    unless File.dir?(source) do
+      Mix.raise("Expected Corex design tree at #{source}")
+    end
+
+    File.mkdir_p!(Path.dirname(destination))
+
+    if File.exists?(destination) do
+      File.rm_rf!(destination)
+    end
+
+    File.cp_r!(source, destination)
+    :ok
+  end
+
   defp clean_priv_static_chunks(_) do
     chunks = Path.join(__DIR__, "priv/static/chunks")
 
@@ -98,16 +114,6 @@ defmodule Corex.MixProject do
     end
 
     :ok
-  end
-
-  defp copy_design_to_installer(_) do
-    source = Path.join([__DIR__, "priv", "design"])
-    destination = Path.join([__DIR__, "installer", "templates", "corex_design"])
-
-    if File.exists?(source) and File.dir?(source) do
-      File.mkdir_p!(Path.dirname(destination))
-      File.cp_r!(source, destination, force: true)
-    end
   end
 
   defp raise_on_archive_build(_) do

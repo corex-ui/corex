@@ -1,15 +1,11 @@
 defmodule E2e.DesignPaletteTest do
   use ExUnit.Case, async: true
 
-  defp config_path do
-    Path.expand("../../assets/corex/design/palette_config.json", __DIR__)
-  end
-
   defp load! do
-    E2e.DesignPalette.load_config!(config_path())
+    E2e.DesignPalette.Config.defaults()
   end
 
-  test "palette_config loads and defines eight theme modes" do
+  test "palette defines eight theme modes" do
     c = load!()
     assert map_size(c["themes"]) == 8
     assert Map.has_key?(c["themes"], "neo-light")
@@ -77,5 +73,16 @@ defmodule E2e.DesignPaletteTest do
 
     sem = Path.join(design, "tokens/semantic/color.json") |> File.read!() |> Jason.decode!()
     assert sem["color"]["ink"]["value"] == "{theme.color.ink}"
+  end
+
+  test "palette round-trips through Jason" do
+    c = load!()
+    assert c == c |> Jason.encode!() |> Jason.decode!()
+  end
+
+  test "load_config reads explicit palette JSON path" do
+    path = Path.expand("../../assets/corex/design/palette_config.json", __DIR__)
+    assert File.exists?(path)
+    assert E2e.DesignPalette.load_config!(path) == load!()
   end
 end

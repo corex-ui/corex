@@ -76,44 +76,67 @@ defmodule Corex.Dialog do
 
   - `instant` — Zag toggles the native `hidden` attribute, no animation.
   - `js` — Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
-  - `custom` — the hook removes `hidden` and dispatches a `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
+  - `custom` — the hook never re-applies `hidden`; the consumer drives the animation by listening to the `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
 
         // event.detail (DialogOpenChangedDetail)
         { id, open, previousOpen }
 
-    During close, the hook sets `data-exit-anim="running"` so backdrop/positioner remain in the DOM, then on the next frame sets `data-exit-anim="complete"` and re-renders so `hidden` is re-applied. Run your exit animation synchronously inside the listener so the visual transition completes before that re-render.
+    Closed visibility is provided by CSS baselines on `[data-state="closed"]` (see `e2e/assets/corex/components/dialog.css`), so the consumer only needs to drive the transition itself. Use the Scale helpers exported from `corex` (mirroring how Accordion / Tree view use the Height helpers).
 
   ```javascript
   import { animate } from "motion"
+  import {
+    findDialogBackdrop,
+    findDialogContent,
+    animateScaleOpen,
+    animateScaleClose,
+  } from "corex"
+
+  const reducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
   document.addEventListener("my-dialog-open-changed", (e) => {
     const { id, open } = e.detail
     const root = document.getElementById(id)
     if (!root) return
-    const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]')
-    const content = root.querySelector('[data-scope="dialog"][data-part="content"]')
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (reduced) {
-      if (backdrop) backdrop.style.opacity = open ? "" : "0"
-      if (content) content.style.opacity = open ? "" : "0"
-      return
-    }
+    const backdrop = findDialogBackdrop(root)
+    const content = findDialogContent(root)
     if (open) {
-      if (backdrop) animate(backdrop, { opacity: [0, 1] }, { duration: 0.5, easing: "ease-out" })
-      if (content)
-        animate(
-          content,
-          { opacity: [0, 1], scale: [0.7, 1], y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
-          { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
-        )
+      if (backdrop)
+        animateScaleOpen(backdrop, { animator: animate, duration: 0.5, easing: "ease-out" })
+      if (content) {
+        animateScaleOpen(content, {
+          animator: animate,
+          duration: 0.7,
+          easing: [0.16, 1, 0.3, 1],
+          scaleStart: 0.7,
+          scaleEnd: 1,
+        })
+        if (!reducedMotion())
+          animate(
+            content,
+            { y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
+            { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
+          )
+      }
     } else {
-      if (backdrop) animate(backdrop, { opacity: [1, 0] }, { duration: 0.4, easing: "ease-in" })
-      if (content)
-        animate(
-          content,
-          { opacity: [1, 0], scale: [1, 0.8], y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
-          { duration: 0.35, easing: "ease-in" },
-        )
+      if (backdrop)
+        animateScaleClose(backdrop, { animator: animate, duration: 0.4, easing: "ease-in" })
+      if (content) {
+        animateScaleClose(content, {
+          animator: animate,
+          duration: 0.35,
+          easing: "ease-in",
+          scaleStart: 0.8,
+          scaleEnd: 1,
+        })
+        if (!reducedMotion())
+          animate(
+            content,
+            { y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
+            { duration: 0.35, easing: "ease-in" },
+          )
+      }
     }
   })
   ```
@@ -266,7 +289,7 @@ defmodule Corex.Dialog do
   )
 
   attr(:animation, :string,
-    default: "instant",
+    default: "js",
     values: ["instant", "js", "custom"],
     doc:
       "Open and close: native hidden (instant), Web Animations via `Corex.Animation.Scale` (js), or events only (custom)"
@@ -343,9 +366,9 @@ defmodule Corex.Dialog do
         {render_slot(@trigger)}
       </button>
 
-      <div phx-mounted={Connect.ignore_backdrop(%Backdrop{id: @id, dir: @dir, open: @open, animation: @animation})} {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open, animation: @animation})}></div>
+      <div phx-mounted={Connect.ignore_backdrop(%Backdrop{id: @id, dir: @dir, open: @open})} {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open}, @animation)}></div>
       <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, open: @open})} {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
-        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open, animation: @animation})} {Connect.content(%Content{id: @id, dir: @dir, open: @open, animation: @animation})}>
+        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open})} {Connect.content(%Content{id: @id, dir: @dir, open: @open}, @animation)}>
         <div data-scope="dialog" data-part="header">
         <h2
           :if={@title != []}

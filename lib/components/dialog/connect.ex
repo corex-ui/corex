@@ -22,10 +22,8 @@ defmodule Corex.Dialog.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    animation = Map.get(assigns, :animation, "instant")
-
-    animation_options =
-      Map.get(assigns, :animation_options, %Scale{scale_start: 0.96, scale_end: 1.0})
+    animation = assigns.animation
+    animation_options = assigns.animation_options
 
     base = %{
       "id" => assigns.id,
@@ -73,16 +71,23 @@ defmodule Corex.Dialog.Connect do
     )
   end
 
-  @spec backdrop(Backdrop.t()) :: map()
-  def backdrop(assigns) do
+  @spec backdrop(Backdrop.t(), String.t()) :: map()
+  def backdrop(assigns, animation \\ "instant") do
+    state = if assigns.open, do: "open", else: "closed"
+
     base = %{
       "data-scope" => "dialog",
       "data-part" => "backdrop",
+      "data-state" => state,
       "dir" => Map.get(assigns, :dir, "ltr"),
       "id" => "dialog:#{assigns.id}:backdrop"
     }
 
-    if assigns.open, do: base, else: Map.put(base, "hidden", "")
+    cond do
+      assigns.open -> base
+      animation in ["js", "custom"] -> base
+      true -> Map.put(base, "hidden", "")
+    end
   end
 
   def ignore_backdrop(assigns) do
@@ -93,9 +98,12 @@ defmodule Corex.Dialog.Connect do
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
+    state = if Map.get(assigns, :open, false), do: "open", else: "closed"
+
     %{
       "data-scope" => "dialog",
       "data-part" => "positioner",
+      "data-state" => state,
       "dir" => Map.get(assigns, :dir, "ltr"),
       "id" => "dialog:#{assigns.id}:positioner"
     }
@@ -107,8 +115,8 @@ defmodule Corex.Dialog.Connect do
     )
   end
 
-  @spec content(Content.t()) :: map()
-  def content(assigns) do
+  @spec content(Content.t(), String.t()) :: map()
+  def content(assigns, animation \\ "instant") do
     data_state = if assigns.open, do: "open", else: "closed"
 
     base = %{
@@ -122,7 +130,11 @@ defmodule Corex.Dialog.Connect do
       "aria-describedby" => "dialog:#{assigns.id}:description"
     }
 
-    if assigns.open, do: base, else: Map.put(base, "hidden", "")
+    cond do
+      assigns.open -> base
+      animation in ["js", "custom"] -> base
+      true -> Map.put(base, "hidden", "")
+    end
   end
 
   def ignore_content(assigns) do

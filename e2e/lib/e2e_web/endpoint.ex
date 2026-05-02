@@ -32,10 +32,6 @@ defmodule E2eWeb.Endpoint do
     only: ~w(css js),
     gzip: not code_reloading?
 
-  if Mix.env() == :dev do
-    plug Tidewave
-  end
-
   if Mix.env() in [:dev, :test] do
     plug Corex.MCP
   end

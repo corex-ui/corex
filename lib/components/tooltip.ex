@@ -13,12 +13,12 @@ defmodule Corex.Tooltip do
   </.tooltip>
   ```
 
-  ### With arrow
+  ### Without arrow
 
   ```heex
-  <.tooltip id="my-tooltip" show_arrow>
+  <.tooltip id="my-tooltip" show_arrow={false}>
     <:trigger>Hover me</:trigger>
-    <:content>Tooltip with arrow</:content>
+    <:content>No arrow</:content>
   </.tooltip>
   ```
 
@@ -157,7 +157,7 @@ defmodule Corex.Tooltip do
   )
 
   attr(:show_arrow, :boolean,
-    default: false,
+    default: true,
     doc: "Whether to show an arrow pointing to the trigger"
   )
 

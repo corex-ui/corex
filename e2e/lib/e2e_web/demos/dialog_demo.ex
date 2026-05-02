@@ -239,7 +239,6 @@ defmodule E2eWeb.Demos.DialogDemo do
     <.dialog
       id="dialog-custom-animate"
       class="dialog"
-      modal
       animation="custom"
       on_open_change_client="my-dialog-open-changed"
     >
@@ -350,35 +349,58 @@ defmodule E2eWeb.Demos.DialogDemo do
   def animation_custom_js do
     ~S"""
     import { animate } from "motion"
+    import {
+      findDialogBackdrop,
+      findDialogContent,
+      animateScaleOpen,
+      animateScaleClose,
+    } from "corex"
+
+    const reducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     document.addEventListener("my-dialog-open-changed", (e) => {
       const { id, open } = e.detail
       const root = document.getElementById(id)
       if (!root) return
-      const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]')
-      const content = root.querySelector('[data-scope="dialog"][data-part="content"]')
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      if (reduced) {
-        if (backdrop) backdrop.style.opacity = open ? "" : "0"
-        if (content) content.style.opacity = open ? "" : "0"
-        return
-      }
+      const backdrop = findDialogBackdrop(root)
+      const content = findDialogContent(root)
       if (open) {
-        if (backdrop) animate(backdrop, { opacity: [0, 1] }, { duration: 0.5, easing: "ease-out" })
-        if (content)
-          animate(
-            content,
-            { opacity: [0, 1], scale: [0.7, 1], y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
-            { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
-          )
+        if (backdrop)
+          animateScaleOpen(backdrop, { animator: animate, duration: 0.5, easing: "ease-out" })
+        if (content) {
+          animateScaleOpen(content, {
+            animator: animate,
+            duration: 0.7,
+            easing: [0.16, 1, 0.3, 1],
+            scaleStart: 0.7,
+            scaleEnd: 1,
+          })
+          if (!reducedMotion())
+            animate(
+              content,
+              { y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
+              { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
+            )
+        }
       } else {
-        if (backdrop) animate(backdrop, { opacity: [1, 0] }, { duration: 0.4, easing: "ease-in" })
-        if (content)
-          animate(
-            content,
-            { opacity: [1, 0], scale: [1, 0.8], y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
-            { duration: 0.35, easing: "ease-in" },
-          )
+        if (backdrop)
+          animateScaleClose(backdrop, { animator: animate, duration: 0.4, easing: "ease-in" })
+        if (content) {
+          animateScaleClose(content, {
+            animator: animate,
+            duration: 0.35,
+            easing: "ease-in",
+            scaleStart: 0.8,
+            scaleEnd: 1,
+          })
+          if (!reducedMotion())
+            animate(
+              content,
+              { y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
+              { duration: 0.35, easing: "ease-in" },
+            )
+        }
       }
     })
     """

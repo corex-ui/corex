@@ -4,15 +4,10 @@ defmodule E2e.DesignPalette.Config do
   @theme_order ~w(neo uno duo leo)
 
   def defaults do
+    nl = neo_light()
+    nd = neo_dark()
+
     %{
-      "seeds" => %{
-        "accent" => "#4B4B4B",
-        "alert" => "#A43C3C",
-        "base" => "#F0F0F0",
-        "brand" => "#32479C",
-        "info" => "#1F77D4",
-        "success" => "#059669"
-      },
       "semantic_ratio_base" => %{
         "active" => 1.0,
         "default" => -1.15,
@@ -27,432 +22,309 @@ defmodule E2e.DesignPalette.Config do
       },
       "state_order" => ["muted", "default", "hover", "active"],
       "themes" => %{
-        "duo-dark" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6.5},
-            "alert" => %{"color" => "alert", "ratio" => 6.5},
-            "brand" => %{"color" => "brand", "ratio" => 6.5},
-            "default" => %{"color" => "base", "ratio" => 12.5},
-            "info" => %{"color" => "info", "ratio" => 6.5},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6.5}
-          },
-          "output" => "tokens/themes/duo/color/dark.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 32
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 32
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 32
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 36
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 9},
-              "lightness" => 24
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 34
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 10},
-            "root" => %{"color" => "base", "lightness" => 6},
-            "ui" => %{"color" => "base", "lightness" => 17, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.62},
-            "shadow" => %{"color" => "base", "ratio" => 1.26}
-          }
-        },
-        "duo-light" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6},
-            "alert" => %{"color" => "alert", "ratio" => 6},
-            "brand" => %{"color" => "brand", "ratio" => 6},
-            "default" => %{"color" => "base", "ratio" => 8.5},
-            "info" => %{"color" => "info", "ratio" => 6},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6}
-          },
-          "output" => "tokens/themes/duo/color/light.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 36
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 36
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 36
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 84
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 97},
-            "root" => %{"color" => "brand", "lightness" => 99},
-            "ui" => %{"color" => "base", "lightness" => 88, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.34},
-            "shadow" => %{"color" => "base", "ratio" => 1.05}
-          }
-        },
-        "leo-dark" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6},
-            "alert" => %{"color" => "alert", "ratio" => 6},
-            "brand" => %{"color" => "brand", "ratio" => 6},
-            "default" => %{"color" => "base", "ratio" => 12.25},
-            "info" => %{"color" => "info", "ratio" => 6},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6}
-          },
-          "output" => "tokens/themes/leo/color/dark.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 30
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 30
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 30
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 34
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 9},
-              "lightness" => 20
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 32
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 9},
-            "root" => %{"color" => "base", "lightness" => 5},
-            "ui" => %{"color" => "base", "lightness" => 14, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.65},
-            "shadow" => %{"color" => "base", "ratio" => 1.28}
-          }
-        },
-        "leo-light" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6},
-            "alert" => %{"color" => "alert", "ratio" => 6},
-            "brand" => %{"color" => "brand", "ratio" => 6},
-            "default" => %{"color" => "base", "ratio" => 9.25},
-            "info" => %{"color" => "info", "ratio" => 6},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6}
-          },
-          "output" => "tokens/themes/leo/color/light.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 34
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 34
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 34
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 82
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 36
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 94},
-            "root" => %{"color" => "base", "lightness" => 99},
-            "ui" => %{"color" => "base", "lightness" => 83, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.38},
-            "shadow" => %{"color" => "base", "ratio" => 1.09}
-          }
-        },
-        "neo-dark" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 7},
-            "alert" => %{"color" => "alert", "ratio" => 7},
-            "brand" => %{"color" => "brand", "ratio" => 7},
-            "default" => %{"color" => "base", "ratio" => 12},
-            "info" => %{"color" => "info", "ratio" => 7},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 7}
-          },
-          "output" => "tokens/themes/neo/color/dark.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 45
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 30
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 38
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 15},
-            "root" => %{"color" => "base", "lightness" => 8},
-            "ui" => %{"color" => "base", "lightness" => 20, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.4},
-            "shadow" => %{"color" => "base", "ratio" => 1.2}
-          }
-        },
-        "neo-light" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6},
-            "alert" => %{"color" => "alert", "ratio" => 6},
-            "brand" => %{"color" => "brand", "ratio" => 6},
-            "default" => %{"color" => "base", "ratio" => 8},
-            "info" => %{"color" => "info", "ratio" => 6},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6}
-          },
-          "output" => "tokens/themes/neo/color/light.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 85
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 40
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 97},
-            "root" => %{"color" => "base", "lightness" => 98},
-            "ui" => %{"color" => "base", "lightness" => 94, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.3},
-            "shadow" => %{"color" => "base", "ratio" => 1.05}
-          }
-        },
-        "uno-dark" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 6.5},
-            "alert" => %{"color" => "alert", "ratio" => 6.5},
-            "brand" => %{"color" => "brand", "ratio" => 6.5},
-            "default" => %{"color" => "base", "ratio" => 12.5},
-            "info" => %{"color" => "info", "ratio" => 6.5},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 6.5}
-          },
-          "output" => "tokens/themes/uno/color/dark.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 34
-            },
-            "alert" => %{
-              "bg" => "alert",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 34
-            },
-            "brand" => %{
-              "bg" => "brand",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 34
-            },
-            "info" => %{
-              "bg" => "info",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 38
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 9},
-              "lightness" => 22
-            },
-            "success" => %{
-              "bg" => "success",
-              "ink" => %{"color" => "base", "ratio" => 8},
-              "lightness" => 36
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 9},
-            "root" => %{"color" => "base", "lightness" => 6},
-            "ui" => %{"color" => "base", "lightness" => 14, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.58},
-            "shadow" => %{"color" => "base", "ratio" => 1.24}
-          }
-        },
-        "uno-light" => %{
-          "ink" => %{
-            "accent" => %{"color" => "accent", "ratio" => 7},
-            "alert" => %{"color" => "alert", "ratio" => 7},
-            "brand" => %{"color" => "brand", "ratio" => 7},
-            "default" => %{"color" => "base", "ratio" => 9.5},
-            "info" => %{"color" => "info", "ratio" => 7},
-            "muted" => %{"color" => "base", "ratio" => 5},
-            "success" => %{"color" => "success", "ratio" => 7}
-          },
-          "output" => "tokens/themes/uno/color/light.json",
-          "semantic" => %{
-            "accent" => %{
-              "bg" => "accent",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 75
-            },
-            "alert" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "alert", "ratio" => 7},
-              "lightness" => 90
-            },
-            "brand" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "brand", "ratio" => 7},
-              "lightness" => 90
-            },
-            "info" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "info", "ratio" => 7},
-              "lightness" => 90
-            },
-            "selected" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "base", "ratio" => 7},
-              "lightness" => 84
-            },
-            "success" => %{
-              "bg" => "base",
-              "ink" => %{"color" => "success", "ratio" => 7},
-              "lightness" => 90
-            }
-          },
-          "surface" => %{
-            "layer" => %{"color" => "base", "lightness" => 99},
-            "root" => %{"color" => "base", "lightness" => 99},
-            "ui" => %{"color" => "base", "lightness" => 93, "states" => true}
-          },
-          "utility" => %{
-            "border" => %{"color" => "base", "ratio" => 1.32},
-            "shadow" => %{"color" => "base", "ratio" => 1.12}
-          }
-        }
+        "neo-light" => nl,
+        "neo-dark" => nd,
+        "uno-light" =>
+          nl |> merge_overrides(uno_light_overrides()) |> Map.put("seeds", uno_seeds()),
+        "uno-dark" =>
+          nd |> merge_overrides(uno_dark_overrides()) |> Map.put("seeds", uno_seeds()),
+        "duo-light" =>
+          nl |> merge_overrides(duo_light_overrides()) |> Map.put("seeds", duo_seeds()),
+        "duo-dark" =>
+          nd |> merge_overrides(duo_dark_overrides()) |> Map.put("seeds", duo_seeds()),
+        "leo-light" =>
+          nl |> merge_overrides(leo_light_overrides()) |> Map.put("seeds", leo_seeds()),
+        "leo-dark" => nd |> merge_overrides(leo_dark_overrides()) |> Map.put("seeds", leo_seeds())
       },
       "ui_ratio_base" => %{"default" => -1.12, "hover" => -1.08, "muted" => -1.2}
+    }
+  end
+
+  defp neo_seeds do
+    %{
+      "accent" => "#4B4B4B",
+      "alert" => "#A43C3C",
+      "base" => "#F0F0F0",
+      "brand" => "#32479C",
+      "info" => "#1F77D4",
+      "success" => "#059669"
+    }
+  end
+
+  defp uno_seeds do
+    %{
+      "accent" => "#475569",
+      "alert" => "#B91C1C",
+      "base" => "#EEF2F7",
+      "brand" => "#0E7490",
+      "info" => "#0369A1",
+      "success" => "#047857"
+    }
+  end
+
+  defp duo_seeds do
+    %{
+      "accent" => "#57534E",
+      "alert" => "#9F1239",
+      "base" => "#FAF7F2",
+      "brand" => "#5B21B6",
+      "info" => "#1D4ED8",
+      "success" => "#15803D"
+    }
+  end
+
+  defp leo_seeds do
+    %{
+      "accent" => "#3F3F46",
+      "alert" => "#991B1B",
+      "base" => "#F4F4F5",
+      "brand" => "#B45309",
+      "info" => "#1E40AF",
+      "success" => "#166534"
+    }
+  end
+
+  defp neo_light do
+    %{
+      "seeds" => neo_seeds(),
+      "ink" => %{
+        "accent" => %{"color" => "accent", "ratio" => 6},
+        "alert" => %{"color" => "alert", "ratio" => 6},
+        "brand" => %{"color" => "brand", "ratio" => 6},
+        "default" => %{"color" => "base", "ratio" => 8},
+        "info" => %{"color" => "info", "ratio" => 6},
+        "link" => %{"color" => "info", "ratio" => 6},
+        "muted" => %{"color" => "base", "ratio" => 5},
+        "success" => %{"color" => "success", "ratio" => 6}
+      },
+      "output" => "tokens/themes/neo/color/light.json",
+      "semantic" => %{
+        "accent" => %{
+          "bg" => "accent",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 40
+        },
+        "alert" => %{
+          "bg" => "alert",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 40
+        },
+        "brand" => %{
+          "bg" => "brand",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 40
+        },
+        "info" => %{
+          "bg" => "info",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 40
+        },
+        "selected" => %{
+          "bg" => "base",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 85
+        },
+        "success" => %{
+          "bg" => "success",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 40
+        }
+      },
+      "surface" => %{
+        "layer" => %{"color" => "base", "lightness" => 97},
+        "root" => %{"color" => "base", "lightness" => 98},
+        "ui" => %{"color" => "base", "lightness" => 94, "states" => true}
+      },
+      "utility" => %{
+        "border" => %{"color" => "base", "ratio" => 1.3},
+        "shadow" => %{"color" => "base", "ratio" => 1.05}
+      }
+    }
+  end
+
+  defp neo_dark do
+    %{
+      "seeds" => neo_seeds(),
+      "ink" => %{
+        "accent" => %{"color" => "accent", "ratio" => 7},
+        "alert" => %{"color" => "alert", "ratio" => 7},
+        "brand" => %{"color" => "brand", "ratio" => 7},
+        "default" => %{"color" => "base", "ratio" => 12},
+        "info" => %{"color" => "info", "ratio" => 7},
+        "link" => %{"color" => "info", "ratio" => 7},
+        "muted" => %{"color" => "base", "ratio" => 5},
+        "success" => %{"color" => "success", "ratio" => 7}
+      },
+      "output" => "tokens/themes/neo/color/dark.json",
+      "semantic" => %{
+        "accent" => %{
+          "bg" => "accent",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 45
+        },
+        "alert" => %{
+          "bg" => "alert",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 38
+        },
+        "brand" => %{
+          "bg" => "brand",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 38
+        },
+        "info" => %{
+          "bg" => "info",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 38
+        },
+        "selected" => %{
+          "bg" => "base",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 30
+        },
+        "success" => %{
+          "bg" => "success",
+          "ink" => %{"color" => "base", "ratio" => 7},
+          "lightness" => 38
+        }
+      },
+      "surface" => %{
+        "layer" => %{"color" => "base", "lightness" => 15},
+        "root" => %{"color" => "base", "lightness" => 8},
+        "ui" => %{"color" => "base", "lightness" => 20, "states" => true}
+      },
+      "utility" => %{
+        "border" => %{"color" => "base", "ratio" => 1.4},
+        "shadow" => %{"color" => "base", "ratio" => 1.2}
+      }
+    }
+  end
+
+  defp uno_light_overrides do
+    %{
+      "output" => "tokens/themes/uno/color/light.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 97},
+        "root" => %{"lightness" => 100},
+        "ui" => %{"lightness" => 94}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.32},
+        "shadow" => %{"ratio" => 1.1}
+      },
+      "ink" => %{"default" => %{"ratio" => 8.5}},
+      "semantic" => %{
+        "accent" => %{
+          "bg" => "base",
+          "lightness" => 89,
+          "ink" => %{"color" => "accent", "ratio" => 5.5}
+        },
+        "alert" => %{
+          "bg" => "base",
+          "lightness" => 89,
+          "ink" => %{"color" => "alert", "ratio" => 5.5}
+        },
+        "brand" => %{
+          "bg" => "base",
+          "lightness" => 95,
+          "ink" => %{"color" => "brand", "ratio" => 5.5}
+        },
+        "info" => %{
+          "bg" => "base",
+          "lightness" => 89,
+          "ink" => %{"color" => "info", "ratio" => 5.5}
+        },
+        "selected" => %{
+          "bg" => "base",
+          "lightness" => 26,
+          "ink" => %{"color" => "accent", "ratio" => 10}
+        },
+        "success" => %{
+          "bg" => "base",
+          "lightness" => 89,
+          "ink" => %{"color" => "success", "ratio" => 5.5}
+        }
+      }
+    }
+  end
+
+  defp uno_dark_overrides do
+    %{
+      "output" => "tokens/themes/uno/color/dark.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 14},
+        "root" => %{"lightness" => 7},
+        "ui" => %{"lightness" => 19}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.42},
+        "shadow" => %{"ratio" => 1.22}
+      },
+      "ink" => %{"default" => %{"ratio" => 12.25}}
+    }
+  end
+
+  defp duo_light_overrides do
+    %{
+      "output" => "tokens/themes/duo/color/light.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 97},
+        "root" => %{"lightness" => 99},
+        "ui" => %{"lightness" => 92}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.34},
+        "shadow" => %{"ratio" => 1.07}
+      },
+      "ink" => %{"default" => %{"ratio" => 8.25}}
+    }
+  end
+
+  defp duo_dark_overrides do
+    %{
+      "output" => "tokens/themes/duo/color/dark.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 16},
+        "root" => %{"lightness" => 10},
+        "ui" => %{"lightness" => 21}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.43},
+        "shadow" => %{"ratio" => 1.23}
+      },
+      "ink" => %{"default" => %{"ratio" => 12.1}}
+    }
+  end
+
+  defp leo_light_overrides do
+    %{
+      "output" => "tokens/themes/leo/color/light.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 96},
+        "root" => %{"lightness" => 98},
+        "ui" => %{"lightness" => 92}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.34},
+        "shadow" => %{"ratio" => 1.07}
+      },
+      "ink" => %{"default" => %{"ratio" => 8.25}}
+    }
+  end
+
+  defp leo_dark_overrides do
+    %{
+      "output" => "tokens/themes/leo/color/dark.json",
+      "surface" => %{
+        "layer" => %{"lightness" => 16},
+        "root" => %{"lightness" => 9},
+        "ui" => %{"lightness" => 21}
+      },
+      "utility" => %{
+        "border" => %{"ratio" => 1.43},
+        "shadow" => %{"ratio" => 1.23}
+      },
+      "ink" => %{"default" => %{"ratio" => 12.1}}
     }
   end
 

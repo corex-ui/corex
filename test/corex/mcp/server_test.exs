@@ -17,8 +17,9 @@ defmodule Corex.MCP.ServerTest do
     assert {tools, _dispatch} = Server.tools_and_dispatch()
     assert tools != []
     names = Enum.map(tools, & &1.name)
-    assert "corex_list_components" in names
-    assert "corex_installation" in names
+    assert "list_components" in names
+    assert "get_component" in names
+    assert "installation_guide" in names
   end
 
   test "handle_http_message initialize returns protocol and tools" do
@@ -129,7 +130,7 @@ defmodule Corex.MCP.ServerTest do
       "jsonrpc" => "2.0",
       "id" => 5,
       "method" => "tools/call",
-      "params" => %{"name" => "corex_list_components", "arguments" => %{}}
+      "params" => %{"name" => "list_components", "arguments" => %{}}
     }
 
     conn =

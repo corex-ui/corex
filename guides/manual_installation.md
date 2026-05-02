@@ -1,6 +1,6 @@
 # Manual installation
 
-This guide describes how to add Corex to an existing Phoenix application **without** using `mix corex.new` or `mix igniter.install corex`. It covers the minimum needed to render Corex components in your templates: the dependency, an ESM Esbuild build, the Corex JS hooks, the root layout `<script type="module">`, and `use Corex` in your web layer.
+This guide describes how to add Corex to an existing Phoenix application without using `mix corex.new`. It covers the minimum needed to render Corex components in your templates: the dependency, an ESM Esbuild build, the Corex JS hooks, the root layout `<script type="module">`, and `use Corex` in your web layer. Later sections cover optional features (design, toasts, dark mode, theming, localization).
 
 If you are creating a new project instead, see the [Installation guide](installation.html).
 
@@ -139,10 +139,10 @@ Fix any Esbuild or module-resolution errors before continuing. If you see `error
 The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Install the assets with:
 
 ```bash
-mix igniter.install corex --design
+mix corex.design
 ```
 
-Pass `--designex` to also copy the design token sources (`assets/corex/design/`). The copy is additive — pre-existing files are never overwritten. To refresh design assets to a newer Corex version, remove `assets/corex/` and re-run `mix igniter.install corex --design [--designex]`.
+Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite — useful when refreshing design assets to a newer Corex version.
 
 Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
@@ -156,7 +156,7 @@ Then import the design layers from `assets/css/app.css`. The minimum is `main.cs
 /* corex:design-imports */
 ```
 
-Keep the `/* corex:design-imports */` markers — `mix igniter.install corex` uses them as anchors when it needs to extend or replace this block later.
+Keep the `/* corex:design-imports */` markers — they're the agreed-upon block Corex generators recognize when updating imports later.
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
@@ -394,6 +394,6 @@ This is the minimum required to use Corex. From here, layer on the optional feat
 
 - [Dark mode](dark_mode.html) — `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
 - [Theming](theming.html) — `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
-- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `Plugs.Path`, `LocalizeLayout`, and a `<.select>` language switcher (RTL is automatic).
+- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Path`, `MyAppWeb.Plugs.Path`, `MyAppWeb.Locale`, and `<.language_switch>` (RTL via CLDR in `Locale.dir/0`).
 - [MCP](mcp.html) — Corex MCP for AI tooling in development.
 - [Production](production.html) — prod build and run.

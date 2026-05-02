@@ -20,7 +20,6 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
     with_installer_tmp("development_workflow", [autoremove?: false], fn tmp_dir ->
       {app_root_path, _} =
         generate_corex_app(tmp_dir, "phx_blog", [
-          "--dev",
           "--no-dashboard"
         ])
 

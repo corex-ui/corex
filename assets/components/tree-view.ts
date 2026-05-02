@@ -59,7 +59,7 @@ export class TreeView extends Component<Props, Api> {
   private updateExistingTree(treeEl: HTMLElement) {
     this.spreadProps(treeEl, this.api.getTreeProps());
 
-    const animation = this.el.dataset.animation ?? "js";
+    const animation = this.el.dataset.animation ?? "instant";
 
     const isOwnedByTree = (el: Element) =>
       el.closest('[data-scope="tree-view"][data-part="tree"]') === treeEl;
@@ -100,7 +100,7 @@ export class TreeView extends Component<Props, Api> {
         const contentPropsRaw = this.api.getBranchContentProps(nodeProps);
         if (animation === "instant") {
           this.spreadProps(contentEl, contentPropsRaw);
-        } else {
+        } else if (animation === "js" || animation === "custom") {
           this.spreadProps(
             contentEl,
             stripHiddenFromProps(contentPropsRaw as Record<string, unknown>)

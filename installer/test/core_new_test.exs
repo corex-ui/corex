@@ -93,14 +93,14 @@ defmodule Mix.Tasks.Corex.NewTest do
 
   @tag :integration
   test "integration: new project with archives" do
-    unless Mix.Task.get("phx.new") && Mix.Task.get("igniter.install") do
-      flunk("Install mix archives to run this test: phx_new, igniter_new. Then: mix test --include integration")
+    unless Mix.Task.get("phx.new") do
+      flunk("Install the phx_new archive to run this test. Then: mix test --include integration")
     end
 
     send(self(), {:mix_shell_input, :yes?, false})
 
     in_tmp("integration corex new", fn ->
-      Mix.Tasks.Corex.New.run(["corex_integration_app", "--no-version-check"])
+      Mix.Tasks.Corex.New.run(["corex_integration_app", "--no-version-check", "--no-install"])
       assert File.dir?("corex_integration_app")
       assert File.regular?("corex_integration_app/mix.exs")
     end)

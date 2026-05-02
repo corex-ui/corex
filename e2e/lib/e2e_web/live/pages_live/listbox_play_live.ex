@@ -148,6 +148,7 @@ defmodule E2eWeb.ListboxPlayLive do
           <.select
             id="playground-disabled-items"
             class="select select--accent w-4xs"
+            positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
             close_on_select={false}

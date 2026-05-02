@@ -3,6 +3,8 @@ var DEFAULT_DURATION = 0.3;
 var DEFAULT_EASING = "ease-out";
 var DEFAULT_OPACITY_START = 0;
 var DEFAULT_OPACITY_END = 1;
+var DEFAULT_SCALE_START = 0.96;
+var DEFAULT_SCALE_END = 1;
 function reducedMotion() {
   return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -26,17 +28,26 @@ function findTreeBranch(rootEl, value) {
     `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`
   );
 }
-function initCustomCollections() {
-  document.querySelectorAll('[data-animation="custom"][phx-hook="Accordion"]').forEach((host) => {
-    host.querySelectorAll('[data-scope="accordion"][data-part="item-content"]').forEach((el) => {
-      if (el.dataset.state !== "open") applyClosedHeight(el);
-    });
-  });
-  document.querySelectorAll('[data-animation="custom"][phx-hook="TreeView"]').forEach((host) => {
-    host.querySelectorAll('[data-scope="tree-view"][data-part="branch-content"]').forEach((el) => {
-      if (el.dataset.state !== "open") applyClosedHeight(el);
-    });
-  });
+function findDialogBackdrop(rootEl) {
+  return rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+}
+function findDialogContent(rootEl) {
+  return rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+}
+function applyClosedScale(el, opts = {}) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  el.style.opacity = String(opacityStart);
+  if (!isBackdrop && scaleStart !== 1) {
+    el.style.transform = `scale(${scaleStart})`;
+  } else {
+    el.style.removeProperty("transform");
+  }
+}
+function applyOpenScale(el) {
+  el.style.opacity = "";
+  el.style.removeProperty("transform");
 }
 function animateHeightOpen(el, opts) {
   if (reducedMotion()) {
@@ -79,6 +90,54 @@ function animateHeightClose(el, opts) {
       { duration, easing }
     ).finished.then(() => {
       applyClosedHeight(el);
+    })
+  ).then(() => void 0);
+}
+function animateScaleOpen(el, opts) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyOpenScale(el);
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+  const keyframes = {
+    opacity: [opacityStart, opacityEnd]
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleStart})`, `scale(${scaleEnd})`];
+  }
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyOpenScale(el);
+    })
+  ).then(() => void 0);
+}
+function animateScaleClose(el, opts) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyClosedScale(el, { scaleStart: opts.scaleStart, opacityStart: opts.opacityStart });
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+  const keyframes = {
+    opacity: [opacityEnd, opacityStart]
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleEnd})`, `scale(${scaleStart})`];
+  }
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyClosedScale(el, { scaleStart, opacityStart });
     })
   ).then(() => void 0);
 }
@@ -151,12 +210,17 @@ export {
   Hooks,
   animateHeightClose,
   animateHeightOpen,
+  animateScaleClose,
+  animateScaleOpen,
   applyClosedHeight,
+  applyClosedScale,
   applyOpenHeight,
+  applyOpenScale,
   corex_default as default,
   findAccordionContent,
+  findDialogBackdrop,
+  findDialogContent,
   findTreeBranch,
-  hooks,
-  initCustomCollections
+  hooks
 };
 //# sourceMappingURL=corex.mjs.map

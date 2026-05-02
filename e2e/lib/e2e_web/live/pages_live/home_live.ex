@@ -27,6 +27,28 @@ defmodule E2eWeb.HomeLive do
     ]
   end
 
+  defp hero_bullets do
+    [
+      %{
+        title: "Server & client API.",
+        body:
+          "Drive every component from LiveView or JavaScript — and listen back from either side."
+      },
+      %{
+        title: "LiveView‑native.",
+        body: "Update props at runtime without resetting component state."
+      },
+      %{
+        title: "Truly unstyled.",
+        body: "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+      },
+      %{
+        title: "Accessible by default.",
+        body: "Keyboard, focus and ARIA wired in by Zag.js state machines."
+      }
+    ]
+  end
+
   @hero_code_snippet ~S"""
   <.accordion class="accordion">
     <:trigger value="anatomy">Anatomy</:trigger>
@@ -36,13 +58,20 @@ defmodule E2eWeb.HomeLive do
   </.accordion>
   """
 
+  @install_command "mix corex.new my_app"
+
+  defp component_count, do: length(Corex.component_ids())
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "Corex")
      |> assign(:hero_code, @hero_code_snippet)
+     |> assign(:install_command, @install_command)
      |> assign(:hero_marquee_items, hero_marquee_items())
+     |> assign(:hero_bullets, hero_bullets())
+     |> assign(:component_count, component_count())
      |> stream(:accordion_events, [], limit: 20)}
   end
 
@@ -71,82 +100,44 @@ defmodule E2eWeb.HomeLive do
       path={@path}
     >
       <section class="home__hero" aria-labelledby="home-hero-heading">
-        <div class="home__hero__backdrop" aria-hidden="true">
-          <div class="home__hero__glow home__hero__glow--brand"></div>
-          <div class="home__hero__glow home__hero__glow--accent"></div>
-          <div class="home__hero__grid-pattern"></div>
-        </div>
-
         <div class="home__hero__stack">
           <div class="home__hero__inner">
             <div class="home__hero__copy">
-              <h1 id="home-hero-heading" class="home__display">
-                The <span class="text-brand">Phoenix UI</span>
-                with a <span class="text-alert">real API</span>.
+              <h1 id="home-hero-heading" class="home__display home__display--lg">
+                The Phoenix UI with a <span class="home__display__accent">real API</span>.
               </h1>
 
               <p class="home__lede">
-                Corex brings Zag.js state machines to Phoenix to build accessible and unstyled components with a full server and client API.
-                <br />
-                Control and listen from both sides of the wire and Fully Compatible with Phoenix Form, Stream and Ecto Changeset
+                Accessible, unstyled Phoenix components with a full server‑and‑client API,
+                powered by
+                <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
+                state machines.
               </p>
 
               <ul class="home__bullets" aria-label="Highlights">
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
+                <li :for={bullet <- @hero_bullets} class="home__bullet">
+                  <.heroicon name="hero-check" class="home__bullet__icon" />
                   <span>
-                    <strong>Flexible anatomy:</strong>
-                    declarative, custom slots and full compound mode.
-                  </span>
-                </li>
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
-                  <span>
-                    <strong>Server and client API & Events:</strong>
-                    push state in, pull it out and react to changes in Elixir and JavaScript.
-                  </span>
-                </li>
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
-                  <span>
-                    <strong>LiveView-native:</strong>
-                    update props at runtime without resetting component state.
-                  </span>
-                </li>
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
-                  <span>
-                    <strong>Server App & Static Website</strong>
-                    Build a full app with Phoenix or build a static site using Tableau.
-                  </span>
-                </li>
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
-                  <span>
-                    <strong>Accessible and keyboard-first:</strong> powered by Zag.js state machines.
-                  </span>
-                </li>
-                <li class="home__bullet">
-                  <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
-                  <span>
-                    <strong>Truly unstyled:</strong> bring your own CSS or use Corex Design System.
+                    <strong>{bullet.title}</strong> {bullet.body}
                   </span>
                 </li>
               </ul>
 
-              <div class="home__cta-row">
+              <div class="home__hero__cta-row">
                 <.navigate
-                  to={~p"/accordion/anatomy"}
+                  to={~p"/accordion/playground"}
                   class="button button--brand rounded-full"
                 >
-                  Browse components <.heroicon name="hero-arrow-right" class="icon" />
+                  {gettext("Browse components")}
+                  <.heroicon name="hero-arrow-right" class="icon" />
                 </.navigate>
                 <.navigate
                   to="https://hexdocs.pm/corex/installation.html"
                   class="button button--ghost rounded-full"
                   external
                 >
-                  Visit Hexdocs <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+                  {gettext("Visit Hexdocs")}
+                  <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
                 </.navigate>
               </div>
             </div>
@@ -212,12 +203,10 @@ defmodule E2eWeb.HomeLive do
                   </div>
                   <.clipboard
                     id="hero-code-clipboard"
-                    class="clipboard w-auto"
+                    class="clipboard clipboard--sm"
                     value={@hero_code}
                     input={false}
                     trigger_aria_label="Copy snippet"
-                    root_class="home__card__clipboard-root"
-                    control_class="home__card__clipboard-control"
                   >
                     <:copy>
                       <span>Copy</span>
@@ -260,48 +249,127 @@ defmodule E2eWeb.HomeLive do
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="home__hero__marquee" aria-label="Built with">
-            <div class="home__hero__marquee__inner">
-              <p class="home__hero__marquee__label">Built with</p>
-              <div class="home__hero__marquee__logos">
-                <%= for item <- @hero_marquee_items do %>
-                  <img src={item.img} alt={item.name} class="home__hero__marquee__logo" />
-                <% end %>
-              </div>
+      <section
+        class="home__section home__section--alt home__numbers-section"
+        aria-labelledby="home-numbers-heading"
+      >
+        <div class="home__section__inner">
+          <h2 id="home-numbers-heading" class="sr-only">
+            {gettext("Corex by the numbers")}
+          </h2>
+          <div class="home__numbers">
+            <div class="home__numbers__cell">
+              <span class="home__numbers__value">
+                {@component_count}<span class="home__numbers__value__suffix">+</span>
+              </span>
+              <span class="home__numbers__label">Components</span>
+              <p class="home__numbers__hint">
+                Works in Controller and Live View
+              </p>
+            </div>
+            <div class="home__numbers__cell">
+              <span class="home__numbers__value">
+                100<span class="home__numbers__value__suffix">+</span>
+              </span>
+              <span class="home__numbers__label">API & Events</span>
+              <p class="home__numbers__hint">
+                Control the components from the Server and the Client
+              </p>
+            </div>
+            <div class="home__numbers__cell">
+              <span class="home__numbers__value">
+                100<span class="home__numbers__value__suffix">%</span>
+              </span>
+              <span class="home__numbers__label">Open Source</span>
+              <p class="home__numbers__hint">
+                Open Source and free to use. MIT License
+              </p>
+            </div>
+            <div class="home__numbers__cell">
+              <span class="home__numbers__value">
+                A<span class="home__numbers__value__suffix">11y</span>
+              </span>
+              <span class="home__numbers__label">Built in</span>
+              <p class="home__numbers__hint">
+                Keyboard, focus and ARIA from Zag.js machines.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="home__cta-band" aria-labelledby="home-cta-band-heading">
-        <div class="home__cta-band__inner">
-          <h2 id="home-cta-band-heading" class="home__cta-band__title">
-            {gettext("Get started")}
-          </h2>
-          <div class="home__cta-band__panel">
-            <div class="home__cta-band__actions">
+      <section class="home__section home__stack-section" aria-labelledby="home-stack-heading">
+        <div class="home__section__inner home__stack">
+          <div class="home__stack__head">
+            <span class="home__stack__rule" aria-hidden="true"></span>
+            <h2 id="home-stack-heading" class="home__eyebrow">Built with</h2>
+            <span class="home__stack__rule" aria-hidden="true"></span>
+          </div>
+
+          <.marquee
+            id="home-stack-marquee"
+            class="marquee marquee--on-layer home__stack__marquee"
+            duration={28}
+            spacing="0px"
+            pause_on_interaction
+            items={@hero_marquee_items}
+          >
+            <:item :let={item}>
+              <span class="home__stack__item">
+                <img src={item.img} alt={item.name} class="home__stack__logo" />
+              </span>
+            </:item>
+          </.marquee>
+        </div>
+      </section>
+
+      <section
+        class="home__section home__section--alt home__cta"
+        aria-labelledby="home-cta-heading"
+      >
+        <div class="home__section__inner">
+          <div class="home__cta__inner">
+            <p class="home__eyebrow">Ready?</p>
+            <h2 id="home-cta-heading" class="home__cta__display">
+              Install Corex <span class="home__display__accent">in one command.</span>
+            </h2>
+            <p class="home__lede">
+              Igniter wires up the dependency, the design tokens and the assets pipeline for you.
+            </p>
+
+            <.clipboard
+              id="home-install-clipboard"
+              class="clipboard"
+              value={@install_command}
+              trigger_aria_label="Copy install command"
+            >
+              <:copy>
+                <span>Copy</span>
+                <.heroicon name="hero-clipboard" />
+              </:copy>
+              <:copied>
+                <span>Copied</span>
+                <.heroicon name="hero-check" />
+              </:copied>
+            </.clipboard>
+
+            <div class="home__cta__actions">
               <.navigate
-                to={~p"/accordion/anatomy"}
-                class="home__cta-band__btn button button--brand rounded-full"
+                to={~p"/accordion/playground"}
+                class="button button--brand rounded-full"
               >
                 {gettext("Browse components")}
                 <.heroicon name="hero-arrow-right" class="icon" />
               </.navigate>
               <.navigate
-                to="https://hexdocs.pm/corex/installation.html"
-                class="home__cta-band__btn home__cta-band__btn--secondary button rounded-full"
-                external
-              >
-                {gettext("Visit Hexdocs")}
-                <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-              </.navigate>
-              <.navigate
                 to="https://github.com/corex-ui/corex"
-                class="home__cta-band__btn home__cta-band__btn--secondary button rounded-full"
+                class="button button--ghost rounded-full"
                 external
               >
-                {gettext("Visit GitHub")}
+                {gettext("Star on GitHub")}
                 <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
               </.navigate>
             </div>

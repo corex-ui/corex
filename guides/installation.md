@@ -10,7 +10,8 @@
 
 Corex is an accessible UI components library for Phoenix and LiveView. It ships HEEx components, matching JavaScript hooks, and server-side APIs that stay in sync with the client. You bring your own styles, or opt in to the Corex Design system.
 
-This guide covers adding Corex with the official generators. For the same setup without Igniter, see [Manual installation](manual_installation.html).
+This guide covers adding Corex with the official generators. 
+For the same manual setup, see [Manual installation](manual_installation.html).
 
 > #### Beta {: .neutral}
 >
@@ -27,7 +28,6 @@ Install the archives once:
 
 ```bash
 mix archive.install hex phx_new
-mix archive.install hex igniter_new
 mix archive.install hex corex_new
 ```
 
@@ -52,40 +52,50 @@ mix help corex.new
 
 ## Existing Phoenix application
 
-From your app directory:
+There is no automatic installer for existing apps. Follow the
+[manual installation guide](manual_installation.html) — it's a complete,
+copy-paste walkthrough covering the dep, esbuild config, `use Corex`,
+the root-layout script tag, and the optional `--mode`, `--theme`,
+`--lang`, `--design`, and toast wiring.
+
+To copy the Corex design assets into an existing app:
 
 ```bash
-mix igniter.install corex
+mix corex.design
 ```
 
-Re-running `mix igniter.install corex` with the same flags makes no diffs to the project — the installer is idempotent. Re-running with new UI flags (e.g. add `--lang` later) only adds the new bits; previously enabled features are preserved.
+Pass `--designex` to also copy the token sources into `assets/corex/design/`.
+Pass `--force` to overwrite.
 
-## Corex options (`corex.new` and `mix igniter.install corex`)
+## Corex options (`mix corex.new`)
 
-Corex flags are unique and **do not conflict** with `phx.new` or Igniter switches, so you can pass them bare to either generator (no `--corex.` prefix needed).
+Corex flags are unique and **do not conflict** with `phx.new` switches, so you can pass them bare alongside Phoenix flags.
 
 | Flag                          | Effect                                                                                                                                                                                                                                                                                                                       |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--mode`                      | Light/dark mode: plugs, assigns, root layout script, optional layout UI (see [Dark mode](dark_mode.html)). **Implies `--design`** (with a notice).                                                                                                                                                                           |
-| `--theme`                     | Theme picker (neo, uno, duo, leo): plugs, assigns, optional UI (see [Theming](theming.html)). **Implies `--design`** (with a notice).                                                                                                                                                                                        |
+| `--mode`                      | Light/dark mode: plugs, assigns, root-layout script, mode toggle (see [Dark mode](dark_mode.html)). **Implies `--design`**.                                                                                                                                                                                                  |
+| `--theme`                     | Theme picker (neo, uno, duo, leo): plugs, assigns, theme toggle (see [Theming](theming.html)). **Implies `--design`**.                                                                                                                                                                                                       |
 | `--lang`                      | Localization with `localize_web`, Path plug, router helpers (see [Localize](localize.html)). Does **not** imply `--design`.                                                                                                                                                                                                  |
-| `--design` / `--no-design`    | Add the Corex Design system: copy assets into `assets/corex/`, strip stock daisy/Tailwind, and replace `assets/css/app.css` with the Corex design entry. Pass **`--no-design`** to leave the stock Phoenix Tailwind/daisy setup in place. **Default: on**.                                                                  |
-| `--designex`                  | Also copy the design token sources into `assets/corex/design/`. **Implies `--design`**.                                                                                                                                                                                                                                      |
-| `--mcp` / `--no-mcp`          | Add the Corex MCP plug on the web endpoint in development. Pass **`--no-mcp`** to skip. **Default: on**.                                                                                                                                                                                                                     |
+| `--design` / `--no-design`    | Copy **consumer** design assets from the Corex repo’s `priv/design/corex` tree into `assets/corex/` (no `assets/corex/design/` folder). Writes the Corex `app.css`. Pass **`--no-design`** for stock Phoenix Tailwind/daisy. **Default: on**.                                                                                  |
+| `--designex`                  | After that, copy **`priv/design/design`** into **`assets/corex/design/`** (token sources next to consumer CSS). Adds the `:designex` Hex dependency (dev runtime), `config :designex`, and runs **`designex corex`** in `assets.build` / `assets.deploy`. **Implies `--design`**.                                           |
+| `--dev PATH`                  | Use a local Corex checkout as a path dep (useful when developing Corex). `PATH` is relative to the generated app; `assets/js/app.js` imports `priv/static/corex.mjs` from that checkout via a relative path.                                                                                                                                                                                 |
 
-The installer always patches `Layouts.app` and `home.html.heex`. Stock Phoenix templates are fully replaced with the Corex layout; already-touched files get only the missing flag-driven pieces (switchers, attrs, declarations) without losing existing customizations.
+The generator always writes Corex-owned files from templates: `layouts.ex`,
+`root.html.heex`, `home.html.heex`, plus feature-specific plug modules under
+`lib/<app>_web/plugs/`. For Phoenix-owned files (`mix.exs`, `<app>_web.ex`,
+`router.ex`, `config/config.exs`) it applies small, idempotent patches.
 
-To refresh the Corex design assets to a newer version, remove `assets/corex/` and re-run `mix igniter.install corex --design [--designex]`.
+The bundled installer snapshot mirrors **`priv/design`** (sibling **`corex`** and **`design`** folders); default **`--design`** copies only the consumer **`corex`** tree into your app. To refresh design assets after
+upgrading the `corex` dependency, run `mix corex.design --force` (or
+`mix corex.design --designex --force` to also refresh token sources).
 
 Examples:
 
 ```bash
 mix corex.new my_app --mode --theme --lang
 mix corex.new my_app --no-design
-mix igniter.install corex --mode --theme --lang --yes
+mix corex.new my_app --dev ../corex
 ```
-
-Installing Corex from a **local checkout or path dependency** is **not** covered here — use **`mix help corex.new`** and the moduledoc for `Mix.Tasks.Corex.New`.
 
 ## Try your first component
 
@@ -276,4 +286,4 @@ The same pattern applies to every component — see each component's module docs
 - [Theming](theming.html) — theme picker after `--theme`.
 - [Localize](localize.html) — locales and routes after `--lang`.
 - [Production](production.html) — prod build and run.
-- [Manual installation](manual_installation.html) — install Corex without Igniter.
+- [Manual installation](manual_installation.html) — add Corex to an existing Phoenix app.

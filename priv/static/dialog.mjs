@@ -7,7 +7,7 @@ import {
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunks/chunk-7NPJK3FE.mjs";
+} from "./chunks/chunk-4PSVMPGM.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1240,7 +1240,6 @@ var Dialog = class extends Component {
   render() {
     const rootEl = this.el;
     const animation = rootEl.dataset.animation ?? "instant";
-    const open = this.api.open;
     const triggerEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="trigger"]'
     );
@@ -1252,13 +1251,9 @@ var Dialog = class extends Component {
       const rawBackdrop = this.api.getBackdropProps();
       if (animation === "instant") {
         this.spreadProps(backdropEl, rawBackdrop);
-      } else {
+      } else if (animation === "js" || animation === "custom") {
         this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
-        if (open) {
-          backdropEl.removeAttribute("hidden");
-        } else if (rootEl.dataset.exitAnim !== "running") {
-          backdropEl.setAttribute("hidden", "");
-        }
+        backdropEl.removeAttribute("hidden");
       }
     }
     const positionerEl = rootEl.querySelector(
@@ -1272,12 +1267,11 @@ var Dialog = class extends Component {
       const rawContent = this.api.getContentProps();
       if (animation === "instant") {
         this.spreadProps(contentEl, rawContent);
-      } else {
+      } else if (animation === "js" || animation === "custom") {
         this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
-        if (open) {
-          contentEl.removeAttribute("hidden");
-        } else if (rootEl.dataset.exitAnim !== "running") {
-          contentEl.setAttribute("hidden", "");
+        contentEl.removeAttribute("hidden");
+        if (!this.api.open) {
+          contentEl.style.removeProperty("pointer-events");
         }
       }
     }
@@ -1291,45 +1285,29 @@ var Dialog = class extends Component {
       '[data-scope="dialog"][data-part="close-trigger"]'
     );
     if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
-    if (animation !== "instant") {
-      if (rootEl.dataset.animInteractionLocked === "true") {
-        if (backdropEl) backdropEl.style.pointerEvents = "auto";
-        if (positionerEl) positionerEl.style.pointerEvents = "auto";
-        if (contentEl) contentEl.style.pointerEvents = "none";
-      } else {
-        if (contentEl) contentEl.style.removeProperty("pointer-events");
-        if (open) {
-          if (backdropEl) backdropEl.style.pointerEvents = "auto";
-          if (positionerEl) positionerEl.style.pointerEvents = "auto";
-        } else if (animation === "js") {
-          const pe = rootEl.dataset.exitAnim === "running" ? "auto" : "none";
-          if (backdropEl) backdropEl.style.pointerEvents = pe;
-          if (positionerEl) positionerEl.style.pointerEvents = pe;
-        } else if (animation === "custom") {
-          if (backdropEl) backdropEl.style.pointerEvents = "none";
-          if (positionerEl) positionerEl.style.pointerEvents = "none";
-        } else {
-          if (backdropEl) backdropEl.style.pointerEvents = "none";
-          if (positionerEl) positionerEl.style.pointerEvents = "none";
-        }
-      }
-    }
   }
 };
 
 // hooks/dialog.ts
 function getDialogUpdatePropsFromEl(el) {
-  const softLock = el.dataset.animInteractionLocked === "true";
   return {
     id: el.id,
     ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
     modal: getBoolean(el, "modal"),
-    closeOnInteractOutside: softLock ? false : getBoolean(el, "closeOnInteractOutside"),
-    closeOnEscape: softLock ? false : getBoolean(el, "closeOnEscapeKeyDown"),
+    closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+    closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
     preventScroll: getBoolean(el, "preventScroll"),
     restoreFocus: getBoolean(el, "restoreFocus"),
     dir: getDir(el)
   };
+}
+function runDialogScaleTransitions(el, isOpen) {
+  const opts = readScaleAnimationOptions(el);
+  const blockRoot = opts.blockInteraction ? el : void 0;
+  const backdrop = el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+  const content = el.querySelector('[data-scope="dialog"][data-part="content"]');
+  if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
+  if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
 }
 var DialogHook = {
   mounted() {
@@ -1348,44 +1326,6 @@ var DialogHook = {
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getDir(el),
       onOpenChange: (details) => {
-        if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
-          if (self.closePointerT !== void 0) clearTimeout(self.closePointerT);
-          el.setAttribute("data-exit-anim", "running");
-          if (el.dataset.animation === "js") {
-            const closeOpts = readScaleAnimationOptions(el);
-            self.closePointerT = window.setTimeout(
-              () => {
-                el.setAttribute("data-exit-anim", "complete");
-                const backdrop = el.querySelector(
-                  '[data-scope="dialog"][data-part="backdrop"]'
-                );
-                const positioner = el.querySelector(
-                  '[data-scope="dialog"][data-part="positioner"]'
-                );
-                if (backdrop) backdrop.style.pointerEvents = "none";
-                if (positioner) positioner.style.pointerEvents = "none";
-                self.closePointerT = void 0;
-                dialog.render();
-              },
-              Math.max(0, closeOpts.duration * 1e3)
-            );
-          } else {
-            self.closePointerT = window.setTimeout(() => {
-              el.setAttribute("data-exit-anim", "complete");
-              self.closePointerT = void 0;
-              dialog.render();
-            }, 0);
-          }
-        } else if (details.open) {
-          if (self.closePointerT !== void 0) {
-            clearTimeout(self.closePointerT);
-            self.closePointerT = void 0;
-          }
-          el.removeAttribute("data-exit-anim");
-          el.removeAttribute("data-anim-interaction-locked");
-          dialog.updateProps(getDialogUpdatePropsFromEl(el));
-          dialog.render();
-        }
         const previousOpen = self.lastOpen ?? false;
         self.lastOpen = details.open;
         const payload = {
@@ -1401,36 +1341,8 @@ var DialogHook = {
           serverEventName: getString(el, "onOpenChange"),
           clientEventName: getString(el, "onOpenChangeClient")
         });
-        if (el.dataset.animation === "js") {
-          const animOpts = readScaleAnimationOptions(el);
-          if (animOpts.blockInteraction) {
-            el.dataset.animInteractionLocked = "true";
-            dialog.updateProps(getDialogUpdatePropsFromEl(el));
-            dialog.render();
-          }
-          const backdrop = el.querySelector(
-            '[data-scope="dialog"][data-part="backdrop"]'
-          );
-          const content = el.querySelector(
-            '[data-scope="dialog"][data-part="content"]'
-          );
-          const a1 = backdrop ? runScaleAnimation(backdrop, details.open, animOpts) : null;
-          const a2 = content ? runScaleAnimation(content, details.open, animOpts) : null;
-          const onDone = () => {
-            if (animOpts.blockInteraction) {
-              el.removeAttribute("data-anim-interaction-locked");
-              dialog.updateProps(getDialogUpdatePropsFromEl(el));
-              dialog.render();
-            }
-          };
-          const promises = [];
-          if (a1) promises.push(a1.finished);
-          if (a2) promises.push(a2.finished);
-          if (promises.length > 0) {
-            void Promise.all(promises).then(onDone, onDone);
-          } else {
-            onDone();
-          }
+        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+          runDialogScaleTransitions(el, details.open);
         }
       }
     });
@@ -1471,19 +1383,19 @@ var DialogHook = {
     });
   },
   updated() {
-    if (getBoolean(this.el, "controlled")) {
-      this.lastOpen = getBoolean(this.el, "open") ?? false;
+    const el = this.el;
+    const controlled = getBoolean(el, "controlled");
+    if (controlled) {
+      const nextOpen = getBoolean(el, "open") ?? false;
+      const prevOpen = this.lastOpen ?? false;
+      this.lastOpen = nextOpen;
+      if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
+        runDialogScaleTransitions(el, nextOpen);
+      }
     }
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(el));
   },
   destroyed() {
-    const self = this;
-    if (self.closePointerT !== void 0) {
-      clearTimeout(self.closePointerT);
-      self.closePointerT = void 0;
-    }
-    this.el.removeAttribute("data-exit-anim");
-    this.el.removeAttribute("data-anim-interaction-locked");
     this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();

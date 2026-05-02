@@ -4,7 +4,7 @@
 
 This guide walks through wiring **light/dark mode** into a Phoenix + Corex app. The result is a `data-mode="light"` or `data-mode="dark"` attribute on `<html>` that drives CSS (including the Corex Design `dark` variant) and a server-rendered initial value that matches what the user picked previously.
 
-If you ran `mix corex.new my_app --mode` (or `mix igniter.install corex --yes --mode`), the installer wrote everything below for you. Use this guide either to understand what that produced, or to wire it by hand without the installer.
+If you ran `mix corex.new my_app --mode`, the installer wrote everything below for you. Use this guide either to understand what that produced, or to wire it by hand in an existing app.
 
 For the underlying Corex install, see [Manual installation](manual_installation.html).
 

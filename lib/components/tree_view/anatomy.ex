@@ -207,6 +207,7 @@ defmodule Corex.TreeView.Anatomy do
       "id",
       "data-state",
       "hidden",
+      "style",
       "role"
     ]
     def ignored_attrs, do: @ignored_attrs

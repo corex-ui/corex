@@ -13,8 +13,8 @@ defmodule Corex.DialogTest do
       assert html =~ ~r/data-part="content"/
       assert html =~ ~r/Open/
       assert html =~ ~r/Dialog content/
-      assert html =~ ~r/data-animation="instant"/
-      refute html =~ "data-anim-scale-duration"
+      assert html =~ ~r/data-animation="js"/
+      assert html =~ "data-anim-scale-duration"
     end
   end
 
@@ -59,57 +59,100 @@ defmodule Corex.DialogTest do
     end
   end
 
-  describe "Connect.backdrop/1" do
-    test "returns backdrop attributes when open" do
+  describe "Connect.backdrop/2" do
+    test "returns backdrop attributes when open (instant)" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true}
-      result = Connect.backdrop(assigns)
+      result = Connect.backdrop(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:backdrop"
       assert result["data-part"] == "backdrop"
       refute Map.has_key?(result, "hidden")
     end
 
-    test "returns backdrop with hidden when closed" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "instant"}
-      result = Connect.backdrop(assigns)
+    test "returns backdrop with hidden when closed and animation is instant" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.backdrop(assigns, "instant")
       assert result["hidden"] == ""
+      assert result["data-state"] == "closed"
     end
 
-    test "returns backdrop with hidden when closed and animation is js" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "js"}
-      result = Connect.backdrop(assigns)
-      assert result["hidden"] == ""
+    test "omits hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.backdrop(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is custom" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.backdrop(assigns, "custom")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when open and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.backdrop(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "open"
     end
   end
 
   describe "Connect.positioner/1" do
-    test "returns positioner attributes" do
-      assigns = %{id: "test-dialog", dir: "ltr"}
+    test "returns positioner attributes when closed" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
       result = Connect.positioner(assigns)
       assert result["id"] == "dialog:test-dialog:positioner"
       assert result["data-part"] == "positioner"
+      assert result["data-state"] == "closed"
+      refute Map.has_key?(result, "style")
+      refute Map.has_key?(result, "hidden")
+    end
+
+    test "returns positioner attributes when open" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.positioner(assigns)
+      assert result["data-state"] == "open"
+      refute Map.has_key?(result, "style")
+      refute Map.has_key?(result, "hidden")
     end
   end
 
-  describe "Connect.content/1" do
-    test "returns content attributes when open" do
+  describe "Connect.content/2" do
+    test "returns content attributes when open (instant)" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true}
-      result = Connect.content(assigns)
+      result = Connect.content(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:content"
       assert result["role"] == "dialog"
       assert result["data-state"] == "open"
       refute Map.has_key?(result, "hidden")
     end
 
-    test "returns content with hidden when closed" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "instant"}
-      result = Connect.content(assigns)
+    test "returns content with hidden when closed and animation is instant" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.content(assigns, "instant")
       assert result["hidden"] == ""
+      assert result["data-state"] == "closed"
     end
 
-    test "returns content with hidden when closed and animation is js" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "js"}
-      result = Connect.content(assigns)
-      assert result["hidden"] == ""
+    test "omits hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.content(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is custom" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.content(assigns, "custom")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when open and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.content(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "open"
     end
   end
 

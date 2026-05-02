@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 Dashbit
-# Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/mcp/server.ex) tidewave v0.5.5
+# See LICENSE for third-party notices.
 # Modifications: Corex.MCP namespace; ETS :corex_mcp_tools; Corex.MCP.Tools.*; Corex
 #   serverInfo; init_tools (re)loads tool specs from raw_tools/0 on each call so metadata
 #   (e.g. readOnlyHint) and callbacks stay in sync with the current build.

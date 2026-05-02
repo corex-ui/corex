@@ -1,0 +1,15 @@
+defmodule <%= @web_module %>.Plugs.Path do
+  @moduledoc "Assigns locale-stripped :path from the request (after Localize.Plug)."
+
+  import Plug.Conn
+
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    path = <%= @web_module %>.Path.strip_after_locale(conn.request_path)
+
+    conn
+    |> assign(:path, path)
+    |> put_session(:path, path)
+  end
+end

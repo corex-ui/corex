@@ -55,7 +55,7 @@ mix phx.server
 Then visit:
 
 ```
-http://localhost:4005
+http://localhost:4000
 ```
 
 ## Try in production
@@ -75,7 +75,7 @@ MIX_ENV=prod mix assets.deploy
 MIX_ENV=prod mix phx.server
 ```
 
-Then open `http://localhost:4005`. Prod uses digested, minified assets (smaller `app.js` and chunks).
+Then open `http://localhost:4000`. Prod uses digested, minified assets (smaller `app.js` and chunks).
 
 ## Purpose
 

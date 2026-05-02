@@ -204,13 +204,14 @@ defmodule E2eWeb.AccordionPlayLive do
   end
 
   @impl true
+
   def render(assigns) do
     ~H"""
     <Layouts.app
       flash={@flash}
+      path={@path}
       mode={@mode}
       theme={@theme}
-      path={@path}
     >
       <.demo_playground
         title="Accordion · Playground"
@@ -249,6 +250,7 @@ defmodule E2eWeb.AccordionPlayLive do
             items={@disabled_select_items}
             on_value_change="disabled_items_changed"
             translation={%Corex.Select.Translation{placeholder: "Select items"}}
+            positioning={%Corex.Positioning{same_width: true}}
           >
             <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Disabled items</:label>
@@ -280,6 +282,7 @@ defmodule E2eWeb.AccordionPlayLive do
             items={@accordion_color_items}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Color"}}
+            positioning={%Corex.Positioning{same_width: true}}
           >
             <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Color</:label>
@@ -293,6 +296,7 @@ defmodule E2eWeb.AccordionPlayLive do
             items={@accordion_size_items}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Size"}}
+            positioning={%Corex.Positioning{same_width: true}}
           >
             <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
             <:label>Size</:label>

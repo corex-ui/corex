@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 Dashbit
-# Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/router.ex); Corex names, Json, :corex_mcp_config.
+# See LICENSE for third-party notices.
 
 defmodule Corex.MCP.Router do
   @moduledoc false

@@ -1,38 +1,116 @@
 {
   "theme": {
-    "spacing": {
-      "default": { "value": "0.25rem", "type": "dimension" },
-      "space": {
-        "sm": { "value": "calc({theme.spacing.default} * 1)", "type": "dimension" },
-        "md": { "value": "calc({theme.spacing.default} * 2)", "type": "dimension" },
-        "lg": { "value": "calc({theme.spacing.default} * 3)", "type": "dimension" },
-        "xl": { "value": "calc({theme.spacing.default} * 4)", "type": "dimension" }
+    "container": {
+      "2xl": {
+        "type": "dimension",
+        "value": "41.16rem"
       },
-      "size": {
-        "sm": { "value": "calc({theme.spacing.default} * 7)", "type": "dimension" },
-        "md": { "value": "calc({theme.spacing.default} * 9)", "type": "dimension" },
-        "lg": { "value": "calc({theme.spacing.default} * 11)", "type": "dimension" },
-        "xl": { "value": "calc({theme.spacing.default} * 13)", "type": "dimension" }
+      "2xs": {
+        "type": "dimension",
+        "value": "17.64rem"
+      },
+      "3xl": {
+        "type": "dimension",
+        "value": "47.04rem"
+      },
+      "3xs": {
+        "type": "dimension",
+        "value": "15.68rem"
+      },
+      "4xl": {
+        "type": "dimension",
+        "value": "54.88rem"
+      },
+      "4xs": {
+        "type": "dimension",
+        "value": "11.76rem"
+      },
+      "5xl": {
+        "type": "dimension",
+        "value": "62.72rem"
+      },
+      "5xs": {
+        "type": "dimension",
+        "value": "9.8rem"
+      },
+      "6xl": {
+        "type": "dimension",
+        "value": "70.56rem"
+      },
+      "6xs": {
+        "type": "dimension",
+        "value": "7.84rem"
+      },
+      "7xl": {
+        "type": "dimension",
+        "value": "78.4rem"
+      },
+      "7xs": {
+        "type": "dimension",
+        "value": "5.88rem"
+      },
+      "lg": {
+        "type": "dimension",
+        "value": "31.36rem"
+      },
+      "md": {
+        "type": "dimension",
+        "value": "27.44rem"
+      },
+      "sm": {
+        "type": "dimension",
+        "value": "23.52rem"
+      },
+      "xl": {
+        "type": "dimension",
+        "value": "35.28rem"
+      },
+      "xs": {
+        "type": "dimension",
+        "value": "19.6rem"
       }
     },
-    "container": {
-      "7xs": { "value": "5.52rem", "type": "dimension" },
-      "6xs": { "value": "7.36rem", "type": "dimension" },
-      "5xs": { "value": "9.2rem", "type": "dimension" },
-      "4xs": { "value": "11.04rem", "type": "dimension" },
-      "3xs": { "value": "14.72rem", "type": "dimension" },
-      "2xs": { "value": "16.56rem", "type": "dimension" },
-      "xs": { "value": "18.4rem", "type": "dimension" },
-      "sm": { "value": "22.08rem", "type": "dimension" },
-      "md": { "value": "25.76rem", "type": "dimension" },
-      "lg": { "value": "29.44rem", "type": "dimension" },
-      "xl": { "value": "33.12rem", "type": "dimension" },
-      "2xl": { "value": "38.64rem", "type": "dimension" },
-      "3xl": { "value": "44.16rem", "type": "dimension" },
-      "4xl": { "value": "51.52rem", "type": "dimension" },
-      "5xl": { "value": "58.88rem", "type": "dimension" },
-      "6xl": { "value": "66.24rem", "type": "dimension" },
-      "7xl": { "value": "73.6rem", "type": "dimension" }
+    "spacing": {
+      "default": {
+        "type": "dimension",
+        "value": "0.23rem"
+      },
+      "size": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 12)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 10)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 8)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 14)"
+        }
+      },
+      "space": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 4)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 3)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 2)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 5)"
+        }
+      }
     }
   }
 }

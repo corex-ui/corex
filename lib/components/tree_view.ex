@@ -290,7 +290,6 @@ defmodule Corex.TreeView do
    ```javascript
    import { animate } from "motion"
    import {
-     initCustomCollections,
      findTreeBranch,
      animateHeightOpen,
      animateHeightClose,
@@ -298,9 +297,6 @@ defmodule Corex.TreeView do
 
    const reducedMotion = () =>
      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-   document.addEventListener("DOMContentLoaded", initCustomCollections)
-   window.addEventListener("phx:page-loading-stop", initCustomCollections)
 
    document.addEventListener("my-tree-expanded", (e) => {
      const root = document.getElementById(e.detail.id)
@@ -421,7 +417,6 @@ defmodule Corex.TreeView do
    </.tree_view>
    ```
 
-   See [Corex Design — Tree View](https://corex-ui.com/components/tree-view#modifiers).
 
   '''
 
@@ -612,7 +607,12 @@ defmodule Corex.TreeView do
       {if @compound do render_slot(@inner_block, @ctx) end}
 
       <div :if={not @compound} phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
-        <div :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
+        <div
+          :if={@label != []}
+          class={Map.get(List.first(@label), :class, nil)}
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
+          {Connect.label(%Label{id: @id, dir: @dir})}
+        >
           {render_slot(@label)}
         </div>
         <div phx-mounted={Connect.ignore_tree(%Props{id: @id, dir: @dir})} {Connect.tree(%Props{id: @id, dir: @dir})}>
@@ -754,7 +754,12 @@ defmodule Corex.TreeView do
 
     ~H"""
     <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
-      <h3 :if={@label != []} phx-mounted={Connect.ignore_label(@label_assigns)} {Connect.label(@label_assigns)}>
+      <h3
+        :if={@label != []}
+        class={Map.get(List.first(@label), :class, nil)}
+        phx-mounted={Connect.ignore_label(@label_assigns)}
+        {Connect.label(@label_assigns)}
+      >
         {render_slot(@label)}
       </h3>
       <div phx-mounted={Connect.ignore_tree(%Props{id: @ctx.id, dir: @ctx.dir})} {Connect.tree(%Props{id: @ctx.id, dir: @ctx.dir})}>
