@@ -25,20 +25,19 @@ defmodule E2eWeb.AngleSliderModel do
 
   def set_angle_value(session, value, mode \\ :static) do
     value_str = to_string(value)
+    value_float = value * 1.0
 
     script =
       case mode do
         :static ->
-          field_id = "angle-slider-form-angle"
-          input_id = "angle-slider:#{field_id}:input"
-
           """
           (function() {
-            var el = document.getElementById(#{Jason.encode!(input_id)});
+            var el = document.getElementById(#{Jason.encode!("angle-slider-form-angle")});
             if (!el) return;
-            el.value = #{Jason.encode!(value_str)};
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new CustomEvent('corex:angle-slider:set-value', {
+              detail: { value: #{Jason.encode!(value_float)} },
+              bubbles: false
+            }));
           })();
           """
 

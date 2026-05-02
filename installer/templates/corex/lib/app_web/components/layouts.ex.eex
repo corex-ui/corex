@@ -103,8 +103,8 @@ defmodule <%= @web_module %>.Layouts do
     </footer>
 
     <.toast_group id="layout-toast" class="toast" flash={@flash}>
-      <:loading>Loading…</:loading>
-      <:close>Close</:close>
+      <:loading><.heroicon name="hero-arrow-path" class="icon" /></:loading>
+      <:close><.heroicon name="hero-x-mark" class="icon" /></:close>
     </.toast_group>
     <.toast_client_error
       toast_group_id="layout-toast"
