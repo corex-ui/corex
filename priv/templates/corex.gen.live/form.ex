@@ -16,8 +16,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
-    <% else %><Layouts.app flash={@flash}>
-    <% end %>
+    <% else %><Layouts.app flash={@flash}><% end %>
       <.layout_heading class="layout-heading">
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>

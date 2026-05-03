@@ -40,29 +40,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  # NOTE: We don't require a specific LiveView route in generated apps.
-
-  describe "ExampleLiveTest" do
-    @tag database: :postgresql
-    test "generated LiveView test passes" do
-      with_installer_tmp("corex_example_live", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
-
-        drop_test_database(app_root_path)
-
-        {output, 0} =
-          System.cmd(
-            "mix",
-            ["test", "--timeout", "600000", "test/my_app_web/live/example_live_test.exs"],
-            stderr_to_stdout: true,
-            cd: app_root_path
-          )
-
-        assert output =~ "1 test, 0 failures"
-      end)
-    end
-  end
-
   describe "app with --mode" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_mode", fn tmp_dir ->

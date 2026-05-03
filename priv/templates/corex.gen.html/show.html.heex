@@ -7,8 +7,7 @@
   current_path={@current_path}<% end %><%= if scope do %>
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
-<% else %><Layouts.app flash={@flash}>
-<% end %>
+<% else %><Layouts.app flash={@flash}><% end %>
   <.layout_heading class="layout-heading">
     <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
