@@ -181,6 +181,8 @@ end
 
 **`mix corex.new --lang`** also duplicates the **`scope "/"`** block into **`scope "/:locale"`** so helpers and scopes match localized URLs — inspect your generated **`router.ex`** for the exact pattern.
 
+With the default **`Phoenix.VerifiedRoutes`** setup (no locale **`path_prefixes`**; see **§3** above), **`~p`** expects paths **without** a leading locale segment (for example **`~p"/users/#{user}"`**). Routes must therefore exist under **`scope "/", …`** as well as under **`scope "/:locale", …`**. After **`mix corex.gen.live`**, **`mix corex.gen.html`**, or any manual **`router.ex`** edit, add **`live`**, **`resources`**, and other browser routes in **both** scopes so **`/:locale/...`** URLs and verified paths stay aligned. If you adopt **`path_prefixes`** so **`~p`** includes the locale, you can consolidate on a single localized scope instead — confirm behavior with [**Phoenix.VerifiedRoutes**](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+
 Visiting **`/`** redirects to **`/en`** (or whichever locale the resolver picked). To localize more routes, put them inside the same **`localize do … end`** block, or open additional ones inside their scopes.
 
 ## 5. Create `MyAppWeb.Locale`
