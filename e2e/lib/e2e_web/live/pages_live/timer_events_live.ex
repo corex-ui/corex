@@ -55,7 +55,8 @@ defmodule E2eWeb.TimerEventsLive do
 
   @impl true
   def handle_event("timer_complete_client", %{"id" => id}, socket) do
-    {:noreply, stream_insert(socket, :client_logs, new_log("on_complete_client", id, "done"), at: 0)}
+    {:noreply,
+     stream_insert(socket, :client_logs, new_log("on_complete_client", id, "done"), at: 0)}
   end
 
   @impl true

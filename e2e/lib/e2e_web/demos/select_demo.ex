@@ -509,13 +509,25 @@ defmodule E2eWeb.Demos.SelectDemo do
   def styling_mix_modifiers_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full items-start">
-      <.select id="select-style-mix-1" class="select select--sm select--brand max-w-2xs" items={items()}>
+      <.select
+        id="select-style-mix-1"
+        class="select select--sm select--brand max-w-2xs"
+        items={items()}
+      >
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
-      <.select id="select-style-mix-2" class="select select--lg select--accent max-w-md" items={items()}>
+      <.select
+        id="select-style-mix-2"
+        class="select select--lg select--accent max-w-md"
+        items={items()}
+      >
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
-      <.select id="select-style-mix-3" class="select select--sm select--rounded-lg select--alert max-w-lg" items={items()}>
+      <.select
+        id="select-style-mix-3"
+        class="select select--sm select--rounded-lg select--alert max-w-lg"
+        items={items()}
+      >
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
     </div>

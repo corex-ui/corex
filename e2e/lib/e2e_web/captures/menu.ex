@@ -25,11 +25,10 @@ defmodule CorexWeb.Menu do
       id: "corex",
       label: "Corex",
       children: [
-        %Item{
-          id: "corex-menu",
-          label: "Menu",
-          children: @items_minimal
-        }
+        %Item{id: "combobox", label: "Combobox"},
+        %Item{id: "date-picker", label: "Date picker"},
+        %Item{id: "menu", label: "Menu"},
+        %Item{id: "dialog", label: "Dialog"}
       ]
     },
     %Item{id: "tabs", label: "Tabs"}

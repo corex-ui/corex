@@ -12,8 +12,7 @@ defmodule E2eWeb.ToastApiLive do
 
   @impl true
   def handle_event("toast_api_push_info", _params, socket) do
-    {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "Info", "From server", :info, 5000)}
+    {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "Info", "From server", :info, 5000)}
   end
 
   @impl true

@@ -71,9 +71,7 @@ defmodule E2eWeb.SwitchModel do
     case mode do
       :live ->
         session
-        |> assert_has(
-          css("#switch-live-form-changeset [phx-hook='Switch']:not([data-loading])")
-        )
+        |> assert_has(css("#switch-live-form-changeset [phx-hook='Switch']:not([data-loading])"))
         |> click(css("#switch-live-form-changeset #switch-form-live-submit"))
 
       _ ->

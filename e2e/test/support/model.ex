@@ -172,8 +172,7 @@ defmodule E2eWeb.Model do
 
           {:error, _} ->
             raise Wallaby.ExpectationNotMetError,
-              message:
-                "expected #layout-toast textContent to include #{inspect(substring)}"
+              message: "expected #layout-toast textContent to include #{inspect(substring)}"
         end
       end
 

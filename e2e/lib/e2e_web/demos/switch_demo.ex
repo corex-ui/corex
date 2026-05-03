@@ -165,7 +165,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
         <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">
           On
         </.action>
-        <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">
+        <.action
+          phx-click={Corex.Switch.set_checked("switch-api-cb", false)}
+          class="button button--sm"
+        >
           Off
         </.action>
         <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">

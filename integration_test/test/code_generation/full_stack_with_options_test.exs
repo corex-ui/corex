@@ -31,13 +31,14 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
         )
 
         live_routes =
-          """
-            live "/admins", AdminLive.Index, :index
-            live "/admins/new", AdminLive.Form, :new
-            live "/admins/:id", AdminLive.Show, :show
-            live "/admins/:id/edit", AdminLive.Form, :edit
-          """
-          |> String.replace(~r/^            /m, "      ")
+          [
+            "    live \"/admins\", AdminLive.Index, :index",
+            "    live \"/admins/new\", AdminLive.Form, :new",
+            "    live \"/admins/:id\", AdminLive.Show, :show",
+            "    live \"/admins/:id/edit\", AdminLive.Form, :edit"
+          ]
+          |> Enum.join("\n")
+          |> Kernel.<>("\n")
 
         inject_live_routes(router_path, live_routes, locale_scope: true)
 

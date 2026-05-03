@@ -56,8 +56,18 @@ defmodule E2eWeb.PasswordInputApiLive do
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
             %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_binding_elixir()},
-            %{value: "initial", label: "Initial visible", language: :heex, code: Demo.api_initial_heex()},
-            %{value: "initial_elixir", label: "Initial Elixir", language: :elixir, code: Demo.api_initial_elixir()}
+            %{
+              value: "initial",
+              label: "Initial visible",
+              language: :heex,
+              code: Demo.api_initial_heex()
+            },
+            %{
+              value: "initial_elixir",
+              label: "Initial Elixir",
+              language: :elixir,
+              code: Demo.api_initial_elixir()
+            }
           ]}
         >
           <:preview><Demo.api_binding_example /></:preview>

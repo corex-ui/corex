@@ -12,8 +12,49 @@ type MenuHookState = {
   handlers?: Array<CallbackRef>;
   onSetOpen?: (event: Event) => void;
   onSubmenuItemClick?: (event: Event) => void;
-  nestedMenus?: Map<string, Menu>;
 };
+
+function findImmediateParentMenuHookEl(nestedEl: HTMLElement): HTMLElement | null {
+  let node: HTMLElement | null = nestedEl.parentElement;
+  while (node) {
+    if (node.getAttribute("phx-hook") === "Menu") {
+      return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+
+function wireSubmenuTriggersDeep(menu: Menu): void {
+  menu.renderSubmenuTriggers();
+  for (const child of menu.children) {
+    wireSubmenuTriggersDeep(child);
+  }
+}
+
+function syncMenuPropsFromDom(menu: Menu): void {
+  const hookEl = menu.el;
+  menu.updateProps({
+    id: hookEl.id.replace(/^menu:/, ""),
+    closeOnSelect: getBoolean(hookEl, "closeOnSelect"),
+    loopFocus: getBoolean(hookEl, "loopFocus"),
+    typeahead: getBoolean(hookEl, "typeahead"),
+    composite: getBoolean(hookEl, "composite"),
+    defaultHighlightedValue: getString(hookEl, "defaultHighlightedValue"),
+    dir: getDir(hookEl),
+    positioning: readPositioningOptions(hookEl),
+  } as Props);
+  for (const child of menu.children) {
+    syncMenuPropsFromDom(child);
+  }
+}
+
+function destroyDescendantMenus(menu: Menu): void {
+  for (const child of [...menu.children]) {
+    destroyDescendantMenus(child);
+    child.destroy();
+  }
+}
 
 const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & MenuHookState) {
@@ -57,7 +98,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     };
 
     const menu = new Menu(el, {
-      id: el.id.replace("menu:", ""),
+      id: el.id.replace(/^menu:/, ""),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       loopFocus: getBoolean(el, "loopFocus"),
       typeahead: getBoolean(el, "typeahead"),
@@ -92,43 +133,48 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     menu.init();
     this.menu = menu;
 
-    this.nestedMenus = new Map();
     const nestedMenuElements = el.querySelectorAll<HTMLElement>(
       '[data-scope="menu"][data-nested="menu"]'
     );
 
+    const menuByHookId = new Map<string, Menu>();
     const nestedMenuInstances: Menu[] = [];
-    nestedMenuElements.forEach((nestedEl, index) => {
-      const nestedId = nestedEl.id;
-      if (nestedId) {
-        const nestedMenuId = `${nestedId}-${index}`;
-        const nestedMenu = new Menu(nestedEl, {
-          id: nestedMenuId,
-          dir: getDir(nestedEl),
-          closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
-          loopFocus: getBoolean(nestedEl, "loopFocus"),
-          typeahead: getBoolean(nestedEl, "typeahead"),
-          composite: getBoolean(nestedEl, "composite"),
-          positioning: readPositioningOptions(nestedEl),
-          onSelect: buildOnSelect(),
-        });
 
-        nestedMenu.init();
-        this.nestedMenus?.set(nestedId, nestedMenu);
-        nestedMenuInstances.push(nestedMenu);
-      }
+    nestedMenuElements.forEach((nestedEl) => {
+      const hookId = nestedEl.id;
+      if (!hookId) return;
+
+      const nestedMenu = new Menu(nestedEl, {
+        id: hookId.replace(/^menu:/, ""),
+        dir: getDir(nestedEl),
+        closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
+        loopFocus: getBoolean(nestedEl, "loopFocus"),
+        typeahead: getBoolean(nestedEl, "typeahead"),
+        composite: getBoolean(nestedEl, "composite"),
+        positioning: readPositioningOptions(nestedEl),
+        onSelect: buildOnSelect(),
+      });
+
+      nestedMenu.init();
+      menuByHookId.set(hookId, nestedMenu);
+      nestedMenuInstances.push(nestedMenu);
     });
 
     setTimeout(() => {
       nestedMenuInstances.forEach((nestedMenu) => {
-        if (this.menu) {
-          this.menu.setChild(nestedMenu);
-          nestedMenu.setParent(this.menu);
-        }
+        const nestedEl = nestedMenu.el;
+        const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
+        if (!parentHookEl) return;
+
+        const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+        if (!parentMenu) return;
+
+        parentMenu.setChild(nestedMenu);
+        nestedMenu.setParent(parentMenu);
       });
 
       if (this.menu && this.menu.children.length > 0) {
-        this.menu.renderSubmenuTriggers();
+        wireSubmenuTriggersDeep(this.menu);
       }
     }, 0);
 
@@ -160,17 +206,13 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & MenuHookState) {
     if (this.el.hasAttribute("data-nested")) return;
+    if (!this.menu) return;
 
-    this.menu?.updateProps({
-      id: this.el.id,
-      closeOnSelect: getBoolean(this.el, "closeOnSelect"),
-      loopFocus: getBoolean(this.el, "loopFocus"),
-      typeahead: getBoolean(this.el, "typeahead"),
-      composite: getBoolean(this.el, "composite"),
-      defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
-      dir: getDir(this.el),
-      positioning: readPositioningOptions(this.el),
-    } as Props);
+    syncMenuPropsFromDom(this.menu);
+
+    if (this.menu.children.length > 0) {
+      wireSubmenuTriggersDeep(this.menu);
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & MenuHookState) {
@@ -186,13 +228,10 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       }
     }
 
-    if (this.nestedMenus) {
-      for (const [, nestedMenu] of this.nestedMenus) {
-        nestedMenu.destroy();
-      }
+    if (this.menu) {
+      destroyDescendantMenus(this.menu);
+      this.menu.destroy();
     }
-
-    this.menu?.destroy();
   },
 };
 

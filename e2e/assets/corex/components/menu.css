@@ -19,9 +19,24 @@
   .menu [data-scope="menu"][data-part="trigger"] {
     @apply ui-trigger;
 
+    justify-content: space-between;
+    width: 100%;
     margin-inline-end: --spacing(4);
     border: none;
     min-width: var(--container-7xs);
+  }
+
+  .menu [data-scope="menu"][data-part="trigger"] > :not([data-part="indicator"]) {
+    flex: 1 1 0%;
+    min-width: 0;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .menu [data-scope="menu"][data-part="trigger"] > [data-part="indicator"] {
+    flex-shrink: 0;
   }
 
   .menu [data-scope="menu"][data-part="context-trigger"] {
@@ -54,6 +69,132 @@
   .menu [data-scope="menu"][data-part="trigger-item"] {
     @apply ui-item;
 
-    min-width: var(--container-7xs);
+    min-width: 0;
+  }
+
+  .menu [data-scope="menu"][data-part="item"] [data-part="item-indicator"],
+  .menu [data-scope="menu"][data-part="trigger-item"] [data-part="item-indicator"] {
+    transition: none !important;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    text-align: start;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] {
+    @apply ui-icon;
+
+    flex-shrink: 0;
+  }
+
+  .menu [data-scope="menu"][data-part="indicator"] [class^="hero-"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [class^="hero-"] {
+    transition: none !important;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item"] > [data-part="item-indicator"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="trigger-item"] > [data-part="item-indicator"],
+  .menu [data-scope="menu"] [data-part="item"][data-state="open"] > [data-part="item-indicator"],
+  .menu [data-scope="menu"] [data-part="item-indicator"][data-state="open"],
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="trigger-item"][data-state="open"]
+    > [data-part="item-indicator"] {
+    transform: none !important;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item-indicator"] [class^="hero-"],
+  .menu [data-scope="menu"][data-part="content"] [data-part="item"] > [data-part="item-indicator"] [class^="hero-"],
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="trigger-item"]
+    > [data-part="item-indicator"]
+    [class^="hero-"] {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .menu [data-scope="menu"][data-part="content"][dir="rtl"] [data-part="item-indicator"] [class^="hero-"],
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="item"][dir="rtl"]
+    > [data-part="item-indicator"]
+    [class^="hero-"],
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="trigger-item"][dir="rtl"]
+    > [data-part="item-indicator"]
+    [class^="hero-"],
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="item-indicator"][dir="rtl"]
+    [class^="hero-"] {
+    transform: scaleX(-1) !important;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="trigger-item"] {
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .menu [data-scope="menu"][data-part="content"] [data-part="item"]:has(> div:has([data-nested="menu"])),
+  .menu [data-scope="menu"][data-part="content"] [data-part="trigger-item"]:has(> div:has([data-nested="menu"])) {
+    position: relative;
+  }
+
+  .menu [data-scope="menu"][data-part="content"]:not([dir="rtl"]) [data-part="item"] > div:has([data-nested="menu"]),
+  .menu
+    [data-scope="menu"][data-part="content"]:not([dir="rtl"])
+    [data-part="trigger-item"]
+    > div:has([data-nested="menu"]) {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    min-width: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .menu [data-scope="menu"][data-part="content"][dir="rtl"] [data-part="item"] > div:has([data-nested="menu"]),
+  .menu
+    [data-scope="menu"][data-part="content"][dir="rtl"]
+    [data-part="trigger-item"]
+    > div:has([data-nested="menu"]) {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    min-width: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="item"]
+    > div:has([data-nested="menu"])
+    *,
+  .menu
+    [data-scope="menu"][data-part="content"]
+    [data-part="trigger-item"]
+    > div:has([data-nested="menu"])
+    * {
+    pointer-events: auto;
   }
 }

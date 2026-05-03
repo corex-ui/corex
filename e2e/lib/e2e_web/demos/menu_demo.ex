@@ -98,15 +98,10 @@ defmodule E2eWeb.Demos.MenuDemo do
           id: "corex",
           label: "Corex",
           children: [
-            %Corex.Tree.Item{
-              id: "corex-menu",
-              label: "Menu",
-              children: [
-                %Corex.Tree.Item{id: "menu", label: "Menu"},
-                %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-                %Corex.Tree.Item{id: "select", label: "Select"}
-              ]
-            }
+            %Corex.Tree.Item{id: "combobox", label: "Combobox"},
+            %Corex.Tree.Item{id: "date-picker", label: "Date picker"},
+            %Corex.Tree.Item{id: "menu", label: "Menu"},
+            %Corex.Tree.Item{id: "dialog", label: "Dialog"}
           ]
         },
         %Corex.Tree.Item{id: "tabs", label: "Tabs"}
@@ -129,13 +124,7 @@ defmodule E2eWeb.Demos.MenuDemo do
         %Corex.Tree.Item{
           id: "corex",
           label: "Corex",
-          children: [
-            %Corex.Tree.Item{
-              id: "corex-menu",
-              label: "Menu",
-              children: demo_leaf_items()
-            }
-          ]
+          children: demo_nested_flat_children()
         },
         %Corex.Tree.Item{id: "tabs", label: "Tabs"}
       ]}
@@ -156,6 +145,15 @@ defmodule E2eWeb.Demos.MenuDemo do
       %Corex.Tree.Item{id: "date-picker", label: "Date picker", group: "Pickers"},
       %Corex.Tree.Item{id: "menu", label: "Menu", group: "Overlays"},
       %Corex.Tree.Item{id: "dialog", label: "Dialog", group: "Overlays"}
+    ]
+  end
+
+  def demo_nested_flat_children do
+    [
+      %Corex.Tree.Item{id: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{id: "date-picker", label: "Date picker"},
+      %Corex.Tree.Item{id: "menu", label: "Menu"},
+      %Corex.Tree.Item{id: "dialog", label: "Dialog"}
     ]
   end
 

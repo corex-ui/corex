@@ -316,7 +316,7 @@ defmodule Corex.Menu do
   )
 
   attr(:positioning, Positioning,
-    default: %Positioning{},
+    default: %Positioning{slide: false},
     doc: "Floating UI positioning (placement, gutter, flip, etc.)"
   )
 
@@ -505,6 +505,7 @@ defmodule Corex.Menu do
                   :if={item.children != [] && item.children != nil && @nested_indicator != []}
                   data-scope="menu"
                   data-part="item-indicator"
+                  dir={@dir}
                 >
                   {render_slot(@nested_indicator)}
                 </span>
@@ -546,6 +547,7 @@ defmodule Corex.Menu do
                 :if={item.children != [] && item.children != nil && @nested_indicator != []}
                 data-scope="menu"
                 data-part="item-indicator"
+                dir={@dir}
               >
                 {render_slot(@nested_indicator)}
               </span>
@@ -661,6 +663,7 @@ defmodule Corex.Menu do
                   :if={nitem.children != [] && nitem.children != nil && @nested_indicator != []}
                   data-scope="menu"
                   data-part="item-indicator"
+                  dir={@dir}
                 >
                   {render_slot(@nested_indicator)}
                 </span>
@@ -702,6 +705,7 @@ defmodule Corex.Menu do
                 :if={nitem.children != [] && nitem.children != nil && @nested_indicator != []}
                 data-scope="menu"
                 data-part="item-indicator"
+                dir={@dir}
               >
                 {render_slot(@nested_indicator)}
               </span>

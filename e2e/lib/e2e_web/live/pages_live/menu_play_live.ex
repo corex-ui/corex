@@ -89,13 +89,7 @@ defmodule E2eWeb.MenuPlayLive do
               %Corex.Tree.Item{
                 id: "corex",
                 label: "Corex",
-                children: [
-                  %Corex.Tree.Item{
-                    id: "corex-menu",
-                    label: "Menu",
-                    children: E2eWeb.Demos.MenuDemo.demo_leaf_items()
-                  }
-                ]
+                children: E2eWeb.Demos.MenuDemo.demo_nested_flat_children()
               },
               %Corex.Tree.Item{id: "tabs", label: "Tabs"}
             ]}

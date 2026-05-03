@@ -29,7 +29,12 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_basic_example(assigns) do
     ~H"""
-    <.tabs id="tabs-basic" class="tabs w-full max-w-md" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <.tabs
+      id="tabs-basic"
+      class="tabs w-full max-w-md"
+      value="lorem"
+      items={E2eWeb.Demos.TabsDemo.basic_items()}
+    />
     """
   end
 

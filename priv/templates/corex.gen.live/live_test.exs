@@ -56,7 +56,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid =
         form_live
-        |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs)
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs)
         |> render_change()
 
       assert html_invalid =~ <%= inspect(validation_hint) %> or
@@ -67,7 +67,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -89,7 +89,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid_edit =
         form_live
-        |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
         |> render_change()
 
       assert html_invalid_edit =~ <%= inspect(validation_hint) %> or
@@ -100,7 +100,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -140,7 +140,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid_show =
         form_live
-        |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
         |> render_change()
 
       assert html_invalid_show =~ <%= inspect(validation_hint) %> or
@@ -151,7 +151,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert {:ok, show_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}")
 

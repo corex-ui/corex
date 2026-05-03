@@ -26356,6 +26356,44 @@ var Corex = (() => {
       }
     };
   }
+  function findImmediateParentMenuHookEl(nestedEl) {
+    let node = nestedEl.parentElement;
+    while (node) {
+      if (node.getAttribute("phx-hook") === "Menu") {
+        return node;
+      }
+      node = node.parentElement;
+    }
+    return null;
+  }
+  function wireSubmenuTriggersDeep(menu) {
+    menu.renderSubmenuTriggers();
+    for (const child of menu.children) {
+      wireSubmenuTriggersDeep(child);
+    }
+  }
+  function syncMenuPropsFromDom(menu) {
+    const hookEl = menu.el;
+    menu.updateProps({
+      id: hookEl.id.replace(/^menu:/, ""),
+      closeOnSelect: getBoolean(hookEl, "closeOnSelect"),
+      loopFocus: getBoolean(hookEl, "loopFocus"),
+      typeahead: getBoolean(hookEl, "typeahead"),
+      composite: getBoolean(hookEl, "composite"),
+      defaultHighlightedValue: getString(hookEl, "defaultHighlightedValue"),
+      dir: getDir(hookEl),
+      positioning: readPositioningOptions(hookEl)
+    });
+    for (const child of menu.children) {
+      syncMenuPropsFromDom(child);
+    }
+  }
+  function destroyDescendantMenus(menu) {
+    for (const child of [...menu.children]) {
+      destroyDescendantMenus(child);
+      child.destroy();
+    }
+  }
   var anatomy16, parts16, clsx, CSS_REGEX, serialize, css, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
@@ -27538,7 +27576,7 @@ var Corex = (() => {
             }
           };
           const menu = new Menu(el, {
-            id: el.id.replace("menu:", ""),
+            id: el.id.replace(/^menu:/, ""),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             loopFocus: getBoolean(el, "loopFocus"),
             typeahead: getBoolean(el, "typeahead"),
@@ -27572,40 +27610,40 @@ var Corex = (() => {
           });
           menu.init();
           this.menu = menu;
-          this.nestedMenus = /* @__PURE__ */ new Map();
           const nestedMenuElements = el.querySelectorAll(
             '[data-scope="menu"][data-nested="menu"]'
           );
+          const menuByHookId = /* @__PURE__ */ new Map();
           const nestedMenuInstances = [];
-          nestedMenuElements.forEach((nestedEl, index) => {
-            var _a4;
-            const nestedId = nestedEl.id;
-            if (nestedId) {
-              const nestedMenuId = `${nestedId}-${index}`;
-              const nestedMenu = new Menu(nestedEl, {
-                id: nestedMenuId,
-                dir: getDir(nestedEl),
-                closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
-                loopFocus: getBoolean(nestedEl, "loopFocus"),
-                typeahead: getBoolean(nestedEl, "typeahead"),
-                composite: getBoolean(nestedEl, "composite"),
-                positioning: readPositioningOptions(nestedEl),
-                onSelect: buildOnSelect()
-              });
-              nestedMenu.init();
-              (_a4 = this.nestedMenus) == null ? void 0 : _a4.set(nestedId, nestedMenu);
-              nestedMenuInstances.push(nestedMenu);
-            }
+          nestedMenuElements.forEach((nestedEl) => {
+            const hookId = nestedEl.id;
+            if (!hookId) return;
+            const nestedMenu = new Menu(nestedEl, {
+              id: hookId.replace(/^menu:/, ""),
+              dir: getDir(nestedEl),
+              closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
+              loopFocus: getBoolean(nestedEl, "loopFocus"),
+              typeahead: getBoolean(nestedEl, "typeahead"),
+              composite: getBoolean(nestedEl, "composite"),
+              positioning: readPositioningOptions(nestedEl),
+              onSelect: buildOnSelect()
+            });
+            nestedMenu.init();
+            menuByHookId.set(hookId, nestedMenu);
+            nestedMenuInstances.push(nestedMenu);
           });
           setTimeout(() => {
             nestedMenuInstances.forEach((nestedMenu) => {
-              if (this.menu) {
-                this.menu.setChild(nestedMenu);
-                nestedMenu.setParent(this.menu);
-              }
+              const nestedEl = nestedMenu.el;
+              const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
+              if (!parentHookEl) return;
+              const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+              if (!parentMenu) return;
+              parentMenu.setChild(nestedMenu);
+              nestedMenu.setParent(parentMenu);
             });
             if (this.menu && this.menu.children.length > 0) {
-              this.menu.renderSubmenuTriggers();
+              wireSubmenuTriggersDeep(this.menu);
             }
           }, 0);
           this.onSetOpen = (event) => {
@@ -27631,21 +27669,14 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a4;
           if (this.el.hasAttribute("data-nested")) return;
-          (_a4 = this.menu) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            closeOnSelect: getBoolean(this.el, "closeOnSelect"),
-            loopFocus: getBoolean(this.el, "loopFocus"),
-            typeahead: getBoolean(this.el, "typeahead"),
-            composite: getBoolean(this.el, "composite"),
-            defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
-            dir: getDir(this.el),
-            positioning: readPositioningOptions(this.el)
-          });
+          if (!this.menu) return;
+          syncMenuPropsFromDom(this.menu);
+          if (this.menu.children.length > 0) {
+            wireSubmenuTriggersDeep(this.menu);
+          }
         },
         destroyed() {
-          var _a4;
           if (this.el.hasAttribute("data-nested")) return;
           if (this.onSetOpen) {
             this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
@@ -27655,12 +27686,10 @@ var Corex = (() => {
               this.removeHandleEvent(handler);
             }
           }
-          if (this.nestedMenus) {
-            for (const [, nestedMenu] of this.nestedMenus) {
-              nestedMenu.destroy();
-            }
+          if (this.menu) {
+            destroyDescendantMenus(this.menu);
+            this.menu.destroy();
           }
-          (_a4 = this.menu) == null ? void 0 : _a4.destroy();
         }
       };
     }
