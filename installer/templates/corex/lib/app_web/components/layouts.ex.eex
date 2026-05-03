@@ -160,6 +160,7 @@ defmodule <%= @web_module %>.Layouts do
         %{id: "leo", label: "Leo"}
       ]}
       value={[@theme]}
+      positioning={%Corex.Positioning{same_width: false}}
       on_value_change_client="phx:set-theme"
     >
       <:label class="sr-only">

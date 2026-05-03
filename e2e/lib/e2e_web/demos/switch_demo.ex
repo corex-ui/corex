@@ -622,10 +622,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
       {:ok, assign(socket, :form, form)}
     end
 
-    def handle_event("validate", %{"preferences" => params}, socket) do
+    def handle_event("validate", %{"preferences" => prefs}, socket) do
       changeset =
         %E2e.Form.Preferences{}
-        |> E2e.Form.Preferences.changeset(params)
+        |> E2e.Form.Preferences.changeset(prefs)
         |> Map.put(:action, :validate)
 
       {:noreply,
@@ -636,8 +636,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
        )}
     end
 
-    def handle_event("save", %{"preferences" => params}, socket) do
-      case E2e.Form.Preferences.changeset(%E2e.Form.Preferences{}, params) do
+    def handle_event("save", %{"preferences" => prefs}, socket) do
+      case E2e.Form.Preferences.changeset(%E2e.Form.Preferences{}, prefs) do
         %Ecto.Changeset{valid?: true} = _changeset ->
           {:noreply,
            assign(

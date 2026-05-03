@@ -125,7 +125,7 @@
     align-items: center;
     padding: var(--spacing-space-xl);
     gap: var(--spacing-space-xl);
-    margin-block-end: var(--spacing-size-lg);
+    padding-block: var(--spacing-size);
 
   }
 
@@ -152,7 +152,7 @@
     max-width: none;
     width: 100%;
     align-items: stretch;
-    margin-block-end: var(--spacing-size-lg);
+    padding-block: var(--spacing-size);
   }
 
   .layout .layout__row {

@@ -37,12 +37,10 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("validate", params, socket) when is_map(params) do
-    prefs = preferences_form_params(params, "preferences")
-
+  def handle_event("validate", %{"preferences" => params}, socket) do
     changeset =
       %Preferences{}
-      |> Preferences.changeset(prefs)
+      |> Preferences.changeset(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -58,17 +56,15 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("save", params, socket) when is_map(params) do
-    prefs = preferences_form_params(params, "preferences")
-
-    case Preferences.changeset(%Preferences{}, prefs) do
+  def handle_event("save", %{"preferences" => params}, socket) do
+    case Preferences.changeset(%Preferences{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: notifications=#{data.notifications}"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", message, "", :info, 5000)
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
          |> assign(
            :form,
            Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, %{}),
@@ -92,12 +88,10 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("validate_strict", params, socket) when is_map(params) do
-    prefs = preferences_form_params(params, "preferences_strict")
-
+  def handle_event("validate_strict", %{"preferences_strict" => params}, socket) do
     changeset =
       %Preferences{}
-      |> Preferences.changeset_validate(prefs)
+      |> Preferences.changeset_validate(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -113,17 +107,15 @@ defmodule E2eWeb.SwitchFormLive do
   end
 
   @impl true
-  def handle_event("save_strict", params, socket) when is_map(params) do
-    prefs = preferences_form_params(params, "preferences_strict")
-
-    case Preferences.changeset_validate(%Preferences{}, prefs) do
+  def handle_event("save_strict", %{"preferences_strict" => params}, socket) do
+    case Preferences.changeset_validate(%Preferences{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: notifications=#{data.notifications}"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", message, "", :info, 5000)
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
          |> assign(
            :strict_form,
            Phoenix.Component.to_form(
@@ -144,13 +136,6 @@ defmodule E2eWeb.SwitchFormLive do
              id: "switch-strict-form-live"
            )
          )}
-    end
-  end
-
-  defp preferences_form_params(params, key) when is_map(params) and is_binary(key) do
-    case Map.get(params, key) do
-      %{} = nested -> nested
-      _ -> %{}
     end
   end
 

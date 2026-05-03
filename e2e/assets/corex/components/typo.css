@@ -194,7 +194,7 @@
     border-start-end-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     border-inline-start: 4px solid var(--color-info);
-    margin-block: var(--spacing-size);
+    padding-block: var(--spacing-size);
     padding: var(--spacing-space);
     gap: var(--spacing-space);
     width: fit-content;

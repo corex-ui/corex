@@ -41,13 +41,13 @@ defmodule E2eWeb.SwitchModel do
   end
 
   def click_switch(session, mode \\ :static) do
-    section =
+    host_id =
       case mode do
-        :live -> "#switch-live-form-changeset"
+        :live -> "#switch-form-live-notifications"
         _ -> "#switch-form-changeset"
       end
 
-    click(session, css("#{section} [data-scope='switch'][data-part='control']"))
+    click(session, css("#{host_id} [data-scope='switch'][data-part='control']"))
   end
 
   def press_space_on_switch(session) do

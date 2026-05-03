@@ -407,7 +407,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   @doc """
   `mix corex.new` default (replace on, design on): JS hooks, design assets, home wrapped in
-  `Layouts.app`, and Phoenix daisyUI plugins stripped from `app.css`.
+  `Layouts.app`, generator-related Corex component imports (including `select.css`), no mode
+  toggle import, and Phoenix daisyUI plugins stripped from `app.css`.
   """
   def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
@@ -429,7 +430,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
       assert c =~ ~s(@import "../corex/main.css";)
       assert c =~ ~s(@import "../corex/theme/neo.css";)
       refute c =~ "toggle-group.css"
-      refute c =~ "select.css"
+      assert c =~ ~s(@import "../corex/components/select.css";)
+      assert c =~ ~s(@import "../corex/components/data-table.css";)
     end)
 
     assert_file(app_css, fn c ->

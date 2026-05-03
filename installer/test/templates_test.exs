@@ -41,6 +41,7 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "attr :theme, :string"
       assert out =~ "def theme_toggle(assigns)"
       assert out =~ "<.theme_toggle theme={@theme} />"
+      assert out =~ ~s(positioning={%Corex.Positioning{same_width: false}})
     end
 
     test "includes language_switch/1 when lang: true" do

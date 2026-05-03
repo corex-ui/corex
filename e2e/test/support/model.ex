@@ -19,9 +19,9 @@ defmodule E2eWeb.Model do
       uses `phx-update="ignore"`, and is never a direct interaction
       target. Instead of `data-loading`, the `Toast` hook publishes a
       positive `data-ready` flag once `createToastGroup` succeeds.
-      `prepare_live_form/1` waits for `#layout-toast[data-ready]`
-      before returning, and       `assert_toast/2` / `refute_toast/2` wait for `#layout-toast[data-ready]` then
-      assert substring on `#layout-toast` so title or description matches with retries.
+      `prepare_live_form/1` waits for `#layout-toast[data-ready]` before returning.
+      `assert_toast/2` / `refute_toast/2` wait for `#layout-toast[data-ready]` then match substring with
+      `assert_text/3` on `#layout-toast` (`visible: :any`) so animated opacity does not fail visibility checks.
   """
 
   def wait(session, time) do
@@ -94,15 +94,22 @@ defmodule E2eWeb.Model do
       end
 
       def assert_toast(session, substring) when is_binary(substring) do
+        toast_root = css("#layout-toast", visible: :any)
+
         session
         |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-        |> assert_has(css("#layout-toast", text: substring))
+        |> Wallaby.Browser.assert_text(toast_root, substring)
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
+        toast_root = css("#layout-toast", visible: :any)
+
         session
         |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-        |> refute_has(css("#layout-toast", text: substring))
+
+        refute Wallaby.Browser.has_text?(session, toast_root, substring)
+
+        session
       end
 
       def assert_submitted(session, substring) when is_binary(substring) do
