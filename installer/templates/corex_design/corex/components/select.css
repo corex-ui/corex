@@ -130,14 +130,26 @@
   }
 
   .select [data-scope="select"][data-part="content"] [data-part="item-text"] {
-    width: 100%;
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
     text-align: start;
-    text-wrap-mode: nowrap;
   }
 
   .select [data-scope="select"][data-part="item-indicator"] {
     @apply ui-icon;
   }
+
+  .select [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+    flex-shrink: 0;
+    padding-inline-end: var(--spacing-space);
+  }
+
 
   .select [data-scope="select"][data-part="error"] {
     @apply ui-error;
@@ -171,6 +183,12 @@
   [data-scope="select"][data-part="item"] {
     font-size: var(--text-sm);
     line-height: var(--text-sm--line-height);
+    padding-inline: var(--spacing-space-sm);
+    gap: var(--spacing-space-sm);
+  }
+
+  [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+    padding-inline-end: var(--spacing-space-sm);
   }
 
   [data-scope="select"][data-part="item-group-label"] {
@@ -205,6 +223,12 @@
   [data-scope="select"][data-part="item"] {
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
+    padding-inline: var(--spacing-space-md);
+    gap: var(--spacing-space-md);
+  }
+
+  [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+    padding-inline-end: var(--spacing-space-md);
   }
 
   [data-scope="select"][data-part="item-group-label"] {
@@ -239,6 +263,12 @@
   [data-scope="select"][data-part="item"] {
     font-size: var(--text-lg);
     line-height: var(--text-lg--line-height);
+    padding-inline: var(--spacing-space-lg);
+    gap: var(--spacing-space-lg);
+  }
+
+  [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+    padding-inline-end: var(--spacing-space-lg);
   }
 
   [data-scope="select"][data-part="item-group-label"] {
@@ -273,6 +303,12 @@
   [data-scope="select"][data-part="item"] {
     font-size: var(--text-xl);
     line-height: var(--text-xl--line-height);
+    padding-inline: var(--spacing-space-xl);
+    gap: var(--spacing-space-xl);
+  }
+
+  [data-scope="select"][data-part="content"] [data-part="item-indicator"] {
+    padding-inline-end: var(--spacing-space-xl);
   }
 
   [data-scope="select"][data-part="item-group-label"] {

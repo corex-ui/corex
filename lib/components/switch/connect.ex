@@ -8,6 +8,7 @@ defmodule Corex.Switch.Connect do
       get_boolean: 1,
       checkbox_checked_controlled_attr: 2,
       checkbox_checked_default_attr: 2,
+      checkbox_native_checked: 1,
       data_state: 3
     ]
 
@@ -17,7 +18,8 @@ defmodule Corex.Switch.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-checked" => checkbox_checked_default_attr(assigns.controlled, assigns.checked),
+      "data-default-checked" =>
+        checkbox_checked_default_attr(assigns.controlled, assigns.checked),
       "data-checked" => checkbox_checked_controlled_attr(assigns.controlled, assigns.checked),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
@@ -60,24 +62,17 @@ defmodule Corex.Switch.Connect do
 
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
-    checked =
-      if assigns.controlled do
-        if assigns.checked, do: "", else: "false"
-      else
-        nil
-      end
-
     %{
       "data-scope" => "switch",
       "data-part" => "hidden-input",
       "type" => "checkbox",
       "id" => "switch:#{assigns.id}:input",
-      "checked" => checked,
       "name" => assigns.name,
       "required" => get_boolean(assigns.required),
       "disabled" => get_boolean(assigns.disabled),
       "aria-labelledby" => "switch:#{assigns.id}:label",
       "value" => assigns.value,
+      "checked" => checkbox_native_checked(assigns.checked),
       "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
       "style" =>
         "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"

@@ -144,7 +144,9 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "@import \"../corex/main.css\""
       assert out =~ "@import \"../corex/theme/neo.css\""
       refute out =~ "toggle-group.css"
-      refute out =~ "select.css"
+      assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/data-table.css\""
+      assert out =~ "@import \"../corex/components/native-input.css\""
     end
 
     test "includes toggle-group import when mode without theme or lang" do
@@ -156,7 +158,7 @@ defmodule Corex.New.TemplatesTest do
         )
 
       assert out =~ "@import \"../corex/components/toggle-group.css\""
-      refute out =~ "select.css"
+      assert out =~ "@import \"../corex/components/select.css\""
     end
 
     test "includes select import when theme without mode" do

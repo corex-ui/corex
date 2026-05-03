@@ -229,6 +229,9 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           assert content =~ ~s(@import "../corex/theme/leo.css";)
           assert content =~ ~s(@import "../corex/components/toggle-group.css";)
           assert content =~ ~s(@import "../corex/components/select.css";)
+          assert content =~ ~s(@import "../corex/components/data-table.css";)
+          assert content =~ ~s(@import "../corex/components/data-list.css";)
+          assert content =~ ~s(@import "../corex/components/scrollbar.css";)
           assert content =~ ~s(@import "../corex/components/typo.css";)
           refute content =~ "../vendor/daisyui"
           refute content =~ "daisyui-theme"

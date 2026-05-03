@@ -20,10 +20,8 @@ defmodule E2eWeb.Model do
       target. Instead of `data-loading`, the `Toast` hook publishes a
       positive `data-ready` flag once `createToastGroup` succeeds.
       `prepare_live_form/1` waits for `#layout-toast[data-ready]`
-      before returning, and `assert_toast/2` / `refute_toast/2` look
-      for substrings inside the rendered toast container
-      (`#layout-toast [data-scope='toast'][data-part='root']`)
-      rather than the whole `body`.
+      before returning, and       `assert_toast/2` / `refute_toast/2` wait for `#layout-toast[data-ready]` then
+      assert substring on `#layout-toast` so title or description matches with retries.
   """
 
   def wait(session, time) do
@@ -98,20 +96,13 @@ defmodule E2eWeb.Model do
       def assert_toast(session, substring) when is_binary(substring) do
         session
         |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-        |> assert_has(
-          css("#layout-toast [data-scope='toast'][data-part='root']", text: substring)
-        )
+        |> assert_has(css("#layout-toast", text: substring))
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
         session
         |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-        |> assert_has(
-          css("#layout-toast [data-scope='toast'][data-part='root']",
-            count: 0,
-            text: substring
-          )
-        )
+        |> refute_has(css("#layout-toast", text: substring))
       end
 
       def assert_submitted(session, substring) when is_binary(substring) do

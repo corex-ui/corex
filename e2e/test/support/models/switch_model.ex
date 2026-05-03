@@ -63,7 +63,11 @@ defmodule E2eWeb.SwitchModel do
   def submit_form(session, mode \\ :static) do
     case mode do
       :live ->
-        click(session, css("#switch-live-form-changeset #switch-form-live-submit"))
+        session
+        |> assert_has(
+          css("#switch-live-form-changeset [phx-hook='Switch']:not([data-loading])")
+        )
+        |> click(css("#switch-live-form-changeset #switch-form-live-submit"))
 
       _ ->
         click(session, css("#switch-changeset-submit"))

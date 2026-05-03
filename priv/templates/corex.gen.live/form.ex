@@ -7,8 +7,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_themes || layout_locale || scope do %>
-    <Layouts.app
+    <%= if layout_mode || layout_theme || layout_themes || layout_locale || scope do %><Layouts.app
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
       theme={@theme}<% end %><%= if layout_themes do %>
@@ -17,10 +16,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
-    <% else %>
-    <Layouts.app flash={@flash}>
+    <% else %><Layouts.app flash={@flash}>
     <% end %>
-      <.layout_heading>
+      <.layout_heading class="layout-heading">
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
       </.layout_heading>

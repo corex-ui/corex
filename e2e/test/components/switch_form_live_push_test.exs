@@ -8,10 +8,10 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     view |> form("#switch-form-live") |> render_submit()
 
     assert_push_event(view, "toast-create", %{
-      description: "Submitted: notifications=false",
+      description: "",
       duration: 5000,
       groupId: "layout-toast",
-      title: "Submitted",
+      title: "Submitted: notifications=false",
       type: "info"
     })
   end

@@ -115,7 +115,7 @@ defmodule Corex.SwitchTest do
       assert result["type"] == "checkbox"
       assert result["name"] == "notifications"
       assert result["value"] == "true"
-      assert result["checked"] == nil
+      assert result["checked"] == false
     end
 
     test "returns checked when controlled and checked" do
@@ -131,7 +131,7 @@ defmodule Corex.SwitchTest do
       }
 
       result = Connect.hidden_input(assigns)
-      assert result["checked"] == ""
+      assert result["checked"] == true
     end
 
     test "returns checked false when controlled and unchecked" do
@@ -147,7 +147,7 @@ defmodule Corex.SwitchTest do
       }
 
       result = Connect.hidden_input(assigns)
-      assert result["checked"] == "false"
+      assert result["checked"] == false
     end
   end
 
