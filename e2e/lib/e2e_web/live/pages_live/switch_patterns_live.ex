@@ -35,7 +35,7 @@ defmodule E2eWeb.SwitchPatternsLive do
         subtitle="Controlled checked state synced with a LiveView assign."
       >
         <.demo_section
-          id="switch-patterns-controlled"
+          id="switch-patterns-controlled-section"
           title="Controlled"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},

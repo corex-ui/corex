@@ -29337,11 +29337,14 @@ var Corex = (() => {
           this.handlers = [];
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
-          domRegistry.add("corex:password-input:set-visible", (event) => {
-            var _a4;
-            const vis = (_a4 = event.detail) == null ? void 0 : _a4.visible;
-            if (typeof vis === "boolean") zag.api.setVisible(vis);
-          });
+          domRegistry.add(
+            "corex:password-input:set-visible",
+            (event) => {
+              var _a4;
+              const vis = (_a4 = event.detail) == null ? void 0 : _a4.visible;
+              if (typeof vis === "boolean") zag.api.setVisible(vis);
+            }
+          );
           domRegistry.add("corex:password-input:toggle-visible", () => {
             zag.api.toggleVisible();
           });
@@ -33335,25 +33338,26 @@ var Corex = (() => {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const inputEl = this.el.querySelector(
-            '[data-scope="switch"][data-part="hidden-input"]'
+          const inputEl = rootEl.querySelector(
+            ':scope > [data-scope="switch"][data-part="hidden-input"]'
           );
           if (inputEl) {
             this.spreadProps(inputEl, this.api.getHiddenInputProps());
           }
-          const labelEl = this.el.querySelector('[data-scope="switch"][data-part="label"]');
-          if (labelEl) {
+          rootEl.querySelectorAll(':scope > [data-scope="switch"][data-part="label"]').forEach((labelEl) => {
             this.spreadProps(labelEl, this.api.getLabelProps());
-          }
-          const controlEl = this.el.querySelector(
-            '[data-scope="switch"][data-part="control"]'
+          });
+          const controlEl = rootEl.querySelector(
+            ':scope > [data-scope="switch"][data-part="control"]'
           );
           if (controlEl) {
             this.spreadProps(controlEl, this.api.getControlProps());
-          }
-          const thumbEl = this.el.querySelector('[data-scope="switch"][data-part="thumb"]');
-          if (thumbEl) {
-            this.spreadProps(thumbEl, this.api.getThumbProps());
+            const thumbEl = controlEl.querySelector(
+              ':scope > [data-scope="switch"][data-part="thumb"]'
+            );
+            if (thumbEl) {
+              this.spreadProps(thumbEl, this.api.getThumbProps());
+            }
           }
         }
       };
@@ -33362,10 +33366,9 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.wasFocused = false;
           const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") }), {
+          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") === true } : { defaultChecked: getCheckedState(el, "defaultChecked") === true }), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -33374,7 +33377,6 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             readOnly: getBoolean(el, "readOnly"),
-            label: getString(el, "label"),
             onCheckedChange: (details) => {
               notifyChange({
                 el,
@@ -33433,15 +33435,11 @@ var Corex = (() => {
             });
           });
         },
-        beforeUpdate() {
-          var _a4, _b;
-          this.wasFocused = (_b = (_a4 = this.zagSwitch) == null ? void 0 : _a4.api.focused) != null ? _b : false;
-        },
         updated() {
           var _a4;
           (_a4 = this.zagSwitch) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") }), {
+          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") === true } : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -33449,15 +33447,8 @@ var Corex = (() => {
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            label: getString(this.el, "label")
+            readOnly: getBoolean(this.el, "readOnly")
           }));
-          if (getBoolean(this.el, "controlled")) {
-            if (this.wasFocused) {
-              const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-              hiddenInput == null ? void 0 : hiddenInput.focus();
-            }
-          }
         },
         destroyed() {
           var _a4, _b, _c;

@@ -306,10 +306,13 @@ var PasswordInputHook = {
     this.handlers = [];
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
-    domRegistry.add("corex:password-input:set-visible", (event) => {
-      const vis = event.detail?.visible;
-      if (typeof vis === "boolean") zag.api.setVisible(vis);
-    });
+    domRegistry.add(
+      "corex:password-input:set-visible",
+      (event) => {
+        const vis = event.detail?.visible;
+        if (typeof vis === "boolean") zag.api.setVisible(vis);
+      }
+    );
     domRegistry.add("corex:password-input:toggle-visible", () => {
       zag.api.toggleVisible();
     });

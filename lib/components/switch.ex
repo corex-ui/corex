@@ -188,6 +188,7 @@ defmodule Corex.Switch do
 
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
   alias Corex.Switch.Connect
+  alias Corex.Helpers
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -316,6 +317,7 @@ defmodule Corex.Switch do
       |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
 
     ~H"""
     <div
@@ -342,12 +344,12 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
-      <input
-        phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
-        {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
-      />
       <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+        <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
+        <input
+          phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+          {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+        />
         <span
           :for={label <- @label}
           :if={Map.get(label, :position, :post) == :pre}

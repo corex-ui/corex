@@ -15,14 +15,66 @@ defmodule E2eWeb.Model do
       `css("...:not([data-loading])")` to know a component is
       interactive.
 
-    * The layout `Toast` group is special: it lives in the layout,
-      uses `phx-update="ignore"`, and is never a direct interaction
-      target. Instead of `data-loading`, the `Toast` hook publishes a
-      positive `data-ready` flag once `createToastGroup` succeeds.
-      `prepare_live_form/1` waits for `#layout-toast[data-ready]` before returning.
-      `assert_toast/2` / `refute_toast/2` wait for `#layout-toast[data-ready]` then match substring with
-      `assert_text/3` on `#layout-toast` (`visible: :any`) so animated opacity does not fail visibility checks.
+    * The layout toast group uses `phx-update="ignore"` and publishes
+      `data-ready` once the Toast hook mounts. Toast items use fixed
+      positioning and opacity transitions; Wallaby CSS/text queries on
+      `#layout-toast` are unreliable in CI, so `prepare_live_form/1`,
+      `assert_toast/2`, and `refute_toast/2` use `execute_script` on
+      `#layout-toast` innerText plus `Wallaby.Browser.retry/1`.
   """
+
+  def layout_toast_hook_ready?(session) do
+    key = script_result_key()
+
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        var el = document.getElementById('layout-toast');
+        return !!(el && el.hasAttribute('data-ready'));
+        """,
+        [],
+        fn value ->
+          Process.put(key, script_truthy?(value))
+        end
+      )
+
+    case Process.delete(key) do
+      true -> true
+      _ -> false
+    end
+  end
+
+  def layout_toast_contains?(session, needle) when is_binary(needle) do
+    key = script_result_key()
+
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        """
+        var root = document.getElementById('layout-toast');
+        var needle = arguments[0];
+        var text = root ? (root.textContent || '') : '';
+        return text.indexOf(needle) !== -1;
+        """,
+        [needle],
+        fn value ->
+          Process.put(key, script_truthy?(value))
+        end
+      )
+
+    case Process.delete(key) do
+      true -> true
+      _ -> false
+    end
+  end
+
+  defp script_result_key do
+    {:e2e_wallaby_execute_script, self(), make_ref()}
+  end
+
+  defp script_truthy?(value) when value in [true, "true", 1, "1"], do: true
+  defp script_truthy?(_), do: false
 
   def wait(session, time) do
     Process.sleep(time)
@@ -86,7 +138,21 @@ defmodule E2eWeb.Model do
       end
 
       def prepare_live_form(session) do
-        assert_has(session, css("#layout-toast[data-ready]", visible: :any))
+        case Wallaby.Browser.retry(fn ->
+               if E2eWeb.Model.layout_toast_hook_ready?(session) do
+                 {:ok, session}
+               else
+                 {:error, :not_ready}
+               end
+             end) do
+          {:ok, session} ->
+            session
+
+          {:error, _} ->
+            raise Wallaby.ExpectationNotMetError,
+              message:
+                "expected #layout-toast to exist with data-ready before LiveView interactions"
+        end
       end
 
       def prepare_live_form_for_push_toast(session) do
@@ -94,20 +160,26 @@ defmodule E2eWeb.Model do
       end
 
       def assert_toast(session, substring) when is_binary(substring) do
-        toast_root = css("#layout-toast", visible: :any)
+        case Wallaby.Browser.retry(fn ->
+               if E2eWeb.Model.layout_toast_contains?(session, substring) do
+                 {:ok, session}
+               else
+                 {:error, :no_match}
+               end
+             end) do
+          {:ok, session} ->
+            session
 
-        session
-        |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-        |> Wallaby.Browser.assert_text(toast_root, substring)
+          {:error, _} ->
+            raise Wallaby.ExpectationNotMetError,
+              message:
+                "expected #layout-toast textContent to include #{inspect(substring)}"
+        end
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
-        toast_root = css("#layout-toast", visible: :any)
-
-        session
-        |> assert_has(css("#layout-toast[data-ready]", visible: :any))
-
-        refute Wallaby.Browser.has_text?(session, toast_root, substring)
+        refute E2eWeb.Model.layout_toast_contains?(session, substring),
+               "expected #layout-toast innerText not to include #{inspect(substring)}"
 
         session
       end

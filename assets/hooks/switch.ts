@@ -12,7 +12,6 @@ type SwitchHookState = {
   zagSwitch?: Switch;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
-  wasFocused?: boolean;
 };
 
 function checkedChangePayload(
@@ -30,7 +29,6 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    this.wasFocused = false;
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
@@ -44,7 +42,6 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       readOnly: getBoolean(el, "readOnly"),
-      label: getString(el, "label"),
 
       onCheckedChange: (details: CheckedChangeDetails) => {
         notifyChange({
@@ -115,10 +112,6 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     });
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.wasFocused = this.zagSwitch?.api.focused ?? false;
-  },
-
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     this.zagSwitch?.updateProps({
       id: this.el.id,
@@ -133,14 +126,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       readOnly: getBoolean(this.el, "readOnly"),
-      label: getString(this.el, "label"),
     });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]') as HTMLInputElement;
-        hiddenInput?.focus();
-      }
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SwitchHookState) {

@@ -26,8 +26,7 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.click_form_select_trigger(:live)
     |> Select.select_item("bel")
     |> Select.submit_form(:live)
-    |> Select.see_flash("Submitted: country=", timeout: 10_000)
-    |> Select.see_flash("bel", timeout: 10_000)
+    |> Select.see_flash("Submitted: country=bel")
   end
 
   feature "live form - submit without selection does not show success", %{

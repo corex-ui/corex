@@ -47,7 +47,14 @@ defmodule E2eWeb.SwitchModel do
         _ -> "#switch-form-changeset"
       end
 
-    click(session, css("#{host_id} [data-scope='switch'][data-part='control']"))
+    session
+    |> click(css("#{host_id} [data-scope='switch'][data-part='control']"))
+    |> assert_has(
+      css(
+        "#{host_id} [data-scope='switch'][data-part='root'][data-state='checked']",
+        visible: :any
+      )
+    )
   end
 
   def press_space_on_switch(session) do
