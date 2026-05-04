@@ -207,7 +207,7 @@
     .home__hero__inner {
       grid-template-columns: minmax(0, 1.05fr) minmax(17.5rem, 1fr);
       gap: --spacing(12);
-      align-items: center;
+      align-items: start;
       justify-items: stretch;
     }
   }
