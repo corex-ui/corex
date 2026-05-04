@@ -41,8 +41,8 @@ corex-*.tar
 /installer/tmp/
 /installer/cover/
 
-/integration_test/_build
-/integration_test/deps
+/integration_test/_build/
+/integration_test/deps/
 .dexter.db*
 
 /.claude/
