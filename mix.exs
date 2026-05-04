@@ -50,7 +50,7 @@ defmodule Corex.MixProject do
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0", optional: true},
       {:esbuild, "~> 0.8", only: :dev},
-      {:ex_doc, "~> 0.40", only: :docs},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},

@@ -54,7 +54,7 @@ defmodule Corex.New.MixProject do
   def deps do
     [
       {:jason, "~> 1.0"},
-      {:ex_doc, "~> 0.24", only: :docs}
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
     ]
   end
 
