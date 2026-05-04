@@ -163,31 +163,36 @@ defmodule E2eWeb.App.Header do
         id: "doc-installation",
         label: gettext("Installation"),
         to: "https://hexdocs.pm/corex/installation.html",
-        redirect: :href
+        redirect: :href,
+        new_tab: true
       },
       %{
         id: "doc-localize",
         label: gettext("Localize"),
         to: "https://hexdocs.pm/corex/localize.html",
-        redirect: :href
+        redirect: :href,
+        new_tab: true
       },
       %{
         id: "doc-theming",
         label: gettext("Theming"),
         to: "https://hexdocs.pm/corex/theming.html",
-        redirect: :href
+        redirect: :href,
+        new_tab: true
       },
       %{
         id: "doc-dark-mode",
         label: gettext("Dark Mode"),
         to: "https://hexdocs.pm/corex/dark_mode.html",
-        redirect: :href
+        redirect: :href,
+        new_tab: true
       },
       %{
         id: "doc-mcp",
         label: gettext("MCP"),
         to: "https://hexdocs.pm/corex/mcp.html",
-        redirect: :href
+        redirect: :href,
+        new_tab: true
       }
     ])
   end
