@@ -513,7 +513,6 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: break-all;
 
   &:hover {
     text-decoration-thickness: 2px;
