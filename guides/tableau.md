@@ -1,6 +1,6 @@
-# Tableau + Corex
+# Tableau
 
-This guide adds [Corex](installation.html) to a **[Tableau](https://hex.pm/packages/tableau)** static site generated with HEEx, Esbuild, and Tailwind. It assumes you are **not** using `mix corex.new` (Phoenix app). For a full Phoenix app, use [Installation](installation.html) or [Manual installation](manual_installation.html).
+This guide adds [Corex](installation.html) to a **[Tableau](https://hex.pm/packages/tableau)** static site generated with HEEx, Esbuild, and Tailwind.
 
 ## Create the site
 
@@ -9,23 +9,16 @@ mix tableau.new my_site --template heex --js esbuild --css tailwind
 cd my_site
 ```
 
-The rest of this page describes what that generator already provides, then the **minimum changes** to use Corex.
 
-## What `tableau.new` already gives you
+What `tableau.new` already gives you
 
-- **`mix.exs`**: `tableau`, `tailwind`, `phoenix_live_view`, and `esbuild` (no `corex` yet).
+- **`mix.exs`**: `tableau`, `tailwind`, `phoenix_live_view`, and `esbuild`
 - **`config/config.exs`**: Esbuild profile **`default`** bundles **`assets/js/site.js`** into **`_site/js`**, with **`NODE_PATH`** pointing at **`deps/`** so npm-style imports from Hex dependencies resolve. Tailwind compiles **`assets/css/site.css`** to **`_site/css/site.css`**.
 - **`lib/layouts/root_layout.ex`**: stylesheet at **`/css/site.css`**, script at **`/js/site.js`** (plain script tag, no CSRF meta).
 - **`assets/js/site.js`**: empty in a fresh project.
 - **`assets/css/site.css`**: typically only `@import "tailwindcss"`.
 
-Exact filenames may differ if Tableau’s template changes; adjust paths to match your tree.
-
 ## 1. Elixir and the `corex` dependency
-
-Corex requires **Elixir `~> 1.17`**. A new Tableau app may still declare **`elixir: "~> 1.15"`** in **`mix.exs`** — bump the requirement before adding Corex.
-
-Add Corex to **`deps/0`** (pin matches [Hex](https://hex.pm/packages/corex) or your lockfile):
 
 ```elixir
 {:corex, "~> 0.1.0-beta.2"}
@@ -36,8 +29,6 @@ Then:
 ```bash
 mix deps.get
 ```
-
-For local development against a Corex checkout, you can use **`{:corex, path: "../path/to/corex"}`**. With a **`path:`** dependency you may import the JS entry with a **relative path** to that checkout instead of the package name. With a **Hex** dependency, use **`import corex from "corex"`** as below.
 
 ## 2. Esbuild: ESM, splitting, and `_site/js`
 
@@ -50,15 +41,11 @@ config :esbuild,
   version: "0.25.5",
   default: [
     args:
-      ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js --external:/fonts/* --external:/images/*),
+      ~w(js/site.js --bundle --format=esm --splitting --target=es2022 --outdir=../_site/js),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 ```
-
-Drop the **`--external:/fonts/*`** and **`--external:/images/*`** lines if your JS never imports those URL patterns (see the same section in [Manual installation](manual_installation.html)).
-
-**Do not** point **`--outdir`** at Phoenix’s **`priv/static/...`** — that belongs to a standard Phoenix asset pipeline, not Tableau’s **`_site`** output.
 
 ## 3. Corex design assets
 
@@ -68,7 +55,7 @@ Copy packaged design CSS into your app:
 mix corex.design
 ```
 
-That creates **`assets/corex/`** from the **`corex`** package (see **`Mix.Tasks.Corex.Design`**). Use **`--force`** to overwrite, **`--designex`** to also copy token sources if you use [designex](https://hex.pm/packages/designex) later.
+That creates **`assets/corex/`** from the **`corex`** package (see **`Mix.Tasks.Corex.Design`**). Use **`--force`** to overwrite, **`--designex`** to also copy token sources if you use [Designex](https://hex.pm/packages/designex) later.
 
 ## 4. Tailwind entry: import Corex CSS
 
@@ -85,9 +72,9 @@ After **`@import "tailwindcss"`** (or your Tailwind v4 entry), import design lay
 @import "../corex/components/accordion.css";
 ```
 
-If you use Corex Design’s base layout helpers, add **`typo`** and **`layout`** classes on **`<body>`** as in [Manual installation §7](manual_installation.html#7-optional-corex-design).
+Add **`typo`** and **`layout`** classes on **`<body>`**
 
-## 5. Root layout: CSRF, module script, `use Corex`
+## 5. Root layout
 
 Corex’s JS is **ESM** and Phoenix **`LiveSocket`** expects a **CSRF** token in the page.
 
@@ -108,42 +95,46 @@ In your **`Tableau.Layout`** module (for example **`lib/layouts/root_layout.ex`*
 
 4. Add **`use Corex`** next to **`use Phoenix.Component`** so Corex function components are available in the layout template.
 
-Any **`Tableau.Page`** module that renders **`<.dialog>`**, **`<.accordion>`**, and so on also needs **`use Corex`** (and **`use Phoenix.Component`** if not already present).
+## 6. Corex hooks
 
-## 6. `assets/js/site.js`: `LiveSocket` and Corex hooks
-
-Author a small entry module. Minimal shape (extend with your own hooks as needed):
+Import Corex and merge its hooks into the `LiveSocket`. After your existing LiveView and `colocatedHooks` imports, add:
 
 ```javascript
-import { Socket } from "phoenix"
-import { LiveSocket } from "phoenix_live_view"
-import { hooks } from "corex/hooks"
+import corex from "corex"
+```
 
-const csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  ?.getAttribute("content")
+Then merge `...corex` into the `hooks` map:
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: { ...colocatedHooks, ...corex }
+})
+```
+
+`import corex from "corex"` registers **every** Corex hook and keeps the full lazy registry in your bundle graph. To register **only** some hooks **without** pulling that full table into your app bundle, import **`hooks`** from **`corex/hooks`** and pass **lazy factories** (object keys must match **`phx-hook`** names, e.g. **`Dialog`**):
+
+```javascript
+import { hooks } from "corex/hooks"
 
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: {
+    ...colocatedHooks,
     ...hooks({
       Accordion: () => import("corex/accordion"),
       Dialog: () => import("corex/dialog"),
+      Combobox: () => import("corex/combobox"),
     }),
   },
 })
-
-liveSocket.connect()
 ```
-
-**`/live`** is the default LiveView websocket path used with Tableau’s dev tooling; keep it aligned with how you run the site.
-
-Use **`corex/hooks`** for **`hooks`** so your entry does not import the full **`corex`** registry. Pass **`() => import("corex/<name>")`** per component you use. See [Manual installation §3](manual_installation.html#3-phoenix-hooks). **`import corex from "corex"`** plus **`{ ...corex }`** still registers every hook.
 
 ## Try a component
 
-After **`mix compile`** and your usual Tableau asset build (for example **`mix tableau.build`** or watch tasks from **`config :tableau, :assets`**), use a component in a page template. Example (**`id`** is required when driving the component from the API):
+After **`mix compile`** and your usual Tableau asset build (for example **`mix tableau.build`** or watch tasks from **`config :tableau, :assets`**), use a component in a page template.
 
 ```heex
 <.accordion
@@ -155,12 +146,6 @@ After **`mix compile`** and your usual Tableau asset build (for example **`mix t
   ])}
 />
 ```
-
-More examples: [Installation — Try your first component](installation.html#try-your-first-component).
-
-## Optional: Designex and larger sites
-
-For **token-driven** themes and a heavier pipeline (custom palette scripts, **`designex corex`** in **`mix`** aliases), compare a mature Tableau site’s **`mix.exs`** **`build`** alias, **`config :designex`**, **`assets/css/site.css`** imports, and root layout. Older sites may still use a **simpler Esbuild** line without splitting; **this guide recommends ESM + splitting** as the supported baseline for Corex.
 
 ## Related
 
