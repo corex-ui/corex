@@ -6,21 +6,21 @@ defmodule CorexWeb.Tabs do
   alias Corex.Content
 
   @items Content.new([
-           [
-             id: "lorem",
+           %{
+             value: "lorem",
              trigger: "Lorem",
              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-           ],
-           [
-             id: "duis",
+           },
+           %{
+             value: "duis",
              trigger: "Duis",
              content: "Nullam eget vestibulum ligula, at interdum tellus."
-           ],
-           [
-             id: "donec",
+           },
+           %{
+             value: "donec",
              trigger: "Donec",
              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-           ]
+           }
          ])
 
   capture variants: [
@@ -53,22 +53,22 @@ defmodule CorexWeb.Tabs do
               value: "lorem",
               items:
                 Content.new([
-                  [
-                    id: "lorem",
+                  %{
+                    value: "lorem",
                     trigger: "Lorem",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-                  ],
-                  [
-                    id: "duis",
+                  },
+                  %{
+                    value: "duis",
                     trigger: "Duis",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    id: "donec",
+                  },
+                  %{
+                    value: "donec",
                     trigger: "Donec",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
                     disabled: true
-                  ]
+                  }
                 ])
             }
           ]

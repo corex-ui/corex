@@ -1,22 +1,41 @@
 import {
+  readPositioningOptions
+} from "./chunks/chunk-FZ6PQ5YA.mjs";
+import {
+  getPlacement,
+  getPlacementStyles
+} from "./chunks/chunk-AOAQEX4D.mjs";
+import {
+  trackDismissableElement
+} from "./chunks/chunk-FXKWDXRF.mjs";
+import "./chunks/chunk-AOJTHBPA.mjs";
+import {
+  zagIdValueLabelCollectionConfig
+} from "./chunks/chunk-7NUJK5QP.mjs";
+import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-WAY74VD3.mjs";
+} from "./chunks/chunk-5YSYSNPK.mjs";
 import {
-  getPlacement,
-  getPlacementStyles
-} from "./chunk-IMEAISCQ.mjs";
-import {
-  trackDismissableElement
-} from "./chunk-B6KPIA33.mjs";
-import "./chunk-7UNOLQU5.mjs";
+  performRedirect,
+  readDomItemRedirect
+} from "./chunks/chunk-FOQSALVP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-KF3PY6Q6.mjs";
+} from "./chunks/chunk-ZNA2UPG2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
@@ -31,6 +50,7 @@ import {
   ensure,
   getBoolean,
   getByTypeahead,
+  getDir,
   getEventKey,
   getEventTarget,
   getInitialFocus,
@@ -42,15 +62,14 @@ import {
   isInternalChangeEvent,
   isValidTabEvent,
   markAsInternalChangeEvent,
-  normalizeProps,
   observeAttributes,
   raf,
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -70,7 +89,7 @@ var anatomy = createAnatomy("select").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.collection.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -78,7 +97,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.dom.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -100,7 +119,7 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId(ctx, id));
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.connect.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
   const translations = prop("translations");
@@ -524,7 +543,7 @@ var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.machine.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -1244,52 +1263,29 @@ var Select = class extends Component {
     this._options = Array.isArray(options) ? options : [];
   }
   getCollection() {
-    const items = this.options;
-    if (this.hasGroups) {
-      return collection({
-        items,
-        itemToValue: (item) => item.id ?? item.value ?? "",
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => item.group ?? ""
-      });
-    }
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    });
+    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = props.collection;
     return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return collectionFromProps ?? getCollection();
+        return getCollection();
       }
     });
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
-  init = () => {
-    this.machine.start();
-    this.render();
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
-    this.el.removeAttribute("data-js");
-  };
   applyItemProps() {
     const contentEl = this.el.querySelector(
       '[data-scope="select"][data-part="content"]'
     );
     if (!contentEl) return;
+    const isOwnedByContent = (el) => el.closest('[data-scope="select"][data-part="content"]') === contentEl;
     contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]').forEach((groupEl) => {
+      if (!isOwnedByContent(groupEl)) return;
       const groupId = groupEl.dataset.id ?? "";
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
@@ -1300,7 +1296,9 @@ var Select = class extends Component {
       }
     });
     contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
+      if (!isOwnedByContent(itemEl)) return;
       const value = itemEl.dataset.value ?? "";
+      if (!value) return;
       const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
       if (!item) return;
       this.spreadProps(itemEl, this.api.getItemProps({ item }));
@@ -1321,21 +1319,16 @@ var Select = class extends Component {
   render() {
     const root = this.el.querySelector('[data-scope="select"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
-    const hiddenSelect = this.el.querySelector(
-      '[data-scope="select"][data-part="hidden-select"]'
-    );
     const valueInput = this.el.querySelector(
       '[data-scope="select"][data-part="value-input"]'
     );
     if (valueInput) {
-      if (!this.api.value || this.api.value.length === 0) {
-        valueInput.value = "";
-      } else if (this.api.value.length === 1) {
-        valueInput.value = String(this.api.value[0]);
-      } else {
-        valueInput.value = this.api.value.map(String).join(",");
-      }
+      const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
+      valueInput.value = valueStr;
     }
+    const hiddenSelect = this.el.querySelector(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
     }
@@ -1356,13 +1349,9 @@ var Select = class extends Component {
           const itemValue = item.id ?? item.value ?? "";
           return String(itemValue) === String(selectedValue);
         });
-        if (selectedItem) {
-          valueText.textContent = selectedItem.label;
-        } else {
-          valueText.textContent = this.placeholder || "";
-        }
+        valueText.textContent = selectedItem?.label || this.placeholder;
       } else {
-        valueText.textContent = valueAsString || this.placeholder || "";
+        valueText.textContent = valueAsString || this.placeholder;
       }
     }
     const contentEl = this.el.querySelector(
@@ -1393,84 +1382,61 @@ function buildCollection(items, hasGroups) {
     isItemDisabled: (item) => !!item.disabled
   });
 }
-function snakeToCamel(str) {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-}
-function transformPositioningOptions(obj) {
-  const result = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const camelKey = snakeToCamel(key);
-    result[camelKey] = value;
-  }
-  return result;
-}
 var SelectHook = {
   mounted() {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const allItems = JSON.parse(el.dataset.items || "[]");
-    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const hasGroups = allItems.some((item) => Boolean(item.group));
     const initialCollection = buildCollection(allItems, hasGroups);
+    const redirectOn = getBoolean(el, "redirect");
     const selectComponent = new Select(el, {
       id: el.id,
       collection: initialCollection,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       loopFocus: getBoolean(el, "loopFocus"),
-      multiple: getBoolean(el, "multiple"),
+      multiple: redirectOn ? false : getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
-      positioning: (() => {
-        const positioningJson = el.dataset.positioning;
-        if (positioningJson) {
-          try {
-            const parsed = JSON.parse(positioningJson);
-            return transformPositioningOptions(parsed);
-          } catch {
-            return void 0;
-          }
-        }
-        return void 0;
-      })(),
+      deselectable: getBoolean(el, "deselectable"),
+      positioning: readPositioningOptions(el),
       onValueChange: (details) => {
-        const redirect = getBoolean(el, "redirect");
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        const firstItem = details.items?.length ? details.items[0] : null;
-        const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
-        const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
-        const doRedirect = redirect && firstValue && this.liveSocket.main.isDead && itemRedirect !== false;
-        const openInNewTab = itemNewTab === true;
-        if (doRedirect) {
-          if (openInNewTab) {
-            window.open(firstValue, "_blank", "noopener,noreferrer");
-          } else {
-            window.location.href = firstValue;
-          }
+        if (getBoolean(el, "redirect") && firstValue) {
+          const itemEl = el.querySelector(
+            `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+          );
+          performRedirect(readDomItemRedirect(itemEl, firstValue), {
+            liveSocket: this.liveSocket
+          });
         }
         const valueInput = el.querySelector(
           '[data-scope="select"][data-part="value-input"]'
         );
         if (valueInput && getBoolean(el, "controlled")) {
           valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
           valueInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        const payload = {
-          value: details.value,
-          items: details.items,
-          id: el.id
-        };
-        const clientEventName = getString(el, "onValueChangeClient");
-        if (clientEventName) {
-          el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
-        }
-        const serverEventName = getString(el, "onValueChange");
-        if (serverEventName && canPushEvent(this.liveSocket)) {
-          this.pushEvent(serverEventName, payload);
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            items: details.items
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       }
     });
     selectComponent.hasGroups = hasGroups;
@@ -1478,25 +1444,57 @@ var SelectHook = {
     selectComponent.init();
     this.select = selectComponent;
     this.handlers = [];
+    this.lastItemsJson = el.dataset.items || "[]";
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:select:set-value", (event) => {
+      selectComponent.api.setValue(event.detail.value);
+    });
+    domRegistry.add("corex:select:set-open", (event) => {
+      selectComponent.api.setOpen(event.detail.open);
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("select_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      selectComponent.api.setValue(payload.value);
+    });
+    registry.add("select_set_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof payload.open !== "boolean") return;
+      selectComponent.api.setOpen(payload.open);
+    });
   },
   updated() {
-    const newItems = JSON.parse(this.el.dataset.items || "[]");
-    const hasGroups = newItems.some((item) => item.group !== void 0);
+    const itemsJson = this.el.dataset.items || "[]";
+    const itemsUnchanged = itemsJson === this.lastItemsJson;
+    const redirectOn = getBoolean(this.el, "redirect");
+    const nextProps = {
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+      name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
+      disabled: getBoolean(this.el, "disabled"),
+      multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
+      dir: getDir(this.el),
+      invalid: getBoolean(this.el, "invalid"),
+      required: getBoolean(this.el, "required"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      positioning: readPositioningOptions(this.el)
+    };
+    if (this.select && itemsUnchanged) {
+      this.select.updateProps(nextProps);
+      return;
+    }
+    this.lastItemsJson = itemsJson;
+    const newItems = JSON.parse(itemsJson);
+    const hasGroups = newItems.some((item) => Boolean(item.group));
     if (this.select) {
       this.select.hasGroups = hasGroups;
       this.select.setOptions(newItems);
       this.select.updateProps({
-        collection: buildCollection(newItems, hasGroups),
-        id: this.el.id,
-        ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
-        name: getString(this.el, "name"),
-        form: getString(this.el, "form"),
-        disabled: getBoolean(this.el, "disabled"),
-        multiple: getBoolean(this.el, "multiple"),
-        dir: getString(this.el, "dir", ["ltr", "rtl"]),
-        invalid: getBoolean(this.el, "invalid"),
-        required: getBoolean(this.el, "required"),
-        readOnly: getBoolean(this.el, "readOnly")
+        ...nextProps,
+        collection: buildCollection(newItems, hasGroups)
       });
     }
   },
@@ -1506,6 +1504,8 @@ var SelectHook = {
         this.removeHandleEvent(handler);
       }
     }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.select?.destroy();
   }
 };

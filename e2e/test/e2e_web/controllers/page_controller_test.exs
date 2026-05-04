@@ -3,11 +3,12 @@ defmodule E2eWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert redirected_to(conn, 302) == ~p"/en"
+    assert html_response(conn, 200) =~ "Phoenix"
+    assert html_response(conn, 200) =~ "Corex"
+  end
 
-    conn = get(conn, ~p"/en")
-    assert html_response(conn, 200) =~ "Build"
-    assert html_response(conn, 200) =~ "websites"
+  test "GET /en", %{conn: conn} do
+    conn = get(conn, "/en")
     assert html_response(conn, 200) =~ "Corex"
   end
 end

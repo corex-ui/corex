@@ -1,21 +1,41 @@
 import {
   trackDismissableElement
-} from "./chunk-B6KPIA33.mjs";
-import "./chunk-7UNOLQU5.mjs";
+} from "./chunks/chunk-FXKWDXRF.mjs";
+import "./chunks/chunk-AOJTHBPA.mjs";
+import {
+  prepareInitialScaleState,
+  readScaleAnimationOptions,
+  runScaleAnimation,
+  stripHiddenFromProps
+} from "./chunks/chunk-4PSVMPGM.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
+  canPushEvent,
+  compact,
   createAnatomy,
   createMachine,
+  dataAttr,
   findControlledElements,
   getActiveElement,
   getBoolean,
   getComputedStyle,
   getControlledElements,
+  getDir,
   getDocument,
   getEventTarget,
   getFocusables,
+  getInitialFocus,
   getString,
   getTabIndex,
   getTabbables,
@@ -24,16 +44,17 @@ import {
   isControlledElement,
   isDocument,
   isFocusable,
+  isFunction,
   isHTMLElement,
   isIos,
   isTabbable,
-  normalizeProps,
+  queryAll,
   raf,
   setStyle,
   setStyleProperty
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(
   "trigger",
   "backdrop",
@@ -45,27 +66,35 @@ var anatomy = createAnatomy("dialog").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
 var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
 var getContentId = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
-var getTriggerId = (ctx) => ctx.ids?.trigger ?? `dialog:${ctx.id}:trigger`;
+var getTriggerId = (ctx, value) => {
+  const customId = ctx.ids?.trigger;
+  if (customId != null) return isFunction(customId) ? customId(value) : customId;
+  return value ? `dialog:${ctx.id}:trigger:${value}` : `dialog:${ctx.id}:trigger`;
+};
 var getTitleId = (ctx) => ctx.ids?.title ?? `dialog:${ctx.id}:title`;
 var getDescriptionId = (ctx) => ctx.ids?.description ?? `dialog:${ctx.id}:description`;
 var getCloseTriggerId = (ctx) => ctx.ids?.closeTrigger ?? `dialog:${ctx.id}:close`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
-var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
 var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
 var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
+var getTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+var getActiveTriggerEl = (ctx, value) => {
+  return value == null ? getTriggerEls(ctx)[0] : ctx.getById(getTriggerId(ctx, value));
+};
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const ariaLabel = prop("aria-label");
   const open = state.matches("open");
+  const triggerValue = context.get("triggerValue");
   return {
     open,
     setOpen(nextOpen) {
@@ -73,19 +102,29 @@ function connect(service, normalize) {
       if (open2 === nextOpen) return;
       send({ type: nextOpen ? "OPEN" : "CLOSE" });
     },
-    getTriggerProps() {
+    triggerValue,
+    setTriggerValue(value) {
+      send({ type: "TRIGGER_VALUE.SET", value });
+    },
+    getTriggerProps(props = {}) {
+      const { value } = props;
+      const current = value == null ? false : triggerValue === value;
       return normalize.button({
         ...parts.trigger.attrs,
         dir: prop("dir"),
-        id: getTriggerId(scope),
+        id: getTriggerId(scope, value),
+        "data-ownedby": scope.id,
+        "data-value": value,
         "aria-haspopup": "dialog",
         type: "button",
-        "aria-expanded": open,
+        "aria-expanded": value == null ? open : open && current,
         "data-state": open ? "open" : "closed",
         "aria-controls": getContentId(scope),
+        "data-current": dataAttr(current),
         onClick(event) {
           if (event.defaultPrevented) return;
-          send({ type: "TOGGLE" });
+          const shouldSwitch = open && value != null && !current;
+          send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TOGGLE", value });
         }
       });
     },
@@ -103,9 +142,9 @@ function connect(service, normalize) {
         ...parts.positioner.attrs,
         dir: prop("dir"),
         id: getPositionerId(scope),
-        style: {
-          pointerEvents: open ? void 0 : "none"
-        }
+        style: compact({
+          pointerEvents: !open || !prop("modal") ? "none" : void 0
+        })
       });
     },
     getContentProps() {
@@ -118,10 +157,13 @@ function connect(service, normalize) {
         id: getContentId(scope),
         tabIndex: -1,
         "data-state": open ? "open" : "closed",
-        "aria-modal": true,
+        "aria-modal": prop("modal"),
         "aria-label": ariaLabel || void 0,
         "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-        "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
+        "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0,
+        style: compact({
+          pointerEvents: prop("modal") ? void 0 : "auto"
+        })
       });
     },
     getTitleProps() {
@@ -154,7 +196,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
 var counterMap = /* @__PURE__ */ new WeakMap();
 var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
 var markerMap = {};
@@ -258,7 +300,7 @@ var walkTreeOutside = (originalTarget, props) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
 var getParentNode = (originalTarget) => {
   const target = Array.isArray(originalTarget) ? originalTarget[0] : originalTarget;
   return target.ownerDocument.body;
@@ -274,7 +316,7 @@ var hideOthers = (originalTarget, parentNode = getParentNode(originalTarget), ma
   });
 };
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.40.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
 var raf2 = (fn) => {
   const frameId = requestAnimationFrame(() => fn());
   return () => cancelAnimationFrame(frameId);
@@ -296,12 +338,12 @@ function ariaHidden(targetsOrFn, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
 var activeFocusTraps = {
   activateTrap(trapStack, trap) {
     if (trapStack.length > 0) {
@@ -522,6 +564,9 @@ var FocusTrap = class {
       }
       if (!node.isConnected) {
         node = this.getNodeForOption("fallbackFocus");
+      }
+      if (!node || !node.isConnected) {
+        throw new Error("Your focus-trap needs to have at least one focusable element");
       }
       return node;
     });
@@ -871,7 +916,7 @@ var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
 var delay = (fn) => setTimeout(fn, 0);
 var isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.40.0/node_modules/@zag-js/focus-trap/dist/index.mjs
 function trapFocus(el, options = {}) {
   let trap;
   const cleanup = raf(() => {
@@ -900,7 +945,7 @@ function trapFocus(el, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+remove-scroll@1.36.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+remove-scroll@1.40.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
 var LOCK_CLASSNAME = "data-scroll-lock";
 function getPaddingProperty(documentElement) {
   const documentLeft = documentElement.getBoundingClientRect().left;
@@ -959,7 +1004,7 @@ function preventBodyScroll(_document) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
 var machine = createMachine({
   props({ props, scope }) {
     const alertDialog = props.role === "alertdialog";
@@ -981,10 +1026,20 @@ var machine = createMachine({
     const open = prop("open") || prop("defaultOpen");
     return open ? "open" : "closed";
   },
-  context({ bindable }) {
+  context({ bindable, prop, scope }) {
     return {
       rendered: bindable(() => ({
         defaultValue: { title: true, description: true }
+      })),
+      triggerValue: bindable(() => ({
+        defaultValue: prop("defaultTriggerValue") ?? null,
+        value: prop("triggerValue"),
+        onChange(value) {
+          const onTriggerValueChange = prop("onTriggerValueChange");
+          if (!onTriggerValueChange) return;
+          const triggerElement = getActiveTriggerEl(scope, value);
+          onTriggerValueChange({ value, triggerElement });
+        }
       }))
     };
   },
@@ -995,7 +1050,7 @@ var machine = createMachine({
   },
   states: {
     open: {
-      entry: ["checkRenderedElements", "syncZIndex"],
+      entry: ["checkRenderedElements", "syncZIndex", "setInitialFocus"],
       effects: ["trackDismissableElement", "trapFocus", "preventScroll", "hideContentBelow"],
       on: {
         "CONTROLLED.CLOSE": {
@@ -1020,7 +1075,10 @@ var machine = createMachine({
             target: "closed",
             actions: ["invokeOnClose"]
           }
-        ]
+        ],
+        "TRIGGER_VALUE.SET": {
+          actions: ["setTriggerValue"]
+        }
       }
     },
     closed: {
@@ -1031,23 +1089,26 @@ var machine = createMachine({
         OPEN: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           }
         ],
         TOGGLE: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           }
-        ]
+        ],
+        "TRIGGER_VALUE.SET": {
+          actions: ["setTriggerValue"]
+        }
       }
     }
   },
@@ -1062,7 +1123,7 @@ var machine = createMachine({
           type: "dialog",
           defer: true,
           pointerBlocking: prop("modal"),
-          exclude: [getTriggerEl(scope)],
+          exclude: getTriggerEls(scope),
           onInteractOutside(event) {
             prop("onInteractOutside")?.(event);
             if (!prop("closeOnInteractOutside")) {
@@ -1088,14 +1149,25 @@ var machine = createMachine({
         if (!prop("preventScroll")) return;
         return preventBodyScroll(scope.getDoc());
       },
-      trapFocus({ scope, prop }) {
+      trapFocus({ scope, prop, context }) {
         if (!prop("trapFocus")) return;
         const contentEl = () => getContentEl(scope);
         return trapFocus(contentEl, {
           preventScroll: true,
           returnFocusOnDeactivate: !!prop("restoreFocus"),
           initialFocus: prop("initialFocusEl"),
-          setReturnFocus: (el) => prop("finalFocusEl")?.() ?? el,
+          setReturnFocus: (el) => {
+            const finalFocusEl = prop("finalFocusEl")?.();
+            if (finalFocusEl) return finalFocusEl;
+            const triggerValue = context.get("triggerValue");
+            if (triggerValue) {
+              const activeTriggerEl = getActiveTriggerEl(scope, triggerValue);
+              if (activeTriggerEl) return activeTriggerEl;
+            }
+            const fallbackTrigger = getTriggerEls(scope)[0];
+            if (fallbackTrigger) return fallbackTrigger;
+            return el;
+          },
           getShadowRoot: true
         });
       },
@@ -1106,6 +1178,16 @@ var machine = createMachine({
       }
     },
     actions: {
+      setInitialFocus({ prop, scope }) {
+        if (prop("trapFocus")) return;
+        raf(() => {
+          const element = getInitialFocus({
+            root: getContentEl(scope),
+            getInitialEl: prop("initialFocusEl")
+          });
+          element?.focus({ preventScroll: true });
+        });
+      },
       checkRenderedElements({ context, scope }) {
         raf(() => {
           context.set("rendered", {
@@ -1132,6 +1214,10 @@ var machine = createMachine({
       invokeOnOpen({ prop }) {
         prop("onOpenChange")?.({ open: true });
       },
+      setTriggerValue({ context, event }) {
+        if (event.value === void 0) return;
+        context.set("triggerValue", event.value);
+      },
       toggleVisibility({ prop, send, event }) {
         send({
           type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
@@ -1143,16 +1229,32 @@ var machine = createMachine({
 });
 
 // components/dialog.ts
+function dialogInitialAriaLabel(rootEl) {
+  const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+  if (titleEl?.textContent?.trim()) return void 0;
+  const fromDataset = getString(rootEl, "dialogDefaultLabel")?.trim();
+  if (fromDataset) return fromDataset;
+  return "Dialog";
+}
+function syncDialogContentAriaRefs(rootEl, contentEl) {
+  const descriptionEl = rootEl.querySelector(
+    '[data-scope="dialog"][data-part="description"]'
+  );
+  if (!descriptionEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-describedby");
+  }
+}
 var Dialog = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el;
+    const animation = rootEl.dataset.animation ?? "instant";
     const triggerEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="trigger"]'
     );
@@ -1160,7 +1262,15 @@ var Dialog = class extends Component {
     const backdropEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="backdrop"]'
     );
-    if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
+    if (backdropEl) {
+      const rawBackdrop = this.api.getBackdropProps();
+      if (animation === "instant") {
+        this.spreadProps(backdropEl, rawBackdrop);
+      } else if (animation === "js" || animation === "custom") {
+        this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
+        backdropEl.removeAttribute("hidden");
+      }
+    }
     const positionerEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="positioner"]'
     );
@@ -1168,7 +1278,19 @@ var Dialog = class extends Component {
     const contentEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="content"]'
     );
-    if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+    if (contentEl) {
+      const rawContent = this.api.getContentProps();
+      if (animation === "instant") {
+        this.spreadProps(contentEl, rawContent);
+      } else if (animation === "js" || animation === "custom") {
+        this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
+        contentEl.removeAttribute("hidden");
+        if (!this.api.open) {
+          contentEl.style.removeProperty("pointer-events");
+        }
+      }
+      syncDialogContentAriaRefs(rootEl, contentEl);
+    }
     const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
     if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
     const descriptionEl = rootEl.querySelector(
@@ -1183,10 +1305,33 @@ var Dialog = class extends Component {
 };
 
 // hooks/dialog.ts
+function getDialogUpdatePropsFromEl(el) {
+  return {
+    id: el.id,
+    ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+    modal: getBoolean(el, "modal"),
+    closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+    closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
+    preventScroll: getBoolean(el, "preventScroll"),
+    restoreFocus: getBoolean(el, "restoreFocus"),
+    dir: getDir(el)
+  };
+}
+function runDialogScaleTransitions(el, isOpen) {
+  const opts = readScaleAnimationOptions(el);
+  const blockRoot = opts.blockInteraction ? el : void 0;
+  const backdrop = el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+  const content = el.querySelector('[data-scope="dialog"][data-part="content"]');
+  if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
+  if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
+}
 var DialogHook = {
   mounted() {
     const el = this.el;
+    const self = this;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    self.lastOpen = getBoolean(el, "controlled") ? getBoolean(el, "open") ?? false : getBoolean(el, "defaultOpen") ?? false;
     const dialog = new Dialog(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
@@ -1195,73 +1340,82 @@ var DialogHook = {
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
+      "aria-label": dialogInitialAriaLabel(el),
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open
-              }
-            })
-          );
+        const previousOpen = self.lastOpen ?? false;
+        self.lastOpen = details.open;
+        const payload = {
+          id: el.id,
+          open: details.open,
+          previousOpen
+        };
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload,
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
+        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+          runDialogScaleTransitions(el, details.open);
         }
       }
     });
     dialog.init();
     this.dialog = dialog;
-    this.onSetOpen = (event) => {
+    if (el.dataset.animation === "js") {
+      const opts = readScaleAnimationOptions(el);
+      prepareInitialScaleState(
+        el,
+        '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
+        opts,
+        (sub) => {
+          if (sub.dataset.part === "backdrop") return { scale: false };
+        }
+      );
+    }
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:dialog:set-open", (event) => {
       const { open } = event.detail;
       dialog.api.setOpen(open);
-    };
-    el.addEventListener("phx:dialog:set-open", this.onSetOpen);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("dialog_set_open", (payload) => {
-        const targetId = payload.dialog_id;
-        if (targetId && targetId !== el.id) return;
-        dialog.api.setOpen(payload.open);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("dialog_open", () => {
-        this.pushEvent("dialog_open_response", {
-          value: dialog.api.open
-        });
-      })
-    );
-  },
-  updated() {
-    this.dialog?.updateProps({
-      id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
-      modal: getBoolean(this.el, "modal"),
-      closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(this.el, "closeOnEscapeKeyDown"),
-      preventScroll: getBoolean(this.el, "preventScroll"),
-      restoreFocus: getBoolean(this.el, "restoreFocus"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("dialog_set_open", (payload) => {
+      if (!payload || typeof payload !== "object") return;
+      const o = payload;
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof o.open === "boolean") dialog.api.setOpen(o.open);
+    });
+    registry.add("dialog_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("dialog_open_response", {
+        id: el.id,
+        value: dialog.api.open
+      });
     });
   },
-  destroyed() {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("phx:dialog:set-open", this.onSetOpen);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
+  updated() {
+    const el = this.el;
+    const controlled = getBoolean(el, "controlled");
+    if (controlled) {
+      const nextOpen = getBoolean(el, "open") ?? false;
+      const prevOpen = this.lastOpen ?? false;
+      this.lastOpen = nextOpen;
+      if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
+        runDialogScaleTransitions(el, nextOpen);
       }
     }
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(el));
+  },
+  destroyed() {
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.dialog?.destroy();
   }
 };

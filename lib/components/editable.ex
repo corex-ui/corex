@@ -53,7 +53,20 @@ defmodule Corex.Editable do
   </.editable>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/editable#modifiers)
+  ## Programmatic control
+
+  ```heex
+  <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
+    Set Hello
+  </.action>
+  ```
+
+  ```elixir
+  def handle_event("set_text", _, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
+  end
+  ```
+
   '''
 
   defmodule Translation do
@@ -72,9 +85,14 @@ defmodule Corex.Editable do
 
   import Corex.Gettext, only: [gettext: 1]
 
+  alias Phoenix.HTML.Form
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
   alias Corex.Editable.Anatomy.{
     Area,
     CancelTrigger,
+    Control,
     EditTrigger,
     Input,
     Label,
@@ -88,8 +106,18 @@ defmodule Corex.Editable do
   alias Corex.Editable.Connect
 
   attr(:id, :string, required: false, doc: "The id of the editable component")
-  attr(:value, :string, default: "", doc: "The current or initial value")
-  attr(:controlled, :boolean, default: false, doc: "Whether the value is controlled externally")
+
+  attr(:value, :string,
+    default: "",
+    doc:
+      "Initial or current text; merged into default for the client hook (prefer default_value when both are set)"
+  )
+
+  attr(:default_value, :string,
+    default: nil,
+    doc: "Preferred initial text when set (otherwise value)"
+  )
+
   attr(:disabled, :boolean, default: false, doc: "Whether the editable is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the editable is read-only")
   attr(:required, :boolean, default: false, doc: "Whether the input is required")
@@ -97,6 +125,7 @@ defmodule Corex.Editable do
   attr(:name, :string, default: nil, doc: "The name attribute for form submission")
   attr(:form, :string, default: nil, doc: "The id of the form this input belongs to")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
+  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:edit, :boolean, default: false, doc: "Controlled edit state when controlled_edit is true")
 
   attr(:controlled_edit, :boolean,
@@ -126,6 +155,11 @@ defmodule Corex.Editable do
     doc: "Override translatable strings"
   )
 
+  attr(:field, Phoenix.HTML.FormField,
+    default: nil,
+    doc: "A form field struct, e.g. f[:text] or @form[:text]"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: true do
@@ -144,11 +178,21 @@ defmodule Corex.Editable do
     attr(:class, :string, required: false)
   end
 
-  def editable(assigns) do
-    empty = String.trim(assigns[:value] || "") == ""
-    editing = assigns[:default_edit] || false
-    value_text = if(empty, do: assigns[:placeholder] || "", else: assigns[:value] || "")
+  def editable(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
+    assigns
+    |> assign(field: nil)
+    |> assign(:id, field.id)
+    |> assign(:name, field.name)
+    |> assign(:form, field.form.id)
+    |> assign(:value, value_to_string(Form.normalize_value("text", field.value)))
+    |> assign(:default_value, nil)
+    |> assign(:invalid, errors != [])
+    |> editable()
+  end
+
+  def editable(assigns) do
     default_translation = %Translation{
       input: gettext("editable input"),
       edit: gettext("edit"),
@@ -156,12 +200,25 @@ defmodule Corex.Editable do
       cancel: gettext("cancel")
     }
 
+    value_s = value_to_string(Form.normalize_value("text", assigns[:value]))
+    default_s = normalize_default_value(assigns[:default_value])
+
+    content_value = default_s || value_s || ""
+
+    empty = String.trim(content_value) == ""
+    editing = assigns[:default_edit] || false
+    value_text = if(empty, do: assigns[:placeholder] || "", else: content_value)
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "editable-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:value, value_s)
+      |> assign(:default_value, default_s)
+      |> assign(:content_value, content_value)
       |> assign(:empty, empty)
       |> assign(:editing, editing)
       |> assign(:value_text, value_text)
@@ -170,11 +227,13 @@ defmodule Corex.Editable do
     <div
       id={@id}
       phx-hook="Editable"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
         value: @value,
-        controlled: @controlled,
+        default_value: @default_value,
         disabled: @disabled,
         read_only: @read_only,
         required: @required,
@@ -182,6 +241,7 @@ defmodule Corex.Editable do
         name: @name,
         form: @form,
         dir: @dir,
+        orientation: @orientation,
         edit: @edit,
         controlled_edit: @controlled_edit,
         default_edit: @default_edit,
@@ -192,25 +252,25 @@ defmodule Corex.Editable do
         on_value_change_client: @on_value_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-      <label {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+      <label phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
         {render_slot(@label)}
       </label>
-        <div data-scope="editable" data-part="control">
-          <div {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false})}>
-            <input type="text" {Connect.input(%Input{id: @id, disabled: @disabled, value: @value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input})} />
-            <span {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit})}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+          <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})}>
+            <input type="text" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
+            <span phx-mounted={Connect.ignore_preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})} {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
               {@value_text}
             </span>
           </div>
           <div {Connect.triggers(%Triggers{})}>
-            <button type="button" {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit})}>
+            <button type="button" phx-mounted={Connect.ignore_edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit, orientation: @orientation})} {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
               {render_slot(@edit_trigger)}
             </button>
-            <button type="button" {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit})}>
+            <button type="button" phx-mounted={Connect.ignore_submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit, orientation: @orientation})} {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit, orientation: @orientation})}>
               {render_slot(@submit_trigger)}
             </button>
-            <button type="button" {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel})}>
+            <button type="button" phx-mounted={Connect.ignore_cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel, orientation: @orientation})} {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel, orientation: @orientation})}>
               {render_slot(@cancel_trigger)}
             </button>
         </div>
@@ -230,5 +290,50 @@ defmodule Corex.Editable do
       submit: partial.submit || default.submit,
       cancel: partial.cancel || default.cancel
     }
+  end
+
+  defp value_to_string(nil), do: ""
+
+  defp value_to_string(v), do: to_string(v)
+
+  defp normalize_default_value(nil), do: nil
+  defp normalize_default_value(v), do: value_to_string(v)
+
+  @doc type: :api
+  @doc """
+  Sets the editable text from the client. Returns a `Phoenix.LiveView.JS` command.
+
+  ## Examples
+
+      <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
+        Set Hello
+      </.action>
+  """
+  def set_value(editable_id, value)
+      when is_binary(editable_id) and is_binary(value) do
+    JS.dispatch("corex:editable:set-value",
+      to: "##{editable_id}",
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets the editable text from the server by pushing an event to the hook.
+
+  ## Examples
+
+      def handle_event("set_text", _params, socket) do
+        {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
+      end
+  """
+  def set_value(socket, editable_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(editable_id) and
+             is_binary(value) do
+    LiveView.push_event(socket, "editable_set_value", %{
+      id: editable_id,
+      value: value
+    })
   end
 end

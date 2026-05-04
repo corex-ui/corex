@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+Corex MCP
+
+The HTTP Model Context Protocol stack under `lib/corex/mcp/` is aligned with
+[tidewave_phoenix](https://github.com/tidewave-ai/tidewave_phoenix) 
+
+The original Tidewave files are copyright (c) 2025 Dashbit and licensed under the
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

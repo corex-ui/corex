@@ -1,4 +1,24 @@
 import {
+  diffStringValues
+} from "./chunks/chunk-JDGMEOQK.mjs";
+import {
+  prepareInitialHeightState,
+  readHeightAnimationOptions,
+  runOpenStateTransitionsHeight,
+  stripHiddenFromProps
+} from "./chunks/chunk-4PSVMPGM.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
+import {
   Component,
   VanillaMachine,
   add,
@@ -16,18 +36,17 @@ import {
   isSafari,
   last,
   nextById,
-  normalizeProps,
   prevById,
   queryAll,
   remove,
   warn
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `accordion:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `accordion:${ctx.id}:item:${value}`;
 var getItemContentId = (ctx, value) => ctx.ids?.itemContent?.(value) ?? `accordion:${ctx.id}:content:${value}`;
@@ -43,7 +62,7 @@ var getLastTriggerEl = (ctx) => last(getTriggerEls(ctx));
 var getNextTriggerEl = (ctx, id) => nextById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 var getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, scope, computed } = service;
   const focusedValue = context.get("focusedValue");
@@ -130,6 +149,7 @@ function connect(service, normalize) {
         "data-orientation": prop("orientation"),
         "aria-disabled": itemState.disabled,
         "data-state": itemState.expanded ? "open" : "closed",
+        "data-focus": dataAttr(itemState.focused),
         "data-ownedby": getRootId(scope),
         onFocus() {
           if (itemState.disabled) return;
@@ -188,7 +208,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -327,20 +347,22 @@ var Accordion = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="accordion"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const itemsList = this.getItemsList();
+    const scopeId = this.el.id;
+    const itemPrefix = scopeId ? `accordion:${scopeId}:item:` : "";
     const itemEls = rootEl.querySelectorAll(
       '[data-scope="accordion"][data-part="item"]'
     );
-    for (let i = 0; i < itemEls.length; i++) {
-      const itemEl = itemEls[i];
-      const itemData = itemsList[i];
-      if (!itemData?.value) continue;
-      const { value, disabled } = itemData;
+    const animation = this.el.dataset.animation ?? "instant";
+    for (const itemEl of itemEls) {
+      if (itemPrefix && !itemEl.id.startsWith(itemPrefix)) continue;
+      const value = itemEl.dataset.value;
+      if (!value) continue;
+      const disabled = itemEl.dataset.disabled === "";
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
       const triggerEl = itemEl.querySelector(
         '[data-scope="accordion"][data-part="item-trigger"]'
@@ -358,17 +380,18 @@ var Accordion = class extends Component {
         '[data-scope="accordion"][data-part="item-content"]'
       );
       if (contentEl) {
-        this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+        if (animation === "instant") {
+          this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+        } else if (animation === "js" || animation === "custom") {
+          this.spreadProps(
+            contentEl,
+            stripHiddenFromProps(
+              this.api.getItemContentProps({ value, disabled })
+            )
+          );
+          contentEl.removeAttribute("hidden");
+        }
       }
-    }
-  }
-  getItemsList() {
-    const raw = this.el.getAttribute("data-items");
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return [];
     }
   }
 };
@@ -377,112 +400,206 @@ var Accordion = class extends Component {
 var AccordionHook = {
   mounted() {
     const el = this.el;
+    const self = this;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    self.lastValue = getBoolean(el, "controlled") ? getStringList(el, "value") ?? [] : getStringList(el, "defaultValue") ?? [];
     const accordion = new Accordion(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       collapsible: getBoolean(el, "collapsible"),
       multiple: getBoolean(el, "multiple"),
-      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+      orientation: getString(el, "orientation"),
       dir: getDir(el),
       onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null
+        const next = details.value ?? [];
+        const previousValue = self.lastValue ?? [];
+        const { added, removed } = diffStringValues(next, previousValue);
+        self.lastValue = next;
+        const payload = {
+          id: el.id,
+          value: next,
+          previousValue,
+          added,
+          removed
+        };
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload,
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+          runOpenStateTransitionsHeight({
+            rootEl: el,
+            selector: '[data-scope="accordion"][data-part="item-content"]',
+            opts: readHeightAnimationOptions(el),
+            isOpen: (contentEl) => {
+              const itemEl = contentEl.closest(
+                '[data-scope="accordion"][data-part="item"]'
+              );
+              const value = itemEl?.dataset.value;
+              return !!value && next.includes(value);
+            }
           });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null
-              }
-            })
-          );
         }
       },
       onFocusChange: (details) => {
-        const eventName = getString(el, "onFocusChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null
-          });
-        }
-        const eventNameClient = getString(el, "onFocusChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: details.value ?? null },
+          serverEventName: getString(el, "onFocusChange"),
+          clientEventName: getString(el, "onFocusChangeClient")
+        });
       }
     });
     accordion.init();
     this.accordion = accordion;
-    this.onSetValue = (event) => {
-      const { value } = event.detail;
-      accordion.api.setValue(value);
+    if (el.dataset.animation === "js") {
+      const opts = readHeightAnimationOptions(el);
+      prepareInitialHeightState(el, '[data-scope="accordion"][data-part="item-content"]', opts);
+    }
+    const emitValue = (respondTo) => {
+      const value = accordion.api.value;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "accordion_value_response",
+        serverPayload: { id: el.id, value },
+        el,
+        domEventName: "accordion-value",
+        domDetail: { id: el.id, value }
+      });
     };
-    el.addEventListener("phx:accordion:set-value", this.onSetValue);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("accordion_set_value", (payload) => {
-        const targetId = payload.id;
-        if (targetId) {
-          const matches = el.id === targetId || el.id === `accordion:${targetId}`;
-          if (!matches) return;
-        }
-        accordion.api.setValue(payload.value);
-      })
+    const emitFocusedValue = (respondTo) => {
+      const value = accordion.api.focusedValue;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "accordion_focused_response",
+        serverPayload: { id: el.id, value },
+        el,
+        domEventName: "accordion-focused",
+        domDetail: { id: el.id, value }
+      });
+    };
+    const emitItemState = (itemValue, disabled, respondTo) => {
+      const props = { value: itemValue, disabled };
+      const state = accordion.api.getItemState(props);
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "accordion_item_state_response",
+        serverPayload: {
+          id: el.id,
+          value: itemValue,
+          state: {
+            expanded: state.expanded,
+            focused: state.focused,
+            disabled: state.disabled
+          }
+        },
+        el,
+        domEventName: "accordion-item-state",
+        domDetail: { id: el.id, value: itemValue, state }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:accordion:set-value", (event) => {
+      accordion.api.setValue(event.detail.value);
+    });
+    domRegistry.add("corex:accordion:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    domRegistry.add("corex:accordion:focused", (event) => {
+      emitFocusedValue(parseRespondTo(event.detail));
+    });
+    domRegistry.add(
+      "corex:accordion:item-state",
+      (event) => {
+        const d = event.detail;
+        const v = d?.value;
+        if (typeof v !== "string" || v === "") return;
+        emitItemState(v, d?.disabled === true, parseRespondTo(d));
+      }
     );
-    this.handlers.push(
-      this.handleEvent("accordion_value", () => {
-        this.pushEvent("accordion_value_response", {
-          value: accordion.api.value
-        });
-      })
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("accordion_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      accordion.api.setValue(payload.value);
+    });
+    registry.add("accordion_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
+    registry.add("accordion_focused", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitFocusedValue(parseRespondTo(payload));
+    });
+    registry.add(
+      "accordion_item_state",
+      (payload) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
+        if (typeof payload?.value !== "string" || payload.value === "") return;
+        emitItemState(payload.value, payload.disabled === true, parseRespondTo(payload));
+      }
     );
-    this.handlers.push(
-      this.handleEvent("accordion_focused_value", () => {
-        this.pushEvent("accordion_focused_value_response", {
-          value: accordion.api.focusedValue
-        });
-      })
-    );
+  },
+  beforeUpdate() {
+    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+      this.previousValue = getStringList(this.el, "value") ?? [];
+    }
   },
   updated() {
     const controlled = getBoolean(this.el, "controlled");
+    if (controlled) {
+      const nextValue = getStringList(this.el, "value") ?? [];
+      const prevValue = this.previousValue ?? this.lastValue ?? [];
+      this.previousValue = void 0;
+      this.lastValue = nextValue;
+      if (this.el.dataset.animation === "js") {
+        runOpenStateTransitionsHeight({
+          rootEl: this.el,
+          selector: '[data-scope="accordion"][data-part="item-content"]',
+          opts: readHeightAnimationOptions(this.el),
+          wasOpen: (contentEl) => {
+            const itemEl = contentEl.closest(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && prevValue.includes(value);
+          },
+          isOpen: (contentEl) => {
+            const itemEl = contentEl.closest(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && nextValue.includes(value);
+          }
+        });
+      }
+    }
     this.accordion?.updateProps({
       id: this.el.id,
-      ...controlled ? { value: getStringList(this.el, "value") } : {
-        defaultValue: this.accordion?.api?.value ?? getStringList(this.el, "defaultValue")
-      },
+      ...controlled ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
       collapsible: getBoolean(this.el, "collapsible"),
       multiple: getBoolean(this.el, "multiple"),
-      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
+      orientation: getString(this.el, "orientation"),
       dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:accordion:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.accordion?.destroy();
   }
 };

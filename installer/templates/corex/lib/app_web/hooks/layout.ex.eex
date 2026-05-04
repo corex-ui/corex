@@ -1,0 +1,34 @@
+defmodule <%= @web_module %>.Hooks.Layout do
+  import Phoenix.Component, only: [assign: 3]
+  import Phoenix.LiveView, only: [attach_hook: 4]
+
+  def on_mount(:default, _params, session, socket) do
+    _ =
+      case Localize.Plug.put_locale_from_session(session, gettext: <%= @web_module %>.Gettext) do
+        {:ok, _} -> :ok
+        {:error, _} -> :ok
+      end
+
+    mode = Map.get(session, "mode") || Map.get(session, :mode) || "light"
+    theme = Map.get(session, "theme") || Map.get(session, :theme) || "neo"
+
+    socket =
+      socket
+      |> assign(:mode, mode)
+      |> assign(:theme, theme)
+      |> assign(:current_path, "/")
+      |> attach_hook(:layout_current_path, :handle_params, &assign_current_path/3)
+
+    {:cont, socket}
+  end
+
+  defp assign_current_path(_params, url, socket) do
+    path =
+      case URI.parse(url) do
+        %URI{path: p} when is_binary(p) and p != "" -> p
+        _ -> "/"
+      end
+
+    {:cont, assign(socket, :current_path, path)}
+  end
+end

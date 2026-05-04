@@ -13,7 +13,11 @@ type ToastPayload = {
   id?: string;
   duration?: number | string;
   groupId?: string;
+  loading?: boolean;
 };
+
+const loadingMeta = (loading: unknown) =>
+  loading === true || loading === "true" ? { meta: { loading: true as const } } : {};
 
 type ToastHookState = {
   groupId: string;
@@ -68,6 +72,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
+    el.setAttribute("data-ready", "");
+
     const store = getToastStore(this.groupId);
     const flashInfo = el.getAttribute("data-flash-info");
     const flashInfoTitle = el.getAttribute("data-flash-info-title");
@@ -118,6 +124,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
             type: payload.type || "info",
             id: payload.id || generateId(undefined, "toast"),
             duration: parseDuration(payload.duration),
+            ...loadingMeta(payload.loading),
           });
         } catch (error) {
           console.error("Failed to create toast:", error);
@@ -167,6 +174,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
           type: detail.type || "info",
           id: detail.id || generateId(undefined, "toast"),
           duration: parseDuration(detail.duration),
+          ...loadingMeta(detail.loading),
         });
       } catch (error) {
         console.error("Failed to create toast:", error);

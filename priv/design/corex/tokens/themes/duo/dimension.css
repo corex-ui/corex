@@ -1,0 +1,32 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="duo"] {
+  --theme-container-2xl: 41.9rem;
+  --theme-container-2xs: 18rem;
+  --theme-container-3xl: 47.9rem;
+  --theme-container-3xs: 16rem;
+  --theme-container-4xl: 55.9rem;
+  --theme-container-4xs: 12rem;
+  --theme-container-5xl: 63.8rem;
+  --theme-container-5xs: 10rem;
+  --theme-container-6xl: 71.8rem;
+  --theme-container-6xs: 8rem;
+  --theme-container-7xl: 79.8rem;
+  --theme-container-7xs: 6rem;
+  --theme-container-lg: 31.9rem;
+  --theme-container-md: 27.9rem;
+  --theme-container-sm: 23.9rem;
+  --theme-container-xl: 35.9rem;
+  --theme-container-xs: 20rem;
+  --theme-spacing: 0.25rem;
+  --theme-spacing-size-lg: calc(var(--theme-spacing) * 12);
+  --theme-spacing-size-md: calc(var(--theme-spacing) * 10);
+  --theme-spacing-size-sm: calc(var(--theme-spacing) * 8);
+  --theme-spacing-size-xl: calc(var(--theme-spacing) * 14);
+  --theme-spacing-space-lg: calc(var(--theme-spacing) * 4);
+  --theme-spacing-space-md: calc(var(--theme-spacing) * 3);
+  --theme-spacing-space-sm: calc(var(--theme-spacing) * 2);
+  --theme-spacing-space-xl: calc(var(--theme-spacing) * 5);
+}

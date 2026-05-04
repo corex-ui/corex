@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html
-  lang={assigns[:locale] || "en"}
-  dir={
-    assigns[:dir] ||
-      if(assigns[:locale] in Application.get_env(:corex, :rtl_locales, []),
-        do: "rtl",
-        else: "ltr"
-      )
-  }
-  data-theme={assigns[:theme] || "neo"}
+  lang={E2eWeb.Locale.current()}
+  dir={E2eWeb.Locale.dir(E2eWeb.Locale.current())}
+  data-theme={assigns[:theme]}
   data-mode={assigns[:mode]}
 >
   <head>
@@ -99,7 +93,7 @@
       })();
     </script>
   </head>
-  <body class="typo layout">
+  <body class="typo layout antialiased">
     {@inner_content}
   </body>
 </html>

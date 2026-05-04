@@ -57,7 +57,6 @@ defmodule Corex.Timer do
   </.timer>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/timer#modifiers)
   '''
 
   @doc type: :component
@@ -73,7 +72,22 @@ defmodule Corex.Timer do
   attr(:auto_start, :boolean, default: false)
   attr(:interval, :integer, default: 1000)
   attr(:on_tick, :string, default: nil)
+  attr(:on_tick_client, :string, default: nil)
   attr(:on_complete, :string, default: nil)
+  attr(:on_complete_client, :string, default: nil)
+
+  attr(:dir, :string,
+    default: "ltr",
+    values: ["ltr", "rtl"],
+    doc: "Text direction for styling; nil follows the document."
+  )
+
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation for CSS."
+  )
+
   attr(:rest, :global)
 
   slot :start_trigger, required: true do
@@ -104,6 +118,8 @@ defmodule Corex.Timer do
     <div
       id={@id}
       phx-hook="Timer"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -113,32 +129,66 @@ defmodule Corex.Timer do
         auto_start: @auto_start,
         interval: @interval,
         on_tick: @on_tick,
-        on_complete: @on_complete
+        on_tick_client: @on_tick_client,
+        on_complete: @on_complete,
+        on_complete_client: @on_complete_client,
+        dir: @dir,
+        orientation: @orientation
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id})}>
-        <div {Connect.area(%Area{id: @id})}>
-          <div {Connect.item(%Item{type: "days", value: @time_values.days})}></div>
-          <div {Connect.separator(%Separator{})}>:</div>
-          <div {Connect.item(%Item{type: "hours", value: @time_values.hours})}></div>
-          <div {Connect.separator(%Separator{})}>:</div>
-          <div {Connect.item(%Item{type: "minutes", value: @time_values.minutes})}></div>
-          <div {Connect.separator(%Separator{})}>:</div>
-          <div {Connect.item(%Item{type: "seconds", value: @time_values.seconds})}></div>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, orientation: @orientation})}>
+          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "days", value: @time_values.days, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "days", value: @time_values.days, dir: @dir, orientation: @orientation})}></div>
+          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:0", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:0", dir: @dir, orientation: @orientation})}>:</div>
+          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "hours", value: @time_values.hours, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "hours", value: @time_values.hours, dir: @dir, orientation: @orientation})}></div>
+          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:1", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:1", dir: @dir, orientation: @orientation})}>:</div>
+          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "minutes", value: @time_values.minutes, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "minutes", value: @time_values.minutes, dir: @dir, orientation: @orientation})}></div>
+          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})}>:</div>
+          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})}></div>
         </div>
-        <div {Connect.control(%Control{id: @id})}>
-          <button type="button" {Connect.action_trigger(%ActionTrigger{action: "start", hidden: @running or @paused})}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}>
             {render_slot(@start_trigger)}
           </button>
-          <button type="button" {Connect.action_trigger(%ActionTrigger{action: "pause", hidden: not @running})}>
+          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}>
             {render_slot(@pause_trigger)}
           </button>
-          <button type="button" {Connect.action_trigger(%ActionTrigger{action: "resume", hidden: not @paused})}>
+          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}>
             {render_slot(@resume_trigger)}
           </button>
-          <button type="button" {Connect.action_trigger(%ActionTrigger{action: "reset", hidden: not @running and not @paused})}>
+          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}>
             {render_slot(@reset_trigger)}
           </button>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc type: :component
+  attr(:id, :string, required: false)
+  attr(:rest, :global)
+
+  def timer_skeleton(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+
+    ~H"""
+    <div id={@id} {@rest}>
+      <div {Connect.root(%Root{id: @id, dir: "ltr", orientation: "horizontal"})}>
+        <div {Connect.area(%Area{id: @id, dir: "ltr", orientation: "horizontal"})}>
+          <div {Connect.item(%Item{id: @id, type: "days", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:0", dir: "ltr", orientation: "horizontal"})}>:</div>
+          <div {Connect.item(%Item{id: @id, type: "hours", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:1", dir: "ltr", orientation: "horizontal"})}>:</div>
+          <div {Connect.item(%Item{id: @id, type: "minutes", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:2", dir: "ltr", orientation: "horizontal"})}>:</div>
+          <div {Connect.item(%Item{id: @id, type: "seconds", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+        </div>
+        <div {Connect.control(%Control{id: @id, dir: "ltr", orientation: "horizontal"})}>
+          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
+          <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>
         </div>
       </div>
     </div>

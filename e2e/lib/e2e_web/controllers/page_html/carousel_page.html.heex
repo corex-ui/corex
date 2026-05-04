@@ -2,122 +2,35 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Carousel</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <div class="layout__row flex flex-col gap-ui">
-    <section>
-      <h3 class="font-ui-lg mb-micro">Basic</h3>
-      <.carousel
-        id="carousel-basic"
-        items={[
-          ~p"/images/beach.jpg",
-          ~p"/images/fall.jpg",
-          ~p"/images/sand.jpg",
-          ~p"/images/star.jpg",
-          ~p"/images/winter.jpg"
-        ]}
-        class="carousel"
-      >
-        <:prev_trigger>
-          <.heroicon name="hero-arrow-left" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-arrow-right" />
-        </:next_trigger>
-      </.carousel>
-    </section>
-    <section>
-      <h3 class="font-ui-lg mb-micro">Loop</h3>
-      <.carousel
-        id="carousel-loop"
-        items={[
-          ~p"/images/beach.jpg",
-          ~p"/images/fall.jpg",
-          ~p"/images/sand.jpg",
-          ~p"/images/star.jpg",
-          ~p"/images/winter.jpg"
-        ]}
-        loop
-        class="carousel"
-      >
-        <:prev_trigger>
-          <.heroicon name="hero-arrow-left" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-arrow-right" />
-        </:next_trigger>
-      </.carousel>
-    </section>
-    <section>
-      <h3 class="font-ui-lg mb-micro">Vertical</h3>
-      <.carousel
-        id="carousel-vertical"
-        items={[
-          ~p"/images/beach.jpg",
-          ~p"/images/fall.jpg",
-          ~p"/images/sand.jpg",
-          ~p"/images/star.jpg",
-          ~p"/images/winter.jpg"
-        ]}
-        orientation="vertical"
-        class="carousel"
-      >
-        <:prev_trigger>
-          <.heroicon name="hero-arrow-up" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-arrow-down" />
-        </:next_trigger>
-      </.carousel>
-    </section>
-    <section>
-      <h3 class="font-ui-lg mb-micro">Slides per page (2)</h3>
-      <.carousel
-        id="carousel-multiple"
-        items={[
-          ~p"/images/beach.jpg",
-          ~p"/images/fall.jpg",
-          ~p"/images/sand.jpg",
-          ~p"/images/star.jpg",
-          ~p"/images/winter.jpg"
-        ]}
-        slides_per_page={2}
-        class="carousel"
-      >
-        <:prev_trigger>
-          <.heroicon name="hero-arrow-left" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-arrow-right" />
-        </:next_trigger>
-      </.carousel>
-    </section>
-    <section>
-      <h3 class="font-ui-lg mb-micro">Autoplay</h3>
-      <.carousel
-        id="carousel-autoplay"
-        items={[
-          ~p"/images/beach.jpg",
-          ~p"/images/fall.jpg",
-          ~p"/images/sand.jpg",
-          ~p"/images/star.jpg",
-          ~p"/images/winter.jpg"
-        ]}
-        autoplay
-        class="carousel"
-      >
-        <:prev_trigger>
-          <.heroicon name="hero-arrow-left" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-arrow-right" />
-        </:next_trigger>
-      </.carousel>
-    </section>
-  </div>
+  <.demo_page
+    id="carousel-anatomy-page"
+    title="Carousel Anatomy"
+    subtitle="Basic, looping, and vertical carousels."
+  >
+    <.demo_section
+      id="carousel-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.CarouselDemo.basic_code()}
+    >
+      <:preview><E2eWeb.Demos.CarouselDemo.basic_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-anatomy-loop"
+      title="Loop"
+      code={E2eWeb.Demos.CarouselDemo.loop_code()}
+    >
+      <:preview><E2eWeb.Demos.CarouselDemo.loop_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-anatomy-vertical"
+      title="Vertical"
+      code={E2eWeb.Demos.CarouselDemo.vertical_code()}
+    >
+      <:preview><E2eWeb.Demos.CarouselDemo.vertical_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

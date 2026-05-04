@@ -1,7 +1,8 @@
 import { connect, machine, collection, type Props, type Api } from "@zag-js/select";
 import type { ListCollection } from "@zag-js/collection";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { zagIdValueLabelCollectionConfig } from "../lib/list-collection";
 import { getString } from "../lib/util";
 
 type Item = {
@@ -33,52 +34,23 @@ export class Select extends Component<Props, Api> {
   }
 
   getCollection(): ListCollection<Item> {
-    const items = this.options;
-
-    if (this.hasGroups) {
-      return collection({
-        items: items,
-        itemToValue: (item) => item.id ?? item.value ?? "",
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item: Item) => item.group ?? "",
-      });
-    }
-
-    return collection({
-      items: items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled,
-    });
+    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = (props as Props & { collection?: ListCollection<Item> }).collection;
 
     return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return collectionFromProps ?? getCollection();
+        return getCollection();
       },
     });
   }
-
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
-
-  init = (): void => {
-    this.machine.start();
-    this.render();
-    this.machine.subscribe(() => {
-      this.api = this.initApi();
-      this.render();
-    });
-    this.el.removeAttribute("data-js");
-  };
 
   applyItemProps(): void {
     const contentEl = this.el.querySelector<HTMLElement>(
@@ -86,9 +58,13 @@ export class Select extends Component<Props, Api> {
     );
     if (!contentEl) return;
 
+    const isOwnedByContent = (el: Element) =>
+      el.closest('[data-scope="select"][data-part="content"]') === contentEl;
+
     contentEl
       .querySelectorAll<HTMLElement>('[data-scope="select"][data-part="item-group"]')
       .forEach((groupEl) => {
+        if (!isOwnedByContent(groupEl)) return;
         const groupId = groupEl.dataset.id ?? "";
         this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
         const labelEl = groupEl.querySelector<HTMLElement>(
@@ -102,16 +78,22 @@ export class Select extends Component<Props, Api> {
     contentEl
       .querySelectorAll<HTMLElement>('[data-scope="select"][data-part="item"]')
       .forEach((itemEl) => {
+        if (!isOwnedByContent(itemEl)) return;
         const value = itemEl.dataset.value ?? "";
+        if (!value) return;
+
         const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
         if (!item) return;
+
         this.spreadProps(itemEl, this.api.getItemProps({ item }));
+
         const textEl = itemEl.querySelector<HTMLElement>(
           '[data-scope="select"][data-part="item-text"]'
         );
         if (textEl) {
           this.spreadProps(textEl, this.api.getItemTextProps({ item }));
         }
+
         const indicatorEl = itemEl.querySelector<HTMLElement>(
           '[data-scope="select"][data-part="item-indicator"]'
         );
@@ -127,23 +109,17 @@ export class Select extends Component<Props, Api> {
 
     this.spreadProps(root, this.api.getRootProps());
 
-    const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
-      '[data-scope="select"][data-part="hidden-select"]'
-    );
-
     const valueInput = this.el.querySelector<HTMLInputElement>(
       '[data-scope="select"][data-part="value-input"]'
     );
     if (valueInput) {
-      if (!this.api.value || this.api.value.length === 0) {
-        valueInput.value = "";
-      } else if (this.api.value.length === 1) {
-        valueInput.value = String(this.api.value[0]);
-      } else {
-        valueInput.value = this.api.value.map(String).join(",");
-      }
+      const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
+      valueInput.value = valueStr;
     }
 
+    const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
     }
@@ -175,13 +151,9 @@ export class Select extends Component<Props, Api> {
           const itemValue = item.id ?? item.value ?? "";
           return String(itemValue) === String(selectedValue);
         });
-        if (selectedItem) {
-          valueText.textContent = selectedItem.label;
-        } else {
-          valueText.textContent = this.placeholder || "";
-        }
+        valueText.textContent = selectedItem?.label || this.placeholder;
       } else {
-        valueText.textContent = valueAsString || this.placeholder || "";
+        valueText.textContent = valueAsString || this.placeholder;
       }
     }
 

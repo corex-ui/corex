@@ -1,17 +1,29 @@
 # Manual installation
 
-This guide describes how to add Corex to an existing Phoenix application without using the `mix corex.new` generator.
+This guide describes how to add Corex to an existing Phoenix application without using `mix corex.new`. It covers the minimum needed to render Corex components in your templates: the dependency, an ESM Esbuild build, the Corex JS hooks, the root layout `<script type="module">`, and `use Corex` in your web layer. Later sections cover optional features (design, toasts, dark mode, theming, localization).
 
 If you are creating a new project instead, see the [Installation guide](installation.html).
 
-## Add the dependency
+For light/dark mode, theming, and localization, follow the dedicated guides after this minimal install:
 
-Add `corex` to your `mix.exs` dependencies:
+- [Dark mode](dark_mode.html)
+- [Theming](theming.html)
+- [Localize](localize.html)
+
+## Requirements
+
+- **Elixir**
+- **Phoenix** and **LiveView** 
+- A standard **Esbuild** asset pipeline
+
+## 1. Add the dependency
+
+Add `corex` to your `mix.exs` deps:
 
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.33"}
+    {:corex, "~> 0.1.0-beta.1"}
   ]
 end
 ```
@@ -22,53 +34,11 @@ Then fetch the dependencies:
 mix deps.get
 ```
 
-## Configuration
+## 2. Esbuild
 
-Configure Gettext backend and Jason Library in your `config/config.exs`:
+Corex's JavaScript ships as ECMAScript modules with dynamic `import()`. Each component hook loads its own chunk on demand, so a component that never appears on a page is never fetched.
 
-```elixir
-config :corex,
-  gettext_backend: MyAppWeb.Gettext,
-  json_library: Jason
-```
-
-### Import Corex Hooks
-
-In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket.
-
-Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
-
-To load all hooks (in dev only):
-
-```javascript
-import corex from "corex"
-```
-
-```javascript
-const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...corex}
-})
-```
-
-To register only the hooks you use (recommended for production):
-
-```javascript
-import { hooks } from "corex"
-```
-
-```javascript
-const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"])}
-})
-```
-
-### Esbuild
-
-Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+This requires two Esbuild flags on your main app target: **`--format=esm`**, **`--splitting`** and **`--outdir=../priv/static/assets/js`**. In `config/config.exs`:
 
 ```elixir
 config :esbuild,
@@ -81,15 +51,49 @@ config :esbuild,
   ]
 ```
 
-Load your app script with `type="module"` in your root layout in `root.html.heex`:
+## 3. Phoenix Hooks
+
+Import Corex and merge its hooks into the `LiveSocket`. After your existing LiveView and `colocatedHooks` imports, add:
+
+```javascript
+import corex from "corex"
+```
+
+Then merge `...corex` into the `hooks` map:
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: { ...colocatedHooks, ...corex }
+})
+```
+
+`import corex from "corex"` registers **every** Corex hook. In production you can opt into the named export to register only the hooks you actually use:
+
+```javascript
+import { hooks } from "corex"
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: { ...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"]) }
+})
+```
+
+## 4. Root layout: load `app.js` as a module
+
+The Corex JS bundle is ESM, so the browser must load it as a module. In `lib/my_app_web/components/layouts/root.html.heex`, set `type="module"` on the `<script>` tag that loads `assets/js/app.js`:
 
 ```heex
 <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
 ```
 
-## Import Components
+If your root layout already uses `type="text/javascript"` (the `phx.new` default), replace `text/javascript` with `module`. If it has no `type` at all, add `type="module"` next to `phx-track-static`.
 
-Add `use Corex` into your `MyAppWeb` `html_helpers`:
+## 5. Import Corex
+
+In your web module (typically `lib/my_app_web.ex`), add `use Corex` inside the `quote` block of `defp html_helpers`, alongside the other imports that apply to HEEx templates:
 
 ```elixir
 defp html_helpers do
@@ -105,74 +109,75 @@ defp html_helpers do
 end
 ```
 
-By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates. You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions:
+By default this imports every Corex function component (`accordion/1`, `combobox/1`, `dialog/1`, …). If you want a smaller surface area or to avoid name collisions with other components, narrow it with `only:` / `except:` and an optional `prefix:`:
 
 ```elixir
 use Corex, only: [:accordion], prefix: "ui"
 ```
 
 ```heex
-<.ui_accordion>
-...
+<.ui_accordion id="my-accordion" class="accordion">
+  ...
 </.ui_accordion>
 ```
 
-## Styling
+## 6. Verify
 
-All components are unstyled by default. To use the default styling provided by Corex:
+Compile and rebuild assets:
 
-1. Copy the default Corex Design files to your `assets` folder:
+```bash
+mix compile
+mix assets.build
+```
+
+## 7. Optional: Corex Design
+
+The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Install the assets with:
 
 ```bash
 mix corex.design
 ```
 
-2. Add `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`.
+Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite — useful when refreshing design assets to a newer Corex version.
 
-3. In your `app.css` add:
+Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
 ```css
 @import "../corex/main.css";
-@import "../corex/tokens/themes/neo/light.css";
+@import "../corex/theme/neo.css";
 @import "../corex/components/typo.css";
+@import "../corex/components/layout.css";
 @import "../corex/components/accordion.css";
 ```
 
-4. Remove any Daisy UI related CSS and plugin from `app.css`.
+Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`, and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
 
-If you don't see the styling, run `mix assets.build`.
+If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
-For more details see [Mix.Tasks.Corex.Design](Mix.Tasks.Corex.Design.html).
+Finally, give the `<body>` the `typo` and `layout` classes so the design system's base typography and layout container apply:
 
-## Phoenix flash with Toast
-
-To show Phoenix flash messages (and LiveView flash) as toasts, wire the Toast component to the layout and ensure the router fetches flash.
-
-In your browser pipeline in `router.ex`, include both plugs:
-
-```elixir
-pipeline :browser do
-  plug :accepts, ["html"]
-  plug :fetch_session
-  plug :fetch_flash
-  plug :fetch_live_flash
-  # ... other plugs
-end
+```heex
+<body class="typo layout">
+  {@inner_content}
+</body>
 ```
 
-In your app layout (the component that wraps page content and receives `@flash`), render the toast group and pass the flash assign. For example in `layouts.ex`:
+## 8. Optional: Phoenix flash with Toast
+
+To render Phoenix flash (and LiveView flash) as Corex toasts instead of the default `<.flash_group>`, render a `<.toast_group>` in your app layout and pass it `flash={@flash}`. In `lib/my_app_web/components/layouts.ex`, replace the flash group inside `def app/1` with:
 
 ```heex
 <.toast_group id="layout-toast" class="toast" flash={@flash}>
   <:loading>
-    <.heroicon name="hero-arrow-path" />
+    <.heroicon name="hero-arrow-path" class="icon" />
   </:loading>
+  <:close>
+    <.heroicon name="hero-x-mark" class="icon" />
+  </:close>
 </.toast_group>
 ```
 
-Ensure every LiveView and controller view that uses this layout passes `flash={@flash}` into the layout (e.g. `Layouts.app flash={@flash} ...`).
-
-Optionally, add connection state toasts so users see feedback when the connection drops or recovers:
+Optionally, add the connection-state toasts so users see feedback when the socket drops or the server errors out:
 
 ```heex
 <.toast_client_error
@@ -191,24 +196,25 @@ Optionally, add connection state toasts so users see feedback when the connectio
 />
 ```
 
-See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and customisation options.
+Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
-## Add your first component
+See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and the rest of the toast API.
 
-Add the following Accordion examples to your application.
+### MCP plug (development)
 
-<!-- tabs-open -->
+By default, **`mix corex.new`** inserts **`plug Corex.MCP`** in **`lib/my_app_web/endpoint.ex`** inside **`if Mix.env() in [:dev, :test] do`**, immediately after the first **`plug Plug.Static`** block (pass **`--no-mcp`** to skip). For behavior, security notes, and manual wiring in an existing app, see [MCP](mcp.html).
+
+## 9. Add your first component
+
+After the install, every Corex function component is available in your templates. The `id` attribute is required for any component you want to drive from the API.
 
 ### Basic
 
-You can use `Corex.Content.new/1` to create a list of content items.
-
-The `id` for each item is optional and will be auto-generated if not provided.
-
-You can specify `disabled` for each item.
+`Corex.Content.new/1` builds a list of items. The `id` is auto-generated when missing; you can also flag an item as `disabled`.
 
 ```heex
 <.accordion
+  id="welcome-accordion"
   class="accordion"
   items={Corex.Content.new([
     [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
@@ -220,28 +226,16 @@ You can specify `disabled` for each item.
 
 ### With indicator
 
-Use the optional `:indicator` slot to add an icon after each trigger.
-
-This example assumes the import of `.heroicon` from Core Components.
+The optional `:indicator` slot adds an icon after each trigger.
 
 ```heex
 <.accordion
+  id="indicator-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [
-      id: "lorem",
-      trigger: "Lorem ipsum dolor sit amet",
-      content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-    ],
-    [
-      trigger: "Duis dictum gravida odio ac pharetra?",
-      content: "Nullam eget vestibulum ligula, at interdum tellus."
-    ],
-    [
-      id: "donec",
-      trigger: "Donec condimentum ex mi",
-      content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-    ]
+    [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 >
   <:indicator>
@@ -252,10 +246,11 @@ This example assumes the import of `.heroicon` from Core Components.
 
 ### Custom
 
-Use `:trigger` and `:content` together to fully customize how each item is rendered. Add the `:indicator` slot to show an icon after each trigger. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization).
+Use `:trigger`, `:content`, and `:indicator` together with `:let={item}` for fully custom rendering, including per-item `meta`.
 
 ```heex
 <.accordion
+  id="custom-accordion"
   class="accordion"
   items={
     Corex.Content.new([
@@ -266,7 +261,7 @@ Use `:trigger` and `:content` together to fully customize how each item is rende
         meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
       ],
       [
-        trigger: "Duis dictum gravida ?",
+        trigger: "Duis dictum gravida?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
       ],
@@ -290,13 +285,9 @@ Use `:trigger` and `:content` together to fully customize how each item is rende
 </.accordion>
 ```
 
-### Controlled
+### Controlled (server-driven)
 
-Render an accordion controlled by the server.
-
-You must use the `on_value_change` event to update the value on the server and pass the value as a list of strings.
-
-The event will receive the value as a map with the key `value` and the id of the accordion.
+Pass `controlled` and `value`, and update the value from `on_value_change`. The event payload is a map with the key `value` (a list of strings) and the accordion `id`.
 
 ```elixir
 defmodule MyAppWeb.AccordionLive do
@@ -313,13 +304,14 @@ defmodule MyAppWeb.AccordionLive do
   def render(assigns) do
     ~H"""
     <.accordion
+      id="controlled-accordion"
       controlled
       value={@value}
       on_value_change="on_value_change"
       class="accordion"
       items={Corex.Content.new([
-        [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
-        [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
+        [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+        [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."]
       ])}
     />
     """
@@ -327,11 +319,9 @@ defmodule MyAppWeb.AccordionLive do
 end
 ```
 
-### Async
+### Async (loading state)
 
-When the initial props are not available on mount, you can use `Phoenix.LiveView.assign_async` to assign the props asynchronously.
-
-You can use the optional `Corex.Accordion.accordion_skeleton/1` to render a loading or error state.
+When the data is not available on mount, drive the component from `Phoenix.LiveView.assign_async/3`. `Corex.Accordion.accordion_skeleton/1` renders a placeholder while the async result is pending.
 
 ```elixir
 defmodule MyAppWeb.AccordionAsyncLive do
@@ -339,36 +329,15 @@ defmodule MyAppWeb.AccordionAsyncLive do
 
   def mount(_params, _session, socket) do
     socket =
-      socket
-      |> assign_async(:accordion, fn ->
-        Process.sleep(1000)
+      assign_async(socket, :accordion, fn ->
+        items =
+          Corex.Content.new([
+            [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
+            [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+            [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+          ])
 
-        items = Corex.Content.new([
-          [
-            id: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-            disabled: true
-          ],
-          [
-            id: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          ],
-          [
-            id: "donec",
-            trigger: "Donec condimentum ex mi",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          ]
-        ])
-
-        {:ok,
-         %{
-           accordion: %{
-             items: items,
-             value: ["duis", "donec"]
-           }
-         }}
+        {:ok, %{accordion: %{items: items, value: ["duis", "donec"]}}}
       end)
 
     {:ok, socket}
@@ -381,9 +350,7 @@ defmodule MyAppWeb.AccordionAsyncLive do
         <.accordion_skeleton count={3} class="accordion" />
       </:loading>
 
-      <:failed>
-        there was an error loading the accordion
-      </:failed>
+      <:failed>There was an error loading the accordion.</:failed>
 
       <.accordion
         id="async-accordion"
@@ -397,26 +364,34 @@ defmodule MyAppWeb.AccordionAsyncLive do
 end
 ```
 
-<!-- tabs-close -->
+## 10. Driving components from the API
 
-## API Control
+Every Corex component exposes JS commands for client-side control and matching `socket` helpers for server-side control. You need an `id` on the component.
 
-In order to use the API, you must use an id on the component.
-
-**Client-side**
+**Client-side**, push commands inline from any element:
 
 ```heex
-<button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
-  Open Item 1
+<button type="button" phx-click={Corex.Accordion.set_value("welcome-accordion", ["1"])}>
+  Open the first panel
 </button>
 ```
 
-**Server-side**
+**Server-side**, return the modified socket from a `handle_event/3` (or call it anywhere a `socket` is in scope):
 
 ```elixir
-def handle_event("open_item", _, socket) do
-  {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
+def handle_event("open_first", _params, socket) do
+  {:noreply, Corex.Accordion.set_value(socket, "welcome-accordion", ["1"])}
 end
 ```
 
-For development performance tips (e.g. minifying assets), see [Troubleshooting](troubleshooting.html). For the final build in production, see the [Production guide](production.html).
+The same pattern applies to every component — see each component's module docs for the available commands.
+
+## What's next
+
+This is the minimum required to use Corex. From here, layer on the optional features one at a time:
+
+- [Dark mode](dark_mode.html) — `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
+- [Theming](theming.html) — `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
+- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
+- [MCP](mcp.html) — Corex MCP for AI tooling in development.
+- [Production](production.html) — prod build and run.

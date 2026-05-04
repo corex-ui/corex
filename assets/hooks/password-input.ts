@@ -2,21 +2,26 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { PasswordInput } from "../components/password-input";
 import type { Props, VisibilityChangeDetails } from "@zag-js/password-input";
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { notifyChange, idMatches, readPayloadId, readPayloadVisible } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type PasswordInputHookState = {
   passwordInput?: PasswordInput;
   handlers?: Array<CallbackRef>;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new PasswordInput(el, {
       id: el.id,
-      ...(getBoolean(el, "controlledVisible")
-        ? { visible: getBoolean(el, "visible") }
-        : { defaultVisible: getBoolean(el, "defaultVisible") }),
+      defaultVisible: getBoolean(el, "defaultVisible"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readOnly"),
@@ -24,37 +29,64 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
       ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
       name: getString(el, "name"),
       dir: getDir(el),
-      autoComplete: getString<"current-password" | "new-password">(el, "autoComplete", [
-        "current-password",
-        "new-password",
-      ]),
+      autoComplete: getString<"current-password" | "new-password">(el, "autoComplete"),
       onVisibilityChange: (details: VisibilityChangeDetails) => {
-        const eventName = getString(el, "onVisibilityChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { visible: details.visible, id: el.id });
-        }
-        const clientName = getString(el, "onVisibilityChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, visible: details.visible } as Record<string, unknown>,
+          serverEventName: getString(el, "onVisibilityChange"),
+          clientEventName: getString(el, "onVisibilityChangeClient"),
+        });
       },
     } as Props);
     zag.init();
     this.passwordInput = zag;
     this.handlers = [];
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ visible: boolean }>>(
+      "corex:password-input:set-visible",
+      (event) => {
+        const vis = event.detail?.visible;
+        if (typeof vis === "boolean") zag.api.setVisible(vis);
+      }
+    );
+
+    domRegistry.add("corex:password-input:toggle-visible", () => {
+      zag.api.toggleVisible();
+    });
+
+    domRegistry.add("corex:password-input:focus", () => {
+      zag.api.focus();
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("password_input_set_visible", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const vis = readPayloadVisible(payload);
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
+
+    registry.add("password_input_toggle_visible", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.toggleVisible();
+    });
+
+    registry.add("password_input_focus", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.focus();
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
     this.passwordInput?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlledVisible")
-        ? { visible: getBoolean(this.el, "visible") }
-        : {}),
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       readOnly: getBoolean(this.el, "readOnly"),
@@ -69,6 +101,8 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.passwordInput?.destroy();
   },
 };

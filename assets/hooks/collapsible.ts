@@ -1,21 +1,38 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Collapsible } from "../components/collapsible";
 import type { OpenChangeDetails } from "@zag-js/collapsible";
-import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean } from "../lib/util";
+import { getBoolean, getDir, getString, canPushEvent } from "../lib/util";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId,
+  type RespondTo,
+} from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type CollapsibleHookState = {
   collapsible?: Collapsible;
-  handlers?: Array<CallbackRef>;
-  onSetOpen?: (event: Event) => void;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
+
+function openChangePayload(el: HTMLElement, details: OpenChangeDetails): Record<string, unknown> {
+  return {
+    id: el.id,
+    open: details.open,
+  };
+}
 
 const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
 
     const collapsible = new Collapsible(el, {
       id: el.id,
@@ -23,60 +40,67 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
         ? { open: getBoolean(el, "open") }
         : { defaultOpen: getBoolean(el, "defaultOpen") }),
       disabled: getBoolean(el, "disabled"),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       onOpenChange: (details: OpenChangeDetails) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open,
-          });
-        }
-
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open,
-              },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: openChangePayload(el, details),
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient"),
+        });
       },
     });
 
     collapsible.init();
     this.collapsible = collapsible;
 
-    this.onSetOpen = (event: Event) => {
-      const { open } = (event as CustomEvent<{ open: boolean }>).detail;
-      collapsible.api.setOpen(open);
+    const emitOpen = (respondTo: RespondTo) => {
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "collapsible_open_response",
+        serverPayload: {
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled,
+        } as Record<string, unknown>,
+        el,
+        domEventName: "collapsible-open",
+        domDetail: {
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled,
+        } as Record<string, unknown>,
+      });
     };
-    el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
 
-    this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
 
-    this.handlers.push(
-      this.handleEvent(
-        "collapsible_set_open",
-        (payload: { collapsible_id?: string; open: boolean }) => {
-          const targetId = payload.collapsible_id;
-          if (targetId && targetId !== el.id) return;
-          collapsible.api.setOpen(payload.open);
-        }
-      )
-    );
+    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:collapsible:set-open", (event) => {
+      const { open } = event.detail;
+      collapsible.api.setOpen(open);
+    });
 
-    this.handlers.push(
-      this.handleEvent("collapsible_open", () => {
-        this.pushEvent("collapsible_open_response", {
-          value: collapsible.api.open,
-        });
-      })
-    );
+    domRegistry.add<CustomEvent>("corex:collapsible:open", (event) => {
+      emitOpen(parseRespondTo(event.detail));
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("collapsible_set_open", (payload: { id?: string; open: boolean }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      collapsible.api.setOpen(payload.open);
+    });
+
+    registry.add("collapsible_open", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitOpen(parseRespondTo(payload));
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
@@ -86,21 +110,13 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
         ? { open: getBoolean(this.el, "open") }
         : { defaultOpen: getBoolean(this.el, "defaultOpen") }),
       disabled: getBoolean(this.el, "disabled"),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
     });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("phx:collapsible:set-open", this.onSetOpen);
-    }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.collapsible?.destroy();
   },
 };

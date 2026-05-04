@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class NumberInput extends Component<Props, Api> {
@@ -9,7 +9,7 @@ export class NumberInput extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {
@@ -47,14 +47,5 @@ export class NumberInput extends Component<Props, Api> {
       '[data-scope="number-input"][data-part="increment-trigger"]'
     );
     if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
-
-    const scrubberEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="number-input"][data-part="scrubber"]'
-    );
-    if (scrubberEl) {
-      this.spreadProps(scrubberEl, this.api.getScrubberProps());
-      scrubberEl.setAttribute("aria-label", "Scrub to adjust value");
-      scrubberEl.removeAttribute("role");
-    }
   }
 }

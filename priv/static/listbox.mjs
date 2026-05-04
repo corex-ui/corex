@@ -1,4 +1,7 @@
 import {
+  zagIdValueLabelCollectionConfig
+} from "./chunks/chunk-7NUJK5QP.mjs";
+import {
   GridCollection,
   ListCollection,
   Selection,
@@ -6,22 +9,39 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-WAY74VD3.mjs";
+} from "./chunks/chunk-5YSYSNPK.mjs";
+import {
+  performRedirect,
+  readDomItemRedirect
+} from "./chunks/chunk-FOQSALVP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-KF3PY6Q6.mjs";
+} from "./chunks/chunk-ZNA2UPG2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
   ariaAttr,
+  canPushEvent,
   contains,
   createAnatomy,
   dataAttr,
   ensure,
   getBoolean,
   getByTypeahead,
+  getDir,
   getEventKey,
   getEventTarget,
   getNativeEvent,
@@ -34,14 +54,14 @@ import {
   isEditableElement,
   isEqual,
   isOpeningInNewTab,
-  normalizeProps,
   observeAttributes,
   raf,
   scrollIntoView,
-  setup
-} from "./chunk-ZOODJA3P.mjs";
+  setup,
+  templatesContentRoot
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",
@@ -56,7 +76,7 @@ var anatomy = createAnatomy("listbox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -70,7 +90,7 @@ gridCollection.empty = () => {
   return new GridCollection({ items: [], columnCount: 0 });
 };
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `listbox:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `listbox:${ctx.id}:content`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `listbox:${ctx.id}:label`;
@@ -80,7 +100,7 @@ var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `listbox
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, computed, send, refs } = service;
   const disabled = prop("disabled");
@@ -467,7 +487,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
 var { guards, createMachine } = setup();
 var { or } = guards;
 var machine = createMachine({
@@ -866,6 +886,7 @@ function invokeOnSelect(current, next, onSelect) {
 var Listbox = class extends Component {
   _options = [];
   hasGroups = false;
+  lastItemsFingerprint = "";
   constructor(el, props) {
     super(el, props);
     const collectionFromProps = props.collection;
@@ -876,6 +897,9 @@ var Listbox = class extends Component {
   }
   setOptions(options) {
     this._options = Array.isArray(options) ? options : [];
+  }
+  itemsFingerprint() {
+    return `${this.hasGroups}:${JSON.stringify(this.options)}`;
   }
   getOrderedGroupIds() {
     const seen = /* @__PURE__ */ new Set();
@@ -890,22 +914,7 @@ var Listbox = class extends Component {
     return ids;
   }
   getCollection() {
-    const items = this.options;
-    if (this.hasGroups) {
-      return collection({
-        items,
-        itemToValue: (item) => item.id ?? item.value ?? "",
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => item.group ?? ""
-      });
-    }
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    });
+    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -918,7 +927,7 @@ var Listbox = class extends Component {
     });
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   init = () => {
     this.machine.start();
@@ -933,20 +942,27 @@ var Listbox = class extends Component {
       '[data-scope="listbox"][data-part="content"]'
     );
     if (!contentEl) return;
-    const templatesContainer = this.el.querySelector('[data-templates="listbox"]');
-    if (!templatesContainer) return;
-    contentEl.querySelectorAll(
-      '[data-scope="listbox"][data-part="empty"]:not([data-template])'
-    ).forEach((el) => el.remove());
-    contentEl.querySelectorAll(
-      '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
-    ).forEach((el) => el.remove());
-    contentEl.querySelectorAll(
-      '[data-scope="listbox"][data-part="item"]:not([data-template])'
-    ).forEach((el) => el.remove());
+    const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
+    const templatesRoot = templatesContentRoot(this.el, "listbox");
+    if (!templatesRoot) return;
+    Array.from(
+      contentEl.querySelectorAll(
+        '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+      )
+    ).filter(isOwnedByContent).forEach((el) => el.remove());
+    Array.from(
+      contentEl.querySelectorAll(
+        '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+      )
+    ).filter(isOwnedByContent).forEach((el) => el.remove());
+    Array.from(
+      contentEl.querySelectorAll(
+        '[data-scope="listbox"][data-part="item"]:not([data-template])'
+      )
+    ).filter(isOwnedByContent).forEach((el) => el.remove());
     const items = this.options;
     if (items.length === 0) {
-      const emptyTemplate = templatesContainer.querySelector(
+      const emptyTemplate = templatesRoot.querySelector(
         '[data-scope="listbox"][data-part="empty"][data-template]'
       );
       if (emptyTemplate) {
@@ -957,7 +973,7 @@ var Listbox = class extends Component {
     } else if (this.hasGroups) {
       const groupIds = this.getOrderedGroupIds();
       for (const groupId of groupIds) {
-        const template = templatesContainer.querySelector(
+        const template = templatesRoot.querySelector(
           `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
         );
         if (!template) continue;
@@ -969,7 +985,7 @@ var Listbox = class extends Component {
     } else {
       for (const item of items) {
         const value = String(item.id ?? item.value ?? "");
-        const template = templatesContainer.querySelector(
+        const template = templatesRoot.querySelector(
           `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
         );
         if (!template) continue;
@@ -984,7 +1000,9 @@ var Listbox = class extends Component {
       '[data-scope="listbox"][data-part="content"]'
     );
     if (!contentEl) return;
+    const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
     contentEl.querySelectorAll('[data-scope="listbox"][data-part="item-group"]').forEach((groupEl) => {
+      if (!isOwnedByContent(groupEl)) return;
       const groupId = groupEl.dataset.id ?? "";
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
@@ -995,6 +1013,7 @@ var Listbox = class extends Component {
       }
     });
     contentEl.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach((itemEl) => {
+      if (!isOwnedByContent(itemEl)) return;
       const value = itemEl.dataset.value ?? "";
       const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
       if (!item) return;
@@ -1018,10 +1037,6 @@ var Listbox = class extends Component {
     this.spreadProps(rootEl, this.api.getRootProps());
     const labelEl = this.el.querySelector('[data-scope="listbox"][data-part="label"]');
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
-    const valueTextEl = this.el.querySelector(
-      '[data-scope="listbox"][data-part="value-text"]'
-    );
-    if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
     const inputEl = this.el.querySelector('[data-scope="listbox"][data-part="input"]');
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
     const contentEl = this.el.querySelector(
@@ -1029,7 +1044,11 @@ var Listbox = class extends Component {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
-      this.renderItems();
+      const fp = this.itemsFingerprint();
+      if (fp !== this.lastItemsFingerprint) {
+        this.lastItemsFingerprint = fp;
+        this.renderItems();
+      }
       this.applyItemProps();
     }
   }
@@ -1053,6 +1072,41 @@ function buildCollection(items, hasGroups) {
     isItemDisabled: (item) => !!item.disabled
   });
 }
+function listboxZagPropsBase(el, liveSocket, pushEvent) {
+  const redirectOn = getBoolean(el, "redirect");
+  return {
+    id: el.id,
+    disabled: getBoolean(el, "disabled"),
+    dir: getDir(el),
+    orientation: getString(el, "orientation"),
+    loopFocus: getBoolean(el, "loopFocus"),
+    selectionMode: redirectOn ? "single" : getString(el, "selectionMode"),
+    selectOnHighlight: getBoolean(el, "selectOnHighlight"),
+    deselectable: getBoolean(el, "deselectable"),
+    typeahead: getBoolean(el, "typeahead"),
+    onValueChange: (details) => {
+      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+      if (redirectOn && firstValue) {
+        const itemEl = el.querySelector(
+          `[data-scope="listbox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      }
+      notifyChange({
+        el,
+        canPushServer: canPushEvent(liveSocket),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          items: details.items
+        },
+        serverEventName: getString(el, "onValueChange"),
+        clientEventName: getString(el, "onValueChangeClient")
+      });
+    }
+  };
+}
 var ListboxHook = {
   mounted() {
     const el = this.el;
@@ -1061,61 +1115,48 @@ var ListboxHook = {
     const valueList = getStringList(el, "value");
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new Listbox(el, {
-      id: el.id,
+      ...listboxZagPropsBase(el, this.liveSocket, pushEvent),
       collection: buildCollection(allItems, hasGroups),
-      ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
-      disabled: getBoolean(el, "disabled"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      orientation: getString(el, "orientation", [
-        "horizontal",
-        "vertical"
-      ]),
-      loopFocus: getBoolean(el, "loopFocus"),
-      selectionMode: getString(el, "selectionMode", [
-        "single",
-        "multiple",
-        "extended"
-      ]),
-      selectOnHighlight: getBoolean(el, "selectOnHighlight"),
-      deselectable: getBoolean(el, "deselectable"),
-      typeahead: getBoolean(el, "typeahead"),
-      onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            items: details.items,
-            id: el.id
-          });
-        }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
-      }
+      ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] }
     });
     zag.hasGroups = hasGroups;
     zag.setOptions(allItems);
     zag.init();
     this.listbox = zag;
-    this.handlers = [];
-    this.handleContentClick = (e) => {
-      const btn = e.target.closest?.(
-        "[data-phx-push][data-phx-push-id]"
-      );
-      if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-        e.stopPropagation();
-        e.preventDefault();
-        this.pushEvent(btn.dataset.phxPush, { id: btn.dataset.phxPushId });
-      }
+    const emitValue = (respondTo) => {
+      const value = zag.api.value;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "listbox_value_response",
+        serverPayload: { id: el.id, value },
+        el,
+        domEventName: "listbox-value",
+        domDetail: { id: el.id, value }
+      });
     };
-    el.addEventListener("click", this.handleContentClick, true);
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:listbox:set-value", (event) => {
+      zag.api.setValue(event.detail.value);
+    });
+    domRegistry.add("corex:listbox:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("listbox_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(payload.value);
+    });
+    registry.add("listbox_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
   },
   updated() {
     const newItems = JSON.parse(this.el.dataset.items ?? "[]");
@@ -1128,25 +1169,15 @@ var ListboxHook = {
       this.listbox.setOptions(newItems);
       this.listbox.render();
       this.listbox.updateProps({
+        ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
         collection: this.listbox.getCollection(),
-        id: this.el.id,
-        ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
-        disabled: getBoolean(this.el, "disabled"),
-        dir: getString(this.el, "dir", ["ltr", "rtl"]),
-        orientation: getString(this.el, "orientation", [
-          "horizontal",
-          "vertical"
-        ])
+        ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] }
       });
     }
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
-    if (this.handleContentClick) {
-      this.el.removeEventListener("click", this.handleContentClick, true);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.listbox?.destroy();
   }
 };

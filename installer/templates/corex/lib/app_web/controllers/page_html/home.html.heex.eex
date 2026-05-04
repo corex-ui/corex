@@ -1,0 +1,18 @@
+<Layouts.app flash={@flash}<%= if @mode do %>
+  mode={@mode}<% end %><%= if @theme do %>
+  theme={@theme}<% end %><%= if @lang do %>
+  current_path={@conn.request_path}<% end %>
+>
+  <.layout_heading class="layout-heading">
+    <:title>Corex for Phoenix</:title>
+    <:subtitle>Accessible and unstyled Phoenix components</:subtitle>
+    <:actions>
+      <.navigate class="button" external to="https://hexdocs.pm/corex">
+        Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
+      </.navigate>
+      <.navigate class="button" external to="https://corex.gigalixirapp.com/">
+        Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
+      </.navigate>
+    </:actions>
+  </.layout_heading>
+</Layouts.app>

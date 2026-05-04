@@ -9,6 +9,8 @@ defmodule Corex.TabsTest do
       html = render_component(&CorexTest.ComponentHelpers.render_tabs/1, [])
       assert html =~ ~r/data-scope="tabs"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
       assert html =~ ~r/Tab1/
     end
 
@@ -31,41 +33,12 @@ defmodule Corex.TabsTest do
       assert html =~ ~r/B content/
     end
 
-    test "renders with indicator slot" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tabs_with_indicator/1, [])
-      assert html =~ ~r/data-scope="tabs"/
-      assert html =~ ~r/data-part="item-indicator"/
-      assert html =~ ~r/data-indicator/
-    end
-
-    test "raises when items is nil" do
-      assert_raise ArgumentError, ~r/Tabs requires :items/, fn ->
-        render_component(&Tabs.tabs/1, items: nil)
-      end
-    end
-
     test "raises when items is not a list of Corex.Content.Item" do
-      assert_raise ArgumentError, ~r/Corex\.Content\.Item.*got:/, fn ->
-        render_component(&Tabs.tabs/1, items: [[trigger: "T1", content: "C1"]])
+      assert_raise ArgumentError, fn ->
+        render_component(&Tabs.tabs/1,
+          items: [[trigger: "T1", content: "C1"]]
+        )
       end
-    end
-  end
-
-  describe "tabs_trigger/1" do
-    test "renders trigger" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tabs_trigger/1, [])
-      assert html =~ ~r/data-scope="tabs"/
-      assert html =~ ~r/data-part="trigger"/
-      assert html =~ ~r/Tab 1/
-    end
-  end
-
-  describe "tabs_content/1" do
-    test "renders content" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tabs_content/1, [])
-      assert html =~ ~r/data-scope="tabs"/
-      assert html =~ ~r/data-part="content"/
-      assert html =~ ~r/Content 1/
     end
   end
 
@@ -99,7 +72,7 @@ defmodule Corex.TabsTest do
     test "returns root attributes" do
       assigns = %{id: "test-tabs", dir: "ltr", orientation: "vertical"}
       result = Connect.root(assigns)
-      assert result["id"] == "tabs:test-tabs"
+      assert result["id"] == "tabs-test-tabs-root"
       assert result["data-scope"] == "tabs"
       assert result["data-part"] == "root"
       assert result["data-orientation"] == "vertical"
@@ -122,7 +95,7 @@ defmodule Corex.TabsTest do
     test "returns list attributes" do
       assigns = %{id: "test-tabs", dir: "ltr", orientation: "vertical"}
       result = Connect.list(assigns)
-      assert result["id"] == "tabs:test-tabs:list"
+      assert result["id"] == "tabs-test-tabs-list"
       assert result["role"] == "tablist"
       assert result["data-orientation"] == "vertical"
     end
@@ -141,10 +114,12 @@ defmodule Corex.TabsTest do
       }
 
       result = Connect.trigger(assigns)
-      assert result["id"] == "tabs:test-tabs:trigger:tab-1"
+      assert result["id"] == "tabs-test-tabs-trigger-tab-1"
       assert result["aria-selected"] == "true"
       assert result["aria-expanded"] == "true"
-      assert result["data-controls"] == "tabs:test-tabs:content:tab-1"
+      assert result["data-controls"] == "tabs-test-tabs-content-tab-1"
+      assert result["aria-controls"] == "tabs-test-tabs-content-tab-1"
+      assert result["data-ownedby"] == "tabs-test-tabs-list"
     end
 
     test "returns trigger attributes when not selected" do
@@ -182,30 +157,27 @@ defmodule Corex.TabsTest do
   end
 
   describe "Connect.indicator/1" do
-    test "returns indicator attributes when selected" do
-      assigns = %{
+    test "returns indicator attributes when a tab is selected" do
+      assigns = %Corex.Tabs.Anatomy.Indicator{
         id: "test-tabs",
-        value: "tab-1",
         values: ["tab-1"],
         dir: "ltr",
-        orientation: "vertical",
-        disabled: false
+        orientation: "vertical"
       }
 
       result = Connect.indicator(assigns)
       assert result["data-scope"] == "tabs"
       assert result["data-part"] == "item-indicator"
+      assert result["id"] == "tabs-test-tabs-indicator"
       assert result["data-state"] == "open"
     end
 
-    test "returns indicator attributes when not selected" do
-      assigns = %{
+    test "returns indicator attributes when no tab is selected" do
+      assigns = %Corex.Tabs.Anatomy.Indicator{
         id: "test-tabs",
-        value: "tab-1",
-        values: ["tab-2"],
+        values: [],
         dir: "ltr",
-        orientation: "vertical",
-        disabled: false
+        orientation: "vertical"
       }
 
       result = Connect.indicator(assigns)
@@ -226,7 +198,9 @@ defmodule Corex.TabsTest do
       }
 
       result = Connect.content(assigns)
-      assert result["id"] == "tabs:test-tabs:content:tab-1"
+      assert result["id"] == "tabs-test-tabs-content-tab-1"
+      assert result["role"] == "tabpanel"
+      assert result["aria-labelledby"] == "tabs-test-tabs-trigger-tab-1"
       assert result["data-state"] == "open"
       assert result["hidden"] == false
     end

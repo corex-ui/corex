@@ -1,37 +1,48 @@
 import {
   setValueAtIndex
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
   ariaAttr,
+  canPushEvent,
   createAnatomy,
   dataAttr,
   dispatchInputValueEvent,
   getBeforeInputValue,
   getBoolean,
+  getDir,
   getEventKey,
   getNativeEvent,
   getNumber,
   getString,
-  getStringList,
   invariant,
   isComposingEvent,
   isEqual,
   isHTMLElement,
   isModifierKey,
-  normalizeProps,
   queryAll,
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pin-input:${ctx.id}`;
 var getInputId = (ctx, id) => ctx.ids?.input?.(id) ?? `pin-input:${ctx.id}:${id}`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `pin-input:${ctx.id}:hidden`;
@@ -51,7 +62,7 @@ var setInputValue = (inputEl, value) => {
   inputEl.setAttribute("value", value);
 };
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
 var REGEX = {
   numeric: /^[0-9]+$/,
   alphabetic: /^[A-Za-z]+$/,
@@ -67,7 +78,7 @@ function isValidValue(value, type, pattern) {
   return regex.test(value);
 }
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
 function connect(service, normalize) {
   const { send, context, computed, prop, scope } = service;
   const complete = computed("isValueComplete");
@@ -153,12 +164,16 @@ function connect(service, normalize) {
     getInputProps(props) {
       const { index } = props;
       const inputType = prop("type") === "numeric" ? "tel" : "text";
+      const valueLength = computed("valueLength");
+      const tabbableIndex = focusedIndex !== -1 ? focusedIndex : Math.min(computed("filledValueLength"), valueLength - 1);
       return normalize.input({
         ...parts.input.attrs,
         dir: prop("dir"),
         disabled,
+        tabIndex: index === tabbableIndex ? 0 : -1,
         "data-disabled": dataAttr(disabled),
         "data-complete": dataAttr(complete),
+        "data-filled": dataAttr(context.get("value")[index] !== ""),
         id: getInputId(scope, index.toString()),
         "data-index": index,
         "data-ownedby": getRootId(scope),
@@ -166,6 +181,7 @@ function connect(service, normalize) {
         inputMode: prop("otp") || prop("type") === "numeric" ? "numeric" : "text",
         "aria-invalid": ariaAttr(invalid),
         "data-invalid": dataAttr(invalid),
+        enterKeyHint: index === valueLength - 1 ? "done" : "next",
         type: prop("mask") ? "password" : inputType,
         defaultValue: context.get("value")[index] || "",
         readOnly,
@@ -173,8 +189,10 @@ function connect(service, normalize) {
         autoComplete: prop("otp") ? "one-time-code" : "off",
         placeholder: focusedIndex === index ? "" : prop("placeholder"),
         onPaste(event) {
-          const pastedValue = event.clipboardData?.getData("text/plain");
+          let pastedValue = event.clipboardData?.getData("text/plain");
           if (!pastedValue) return;
+          const transformer = prop("sanitizeValue");
+          if (transformer) pastedValue = transformer(pastedValue);
           const isValid = isValidValue(pastedValue, prop("type"), prop("pattern"));
           if (!isValid) {
             send({ type: "VALUE.INVALID", value: pastedValue });
@@ -215,6 +233,10 @@ function connect(service, normalize) {
             send({ type: "INPUT.BACKSPACE" });
             return;
           }
+          if (evt.inputType === "deleteByCut") {
+            send({ type: "INPUT.DELETE" });
+            return;
+          }
           if (value === computed("focusedValue")) return;
           send({ type: "INPUT.CHANGE", value, index });
         },
@@ -222,6 +244,11 @@ function connect(service, normalize) {
           if (event.defaultPrevented) return;
           if (isComposingEvent(event)) return;
           if (isModifierKey(event)) return;
+          if (event.key.length === 1 && computed("focusedValue") === event.key) {
+            event.preventDefault();
+            send({ type: "INPUT.ADVANCE" });
+            return;
+          }
           const keyMap = {
             Backspace() {
               send({ type: "INPUT.BACKSPACE" });
@@ -237,6 +264,12 @@ function connect(service, normalize) {
             },
             Enter() {
               send({ type: "INPUT.ENTER" });
+            },
+            Home() {
+              send({ type: "INPUT.HOME" });
+            },
+            End() {
+              send({ type: "INPUT.END" });
             }
           };
           const exec = keyMap[getEventKey(event, {
@@ -261,7 +294,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.40.0/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
 var { choose, createMachine } = setup();
 var machine = createMachine({
   props({ props }) {
@@ -323,7 +356,7 @@ var machine = createMachine({
       action(["syncInputElements", "dispatchInputEvent"]);
     });
     track([() => computed("isValueComplete")], () => {
-      action(["invokeOnComplete", "blurFocusedInputIfNeeded"]);
+      action(["invokeOnComplete", "blurFocusedInputIfNeeded", "autoSubmitIfNeeded"]);
     });
   },
   on: {
@@ -350,13 +383,16 @@ var machine = createMachine({
     focused: {
       on: {
         "INPUT.CHANGE": {
-          actions: ["setFocusedValue", "syncInputValue", "setNextFocusedIndex"]
+          actions: ["setFocusedValue", "syncInputValue", "advanceFocusedIndex"]
+        },
+        "INPUT.ADVANCE": {
+          actions: ["advanceFocusedIndex"]
         },
         "INPUT.PASTE": {
           actions: ["setPastedValue", "setLastValueFocusIndex"]
         },
         "INPUT.FOCUS": {
-          actions: ["setFocusedIndex"]
+          actions: ["setFocusedIndex", "focusInput"]
         },
         "INPUT.BLUR": {
           target: "idle",
@@ -372,10 +408,16 @@ var machine = createMachine({
         "INPUT.ARROW_RIGHT": {
           actions: ["setNextFocusedIndex"]
         },
+        "INPUT.HOME": {
+          actions: ["setFocusIndexToFirst"]
+        },
+        "INPUT.END": {
+          actions: ["setFocusIndexToLast"]
+        },
         "INPUT.BACKSPACE": [
           {
             guard: "hasValue",
-            actions: ["clearFocusedValue"]
+            actions: ["clearFocusedValue", "setPrevFocusedIndex"]
           },
           {
             actions: ["setPrevFocusedIndex", "clearFocusedValue"]
@@ -411,7 +453,9 @@ var machine = createMachine({
       focusInput({ context, scope }) {
         const focusedIndex = context.get("focusedIndex");
         if (focusedIndex === -1) return;
-        getInputElAtIndex(scope, focusedIndex)?.focus({ preventScroll: true });
+        queueMicrotask(() => {
+          getInputElAtIndex(scope, focusedIndex)?.focus({ preventScroll: true });
+        });
       },
       selectInputIfNeeded({ context, prop, scope }) {
         const focusedIndex = context.get("focusedIndex");
@@ -436,8 +480,9 @@ var machine = createMachine({
       clearFocusedIndex({ context }) {
         context.set("focusedIndex", -1);
       },
-      setFocusedIndex({ context, event }) {
-        context.set("focusedIndex", event.index);
+      setFocusedIndex({ context, event, computed }) {
+        const maxIndex = Math.min(computed("filledValueLength"), computed("valueLength") - 1);
+        context.set("focusedIndex", Math.min(event.index, maxIndex));
       },
       setValue({ context, event }) {
         const value = fill(event.value, context.get("count"));
@@ -495,13 +540,24 @@ var machine = createMachine({
       clearFocusedValue({ context, computed }) {
         const focusedIndex = context.get("focusedIndex");
         if (focusedIndex === -1) return;
-        context.set("value", setValueAtIndex(computed("_value"), focusedIndex, ""));
+        const value = [...computed("_value")];
+        value.splice(focusedIndex, 1);
+        value.push("");
+        context.set("value", value);
       },
       setFocusIndexToFirst({ context }) {
         context.set("focusedIndex", 0);
       },
-      setNextFocusedIndex({ context, computed }) {
+      setFocusIndexToLast({ context, computed }) {
+        context.set("focusedIndex", Math.max(computed("filledValueLength") - 1, 0));
+      },
+      advanceFocusedIndex({ context, computed }) {
         context.set("focusedIndex", Math.min(context.get("focusedIndex") + 1, computed("valueLength") - 1));
+      },
+      setNextFocusedIndex({ context, computed }) {
+        const nextIndex = context.get("focusedIndex") + 1;
+        const maxIndex = Math.min(computed("filledValueLength"), computed("valueLength") - 1);
+        context.set("focusedIndex", Math.min(nextIndex, maxIndex));
       },
       setPrevFocusedIndex({ context }) {
         context.set("focusedIndex", Math.max(context.get("focusedIndex") - 1, 0));
@@ -511,14 +567,19 @@ var machine = createMachine({
           context.set("focusedIndex", Math.min(computed("filledValueLength"), computed("valueLength") - 1));
         });
       },
-      blurFocusedInputIfNeeded({ context, prop, scope }) {
-        if (!prop("blurOnComplete")) return;
+      blurFocusedInputIfNeeded({ context, computed, prop, scope }) {
+        if (!prop("blurOnComplete") || !computed("isValueComplete")) return;
         raf(() => {
           getInputElAtIndex(scope, context.get("focusedIndex"))?.blur();
         });
       },
       requestFormSubmit({ computed, prop, scope }) {
         if (!prop("name") || !computed("isValueComplete")) return;
+        const inputEl = getHiddenInputEl(scope);
+        inputEl?.form?.requestSubmit();
+      },
+      autoSubmitIfNeeded({ computed, prop, scope }) {
+        if (!prop("autoSubmit") || !computed("isValueComplete")) return;
         const inputEl = getHiddenInputEl(scope);
         inputEl?.form?.requestSubmit();
       }
@@ -547,7 +608,7 @@ var PinInput = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="pin-input"][data-part="root"]') ?? this.el;
@@ -582,18 +643,127 @@ function padToCount(arr, count) {
   while (copy.length < count) copy.push("");
   return copy.slice(0, count);
 }
+function readDefaultValueList(el, count) {
+  const raw = el.dataset.defaultValue;
+  if (raw === void 0 || raw === "") {
+    return [];
+  }
+  return padToCount(parseValueWithEmpties(raw), count);
+}
+function buildMachineProps(el, pushEvent, canPush) {
+  const count = getNumber(el, "count");
+  return {
+    id: el.id,
+    count,
+    defaultValue: readDefaultValueList(el, count ?? 0),
+    disabled: getBoolean(el, "disabled"),
+    invalid: getBoolean(el, "invalid"),
+    required: getBoolean(el, "required"),
+    readOnly: getBoolean(el, "readOnly"),
+    mask: getBoolean(el, "mask"),
+    otp: getBoolean(el, "otp"),
+    blurOnComplete: getBoolean(el, "blurOnComplete"),
+    selectOnFocus: getBoolean(el, "selectOnFocus"),
+    name: getString(el, "name"),
+    form: getString(el, "form"),
+    dir: getDir(el),
+    type: getString(el, "type"),
+    placeholder: getString(el, "placeholder"),
+    onValueChange: (details) => {
+      const hiddenInput = el.querySelector(
+        '[data-scope="pin-input"][data-part="hidden-input"]'
+      );
+      if (hiddenInput) {
+        hiddenInput.value = details.valueAsString;
+        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          valueAsString: details.valueAsString
+        },
+        serverEventName: getString(el, "onValueChange"),
+        clientEventName: getString(el, "onValueChangeClient")
+      });
+    },
+    onValueComplete: (details) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          valueAsString: details.valueAsString
+        },
+        serverEventName: getString(el, "onValueComplete"),
+        clientEventName: getString(el, "onValueCompleteClient")
+      });
+    }
+  };
+}
 var PinInputHook = {
   mounted() {
     const el = this.el;
-    const count = getNumber(el, "count") ?? 4;
-    const rawValue = el.dataset.value;
-    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
-    const defaultValueList = getStringList(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
-    const zag = new PinInput(el, {
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush));
+    zag.init();
+    this.pinInput = zag;
+    const emitValue = (respondTo) => {
+      const api = zag.api;
+      const value = api.value;
+      const valueAsString = api.valueAsString;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "pin_input_value_response",
+        serverPayload: { id: el.id, value, valueAsString },
+        el,
+        domEventName: "pin-input-value",
+        domDetail: { id: el.id, value, valueAsString }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:pin-input:set-value", (event) => {
+      const v = event.detail?.value;
+      if (Array.isArray(v)) zag.api.setValue(v);
+    });
+    domRegistry.add("corex:pin-input:clear", () => {
+      zag.api.clearValue();
+    });
+    domRegistry.add("corex:pin-input:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("pin_input_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (Array.isArray(payload.value)) zag.api.setValue(payload.value);
+    });
+    registry.add("pin_input_clear", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.clearValue();
+    });
+    registry.add("pin_input_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
+  },
+  updated() {
+    const el = this.el;
+    const count = getNumber(el, "count");
+    this.pinInput?.updateProps({
       id: el.id,
       count,
-      ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
+      defaultValue: readDefaultValueList(el, count ?? 0),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
@@ -604,76 +774,14 @@ var PinInputHook = {
       selectOnFocus: getBoolean(el, "selectOnFocus"),
       name: getString(el, "name"),
       form: getString(el, "form"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      type: getString(el, "type", [
-        "alphanumeric",
-        "numeric",
-        "alphabetic"
-      ]),
-      placeholder: getString(el, "placeholder"),
-      onValueChange: (details) => {
-        const hiddenInput = el.querySelector(
-          '[data-scope="pin-input"][data-part="hidden-input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.value = details.valueAsString;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsString: details.valueAsString,
-            id: el.id
-          });
-        }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
-      },
-      onValueComplete: (details) => {
-        const eventName = getString(el, "onValueComplete");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsString: details.valueAsString,
-            id: el.id
-          });
-        }
-      }
-    });
-    zag.init();
-    this.pinInput = zag;
-    this.handlers = [];
-  },
-  updated() {
-    const count = getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4;
-    const rawValue = this.el.dataset.value;
-    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
-    const controlled = getBoolean(this.el, "controlled");
-    this.pinInput?.updateProps({
-      id: this.el.id,
-      count,
-      ...controlled && valueList ? { value: valueList } : {},
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form")
+      dir: getDir(el),
+      type: getString(el, "type"),
+      placeholder: getString(el, "placeholder")
     });
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.pinInput?.destroy();
   }
 };

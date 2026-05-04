@@ -9,15 +9,13 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
 
   describe "full stack with heavy options and locale" do
     @tag database: :postgresql
-    test "corex.new with --lang en:fr --mode --theme neo:uno:duo:leo --dev --live, then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
+    test "corex.new with --lang --mode --theme (path dep via harness), then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
       with_installer_tmp("full_stack_locale", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "full_app", [
-            "--lang", "en:fr",
+            "--lang",
             "--mode",
-            "--theme", "neo:uno:duo:leo",
-            "--dev",
-            "--live"
+            "--theme"
           ])
 
         router_path = Path.join(app_root_path, "lib/full_app_web/router.ex")
@@ -33,13 +31,14 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
         )
 
         live_routes =
-          """
-            live "/admins", AdminLive.Index, :index
-            live "/admins/new", AdminLive.Form, :new
-            live "/admins/:id", AdminLive.Show, :show
-            live "/admins/:id/edit", AdminLive.Form, :edit
-          """
-          |> String.replace(~r/^            /m, "      ")
+          [
+            "    live \"/admins\", AdminLive.Index, :index",
+            "    live \"/admins/new\", AdminLive.Form, :new",
+            "    live \"/admins/:id\", AdminLive.Show, :show",
+            "    live \"/admins/:id/edit\", AdminLive.Form, :edit"
+          ]
+          |> Enum.join("\n")
+          |> Kernel.<>("\n")
 
         inject_live_routes(router_path, live_routes, locale_scope: true)
 
@@ -56,9 +55,9 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
 
   describe "full stack with rich attrs without locale" do
     @tag database: :postgresql
-    test "corex.new with --live, then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
+    test "corex.new then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
       with_installer_tmp("full_stack_no_locale", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
         router_path = Path.join(app_root_path, "lib/phx_blog_web/router.ex")
 
         mix_run!(

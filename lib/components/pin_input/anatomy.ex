@@ -8,7 +8,6 @@ defmodule Corex.PinInput.Anatomy do
     defstruct [
       :id,
       value: [],
-      controlled: false,
       count: 4,
       disabled: false,
       invalid: false,
@@ -21,6 +20,7 @@ defmodule Corex.PinInput.Anatomy do
       name: nil,
       form: nil,
       dir: "ltr",
+      orientation: "horizontal",
       type: "numeric",
       placeholder: "○",
       on_value_change: nil,
@@ -31,7 +31,6 @@ defmodule Corex.PinInput.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             value: list(String.t()),
-            controlled: boolean(),
             count: non_neg_integer(),
             disabled: boolean(),
             invalid: boolean(),
@@ -44,6 +43,7 @@ defmodule Corex.PinInput.Anatomy do
             name: String.t() | nil,
             form: String.t() | nil,
             dir: String.t(),
+            orientation: String.t(),
             type: String.t(),
             placeholder: String.t(),
             on_value_change: String.t() | nil,
@@ -54,16 +54,41 @@ defmodule Corex.PinInput.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-invalid",
+      "data-disabled",
+      "data-complete",
+      "data-readonly"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "for",
+      "htmlFor",
+      "data-invalid",
+      "data-disabled",
+      "data-complete",
+      "data-required",
+      "data-readonly"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule HiddenInput do
@@ -71,19 +96,76 @@ defmodule Corex.PinInput.Anatomy do
     defstruct [:id, :name, :value]
 
     @type t :: %__MODULE__{id: String.t(), name: String.t() | nil, value: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "name",
+      "value",
+      "type",
+      "disabled",
+      "readonly",
+      "readOnly",
+      "required",
+      "form",
+      "tabIndex",
+      "maxLength",
+      "aria-hidden",
+      "style",
+      "defaultValue"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :index, :aria_label]
+    defstruct [:id, :index, :aria_label, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer(), aria_label: String.t() | nil}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            index: non_neg_integer(),
+            aria_label: String.t() | nil,
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "disabled",
+      "tabIndex",
+      "data-disabled",
+      "data-complete",
+      "data-filled",
+      "data-index",
+      "data-ownedby",
+      "aria-label",
+      "inputmode",
+      "inputMode",
+      "aria-invalid",
+      "data-invalid",
+      "enterkeyhint",
+      "enterKeyHint",
+      "type",
+      "defaultValue",
+      "readonly",
+      "readOnly",
+      "autocomplete",
+      "autoComplete",
+      "autocapitalize",
+      "autoCapitalize",
+      "placeholder"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

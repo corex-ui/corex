@@ -4,15 +4,8 @@ defmodule Corex.JsonTest do
   alias Corex.Json
 
   describe "encoder/0" do
-    test "returns default Jason when not configured" do
-      Application.delete_env(:corex, :json_library)
+    test "is Jason" do
       assert Json.encoder() == Jason
-    end
-
-    test "returns configured library when set" do
-      Application.put_env(:corex, :json_library, Jason)
-      assert Json.encoder() == Jason
-      Application.delete_env(:corex, :json_library)
     end
   end
 
@@ -20,7 +13,7 @@ defmodule Corex.JsonTest do
     test "encodes map to JSON string" do
       encoded = Json.encode!(%{a: 1, b: 2})
       assert is_binary(encoded)
-      assert Jason.decode!(encoded) == %{"a" => 1, "b" => 2}
+      assert Json.decode!(encoded) == %{"a" => 1, "b" => 2}
     end
 
     test "encodes list to JSON string" do
@@ -29,6 +22,24 @@ defmodule Corex.JsonTest do
 
     test "encodes string" do
       assert Json.encode!("hello") == "\"hello\""
+    end
+  end
+
+  describe "encode_to_iodata!/1" do
+    test "produces iodata" do
+      out = Json.encode_to_iodata!(%{a: 1})
+      assert is_binary(out) or is_list(out)
+      assert Json.decode!(out) == %{"a" => 1}
+    end
+  end
+
+  describe "decode/1 and decode!/1" do
+    test "decode returns ok tuple" do
+      assert Json.decode("{\"a\":1}") == {:ok, %{"a" => 1}}
+    end
+
+    test "decode! returns term" do
+      assert Json.decode!("{\"a\":1}") == %{"a" => 1}
     end
   end
 end

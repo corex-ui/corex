@@ -2,6 +2,7 @@ defmodule Corex.CollapsibleTest do
   use CorexTest.ComponentCase, async: true
 
   alias Corex.Collapsible
+  alias Corex.Collapsible.Anatomy.{Closed, Opened}
   alias Corex.Collapsible.Connect
 
   describe "collapsible/1" do
@@ -9,6 +10,36 @@ defmodule Corex.CollapsibleTest do
       html = render_component(&CorexTest.ComponentHelpers.render_collapsible/1, [])
       assert html =~ ~r/data-scope="collapsible"/
       assert html =~ ~r/data-part="root"/
+      refute html =~ ~r/data-part="closed"/
+    end
+
+    test "renders with :closed slot" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_collapsible_with_closed_surface/1, [])
+
+      assert html =~ ~r/data-scope="collapsible"/
+      assert html =~ ~r/data-part="closed"/
+      assert html =~ "Closed surface"
+    end
+
+    test "renders with :let on trigger, content, and :closed" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1,
+          open: false
+        )
+
+      assert html =~ ~r/data-scope="collapsible"/
+      assert html =~ "Expand"
+      assert html =~ "Panel"
+      assert html =~ ~r/data-closed-state="closed"/
+
+      html_open =
+        render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1,
+          open: true
+        )
+
+      assert html_open =~ "Collapse"
+      assert html_open =~ ~r/data-closed-state="open"/
     end
   end
 
@@ -96,6 +127,28 @@ defmodule Corex.CollapsibleTest do
       result = Connect.content(assigns)
       assert result["data-state"] == "open"
       assert result["hidden"] == false
+    end
+  end
+
+  describe "Connect.closed_part/1" do
+    test "returns closed surface attributes" do
+      assigns = %Closed{id: "x", dir: "ltr", disabled: false, orientation: "vertical"}
+      result = Connect.closed_part(assigns)
+      assert result["data-scope"] == "collapsible"
+      assert result["data-part"] == "closed"
+      assert result["id"] == "collapsible:x:closed"
+      assert result["aria-hidden"] == true
+    end
+  end
+
+  describe "Connect.opened_part/1" do
+    test "returns opened surface attributes" do
+      assigns = %Opened{id: "x", dir: "rtl", disabled: true, orientation: "horizontal"}
+      result = Connect.opened_part(assigns)
+      assert result["data-scope"] == "collapsible"
+      assert result["data-part"] == "opened"
+      assert result["id"] == "collapsible:x:opened"
+      assert result["dir"] == "rtl"
     end
   end
 end

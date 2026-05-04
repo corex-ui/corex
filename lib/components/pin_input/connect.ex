@@ -1,36 +1,34 @@
 defmodule Corex.PinInput.Connect do
   @moduledoc false
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
-  import Corex.Helpers, only: [validate_value!: 1]
+  alias Corex.Selectors
+  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+
+  defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    value_str =
-      if is_list(assigns.value), do: Enum.join(validate_value!(assigns.value), ","), else: ""
-
-    default_value_str = if assigns.controlled, do: nil, else: value_str
+    value_list = if is_list(assigns.value), do: validate_value!(assigns.value), else: []
+    data_default_value_str = Enum.join(value_list, ",")
 
     %{
       "id" => assigns.id,
-      "data-value" => if(assigns.controlled, do: value_str, else: nil),
-      "data-default-value" => default_value_str,
-      "data-controlled" => data_attr(assigns.controlled),
+      "data-default-value" => data_default_value_str,
       "data-count" => to_string(assigns.count),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
-      "data-required" => data_attr(assigns.required),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-mask" => data_attr(assigns.mask),
-      "data-otp" => data_attr(assigns.otp),
-      "data-blur-on-complete" => data_attr(assigns.blur_on_complete),
-      "data-select-on-focus" => data_attr(assigns.select_on_focus),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-required" => get_boolean(assigns.required),
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-mask" => get_boolean(assigns.mask),
+      "data-otp" => get_boolean(assigns.otp),
+      "data-blur-on-complete" => get_boolean(assigns.blur_on_complete),
+      "data-select-on-focus" => get_boolean(assigns.select_on_focus),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "data-type" => assigns.type,
       "data-placeholder" => assigns.placeholder,
       "data-on-value-change" => assigns.on_value_change,
@@ -39,12 +37,43 @@ defmodule Corex.PinInput.Connect do
     }
   end
 
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("pin-input:#{assigns.id}")
+    )
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("pin-input:#{assigns.id}:label")
+    )
+  end
+
+  def ignore_hidden_input(assigns) do
+    JS.ignore_attributes(HiddenInput.ignored_attrs(),
+      to: Selectors.css_id("pin-input:#{assigns.id}:hidden-input")
+    )
+  end
+
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("pin-input:#{assigns.id}:control")
+    )
+  end
+
+  def ignore_input(assigns) do
+    JS.ignore_attributes(Input.ignored_attrs(),
+      to: Selectors.css_id("pin-input:#{assigns.id}:input:#{assigns.index}")
+    )
+  end
+
   @spec root(Root.t()) :: map()
   def root(assigns) do
     %{
       "data-scope" => "pin-input",
       "data-part" => "root",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "pin-input:#{assigns.id}"
     }
   end
@@ -55,6 +84,7 @@ defmodule Corex.PinInput.Connect do
       "data-scope" => "pin-input",
       "data-part" => "label",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "pin-input:#{assigns.id}:label"
     }
   end
@@ -77,6 +107,7 @@ defmodule Corex.PinInput.Connect do
       "data-scope" => "pin-input",
       "data-part" => "control",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "pin-input:#{assigns.id}:control"
     }
   end
@@ -88,7 +119,9 @@ defmodule Corex.PinInput.Connect do
       "data-part" => "input",
       "data-index" => to_string(assigns.index),
       "id" => "pin-input:#{assigns.id}:input:#{assigns.index}",
-      "aria-label" => assigns.aria_label
+      "aria-label" => assigns.aria_label,
+      "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns)
     }
   end
 end

@@ -1,5 +1,7 @@
 defmodule Corex.Editable.Connect do
   @moduledoc false
+  alias Corex.Selectors
+
   alias Corex.Editable.Anatomy.{
     Area,
     CancelTrigger,
@@ -14,31 +16,85 @@ defmodule Corex.Editable.Connect do
     Triggers
   }
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
+
+  defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}")
+    )
+  end
+
+  def ignore_area(assigns) do
+    JS.ignore_attributes(Area.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:area")
+    )
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:label")
+    )
+  end
+
+  def ignore_input(assigns) do
+    JS.ignore_attributes(Input.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:input")
+    )
+  end
+
+  def ignore_preview(assigns) do
+    JS.ignore_attributes(Preview.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:preview")
+    )
+  end
+
+  def ignore_edit_trigger(assigns) do
+    JS.ignore_attributes(EditTrigger.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:edit-trigger")
+    )
+  end
+
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:control")
+    )
+  end
+
+  def ignore_submit_trigger(assigns) do
+    JS.ignore_attributes(SubmitTrigger.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:submit-trigger")
+    )
+  end
+
+  def ignore_cancel_trigger(assigns) do
+    JS.ignore_attributes(CancelTrigger.ignored_attrs(),
+      to: Selectors.css_id("editable:#{assigns.id}:cancel-trigger")
+    )
+  end
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
-      "data-default-value" => if(assigns.controlled, do: nil, else: assigns.value),
-      "data-controlled" => data_attr(assigns.controlled),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-required" => data_attr(assigns.required),
-      "data-invalid" => data_attr(assigns.invalid),
+      "data-default-value" => assigns.default_value || assigns.value || "",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-required" => get_boolean(assigns.required),
+      "data-invalid" => get_boolean(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
-      "data-edit" => if(assigns.controlled_edit, do: data_attr(assigns.edit), else: nil),
+      "data-orientation" => orientation(assigns),
+      "data-edit" => if(assigns.controlled_edit, do: get_boolean(assigns.edit), else: nil),
       "data-default-edit" =>
-        if(assigns.controlled_edit, do: nil, else: data_attr(assigns.default_edit)),
-      "data-controlled-edit" => data_attr(assigns.controlled_edit),
+        if(assigns.controlled_edit, do: nil, else: get_boolean(assigns.default_edit)),
+      "data-controlled-edit" => get_boolean(assigns.controlled_edit),
       "data-placeholder" => assigns.placeholder,
       "data-activation-mode" => assigns.activation_mode,
-      "data-select-on-focus" => data_attr(assigns.select_on_focus),
+      "data-select-on-focus" => get_boolean(assigns.select_on_focus),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
@@ -50,6 +106,7 @@ defmodule Corex.Editable.Connect do
       "data-scope" => "editable",
       "data-part" => "root",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}"
     }
   end
@@ -60,9 +117,10 @@ defmodule Corex.Editable.Connect do
       "data-scope" => "editable",
       "data-part" => "area",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:area",
-      "data-focus" => data_attr(assigns.editing),
-      "data-placeholder-shown" => data_attr(assigns.empty)
+      "data-focus" => get_boolean(assigns.editing),
+      "data-placeholder-shown" => get_boolean(assigns.empty)
     }
 
     if assigns.auto_resize do
@@ -78,6 +136,7 @@ defmodule Corex.Editable.Connect do
       "data-scope" => "editable",
       "data-part" => "label",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:label",
       "for" => "editable:#{assigns.id}:input"
     }
@@ -88,13 +147,15 @@ defmodule Corex.Editable.Connect do
     %{
       "data-scope" => "editable",
       "data-part" => "input",
-      "disabled" => data_attr(assigns.disabled),
+      "disabled" => get_boolean(assigns.disabled),
       "id" => "editable:#{assigns.id}:input",
-      "required" => data_attr(assigns.required),
-      "readonly" => data_attr(assigns.read_only),
+      "required" => get_boolean(assigns.required),
+      "readonly" => get_boolean(assigns.read_only),
       "aria-label" => assigns.aria_label,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-readonly" => data_attr(assigns.read_only)
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-readonly" => get_boolean(assigns.read_only),
+      "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns)
     }
     |> maybe_put("placeholder", assigns.placeholder)
     |> maybe_put("name", assigns.name)
@@ -109,8 +170,9 @@ defmodule Corex.Editable.Connect do
       "data-scope" => "editable",
       "data-part" => "preview",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:preview",
-      "data-placeholder-shown" => data_attr(assigns.empty),
+      "data-placeholder-shown" => get_boolean(assigns.empty),
       "aria-label" => assigns.aria_label,
       "tabindex" => "0",
       "hidden" => if(assigns.editing, do: "", else: nil)
@@ -124,6 +186,7 @@ defmodule Corex.Editable.Connect do
       "data-part" => "edit-trigger",
       "type" => "button",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:edit-trigger",
       "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: "", else: nil)
@@ -136,6 +199,7 @@ defmodule Corex.Editable.Connect do
       "data-scope" => "editable",
       "data-part" => "control",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:control"
     }
   end
@@ -152,6 +216,7 @@ defmodule Corex.Editable.Connect do
       "data-part" => "submit-trigger",
       "type" => "button",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:submit-trigger",
       "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: nil, else: "")
@@ -165,6 +230,7 @@ defmodule Corex.Editable.Connect do
       "data-part" => "cancel-trigger",
       "type" => "button",
       "dir" => assigns.dir,
+      "data-orientation" => orientation(assigns),
       "id" => "editable:#{assigns.id}:cancel-trigger",
       "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: nil, else: "")

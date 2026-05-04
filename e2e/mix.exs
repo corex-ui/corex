@@ -5,7 +5,7 @@ defmodule E2e.MixProject do
     [
       app: :corex_web,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -64,24 +64,33 @@ defmodule E2e.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
+      {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
+      {:color, "~> 0.11"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:corex, path: "../../corex"},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
       {:makeup_html, "~> 0.2"},
+      {:makeup_eex, "~> 2.0"},
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
-      {:ex_cldr, "~> 2.47"},
-      {:ex_cldr_languages, "~> 0.3"},
-      {:ex_cldr_territories, "~> 2.10.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:designex, "~> 1.0", only: [:dev, :test]}
-    ]
+      {:designex, "~> 1.0"},
+      {:igniter, "~> 0.6", only: [:dev, :test]}
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    if Code.ensure_loaded?(:json) do
+      []
+    else
+      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+    end
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
@@ -97,24 +106,32 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
-        "assets.build",
+        "patch_wallaby_session_store",
+        "localize.download_locales",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
         "run priv/repo/seeds/user_admin_seed.exs",
+        "tailwind e2e --minify",
+        "esbuild e2e  --minify",
         "test"
       ],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "localize.download_locales",
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing"
+      ],
       "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
       "assets.build": [
-        "compile",
+        "e2e.palette",
         "designex corex",
-        "tailwind e2e --minify",
+        "tailwind e2e",
         "esbuild e2e"
       ],
       "assets.deploy": [
         "compile",
+        "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e --minify",
         "phx.digest"

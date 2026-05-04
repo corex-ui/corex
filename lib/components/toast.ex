@@ -27,7 +27,7 @@ defmodule Corex.Toast do
    Create Info Toast
   </button>
 
-  <div phx-disconnected={Corex.Toast.create_toast("layout-toast", "We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
+  <div phx-disconnected={Corex.Toast.create_toast("layout-toast", "We can't find the internet", "Attempting to reconnect", :info, [duration: :infinity, loading: true])}></div>
 
   ```
 
@@ -158,6 +158,10 @@ defmodule Corex.Toast do
     attr(:class, :string, required: false)
   end
 
+  slot(:close,
+    doc: "content placed in each toast close button (hidden template, cloned in the client)"
+  )
+
   attr(:rest, :global)
 
   def toast_group(assigns) do
@@ -178,6 +182,7 @@ defmodule Corex.Toast do
     assigns =
       assigns
       |> assign_new(:loading, fn -> [] end)
+      |> assign_new(:close, fn -> [] end)
       |> assign(:info_flash, info_flash)
       |> assign(:error_flash, error_flash)
       |> assign(:flash_info, flash_info)
@@ -205,6 +210,9 @@ defmodule Corex.Toast do
       </div>
       <div :if={@loading != []} id={"#{@id}-loading-icon"} data-loading-icon-template style="display: none;">
         {render_slot(@loading)}
+      </div>
+      <div :if={@close != []} id={"#{@id}-close-icon"} data-close-icon-template style="display: none;">
+        {render_slot(@close)}
       </div>
       <div
         :if={@info_flash}
@@ -272,7 +280,8 @@ defmodule Corex.Toast do
             title: @title,
             description: @description,
             type: @type_str,
-            duration: @duration_str
+            duration: @duration_str,
+            loading: true
           }
         )
       }
@@ -334,7 +343,8 @@ defmodule Corex.Toast do
             title: @title,
             description: @description,
             type: @type_str,
-            duration: @duration_str
+            duration: @duration_str,
+            loading: true
           }
         )
       }
@@ -454,7 +464,8 @@ defmodule Corex.Toast do
             title: @title,
             description: @description,
             type: @type_str,
-            duration: @duration_str
+            duration: @duration_str,
+            loading: true
           }
         )
       }
@@ -485,13 +496,16 @@ defmodule Corex.Toast do
         Save
       </button>
 
-      <button phx-click={Corex.Toast.create_toast("layout-toast", "Loading...", nil, :loading, duration: :infinity)}>
+      <button phx-click={Corex.Toast.create_toast("layout-toast", "Loading...", nil, :info, [duration: :infinity, loading: true])}>
         Show Loading
       </button>
+
+  Option `loading: true` (default `false`) shows the loading slot; use it with `duration: :infinity` when you want a spinner, or with any duration to show the template.
   """
   def create_toast(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) do
     duration = Keyword.get(opts, :duration, 5000)
+    loading = Keyword.get(opts, :loading, false)
     duration_str = if duration == :infinity, do: "Infinity", else: duration
 
     type_str =
@@ -502,15 +516,16 @@ defmodule Corex.Toast do
         _ -> "info"
       end
 
-    JS.dispatch("toast:create",
-      to: "##{toast_group_id}",
-      detail: %{
-        title: title,
-        description: description,
-        type: type_str,
-        duration: duration_str
-      }
-    )
+    base_detail = %{
+      title: title,
+      description: description,
+      type: type_str,
+      duration: duration_str
+    }
+
+    detail = if(loading, do: Map.put(base_detail, :loading, true), else: base_detail)
+
+    JS.dispatch("toast:create", to: "##{toast_group_id}", detail: detail)
   end
 
   @doc type: :api
@@ -524,10 +539,16 @@ defmodule Corex.Toast do
       def handle_event("save", _params, socket) do
         {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "Saved!", "Your changes have been saved.", :success, 5000)}
       end
+
+  Optional opts: `loading: true` shows the `<:loading>` template in the toast (independent of duration). Default is `false`.
+
+      push_toast(socket, "t", "Title", nil, :info, :infinity, loading: true)
   """
-  def push_toast(socket, toast_group_id, title, description, type, duration)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) do
+  def push_toast(socket, toast_group_id, title, description, type, duration, opts \\ [])
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
+             is_list(opts) do
     duration_str = if duration == :infinity, do: "Infinity", else: duration
+    loading = Keyword.get(opts, :loading, false)
 
     type_str =
       case type do
@@ -537,12 +558,16 @@ defmodule Corex.Toast do
         _ -> "info"
       end
 
-    Phoenix.LiveView.push_event(socket, "toast-create", %{
+    base = %{
       groupId: toast_group_id,
       title: title,
       description: description,
       type: type_str,
       duration: duration_str
-    })
+    }
+
+    data = if(loading, do: Map.put(base, :loading, true), else: base)
+
+    Phoenix.LiveView.push_event(socket, "toast-create", data)
   end
 end

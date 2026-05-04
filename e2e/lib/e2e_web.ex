@@ -89,6 +89,7 @@ defmodule E2eWeb do
       # Common modules used in templates
       alias Phoenix.LiveView.JS
       alias E2eWeb.Layouts
+      import E2eWeb.RecordFields
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
@@ -100,7 +101,8 @@ defmodule E2eWeb do
       use Phoenix.VerifiedRoutes,
         endpoint: E2eWeb.Endpoint,
         router: E2eWeb.Router,
-        statics: E2eWeb.static_paths()
+        statics: E2eWeb.static_paths(),
+        path_prefixes: [{E2eWeb.Locale, :current, []}]
     end
   end
 

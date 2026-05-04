@@ -3,15 +3,25 @@ import {
   addPoints,
   createRect,
   subtractPoints
-} from "./chunk-ZZKFCQSP.mjs";
+} from "./chunks/chunk-QB2YSZP6.mjs";
 import {
   clampValue,
   toPx
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
@@ -27,16 +37,15 @@ import {
   isHTMLElement,
   isLeftClick,
   match,
-  normalizeProps,
   pick,
   proxy,
   raf,
   resizeObserverBorderBox,
   subscribe,
   trackPointerMove
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
   "trigger",
   "positioner",
@@ -52,7 +61,7 @@ var anatomy = createAnatomy("floating-panel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
 var AffineTransform = class _AffineTransform {
   constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
     __publicField(this, "m00");
@@ -212,7 +221,7 @@ var AffineTransform = class _AffineTransform {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/clamp.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/clamp.mjs
 var clamp = (value, min2, max) => Math.min(Math.max(value, min2), max);
 var clampPoint = (position, size, boundaryRect) => {
   const x = clamp(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size.width);
@@ -234,7 +243,7 @@ var clampSize = (size, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/constrain.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/constrain.mjs
 var constrainRect = (rect, boundary) => {
   const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
   const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
@@ -246,7 +255,7 @@ var constrainRect = (rect, boundary) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/equality.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/equality.mjs
 var isSizeEqual = (a, b) => {
   return a.width === b?.width && a.height === b?.height;
 };
@@ -254,7 +263,7 @@ var isPointEqual = (a, b) => {
   return a.x === b?.x && a.y === b?.y;
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-element.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/from-element.mjs
 var styleCache = /* @__PURE__ */ new WeakMap();
 function getCacheComputedStyle(el) {
   if (!styleCache.has(el)) {
@@ -291,7 +300,7 @@ function getClientRect(el, opts = {}) {
 var px = (v) => parseFloat(v.replace("px", ""));
 var sum = (...vals) => vals.reduce((sum2, v) => sum2 + (v ? px(v) : 0), 0);
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-window.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/from-window.mjs
 function getWindowRect(win, opts = {}) {
   return createRect(getViewportRect(win, opts));
 }
@@ -310,7 +319,7 @@ function getViewportRect(win, opts) {
   return rect;
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/compass.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/compass.mjs
 var compassDirectionMap = {
   n: { x: 0.5, y: 0 },
   ne: { x: 1, y: 0 },
@@ -332,7 +341,7 @@ var oppositeDirectionMap = {
   nw: "se"
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/resize.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/resize.mjs
 var { sign, abs, min } = Math;
 function getRectExtentPoint(rect, direction) {
   const { minX, minY, maxX, maxY, midX, midY } = rect;
@@ -416,7 +425,7 @@ function transformRect(rect, transform, normalized = true) {
   return createRectFromPoints(p1, p2, normalized);
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `float:${ctx.id}:trigger`;
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `float:${ctx.id}:positioner`;
 var getContentId = (ctx) => ctx.ids?.content ?? `float:${ctx.id}:content`;
@@ -447,7 +456,7 @@ var getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
   return pick(boundaryRect, ["x", "y", "width", "height"]);
 };
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
 function getResizeAxisStyle(axis) {
   switch (axis) {
     case "n":
@@ -511,7 +520,7 @@ function getResizeAxisStyle(axis) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
 var validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
 function connect(service, normalize) {
   const { state, send, scope, prop, computed, context } = service;
@@ -614,13 +623,13 @@ function connect(service, normalize) {
         },
         onKeyDown(event) {
           if (event.defaultPrevented) return;
+          if (event.key === "Escape" && isTopmost) {
+            send({ type: "ESCAPE" });
+            return;
+          }
           if (event.currentTarget !== getEventTarget(event)) return;
           const step = getEventStep(event) * prop("gridSize");
           const keyMap = {
-            Escape() {
-              if (!isTopmost) return;
-              send({ type: "ESCAPE" });
-            },
             ArrowLeft() {
               send({ type: "MOVE", direction: "left", step });
             },
@@ -809,7 +818,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
 var panelStack = proxy({
   stack: [],
   count() {
@@ -836,7 +845,7 @@ var panelStack = proxy({
   }
 });
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
 var { not, and } = createGuards();
 var defaultTranslations = {
   minimize: "Minimize window",
@@ -1022,35 +1031,33 @@ var machine = createMachine({
         },
         dragging: {
           effects: ["trackPointerMove"],
-          exit: ["clearPrevPosition"],
           on: {
             DRAG: {
               actions: ["setPositionFromDrag"]
             },
             DRAG_END: {
               target: "idle",
-              actions: ["invokeOnDragEnd"]
+              actions: ["invokeOnDragEnd", "clearPrevPosition"]
             },
             ESCAPE: {
               target: "idle",
-              actions: ["restorePosition"]
+              actions: ["restorePosition", "clearPrevPosition"]
             }
           }
         },
         resizing: {
           effects: ["trackPointerMove"],
-          exit: ["clearPrevSize"],
           on: {
             DRAG: {
               actions: ["setSizeFromDrag"]
             },
             DRAG_END: {
               target: "idle",
-              actions: ["invokeOnResizeEnd"]
+              actions: ["invokeOnResizeEnd", "clearPrevSize"]
             },
             ESCAPE: {
               target: "idle",
-              actions: ["restoreSize"]
+              actions: ["restoreSize", "clearPrevSize"]
             }
           }
         }
@@ -1324,14 +1331,17 @@ var machine = createMachine({
       invokeOnResizeEnd({ context, prop }) {
         prop("onSizeChangeEnd")?.({ size: context.get("size") });
       },
-      setFinalFocus({ scope }) {
+      setFinalFocus({ scope, prop }) {
+        if (prop("restoreFocus") === false) return;
         raf(() => {
-          getTriggerEl(scope)?.focus();
+          const element = prop("finalFocusEl")?.() ?? getTriggerEl(scope);
+          element?.focus({ preventScroll: true });
         });
       },
-      setInitialFocus({ scope }) {
+      setInitialFocus({ scope, prop }) {
         raf(() => {
-          getContentEl(scope)?.focus();
+          const element = prop("initialFocusEl")?.() ?? getContentEl(scope);
+          element?.focus({ preventScroll: true });
         });
       },
       toggleVisibility({ send, prop, event }) {
@@ -1348,7 +1358,7 @@ var FloatingPanel = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const triggerEl = this.el.querySelector(
@@ -1435,16 +1445,15 @@ function parsePoint(val) {
 var FloatingPanelHook = {
   mounted() {
     const el = this.el;
-    const open = getBoolean(el, "open");
-    const defaultOpen = getBoolean(el, "defaultOpen");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const size = parseSize(el.dataset.size);
     const defaultSize = parseSize(el.dataset.defaultSize);
     const position = parsePoint(el.dataset.position);
     const defaultPosition = parsePoint(el.dataset.defaultPosition);
     const zag = new FloatingPanel(el, {
       id: el.id,
-      ...controlled ? { open } : { defaultOpen },
+      defaultOpen: false,
       draggable: getBoolean(el, "draggable") !== false,
       resizable: getBoolean(el, "resizable") !== false,
       allowOverflow: getBoolean(el, "allowOverflow") !== false,
@@ -1460,66 +1469,78 @@ var FloatingPanelHook = {
       persistRect: getBoolean(el, "persistRect"),
       gridSize: Number(el.dataset.gridSize) || 1,
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { open: details.open, id: el.id });
-        }
-        const clientName = getString(el, "onOpenChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            open: details.open
+          },
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
       },
       onPositionChange: (details) => {
-        const eventName = getString(el, "onPositionChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            position: details.position,
-            id: el.id
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, position: details.position },
+          serverEventName: getString(el, "onPositionChange"),
+          clientEventName: getString(el, "onPositionChangeClient")
+        });
       },
       onSizeChange: (details) => {
-        const eventName = getString(el, "onSizeChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            size: details.size,
-            id: el.id
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, size: details.size },
+          serverEventName: getString(el, "onSizeChange"),
+          clientEventName: getString(el, "onSizeChangeClient")
+        });
       },
       onStageChange: (details) => {
-        const eventName = getString(el, "onStageChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            stage: details.stage,
-            id: el.id
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, stage: details.stage },
+          serverEventName: getString(el, "onStageChange"),
+          clientEventName: getString(el, "onStageChangeClient")
+        });
       }
     });
     zag.init();
     this.floatingPanel = zag;
-    this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:floating-panel:set-open", (event) => {
+      const { open } = event.detail;
+      zag.api.setOpen(open);
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("floating_panel_set_open", (payload) => {
+      if (!payload || typeof payload !== "object") return;
+      const o = payload;
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof o.open === "boolean") zag.api.setOpen(o.open);
+    });
   },
   updated() {
-    const open = getBoolean(this.el, "open");
-    const controlled = getBoolean(this.el, "controlled");
     this.floatingPanel?.updateProps({
       id: this.el.id,
-      ...controlled ? { open } : {},
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.domRegistry = void 0;
+    this.handleRegistry?.teardown();
+    this.handleRegistry = void 0;
     this.floatingPanel?.destroy();
   }
 };

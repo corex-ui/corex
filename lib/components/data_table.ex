@@ -70,6 +70,8 @@ defmodule Corex.DataTable do
 
    Add a row: `stream_insert(socket, :items, %{id: id, name: "New"})` from `handle_event` or `handle_info`.
 
+   With the `:empty` slot, the empty row stays in the DOM and is hidden by the `data-table` stylesheet whenever the tbody has data rows (same idea as [stream empty state siblings](https://elixirforum.com/t/stream-empty-state-is-there-a-way-to-check-when-a-stream-is-empty/57219/20); avoids counting stream items on the server).
+
 
    ### Sortable
 
@@ -127,7 +129,7 @@ defmodule Corex.DataTable do
      checkbox_class="checkbox"
    >
      <:checkbox_indicator>
-       <.heroicon name="hero-check" class="data-checked" />
+       <.heroicon name="hero-check" />
      </:checkbox_indicator>
      <:col :let={user} label="ID" name={:id}>{user.id}</:col>
      <:col :let={user} label="Name" name={:name}>{user.name}</:col>
@@ -155,8 +157,14 @@ defmodule Corex.DataTable do
    [data-scope="data-table"][data-part="selection-header"] {}
    [data-scope="data-table"][data-part="selection-cell"] {}
    [data-scope="data-table"][data-part="action-header"] {}
+   [data-scope="data-table"][data-part="action-cell"] {}
    [data-scope="data-table"][data-part="actions"] {}
+   [data-scope="data-table"][data-part="empty-row"] {}
+   [data-scope="data-table"][data-part="empty-cell"] {}
+   [data-scope="data-table"][data-part="empty"] {}
    ```
+
+   With the `data-table` class, the stylesheet hides `[data-part="empty-row"]` when it is not the only row in the tbody so list and stream tables can use `<:empty>` without server-side row counts.
 
    If you wish to use the default Corex styling, you can use the class `data-table` on the component.
    This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
@@ -247,7 +255,7 @@ defmodule Corex.DataTable do
     assigns = assign(assigns, :empty_col_count, col_count)
 
     ~H"""
-    <div {@rest}>
+    <div tabindex="0" {@rest}>
       <table data-scope="data-table" data-part="root">
         <thead data-scope="data-table" data-part="thead">
           <tr>
@@ -277,11 +285,14 @@ defmodule Corex.DataTable do
                     data-part="sort-trigger"
                     data-active={to_string(@sort_by == col[:name])}
                   >
-                    <%= if @sort_icon != [] do %>
-                      <%= for icon <- @sort_icon do %>
-                        {render_slot(icon, %{direction: if(@sort_by == col[:name], do: @sort_order, else: :none)})}
-                      <% end %>
-                    <% end %>
+                    <span
+                      :if={@sort_icon != []}
+                      :for={icon <- @sort_icon}
+                      data-scope="data-table"
+                      data-part="sort-icon"
+                    >
+                      {render_slot(icon, %{direction: if(@sort_by == col[:name], do: @sort_order, else: :none)})}
+                    </span>
                   </button>
                 </span>
               </div>
@@ -297,9 +308,9 @@ defmodule Corex.DataTable do
         <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
           <tr :if={@empty != []} id={"#{@id}-empty"} data-scope="data-table" data-part="empty-row">
             <td colspan={@empty_col_count} data-scope="data-table" data-part="empty-cell">
-              <%= for slot <- @empty do %>
-                {render_slot(slot)}
-              <% end %>
+              <div data-scope="data-table" data-part="empty">
+                {render_slot(@empty)}
+              </div>
             </td>
           </tr>
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
@@ -328,11 +339,9 @@ defmodule Corex.DataTable do
             >
               {render_slot(col, @row_item.(row))}
             </td>
-            <td :if={@action != []} data-scope="data-table" data-part="cell">
+            <td :if={@action != []} data-scope="data-table" data-part="action-cell">
               <div data-scope="data-table" data-part="actions">
-                <%= for action <- @action do %>
-                  {render_slot(action, @row_item.(row))}
-                <% end %>
+                {render_slot(@action, @row_item.(row))}
               </div>
             </td>
           </tr>

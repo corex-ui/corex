@@ -2,17 +2,19 @@ defmodule E2eWeb.ComboboxFormTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
 
+  import Wallaby.Query
+
   alias E2eWeb.ComboboxModel, as: Combobox
 
-  for mode <- ["/en/combobox/form", "/en/live/combobox-form"] do
-    @mode mode
+  for {path, ready} <- [
+        {"/en/combobox/form", "#combobox-form-submit"},
+        {"/en/combobox/live-form", "#airport-combobox"}
+      ] do
+    @path path
+    @ready ready
 
-    feature "#{@mode} - Combobox form has no A11y violations", %{session: session} do
-      session
-      |> Combobox.goto(@mode)
-      |> Combobox.wait(500)
-
-      # |> Combobox.check_accessibility()
+    feature "a11y #{@path}", %{session: session} do
+      Combobox.visit_and_check_a11y(session, @path, css(@ready))
     end
   end
 end

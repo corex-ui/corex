@@ -1,0 +1,94 @@
+{
+  "theme": {
+    "font": {
+      "display": {
+        "type": "fontFamily",
+        "value": [
+          "Nunito Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
+      },
+      "mono": {
+        "type": "fontFamily",
+        "value": [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "Liberation Mono",
+          "Courier New",
+          "monospace"
+        ]
+      },
+      "sans": {
+        "type": "fontFamily",
+        "value": [
+          "Nunito Sans",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
+      },
+      "serif": {
+        "type": "fontFamily",
+        "value": [
+          "ui-serif",
+          "Georgia",
+          "Cambria",
+          "Times New Roman",
+          "Times",
+          "serif"
+        ]
+      }
+    },
+    "font-weight": {
+      "black": {
+        "type": "fontWeights",
+        "value": 900
+      },
+      "bold": {
+        "type": "fontWeights",
+        "value": 700
+      },
+      "extrabold": {
+        "type": "fontWeights",
+        "value": 800
+      },
+      "extralight": {
+        "type": "fontWeights",
+        "value": 200
+      },
+      "light": {
+        "type": "fontWeights",
+        "value": 300
+      },
+      "medium": {
+        "type": "fontWeights",
+        "value": 500
+      },
+      "normal": {
+        "type": "fontWeights",
+        "value": 400
+      },
+      "semibold": {
+        "type": "fontWeights",
+        "value": 600
+      },
+      "thin": {
+        "type": "fontWeights",
+        "value": 100
+      }
+    }
+  }
+}

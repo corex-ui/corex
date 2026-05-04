@@ -1,0 +1,116 @@
+{
+  "theme": {
+    "container": {
+      "2xl": {
+        "type": "dimension",
+        "value": "42.84rem"
+      },
+      "2xs": {
+        "type": "dimension",
+        "value": "18.36rem"
+      },
+      "3xl": {
+        "type": "dimension",
+        "value": "48.96rem"
+      },
+      "3xs": {
+        "type": "dimension",
+        "value": "16.32rem"
+      },
+      "4xl": {
+        "type": "dimension",
+        "value": "57.12rem"
+      },
+      "4xs": {
+        "type": "dimension",
+        "value": "12.24rem"
+      },
+      "5xl": {
+        "type": "dimension",
+        "value": "65.28rem"
+      },
+      "5xs": {
+        "type": "dimension",
+        "value": "10.2rem"
+      },
+      "6xl": {
+        "type": "dimension",
+        "value": "73.44rem"
+      },
+      "6xs": {
+        "type": "dimension",
+        "value": "8.16rem"
+      },
+      "7xl": {
+        "type": "dimension",
+        "value": "81.6rem"
+      },
+      "7xs": {
+        "type": "dimension",
+        "value": "6.12rem"
+      },
+      "lg": {
+        "type": "dimension",
+        "value": "32.64rem"
+      },
+      "md": {
+        "type": "dimension",
+        "value": "28.56rem"
+      },
+      "sm": {
+        "type": "dimension",
+        "value": "24.48rem"
+      },
+      "xl": {
+        "type": "dimension",
+        "value": "36.72rem"
+      },
+      "xs": {
+        "type": "dimension",
+        "value": "20.4rem"
+      }
+    },
+    "spacing": {
+      "default": {
+        "type": "dimension",
+        "value": "0.26rem"
+      },
+      "size": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 12)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 10)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 8)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 14)"
+        }
+      },
+      "space": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 4)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 3)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 2)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 5)"
+        }
+      }
+    }
+  }
+}

@@ -2,26 +2,36 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Data List</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
+  <.demo_page
+    id="data-list-anatomy-page"
+    title="Data List"
+    subtitle="Display structured key-value data."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="data-list-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.DataListDemo.anatomy_basic_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.anatomy_basic_example /></:preview>
+    </.demo_section>
 
-  <h3>Basic Example</h3>
-  <.data_list class="data-list">
-    <:item title="Name">Alice</:item>
-    <:item title="Role">Admin</:item>
-    <:item title="Email">alice@example.com</:item>
-    <:item title="Status">Active</:item>
-  </.data_list>
+    <.demo_section
+      id="data-list-anatomy-rich-values"
+      title="Rich values"
+      code={E2eWeb.Demos.DataListDemo.anatomy_rich_values_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.anatomy_rich_values_example /></:preview>
+    </.demo_section>
 
-  <h3>Another Example</h3>
-  <.data_list class="data-list mt-4">
-    <:item title="Project">Phoenix Web App</:item>
-    <:item title="Status">In Progress</:item>
-    <:item title="Deadline">Dec 31, 2026</:item>
-  </.data_list>
+    <.demo_section
+      id="data-list-anatomy-items-api"
+      title="Items API"
+      code={E2eWeb.Demos.DataListDemo.api_items_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.api_items_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

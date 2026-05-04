@@ -2,44 +2,20 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Toggle Group</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem"])}
-      class="button button--sm"
+  <.demo_page
+    id="toggle-group-anatomy-page"
+    title="Toggle group · Anatomy"
+    subtitle="Select one or multiple toggles."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="toggle-group-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.ToggleGroupDemo.anatomy_basic_code()}
     >
-      Toggle Lorem
-    </.action>
-    <.action
-      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem", "donec"])}
-      class="button button--sm"
-    >
-      Toggle Lorem and Donec
-    </.action>
-    <.action
-      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", [])}
-      class="button button--sm"
-    >
-      Toggle no items
-    </.action>
-  </div>
-  <.toggle_group id="my-toggle-group" class="toggle-group">
-    <:item value="lorem">
-      Lorem
-    </:item>
-
-    <:item value="duis">
-      Duis
-    </:item>
-    <:item value="donec">
-      Donec
-    </:item>
-  </.toggle_group>
+      <:preview><E2eWeb.Demos.ToggleGroupDemo.anatomy_basic_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

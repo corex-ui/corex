@@ -1,16 +1,27 @@
 defmodule E2eWeb.RadioGroupTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   use Wallaby.Feature
+
+  import Wallaby.Query
 
   alias E2eWeb.RadioGroupModel, as: RadioGroup
 
-  for mode <- [:static, :live] do
-    @mode mode
+  feature "anatomy — select option B in plain section", %{session: session} do
+    session
+    |> RadioGroup.visit_ready("/en/radio-group/anatomy", css("#radio-group-anatomy-page"))
+    |> RadioGroup.click_item_in_section("radio-group-anatomy-minimal", "b")
+  end
 
-    feature "#{@mode} - Radio group has no A11y violations", %{session: session} do
+  feature "events — server radio group produces log row", %{session: session} do
+    session =
       session
-      |> RadioGroup.goto(@mode)
-      |> RadioGroup.check_accessibility()
-    end
+      |> RadioGroup.visit_ready("/en/radio-group/events", css("#radio-group-events-page"))
+
+    refute RadioGroup.radio_group_events_server_log_has_row?(session)
+
+    session
+    |> RadioGroup.click_item_in_section("radio-group-events-server", "b")
+
+    assert RadioGroup.radio_group_events_server_log_has_row?(session)
   end
 end

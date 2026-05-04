@@ -5,26 +5,26 @@ defmodule CorexWeb.Combobox do
   alias Corex.Combobox
   alias Corex.Heroicon
 
-  @collection [
-    %{label: "France", id: "fra"},
-    %{label: "Belgium", id: "bel"},
-    %{label: "Germany", id: "deu"},
-    %{label: "Netherlands", id: "nld"},
-    %{label: "Switzerland", id: "che"}
-  ]
+  @items Corex.List.new([
+           %{label: "France", id: "fra"},
+           %{label: "Belgium", id: "bel"},
+           %{label: "Germany", id: "deu"},
+           %{label: "Netherlands", id: "nld"},
+           %{label: "Switzerland", id: "che"}
+         ])
 
   capture variants: [
             basic: %{
               class: "combobox",
               placeholder: "Select a country",
-              collection: @collection,
+              items: @items,
               empty: [%{inner_block: "No results"}],
               trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
             },
             with_value: %{
               class: "combobox",
               placeholder: "Select a country",
-              collection: @collection,
+              items: @items,
               value: ["bel"],
               empty: [%{inner_block: "No results"}],
               trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]

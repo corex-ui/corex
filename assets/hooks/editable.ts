@@ -1,27 +1,34 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Editable } from "../components/editable";
 import type { Props, ValueChangeDetails } from "@zag-js/editable";
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
+import { idMatches, notifyChange, readPayloadId, readPayloadValue } from "../lib/respond-to";
 
 type EditableHookState = {
   editable?: Editable;
-  handlers?: Array<CallbackRef>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
 };
 
-const EditableHook: Hook<object & EditableHookState, HTMLElement> = {
+function dataDefaultValue(el: HTMLElement): string {
+  return getString(el, "defaultValue") ?? "";
+}
+
+const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & EditableHookState) {
     const el = this.el;
-    const value = getString(el, "value");
-    const defaultValue = getString(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const placeholder = getString(el, "placeholder");
     const activationMode = getString(el, "activationMode") as "focus" | "dblclick" | undefined;
     const selectOnFocus = getBoolean(el, "selectOnFocus");
 
     const zag = new Editable(el, {
       id: el.id,
-      ...(controlled && value !== undefined ? { value } : { defaultValue: defaultValue ?? "" }),
+      defaultValue: dataDefaultValue(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -45,45 +52,63 @@ const EditableHook: Hook<object & EditableHookState, HTMLElement> = {
           inputEl.dispatchEvent(new Event("input", { bubbles: true }));
           inputEl.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { value: details.value, id: el.id });
-        }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+          } as Record<string, unknown>,
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient"),
+        });
       },
     } as Props);
     zag.init();
     this.editable = zag;
-    this.handlers = [];
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ value?: string }>>("corex:editable:set-value", (event) => {
+      const raw = event.detail?.value;
+      zag.api.setValue(raw === undefined || raw === null ? "" : String(raw));
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("editable_set_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(readPayloadValue(payload));
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & EditableHookState) {
-    const value = getString(this.el, "value");
-    const controlled = getBoolean(this.el, "controlled");
+    const el = this.el;
+    const dv = dataDefaultValue(el);
+    if (this.editable && !this.editable.api.editing && dv !== this.editable.api.value) {
+      this.editable.api.setValue(dv);
+    }
     this.editable?.updateProps({
-      id: this.el.id,
-      ...(controlled && value !== undefined ? { value } : {}),
-      disabled: getBoolean(this.el, "disabled"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      required: getBoolean(this.el, "required"),
-      invalid: getBoolean(this.el, "invalid"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      dir: getDir(el),
+      ...(getBoolean(el, "controlledEdit")
+        ? { edit: getBoolean(el, "edit") }
+        : { defaultEdit: getBoolean(el, "defaultEdit") }),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & EditableHookState) {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.editable?.destroy();
   },
 };

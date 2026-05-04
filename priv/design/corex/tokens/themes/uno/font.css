@@ -1,0 +1,19 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="uno"] {
+  --theme-font-display: Inter, 'Inter var', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --theme-font-sans: Inter, 'Inter var', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --theme-font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --theme-font-weight-black: 900;
+  --theme-font-weight-bold: 700;
+  --theme-font-weight-extrabold: 800;
+  --theme-font-weight-extralight: 200;
+  --theme-font-weight-light: 300;
+  --theme-font-weight-medium: 500;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-semibold: 600;
+  --theme-font-weight-thin: 100;
+}

@@ -2,33 +2,35 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Layout Heading</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
+  <.demo_page
+    id="layout-heading-anatomy-page"
+    title="Layout Heading Anatomy"
+    subtitle="Page headings with title, subtitle, and actions."
+  >
+    <.demo_section
+      id="layout-heading-title-only"
+      title="Title only"
+      code={E2eWeb.Demos.LayoutHeadingDemo.title_only_code()}
+    >
+      <:preview><E2eWeb.Demos.LayoutHeadingDemo.title_only_example /></:preview>
+    </.demo_section>
 
-  <h3>Title only</h3>
-  <.layout_heading>
-    <:title>Page Title</:title>
-  </.layout_heading>
+    <.demo_section
+      id="layout-heading-title-subtitle"
+      title="Title and subtitle"
+      code={E2eWeb.Demos.LayoutHeadingDemo.title_and_subtitle_code()}
+    >
+      <:preview><E2eWeb.Demos.LayoutHeadingDemo.title_and_subtitle_example /></:preview>
+    </.demo_section>
 
-  <h3>Title and subtitle</h3>
-  <.layout_heading>
-    <:title>Page Title</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Title, subtitle and actions</h3>
-  <.layout_heading>
-    <:title>Page Title</:title>
-    <:subtitle>Controller View</:subtitle>
-    <:actions>
-      <.navigate to={~p"/#{@locale}"} type="href" class="button">
-        <.heroicon name="hero-arrow-left" class="icon" /> Back
-      </.navigate>
-    </:actions>
-  </.layout_heading>
+    <.demo_section
+      id="layout-heading-with-actions"
+      title="With actions"
+      code={E2eWeb.Demos.LayoutHeadingDemo.with_actions_code()}
+    >
+      <:preview><E2eWeb.Demos.LayoutHeadingDemo.with_actions_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

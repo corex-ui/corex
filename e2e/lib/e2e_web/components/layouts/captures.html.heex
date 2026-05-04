@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html
-  lang={assigns[:locale] || "en"}
-  dir={
-    assigns[:dir] ||
-      if(assigns[:locale] in Application.get_env(:corex, :rtl_locales, []),
-        do: "rtl",
-        else: "ltr"
-      )
-  }
+  lang={E2eWeb.Locale.current()}
+  dir={E2eWeb.Locale.dir(E2eWeb.Locale.current())}
   data-theme={assigns[:theme] || "neo"}
   data-mode={assigns[:mode]}
 >
@@ -100,9 +94,9 @@
     </script>
   </head>
   <body class="typo layout">
-    <.toast_group id="layout-toast" class="toast" flash={@flash}>
+    <.toast_group id="layout-toast" class="toast" phx-update="ignore" flash={@flash}>
       <:loading>
-        <.heroicon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" class="icon" />
       </:loading>
     </.toast_group>
     <header class="layout__header">
@@ -111,12 +105,12 @@
           <a
             href="/"
             target="_blank"
-            class="link md:link--md lg:link--lg link--brand gap-mini-gap font-ui-xl flex flex-nowrap px-1 uppercase after:content-none"
+            class="link md:link--md lg:link--lg link--brand gap-mini-gap text-xl flex flex-nowrap px-1 uppercase after:content-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136">
               <path
                 d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
-                fill="var(--color-layer--brand)"
+                fill="var(--color-blue-700)"
               />
             </svg>
             Corex
@@ -128,7 +122,7 @@
         </div>
       </div>
     </header>
-    <main class="layout__main py-ui">
+    <main class="layout__main">
       <div class="layout__content">
         <div class="layout__article">
           {@inner_content}
@@ -136,7 +130,7 @@
       </div>
     </main>
     <footer class="layout__footer">
-      <div class="layout__footer__content gap-ui-gap justify-center md:justify-between">
+      <div class="layout__footer__content gap-2 justify-center md:justify-between">
         <div class="layout__row">
           <a class="link link--sm link--success" href="https://netoum.com" target="_blank">
             Open source by Netoum
@@ -179,7 +173,7 @@
             </svg>
           </a>
         </div>
-        <div class="layout__row gap-ui-gap">
+        <div class="layout__row gap-2">
           <a
             href="https://github.com/corex-ui/corex"
             target="_blank"

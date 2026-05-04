@@ -1,5 +1,29 @@
 import type { Hook } from "phoenix_live_view";
 
+export type {
+  AccordionChangedDetail,
+  TreeViewExpandedChangedDetail,
+  TreeViewSelectionChangedDetail,
+  DialogOpenChangedDetail,
+} from "../lib/event-details";
+
+export type { Animator, AnimateHeightOptions, AnimateScaleOptions } from "../lib/custom-animation";
+
+export {
+  applyClosedHeight,
+  applyOpenHeight,
+  animateHeightOpen,
+  animateHeightClose,
+  applyClosedScale,
+  applyOpenScale,
+  animateScaleOpen,
+  animateScaleClose,
+  findAccordionContent,
+  findTreeBranch,
+  findDialogBackdrop,
+  findDialogContent,
+} from "../lib/custom-animation";
+
 type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 
 function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {
@@ -35,6 +59,7 @@ export const Hooks = {
   Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
   Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
   Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
+  Code: createLazyHook(() => import("corex/code"), "Code"),
   Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
   Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
   ColorPicker: createLazyHook(() => import("corex/color-picker"), "ColorPicker"),
@@ -55,6 +80,7 @@ export const Hooks = {
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
   Timer: createLazyHook(() => import("corex/timer"), "Timer"),
   Toast: createLazyHook(() => import("corex/toast"), "Toast"),
+  Tooltip: createLazyHook(() => import("corex/tooltip"), "Tooltip"),
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView"),
 };

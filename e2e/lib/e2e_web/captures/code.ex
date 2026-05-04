@@ -27,6 +27,17 @@ defmodule CorexWeb.Code do
               class: "code",
               code: @code_examples.js,
               language: :js
+            },
+            inline: %{
+              class: "code",
+              code: "conn.request_path",
+              language: :elixir,
+              inline: true
+            },
+            from_file: %{
+              class: "code",
+              code: @code_examples.elixir,
+              language: :elixir
             }
           ]
 

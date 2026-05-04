@@ -2,47 +2,51 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Checkbox</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}
-      class="button button--sm"
+  <.demo_page
+    id="checkbox-anatomy-page"
+    title="Checkbox · Anatomy"
+    subtitle="Default structure, indicator, error slot, and indeterminate state."
+  >
+    <.demo_section
+      id="checkbox-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.CheckboxDemo.minimal_code()}
     >
-      Set checked
-    </.action>
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.minimal_example />
+      </:preview>
+    </.demo_section>
 
-    <.action
-      phx-click={Corex.Checkbox.set_checked("my-checkbox", false)}
-      class="button button--sm"
+    <.demo_section
+      id="checkbox-anatomy-labeled"
+      title="Label and indicator"
+      code={E2eWeb.Demos.CheckboxDemo.labeled_code()}
     >
-      Set unchecked
-    </.action>
-    <.action
-      phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}
-      class="button button--sm"
-    >
-      Toggle checked
-    </.action>
-  </div>
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.labeled_example />
+      </:preview>
+    </.demo_section>
 
-  <.checkbox id="my-checkbox" class="checkbox">
-    <:label>
-      Accept the terms
-    </:label>
-    <:indicator>
-      <.heroicon name="hero-check" class="data-checked" />
-    </:indicator>
-    <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-  </.checkbox>
+    <.demo_section
+      id="checkbox-anatomy-invalid"
+      title="Invalid"
+      code={E2eWeb.Demos.CheckboxDemo.invalid_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.invalid_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-anatomy-indeterminate"
+      title="Indeterminate"
+      code={E2eWeb.Demos.CheckboxDemo.indeterminate_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.indeterminate_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

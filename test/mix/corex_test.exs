@@ -1,12 +1,22 @@
 defmodule Mix.CorexTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+
+  @moduletag capture_log: true
 
   @tmp_path Path.join(__DIR__, "../../tmp/mix_corex")
 
   setup do
+    shell = Mix.shell()
+    Mix.shell(Mix.Shell.Quiet)
+
     File.rm_rf!(@tmp_path)
     File.mkdir_p!(@tmp_path)
-    on_exit(fn -> File.rm_rf!(@tmp_path) end)
+
+    on_exit(fn ->
+      File.rm_rf!(@tmp_path)
+      Mix.shell(shell)
+    end)
+
     :ok
   end
 

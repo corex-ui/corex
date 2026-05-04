@@ -8,7 +8,6 @@ defmodule CorexWeb.FloatingPanel do
   capture variants: [
             basic: %{
               class: "floating-panel",
-              default_open: false,
               open_trigger: [%{inner_block: "Close panel"}],
               closed_trigger: [%{inner_block: "Open panel"}],
               minimize_trigger: [

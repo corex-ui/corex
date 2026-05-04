@@ -1,0 +1,52 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme][data-mode] {
+  --color-selected-ink: var(--theme-color-selected-ink);
+  --color-ink-success: var(--theme-color-ink-success);
+  --color-ui-active: var(--theme-color-ui-active);
+  --color-brand-muted: var(--theme-color-brand-muted);
+  --color-alert-muted: var(--theme-color-alert-muted);
+  --color-accent-muted: var(--theme-color-accent-muted);
+  --color-accent-ink: var(--theme-color-accent-ink);
+  --color-ui-hover: var(--theme-color-ui-hover);
+  --color-selected-hover: var(--theme-color-selected-hover);
+  --color-ink-accent: var(--theme-color-ink-accent);
+  --color-layer: var(--theme-color-layer);
+  --color-brand-ink: var(--theme-color-brand-ink);
+  --color-accent-active: var(--theme-color-accent-active);
+  --color-alert-ink: var(--theme-color-alert-ink);
+  --color-alert: var(--theme-color-alert);
+  --color-link: var(--theme-color-link);
+  --color-brand-active: var(--theme-color-brand-active);
+  --color-selected-active: var(--theme-color-selected-active);
+  --color-ink-alert: var(--theme-color-ink-alert);
+  --color-alert-active: var(--theme-color-alert-active);
+  --color-success: var(--theme-color-success);
+  --color-info: var(--theme-color-info);
+  --color-success-active: var(--theme-color-success-active);
+  --color-success-muted: var(--theme-color-success-muted);
+  --color-selected-muted: var(--theme-color-selected-muted);
+  --color-selected: var(--theme-color-selected);
+  --color-ui-muted: var(--theme-color-ui-muted);
+  --color-root: var(--theme-color-root);
+  --color-brand: var(--theme-color-brand);
+  --color-shadow: var(--theme-color-shadow);
+  --color-ink: var(--theme-color-ink);
+  --color-accent: var(--theme-color-accent);
+  --color-alert-hover: var(--theme-color-alert-hover);
+  --color-success-ink: var(--theme-color-success-ink);
+  --color-ink-brand: var(--theme-color-ink-brand);
+  --color-info-active: var(--theme-color-info-active);
+  --color-success-hover: var(--theme-color-success-hover);
+  --color-info-ink: var(--theme-color-info-ink);
+  --color-brand-hover: var(--theme-color-brand-hover);
+  --color-ink-muted: var(--theme-color-ink-muted);
+  --color-info-hover: var(--theme-color-info-hover);
+  --color-ink-info: var(--theme-color-ink-info);
+  --color-info-muted: var(--theme-color-info-muted);
+  --color-accent-hover: var(--theme-color-accent-hover);
+  --color-ui: var(--theme-color-ui);
+  --color-border: var(--theme-color-border);
+}

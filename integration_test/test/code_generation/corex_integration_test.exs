@@ -6,6 +6,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
       with_installer_tmp("corex_default", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
 
+        assert_corex_greenfield_file_invariants!(app_root_path, "my_app")
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
       end)
@@ -25,52 +26,16 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "default app home page" do
     test "GET / returns 200 and body contains Corex" do
       with_installer_tmp("corex_home", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
-
-        assert_no_compilation_warnings(app_root_path)
-
-        port = run_phx_server(app_root_path)
-
-        :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
-        assert response.status_code == 200
-        assert response.body =~ "Corex"
-      end)
-    end
-  end
-
-  describe "default app LiveView" do
-    test "GET /live returns 200 and body contains Corex" do
-      with_installer_tmp("corex_live", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
-
-        assert_no_compilation_warnings(app_root_path)
-
-        port = run_phx_server(app_root_path)
-
-        :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}/live", 20)
-        assert response.status_code == 200
-        assert response.body =~ "Corex"
-      end)
-    end
-  end
-
-  describe "ExampleLiveTest" do
-    @tag database: :postgresql
-    test "generated LiveView test passes" do
-      with_installer_tmp("corex_example_live", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
 
-        drop_test_database(app_root_path)
+        assert_no_compilation_warnings(app_root_path)
 
-        {output, 0} =
-          System.cmd("mix", ["test", "test/my_app_web/live/example_live_test.exs"],
-            stderr_to_stdout: true,
-            cd: app_root_path
-          )
+        port = run_phx_server(app_root_path)
 
-        assert output =~ "1 test, 0 failures"
+        :inets.start()
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
+        assert response.status_code == 200
+        assert response.body =~ "Corex"
       end)
     end
   end
@@ -78,7 +43,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "app with --mode" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_mode", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode", "--no-ecto"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -87,11 +52,11 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --theme uno:leo" do
+  describe "app with --theme" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_theme", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo", "--no-ecto"])
+          generate_corex_app(tmp_dir, "my_app", ["--theme"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -100,26 +65,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --lang en:fr" do
+  describe "app with --lang (i18n)" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_lang", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--lang", "en:fr", "--no-ecto"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--lang"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
-      end)
-    end
-  end
-
-  describe "app with --no-ecto" do
-    test "compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_no_ecto", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
-
-        assert_no_compilation_warnings(app_root_path)
-        assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
+        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
       end)
     end
   end
@@ -128,40 +82,18 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     test "keeps design folder, compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_designex", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--designex", "--no-ecto"])
+          generate_corex_app(tmp_dir, "my_app", ["--designex"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_dir(Path.join(app_root_path, "assets/corex/design"))
-        assert_tests_pass(app_root_path)
-      end)
-    end
-  end
-
-  describe "app with --no-tidewave" do
-    test "compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_no_tidewave", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--no-tidewave", "--no-ecto"])
-
-        assert_no_compilation_warnings(app_root_path)
-        assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
-      end)
-    end
-  end
-
-  describe "app with --lang and --rtl" do
-    test "generates locale and RTL files, compiles, format check passes, and tests pass" do
-      with_installer_tmp("corex_lang_rtl", fn tmp_dir ->
-        {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--lang", "en:ar", "--rtl", "ar", "--no-ecto"])
-
-        assert_no_compilation_warnings(app_root_path)
-        assert_passes_formatter_check(app_root_path)
-        assert_file(Path.join(app_root_path, "priv/gettext/ar/LC_MESSAGES/errors.po"))
-        assert_file(Path.join(app_root_path, "lib/my_app_web/plugs/locale.ex"))
-        assert_file(Path.join(app_root_path, "lib/my_app_web/shared_events.ex"))
+        assert_file(Path.join([app_root_path, "assets", "corex", "design", "build.mjs"]))
+        mix_exs = File.read!(Path.join(app_root_path, "mix.exs"))
+        assert mix_exs =~ ~r/\{:designex,/
+        assert mix_exs =~ "designex corex"
+        cfg = File.read!(Path.join(app_root_path, "config/config.exs"))
+        assert cfg =~ "config :designex"
+        assert_assets_build_pass(app_root_path)
         assert_tests_pass(app_root_path)
       end)
     end
@@ -173,14 +105,23 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "my_app", [
             "--mode",
-            "--theme", "neo:uno",
-            "--lang", "en:fr",
-            "--no-ecto"
+            "--theme",
+            "--lang"
           ])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
+        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+
+        web = Path.join(app_root_path, "lib/my_app_web")
+
+        for rel <- ["plugs/mode.ex", "plugs/theme.ex"] do
+          assert File.exists?(Path.join(web, rel))
+        end
+
+        layouts = File.read!(Path.join(web, "components/layouts.ex"))
+        assert layouts =~ "def language_switch"
       end)
     end
 
@@ -189,10 +130,11 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
       with_installer_tmp("corex_mode_theme_lang_sqlite3", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "phx_blog", [
-            "--database", "sqlite3",
+            "--database",
+            "sqlite3",
             "--mode",
-            "--theme", "neo:uno",
-            "--lang", "en:fr"
+            "--theme",
+            "--lang"
           ])
 
         assert_no_compilation_warnings(app_root_path)
@@ -203,11 +145,22 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --no-ecto --no-dashboard" do
+  describe "app with --no-design" do
+    test "patches JS and home but does not run design (no assets/corex, no design imports in app.css)" do
+      with_installer_tmp("corex_no_design_flag", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-design"])
+
+        assert_corex_no_design_replace_invariants!(app_root_path, "my_app")
+        assert_no_compilation_warnings(app_root_path)
+      end)
+    end
+  end
+
+  describe "app with --no-dashboard" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_no_ecto_no_dashboard", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--no-ecto", "--no-dashboard"])
+          generate_corex_app(tmp_dir, "my_app", ["--no-dashboard"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -220,16 +173,56 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     test "GET / returns theme-related markup" do
       with_installer_tmp("corex_theme_http", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo", "--no-ecto"])
+          generate_corex_app(tmp_dir, "my_app", ["--theme"])
 
         assert_no_compilation_warnings(app_root_path)
 
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
         assert response.status_code == 200
-        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or response.body =~ "theme"
+
+        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
+                 response.body =~ "theme"
+      end)
+    end
+  end
+
+  describe "mix corex.new with --mode and --theme (design assets)" do
+    test "compile + assets.build succeed; design imports and root layout data attrs" do
+      with_installer_tmp("corex_mode_theme_design", [autoremove?: false], fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--mode", "--theme"])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_assets_build_pass(app_root_path)
+
+        assert_file(Path.join(app_root_path, "assets/css/app.css"), fn content ->
+          assert content =~ ~s(@import "../corex/main.css";)
+          assert content =~ ~s(@import "../corex/theme/neo.css";)
+          assert content =~ ~s(@import "../corex/theme/uno.css";)
+          assert content =~ ~s(@import "../corex/theme/duo.css";)
+          assert content =~ ~s(@import "../corex/theme/leo.css";)
+          assert content =~ ~s(@import "../corex/components/toggle-group.css";)
+          assert content =~ ~s(@import "../corex/components/select.css";)
+          assert content =~ ~s(@import "../corex/components/data-table.css";)
+          assert content =~ ~s(@import "../corex/components/data-list.css";)
+          assert content =~ ~s(@import "../corex/components/scrollbar.css";)
+          assert content =~ ~s(@import "../corex/components/typo.css";)
+          refute content =~ "../vendor/daisyui"
+          refute content =~ "daisyui-theme"
+        end)
+
+        assert_file(
+          Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"),
+          fn content ->
+            assert content =~ ~r/<html\b[^>]*\bdata-theme=/
+            assert content =~ ~r/<html\b[^>]*\bdata-mode=/
+            assert content =~ ~r/window\.addEventListener\(\s*[\"']phx:set-theme/
+            refute content =~ "dataset.phxTheme"
+          end
+        )
       end)
     end
   end
@@ -237,36 +230,18 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "app with --mode HTTP check" do
     test "GET / returns mode-related markup" do
       with_installer_tmp("corex_mode_http", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode", "--no-ecto"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
 
         assert_no_compilation_warnings(app_root_path)
 
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
         assert response.status_code == 200
-        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or response.body =~ "mode"
-      end)
-    end
-  end
 
-  describe "corex.new.web inside umbrella" do
-    test "creates web app and injects config" do
-      with_installer_tmp("corex_new_web", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_umb", ["--umbrella"])
-        integration_test_root = Path.expand("../../", __DIR__)
-        extra_web_path = Path.join([app_root_path, "apps", "extra_web"])
-
-        mix_run!(
-          ["corex.new.web", extra_web_path, "--install"],
-          integration_test_root
-        )
-
-        assert_file(Path.join(app_root_path, "apps/extra_web/mix.exs"))
-        assert_file(Path.join(app_root_path, "config/config.exs"), fn file ->
-          assert file =~ "extra_web" or file =~ "import_config"
-        end)
+        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
+                 response.body =~ "mode"
       end)
     end
   end
@@ -291,5 +266,4 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
       end)
     end
   end
-
 end

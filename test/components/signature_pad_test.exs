@@ -1,14 +1,27 @@
+defmodule Corex.SignaturePadTest.SigForm do
+  use Ecto.Schema
+
+  @primary_key false
+  embedded_schema do
+    field(:signature, :string)
+  end
+end
+
 defmodule Corex.SignaturePadTest do
   use CorexTest.ComponentCase, async: true
+  import Ecto.Changeset
   import Phoenix.Component
 
   alias Corex.SignaturePad.Connect
+  alias Corex.SignaturePadTest.SigForm
 
   describe "signature_pad/1" do
     test "renders" do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad/1, [])
       assert html =~ ~r/data-scope="signature-pad"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
     end
   end
 
@@ -30,6 +43,15 @@ defmodule Corex.SignaturePadTest do
     end
   end
 
+  describe "Connect.hidden_input/1" do
+    test "uses text type and hidden for LiveView used_input" do
+      result = Connect.hidden_input(%{id: "p", dir: "ltr", name: "user[signature]", form: nil})
+      assert result["type"] == "text"
+      assert result["hidden"] == "true"
+      assert result["data-part"] == "hidden-input"
+    end
+  end
+
   describe "Connect.clear_trigger/1" do
     test "returns clear trigger attributes without hidden when has_paths" do
       assigns = %{id: "test-signature", dir: "ltr", has_paths: true, aria_label: nil}
@@ -46,9 +68,9 @@ defmodule Corex.SignaturePadTest do
   end
 
   describe "signature_pad/1 with options" do
-    test "renders with controlled" do
+    test "renders with empty default paths" do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad_controlled/1, [])
-      assert html =~ ~r/data-controlled/
+      refute html =~ ~r/data-controlled/
     end
 
     test "renders with drawing options" do
@@ -65,6 +87,17 @@ defmodule Corex.SignaturePadTest do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_field/1, [])
       assert html =~ ~r/data-scope="signature-pad"/
       assert html =~ ~r/name="user\[signature\]"/
+      assert html =~ ~r/type="text"/
+    end
+
+    test "hidden value is empty string when field is blank, not json []" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_field/1,
+          params: %{"signature" => ""}
+        )
+
+      assert html =~ ~r/value=""/
+      refute html =~ ~s(value="[]")
     end
 
     test "renders with field value as list" do
@@ -86,13 +119,14 @@ defmodule Corex.SignaturePadTest do
       assert html =~ ~r/M0 0 L10 10/
     end
 
-    test "renders with paths as JSON string" do
+    test "renders with paths as newline-separated d strings" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_paths/1,
-          paths: ~s(["M0 0 L10 10"])
+          paths: "M0 0 L5 5\nM10 10 L15 15"
         )
 
       assert html =~ ~r/data-scope="signature-pad"/
+      assert html =~ "M0 0 L5 5"
     end
 
     test "renders with errors slot" do
@@ -113,7 +147,6 @@ defmodule Corex.SignaturePadTest do
             <Corex.SignaturePad.signature_pad
               id="sig1"
               name="sig1_name"
-              controlled={true}
               drawing_fill="red"
               drawing_size={3}
               drawing_simulate_pressure={true}
@@ -180,7 +213,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={"invalid_json"} />
+            <Corex.SignaturePad.signature_pad paths=" \n " />
             """
           end,
           %{}
@@ -214,6 +247,69 @@ defmodule Corex.SignaturePadTest do
       socket = %Phoenix.LiveView.Socket{}
       result = Corex.SignaturePad.clear(socket, "my-pad")
       assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "signature_pad/1 with field, validate, and used_input" do
+    test "shows field errors on validate when signature is blank and field is used" do
+      changeset =
+        %SigForm{}
+        |> cast(%{"signature" => ""}, [:signature])
+        |> validate_required([:signature])
+
+      form = to_form(changeset, as: :user, action: :validate)
+      field = form[:signature]
+      assert Phoenix.Component.used_input?(field)
+      assert field.errors != []
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad field={@field}>
+              <:label>Sign</:label>
+              <:clear_trigger>Clear</:clear_trigger>
+              <:error :let={msg}>{msg}</:error>
+            </Corex.SignaturePad.signature_pad>
+            """
+          end,
+          %{field: field}
+        )
+
+      assert html =~ "blank"
+    end
+
+    test "shows field errors when form has no validate-only restriction" do
+      changeset =
+        %SigForm{}
+        |> cast(%{"signature" => ""}, [:signature])
+        |> validate_required([:signature])
+        |> Map.put(:action, :insert)
+
+      form = to_form(changeset, as: :user)
+      assert form.action == :insert
+      field = form[:signature]
+      assert Phoenix.Component.used_input?(field)
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad field={@field}>
+              <:label>Sign</:label>
+              <:clear_trigger>Clear</:clear_trigger>
+              <:error :let={msg}>{msg}</:error>
+            </Corex.SignaturePad.signature_pad>
+            """
+          end,
+          %{field: field}
+        )
+
+      assert html =~ "blank"
     end
   end
 end

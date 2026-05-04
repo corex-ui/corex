@@ -1,28 +1,55 @@
 defmodule Corex.Select.Connect do
   @moduledoc false
-  alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
+  alias Corex.Selectors
 
-  import Corex.Helpers, only: [get_boolean: 1, validate_value!: 1]
+  alias Corex.Select.Anatomy.{
+    Content,
+    Control,
+    HiddenSelect,
+    Item,
+    ItemGroup,
+    ItemGroupLabel,
+    ItemIndicator,
+    ItemText,
+    Label,
+    Positioner,
+    Props,
+    Root,
+    Trigger,
+    ValueInput
+  }
+
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [get_boolean: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    sorted_items = sort_items_by_group(assigns.items || [])
+    vlist = assigns.value || []
+    joined = if vlist == [], do: nil, else: Enum.map_join(vlist, ",", &to_string/1)
+
+    value_str =
+      if assigns.controlled and joined do
+        joined
+      else
+        nil
+      end
+
+    default_value_str =
+      if not assigns.controlled and joined do
+        joined
+      else
+        nil
+      end
+
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(assigns.items),
+      "data-items" => Corex.Json.encode!(sorted_items),
       "data-controlled" => get_boolean(assigns.controlled),
-      "data-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
-        end,
-      "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
-        end,
-      "data-placeholder" => assigns.placeholder,
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
+      "data-placeholder" => assigns.placeholder || "",
       "data-disabled" => get_boolean(assigns.disabled),
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-loop-focus" => get_boolean(assigns.loop_focus),
@@ -32,18 +59,23 @@ defmodule Corex.Select.Connect do
       "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
-      "data-positioning" =>
-        if assigns.positioning do
-          Corex.Json.encode!(assigns.positioning)
-        else
-          nil
-        end
+      "data-dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 
     base
+    |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
+    |> maybe_put("data-deselectable", get_boolean(Map.get(assigns, :deselectable)))
+  end
+
+  defp sort_items_by_group(items) do
+    items
+    |> Enum.group_by(&Map.get(&1, :group))
+    |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
+    |> Enum.flat_map(fn {_group, group_items} -> group_items end)
   end
 
   defp maybe_put(map, _key, nil), do: map
@@ -52,15 +84,23 @@ defmodule Corex.Select.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     orientation = Map.get(assigns, :orientation, "vertical")
+    dir = Map.get(assigns, :dir, "ltr")
 
     %{
       "data-scope" => "select",
       "data-part" => "root",
       "data-orientation" => orientation,
+      "dir" => dir,
       "id" => "select:#{assigns.id}",
       "data-invalid" => get_boolean(assigns.invalid),
       "data-readonly" => get_boolean(assigns.read_only)
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}")
+    )
   end
 
   @spec label(Label.t()) :: map()
@@ -80,6 +120,12 @@ defmodule Corex.Select.Connect do
     }
   end
 
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:label")
+    )
+  end
+
   @spec control(Control.t()) :: map()
   def control(assigns) do
     orientation = Map.get(assigns, :orientation, "vertical")
@@ -95,29 +141,222 @@ defmodule Corex.Select.Connect do
     }
   end
 
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:control")
+    )
+  end
+
+  @spec trigger(Trigger.t()) :: map()
+  def trigger(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "data-scope" => "select",
+      "data-part" => "trigger",
+      "data-orientation" => orientation,
+      "dir" => assigns.dir,
+      "id" => "select:#{assigns.id}:trigger",
+      "type" => "button",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid)
+    }
+  end
+
+  def ignore_trigger(assigns) do
+    JS.ignore_attributes(Trigger.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:trigger")
+    )
+  end
+
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
     %{
       "data-scope" => "select",
       "data-part" => "positioner",
       "dir" => assigns.dir,
+      "data-orientation" => orientation,
       "style" =>
         "position:fixed;isolation:isolate;width:var(--reference-width);pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);z-index:var(--z-index);",
       "id" => "select:#{assigns.id}:positioner"
     }
   end
 
+  def ignore_positioner(assigns) do
+    JS.ignore_attributes(Positioner.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:positioner")
+    )
+  end
+
   @spec content(Content.t()) :: map()
   def content(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
     %{
       "data-scope" => "select",
       "data-part" => "content",
       "dir" => assigns.dir,
+      "data-orientation" => orientation,
       "id" => "select:#{assigns.id}:content",
       "tabindex" => -1,
       "role" => "listbox",
       "hidden" => "true",
       "aria-labelledby" => "select:#{assigns.id}:label"
     }
+  end
+
+  def ignore_content(assigns) do
+    JS.ignore_attributes(Content.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:content")
+    )
+  end
+
+  @spec hidden_select(HiddenSelect.t()) :: map()
+  def hidden_select(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "data-scope" => "select",
+      "data-part" => "hidden-select",
+      "dir" => assigns.dir,
+      "data-orientation" => orientation,
+      "id" => "select:#{assigns.id}:hidden-select",
+      "aria-hidden" => "true",
+      "tabindex" => -1,
+      "style" =>
+        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
+    }
+  end
+
+  def ignore_hidden_select(assigns) do
+    JS.ignore_attributes(HiddenSelect.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:hidden-select")
+    )
+  end
+
+  @spec value_input(ValueInput.t()) :: map()
+  def value_input(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "type" => "hidden",
+      "data-scope" => "select",
+      "data-part" => "value-input",
+      "dir" => assigns.dir,
+      "data-orientation" => orientation,
+      "id" => "select:#{assigns.id}:value-input"
+    }
+  end
+
+  def ignore_value_input(assigns) do
+    JS.ignore_attributes(ValueInput.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:value-input")
+    )
+  end
+
+  @spec item_group(ItemGroup.t()) :: map()
+  def item_group(assigns) do
+    %{
+      "data-scope" => "select",
+      "data-part" => "item-group",
+      "data-id" => assigns.group_id,
+      "dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "select:#{assigns.id}:item-group:#{assigns.group_id}"
+    }
+  end
+
+  def ignore_item_group(assigns) do
+    JS.ignore_attributes(ItemGroup.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:item-group:#{assigns.group_id}")
+    )
+  end
+
+  @spec item_group_label(ItemGroupLabel.t()) :: map()
+  def item_group_label(assigns) do
+    %{
+      "data-scope" => "select",
+      "data-part" => "item-group-label",
+      "data-id" => assigns.group_id,
+      "dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "select:#{assigns.id}:item-group-label:#{assigns.group_id}"
+    }
+  end
+
+  def ignore_item_group_label(assigns) do
+    JS.ignore_attributes(ItemGroupLabel.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:item-group-label:#{assigns.group_id}")
+    )
+  end
+
+  @spec item(Item.t()) :: map()
+  def item(assigns) do
+    base = %{
+      "data-scope" => "select",
+      "data-part" => "item",
+      "data-value" => assigns.value,
+      "dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "select:#{assigns.id}:item:#{assigns.value}"
+    }
+
+    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
+
+    base =
+      case Map.get(assigns, :redirect) do
+        false ->
+          Map.put(base, "data-redirect", "false")
+
+        mode when mode in [:href, :patch, :navigate] ->
+          Map.put(base, "data-redirect", Atom.to_string(mode))
+
+        _ ->
+          base
+      end
+
+    if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
+  end
+
+  def ignore_item(assigns) do
+    JS.ignore_attributes(Item.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:item:#{assigns.value}")
+    )
+  end
+
+  @spec item_text(ItemText.t()) :: map()
+  def item_text(assigns) do
+    %{
+      "data-scope" => "select",
+      "data-part" => "item-text",
+      "dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "select:#{assigns.id}:item-text:#{assigns.value}"
+    }
+  end
+
+  def ignore_item_text(assigns) do
+    JS.ignore_attributes(ItemText.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:item-text:#{assigns.value}")
+    )
+  end
+
+  @spec item_indicator(ItemIndicator.t()) :: map()
+  def item_indicator(assigns) do
+    %{
+      "data-scope" => "select",
+      "data-part" => "item-indicator",
+      "dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "select:#{assigns.id}:item-indicator:#{assigns.value}"
+    }
+  end
+
+  def ignore_item_indicator(assigns) do
+    JS.ignore_attributes(ItemIndicator.ignored_attrs(),
+      to: Selectors.css_id("select:#{assigns.id}:item-indicator:#{assigns.value}")
+    )
   end
 end

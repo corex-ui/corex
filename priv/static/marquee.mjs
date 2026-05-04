@@ -1,4 +1,8 @@
 import {
+  idMatches,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
+import {
   Component,
   VanillaMachine,
   createAnatomy,
@@ -7,15 +11,14 @@ import {
   getBoolean,
   getDir,
   getNumber,
-  getString,
-  normalizeProps
-} from "./chunk-ZOODJA3P.mjs";
+  getString
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
 var dom = {
   getRootId: (ctx) => ctx.ids?.root ?? `marquee:${ctx.id}`,
   getViewportId: (ctx) => ctx.ids?.viewport ?? `marquee:${ctx.id}:viewport`,
@@ -25,7 +28,7 @@ var dom = {
   getContentEl: (ctx, index) => ctx.getById(dom.getContentId(ctx, index))
 };
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
 var getEdgePositionStyles = (options) => {
   const { side } = options;
   switch (side) {
@@ -67,7 +70,7 @@ var getMarqueeTranslate = (options) => {
   return shouldBeNegative ? "-100%" : "100%";
 };
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
 function connect(service, normalize) {
   const { scope, send, context, computed, prop } = service;
   const side = prop("side");
@@ -219,7 +222,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -399,67 +402,118 @@ function calculateDuration(options) {
 
 // components/marquee.ts
 var Marquee = class extends Component {
+  items = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
+  }
+  buildDom() {
+    const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+    if (ssrPreview) ssrPreview.remove();
+    const templateEl = this.el.querySelector(
+      'template[data-part="items-template"]'
+    );
+    if (!templateEl) return;
+    this.items = Array.from(templateEl.content.children).map(
+      (el) => el.cloneNode(true)
+    );
+    templateEl.remove();
+    if (this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
+      return;
+    }
+    const root = document.createElement("div");
+    root.setAttribute("data-scope", "marquee");
+    root.setAttribute("data-part", "root");
+    root.id = `marquee:${this.el.id}`;
+    root.style.cssText = "display:flex;flex-direction:row;position:relative;overflow:hidden;width:100%";
+    this.el.appendChild(root);
+    const edgeStart = document.createElement("div");
+    root.appendChild(edgeStart);
+    this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
+    const viewport = document.createElement("div");
+    viewport.setAttribute("data-scope", "marquee");
+    viewport.setAttribute("data-part", "viewport");
+    viewport.id = `marquee:${this.el.id}:viewport`;
+    viewport.style.cssText = "display:flex;width:100%";
+    root.appendChild(viewport);
+    const content = document.createElement("div");
+    content.setAttribute("data-scope", "marquee");
+    content.setAttribute("data-part", "content");
+    content.setAttribute("data-index", "0");
+    content.id = `marquee:${this.el.id}:content:0`;
+    content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
+    viewport.appendChild(content);
+    this.items.forEach((itemEl) => {
+      content.appendChild(itemEl.cloneNode(true));
+    });
+    const edgeEnd = document.createElement("div");
+    root.appendChild(edgeEnd);
+    this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="marquee"][data-part="root"]') ?? this.el;
-    this.spreadProps(rootEl, this.api.getRootProps());
-    const edgeStart = this.el.querySelector(
-      '[data-scope="marquee"][data-part="edge"][data-side="start"]'
-    );
+    if (!this.items) return;
+    const root = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
+    if (!root) return;
+    this.spreadProps(root, this.api.getRootProps());
+    const edgeStart = root.querySelector('[data-part="edge"][data-side="start"]');
     if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
-    const viewport = this.el.querySelector(
-      '[data-scope="marquee"][data-part="viewport"]'
+    const viewport = root.querySelector('[data-part="viewport"]');
+    if (!viewport) return;
+    this.spreadProps(viewport, this.api.getViewportProps());
+    const existingContents = Array.from(
+      viewport.querySelectorAll(':scope > [data-part="content"]')
     );
-    if (viewport) this.spreadProps(viewport, this.api.getViewportProps());
-    const contentEls = this.el.querySelectorAll(
-      '[data-scope="marquee"][data-part="content"]'
-    );
-    contentEls.forEach((contentEl, i) => {
+    while (existingContents.length > this.api.contentCount) {
+      const el = existingContents.pop();
+      if (el) viewport.removeChild(el);
+    }
+    Array.from({ length: this.api.contentCount }).forEach((_, i) => {
+      let contentEl = existingContents[i];
+      if (!contentEl) {
+        contentEl = document.createElement("div");
+        viewport.appendChild(contentEl);
+        this.items.forEach((itemEl) => {
+          const clone = itemEl.cloneNode(true);
+          contentEl.appendChild(clone);
+        });
+      }
       this.spreadProps(contentEl, this.api.getContentProps({ index: i }));
-      const itemEls = contentEl.querySelectorAll(
-        '[data-scope="marquee"][data-part="item"]'
-      );
-      itemEls.forEach((itemEl) => {
+      contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
         this.spreadProps(itemEl, this.api.getItemProps());
       });
     });
-    const edgeEnd = this.el.querySelector(
-      '[data-scope="marquee"][data-part="edge"][data-side="end"]'
-    );
+    const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
     if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
   }
 };
 
 // hooks/marquee.ts
+function readMarqueeProps(el) {
+  return {
+    id: el.id,
+    translations: { root: getString(el, "ariaLabel") },
+    duration: getNumber(el, "duration"),
+    side: getString(el, "side"),
+    speed: getNumber(el, "speed"),
+    spacing: getString(el, "spacing"),
+    autoFill: getBoolean(el, "autoFill"),
+    pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
+    defaultPaused: getBoolean(el, "defaultPaused"),
+    delay: getNumber(el, "delay"),
+    loopCount: getNumber(el, "loopCount"),
+    reverse: getBoolean(el, "reverse"),
+    dir: getDir(el)
+  };
+}
 var MarqueeHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const ariaLabel = getString(el, "ariaLabel") ?? `Marquee: ${el.id}`;
     const zag = new Marquee(el, {
-      id: el.id,
-      translations: { root: ariaLabel },
-      duration: getNumber(el, "duration") ?? 20,
-      side: getString(el, "side", [
-        "start",
-        "end",
-        "top",
-        "bottom"
-      ]) ?? "end",
-      speed: getNumber(el, "speed") ?? 50,
-      spacing: getString(el, "spacing") ?? "1rem",
-      autoFill: getBoolean(el, "autoFill"),
-      pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
-      defaultPaused: getBoolean(el, "defaultPaused"),
-      delay: getNumber(el, "delay") ?? 0,
-      loopCount: getNumber(el, "loopCount") ?? 0,
-      reverse: getBoolean(el, "reverse"),
-      dir: getDir(el),
+      ...readMarqueeProps(el),
       onPauseChange: (details) => {
         const eventName = getString(el, "onPauseChange");
         if (eventName && this.liveSocket.main.isConnected()) {
@@ -500,65 +554,43 @@ var MarqueeHook = {
         }
       }
     });
+    zag.buildDom();
     zag.init();
     this.marquee = zag;
     this.onPause = () => zag.api.pause();
     this.onResume = () => zag.api.resume();
     this.onTogglePause = () => zag.api.togglePause();
-    el.addEventListener("phx:marquee:pause", this.onPause);
-    el.addEventListener("phx:marquee:resume", this.onResume);
-    el.addEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+    el.addEventListener("corex:marquee:pause", this.onPause);
+    el.addEventListener("corex:marquee:resume", this.onResume);
+    el.addEventListener("corex:marquee:toggle-pause", this.onTogglePause);
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("marquee_pause", (payload) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.pause();
       })
     );
     this.handlers.push(
       this.handleEvent("marquee_resume", (payload) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.resume();
       })
     );
     this.handlers.push(
       this.handleEvent("marquee_toggle_pause", (payload) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.togglePause();
       })
     );
   },
   updated() {
-    const ariaLabel = getString(this.el, "ariaLabel") ?? `Marquee: ${this.el.id}`;
-    this.marquee?.updateProps({
-      id: this.el.id,
-      translations: { root: ariaLabel },
-      duration: getNumber(this.el, "duration") ?? 20,
-      side: getString(this.el, "side", [
-        "start",
-        "end",
-        "top",
-        "bottom"
-      ]) ?? "end",
-      speed: getNumber(this.el, "speed") ?? 50,
-      spacing: getString(this.el, "spacing") ?? "1rem",
-      autoFill: getBoolean(this.el, "autoFill"),
-      pauseOnInteraction: getBoolean(this.el, "pauseOnInteraction"),
-      defaultPaused: getBoolean(this.el, "defaultPaused"),
-      delay: getNumber(this.el, "delay") ?? 0,
-      loopCount: getNumber(this.el, "loopCount") ?? 0,
-      reverse: getBoolean(this.el, "reverse"),
-      dir: getDir(this.el)
-    });
+    this.marquee?.updateProps(readMarqueeProps(this.el));
   },
   destroyed() {
-    if (this.onPause) this.el.removeEventListener("phx:marquee:pause", this.onPause);
-    if (this.onResume) this.el.removeEventListener("phx:marquee:resume", this.onResume);
+    if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
+    if (this.onResume) this.el.removeEventListener("corex:marquee:resume", this.onResume);
     if (this.onTogglePause)
-      this.el.removeEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+      this.el.removeEventListener("corex:marquee:toggle-pause", this.onTogglePause);
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }

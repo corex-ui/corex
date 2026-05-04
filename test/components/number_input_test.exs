@@ -2,12 +2,25 @@ defmodule Corex.NumberInputTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
-  alias Corex.NumberInput
   alias Corex.NumberInput.Connect
 
   describe "number_input/1" do
     test "renders" do
-      html = render_component(&NumberInput.number_input/1, [])
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="n1">
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ ~r/data-scope="number-input"/
       assert html =~ ~r/data-part="root"/
     end
@@ -21,6 +34,8 @@ defmodule Corex.NumberInputTest do
             ~H"""
             <Corex.NumberInput.number_input min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
               <:label>Number</:label>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
             """
           end,
@@ -33,30 +48,44 @@ defmodule Corex.NumberInputTest do
       assert html =~ "data-step=\"2\""
     end
 
-    test "renders with scrubber" do
-      html =
+    test "raises when increment_trigger is missing" do
+      assert_raise ArgumentError, ~r/increment_trigger.*decrement_trigger/, fn ->
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input scrubber={true}>
-              <:scrubber_trigger>Scrub here</:scrubber_trigger>
+            <Corex.NumberInput.number_input>
+              <:decrement_trigger>-</:decrement_trigger>
             </Corex.NumberInput.number_input>
             """
           end,
           %{}
         )
+      end
+    end
 
-      assert html =~ "Scrub here"
-      assert html =~ "data-part=\"scrubber\""
+    test "raises when decrement_trigger is missing" do
+      assert_raise ArgumentError, ~r/increment_trigger.*decrement_trigger/, fn ->
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+      end
     end
 
     test "renders with translation and buttons" do
       translation = %Corex.NumberInput.Translation{
         increase: "Plus",
-        decrease: "Minus",
-        scrub: "Scrub"
+        decrease: "Minus"
       }
 
       html =
@@ -78,6 +107,25 @@ defmodule Corex.NumberInputTest do
       assert html =~ "Minus"
       assert html =~ "+"
       assert html =~ "-"
+    end
+
+    test "does not emit data-controlled" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x">
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      refute html =~ "data-controlled"
     end
   end
 

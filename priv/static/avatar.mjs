@@ -1,26 +1,37 @@
 import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
+import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   getString,
-  normalizeProps,
   observeAttributes,
   observeChildren
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.36.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.36.0/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `avatar:${ctx.id}`;
 var getImageId = (ctx) => ctx.ids?.image ?? `avatar:${ctx.id}:image`;
 var getFallbackId = (ctx) => ctx.ids?.fallback ?? `avatar:${ctx.id}:fallback`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getImageEl = (ctx) => ctx.getById(getImageId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.36.0/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope } = service;
   const loaded = state.matches("loaded");
@@ -70,7 +81,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.36.0/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
 var machine = createMachine({
   initialState() {
     return "loading";
@@ -168,7 +179,7 @@ var Avatar = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="avatar"][data-part="root"]') ?? this.el;
@@ -193,46 +204,91 @@ var Avatar = class extends Component {
 };
 
 // hooks/avatar.ts
+function statusPayload(el, details) {
+  return { id: el.id, status: details.status };
+}
 var AvatarHook = {
   mounted() {
     const el = this.el;
-    const src = getString(el, "src");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    const initialSrc = getString(el, "src");
     const zag = new Avatar(el, {
       id: el.id,
+      dir: getString(el, "dir"),
       onStatusChange: (details) => {
-        const eventName = getString(el, "onStatusChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { status: details.status, id: el.id });
-        }
-        const clientName = getString(el, "onStatusChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
-      },
-      ...src !== void 0 ? {} : {}
+        const flat = statusPayload(el, details);
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: flat,
+          serverEventName: getString(el, "onStatusChange"),
+          clientEventName: getString(el, "onStatusChangeClient")
+        });
+      }
     });
     zag.init();
     this.avatar = zag;
-    if (src !== void 0) {
-      zag.api.setSrc(src);
-    }
-    this.handlers = [];
+    this.lastSrc = initialSrc;
+    const emitLoaded = (respondTo) => {
+      const loaded = zag.api.loaded;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "avatar_loaded_response",
+        serverPayload: { id: el.id, loaded },
+        el,
+        domEventName: "avatar-loaded",
+        domDetail: { id: el.id, loaded }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:avatar:set-src", (event) => {
+      const next = event.detail?.src;
+      if (typeof next !== "string") return;
+      zag.api.setSrc(next);
+      this.lastSrc = next;
+      el.dataset.src = next;
+    });
+    domRegistry.add("corex:avatar:loaded", (event) => {
+      emitLoaded(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("avatar_set_src", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setSrc(payload.src);
+      this.lastSrc = payload.src;
+      el.dataset.src = payload.src;
+    });
+    registry.add("avatar_loaded", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitLoaded(parseRespondTo(payload));
+    });
   },
   updated() {
     const src = getString(this.el, "src");
-    if (src !== void 0 && this.avatar) {
+    const dir = getString(this.el, "dir");
+    if (this.avatar) {
+      this.avatar.updateProps({
+        ...dir !== void 0 ? { dir } : {}
+      });
+    }
+    if (this.avatar && src !== void 0 && src !== this.lastSrc) {
       this.avatar.api.setSrc(src);
+      this.lastSrc = src;
+    }
+    if (this.avatar && src === void 0 && this.lastSrc !== void 0) {
+      this.avatar.api.setSrc("");
+      this.lastSrc = void 0;
     }
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.avatar?.destroy();
   }
 };

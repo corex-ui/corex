@@ -1,6 +1,7 @@
 defmodule Corex.EditableTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Editable
   alias Corex.Editable.Connect
 
   describe "editable/1" do
@@ -25,6 +26,21 @@ defmodule Corex.EditableTest do
         )
 
       assert html =~ ~r/aria-label="Custom input"/
+    end
+  end
+
+  describe "set_value/2" do
+    test "returns JS command" do
+      js = Editable.set_value("my-editable", "Hello")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Editable.set_value(socket, "my-editable", "Hello")
+      assert %Phoenix.LiveView.Socket{} = result
     end
   end
 

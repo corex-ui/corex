@@ -1,10 +1,20 @@
 import {
   toPx
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
   callAll,
+  canPushEvent,
   clickIfLink,
   contains,
   createAnatomy,
@@ -23,19 +33,18 @@ import {
   itemById,
   last,
   nextById,
-  normalizeProps,
   prevById,
   queryAll,
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.36.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.36.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
 var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
 var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
@@ -65,7 +74,7 @@ var getRectByValue = (ctx, value) => {
   return getOffsetRect(tab);
 };
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.36.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const translations = prop("translations");
@@ -259,7 +268,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.36.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
 var { createMachine } = setup();
 var machine = createMachine({
   props({ props }) {
@@ -543,42 +552,55 @@ var machine = createMachine({
 });
 
 // components/tabs.ts
+function tabsDomIds(rootId) {
+  return {
+    root: `tabs-${rootId}-root`,
+    list: `tabs-${rootId}-list`,
+    indicator: `tabs-${rootId}-indicator`,
+    content: (value) => `tabs-${rootId}-content-${value}`,
+    trigger: (value) => `tabs-${rootId}-trigger-${value}`
+  };
+}
 var Tabs = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
-    return new VanillaMachine(machine, props);
+    const id = props.id ?? this.el.id;
+    return new VanillaMachine(machine, { ...props, id, ids: tabsDomIds(id) });
   }
+  updateProps = (attrs) => {
+    const props = attrs;
+    const id = props.id ?? this.el.id;
+    this.machine.updateProps({ ...props, id, ids: tabsDomIds(id) });
+  };
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]');
+    const listEl = rootEl.querySelector(
+      ':scope > [data-scope="tabs"][data-part="list"]'
+    );
     if (!listEl) return;
     this.spreadProps(listEl, this.api.getListProps());
-    const itemsData = this.el.getAttribute("data-items");
-    const items = itemsData ? JSON.parse(itemsData) : [];
     const triggers = listEl.querySelectorAll(
-      '[data-scope="tabs"][data-part="trigger"]'
+      ':scope > [data-scope="tabs"][data-part="trigger"]'
     );
-    for (let i = 0; i < triggers.length && i < items.length; i++) {
-      const triggerEl = triggers[i];
-      const item = items[i];
-      this.spreadProps(
-        triggerEl,
-        this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
-      );
-    }
+    triggers.forEach((triggerEl) => {
+      const value = triggerEl.dataset.value;
+      const disabled = triggerEl.dataset.disabled == "";
+      if (!value) return;
+      this.spreadProps(triggerEl, this.api.getTriggerProps({ value, disabled }));
+    });
     const contents = rootEl.querySelectorAll(
-      '[data-scope="tabs"][data-part="content"]'
+      ':scope > [data-scope="tabs"][data-part="content"]'
     );
-    for (let i = 0; i < contents.length && i < items.length; i++) {
-      const contentEl = contents[i];
-      const item = items[i];
-      this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
-    }
+    contents.forEach((contentEl) => {
+      const value = contentEl.dataset.value;
+      if (!value) return;
+      this.spreadProps(contentEl, this.api.getContentProps({ value }));
+    });
   }
 };
 
@@ -587,101 +609,74 @@ var TabsHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const tabs = new Tabs(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
-      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      orientation: getString(el, "orientation"),
+      dir: getString(el, "dir"),
       onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: details.value ?? null },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       },
       onFocusChange: (details) => {
-        const eventName = getString(el, "onFocusChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.focusedValue ?? null
-          });
-        }
-        const eventNameClient = getString(el, "onFocusChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.focusedValue ?? null
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: details.focusedValue ?? null },
+          serverEventName: getString(el, "onFocusChange"),
+          clientEventName: getString(el, "onFocusChangeClient")
+        });
       }
     });
     tabs.init();
     this.tabs = tabs;
-    this.onSetValue = (event) => {
-      const { value } = event.detail;
-      tabs.api.setValue(value);
-    };
-    el.addEventListener("phx:tabs:set-value", this.onSetValue);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("tabs_set_value", (payload) => {
-        const targetId = payload.tabs_id;
-        if (targetId && targetId !== el.id) return;
-        tabs.api.setValue(payload.value);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("tabs_value", () => {
-        this.pushEvent("tabs_value_response", {
-          value: tabs.api.value
-        });
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("tabs_focused_value", () => {
-        this.pushEvent("tabs_focused_value_response", {
-          value: tabs.api.focusedValue
-        });
-      })
-    );
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:tabs:set-value", (event) => {
+      tabs.api.setValue(event.detail.value);
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("tabs_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      tabs.api.setValue(payload.value);
+    });
+    registry.add("tabs_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("tabs_value_response", {
+        id: el.id,
+        value: tabs.api.value
+      });
+    });
+    registry.add("tabs_focused_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("tabs_focused_value_response", {
+        id: el.id,
+        value: tabs.api.focusedValue
+      });
+    });
   },
   updated() {
     this.tabs?.updateProps({
       id: this.el.id,
       ...getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") },
-      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+      orientation: getString(this.el, "orientation"),
+      dir: getString(this.el, "dir")
     });
   },
   destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.tabs?.destroy();
   }
 };

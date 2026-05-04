@@ -2,17 +2,36 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Timer</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.timer id="my-timer" countdown start_ms={60_000} target_ms={0} class="timer">
-    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-  </.timer>
+  <.demo_page
+    id="timer-anatomy-page"
+    title="Timer · Anatomy"
+    subtitle="Count up or down with controls."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="timer-anatomy-countdown"
+      title="Countdown"
+      code={E2eWeb.Demos.TimerDemo.anatomy_countdown_code()}
+    >
+      <:preview><E2eWeb.Demos.TimerDemo.anatomy_countdown_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="timer-anatomy-interval"
+      title="Interval and auto start"
+      code={E2eWeb.Demos.TimerDemo.anatomy_timing_code()}
+    >
+      <:preview><E2eWeb.Demos.TimerDemo.anatomy_timing_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="timer-anatomy-direction"
+      title="Direction and orientation"
+      code={E2eWeb.Demos.TimerDemo.anatomy_direction_code()}
+    >
+      <:preview><E2eWeb.Demos.TimerDemo.anatomy_direction_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

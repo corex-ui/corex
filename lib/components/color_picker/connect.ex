@@ -1,6 +1,15 @@
 defmodule Corex.ColorPicker.Connect do
   @moduledoc false
+  alias Corex.Selectors
+
   alias Corex.ColorPicker.Anatomy.{
+    Area,
+    AreaBackground,
+    AreaThumb,
+    ChannelInput,
+    ChannelSlider,
+    ChannelSliderThumb,
+    ChannelSliderTrack,
     Content,
     Control,
     HiddenInput,
@@ -10,16 +19,15 @@ defmodule Corex.ColorPicker.Connect do
     Props,
     Root,
     Swatch,
+    SwatchGroup,
     SwatchTrigger,
     TransparencyGrid,
     Trigger
   }
 
-  import Corex.Helpers, only: [get_boolean: 1]
+  alias Phoenix.LiveView.JS
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  import Corex.Helpers, only: [get_boolean: 1]
 
   defp maybe_put(acc, _key, nil), do: acc
   defp maybe_put(acc, key, value), do: [{key, value} | acc]
@@ -56,6 +64,12 @@ defmodule Corex.ColorPicker.Connect do
     base
   end
 
+  def ignore_root(%Root{} = assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}")
+    )
+  end
+
   @spec label(Label.t()) :: map()
   def label(assigns) do
     %{
@@ -69,6 +83,12 @@ defmodule Corex.ColorPicker.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required)
     }
+  end
+
+  def ignore_label(%Label{} = assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:label")
+    )
   end
 
   @spec hidden_input(HiddenInput.t()) :: map()
@@ -89,6 +109,12 @@ defmodule Corex.ColorPicker.Connect do
     end
   end
 
+  def ignore_hidden_input(%HiddenInput{} = assigns) do
+    JS.ignore_attributes(HiddenInput.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:hidden-input")
+    )
+  end
+
   @spec control(Control.t()) :: map()
   def control(assigns) do
     %{
@@ -100,6 +126,12 @@ defmodule Corex.ColorPicker.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-state" => if(assigns.open, do: "open", else: "closed")
     }
+  end
+
+  def ignore_control(%Control{} = assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:control")
+    )
   end
 
   @spec trigger(Trigger.t()) :: map()
@@ -123,6 +155,12 @@ defmodule Corex.ColorPicker.Connect do
     }
   end
 
+  def ignore_trigger(%Trigger{} = assigns) do
+    JS.ignore_attributes(Trigger.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:trigger")
+    )
+  end
+
   @spec transparency_grid(TransparencyGrid.t()) :: map()
   def transparency_grid(assigns) do
     size = assigns.size
@@ -131,16 +169,31 @@ defmodule Corex.ColorPicker.Connect do
       "data-scope" => "color-picker",
       "data-part" => "transparency-grid",
       "data-size" => size,
+      "id" => "color-picker:#{assigns.id}:transparency:#{assigns.variant}",
       "style" =>
         "--size:#{size};width:100%;height:100%;position:absolute;background-color:#fff;background-image:#{@transparency_grid_bg};background-size:var(--size) var(--size);inset:0px;z-index:auto;pointer-events:none;"
     }
   end
 
+  def ignore_transparency_grid(%TransparencyGrid{} = assigns) do
+    JS.ignore_attributes(TransparencyGrid.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:transparency:#{assigns.variant}")
+    )
+  end
+
+  defp swatch_dom_id(picker_id, variant) do
+    v = variant || "main"
+    "color-picker:#{picker_id}:swatch:#{v}"
+  end
+
   @spec swatch(Swatch.t()) :: map()
   def swatch(assigns) do
+    variant = Map.get(assigns, :variant) || "main"
+
     base = %{
       "data-scope" => "color-picker",
       "data-part" => "swatch",
+      "id" => swatch_dom_id(assigns.id, variant),
       "style" => "position:relative"
     }
 
@@ -173,6 +226,14 @@ defmodule Corex.ColorPicker.Connect do
     base
   end
 
+  def ignore_swatch(%Swatch{} = assigns) do
+    variant = Map.get(assigns, :variant) || "main"
+
+    JS.ignore_attributes(Swatch.ignored_attrs(),
+      to: Selectors.css_id(swatch_dom_id(assigns.id, variant))
+    )
+  end
+
   def channel_input_style, do: @channel_input_style
 
   def swatch_trigger_aria_label(value), do: "select #{value} as the color"
@@ -182,6 +243,8 @@ defmodule Corex.ColorPicker.Connect do
     base = %{
       "data-scope" => "color-picker",
       "data-part" => "swatch-trigger",
+      "type" => "button",
+      "id" => "color-picker:#{assigns.id}:swatch-trigger:#{assigns.index}",
       "data-value" => assigns.value,
       "aria-label" => swatch_trigger_aria_label(assigns.value),
       "style" => "--color:#{assigns.value};position:relative"
@@ -194,11 +257,18 @@ defmodule Corex.ColorPicker.Connect do
     end
   end
 
+  def ignore_swatch_trigger(%SwatchTrigger{} = assigns) do
+    JS.ignore_attributes(SwatchTrigger.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:swatch-trigger:#{assigns.index}")
+    )
+  end
+
   @spec preset_swatch(PresetSwatch.t()) :: map()
   def preset_swatch(assigns) do
     base = %{
       "data-scope" => "color-picker",
       "data-part" => "swatch",
+      "id" => "color-picker:#{assigns.id}:preset-swatch:#{assigns.index}",
       "data-value" => assigns.value,
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked")
     }
@@ -213,6 +283,12 @@ defmodule Corex.ColorPicker.Connect do
     Map.put(base, "style", style)
   end
 
+  def ignore_preset_swatch(%PresetSwatch{} = assigns) do
+    JS.ignore_attributes(PresetSwatch.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:preset-swatch:#{assigns.index}")
+    )
+  end
+
   @positioner_style "position:fixed;isolation:isolate;min-width:max-content;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);z-index:var(--z-index);"
 
   @spec positioner(Positioner.t()) :: map()
@@ -224,6 +300,12 @@ defmodule Corex.ColorPicker.Connect do
       "dir" => assigns.dir,
       "style" => @positioner_style
     }
+  end
+
+  def ignore_positioner(%Positioner{} = assigns) do
+    JS.ignore_attributes(Positioner.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:positioner")
+    )
   end
 
   @spec content(Content.t()) :: map()
@@ -245,6 +327,153 @@ defmodule Corex.ColorPicker.Connect do
     end
   end
 
+  def ignore_content(%Content{} = assigns) do
+    JS.ignore_attributes(Content.ignored_attrs(),
+      to: Selectors.css_id("color-picker:#{assigns.id}:content")
+    )
+  end
+
+  defp picker(pid), do: "color-picker:#{pid}"
+
+  @spec area(Area.t()) :: map()
+  def area(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "area",
+      "id" => "#{picker(assigns.picker_id)}:area",
+      "dir" => assigns.dir
+    }
+  end
+
+  def ignore_area(%Area{} = assigns) do
+    JS.ignore_attributes(Area.ignored_attrs(),
+      to: Selectors.css_id("#{picker(assigns.picker_id)}:area")
+    )
+  end
+
+  @spec area_background(AreaBackground.t()) :: map()
+  def area_background(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "area-background",
+      "id" => "#{picker(assigns.picker_id)}:area-background"
+    }
+  end
+
+  def ignore_area_background(%AreaBackground{} = assigns) do
+    JS.ignore_attributes(AreaBackground.ignored_attrs(),
+      to: Selectors.css_id("#{picker(assigns.picker_id)}:area-background")
+    )
+  end
+
+  @spec area_thumb(AreaThumb.t()) :: map()
+  def area_thumb(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "area-thumb",
+      "id" => "#{picker(assigns.picker_id)}:area-thumb"
+    }
+  end
+
+  def ignore_area_thumb(%AreaThumb{} = assigns) do
+    JS.ignore_attributes(AreaThumb.ignored_attrs(),
+      to: Selectors.css_id("#{picker(assigns.picker_id)}:area-thumb")
+    )
+  end
+
+  @spec swatch_group(SwatchGroup.t()) :: map()
+  def swatch_group(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "swatch-group",
+      "id" => "#{picker(assigns.picker_id)}:swatch-group"
+    }
+  end
+
+  def ignore_swatch_group(%SwatchGroup{} = assigns) do
+    JS.ignore_attributes(SwatchGroup.ignored_attrs(),
+      to: Selectors.css_id("#{picker(assigns.picker_id)}:swatch-group")
+    )
+  end
+
+  defp channel_input_dom_id(pid, qualifier), do: "#{picker(pid)}:channel-input:#{qualifier}"
+
+  @spec channel_input(ChannelInput.t()) :: map()
+  @spec channel_input(ChannelInput.t(), map()) :: map()
+  def channel_input(assigns), do: channel_input(assigns, %{})
+
+  def channel_input(assigns, extra) do
+    base = %{
+      "data-scope" => "color-picker",
+      "data-part" => "channel-input",
+      "data-channel" => assigns.channel,
+      "id" => channel_input_dom_id(assigns.picker_id, assigns.qualifier),
+      "style" => @channel_input_style
+    }
+
+    Map.merge(base, extra)
+  end
+
+  def ignore_channel_input(%ChannelInput{} = assigns) do
+    JS.ignore_attributes(ChannelInput.ignored_attrs(),
+      to: Selectors.css_id(channel_input_dom_id(assigns.picker_id, assigns.qualifier))
+    )
+  end
+
+  defp channel_slider_dom_id(pid, ch), do: "#{picker(pid)}:channel-slider:#{ch}"
+
+  @spec channel_slider(ChannelSlider.t()) :: map()
+  def channel_slider(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "channel-slider",
+      "data-channel" => assigns.channel,
+      "id" => channel_slider_dom_id(assigns.picker_id, assigns.channel)
+    }
+  end
+
+  def ignore_channel_slider(%ChannelSlider{} = assigns) do
+    JS.ignore_attributes(ChannelSlider.ignored_attrs(),
+      to: Selectors.css_id(channel_slider_dom_id(assigns.picker_id, assigns.channel))
+    )
+  end
+
+  defp channel_slider_track_dom_id(pid, ch), do: "#{picker(pid)}:channel-slider-track:#{ch}"
+
+  @spec channel_slider_track(ChannelSliderTrack.t()) :: map()
+  def channel_slider_track(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "channel-slider-track",
+      "data-channel" => assigns.channel,
+      "id" => channel_slider_track_dom_id(assigns.picker_id, assigns.channel)
+    }
+  end
+
+  def ignore_channel_slider_track(%ChannelSliderTrack{} = assigns) do
+    JS.ignore_attributes(ChannelSliderTrack.ignored_attrs(),
+      to: Selectors.css_id(channel_slider_track_dom_id(assigns.picker_id, assigns.channel))
+    )
+  end
+
+  defp channel_slider_thumb_dom_id(pid, ch), do: "#{picker(pid)}:channel-slider-thumb:#{ch}"
+
+  @spec channel_slider_thumb(ChannelSliderThumb.t()) :: map()
+  def channel_slider_thumb(assigns) do
+    %{
+      "data-scope" => "color-picker",
+      "data-part" => "channel-slider-thumb",
+      "data-channel" => assigns.channel,
+      "id" => channel_slider_thumb_dom_id(assigns.picker_id, assigns.channel)
+    }
+  end
+
+  def ignore_channel_slider_thumb(%ChannelSliderThumb{} = assigns) do
+    JS.ignore_attributes(ChannelSliderThumb.ignored_attrs(),
+      to: Selectors.css_id(channel_slider_thumb_dom_id(assigns.picker_id, assigns.channel))
+    )
+  end
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
     event_attrs =
@@ -264,30 +493,20 @@ defmodule Corex.ColorPicker.Connect do
       |> maybe_put("data-on-interact-outside", get_event(assigns, :on_interact_outside))
       |> Map.new()
 
-    base = %{
-      "id" => assigns.id,
-      "data-default-value" => assigns.default_value,
-      "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
-      "data-name" => assigns.name,
-      "data-format" => assigns.format,
-      "data-default-format" => assigns.default_format,
-      "data-controlled" => data_attr(assigns.controlled),
-      "data-close-on-select" => data_attr(assigns.close_on_select),
-      "data-default-open" => data_attr(assigns.default_open),
-      "data-open" => if(assigns.controlled, do: data_attr(assigns.open), else: nil),
-      "data-open-auto-focus" => data_attr(assigns.open_auto_focus),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-required" => data_attr(assigns.required),
-      "data-dir" => assigns.dir,
-      "data-positioning" =>
-        if assigns.positioning && assigns.positioning != %{} do
-          Corex.Json.encode!(assigns.positioning)
-        else
-          nil
-        end
-    }
+    base =
+      %{
+        "id" => assigns.id,
+        "data-default-value" => assigns.value,
+        "data-name" => Map.get(assigns, :name) || assigns.id,
+        "data-close-on-select" => get_boolean(assigns.close_on_select),
+        "data-open-auto-focus" => get_boolean(assigns.open_auto_focus),
+        "data-disabled" => get_boolean(assigns.disabled),
+        "data-invalid" => get_boolean(assigns.invalid),
+        "data-read-only" => get_boolean(assigns.read_only),
+        "data-required" => get_boolean(assigns.required),
+        "data-dir" => assigns.dir
+      }
+      |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
 
     Map.merge(base, event_attrs)
   end

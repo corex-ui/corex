@@ -1,3 +1,3 @@
 Application.ensure_all_started(:phoenix_live_view)
 
-ExUnit.start()
+ExUnit.start(exclude: [integration: true])

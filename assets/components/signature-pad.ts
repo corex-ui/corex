@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/signature-pad";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class SignaturePad extends Component<Props, Api> {
@@ -22,7 +22,7 @@ export class SignaturePad extends Component<Props, Api> {
   }
 
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   syncPaths = () => {
@@ -40,7 +40,9 @@ export class SignaturePad extends Component<Props, Api> {
       const hiddenInput = this.el.querySelector<HTMLInputElement>(
         '[data-scope="signature-pad"][data-part="hidden-input"]'
       );
-      if (hiddenInput) hiddenInput.value = "";
+      if (hiddenInput && hiddenInput.value !== "") {
+        hiddenInput.value = "";
+      }
       return;
     }
 
@@ -104,7 +106,7 @@ export class SignaturePad extends Component<Props, Api> {
       this.spreadProps(
         hiddenInput,
         this.api.getHiddenInputProps({
-          value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : "",
+          value: this.api.paths.length > 0 ? this.api.paths.join("\n") : "",
         })
       );
     }

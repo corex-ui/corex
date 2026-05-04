@@ -1,4 +1,4 @@
-<Layouts.app
+<%= if layout_mode || layout_theme || layout_themes || layout_locale || scope do %><Layouts.app
   flash={@flash}<%= if layout_mode do %>
   mode={@mode}<% end %><%= if layout_theme do %>
   theme={@theme}<% end %><%= if layout_themes do %>
@@ -7,13 +7,14 @@
   current_path={@current_path}<% end %><%= if scope do %>
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
-  <.layout_heading>
+<% else %><Layouts.app flash={@flash}><% end %>
+  <.layout_heading class="layout-heading">
     <:title>Edit <%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
   </.layout_heading>
 
   <.<%= schema.singular %>_form
-    changeset={@changeset}
+    form={to_form(@changeset, as: :<%= String.to_atom(schema.singular) %>, id: "<%= schema.singular %>-form")}
     action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}"}
     return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
   />

@@ -1,5 +1,7 @@
 defmodule Corex.RadioGroup.Connect do
   @moduledoc false
+  alias Corex.Selectors
+
   alias Corex.RadioGroup.Anatomy.{
     Indicator,
     Item,
@@ -11,9 +13,8 @@ defmodule Corex.RadioGroup.Connect do
     Root
   }
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -21,15 +22,15 @@ defmodule Corex.RadioGroup.Connect do
       "id" => assigns.id,
       "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
       "data-default-value" => if(assigns.controlled, do: nil, else: assigns.value),
-      "data-controlled" => data_attr(assigns.controlled),
+      "data-controlled" => get_boolean(assigns.controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
-      "data-required" => data_attr(assigns.required),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-dir" => assigns.dir,
-      "data-orientation" => assigns.orientation,
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-required" => get_boolean(assigns.required),
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
@@ -41,8 +42,8 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "root",
       "role" => "radiogroup",
-      "dir" => assigns.dir,
-      "data-orientation" => assigns.orientation,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}",
       "style" => "position:relative;"
     }
@@ -54,14 +55,27 @@ defmodule Corex.RadioGroup.Connect do
     end
   end
 
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}")
+    )
+  end
+
   @spec label(Label.t()) :: map()
   def label(assigns) do
     %{
       "data-scope" => "radio-group",
       "data-part" => "label",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:label"
     }
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:label")
+    )
   end
 
   @spec indicator(Indicator.t()) :: map()
@@ -69,12 +83,19 @@ defmodule Corex.RadioGroup.Connect do
     %{
       "data-scope" => "radio-group",
       "data-part" => "indicator",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:indicator",
       "hidden" => "",
       "style" =>
         "position:absolute;width:0;height:0;overflow:hidden;clip:rect(0,0,0,0);margin:-1px;padding:0;border:0;"
     }
+  end
+
+  def ignore_indicator(assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:indicator")
+    )
   end
 
   @spec item(Item.t()) :: map()
@@ -83,11 +104,19 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item:#{assigns.value}"
     }
+  end
+
+  def ignore_item(assigns) do
+    JS.ignore_attributes(Item.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:item:#{assigns.value}")
+    )
   end
 
   @spec item_text(ItemText.t()) :: map()
@@ -96,10 +125,18 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "item-text",
       "data-value" => assigns.value,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-text:#{assigns.value}"
     }
+  end
+
+  def ignore_item_text(assigns) do
+    JS.ignore_attributes(ItemText.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:item-text:#{assigns.value}")
+    )
   end
 
   @spec item_control(ItemControl.t()) :: map()
@@ -110,10 +147,18 @@ defmodule Corex.RadioGroup.Connect do
       "aria-hidden" => "true",
       "data-value" => assigns.value,
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-control:#{assigns.value}"
     }
+  end
+
+  def ignore_item_control(assigns) do
+    JS.ignore_attributes(ItemControl.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:item-control:#{assigns.value}")
+    )
   end
 
   @spec item_hidden_input(ItemHiddenInput.t()) :: map()
@@ -125,14 +170,22 @@ defmodule Corex.RadioGroup.Connect do
       "name" => assigns.name,
       "form" => assigns.form,
       "value" => assigns.value,
-      "checked" => data_attr(assigns.checked),
-      "disabled" => data_attr(assigns.disabled),
+      "checked" => get_boolean(assigns.checked),
+      "disabled" => get_boolean(assigns.disabled),
       "data-value" => assigns.value,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}",
       "style" =>
         "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
+  end
+
+  def ignore_item_hidden_input(assigns) do
+    JS.ignore_attributes(ItemHiddenInput.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}")
+    )
   end
 end

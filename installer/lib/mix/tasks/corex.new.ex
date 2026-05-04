@@ -1,164 +1,84 @@
 defmodule Mix.Tasks.Corex.New do
   @moduledoc """
-  Creates a new Phoenix application with Corex preconfigured.
+  Creates a new Phoenix application with Corex installed.
 
-  Use this task when you want to start a new project with Corex, Phoenix, optional Ecto, and default Corex styling and layout. To add Corex to an existing Phoenix app instead, see [Manual installation](https://hexdocs.pm/corex/manual_installation.html).
+  Install archives:
 
-  It expects the path of the project as an argument:
+      mix archive.install hex phx_new
+      mix archive.install hex corex_new
 
-      $ mix corex.new PATH [--module MODULE] [--app APP]
+  `mix corex.new PATH` runs **`mix phx.new PATH --no-install`** with forwarded Phoenix flags,
+  then writes Corex-owned files and patches into that app. **`--no-install`** is always passed to
+  Phoenix so dependency fetching stays under Corex control.
 
-  A project at the given PATH will be created. The application name and module name will be retrieved from the path, unless `--module` or `--app` is given.
+  LiveView, HTML, esbuild, and the default Phoenix asset setup are **always on** — Corex does not
+  forward **`--no-live`**, **`--no-html`**, **`--no-esbuild`**, or **`--no-assets`**.
 
-  ## Options
+  **`mix phx.new --dev`** (Phoenix from a Git checkout) is **not** forwarded. **`--dev`** on this task
+  means a **Corex** path dependency only.
 
-    * `--umbrella` - generate an umbrella project,
-      with one application for your domain, and
-      a second application for the web interface.
+  ## Corex-only options
 
-    * `--app` - the name of the OTP application
+  * **`--no-design`** — skip copying consumer design assets into `assets/corex/` and omit Corex design `@import` blocks in `app.css`. Default is **`--design`** (design on).
+  * **`--tailwind`** / **`--no-tailwind`** — Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
+  * **`--mode`** — plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
+  * **`--theme`** — themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
+  * **`--lang`** — Localize + Gettext, path plug, locale scope helpers, `language_switch`.
+  * **`--designex`** — copy token sources into `assets/corex/design/`, add `:designex`, asset aliases. Implies **`--design`**.
+  * **`--mcp`** / **`--no-mcp`** — when **`--mcp`** (default), `plug Corex.MCP` is added to the endpoint in `:dev` / `:test` after `Plug.Static`.
+  * **`--dev PATH`** — `{:corex, path: PATH}` and relative `corex.mjs` import when building JS; design copies from that checkout when **`--design`** is on.
+  * **`--install`** / **`--no-install`** — whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 
-    * `--module` - the name of the base module in
-      the generated skeleton
+  ## Options forwarded to **`mix phx.new`**
 
-    * `--database` - specify the database adapter for Ecto. One of:
+  Same semantics as Phoenix’s installer — see **`mix help phx.new`** on [Hexdocs](https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html).
 
-        * `postgres` - via https://github.com/elixir-ecto/postgrex
-        * `mysql` - via https://github.com/elixir-ecto/myxql
-        * `mssql` - via https://github.com/livehelpnow/tds
-        * `sqlite3` - via https://github.com/elixir-sqlite/ecto_sqlite3
+  Supported switches include for example:
 
-      Please check the driver docs for more information
-      and requirements. Defaults to "postgres".
+  * **`--database`** (`postgres`, `mysql`, `sqlite3`, `mssql`, …)
+  * **`--adapter`** (`bandit`, `cowboy`)
+  * **`--app`**, **`--module`**, **`--web-module`**, **`--prefix`**
+  * **`--binary-id`**, **`--verbose`**, **`--inside-docker-env`**
+  * **`--no-dashboard`**, **`--no-mailer`**, **`--no-gettext`**, **`--no-version-check`**
 
-    * `--adapter` - specify the http adapter. One of:
-        * `cowboy` - via https://github.com/elixir-plug/plug_cowboy
-        * `bandit` - via https://github.com/mtrudel/bandit
+  **`--no-ecto`** is rejected (Corex expects Ecto in generated apps).
 
-      Please check the adapter docs for more information
-      and requirements. Defaults to "bandit".
+  **`--no-gettext`** is incompatible with **`--lang`**.
 
-    * `--no-dashboard` - do not include Phoenix.LiveDashboard
+  **`--umbrella`** is not supported here yet; use **`mix phx.new --umbrella`** and **`guides/manual_installation.md`**.
 
-    * `--no-ecto` - do not generate Ecto files
+  ## After generation
 
-    * `--designex` - keep design tokens and designex-related files under `assets/corex/design` so you can run designex for token builds; when not set, only built CSS/tokens are copied (same as `mix corex.design` vs `mix corex.design --designex`)
-
-    * `--no-design` - do not include Corex design (tokens, component CSS) or Tailwind; use a prebuilt default.css instead (same as original Phoenix installer with no Tailwind)
-
-    * `--mode` - enable light/dark mode switching (adds Mode plug, root script, and mode_toggle in layout); when omitted, app stays static light only; no default config, user can change behavior themselves
-
-    * `--theme` - colon-separated theme names (e.g. `uno:leo`); when multiple themes are given, enables theme switching; each must be one of neo, uno, duo, leo
-
-    * `--lang` - colon-separated locales (e.g. `en:ar:fr`); first is default; when multiple locales are given, enables locale switching (adds Locale plug, SharedEvents, and locale_switcher in layout)
-
-    * `--rtl` - colon-separated RTL locales (e.g. `ar`); requires `--lang`; all must be in language
-
-    * `--binary-id` - use `binary_id` as primary key type in Ecto schemas
-
-    * `--verbose` - use verbose output
-
-    * `-v`, `--version` - prints the Corex installer version
-
-    * `--no-version-check` - skip the version check for the latest corex_new version
-
-    * `--no-agents-md` - do not generate an `AGENTS.md` file
-
-    * `--no-a11y` - do not include accessibility testing (Wallaby, a11y_audit) or the home-page a11y test
-
-    * `--no-tidewave` - do not include Tidewave dev dependency or the Tidewave Plug in the endpoint
-
-  When passing the `--no-ecto` flag, Phoenix generators such as
-  `phx.gen.html`, `phx.gen.json`, `phx.gen.live`, and `phx.gen.context`
-  may no longer work as expected as they generate context files that rely
-  on Ecto for the database access. In those cases, you can pass the
-  `--no-context` flag to generate most of the HTML and JSON files
-  but skip the context, allowing you to fill in the blanks as desired.
-
-  ## Installation of the generator
-
-  To use this task, install the Corex project generator archive:
-
-      $ mix archive.install hex corex_new
-
-  To update the generator to the latest version:
-
-      $ mix local.corex
-
-  When generating a project, `mix corex.new` by default prompts you to fetch and install the new project's dependencies. You can enable this behaviour by passing the `--install` flag or disable it with the `--no-install` flag.
+  The installer prints Phoenix-style follow-up steps (**`cd`**, **`mix deps.get`** when dependencies were not fetched, database setup when Ecto is enabled, **`mix assets.setup`** / **`mix assets.build`**, optional **`mix localize.download_locales`** with **`--lang`**, then **`mix phx.server`** / **`iex -S mix phx.server`**).
 
   ## Examples
 
-      $ mix corex.new hello_world
+      mix corex.new hello_world
+      mix corex.new my_app --mode --theme --lang
+      mix corex.new my_app --no-design --no-tailwind
+      mix corex.new my_app --dev ../corex
 
-  Is equivalent to:
+  To update the generator before creating a project:
 
-      $ mix corex.new hello_world --module HelloWorld
-
-  With locale switching (English, French, Arabic), RTL for Arabic, light/dark mode, and multiple themes:
-
-      $ mix corex.new my_app --lang en:fr:ar --rtl ar --mode --theme neo:uno:duo:leo
-
-  As an umbrella:
-
-      $ mix corex.new hello --umbrella
-
-  Would generate the following directory structure and modules:
-
-  ```text
-  hello_umbrella/   Hello.Umbrella
-    apps/
-      hello/        Hello
-      hello_web/    HelloWeb
+  ```bash
+  mix local.corex
+  mix corex.new my_app
   ```
-
-  You can read more about umbrella projects in the
-  [mix documentation](https://hexdocs.pm/mix/Mix.Project.html#module-umbrella-projects)
-
-  ## `COREX_NEW_CACHE_DIR`
-
-  In rare cases, it may be useful to copy the build from a previously
-  cached build. To do this, set the `COREX_NEW_CACHE_DIR` environment
-  variable before running `mix corex.new`. For example, you could generate a
-  cache by running:
-
-  ```shell
-  mix corex.new mycache --no-install && cd mycache \
-    && mix deps.get && mix deps.compile && mix assets.setup \
-    && rm -rf assets config lib priv test mix.exs README.md
-  ```
-
-  Your cached build directory should contain:
-
-      _build
-      deps
-      mix.lock
-
-  Then you could run:
-
-  ```shell
-  COREX_NEW_CACHE_DIR=/path/to/mycache mix corex.new myapp
-  ```
-
-  The entire cache directory will be copied to the new project, replacing
-  any existing files where conflicts exist.
   """
   use Mix.Task
-  alias Corex.New.{Generator, Project, Single, Umbrella, Web}
+
+  alias Corex.New.{Cli, Generate, PhxWrapper, PostGenerate}
 
   @version Mix.Project.config()[:version]
-  @shortdoc "Creates a new Corex v#{@version} application"
+  @shortdoc "Creates a new Phoenix app and installs Corex"
 
   @switches [
-    dev: :boolean,
+    dev: :string,
     design: :boolean,
     designex: :boolean,
-    live: :boolean,
     mode: :boolean,
-    theme: :string,
-    lang: :string,
-    language: :string,
-    rtl: :string,
+    theme: :boolean,
+    lang: :boolean,
     ecto: :boolean,
     app: :string,
     module: :string,
@@ -173,10 +93,10 @@ defmodule Mix.Tasks.Corex.New do
     mailer: :boolean,
     adapter: :string,
     inside_docker_env: :boolean,
-    version_check: :boolean,
-    agents_md: :boolean,
-    a11y: :boolean,
-    tidewave: :boolean
+    no_version_check: :boolean,
+    tailwind: :boolean,
+    gettext: :boolean,
+    mcp: :boolean
   ]
 
   @reserved_app_names ~w(server table)
@@ -187,27 +107,34 @@ defmodule Mix.Tasks.Corex.New do
   end
 
   def run(argv) do
-    elixir_version_check!()
+    Cli.elixir_version_check!(@version)
 
     {opts, argv} = OptionParser.parse!(argv, strict: @switches)
-    validate_opts!(opts)
+
+    opts =
+      opts
+      |> Keyword.put_new(:lang, false)
+      |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:theme, false)
+      |> Keyword.put_new(:design, true)
+      |> Keyword.put_new(:tailwind, true)
+      |> Cli.maybe_auto_enable_design()
+
+    Cli.validate_corex_flags!(opts)
+    Cli.validate_phx_new_flags!(opts)
 
     version_task =
-      if Keyword.get(opts, :version_check, true) do
+      unless opts[:no_version_check] do
         get_latest_version("corex_new")
       end
 
     result =
-      case {opts, argv} do
-        {_opts, []} ->
+      case argv do
+        [] ->
           Mix.Tasks.Help.run(["corex.new"])
 
-        {opts, [base_path | _]} ->
-          if opts[:umbrella] do
-            generate(base_path, Umbrella, :project_path, opts)
-          else
-            generate(base_path, Single, :base_path, opts)
-          end
+        [base_path | _] ->
+          run_with_path(base_path, opts)
       end
 
     if version_task do
@@ -224,200 +151,70 @@ defmodule Mix.Tasks.Corex.New do
     result
   end
 
-  @doc false
-  def run(argv, generator, path) do
-    elixir_version_check!()
+  defp run_with_path(base_path, opts) do
+    if opts[:umbrella] do
+      Mix.raise("""
+      `mix corex.new --umbrella` is not supported yet.
 
-    case OptionParser.parse!(argv, strict: @switches) do
-      {_opts, []} -> Mix.Tasks.Help.run(["corex.new"])
-      {opts, [base_path | _]} ->
-        validate_opts!(opts)
-        generate(base_path, generator, path, opts)
-    end
-  end
+      Generate the umbrella manually, then follow `guides/manual_installation.md`:
 
-  defp generate(base_path, generator, path, opts) do
-    base_path
-    |> Project.new(opts)
-    |> generator.prepare_project()
-    |> Generator.put_binding()
-    |> validate_project(path)
-    |> generator.generate()
-    |> maybe_copy_cached_build(path)
-    |> maybe_init_git(path)
-    |> maybe_prompt_to_install_deps(generator, path)
-  end
-
-  defp validate_opts!(opts) do
-    if opts[:theme] && opts[:theme] != "" do
-      themes = parse_colon_list(opts[:theme])
-      valid = ["neo", "uno", "duo", "leo"]
-      invalid = themes -- valid
-      if invalid != [] do
-        Mix.raise("--theme must be colon-separated names from neo, uno, duo, leo. Got: #{inspect(invalid)}")
-      end
+          mix phx.new --umbrella #{base_path}
+      """)
     end
 
-    if opts[:rtl] && opts[:rtl] != "" do
-      lang_opt = opts[:lang] || opts[:language]
-      unless lang_opt && lang_opt != "" do
-        Mix.raise("--rtl requires --lang. List all locales in --lang; use --rtl to mark which are RTL.")
+    expanded = Path.expand(base_path)
+    phx_root = PhxWrapper.phx_project_path(expanded, opts)
+    app = infer_app_name(expanded, opts)
+
+    check_app_name!(app, !!opts[:app])
+    Cli.confirm_install_path!(phx_root)
+
+    root_mod =
+      (opts[:module] && Module.concat([opts[:module]])) || Module.concat([Macro.camelize(app)])
+
+    check_module_name_validity!(root_mod)
+    check_module_name_availability!(root_mod)
+
+    web_module =
+      cond do
+        is_binary(opts[:web_module]) -> Module.concat([opts[:web_module]])
+        true -> Module.concat([Macro.camelize(app) <> "Web"])
       end
 
-      rtl_locales = parse_colon_list(opts[:rtl])
-      lang_locales = parse_colon_list(lang_opt)
+    install_dir = PhxWrapper.web_project_path(phx_root, opts)
 
-      extra = rtl_locales -- lang_locales
-      if extra != [] do
-        Mix.raise(
-          "All --rtl locales must be in --lang. Got rtl: #{inspect(rtl_locales)}, lang: #{inspect(lang_locales)}."
-        )
-      end
-    end
+    PhxWrapper.ensure_phx_new!()
+
+    phx_argv = PhxWrapper.build_phx_new_argv(opts, expanded)
+
+    Mix.shell().info([
+      :green,
+      "* running ",
+      :reset,
+      "mix phx.new #{Enum.join(phx_argv, " ")} in #{Path.dirname(phx_root)}"
+    ])
+
+    PhxWrapper.phx_new!(Path.dirname(phx_root), phx_argv)
+
+    generate_opts =
+      opts
+      |> Keyword.put(:otp_app, String.to_atom(app))
+      |> Keyword.put(:app_module, root_mod)
+      |> Keyword.put(:web_module, web_module)
+
+    Mix.shell().info([:green, "* installing Corex into ", :reset, install_dir])
+    Generate.run(install_dir, generate_opts)
+
+    PostGenerate.copy_cached_build(phx_root)
+    PostGenerate.init_git(phx_root)
+    PostGenerate.prompt_install(phx_root, install_dir, opts)
   end
 
-  defp parse_colon_list(nil), do: []
-  defp parse_colon_list(""), do: []
-  defp parse_colon_list(s) do
-    s |> String.split(":", trim: true) |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
-  end
-
-  defp validate_project(%Project{opts: opts} = project, path) do
-    check_app_name!(project.app, !!opts[:app])
-    check_directory_existence!(Map.fetch!(project, path))
-    check_module_name_validity!(project.root_mod)
-    check_module_name_availability!(project.root_mod)
-
-    project
-  end
-
-  defp maybe_prompt_to_install_deps(%Project{} = project, generator, path_key) do
-    if project.cached_build_path do
-      project
-    else
-      prompt_to_install_deps(project, generator, path_key)
-    end
-  end
-
-  defp prompt_to_install_deps(%Project{} = project, generator, path_key) do
-    path = Map.fetch!(project, path_key)
-
-    install? =
-      Keyword.get_lazy(project.opts, :install, fn ->
-        Mix.shell().yes?("\nFetch and install dependencies?")
-      end)
-
-    cd_step = ["$ cd #{relative_app_path(path)}"]
-
-    maybe_cd(path, fn ->
-      mix_step = install_mix(project, install?)
-
-      if mix_step == [] do
-        builders = Keyword.fetch!(project.binding, :asset_builders)
-
-        if builders != [] do
-          Mix.shell().info([:green, "* running ", :reset, "mix assets.setup"])
-
-          cmd(project, "mix deps.compile jason #{Enum.join(builders, " ")}", log: false)
-        end
-
-        tasks =
-          Enum.map(builders, fn builder ->
-            cmd = "mix do loadpaths --no-compile --no-listeners + #{builder}.install"
-            Task.async(fn -> cmd(project, cmd, log: false, cd: project.web_path) end)
-          end)
-
-        cmd(project, "mix deps.compile")
-
-        Task.await_many(tasks, :infinity)
-      end
-
-      print_missing_steps(cd_step ++ mix_step)
-
-      if Project.ecto?(project) do
-        print_ecto_info(generator)
-      end
-
-      if path_key == :web_path do
-        Mix.shell().info("""
-        Your web app requires a PubSub server to be running.
-        You must explicitly start the PubSub in your supervision tree as:
-
-            {Phoenix.PubSub, name: #{inspect(project.app_mod)}.PubSub}
-        """)
-      end
-
-      print_mix_info(generator)
-    end)
-  end
-
-  defp maybe_cd(path, func), do: path && File.cd!(path, func)
-
-  defp install_mix(project, install?) do
-    if install? do
-      cmd(project, "mix deps.get")
-    else
-      ["$ mix deps.get"]
-    end
-  end
-
-  defp print_missing_steps(steps) do
-    Mix.shell().info("""
-
-    We are almost there! The following steps are missing:
-
-        #{Enum.join(steps, "\n    ")}
-    """)
-  end
-
-  defp print_ecto_info(Web), do: :ok
-
-  defp print_ecto_info(_gen) do
-    Mix.shell().info("""
-    Then configure your database in config/dev.exs and run:
-
-        $ mix ecto.create
-    """)
-  end
-
-  defp print_mix_info(_gen) do
-    Mix.shell().info("""
-    Start your Phoenix app with:
-
-        $ mix phx.server
-
-    You can also run your app inside IEx (Interactive Elixir) as:
-
-        $ iex -S mix phx.server
-    """)
-  end
-
-  defp relative_app_path(path) do
-    case Path.relative_to_cwd(path) do
-      ^path -> Path.basename(path)
-      rel -> rel
-    end
-  end
-
-  defp cmd(%Project{} = project, cmd, opts \\ []) do
-    {log?, opts} = Keyword.pop(opts, :log, true)
-
-    if log? do
-      Mix.shell().info([:green, "* running ", :reset, cmd])
-    end
-
-    case Mix.shell().cmd(cmd, opts ++ cmd_opts(project)) do
-      0 -> []
-      _ -> ["$ #{cmd}"]
-    end
-  end
-
-  defp cmd_opts(%Project{} = project) do
-    if Project.verbose?(project) do
-      []
-    else
-      [quiet: true]
-    end
+  defp infer_app_name(expanded, opts) do
+    opts[:app] ||
+      expanded
+      |> Path.basename()
+      |> String.replace_suffix("_umbrella", "")
   end
 
   defp check_app_name!(name, from_app_flag) do
@@ -475,78 +272,6 @@ defmodule Mix.Tasks.Corex.New do
     end)
   end
 
-  defp check_directory_existence!(path) do
-    if File.dir?(path) and
-         not Mix.shell().yes?(
-           "The directory #{path} already exists. Are you sure you want to continue?"
-         ) do
-      Mix.raise("Please select another directory for installation.")
-    end
-  end
-
-  defp elixir_version_check! do
-    unless Version.match?(System.version(), "~> 1.15") do
-      Mix.raise(
-        "Corex v#{@version} requires at least Elixir v1.15\n " <>
-          "You have #{System.version()}. Please update accordingly"
-      )
-    end
-  end
-
-  defp git_available? do
-    case System.find_executable("git") do
-      nil -> false
-      _path -> true
-    end
-  end
-
-  defp inside_git_repo?(path) do
-    case System.cmd("git", ["status"], cd: path, stderr_to_stdout: true) do
-      {_output, 0} -> true
-      _ -> false
-    end
-  rescue
-    _ -> false
-  end
-
-  defp maybe_init_git(%Project{} = project, path_key) do
-    project_path = Map.fetch!(project, path_key)
-
-    if git_available?() and not inside_git_repo?(project_path) do
-      Mix.shell().info([:green, "* initializing git repository", :reset])
-
-      case System.cmd("git", ["init"], cd: project_path) do
-        {_output, 0} ->
-          :ok
-
-        {output, _} ->
-          Mix.shell().error("Failed to initialize git repository: #{output}")
-      end
-    end
-
-    project
-  end
-
-  defp maybe_copy_cached_build(%Project{} = project, path_key) do
-    project_path = Map.fetch!(project, path_key)
-
-    case System.fetch_env("COREX_NEW_CACHE_DIR") do
-      {:ok, cache_dir} ->
-        copy_cached_build(%{project_path: project_path, cache_dir: cache_dir})
-        %{project | cached_build_path: cache_dir}
-
-      :error ->
-        project
-    end
-  end
-
-  defp copy_cached_build(%{project_path: project_path, cache_dir: cache_dir}) do
-    if File.exists?(cache_dir) do
-      Mix.shell().info("Copying cached build from #{cache_dir}")
-      System.cmd("cp", ["-Rp", Path.join(cache_dir, "."), project_path])
-    end
-  end
-
   defp maybe_warn_outdated(latest_version) do
     if Version.compare(@version, latest_version) == :lt do
       Mix.shell().info([
@@ -591,18 +316,17 @@ defmodule Mix.Tasks.Corex.New do
     end
 
     defp get_package(name) do
-      http_options =
-        [
-          ssl: [
-            verify: :verify_peer,
-            cacerts: :public_key.cacerts_get(),
-            depth: 2,
-            customize_hostname_check: [
-              match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-            ],
-            versions: [:"tlsv1.2", :"tlsv1.3"]
-          ]
+      http_options = [
+        ssl: [
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          depth: 2,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ],
+          versions: [:"tlsv1.2", :"tlsv1.3"]
         ]
+      ]
 
       options = [body_format: :binary]
 
@@ -614,7 +338,7 @@ defmodule Mix.Tasks.Corex.New do
              options
            ) do
         {:ok, {{_, 200, _}, _headers, body}} ->
-          {:ok, JSON.decode!(body)}
+          {:ok, Jason.decode!(body)}
 
         {:ok, {{_, status, _}, _, _}} ->
           {:error, status}

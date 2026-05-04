@@ -31,6 +31,8 @@ defmodule Corex.Layout.Heading do
 
   ## Styling
 
+  The e2e demo includes static **Anatomy** and **Style** pages (`/layout-heading/anatomy`, `/layout-heading/style`) built from `E2eWeb.Demos.LayoutHeadingDemo`, showing the `layout-heading` wrapper class with optional width utilities.
+
   Target elements with data attributes:
 
   - `[data-scope="layout-heading"][data-part="root"]` – root container
@@ -46,10 +48,14 @@ defmodule Corex.Layout.Heading do
   slot(:title)
   slot(:subtitle)
   slot(:actions)
+  slot(:inner_pre)
+  slot(:inner_post)
 
   def layout_heading(assigns) do
     ~H"""
-    <div data-scope="layout-heading" data-part="root" {@rest}>
+    <div {@rest}>
+    {render_slot(@inner_pre)}
+    <div data-scope="layout-heading" data-part="root">
       <div :if={@title != [] or @subtitle != []} data-scope="layout-heading" data-part="content">
         <h1 :if={@title != []} data-scope="layout-heading" data-part="title">{render_slot(@title)}</h1>
         <h2 :if={@subtitle != []} data-scope="layout-heading" data-part="subtitle">{render_slot(@subtitle)}</h2>
@@ -57,6 +63,8 @@ defmodule Corex.Layout.Heading do
       <div :if={@actions != []} data-scope="layout-heading" data-part="actions">
         {render_slot(@actions)}
       </div>
+    </div>
+    {render_slot(@inner_post)}
     </div>
     """
   end

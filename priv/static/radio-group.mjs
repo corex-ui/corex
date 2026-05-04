@@ -1,31 +1,39 @@
 import {
-  toPx
-} from "./chunk-MV633JPN.mjs";
+  readStringControlledZagProps,
+  readStringControlledZagUpdate
+} from "./chunks/chunk-22L7SRUM.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-KF3PY6Q6.mjs";
+} from "./chunks/chunk-ZNA2UPG2.mjs";
+import {
+  toPx
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  notifyChange
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getDir,
   getEventTarget,
   getString,
   isLeftClick,
   isSafari,
-  normalizeProps,
   queryAll,
   resizeObserverBorderBox,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.40.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
   "root",
   "label",
@@ -36,7 +44,7 @@ var anatomy = createAnatomy("radio-group").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.40.0/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `radio-group:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `radio-group:${ctx.id}:label`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `radio-group:${ctx.id}:radio:${value}`;
@@ -65,7 +73,7 @@ var getOffsetRect = (el) => ({
   height: el?.offsetHeight ?? 0
 });
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.40.0/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, computed, prop, scope } = service;
   const groupDisabled = computed("isDisabled");
@@ -208,6 +216,7 @@ function connect(service, normalize) {
         form: prop("form"),
         value: props.value,
         required: prop("required"),
+        "aria-labelledby": getItemLabelId(scope, props.value),
         "aria-invalid": itemState.invalid || void 0,
         onClick(event) {
           if (readOnly) {
@@ -275,7 +284,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.40.0/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -460,7 +469,7 @@ var RadioGroup = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="radio-group"][data-part="root"]') ?? this.el;
@@ -516,71 +525,64 @@ var RadioGroup = class extends Component {
 };
 
 // hooks/radio-group.ts
+function valueChangePayload(el, details) {
+  return {
+    id: el.id,
+    value: details.value
+  };
+}
 var RadioGroupHook = {
   mounted() {
     const el = this.el;
-    const value = getString(el, "value");
-    const defaultValue = getString(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new RadioGroup(el, {
       id: el.id,
-      ...controlled && value !== void 0 ? { value: value ?? null } : { defaultValue: defaultValue ?? null },
+      ...readStringControlledZagProps(el, "value", "defaultValue"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       readOnly: getBoolean(el, "readOnly"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      orientation: getString(el, "orientation", [
-        "horizontal",
-        "vertical"
-      ]),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
       onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            id: el.id
-          });
+        const checked = el.querySelector(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+        );
+        if (checked) {
+          checked.dispatchEvent(new Event("input", { bubbles: true }));
+          checked.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       }
     });
     zag.init();
     this.radioGroup = zag;
-    this.handlers = [];
   },
   updated() {
-    const value = getString(this.el, "value");
-    const controlled = getBoolean(this.el, "controlled");
     this.radioGroup?.updateProps({
       id: this.el.id,
-      ...controlled && value !== void 0 ? { value: value ?? null } : {},
+      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       readOnly: getBoolean(this.el, "readOnly"),
-      orientation: getString(this.el, "orientation", [
-        "horizontal",
-        "vertical"
-      ])
+      orientation: getString(this.el, "orientation"),
+      dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
     this.radioGroup?.destroy();
   }
 };

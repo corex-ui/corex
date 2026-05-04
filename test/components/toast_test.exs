@@ -1,6 +1,9 @@
 defmodule Corex.ToastTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Toast.Anatomy.Group
+  alias Corex.Toast.Connect
+
   describe "create_toast/5" do
     test "returns JS command for info type" do
       js = Corex.Toast.create_toast("layout-toast", "Title", "Description", :info, [])
@@ -53,14 +56,27 @@ defmodule Corex.ToastTest do
 
     test "accepts infinite duration" do
       socket = %Phoenix.LiveView.Socket{}
-      result = Corex.Toast.push_toast(socket, "layout-toast", "Loading", nil, :loading, :infinity)
+      result = Corex.Toast.push_toast(socket, "layout-toast", "Loading", nil, :info, :infinity)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "passes loading: true in opts" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      result =
+        Corex.Toast.push_toast(socket, "layout-toast", "Wait", nil, :info, :infinity,
+          loading: true
+        )
+
       assert %Phoenix.LiveView.Socket{} = result
     end
   end
 
   describe "toast_group/1" do
     test "renders toast group" do
-      result = render_component(&Corex.Toast.toast_group/1, id: "layout-toast")
+      result =
+        render_component(&Corex.Toast.toast_group/1, id: "layout-toast")
+
       assert [_] = find_in_html(result, ~s([data-scope="toast"][data-part="group"]))
     end
 
@@ -253,6 +269,20 @@ defmodule Corex.ToastTest do
         )
 
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+    end
+  end
+
+  describe "Connect.group/1 and Connect.ignore_group/1" do
+    test "group maps anatomy attrs" do
+      m = Connect.group(%Group{id: "g1"})
+      assert m["id"] == "toast:g1:group"
+      assert m["data-scope"] == "toast"
+      assert m["data-part"] == "group"
+    end
+
+    test "ignore_group returns JS" do
+      js = Connect.ignore_group(%Group{id: "g1"})
+      assert %Phoenix.LiveView.JS{} = js
     end
   end
 end

@@ -1,36 +1,48 @@
 import {
   toPx
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   dataAttr,
   getBoolean,
   getComputedStyle,
+  getDir,
   getEventTarget,
   getString,
   getTabbables,
   nextTick,
-  normalizeProps,
   observeChildren,
   raf,
   setAttribute,
   setStyle
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.36.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.36.0/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `collapsible:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `collapsible:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `collapsible:${ctx.id}:trigger`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.36.0/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const visible = state.matches("open") || state.matches("closing");
@@ -120,7 +132,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.36.0/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
 var machine = createMachine({
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");
@@ -375,7 +387,7 @@ var Collapsible = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector(
@@ -400,80 +412,86 @@ var Collapsible = class extends Component {
 };
 
 // hooks/collapsible.ts
+function openChangePayload(el, details) {
+  return {
+    id: el.id,
+    open: details.open
+  };
+}
 var CollapsibleHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const collapsible = new Collapsible(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
       disabled: getBoolean(el, "disabled"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: openChangePayload(el, details),
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
       }
     });
     collapsible.init();
     this.collapsible = collapsible;
-    this.onSetOpen = (event) => {
+    const emitOpen = (respondTo) => {
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "collapsible_open_response",
+        serverPayload: {
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled
+        },
+        el,
+        domEventName: "collapsible-open",
+        domDetail: {
+          id: el.id,
+          open: collapsible.api.open,
+          disabled: collapsible.api.disabled
+        }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:collapsible:set-open", (event) => {
       const { open } = event.detail;
       collapsible.api.setOpen(open);
-    };
-    el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent(
-        "collapsible_set_open",
-        (payload) => {
-          const targetId = payload.collapsible_id;
-          if (targetId && targetId !== el.id) return;
-          collapsible.api.setOpen(payload.open);
-        }
-      )
-    );
-    this.handlers.push(
-      this.handleEvent("collapsible_open", () => {
-        this.pushEvent("collapsible_open_response", {
-          value: collapsible.api.open
-        });
-      })
-    );
+    });
+    domRegistry.add("corex:collapsible:open", (event) => {
+      emitOpen(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("collapsible_set_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      collapsible.api.setOpen(payload.open);
+    });
+    registry.add("collapsible_open", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitOpen(parseRespondTo(payload));
+    });
   },
   updated() {
     this.collapsible?.updateProps({
       id: this.el.id,
       ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
       disabled: getBoolean(this.el, "disabled"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+      dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("phx:collapsible:set-open", this.onSetOpen);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.collapsible?.destroy();
   }
 };

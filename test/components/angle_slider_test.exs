@@ -3,6 +3,7 @@ defmodule Corex.AngleSliderTest do
   import Phoenix.Component
 
   alias Corex.AngleSlider
+  alias Corex.AngleSlider.Anatomy.Props
   alias Corex.AngleSlider.Connect
 
   describe "angle_slider/1" do
@@ -10,6 +11,20 @@ defmodule Corex.AngleSliderTest do
       html = render_component(&AngleSlider.angle_slider/1, value: 0, name: "angle")
       assert html =~ ~r/data-scope="angle-slider"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-part="control"/
+      assert html =~ ~r/data-part="thumb"/
+      assert html =~ ~r/data-part="hidden-input"/
+      assert html =~ ~r/data-part="value-text"/
+    end
+  end
+
+  describe "angle_slider_skeleton/1" do
+    test "renders static parts" do
+      html = render_component(&AngleSlider.angle_slider_skeleton/1, [])
+      assert html =~ ~r/data-scope="angle-slider"/
+      assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-part="marker-group"/
+      assert html =~ ~r/data-loading/
     end
   end
 
@@ -17,6 +32,12 @@ defmodule Corex.AngleSliderTest do
     test "returns JS command" do
       js = AngleSlider.set_value("my-slider", 45)
       assert %Phoenix.LiveView.JS{} = js
+      ops = Map.get(js, :ops, [])
+
+      assert Enum.any?(ops, fn
+               ["dispatch", %{event: "corex:angle-slider:set-value"}] -> true
+               _ -> false
+             end)
     end
   end
 
@@ -24,6 +45,21 @@ defmodule Corex.AngleSliderTest do
     test "pushes event to socket" do
       socket = %Phoenix.LiveView.Socket{}
       result = AngleSlider.set_value(socket, "my-slider", 90)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "value/1" do
+    test "returns JS command" do
+      js = AngleSlider.value("my-slider")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "value/2" do
+    test "pushes angle_slider_value event with id" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = AngleSlider.value(socket, "my-slider")
       assert %Phoenix.LiveView.Socket{} = result
     end
   end
@@ -114,6 +150,133 @@ defmodule Corex.AngleSliderTest do
       result = Connect.label(assigns)
       assert result["id"] == "angle-slider:test-slider:label"
       assert result["data-part"] == "label"
+      assert result["for"] == "angle-slider:test-slider:input"
+    end
+  end
+
+  describe "Connect.props/1" do
+    test "maps flags and step" do
+      m =
+        Connect.props(%Props{
+          id: "s",
+          step: 15,
+          disabled: true,
+          read_only: true,
+          invalid: true,
+          controlled: true,
+          value: 30,
+          on_value_change: "a"
+        })
+
+      assert m["data-step"] == "15"
+      assert m["data-disabled"] == ""
+      assert m["data-read-only"] == ""
+      assert m["data-invalid"] == ""
+      assert m["data-controlled"] == ""
+      assert m["data-value"] == "30"
+      assert m["data-on-value-change"] == "a"
+      assert m["data-orientation"] == "horizontal"
+    end
+  end
+
+  describe "Connect.control/1 and Connect.thumb/1" do
+    test "returns control and thumb attributes" do
+      base = %{
+        id: "x",
+        dir: "ltr",
+        orientation: "horizontal",
+        disabled: false,
+        read_only: false,
+        invalid: false
+      }
+
+      c = Connect.control(base)
+      assert c["data-part"] == "control"
+      assert c["id"] == "angle-slider:x:control"
+
+      t = Connect.thumb(base)
+      assert t["data-part"] == "thumb"
+      assert t["id"] == "angle-slider:x:thumb"
+    end
+  end
+
+  describe "Connect.hidden_input/1" do
+    test "returns hidden input attributes" do
+      m =
+        Connect.hidden_input(%{
+          id: "x",
+          name: "angle",
+          value: 45,
+          disabled: false,
+          dir: "ltr",
+          orientation: "horizontal"
+        })
+
+      assert m["type"] == "hidden"
+      assert m["name"] == "angle"
+      assert m["value"] == "45"
+      assert m["id"] == "angle-slider:x:input"
+    end
+  end
+
+  describe "Connect.value_text/1 and Connect.marker_group/1" do
+    test "returns value_text and marker_group" do
+      vt = Connect.value_text(%{id: "x", dir: "ltr", value: 0, orientation: "horizontal"})
+      assert vt["data-part"] == "value-text"
+
+      mg = Connect.marker_group(%{id: "x", dir: "ltr", orientation: "horizontal"})
+      assert mg["data-part"] == "marker-group"
+      assert mg["id"] == "angle-slider:x:marker-group"
+    end
+  end
+
+  describe "Connect.value/1 and Connect.text/1" do
+    test "returns value and text parts" do
+      assert Connect.value(%{})["data-part"] == "value"
+      assert Connect.text(%{})["data-part"] == "text"
+    end
+  end
+
+  describe "Connect.marker/1" do
+    test "at-value when marker equals slider" do
+      m =
+        Connect.marker(%{
+          id: "x",
+          value: 90,
+          slider_value: 90,
+          dir: "ltr",
+          orientation: "horizontal",
+          disabled: false
+        })
+
+      assert m["data-state"] == "at-value"
+      assert m["data-value"] == "90"
+    end
+
+    test "under-value and over-value" do
+      u =
+        Connect.marker(%{
+          id: "x",
+          value: 0,
+          slider_value: 90,
+          dir: "ltr",
+          orientation: "horizontal",
+          disabled: false
+        })
+
+      assert u["data-state"] == "under-value"
+
+      o =
+        Connect.marker(%{
+          id: "x",
+          value: 180,
+          slider_value: 90,
+          dir: "ltr",
+          orientation: "horizontal",
+          disabled: false
+        })
+
+      assert o["data-state"] == "over-value"
     end
   end
 end

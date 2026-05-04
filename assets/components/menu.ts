@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/menu";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class Menu extends Component<Props, Api> {
@@ -11,7 +11,7 @@ export class Menu extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   setChild(child: Menu) {

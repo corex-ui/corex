@@ -1,5 +1,7 @@
 defmodule Corex.NumberInput.Connect do
   @moduledoc false
+  alias Corex.Selectors
+
   alias Corex.NumberInput.Anatomy.{
     Control,
     DecrementTrigger,
@@ -8,40 +10,75 @@ defmodule Corex.NumberInput.Connect do
     Label,
     Props,
     Root,
-    Scrubber,
     TriggerGroup
   }
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
 
   defp num_attr(nil), do: nil
   defp num_attr(n) when is_number(n), do: to_string(n)
 
+  defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    default_value =
-      if(assigns.controlled, do: nil, else: assigns.default_value || assigns.value)
+    default_value = assigns.default_value || assigns.value
 
     %{
       "id" => assigns.id,
-      "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
       "data-default-value" => default_value,
-      "data-controlled" => data_attr(assigns.controlled),
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-invalid" => data_attr(assigns.invalid),
-      "data-required" => data_attr(assigns.required),
-      "data-allow-mouse-wheel" => data_attr(assigns.allow_mouse_wheel),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-required" => get_boolean(assigns.required),
+      "data-allow-mouse-wheel" => get_boolean(assigns.allow_mouse_wheel),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-on-value-change" => assigns.on_value_change,
-      "data-on-value-change-client" => assigns.on_value_change_client
+      "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}")
+    )
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}:label")
+    )
+  end
+
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}:control")
+    )
+  end
+
+  def ignore_input(assigns) do
+    JS.ignore_attributes(Input.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}:input")
+    )
+  end
+
+  def ignore_increment_trigger(assigns) do
+    JS.ignore_attributes(IncrementTrigger.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}:inc")
+    )
+  end
+
+  def ignore_decrement_trigger(assigns) do
+    JS.ignore_attributes(DecrementTrigger.ignored_attrs(),
+      to: Selectors.css_id("number-input:#{assigns.id}:dec")
+    )
   end
 
   @spec root(Root.t()) :: map()
@@ -49,7 +86,9 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "root",
-      "id" => "number-input:#{assigns.id}"
+      "id" => "number-input:#{assigns.id}",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
@@ -59,7 +98,9 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "label",
       "id" => "number-input:#{assigns.id}:label",
-      "for" => "number-input:#{assigns.id}:input"
+      "for" => "number-input:#{assigns.id}:input",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
@@ -68,14 +109,19 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "control",
-      "id" => "number-input:#{assigns.id}:control"
+      "id" => "number-input:#{assigns.id}:control",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
   @spec trigger_group(TriggerGroup.t()) :: map()
-  def trigger_group(_assigns) do
+  def trigger_group(assigns) do
     %{
-      "data-part" => "trigger-group"
+      "data-scope" => "number-input",
+      "data-part" => "trigger-group",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
@@ -84,8 +130,10 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "input",
-      "disabled" => data_attr(assigns.disabled),
-      "id" => "number-input:#{assigns.id}:input"
+      "disabled" => get_boolean(assigns.disabled),
+      "id" => "number-input:#{assigns.id}:input",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
@@ -96,7 +144,9 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "decrement-trigger",
       "type" => "button",
       "id" => "number-input:#{assigns.id}:dec",
-      "aria-label" => assigns.aria_label
+      "aria-label" => assigns.aria_label,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 
@@ -107,18 +157,9 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "increment-trigger",
       "type" => "button",
       "id" => "number-input:#{assigns.id}:inc",
-      "aria-label" => assigns.aria_label
-    }
-  end
-
-  @spec scrubber(Scrubber.t()) :: map()
-  def scrubber(assigns) do
-    %{
-      "data-scope" => "number-input",
-      "data-part" => "scrubber",
-      "type" => "button",
-      "id" => "number-input:#{assigns.id}:scrubber",
-      "aria-label" => assigns.aria_label
+      "aria-label" => assigns.aria_label,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
   end
 end

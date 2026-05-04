@@ -70,6 +70,77 @@ defmodule Corex.Dialog do
 
   <!-- tabs-close -->
 
+  ## Animation
+
+  Set `animation` on `dialog` (`instant`, `js`, or `custom`).
+
+  - `instant` — Zag toggles the native `hidden` attribute, no animation.
+  - `js` — Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
+  - `custom` — the hook never re-applies `hidden`; the consumer drives the animation by listening to the `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
+
+        // event.detail (DialogOpenChangedDetail)
+        { id, open, previousOpen }
+
+    Closed visibility is provided by CSS baselines on `[data-state="closed"]` (see `e2e/assets/corex/components/dialog.css`), so the consumer only needs to drive the transition itself. Use the Scale helpers exported from `corex` (mirroring how Accordion / Tree view use the Height helpers).
+
+  ```javascript
+  import { animate } from "motion"
+  import {
+    findDialogBackdrop,
+    findDialogContent,
+    animateScaleOpen,
+    animateScaleClose,
+  } from "corex"
+
+  const reducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+  document.addEventListener("my-dialog-open-changed", (e) => {
+    const { id, open } = e.detail
+    const root = document.getElementById(id)
+    if (!root) return
+    const backdrop = findDialogBackdrop(root)
+    const content = findDialogContent(root)
+    if (open) {
+      if (backdrop)
+        animateScaleOpen(backdrop, { animator: animate, duration: 0.5, easing: "ease-out" })
+      if (content) {
+        animateScaleOpen(content, {
+          animator: animate,
+          duration: 0.7,
+          easing: [0.16, 1, 0.3, 1],
+          scaleStart: 0.7,
+          scaleEnd: 1,
+        })
+        if (!reducedMotion())
+          animate(
+            content,
+            { y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
+            { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
+          )
+      }
+    } else {
+      if (backdrop)
+        animateScaleClose(backdrop, { animator: animate, duration: 0.4, easing: "ease-in" })
+      if (content) {
+        animateScaleClose(content, {
+          animator: animate,
+          duration: 0.35,
+          easing: "ease-in",
+          scaleStart: 0.8,
+          scaleEnd: 1,
+        })
+        if (!reducedMotion())
+          animate(
+            content,
+            { y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
+            { duration: 0.35, easing: "ease-in" },
+          )
+      }
+    }
+  })
+  ```
+
   ## API Control
 
   In order to use the API, you must use an id on the component
@@ -120,7 +191,6 @@ defmodule Corex.Dialog do
   <.dialog class="dialog dialog--accent dialog--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/dialog#modifiers)
   '''
 
   defmodule Translation do
@@ -200,23 +270,45 @@ defmodule Corex.Dialog do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the dialog. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_open_change, :string,
     default: nil,
-    doc: "The server event name when the open state changes"
+    doc:
+      "Server event name when the open state changes. Payload: `%{id, open, previousOpen}` (TS: `DialogOpenChangedDetail`)."
   )
 
   attr(:on_open_change_client, :string,
     default: nil,
-    doc: "The client event name when the open state changes"
+    doc:
+      "DOM event name dispatched when the open state changes. `event.detail` matches `DialogOpenChangedDetail`. Required for `animation=\"custom\"`."
+  )
+
+  attr(:animation, :string,
+    default: "js",
+    values: ["instant", "js", "custom"],
+    doc:
+      "Open and close: native hidden (instant), Web Animations via `Corex.Animation.Scale` (js), or events only (custom)"
+  )
+
+  attr(:animation_options, Corex.Animation.Scale,
+    default: %Corex.Animation.Scale{scale_start: 0.96, scale_end: 1.0},
+    doc:
+      "Wired to the host when `animation` is `js` only. Custom transitions ignore this assign. See `Corex.Animation.Scale` (opacity, scale, timing, `block_interaction`)."
   )
 
   attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:aria_label, :string,
+    default: nil,
+    doc:
+      "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
+  )
+
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -253,6 +345,8 @@ defmodule Corex.Dialog do
     <div
       id={@id}
       phx-hook="Dialog"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -265,25 +359,45 @@ defmodule Corex.Dialog do
         restore_focus: @restore_focus,
         dir: @dir,
         on_open_change: @on_open_change,
-        on_open_change_client: @on_open_change_client
+        on_open_change_client: @on_open_change_client,
+        animation: @animation,
+        animation_options: @animation_options,
+        dialog_default_label: @aria_label
       })}
     >
-      <button phx-update="ignore" aria-label={Map.get(List.first(@trigger), :aria_label, nil)} {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
+      <button
+        phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, open: @open})}
+        aria-label={Map.get(List.first(@trigger), :aria_label, nil)}
+        {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})}
+        class={Map.get(List.first(@trigger), :class, nil)}
+      >
         {render_slot(@trigger)}
       </button>
 
-      <div phx-update="ignore" {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
-      <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
-        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
+      <div phx-mounted={Connect.ignore_backdrop(%Backdrop{id: @id, dir: @dir, open: @open})} {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open}, @animation)}></div>
+      <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, open: @open})} {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
+        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open})} {Connect.content(%Content{id: @id, dir: @dir, open: @open}, @animation)}>
         <div data-scope="dialog" data-part="header">
-        <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
+        <h2
+          :if={@title != []}
+          phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, open: @open})}
+          {Connect.title(%Title{id: @id, dir: @dir, open: @open})}
+        >
             {render_slot(@title)}
           </h2>
-          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}>
+          <button
+            :if={@close_trigger != []}
+            phx-mounted={Connect.ignore_close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}
+            {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}
+          >
           {render_slot(@close_trigger)}
         </button>
         </div>
-          <p :if={@description != []} {Connect.description(%Description{id: @id, dir: @dir, open: @open})}>
+          <p
+            :if={@description != []}
+            phx-mounted={Connect.ignore_description(%Description{id: @id, dir: @dir, open: @open})}
+            {Connect.description(%Description{id: @id, dir: @dir, open: @open})}
+          >
             {render_slot(@description)}
           </p>
           {render_slot(@content)}
@@ -296,14 +410,18 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog title. Use inside `<:content>` when not using the top-level `<:title>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_title(assigns) do
     ~H"""
-    <h2 {Connect.title(%Title{id: @id, dir: @dir, open: false})} {@rest}>
-      <%= render_slot(@inner_block) %>
+    <h2
+      phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, open: false})}
+      {Connect.title(%Title{id: @id, dir: @dir, open: false})}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
     </h2>
     """
   end
@@ -311,14 +429,18 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog description. Use inside `<:content>` when not using the top-level `<:description>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_description(assigns) do
     ~H"""
-    <p {Connect.description(%Description{id: @id, dir: @dir, open: false})} {@rest}>
-      <%= render_slot(@inner_block) %>
+    <p
+      phx-mounted={Connect.ignore_description(%Description{id: @id, dir: @dir, open: false})}
+      {Connect.description(%Description{id: @id, dir: @dir, open: false})}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -326,7 +448,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
   attr(:aria_label, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -335,8 +457,12 @@ defmodule Corex.Dialog do
     assigns = assign_new(assigns, :aria_label, fn -> gettext("Close") end)
 
     ~H"""
-    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})} {@rest}>
-      <%= render_slot(@inner_block) %>
+    <button
+      phx-mounted={Connect.ignore_close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})}
+      {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -352,7 +478,7 @@ defmodule Corex.Dialog do
       </button>
   """
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
-    JS.dispatch("phx:dialog:set-open",
+    JS.dispatch("corex:dialog:set-open",
       to: "##{dialog_id}",
       detail: %{open: open},
       bubbles: false

@@ -2,14 +2,13 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
+  <.layout_heading class="layout-heading">
     <:title>Listing Users</:title>
     <:subtitle>Add and manage user records</:subtitle>
     <:actions>
-      <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
+      <.navigate to={~p"/users/new"} class="button button--accent button--sm">
         <.heroicon name="hero-plus" /> New User
       </.navigate>
     </:actions>
@@ -17,43 +16,39 @@
 
   <.data_table
     id="users"
-    class="data-table"
+    class="data-table max-w-none"
     rows={@users}
-    row_click={&JS.navigate(~p"/#{@locale}/users/#{&1}")}
+    row_click={&JS.navigate(~p"/users/#{&1}")}
   >
-    <:col :let={user} label="Name">{user.name}</:col>
-    <:col :let={user} label="Country">{user.country}</:col>
-    <:col :let={user} label="Birth date">
-      {if user.birth_date, do: Calendar.strftime(user.birth_date, "%d %b %Y"), else: "—"}
-    </:col>
-    <:col :let={user} label="Signature">
-      <.signature_preview signature={user.signature} />
-    </:col>
-    <:col :let={user} label="Terms">
-      {if user.terms, do: "Yes", else: "No"}
+    <:col
+      :let={user}
+      :for={field <- fields(Enum.at(@users, 0))}
+      label={label(field)}
+    >
+      <.record_field_value record={user} field={field} />
     </:col>
     <:action :let={user}>
       <div class="sr-only">
-        <.link navigate={~p"/#{@locale}/users/#{user}"} class="link">Show</.link>
+        <.navigate to={~p"/users/#{user}"} type="navigate" class="link">Show</.navigate>
       </div>
-      <.link
-        navigate={~p"/#{@locale}/users/#{user}/edit"}
-        class="button button--sm"
-        aria-label={"Edit #{user.name}"}
+      <.navigate
+        to={~p"/users/#{user}/edit"}
+        type="navigate"
+        class="button button--sm button--square"
+        aria_label={"Edit #{user.name}"}
       >
         <.heroicon name="hero-pencil-square" />
-      </.link>
+      </.navigate>
     </:action>
     <:action :let={user}>
-      <.link
-        href={~p"/#{@locale}/users/#{user}"}
-        method="delete"
+      <.action
+        phx-click={JS.push("delete", value: %{id: user.id})}
         data-confirm="Are you sure?"
-        class="button button--sm button--alert"
+        class="button button--sm button--alert button--square"
         aria-label={"Delete #{user.name}"}
       >
         <.heroicon name="hero-trash" />
-      </.link>
+      </.action>
     </:action>
   </.data_table>
 </Layouts.app>

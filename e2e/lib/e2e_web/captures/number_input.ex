@@ -16,17 +16,6 @@ defmodule CorexWeb.NumberInput do
               increment_trigger: [
                 %{inner_block: ~s(<.heroicon name="hero-chevron-up" class="icon" />)}
               ]
-            },
-            scrubber: %{
-              id: "scrubber-number-input",
-              scrubber: true,
-              class: "number-input",
-              label: [%{inner_block: "Enter Number"}],
-              scrubber_trigger: [
-                %{
-                  inner_block: ~s(<.heroicon name="hero-arrows-up-down" class="icon rotate-90" />)
-                }
-              ]
             }
           ]
 

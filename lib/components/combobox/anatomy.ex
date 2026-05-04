@@ -8,15 +8,14 @@ defmodule Corex.Combobox.Anatomy do
 
     defstruct [
       :id,
-      collection: [],
-      controlled: false,
+      items: [],
       placeholder: nil,
-      open: false,
       value: [],
       always_submit_on_enter: false,
       auto_focus: false,
       close_on_select: false,
       dir: "ltr",
+      orientation: "vertical",
       input_behavior: "autohighlight",
       loop_focus: false,
       multiple: false,
@@ -31,20 +30,22 @@ defmodule Corex.Combobox.Anatomy do
       on_open_change_client: nil,
       on_input_value_change: nil,
       on_value_change: nil,
-      bubble: false,
-      filter: true
+      on_value_change_client: nil,
+      filter: true,
+      redirect: false,
+      controlled: false
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            collection: list(Tree.Item.t() | map()),
-            controlled: boolean(),
+            items: list(Tree.Item.t() | map()),
             placeholder: String.t() | nil,
             value: list(String.t()),
             always_submit_on_enter: boolean(),
             auto_focus: boolean(),
             close_on_select: boolean(),
             dir: String.t(),
+            orientation: String.t(),
             input_behavior: String.t(),
             loop_focus: boolean(),
             multiple: boolean(),
@@ -55,24 +56,42 @@ defmodule Corex.Combobox.Anatomy do
             read_only: boolean(),
             required: boolean(),
             positioning: Corex.Positioning.t(),
-            on_open_change: (map() -> any()) | nil,
-            on_open_change_client: (map() -> any()) | nil,
-            on_input_value_change: (map() -> any()) | nil,
-            on_value_change: (map() -> any()) | nil,
-            open: boolean() | nil,
-            bubble: boolean()
+            on_open_change: nil,
+            on_open_change_client: nil,
+            on_input_value_change: nil,
+            on_value_change: nil,
+            on_value_change_client: nil,
+            filter: boolean(),
+            redirect: boolean(),
+            controlled: boolean()
           }
   end
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, invalid: false, read_only: false]
+    defstruct [:id, invalid: false, read_only: false, orientation: "vertical", dir: "ltr"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             invalid: boolean(),
-            read_only: boolean()
+            read_only: boolean(),
+            orientation: String.t(),
+            dir: String.t()
           }
+
+    @ignored_attrs [
+      "data-state",
+      "dir",
+      "id",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
@@ -83,7 +102,8 @@ defmodule Corex.Combobox.Anatomy do
       read_only: false,
       required: false,
       disabled: false,
-      dir: "ltr"
+      dir: "ltr",
+      orientation: "vertical"
     ]
 
     @type t :: %__MODULE__{
@@ -92,21 +112,49 @@ defmodule Corex.Combobox.Anatomy do
             read_only: boolean(),
             required: boolean(),
             disabled: boolean(),
-            dir: String.t()
+            dir: String.t(),
+            orientation: String.t()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "data-required",
+      "data-disabled",
+      "data-invalid",
+      "data-readonly",
+      "htmlFor",
+      "for",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :disabled, :invalid, :open]
+    defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             disabled: boolean(),
             invalid: boolean(),
-            open: boolean()
+            orientation: String.t()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "data-disabled",
+      "data-invalid",
+      "data-state",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Input do
@@ -116,14 +164,14 @@ defmodule Corex.Combobox.Anatomy do
       :dir,
       :disabled,
       :invalid,
-      :open,
       :required,
       :placeholder,
       :name,
       :auto_focus,
       :value,
       :selected_label,
-      :form
+      :form,
+      orientation: "vertical"
     ]
 
     @type t :: %__MODULE__{
@@ -131,35 +179,298 @@ defmodule Corex.Combobox.Anatomy do
             dir: String.t(),
             disabled: boolean(),
             invalid: boolean(),
-            open: boolean(),
             required: boolean(),
             placeholder: String.t() | nil,
             name: String.t() | nil,
             auto_focus: boolean(),
             value: list(String.t()),
             selected_label: String.t() | nil,
-            form: String.t() | nil
+            form: String.t() | nil,
+            orientation: String.t()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "value",
+      "aria-expanded",
+      "aria-controls",
+      "aria-autocomplete",
+      "aria-activedescendant",
+      "aria-labelledby",
+      "role",
+      "disabled",
+      "data-state",
+      "data-placement",
+      "data-disabled",
+      "data-invalid",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover",
+      "placeholder",
+      "autoFocus",
+      "autocomplete",
+      "autoCorrect",
+      "autoCapitalize",
+      "spellCheck"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
-  defmodule Positioner do
+  defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir]
-
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t()
-          }
-  end
-
-  defmodule Content do
-    @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            disabled: boolean(),
+            invalid: boolean(),
+            orientation: String.t()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "type",
+      "aria-expanded",
+      "aria-controls",
+      "disabled",
+      "data-state",
+      "data-disabled",
+      "data-invalid",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ClearTrigger do
+    @moduledoc false
+    defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            invalid: boolean(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "type",
+      "aria-label",
+      "hidden",
+      "disabled",
+      "data-state",
+      "data-disabled",
+      "data-invalid",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Positioner do
+    @moduledoc false
+    defstruct [:id, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "style",
+      "data-state",
+      "data-placement",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Content do
+    @moduledoc false
+    defstruct [:id, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "hidden",
+      "role",
+      "tabindex",
+      "aria-labelledby",
+      "data-empty",
+      "data-state",
+      "data-placement",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule List do
+    @moduledoc false
+    defstruct [:id, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "role",
+      "tabindex",
+      "aria-labelledby",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemGroup do
+    @moduledoc false
+    defstruct [:id, :group_id, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            group_id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "data-id",
+      "role",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemGroupLabel do
+    @moduledoc false
+    defstruct [:id, :html_for, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            html_for: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "role",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Item do
+    @moduledoc false
+    defstruct [:id, :item, :value, :dir, :orientation, :to, redirect: nil, new_tab: false]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            item: map(),
+            value: String.t(),
+            dir: String.t(),
+            orientation: String.t(),
+            to: String.t() | nil,
+            redirect: :href | :patch | :navigate | false | nil,
+            new_tab: boolean()
+          }
+
+    @ignored_attrs [
+      "data-value",
+      "data-to",
+      "data-redirect",
+      "data-new-tab",
+      "data-state",
+      "data-highlighted",
+      "data-disabled",
+      "dir",
+      "id",
+      "aria-disabled",
+      "aria-selected",
+      "role",
+      "tabindex",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemText do
+    @moduledoc false
+    defstruct [:id, :item, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            item: map(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs ["id", "dir", "data-focus", "data-focus-visible"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemIndicator do
+    @moduledoc false
+    defstruct [:id, :item, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            item: map(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "hidden",
+      "aria-hidden",
+      "dir",
+      "data-state",
+      "data-focus",
+      "data-focus-visible"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Empty do
+    @moduledoc false
+    defstruct [:id, :dir, orientation: "vertical"]
+
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir"]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

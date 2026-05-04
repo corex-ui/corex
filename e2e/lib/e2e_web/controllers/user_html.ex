@@ -1,19 +1,21 @@
 defmodule E2eWeb.UserHTML do
   use E2eWeb, :html
 
+  alias E2eWeb.SignaturePaths
+
   embed_templates "user_html/*"
 
-  attr :changeset, Ecto.Changeset, required: true
+  attr :form, Phoenix.HTML.Form, required: true
   attr :action, :string, required: true
   attr :return_to, :string, default: nil
-  attr :form_id, :string, default: nil
+  attr :return_context, :string, default: nil
 
   def user_form(assigns)
 
   attr :signature, :string, default: nil
 
   def signature_preview(assigns) do
-    path_d_values = parse_signature_paths(assigns.signature)
+    path_d_values = SignaturePaths.path_d_list(assigns.signature)
     assigns = assign(assigns, :path_d_values, path_d_values)
 
     ~H"""
@@ -35,22 +37,5 @@ defmodule E2eWeb.UserHTML do
       </g>
     </svg>
     """
-  end
-
-  defp parse_signature_paths(nil), do: []
-  defp parse_signature_paths(""), do: []
-
-  defp parse_signature_paths(signature) when is_binary(signature) do
-    case Jason.decode(signature) do
-      {:ok, paths} when is_list(paths) ->
-        Enum.flat_map(paths, fn
-          d when is_binary(d) and d != "" -> [d]
-          %{"d" => d} when is_binary(d) and d != "" -> [d]
-          _ -> []
-        end)
-
-      _ ->
-        []
-    end
   end
 end

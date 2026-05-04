@@ -1,6 +1,15 @@
 import {
   clampValue
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
@@ -8,6 +17,7 @@ import {
   addDomEvent,
   ariaAttr,
   callAll,
+  canPushEvent,
   contains,
   createAnatomy,
   createMachine,
@@ -26,7 +36,6 @@ import {
   isLeftClick,
   isObject,
   nextIndex,
-  normalizeProps,
   prevIndex,
   queryAll,
   raf,
@@ -35,9 +44,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -52,7 +61,7 @@ var anatomy = createAnatomy("carousel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -70,7 +79,7 @@ var syncTabIndex = (ctx) => {
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -339,7 +348,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.36.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.40.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 var convert = (raw, size) => {
   let n = parseFloat(raw);
@@ -505,7 +514,7 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
 var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
   props({ props }) {
@@ -1039,7 +1048,7 @@ var Carousel = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="carousel"][data-part="root"]') ?? this.el;
@@ -1091,11 +1100,18 @@ var Carousel = class extends Component {
 };
 
 // hooks/carousel.ts
+function readInstant(detail) {
+  if (detail && typeof detail === "object" && "instant" in detail) {
+    const v = detail.instant;
+    return v === true || v === "true";
+  }
+  return false;
+}
 var CarouselHook = {
   mounted() {
     const el = this.el;
-    const page = getNumber(el, "page");
-    const defaultPage = getNumber(el, "defaultPage");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const controlled = getBoolean(el, "controlled");
     const slideCount = getNumber(el, "slideCount");
     if (slideCount == null || slideCount < 1) {
@@ -1104,79 +1120,94 @@ var CarouselHook = {
     const zag = new Carousel(el, {
       id: el.id,
       slideCount,
-      ...controlled && page !== void 0 ? { page } : { defaultPage: defaultPage ?? 0 },
+      ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") },
       dir: getDir(el),
-      orientation: getString(el, "orientation", [
-        "horizontal",
-        "vertical"
-      ]),
-      slidesPerPage: getNumber(el, "slidesPerPage") ?? 1,
+      orientation: getString(el, "orientation"),
+      slidesPerPage: getNumber(el, "slidesPerPage"),
       slidesPerMove: getString(el, "slidesPerMove") === "auto" ? "auto" : getNumber(el, "slidesPerMove"),
       loop: getBoolean(el, "loop"),
-      autoplay: getBoolean(el, "autoplay") ? { delay: getNumber(el, "autoplayDelay") ?? 4e3 } : false,
+      autoplay: getBoolean(el, "autoplay") ? { delay: getNumber(el, "autoplayDelay") } : false,
       allowMouseDrag: getBoolean(el, "allowMouseDrag"),
-      spacing: getString(el, "spacing") ?? "0px",
+      spacing: getString(el, "spacing"),
       padding: getString(el, "padding"),
-      inViewThreshold: getNumber(el, "inViewThreshold") ?? 0.6,
-      snapType: getString(el, "snapType", ["proximity", "mandatory"]),
+      inViewThreshold: getNumber(el, "inViewThreshold"),
+      snapType: getString(el, "snapType"),
       autoSize: getBoolean(el, "autoSize"),
       onPageChange: (details) => {
-        const eventName = getString(el, "onPageChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
             page: details.page,
-            pageSnapPoint: details.pageSnapPoint,
-            id: el.id
-          });
-        }
-        const clientName = getString(el, "onPageChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+            pageSnapPoint: details.pageSnapPoint
+          },
+          serverEventName: getString(el, "onPageChange"),
+          clientEventName: getString(el, "onPageChangeClient")
+        });
       }
     });
     zag.init();
     this.carousel = zag;
-    this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:carousel:play", () => {
+      zag.api.play();
+    });
+    domRegistry.add("corex:carousel:pause", () => {
+      zag.api.pause();
+    });
+    domRegistry.add("corex:carousel:scroll-next", (event) => {
+      zag.api.scrollNext(readInstant(event.detail));
+    });
+    domRegistry.add("corex:carousel:scroll-prev", (event) => {
+      zag.api.scrollPrev(readInstant(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("carousel_play", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.play();
+    });
+    registry.add("carousel_pause", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.pause();
+    });
+    registry.add("carousel_scroll_next", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.scrollNext(readInstant(payload));
+    });
+    registry.add("carousel_scroll_prev", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.scrollPrev(readInstant(payload));
+    });
   },
   updated() {
     const slideCount = getNumber(this.el, "slideCount");
     if (slideCount == null || slideCount < 1) return;
-    const page = getNumber(this.el, "page");
     const controlled = getBoolean(this.el, "controlled");
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...controlled && page !== void 0 ? { page } : {},
+      ...controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") },
       dir: getDir(this.el),
-      orientation: getString(this.el, "orientation", [
-        "horizontal",
-        "vertical"
-      ]),
-      slidesPerPage: getNumber(this.el, "slidesPerPage") ?? 1,
+      orientation: getString(this.el, "orientation"),
+      slidesPerPage: getNumber(this.el, "slidesPerPage"),
       slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
       loop: getBoolean(this.el, "loop"),
-      autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") ?? 4e3 } : false,
+      autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") } : false,
       allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
-      spacing: getString(this.el, "spacing") ?? "0px",
+      spacing: getString(this.el, "spacing"),
       padding: getString(this.el, "padding"),
-      inViewThreshold: getNumber(this.el, "inViewThreshold") ?? 0.6,
-      snapType: getString(this.el, "snapType", [
-        "proximity",
-        "mandatory"
-      ]),
+      inViewThreshold: getNumber(this.el, "inViewThreshold"),
+      snapType: getString(this.el, "snapType"),
       autoSize: getBoolean(this.el, "autoSize")
     });
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.carousel?.destroy();
   }
 };

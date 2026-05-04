@@ -9,11 +9,11 @@ defmodule Corex.TreeTest do
       assert Tree.new([]) == []
     end
 
-    test "creates list of items from keyword lists" do
+    test "creates list of items from maps" do
       items =
         Tree.new([
-          [label: "File", id: "file"],
-          [label: "Edit"]
+          %{label: "File", id: "file"},
+          %{label: "Edit"}
         ])
 
       assert length(items) == 2
@@ -26,7 +26,7 @@ defmodule Corex.TreeTest do
     test "creates nested items with children" do
       items =
         Tree.new([
-          [label: "File", children: [[label: "New"], [label: "Open"]]]
+          %{label: "File", children: [%{label: "New"}, %{label: "Open"}]}
         ])
 
       assert length(items) == 1
@@ -36,18 +36,11 @@ defmodule Corex.TreeTest do
       assert Enum.at(Enum.at(items, 0).children, 1).label == "Open"
     end
 
-    test "creates items from maps" do
-      items = Tree.new([%{label: "Map item", id: "map1"}])
-      assert length(items) == 1
-      assert Enum.at(items, 0).label == "Map item"
-      assert Enum.at(items, 0).id == "map1"
-    end
-
     test "creates items with group and meta" do
       items =
         Tree.new([
-          [label: "A1", id: "a1", group: "Group A"],
-          [label: "B1", id: "b1", group: "Group B", meta: %{key: "val"}]
+          %{label: "A1", id: "a1", group: "Group A"},
+          %{label: "B1", id: "b1", group: "Group B", meta: %{key: "val"}}
         ])
 
       assert length(items) == 2
@@ -56,14 +49,20 @@ defmodule Corex.TreeTest do
       assert Enum.at(items, 1).meta == %{key: "val"}
     end
 
-    test "raises for invalid list format" do
-      assert_raise ArgumentError, ~r/invalid item format/, fn ->
+    test "raises for list of non-maps" do
+      assert_raise ArgumentError, ~r/non-map items/, fn ->
         Tree.new(["a", "b"])
       end
     end
 
+    test "raises for list of keyword lists" do
+      assert_raise ArgumentError, ~r/non-map items/, fn ->
+        Tree.new([[label: "Keyword"]])
+      end
+    end
+
     test "raises for non-list input" do
-      assert_raise ArgumentError, ~r/Expected a list/, fn ->
+      assert_raise ArgumentError, ~r/Expected a list of maps/, fn ->
         Tree.new("not a list")
       end
     end
@@ -74,37 +73,50 @@ defmodule Corex.TreeTest do
       item = Item.new(%{label: "From map"})
       assert item.label == "From map"
       assert is_binary(item.id)
-    end
-
-    test "creates item with required label" do
-      item = Item.new(label: "Foo")
-      assert item.label == "Foo"
-      assert is_binary(item.id)
       assert String.starts_with?(item.id, "tree-")
       assert item.children == []
     end
 
+    test "preserves explicit id" do
+      item = Item.new(%{label: "Foo", id: "custom"})
+      assert item.id == "custom"
+    end
+
     test "creates item with children" do
-      item = Item.new(label: "Parent", children: [[label: "Child"]])
+      item = Item.new(%{label: "Parent", children: [%{label: "Child"}]})
       assert item.label == "Parent"
       assert length(item.children) == 1
       assert Enum.at(item.children, 0).label == "Child"
     end
 
+    test "passes through existing Tree.Item children without re-wrapping" do
+      child = Item.new(%{label: "Prebuilt", id: "prebuilt"})
+      parent = Item.new(%{label: "Parent", children: [child]})
+
+      assert length(parent.children) == 1
+      assert Enum.at(parent.children, 0) == child
+    end
+
     test "raises for invalid child type" do
       assert_raise ArgumentError, ~r/Invalid child item/, fn ->
-        Item.new(label: "Parent", children: [[label: "Valid"], 123])
+        Item.new(%{label: "Parent", children: [%{label: "Valid"}, 123]})
       end
     end
 
     test "raises when label missing" do
       assert_raise ArgumentError, ~r/Required fields/, fn ->
-        Item.new(id: "x")
+        Item.new(%{id: "x"})
+      end
+    end
+
+    test "raises for keyword list input" do
+      assert_raise ArgumentError, ~r/Expected a map/, fn ->
+        Item.new(label: "Foo")
       end
     end
 
     test "raises for non-keyword non-map input" do
-      assert_raise ArgumentError, ~r/Expected a keyword list or map/, fn ->
+      assert_raise ArgumentError, ~r/Expected a map/, fn ->
         Item.new("string")
       end
     end

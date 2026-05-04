@@ -109,6 +109,7 @@ defmodule Corex.DataTableTest do
         )
 
       assert html =~ ~s(data-part="action-header")
+      assert html =~ ~s(data-part="action-cell")
       assert html =~ ~s(data-part="actions")
       assert html =~ "Edit Alice"
     end

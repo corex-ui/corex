@@ -1,10 +1,16 @@
 defmodule Corex.Tabs.Connect do
   @moduledoc false
-  alias Corex.Tabs.Anatomy.{Content, List, Props, Root, Trigger}
+  alias Corex.Selectors
+  alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
+
+  defp root_id(id), do: "tabs-#{id}-root"
+  defp list_id(id), do: "tabs-#{id}-list"
+  defp trigger_id(id, value), do: "tabs-#{id}-trigger-#{value}"
+  defp content_id(id, value), do: "tabs-#{id}-content-#{value}"
+  defp indicator_id(id), do: "tabs-#{id}-indicator"
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -22,7 +28,7 @@ defmodule Corex.Tabs.Connect do
         else
           nil
         end,
-      "data-controlled" => data_attr(assigns.controlled),
+      "data-controlled" => get_boolean(assigns.controlled),
       "data-orientation" => assigns.orientation,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
@@ -39,8 +45,12 @@ defmodule Corex.Tabs.Connect do
       "data-part" => "root",
       "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
-      "id" => "tabs:#{assigns.id}"
+      "id" => root_id(assigns.id)
     }
+  end
+
+  def ignore_root(%Root{} = assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(), to: Selectors.css_id(root_id(assigns.id)))
   end
 
   @spec list(List.t()) :: map()
@@ -51,8 +61,14 @@ defmodule Corex.Tabs.Connect do
       "role" => "tablist",
       "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
-      "id" => "tabs:#{assigns.id}:list"
+      "id" => list_id(assigns.id)
     }
+  end
+
+  def ignore_list(%List{} = assigns) do
+    JS.ignore_attributes(List.ignored_attrs(),
+      to: Selectors.css_id(list_id(assigns.id))
+    )
   end
 
   @spec trigger(Trigger.t()) :: map()
@@ -69,32 +85,44 @@ defmodule Corex.Tabs.Connect do
       "aria-selected" => if(expanded, do: "true", else: "false"),
       "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
       "data-disabled" => assigns.disabled,
-      "data-selected" => data_attr(expanded),
+      "data-selected" => get_boolean(expanded),
       "disabled" => assigns.disabled,
       "data-orientation" => assigns.orientation,
       "dir" => assigns.dir,
-      "id" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
-      "data-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
-      "aria-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
-      "data-ownedby" => "tabs:#{assigns.id}",
+      "id" => trigger_id(assigns.id, assigns.value),
+      "data-controls" => content_id(assigns.id, assigns.value),
+      "aria-controls" => content_id(assigns.id, assigns.value),
+      "data-ownedby" => list_id(assigns.id),
       "role" => "tab"
     }
   end
 
-  @spec indicator(Trigger.t()) :: map()
+  def ignore_trigger(%Trigger{} = assigns) do
+    JS.ignore_attributes(Trigger.ignored_attrs(),
+      to: Selectors.css_id(trigger_id(assigns.id, assigns.value))
+    )
+  end
+
+  @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
-    expanded = assigns.value in assigns.values
-    data_state = if expanded, do: "open", else: "closed"
+    data_state = if assigns.values != [], do: "open", else: "closed"
 
     %{
       "data-scope" => "tabs",
       "data-part" => "item-indicator",
       "aria-hidden" => true,
       "data-state" => data_state,
-      "data-disabled" => assigns.disabled,
+      "data-disabled" => false,
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir
+      "dir" => assigns.dir,
+      "id" => indicator_id(assigns.id)
     }
+  end
+
+  def ignore_indicator(%Indicator{} = assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id(indicator_id(assigns.id))
+    )
   end
 
   @spec content(Content.t()) :: map()
@@ -105,14 +133,21 @@ defmodule Corex.Tabs.Connect do
     %{
       "data-scope" => "tabs",
       "data-part" => "content",
-      "role" => "region",
+      "role" => "tabpanel",
+      "data-value" => assigns.value,
       "data-state" => data_state,
       "data-disabled" => assigns.disabled,
       "data-orientation" => assigns.orientation,
       "dir" => assigns.dir,
-      "aria-labelledby" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
+      "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "hidden" => !expanded,
-      "id" => "tabs:#{assigns.id}:content:#{assigns.value}"
+      "id" => content_id(assigns.id, assigns.value)
     }
+  end
+
+  def ignore_content(%Content{} = assigns) do
+    JS.ignore_attributes(Content.ignored_attrs(),
+      to: Selectors.css_id(content_id(assigns.id, assigns.value))
+    )
   end
 end

@@ -4,30 +4,27 @@ defmodule E2eWeb.AdminLiveTest do
   import Phoenix.LiveViewTest
   import E2e.AccountsFixtures
 
+  @valid_signature_path "M0,0L1,1Z"
   @create_attrs %{
     name: "some name",
     country: "fra",
     birth_date: "1990-01-15",
-    signature: "/path/to/signature.png",
+    signature: @valid_signature_path,
     terms: true
   }
   @update_attrs %{
     name: "some updated name",
     country: "deu",
     birth_date: "1995-06-20",
-    signature: "/path/to/updated-signature.png",
     terms: true
   }
   @invalid_attrs %{name: "", country: "", birth_date: nil, signature: "", terms: false}
-  # On edit form, country select only allows current value ("fra"); keep it to trigger "can't be blank" on name only
   @invalid_attrs_edit %{
     name: "",
     country: "fra",
     birth_date: "1990-01-15",
-    signature: "",
     terms: false
   }
-  @locale "en"
 
   defp create_admin(_) do
     admin = admin_fixture()
@@ -35,24 +32,26 @@ defmodule E2eWeb.AdminLiveTest do
     %{admin: admin}
   end
 
+  defp signature_field_value(%{signature: s}) when is_binary(s), do: s
+
   describe "Index" do
     setup [:create_admin]
 
     test "lists all admins", %{conn: conn, admin: admin} do
-      {:ok, _index_live, html} = live(conn, ~p"/#{@locale}/admins")
+      {:ok, _index_live, html} = live(conn, ~p"/admins")
 
       assert html =~ "Listing Admins"
       assert html =~ admin.name
     end
 
     test "saves new admin", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/#{@locale}/admins")
+      {:ok, index_live, _html} = live(conn, ~p"/admins")
 
       assert {:ok, form_live, _} =
                index_live
                |> element("a", "New Admin")
                |> render_click()
-               |> follow_redirect(conn, ~p"/#{@locale}/admins/new")
+               |> follow_redirect(conn, ~p"/admins/new")
 
       assert render(form_live) =~ "New Admin"
 
@@ -67,7 +66,7 @@ defmodule E2eWeb.AdminLiveTest do
       assert {:ok, index_live, _html} =
                form_live
                |> render_submit("save", %{"admin" => @create_attrs})
-               |> follow_redirect(conn, ~p"/#{@locale}/admins")
+               |> follow_redirect(conn, ~p"/admins")
 
       html = render(index_live)
       assert html =~ "Admin created successfully"
@@ -75,28 +74,31 @@ defmodule E2eWeb.AdminLiveTest do
     end
 
     test "updates admin in listing", %{conn: conn, admin: admin} do
-      {:ok, index_live, _html} = live(conn, ~p"/#{@locale}/admins")
+      {:ok, index_live, _html} = live(conn, ~p"/admins")
 
       assert {:ok, form_live, _html} =
                index_live
                |> element("#admins-#{admin.id} [aria-label^='Edit']")
                |> render_click()
-               |> follow_redirect(conn, ~p"/#{@locale}/admins/#{admin}/edit")
+               |> follow_redirect(conn, ~p"/admins/#{admin}/edit")
 
       assert render(form_live) =~ "Edit Admin"
 
+      invalid_edit = Map.put(@invalid_attrs_edit, :signature, signature_field_value(admin))
+
       assert form_live
-             |> form("#admin", admin: @invalid_attrs_edit)
+             |> form("#admin", admin: invalid_edit)
              |> render_change() =~ "can&#39;t be blank"
 
-      # Send validate with country "deu" so server updates form; then submit passes hidden-input check
+      update_attrs = Map.put(@update_attrs, :signature, signature_field_value(admin))
+
       form_live
-      |> render_change("validate", %{"admin" => @update_attrs})
+      |> render_change("validate", %{"admin" => update_attrs})
 
       assert {:ok, index_live, _html} =
                form_live
-               |> render_submit("save", %{"admin" => @update_attrs})
-               |> follow_redirect(conn, ~p"/#{@locale}/admins")
+               |> render_submit("save", %{"admin" => update_attrs})
+               |> follow_redirect(conn, ~p"/admins")
 
       html = render(index_live)
       assert html =~ "Admin updated successfully"
@@ -104,7 +106,7 @@ defmodule E2eWeb.AdminLiveTest do
     end
 
     test "deletes admin in listing", %{conn: conn, admin: admin} do
-      {:ok, index_live, _html} = live(conn, ~p"/#{@locale}/admins")
+      {:ok, index_live, _html} = live(conn, ~p"/admins")
 
       assert index_live |> element("#admins-#{admin.id} [aria-label^='Delete']") |> render_click()
       refute has_element?(index_live, "#admins-#{admin.id}")
@@ -115,35 +117,38 @@ defmodule E2eWeb.AdminLiveTest do
     setup [:create_admin]
 
     test "displays admin", %{conn: conn, admin: admin} do
-      {:ok, _show_live, html} = live(conn, ~p"/#{@locale}/admins/#{admin}")
+      {:ok, _show_live, html} = live(conn, ~p"/admins/#{admin}")
 
       assert html =~ "Show Admin"
       assert html =~ admin.name
     end
 
     test "updates admin and returns to show", %{conn: conn, admin: admin} do
-      {:ok, show_live, _html} = live(conn, ~p"/#{@locale}/admins/#{admin}")
+      {:ok, show_live, _html} = live(conn, ~p"/admins/#{admin}")
 
       assert {:ok, form_live, _} =
                show_live
                |> element("a", "Edit")
                |> render_click()
-               |> follow_redirect(conn, ~p"/#{@locale}/admins/#{admin}/edit?return_to=show")
+               |> follow_redirect(conn, ~p"/admins/#{admin}/edit?return_to=show")
 
       assert render(form_live) =~ "Edit Admin"
 
+      invalid_edit = Map.put(@invalid_attrs_edit, :signature, signature_field_value(admin))
+
       assert form_live
-             |> form("#admin", admin: @invalid_attrs_edit)
+             |> form("#admin", admin: invalid_edit)
              |> render_change() =~ "can&#39;t be blank"
 
-      # Send validate with country "deu" so server updates form; then submit passes hidden-input check
+      update_attrs = Map.put(@update_attrs, :signature, signature_field_value(admin))
+
       form_live
-      |> render_change("validate", %{"admin" => @update_attrs})
+      |> render_change("validate", %{"admin" => update_attrs})
 
       assert {:ok, show_live, _html} =
                form_live
-               |> render_submit("save", %{"admin" => @update_attrs})
-               |> follow_redirect(conn, ~p"/#{@locale}/admins/#{admin}")
+               |> render_submit("save", %{"admin" => update_attrs})
+               |> follow_redirect(conn, ~p"/admins/#{admin}")
 
       html = render(show_live)
       assert html =~ "Admin updated successfully"

@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/angle-slider";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class AngleSlider extends Component<Props, Api> {
@@ -9,7 +9,7 @@ export class AngleSlider extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {
@@ -46,9 +46,12 @@ export class AngleSlider extends Component<Props, Api> {
       const valueSpan = valueTextEl.querySelector<HTMLElement>(
         '[data-scope="angle-slider"][data-part="value"]'
       );
-      if (valueSpan && valueSpan.textContent !== String(this.api.value)) {
-        valueSpan.textContent = String(this.api.value);
-      }
+      const format = this.el.dataset.valueTextAs;
+      const nextValue =
+        format === "raw"
+          ? String(this.api.value)
+          : String(this.api.valueAsDegree ?? this.api.value);
+      if (valueSpan && valueSpan.textContent !== nextValue) valueSpan.textContent = nextValue;
     }
 
     const markerGroupEl = this.el.querySelector<HTMLElement>(

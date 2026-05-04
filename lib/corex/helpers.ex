@@ -19,6 +19,46 @@ defmodule Corex.Helpers do
 
   def data_state(bool, true_val, false_val), do: if(bool, do: true_val, else: false_val)
 
+  def normalize_checkbox_checked(true), do: true
+  def normalize_checkbox_checked(false), do: false
+  def normalize_checkbox_checked(:indeterminate), do: :indeterminate
+  def normalize_checkbox_checked("indeterminate"), do: :indeterminate
+  def normalize_checkbox_checked("true"), do: true
+  def normalize_checkbox_checked("false"), do: false
+  def normalize_checkbox_checked(nil), do: false
+
+  def normalize_checkbox_checked(_), do: false
+
+  def checkbox_checked_attr_value(true), do: "true"
+  def checkbox_checked_attr_value(false), do: "false"
+  def checkbox_checked_attr_value(:indeterminate), do: "indeterminate"
+
+  def checkbox_checked_controlled_attr(controlled, checked) do
+    if controlled, do: checkbox_checked_attr_value(normalize_checkbox_checked(checked)), else: nil
+  end
+
+  def checkbox_checked_default_attr(controlled, checked) do
+    c = normalize_checkbox_checked(checked)
+
+    if controlled do
+      nil
+    else
+      if c == false, do: nil, else: checkbox_checked_attr_value(c)
+    end
+  end
+
+  def checkbox_native_checked(checked) do
+    normalize_checkbox_checked(checked) == true
+  end
+
+  def checkbox_visual_state(checked) do
+    case normalize_checkbox_checked(checked) do
+      true -> "checked"
+      false -> "unchecked"
+      :indeterminate -> "indeterminate"
+    end
+  end
+
   def validate_value!([]), do: []
 
   def validate_value!(value) when is_list(value) do
@@ -75,15 +115,6 @@ defmodule Corex.Helpers do
 
   def validate_content_items_required!(assigns, _component), do: assigns
 
-  def content_items_data_json(items) when is_list(items) do
-    items
-    |> Enum.with_index()
-    |> Enum.map(fn {item, i} ->
-      %{"value" => item.id || "item-#{i}", "disabled" => !!item.disabled}
-    end)
-    |> Corex.Json.encode!()
-  end
-
   def has_groups?(items) when is_list(items) do
     Enum.any?(items, &Map.get(&1, :group))
   end
@@ -126,6 +157,24 @@ defmodule Corex.Helpers do
     Enum.member?(value_list, entry_value(entry))
   end
 
+  @spec respond_to_fields(keyword()) :: %{String.t() => String.t()}
+  def respond_to_fields(opts) when is_list(opts) do
+    case Keyword.get(opts, :respond_to, :server) do
+      :both ->
+        %{respond_to: "both"}
+
+      :server ->
+        %{respond_to: "server"}
+
+      :client ->
+        %{respond_to: "client"}
+
+      other ->
+        raise ArgumentError,
+              "invalid :respond_to, expected :both, :server, or :client, got: #{inspect(other)}"
+    end
+  end
+
   def normalize_items(items) when is_list(items) do
     Enum.map(items, fn
       %Corex.List.Item{} = item ->
@@ -134,7 +183,11 @@ defmodule Corex.Helpers do
           value: item.id,
           label: item.label,
           disabled: item.disabled,
-          group: item.group
+          group: item.group,
+          to: item.to,
+          redirect: normalize_list_item_redirect(item.redirect),
+          new_tab: item.new_tab,
+          meta: item.meta || %{}
         }
 
       %{id: _, label: _} = map ->
@@ -143,7 +196,11 @@ defmodule Corex.Helpers do
           value: Map.get(map, :value) || Map.get(map, :id),
           label: Map.get(map, :label),
           disabled: !!Map.get(map, :disabled, false),
-          group: Map.get(map, :group)
+          group: Map.get(map, :group),
+          to: Map.get(map, :to),
+          redirect: normalize_list_item_redirect(Map.get(map, :redirect)),
+          new_tab: !!Map.get(map, :new_tab, false),
+          meta: Map.get(map, :meta) || %{}
         }
 
       other ->
@@ -155,4 +212,17 @@ defmodule Corex.Helpers do
         """
     end)
   end
+
+  defp normalize_list_item_redirect(nil), do: nil
+  defp normalize_list_item_redirect(false), do: false
+  defp normalize_list_item_redirect(:href), do: :href
+  defp normalize_list_item_redirect(:patch), do: :patch
+  defp normalize_list_item_redirect(:navigate), do: :navigate
+
+  defp normalize_list_item_redirect(other),
+    do:
+      raise(
+        ArgumentError,
+        "invalid item :redirect, expected nil, false, :href, :patch, or :navigate, got: #{inspect(other)}"
+      )
 end

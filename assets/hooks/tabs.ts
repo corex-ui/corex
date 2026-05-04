@@ -1,109 +1,90 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Tabs } from "../components/tabs";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/tabs";
 import type { Direction, Orientation } from "@zag-js/types";
 
-import { getString, getBoolean } from "../lib/util";
+import { getString, getBoolean, canPushEvent } from "../lib/util";
+import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type TabsHookState = {
   tabs?: Tabs;
-  handlers?: Array<CallbackRef>;
-  onSetValue?: (event: Event) => void;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TabsHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
 
     const tabs = new Tabs(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
         ? { value: getString(el, "value") }
         : { defaultValue: getString(el, "defaultValue") }),
-      orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      orientation: getString<Orientation>(el, "orientation"),
+      dir: getString<Direction>(el, "dir"),
       onValueChange: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null,
-          });
-        }
-
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null,
-              },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: details.value ?? null } as Record<string, unknown>,
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient"),
+        });
       },
 
       onFocusChange: (details: FocusChangeDetails) => {
-        const eventName = getString(el, "onFocusChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.focusedValue ?? null,
-          });
-        }
-
-        const eventNameClient = getString(el, "onFocusChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.focusedValue ?? null,
-              },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: details.focusedValue ?? null } as Record<string, unknown>,
+          serverEventName: getString(el, "onFocusChange"),
+          clientEventName: getString(el, "onFocusChangeClient"),
+        });
       },
     });
     tabs.init();
     this.tabs = tabs;
 
-    this.onSetValue = (event: Event) => {
-      const { value } = (event as CustomEvent<{ value: string }>).detail;
-      tabs.api.setValue(value);
-    };
-    el.addEventListener("phx:tabs:set-value", this.onSetValue);
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
 
-    this.handlers = [];
+    domRegistry.add<CustomEvent<{ value: string }>>("corex:tabs:set-value", (event) => {
+      tabs.api.setValue(event.detail.value);
+    });
 
-    this.handlers.push(
-      this.handleEvent("tabs_set_value", (payload: { tabs_id?: string; value: string }) => {
-        const targetId = payload.tabs_id;
-        if (targetId && targetId !== el.id) return;
-        tabs.api.setValue(payload.value);
-      })
-    );
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
 
-    this.handlers.push(
-      this.handleEvent("tabs_value", () => {
-        this.pushEvent("tabs_value_response", {
-          value: tabs.api.value,
-        });
-      })
-    );
+    registry.add("tabs_set_value", (payload: { tabs_id?: string; value: string }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      tabs.api.setValue(payload.value);
+    });
 
-    this.handlers.push(
-      this.handleEvent("tabs_focused_value", () => {
-        this.pushEvent("tabs_focused_value_response", {
-          value: tabs.api.focusedValue,
-        });
-      })
-    );
+    registry.add("tabs_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("tabs_value_response", {
+        id: el.id,
+        value: tabs.api.value,
+      });
+    });
+
+    registry.add("tabs_focused_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("tabs_focused_value_response", {
+        id: el.id,
+        value: tabs.api.focusedValue,
+      });
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & TabsHookState) {
@@ -112,22 +93,14 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
       ...(getBoolean(this.el, "controlled")
         ? { value: getString(this.el, "value") }
         : { defaultValue: getString(this.el, "defaultValue") }),
-      orientation: getString<Orientation>(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+      orientation: getString<Orientation>(this.el, "orientation"),
+      dir: getString<Direction>(this.el, "dir"),
     } as Props);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TabsHookState) {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);
-    }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.tabs?.destroy();
   },
 };

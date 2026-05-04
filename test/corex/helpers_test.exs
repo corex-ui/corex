@@ -2,6 +2,7 @@ defmodule Corex.HelpersTest do
   use ExUnit.Case, async: true
 
   alias Corex.Helpers
+  alias Corex.List.Item
 
   describe "get_boolean/1" do
     test "returns empty string for true" do
@@ -82,6 +83,44 @@ defmodule Corex.HelpersTest do
 
       assert_raise ArgumentError, ~r/value must be a list of strings/, fn ->
         Helpers.validate_value!(123)
+      end
+    end
+  end
+
+  describe "normalize_items/1" do
+    test "preserves redirect fields from Corex.List.Item" do
+      item =
+        Item.new(
+          label: "A",
+          id: "a",
+          to: "/x",
+          redirect: :patch,
+          new_tab: true,
+          meta: %{k: 1}
+        )
+
+      [row] = Helpers.normalize_items([item])
+      assert row.id == "a"
+      assert row.to == "/x"
+      assert row.redirect == :patch
+      assert row.new_tab == true
+      assert row.meta == %{k: 1}
+    end
+
+    test "preserves redirect fields from maps" do
+      [row] =
+        Helpers.normalize_items([
+          %{id: "b", label: "B", to: "/y", redirect: :navigate, new_tab: false, meta: %{}}
+        ])
+
+      assert row.to == "/y"
+      assert row.redirect == :navigate
+      assert row.new_tab == false
+    end
+
+    test "raises on invalid redirect atom" do
+      assert_raise ArgumentError, ~r/invalid item :redirect/, fn ->
+        Helpers.normalize_items([%{id: "c", label: "C", redirect: :oops}])
       end
     end
   end

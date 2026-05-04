@@ -2,6 +2,7 @@ defmodule E2eWeb.AdminLive.Index do
   use E2eWeb, :live_view
 
   alias E2e.Accounts
+  alias E2e.Accounts.Admin
 
   @impl true
   def render(assigns) do
@@ -10,44 +11,48 @@ defmodule E2eWeb.AdminLive.Index do
       flash={@flash}
       mode={@mode}
       theme={@theme}
-      locale={@locale}
-      current_path={@current_path}
+      path={@path}
     >
-      <.layout_heading>
+      <.layout_heading class="layout-heading">
         <:title>Listing Admins</:title>
         <:subtitle>Add and manage admin records</:subtitle>
         <:actions>
-          <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
+          <.navigate to={~p"/admins/new"} type="navigate" class="button button--sm button--accent">
             <.heroicon name="hero-plus" /> New Admin
           </.navigate>
         </:actions>
       </.layout_heading>
       <.data_table
         id="admins"
-        class="data-table"
+        class="data-table max-w-none"
         rows={@streams.admins}
-        row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
+        row_click={fn {_id, admin} -> JS.navigate(~p"/admins/#{admin}") end}
       >
-        <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
-        <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
-        <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
+        <:col
+          :let={{_id, admin}}
+          :for={field <- @fields}
+          label={label(field)}
+        >
+          <.record_field_value record={admin} field={field} />
+        </:col>
         <:action :let={{_id, admin}}>
           <div class="sr-only">
-            <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
+            <.navigate to={~p"/admins/#{admin}"} type="navigate" class="link">Show</.navigate>
           </div>
-          <.link
-            navigate={~p"/#{@locale}/admins/#{admin}/edit"}
-            class="button button--sm"
-            aria-label={"Edit #{admin.name}"}
+          <.navigate
+            to={~p"/admins/#{admin}/edit"}
+            type="navigate"
+            class="button button--sm button--square"
+            aria_label={"Edit #{admin.name}"}
           >
             <.heroicon name="hero-pencil-square" />
-          </.link>
+          </.navigate>
         </:action>
         <:action :let={{_id, admin}}>
           <.action
             phx-click={JS.push("delete", value: %{id: admin.id})}
             data-confirm="Are you sure?"
-            class="button button--sm button--alert"
+            class="button button--sm button--alert button--square"
             aria-label={"Delete #{admin.name}"}
           >
             <.heroicon name="hero-trash" />
@@ -63,6 +68,7 @@ defmodule E2eWeb.AdminLive.Index do
     {:ok,
      socket
      |> assign(:page_title, "Listing Admins")
+     |> assign(:fields, Admin.__schema__(:fields) |> Enum.sort())
      |> stream(:admins, list_admins())}
   end
 

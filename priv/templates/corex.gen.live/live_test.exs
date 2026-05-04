@@ -3,8 +3,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-
-  <% params_create = schema.params.create %><% params_update = schema.params.update-%>
+<% params_create = schema.params.create %><% params_update = schema.params.update %><% validation_hint = Mix.Phoenix.Schema.failed_render_change_message(schema) %>
   @invalid_attrs %{
 <%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value()) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
 <% end %>  }
@@ -55,16 +54,20 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert render(form_live) =~ "New <%= schema.human_singular %>"
 
-      assert form_live
-             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs)
-             |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
+      html_invalid =
+        form_live
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs)
+        |> render_change()
+
+      assert html_invalid =~ <%= inspect(validation_hint) %> or
+               html_invalid =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
       form_live
       |> render_change("validate", %{"<%= schema.singular %>" => @create_attrs_params})
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -84,16 +87,20 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert render(form_live) =~ "Edit <%= schema.human_singular %>"
 
-      assert form_live
-             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
-             |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
+      html_invalid_edit =
+        form_live
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
+        |> render_change()
+
+      assert html_invalid_edit =~ <%= inspect(validation_hint) %> or
+               html_invalid_edit =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
       form_live
       |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -131,16 +138,20 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       assert render(form_live) =~ "Edit <%= schema.human_singular %>"
 
-      assert form_live
-             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
-             |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
+      html_invalid_show =
+        form_live
+        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
+        |> render_change()
+
+      assert html_invalid_show =~ <%= inspect(validation_hint) %> or
+               html_invalid_show =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
       form_live
       |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
 
       assert {:ok, show_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>")
+               |> form("#<%= schema.singular %>-form")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}")
 

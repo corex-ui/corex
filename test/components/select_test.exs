@@ -2,6 +2,7 @@ defmodule Corex.SelectTest do
   use CorexTest.ComponentCase, async: true
 
   alias Corex.Select.Connect
+  alias Test.Support.ConnectProps
 
   describe "select/1" do
     test "renders" do
@@ -10,17 +11,12 @@ defmodule Corex.SelectTest do
       assert html =~ ~r/data-part="root"/
     end
 
-    test "has data-js=pending on root" do
-      html = render_component(&CorexTest.ComponentHelpers.render_select/1, [])
-      assert html =~ ~r/data-js="pending"/
-    end
-
     test "controlled select has data-value" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_controlled_multiple/1, [])
       assert html =~ ~r/data-value="a"/
     end
 
-    test "uncontrolled select with value has data-default-value" do
+    test "select with value only in default attr has data-default-value" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_uncontrolled_value/1, [])
       assert html =~ ~r/data-default-value="a"/
     end
@@ -34,11 +30,11 @@ defmodule Corex.SelectTest do
     test "uses placeholder for aria-label and placeholder span when no selection" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
-          placeholder: "Select an option"
+          placeholder: "Select"
         )
 
-      assert html =~ ~r/aria-label="Select an option"/
-      assert html =~ "Select an option"
+      assert html =~ ~r/aria-label="Select"/
+      assert html =~ "Select"
     end
 
     test "uses custom placeholder when provided" do
@@ -113,7 +109,7 @@ defmodule Corex.SelectTest do
         dir: "ltr"
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["id"] == "test-select"
     end
 
@@ -126,7 +122,7 @@ defmodule Corex.SelectTest do
         dir: "ltr"
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["data-value"] == "a"
     end
 
@@ -140,7 +136,7 @@ defmodule Corex.SelectTest do
         redirect: true
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["data-redirect"] != nil
     end
 
@@ -151,11 +147,11 @@ defmodule Corex.SelectTest do
         controlled: false,
         value: [],
         dir: "ltr",
-        positioning: %{placement: "bottom"}
+        positioning: %Corex.Positioning{placement: "bottom"}
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
-      assert result["data-positioning"] =~ "placement"
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
+      assert result["data-position-placement"] == "bottom"
     end
 
     test "returns props with on_value_change" do
@@ -168,7 +164,7 @@ defmodule Corex.SelectTest do
         on_value_change: "phx-value-change"
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["data-on-value-change"] == "phx-value-change"
     end
 
@@ -182,8 +178,48 @@ defmodule Corex.SelectTest do
         on_value_change_client: "on-change-client"
       }
 
-      result = Connect.props(Map.merge(default_select_props(), assigns))
+      result = Connect.props(Map.merge(ConnectProps.default_select(), assigns))
       assert result["data-on-value-change-client"] == "on-change-client"
+    end
+  end
+
+  describe "Connect.item/1" do
+    test "emits no redirect/to/new-tab attrs by default" do
+      assigns = %{id: "s", value: "a", dir: "ltr", orientation: "vertical"}
+      result = Connect.item(assigns)
+      refute Map.has_key?(result, "data-to")
+      refute Map.has_key?(result, "data-redirect")
+      refute Map.has_key?(result, "data-new-tab")
+    end
+
+    test "emits data-to / data-redirect (atom mode) / data-new-tab" do
+      assigns = %{
+        id: "s",
+        value: "a",
+        dir: "ltr",
+        orientation: "vertical",
+        to: "/foo",
+        redirect: :patch,
+        new_tab: true
+      }
+
+      result = Connect.item(assigns)
+      assert result["data-to"] == "/foo"
+      assert result["data-redirect"] == "patch"
+      assert Map.has_key?(result, "data-new-tab")
+    end
+
+    test "emits data-redirect=\"false\" when redirect is false" do
+      assigns = %{
+        id: "s",
+        value: "a",
+        dir: "ltr",
+        orientation: "vertical",
+        redirect: false
+      }
+
+      result = Connect.item(assigns)
+      assert result["data-redirect"] == "false"
     end
   end
 
@@ -198,30 +234,5 @@ defmodule Corex.SelectTest do
       html = render_component(&CorexTest.ComponentHelpers.render_select_grouped/1, [])
       assert html =~ ~r/data-scope="select"/
     end
-  end
-
-  defp default_select_props do
-    %{
-      id: "test-select",
-      items: [%{id: "a", label: "A"}],
-      invalid: false,
-      read_only: false,
-      disabled: false,
-      name: nil,
-      placeholder: nil,
-      close_on_select: true,
-      loop_focus: false,
-      multiple: false,
-      form: nil,
-      required: false,
-      value: [],
-      controlled: false,
-      dir: "ltr",
-      positioning: nil,
-      on_value_change: nil,
-      on_value_change_client: nil,
-      redirect: false,
-      redirect_new_tab: false
-    }
   end
 end

@@ -1,7 +1,9 @@
 import { connect, machine, collection, type Props, type Api } from "@zag-js/listbox";
 import type { ListCollection } from "@zag-js/collection";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { zagIdValueLabelCollectionConfig } from "../lib/list-collection";
+import { templatesContentRoot } from "../lib/util";
 
 type Item = {
   id?: string;
@@ -14,6 +16,7 @@ type Item = {
 export class Listbox extends Component<Props<Item>, Api> {
   private _options: Item[] = [];
   hasGroups: boolean = false;
+  private lastItemsFingerprint = "";
 
   constructor(el: HTMLElement | null, props: Props<Item>) {
     super(el, props);
@@ -30,6 +33,10 @@ export class Listbox extends Component<Props<Item>, Api> {
     this._options = Array.isArray(options) ? options : [];
   }
 
+  private itemsFingerprint(): string {
+    return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+  }
+
   getOrderedGroupIds(): string[] {
     const seen = new Set<string>();
     const ids: string[] = [];
@@ -44,22 +51,7 @@ export class Listbox extends Component<Props<Item>, Api> {
   }
 
   getCollection(): ListCollection<Item> {
-    const items = this.options;
-    if (this.hasGroups) {
-      return collection({
-        items,
-        itemToValue: (item) => item.id ?? item.value ?? "",
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item: Item) => item.group ?? "",
-      });
-    }
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled,
-    });
+    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,7 +66,7 @@ export class Listbox extends Component<Props<Item>, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   init = (): void => {
@@ -92,29 +84,38 @@ export class Listbox extends Component<Props<Item>, Api> {
     );
     if (!contentEl) return;
 
-    const templatesContainer = this.el.querySelector<HTMLElement>('[data-templates="listbox"]');
-    if (!templatesContainer) return;
+    const isOwnedByContent = (el: Element) =>
+      el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
 
-    contentEl
-      .querySelectorAll<HTMLElement>(
+    const templatesRoot = templatesContentRoot(this.el, "listbox");
+    if (!templatesRoot) return;
+
+    Array.from(
+      contentEl.querySelectorAll<HTMLElement>(
         '[data-scope="listbox"][data-part="empty"]:not([data-template])'
       )
+    )
+      .filter(isOwnedByContent)
       .forEach((el) => el.remove());
-    contentEl
-      .querySelectorAll<HTMLElement>(
+    Array.from(
+      contentEl.querySelectorAll<HTMLElement>(
         '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
       )
+    )
+      .filter(isOwnedByContent)
       .forEach((el) => el.remove());
-    contentEl
-      .querySelectorAll<HTMLElement>(
+    Array.from(
+      contentEl.querySelectorAll<HTMLElement>(
         '[data-scope="listbox"][data-part="item"]:not([data-template])'
       )
+    )
+      .filter(isOwnedByContent)
       .forEach((el) => el.remove());
 
     const items = this.options;
 
     if (items.length === 0) {
-      const emptyTemplate = templatesContainer.querySelector<HTMLElement>(
+      const emptyTemplate = templatesRoot.querySelector<HTMLElement>(
         '[data-scope="listbox"][data-part="empty"][data-template]'
       );
       if (emptyTemplate) {
@@ -125,7 +126,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     } else if (this.hasGroups) {
       const groupIds = this.getOrderedGroupIds();
       for (const groupId of groupIds) {
-        const template = templatesContainer.querySelector<HTMLElement>(
+        const template = templatesRoot.querySelector<HTMLElement>(
           `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
         );
         if (!template) continue;
@@ -139,7 +140,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     } else {
       for (const item of items) {
         const value = String(item.id ?? item.value ?? "");
-        const template = templatesContainer.querySelector<HTMLElement>(
+        const template = templatesRoot.querySelector<HTMLElement>(
           `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
         );
         if (!template) continue;
@@ -156,9 +157,13 @@ export class Listbox extends Component<Props<Item>, Api> {
     );
     if (!contentEl) return;
 
+    const isOwnedByContent = (el: Element) =>
+      el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
+
     contentEl
       .querySelectorAll<HTMLElement>('[data-scope="listbox"][data-part="item-group"]')
       .forEach((groupEl) => {
+        if (!isOwnedByContent(groupEl)) return;
         const groupId = groupEl.dataset.id ?? "";
         this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
         const labelEl = groupEl.querySelector<HTMLElement>(
@@ -172,6 +177,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     contentEl
       .querySelectorAll<HTMLElement>('[data-scope="listbox"][data-part="item"]')
       .forEach((itemEl) => {
+        if (!isOwnedByContent(itemEl)) return;
         const value = itemEl.dataset.value ?? "";
         const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
         if (!item) return;
@@ -199,11 +205,6 @@ export class Listbox extends Component<Props<Item>, Api> {
     const labelEl = this.el.querySelector<HTMLElement>('[data-scope="listbox"][data-part="label"]');
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
 
-    const valueTextEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="listbox"][data-part="value-text"]'
-    );
-    if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
-
     const inputEl = this.el.querySelector<HTMLElement>('[data-scope="listbox"][data-part="input"]');
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
 
@@ -212,7 +213,11 @@ export class Listbox extends Component<Props<Item>, Api> {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
-      this.renderItems();
+      const fp = this.itemsFingerprint();
+      if (fp !== this.lastItemsFingerprint) {
+        this.lastItemsFingerprint = fp;
+        this.renderItems();
+      }
       this.applyItemProps();
     }
   }

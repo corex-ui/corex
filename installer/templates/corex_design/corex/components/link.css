@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+  .link {
+    @apply ui-link;
+   }
+}
+@utility link--* {
+  color: --value(--color-ink, [color]);
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+  
+  padding-inline: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-space-*, [length]);
+}

@@ -1,0 +1,116 @@
+{
+  "theme": {
+    "container": {
+      "2xl": {
+        "type": "dimension",
+        "value": "41.9rem"
+      },
+      "2xs": {
+        "type": "dimension",
+        "value": "18rem"
+      },
+      "3xl": {
+        "type": "dimension",
+        "value": "47.9rem"
+      },
+      "3xs": {
+        "type": "dimension",
+        "value": "16rem"
+      },
+      "4xl": {
+        "type": "dimension",
+        "value": "55.9rem"
+      },
+      "4xs": {
+        "type": "dimension",
+        "value": "12rem"
+      },
+      "5xl": {
+        "type": "dimension",
+        "value": "63.8rem"
+      },
+      "5xs": {
+        "type": "dimension",
+        "value": "10rem"
+      },
+      "6xl": {
+        "type": "dimension",
+        "value": "71.8rem"
+      },
+      "6xs": {
+        "type": "dimension",
+        "value": "8rem"
+      },
+      "7xl": {
+        "type": "dimension",
+        "value": "79.8rem"
+      },
+      "7xs": {
+        "type": "dimension",
+        "value": "6rem"
+      },
+      "lg": {
+        "type": "dimension",
+        "value": "31.9rem"
+      },
+      "md": {
+        "type": "dimension",
+        "value": "27.9rem"
+      },
+      "sm": {
+        "type": "dimension",
+        "value": "23.9rem"
+      },
+      "xl": {
+        "type": "dimension",
+        "value": "35.9rem"
+      },
+      "xs": {
+        "type": "dimension",
+        "value": "20rem"
+      }
+    },
+    "spacing": {
+      "default": {
+        "type": "dimension",
+        "value": "0.25rem"
+      },
+      "size": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 12)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 10)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 8)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 14)"
+        }
+      },
+      "space": {
+        "lg": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 4)"
+        },
+        "md": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 3)"
+        },
+        "sm": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 2)"
+        },
+        "xl": {
+          "type": "dimension",
+          "value": "calc({theme.spacing.default} * 5)"
+        }
+      }
+    }
+  }
+}

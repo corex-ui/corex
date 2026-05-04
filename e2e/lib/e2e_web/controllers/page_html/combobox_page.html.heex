@@ -2,125 +2,71 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Combobox</:title>
-    <:subtitle>Live View</:subtitle>
-  </.layout_heading>
-
-  <h3>Minimal</h3>
-  <.combobox
-    id="my-combobox"
-    class="combobox"
-    placeholder="Select a country"
-    on_open_change_client="handle_open_change"
-    collection={[
-      %{label: "France", id: "fra", disabled: true},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
-    ]}
+  <.demo_page
+    id="combobox-anatomy-page"
+    title="Combobox Anatomy"
+    subtitle="Structure, slots, grouped data, and custom item rendering."
   >
-    <:empty>No results</:empty>
-    <:trigger>
-      <.heroicon name="hero-chevron-down" />
-    </:trigger>
-    <:clear_trigger>
-      <.heroicon name="hero-backspace" />
-    </:clear_trigger>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.combobox>
+    <.demo_section
+      id="combobox-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.ComboboxDemo.minimal_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.minimal_example />
+      </:preview>
+    </.demo_section>
 
-  <h3>Grouped</h3>
-  <.combobox
-    class="combobox"
-    placeholder="Select a country"
-    collection={[
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Netherlands", id: "nld", group: "Europe"},
-      %{label: "Switzerland", id: "che", group: "Europe"},
-      %{label: "Austria", id: "aut", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"},
-      %{label: "Thailand", id: "tha", group: "Asia"},
-      %{label: "USA", id: "usa", group: "North America"},
-      %{label: "Canada", id: "can", group: "North America"},
-      %{label: "Mexico", id: "mex", group: "North America"}
-    ]}
-  >
-    <:empty>No results</:empty>
-    <:trigger>
-      <.heroicon name="hero-chevron-down" />
-    </:trigger>
-  </.combobox>
+    <.demo_section
+      id="combobox-anatomy-slots"
+      title="Slots (indicator, clear, trigger)"
+      code={E2eWeb.Demos.ComboboxDemo.slots_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.slots_example />
+      </:preview>
+    </.demo_section>
 
-  <h3>Extended</h3>
-  <.combobox
-    class="combobox"
-    placeholder="Select a country"
-    collection={[
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
-    ]}
-  >
-    <:empty>No results</:empty>
-    <:label>
-      Country of residence
-    </:label>
-    <:item :let={item}>
-      <Flagpack.flag name={String.to_atom(item.id)} />
-      {item.label}
-    </:item>
-    <:trigger>
-      <.heroicon name="hero-chevron-down" />
-    </:trigger>
-    <:clear_trigger>
-      <.heroicon name="hero-backspace" />
-    </:clear_trigger>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.combobox>
+    <.demo_section
+      id="combobox-anatomy-labeled"
+      title="With label"
+      code={E2eWeb.Demos.ComboboxDemo.labeled_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.labeled_example />
+      </:preview>
+    </.demo_section>
 
-  <h3>Extended Grouped</h3>
-  <.combobox
-    class="combobox"
-    placeholder="Select a country"
-    collection={[
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"}
-    ]}
-  >
-    <:empty>No results</:empty>
-    <:item :let={item}>
-      <Flagpack.flag name={String.to_atom(item.id)} />
-      {item.label}
-    </:item>
-    <:trigger>
-      <.heroicon name="hero-chevron-down" />
-    </:trigger>
-    <:clear_trigger>
-      <.heroicon name="hero-backspace" />
-    </:clear_trigger>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.combobox>
+    <.demo_section
+      id="combobox-anatomy-grouped"
+      title="Grouped"
+      code={E2eWeb.Demos.ComboboxDemo.grouped_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.grouped_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="combobox-anatomy-extended"
+      title="Extended"
+      code={E2eWeb.Demos.ComboboxDemo.extended_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.extended_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="combobox-anatomy-extended-grouped"
+      title="Extended grouped"
+      code={E2eWeb.Demos.ComboboxDemo.extended_grouped_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ComboboxDemo.extended_grouped_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

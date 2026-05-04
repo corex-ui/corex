@@ -2,26 +2,27 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Number Input</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.number_input id="my-number-input" class="number-input">
-    <:label>Quantity</:label>
-    <:decrement_trigger>
-      <.heroicon name="hero-chevron-down" class="icon" />
-    </:decrement_trigger>
-    <:increment_trigger>
-      <.heroicon name="hero-chevron-up" class="icon" />
-    </:increment_trigger>
-  </.number_input>
-  <.number_input id="scrubber-number-input" class="number-input" scrubber>
-    <:label>Enter Number</:label>
-    <:scrubber_trigger>
-      <.heroicon name="hero-arrows-up-down" class="icon rotate-90" />
-    </:scrubber_trigger>
-  </.number_input>
+  <.demo_page
+    id="number-input-anatomy-page"
+    title="Number Input Anatomy"
+    subtitle="Label, required trigger slots, bounds, and default value."
+  >
+    <.demo_section
+      id="number-input-anatomy-minimal"
+      title="Minimal (with triggers)"
+      code={E2eWeb.Demos.NumberInputDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.NumberInputDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-anatomy-bounds"
+      title="Min, max & default value"
+      code={E2eWeb.Demos.NumberInputDemo.min_max_default_code()}
+    >
+      <:preview><E2eWeb.Demos.NumberInputDemo.min_max_default_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

@@ -7,32 +7,26 @@ defmodule E2eWeb.SignatureFormTest do
   feature "static form - submit empty/default includes signature", %{session: session} do
     session
     |> Signature.goto_form(:static)
-    |> Signature.wait(500)
     |> Signature.submit_form()
-    |> Signature.wait(500)
-    |> Signature.see_flash("Submitted: signature=")
+    |> Signature.wait_for_signature_field_error()
   end
 
   feature "static form - has no A11y violations", %{session: session} do
     session
     |> Signature.goto_form(:static)
-    |> Signature.wait(500)
     |> Signature.check_accessibility()
   end
 
   feature "live form - submit default signature", %{session: session} do
     session
     |> Signature.goto_form(:live)
-    |> Signature.wait(500)
     |> Signature.submit_form(:live)
-    |> Signature.wait(2000)
-    |> Signature.see_flash("signature=")
+    |> Signature.wait_for_signature_field_error()
   end
 
   feature "live form - has no A11y violations", %{session: session} do
     session
     |> Signature.goto_form(:live)
-    |> Signature.wait(500)
     |> Signature.check_accessibility()
   end
 end

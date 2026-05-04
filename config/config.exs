@@ -2,7 +2,8 @@ import Config
 
 config :logger, :console,
   colors: [enabled: false],
-  format: "\n$time $metadata[$level] $message\n"
+  format: "\n$time $metadata[$level] $message\n",
+  metadata: :all
 
 config :phoenix,
   json_library: Jason,
@@ -12,7 +13,7 @@ config :phoenix,
 
 if Mix.env() == :dev do
   corex_externals =
-    ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog editable floating-panel listbox marquee menu number-input password-input pin-input radio-group select signature-pad switch tabs timer toast toggle-group tree-view)
+    ~w(accordion angle-slider avatar carousel checkbox clipboard code collapsible combobox color-picker date-picker dialog editable floating-panel listbox marquee menu number-input password-input pin-input radio-group select signature-pad switch tabs timer toast toggle-group tooltip tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
 
   esbuild = fn args ->
@@ -31,6 +32,7 @@ if Mix.env() == :dev do
       ./hooks/carousel.ts
       ./hooks/checkbox.ts
       ./hooks/clipboard.ts
+      ./hooks/code.ts
       ./hooks/collapsible.ts
       ./hooks/combobox.ts
       ./hooks/color-picker.ts
@@ -51,13 +53,15 @@ if Mix.env() == :dev do
       ./hooks/tabs.ts
       ./hooks/timer.ts
       ./hooks/toast.ts
+      ./hooks/tooltip.ts
       ./hooks/toggle-group.ts
       ./hooks/tree-view.ts
     )
 
   hooks_args =
     hooks_entries ++
-      ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs)
+      ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs) ++
+      ["--chunk-names=chunks/[name]-[hash]"]
 
   config :esbuild,
     version: "0.25.4",

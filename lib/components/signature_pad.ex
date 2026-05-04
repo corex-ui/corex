@@ -57,7 +57,9 @@ defmodule Corex.SignaturePad do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
+
+  The value field is a `type="text"` input with the HTML `hidden` attribute (Zag’s pattern), not a `type="hidden"` control, so the LiveView client can mark it “used” like a normal text field. The hook re-applies the same `phxPrivate` usage metadata LiveView stores on that input after draws, clear, and after server patches, so a morph of the value input does not drop “used” state and `used_input?/1` on the server matches expected behaviour.
 
   ### Controller
 
@@ -74,7 +76,7 @@ defmodule Corex.SignaturePad do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.signature_pad field={f[:signature]} class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger>
@@ -91,7 +93,7 @@ defmodule Corex.SignaturePad do
 
   ### Live View
 
-  When using in a Live view you must add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
+  Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 
@@ -132,7 +134,7 @@ defmodule Corex.SignaturePad do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.signature_pad
           field={@form[:signature]}
           id="my-signature-pad"
@@ -202,7 +204,6 @@ defmodule Corex.SignaturePad do
   <.signature_pad class="signature-pad signature-pad--accent signature-pad--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/signature-pad#modifiers)
   '''
 
   @doc type: :component
@@ -211,9 +212,11 @@ defmodule Corex.SignaturePad do
   alias Corex.SignaturePad.Anatomy.{
     ClearTrigger,
     Control,
+    Error,
     Guide,
     HiddenInput,
     Label,
+    Path,
     Props,
     Root,
     Segment
@@ -268,8 +271,8 @@ defmodule Corex.SignaturePad do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the signature pad. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -284,15 +287,10 @@ defmodule Corex.SignaturePad do
     doc: "The client event name when drawing ends"
   )
 
-  attr(:controlled, :boolean,
-    default: false,
-    doc: "Whether the signature pad is controlled"
-  )
-
   attr(:paths, :any,
     default: nil,
     doc:
-      "The initial paths or the controlled paths of the signature pad. Can be a list or a JSON string."
+      "Initial stroke paths: a list of SVG d strings, or one string with lines separated by newline, sent as `data-default-paths` to the hook."
   )
 
   attr(:name, :string, doc: "The name of the signature pad input for form submission")
@@ -304,7 +302,7 @@ defmodule Corex.SignaturePad do
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
-      "A form field struct retrieved from the form, for example: @form[:signature]. Automatically sets id, name, value, and errors from the form field"
+      "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
   attr(:rest, :global)
@@ -327,23 +325,24 @@ defmodule Corex.SignaturePad do
   end
 
   def signature_pad(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    errors = signature_pad_field_errors(field) |> Enum.map(&Corex.Gettext.translate_error/1)
 
     paths_value =
       case field.value do
-        nil -> nil
-        "" -> nil
-        value when is_binary(value) -> value
-        value when is_list(value) -> Corex.Json.encode!(value)
-        _ -> nil
+        nil -> []
+        "" -> []
+        value when is_list(value) -> Enum.filter(value, &is_binary/1)
+        value when is_binary(value) -> path_d_strings(value)
+        _ -> []
       end
 
     assigns =
       assigns
       |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+      |> assign(:errors, errors)
       |> assign_new(:id, fn -> field.id end)
       |> assign_new(:name, fn -> field.name end)
+      |> assign_new(:form, fn -> field.form.id end)
       |> assign(:paths, paths_value)
 
     signature_pad(assigns)
@@ -352,6 +351,8 @@ defmodule Corex.SignaturePad do
   def signature_pad(assigns) do
     assigns =
       assigns
+      |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
+      |> assign_new(:form, fn -> nil end)
       |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
 
@@ -359,10 +360,11 @@ defmodule Corex.SignaturePad do
     <div
       id={@id}
       phx-hook="SignaturePad"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
       {@rest}
       {Connect.props(%Props{
         id: @id,
-        controlled: @controlled,
         paths: @paths,
         drawing_fill: @drawing_fill,
         drawing_size: @drawing_size,
@@ -377,21 +379,34 @@ defmodule Corex.SignaturePad do
         name: @name
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+        <label
+          :if={@label != []}
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
+          {Connect.label(%Label{id: @id, dir: @dir})}
+        >
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir})}>
-          <svg {Connect.segment(%Segment{id: @id, dir: @dir})} fill={@drawing_fill}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir})} {Connect.control(%Control{id: @id, dir: @dir})}>
+          <svg phx-mounted={Connect.ignore_segment(%Segment{id: @id, dir: @dir})} {Connect.segment(%Segment{id: @id, dir: @dir})} fill={@drawing_fill}>
             <path
-              :for={path <- parse_paths(@paths)}
-              data-scope="signature-pad"
-              data-part="path"
+              :for={{path, idx} <- Enum.with_index(@paths)}
+              phx-mounted={Connect.ignore_path(%Path{id: @id, index: idx})}
+              {Connect.path(%Path{id: @id, index: idx})}
               d={path}
             />
           </svg>
           <button
             :if={@clear_trigger != []}
+            phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{
+              id: @id,
+              dir: @dir,
+              has_paths: has_paths?(@paths),
+              aria_label: case @clear_trigger do
+                [entry | _] -> Map.get(entry, :aria_label)
+                _ -> nil
+              end
+            })}
             {Connect.clear_trigger(%ClearTrigger{
               id: @id,
               dir: @dir,
@@ -404,13 +419,22 @@ defmodule Corex.SignaturePad do
           >
             {render_slot(@clear_trigger)}
           </button>
-          <div {Connect.guide(%Guide{id: @id, dir: @dir})} />
+          <div phx-mounted={Connect.ignore_guide(%Guide{id: @id, dir: @dir})} {Connect.guide(%Guide{id: @id, dir: @dir})} />
         </div>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name})} />
-        <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="signature-pad" data-part="error">
-          {render_slot(@error, msg)}
-        </div>
+        <input
+          value={hidden_input_value(@paths)}
+          phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
+          {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
+        />
       </div>
+      <div
+      :if={!Enum.empty?(@errors)}
+      :for={{msg, idx} <- Enum.with_index(@errors)}
+      phx-mounted={Connect.ignore_error(%Error{id: @id, index: idx})}
+      {Connect.error(%Error{id: @id, index: idx})}
+    >
+      {render_slot(@error, msg)}
+    </div>
     </div>
     """
   end
@@ -426,7 +450,7 @@ defmodule Corex.SignaturePad do
       </button>
   """
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
-    JS.dispatch("phx:signature-pad:clear",
+    JS.dispatch("corex:signature-pad:clear",
       to: "##{signature_pad_id}",
       detail: %{id: signature_pad_id},
       bubbles: false
@@ -450,29 +474,26 @@ defmodule Corex.SignaturePad do
     })
   end
 
-  defp has_paths?(nil), do: false
-  defp has_paths?(""), do: false
-  defp has_paths?(paths) when is_list(paths), do: paths != []
-
-  defp has_paths?(paths) when is_binary(paths) do
-    case Corex.Json.encoder().decode(paths) do
-      {:ok, list} when is_list(list) -> list != []
-      _ -> false
-    end
+  defp signature_pad_field_errors(%Phoenix.HTML.FormField{} = field) do
+    if Phoenix.Component.used_input?(field), do: field.errors, else: []
   end
 
+  defp paths_from_paths_attr(nil), do: []
+  defp paths_from_paths_attr(paths) when is_list(paths), do: Enum.filter(paths, &is_binary/1)
+  defp paths_from_paths_attr(paths) when is_binary(paths), do: path_d_strings(paths)
+  defp paths_from_paths_attr(_), do: []
+
+  defp has_paths?([]), do: false
+  defp has_paths?(paths) when is_list(paths), do: paths != []
   defp has_paths?(_), do: false
 
-  defp parse_paths(nil), do: []
-  defp parse_paths(""), do: []
-  defp parse_paths(paths) when is_list(paths), do: Enum.filter(paths, &is_binary/1)
+  defp hidden_input_value([]), do: ""
+  defp hidden_input_value(paths) when is_list(paths), do: Enum.join(paths, "\n")
 
-  defp parse_paths(paths) when is_binary(paths) do
-    case Corex.Json.encoder().decode(paths) do
-      {:ok, list} when is_list(list) -> Enum.filter(list, &is_binary/1)
-      _ -> []
-    end
+  defp path_d_strings(s) when is_binary(s) do
+    s
+    |> String.split("\n")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
   end
-
-  defp parse_paths(_), do: []
 end

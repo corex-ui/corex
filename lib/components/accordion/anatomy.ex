@@ -16,7 +16,9 @@ defmodule Corex.Accordion.Anatomy do
       on_value_change: nil,
       on_value_change_client: nil,
       on_focus_change: nil,
-      on_focus_change_client: nil
+      on_focus_change_client: nil,
+      animation: "js",
+      animation_options: %Corex.Animation.Height{}
     ]
 
     @type t :: %__MODULE__{
@@ -30,7 +32,9 @@ defmodule Corex.Accordion.Anatomy do
             on_value_change: String.t(),
             on_value_change_client: String.t(),
             on_focus_change: String.t(),
-            on_focus_change_client: String.t()
+            on_focus_change_client: String.t(),
+            animation: String.t(),
+            animation_options: Corex.Animation.Height.t()
           }
   end
 
@@ -43,6 +47,9 @@ defmodule Corex.Accordion.Anatomy do
             orientation: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["data-orientation", "dir", "id"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Item do
@@ -54,6 +61,7 @@ defmodule Corex.Accordion.Anatomy do
       values: [],
       value: nil,
       disabled: false,
+      animation: "instant",
       data: %{}
     ]
 
@@ -64,7 +72,57 @@ defmodule Corex.Accordion.Anatomy do
             dir: String.t(),
             value: String.t() | nil,
             disabled: boolean(),
-            values: list(String.t())
+            values: list(String.t()),
+            animation: String.t()
           }
+
+    @ignored_attrs ["data-state", "data-focus", "data-orientation", "dir"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemTrigger do
+    @moduledoc false
+
+    @ignored_attrs [
+      "aria-expanded",
+      "disabled",
+      "aria-disabled",
+      "data-state",
+      "data-focus",
+      "data-orientation",
+      "dir"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemContent do
+    @moduledoc false
+
+    @ignored_attrs [
+      "hidden",
+      "style",
+      "data-state",
+      "data-disabled",
+      "data-focus",
+      "data-orientation",
+      "dir",
+      "aria-label",
+      "aria-labelledby"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemIndicator do
+    @moduledoc false
+
+    @ignored_attrs [
+      "aria-hidden",
+      "data-state",
+      "data-disabled",
+      "data-focus",
+      "data-orientation",
+      "dir"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

@@ -1,7 +1,9 @@
 defmodule Corex.DialogTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Animation.Scale
   alias Corex.Dialog
+  alias Corex.Dialog.Anatomy.Props
   alias Corex.Dialog.Connect
 
   describe "dialog/1" do
@@ -11,6 +13,8 @@ defmodule Corex.DialogTest do
       assert html =~ ~r/data-part="content"/
       assert html =~ ~r/Open/
       assert html =~ ~r/Dialog content/
+      assert html =~ ~r/data-animation="js"/
+      assert html =~ "data-anim-scale-duration"
     end
   end
 
@@ -55,45 +59,147 @@ defmodule Corex.DialogTest do
     end
   end
 
-  describe "Connect.backdrop/1" do
-    test "returns backdrop attributes when open" do
+  describe "Connect.backdrop/2" do
+    test "returns backdrop attributes when open (instant)" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true}
-      result = Connect.backdrop(assigns)
+      result = Connect.backdrop(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:backdrop"
       assert result["data-part"] == "backdrop"
       refute Map.has_key?(result, "hidden")
     end
 
-    test "returns backdrop with hidden when closed" do
+    test "returns backdrop with hidden when closed and animation is instant" do
       assigns = %{id: "test-dialog", dir: "ltr", open: false}
-      result = Connect.backdrop(assigns)
+      result = Connect.backdrop(assigns, "instant")
       assert result["hidden"] == ""
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.backdrop(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is custom" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.backdrop(assigns, "custom")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when open and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.backdrop(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "open"
     end
   end
 
   describe "Connect.positioner/1" do
-    test "returns positioner attributes" do
-      assigns = %{id: "test-dialog", dir: "ltr"}
+    test "returns positioner attributes when closed" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
       result = Connect.positioner(assigns)
       assert result["id"] == "dialog:test-dialog:positioner"
       assert result["data-part"] == "positioner"
+      assert result["data-state"] == "closed"
+      refute Map.has_key?(result, "style")
+      refute Map.has_key?(result, "hidden")
+    end
+
+    test "returns positioner attributes when open" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.positioner(assigns)
+      assert result["data-state"] == "open"
+      refute Map.has_key?(result, "style")
+      refute Map.has_key?(result, "hidden")
     end
   end
 
-  describe "Connect.content/1" do
-    test "returns content attributes when open" do
+  describe "Connect.content/2" do
+    test "returns content attributes when open (instant)" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true}
-      result = Connect.content(assigns)
+      result = Connect.content(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:content"
       assert result["role"] == "dialog"
       assert result["data-state"] == "open"
       refute Map.has_key?(result, "hidden")
     end
 
-    test "returns content with hidden when closed" do
+    test "returns content with hidden when closed and animation is instant" do
       assigns = %{id: "test-dialog", dir: "ltr", open: false}
-      result = Connect.content(assigns)
+      result = Connect.content(assigns, "instant")
       assert result["hidden"] == ""
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.content(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when closed and animation is custom" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      result = Connect.content(assigns, "custom")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "closed"
+    end
+
+    test "omits hidden when open and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      result = Connect.content(assigns, "js")
+      refute Map.has_key?(result, "hidden")
+      assert result["data-state"] == "open"
+    end
+  end
+
+  describe "Connect.props/1" do
+    test "merges animation_options into data attributes" do
+      anim = %Scale{duration: 0.5, scale_start: 0.9, scale_end: 1.0}
+
+      m =
+        Connect.props(%Props{
+          id: "d1",
+          animation: "js",
+          animation_options: anim
+        })
+
+      assert m["data-animation"] == "js"
+      assert m["data-anim-scale-duration"] == 0.5
+      assert m["data-anim-transform-scale-start"] == 0.9
+      assert m["data-anim-transform-scale-end"] == 1.0
+    end
+
+    test "does not merge animation_options when animation is not js" do
+      m =
+        Connect.props(%Props{
+          id: "d2",
+          animation: "custom",
+          animation_options: %Scale{duration: 0.9, scale_start: 0.5, scale_end: 1.0}
+        })
+
+      assert m["data-animation"] == "custom"
+      refute Map.has_key?(m, "data-anim-scale-duration")
+    end
+
+    test "embeds default dialog accessible name for client-side Zag props" do
+      m = Connect.props(%Props{id: "d3", animation: "instant"})
+      assert is_binary(m["data-dialog-default-label"])
+      assert m["data-dialog-default-label"] != ""
+    end
+
+    test "honours dialog_default_label in props when set" do
+      m =
+        Connect.props(%Props{
+          id: "d4",
+          animation: "instant",
+          dialog_default_label: "Custom"
+        })
+
+      assert m["data-dialog-default-label"] == "Custom"
     end
   end
 

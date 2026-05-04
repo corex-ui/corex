@@ -23,70 +23,96 @@ defmodule Corex.PasswordInputTest do
       assert html =~ ~r/data-scope="password-input"/
       assert html =~ ~r/name="user\[password\]"/
     end
+
+    test "rtl applies dir on root only not on input" do
+      html =
+        render_component(&PasswordInput.password_input/1,
+          id: "rtl-markup-test",
+          name: "secret",
+          dir: "rtl"
+        )
+
+      assert [{"div", root_attrs, _} | _] = find_in_html(html, ~s([data-part="root"]))
+      assert {"dir", "rtl"} in root_attrs
+
+      assert [{"input", input_attrs, _} | _] = find_in_html(html, ~s([data-part="input"]))
+      refute Enum.any?(input_attrs, fn {k, _} -> k == "dir" end)
+    end
   end
 
   describe "Connect.root/1" do
-    test "returns root attributes" do
+    test "returns root attributes with dir" do
       assigns = %{id: "test-password", dir: "ltr"}
       result = Connect.root(assigns)
       assert result["id"] == "password-input:test-password"
       assert result["data-scope"] == "password-input"
       assert result["data-part"] == "root"
+      assert result["dir"] == "ltr"
+    end
+
+    test "returns rtl dir on root" do
+      assigns = %{id: "test-password", dir: "rtl"}
+      result = Connect.root(assigns)
+      assert result["dir"] == "rtl"
     end
   end
 
   describe "Connect.label/1" do
-    test "returns label attributes" do
-      assigns = %{id: "test-password", dir: "ltr"}
+    test "returns label attributes without dir" do
+      assigns = %{id: "test-password"}
       result = Connect.label(assigns)
       assert result["data-scope"] == "password-input"
       assert result["data-part"] == "label"
       assert result["for"] == "p-input-test-password-input"
+      refute Map.has_key?(result, "dir")
     end
   end
 
   describe "Connect.control/1" do
-    test "returns control attributes" do
-      assigns = %{id: "test-password", dir: "ltr"}
+    test "returns control attributes without dir" do
+      assigns = %{id: "test-password"}
       result = Connect.control(assigns)
       assert result["id"] == "password-input:test-password:control"
       assert result["data-part"] == "control"
+      refute Map.has_key?(result, "dir")
     end
   end
 
   describe "Connect.input/1" do
-    test "returns input attributes with name" do
-      assigns = %{id: "test-password", dir: "ltr", name: "pass", disabled: false}
+    test "returns input attributes with name without dir" do
+      assigns = %{id: "test-password", name: "pass", disabled: false}
       result = Connect.input(assigns)
       assert result["id"] == "p-input-test-password-input"
       assert result["name"] == "pass"
       assert result["data-part"] == "input"
+      refute Map.has_key?(result, "dir")
     end
   end
 
   describe "Connect.visibility_trigger/1" do
-    test "returns visibility trigger attributes" do
-      assigns = %{id: "test-password", dir: "ltr"}
+    test "returns visibility trigger attributes without dir" do
+      assigns = %{id: "test-password"}
       result = Connect.visibility_trigger(assigns)
       assert result["data-part"] == "visibility-trigger"
       assert result["aria-label"] == "Toggle password visibility"
+      refute Map.has_key?(result, "dir")
     end
   end
 
   describe "Connect.indicator/1" do
-    test "returns indicator attributes" do
-      assigns = %{id: "test-password", dir: "ltr"}
+    test "returns indicator attributes without dir" do
+      assigns = %{id: "test-password"}
       result = Connect.indicator(assigns)
       assert result["data-part"] == "indicator"
       assert result["aria-hidden"] == "true"
+      refute Map.has_key?(result, "dir")
     end
   end
 
   describe "Connect.props/1" do
-    test "returns props when controlled visible" do
+    test "maps visible to default-visible only" do
       assigns = %{
         id: "test-password",
-        controlled_visible: true,
         visible: true,
         disabled: false,
         invalid: false,
@@ -102,31 +128,8 @@ defmodule Corex.PasswordInputTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-visible"] == ""
-      assert result["data-default-visible"] == nil
-    end
-
-    test "returns props when uncontrolled visible" do
-      assigns = %{
-        id: "test-password",
-        controlled_visible: false,
-        visible: true,
-        disabled: false,
-        invalid: false,
-        read_only: false,
-        required: false,
-        ignore_password_managers: false,
-        name: nil,
-        form: nil,
-        dir: "ltr",
-        auto_complete: nil,
-        on_visibility_change: nil,
-        on_visibility_change_client: nil
-      }
-
-      result = Connect.props(assigns)
-      assert result["data-default-visible"] != nil
-      assert result["data-visible"] == nil
+      assert result["data-default-visible"] == ""
+      refute Map.has_key?(result, "data-visible")
     end
   end
 end

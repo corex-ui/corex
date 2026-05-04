@@ -11,33 +11,102 @@ msgstr ""
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
-#: lib/e2e_web/components/core_components.ex:357
+#: lib/e2e_web/components/app/header.ex:136
 #, elixir-autogen, elixir-format
-msgid "Actions"
+msgid "Components"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:231
-#: lib/e2e_web/components/layouts.ex:238
+#: lib/e2e_web/components/app/header.ex:101
 #, elixir-autogen, elixir-format
-msgid "Attempting to reconnect"
+msgid "Display settings"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:237
+#: lib/e2e_web/components/app/header.ex:75
+#: lib/e2e_web/components/app/header.ex:143
 #, elixir-autogen, elixir-format
-msgid "Something went wrong!"
+msgid "Documentation"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:230
+#: lib/e2e_web/live/pages_live/home_live.ex:155
 #, elixir-autogen, elixir-format
-msgid "We can't find the internet"
+msgid "Interactive preview"
 msgstr ""
 
-#: lib/e2e_web/components/core_components.ex:74
+#: lib/e2e_web/components/app/header.ex:130
 #, elixir-autogen, elixir-format
-msgid "close"
+msgid "Main"
 msgstr ""
 
-#: lib/e2e_web/translations/corex.ex:5
-#, elixir-autogen
-msgid "Digit %{digit}"
-msgstr "Digit %{digit}"
+#: lib/e2e_web/controllers/user_html/show.html.heex:15
+#: lib/e2e_web/live/admin_live/show.ex:24
+#, elixir-autogen, elixir-format
+msgid "Previous page"
+msgstr ""
+
+#: lib/e2e_web/live/admin_live/form.ex:44
+#, elixir-autogen, elixir-format
+msgid "Select a country"
+msgstr ""
+
+#: lib/e2e_web/components/layouts.ex:64
+#: lib/e2e_web/components/layouts.ex:108
+#, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr ""
+
+#: lib/e2e_web/components/layouts.ex:65
+#: lib/e2e_web/components/layouts.ex:109
+#, elixir-autogen, elixir-format
+msgid "We're trying to reconnect you..."
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:66
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Documentation links"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:150
+#, elixir-autogen, elixir-format
+msgid "MCP"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/home_live.ex:142
+#: lib/e2e_web/live/pages_live/home_live.ex:288
+#, elixir-autogen, elixir-format
+msgid "Browse components"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/home_live.ex:280
+#, elixir-autogen, elixir-format
+msgid "Get started"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/home_live.ex:304
+#, elixir-autogen, elixir-format
+msgid "Visit GitHub"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/home_live.ex:296
+#, elixir-autogen, elixir-format
+msgid "Visit Hexdocs"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:185
+#, elixir-autogen, elixir-format
+msgid "Dark Mode"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:167
+#, elixir-autogen, elixir-format
+msgid "Installation"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:173
+#, elixir-autogen, elixir-format
+msgid "Localize"
+msgstr ""
+
+#: lib/e2e_web/components/app/header.ex:179
+#, elixir-autogen, elixir-format
+msgid "Theming"
+msgstr ""

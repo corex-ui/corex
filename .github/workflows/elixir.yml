@@ -23,12 +23,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
+            coveralls: false
           - elixir: 1.18.4
             otp: 27.3
+            coveralls: true
           - elixir: 1.18.4
             otp: 28.0.1
+            coveralls: false
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -54,8 +57,26 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Check JavaScript (prettier + eslint)
+        run: npm run check
+
       - name: Run tests and post coverage to Coveralls
+        if: matrix.coveralls
         run: mix coveralls.github
+
+      - name: Run tests
+        if: ${{ !matrix.coveralls }}
+        run: mix test
 
   e2e-tests:
     name: E2E tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
@@ -64,8 +85,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -88,6 +109,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: e2e/pnpm-lock.yaml
+
+      - name: Install e2e JS dependencies
+        working-directory: e2e
+        run: pnpm install --frozen-lockfile
 
       - name: Set up Elixir
         uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
@@ -119,7 +156,7 @@ jobs:
 
       - name: Run E2E tests
         working-directory: e2e
-        run: mix test
+        run: mix test --timeout 600000
         env:
           MIX_ENV: test
 
@@ -130,8 +167,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -171,10 +208,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
           - elixir: 1.17.3
-            otp: 27.1.2
+            otp: 26.2.5.2
+          - elixir: 1.18.4
+            otp: 27.3
 
     services:
       postgres:
@@ -214,6 +251,35 @@ jobs:
         working-directory: integration_test
         run: mix deps.get
 
-      - name: Run integration tests
+      - name: Install installer dependencies and local corex_new archive
+        working-directory: installer
+        run: |
+          mix deps.get
+          mix archive.build -o corex_new.ez
+          mix archive.install corex_new.ez --force
+
+      - name: Install Mix archives for corex.new (phx_new)
+        run: mix archive.install hex phx_new --force
+
+      - name: Run integration tests (no database tag)
         working-directory: integration_test
-        run: mix test --exclude database:mysql --exclude database:mssql --timeout 600000
+        env:
+          MIX_ENV: test
+        run: mix test --timeout 1200000
+
+      - name: Run integration tests (PostgreSQL)
+        working-directory: integration_test
+        env:
+          MIX_ENV: test
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGPORT: "5432"
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: mix test --include database:postgresql --timeout 1200000
+
+      - name: Run integration tests (SQLite3)
+        working-directory: integration_test
+        env:
+          MIX_ENV: test
+        run: mix test --include database:sqlite3 --timeout 1200000

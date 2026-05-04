@@ -123,7 +123,6 @@ defmodule Corex.ToggleGroup do
   <.toggle_group class="toggle-group toggle-group--accent toggle-group--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/toggle-group#modifiers)
   '''
 
   @doc type: :component
@@ -167,8 +166,8 @@ defmodule Corex.ToggleGroup do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the toggle group. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -201,10 +200,12 @@ defmodule Corex.ToggleGroup do
 
   def toggle_group(assigns) do
     assigns =
-      assign_new(assigns, :id, fn -> "toggle-group-#{System.unique_integer([:positive])}" end)
+      assigns
+      |> assign_new(:id, fn -> "toggle-group-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:dir, fn -> "ltr" end)
 
     ~H"""
-    <div id={@id} phx-hook="ToggleGroup" {@rest}
+    <div id={@id} phx-hook="ToggleGroup" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -219,8 +220,16 @@ defmodule Corex.ToggleGroup do
       on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})}>
         <button :for={{item_entry, index} <- Enum.with_index(@item)}
+        phx-mounted={Connect.ignore_item(%Item{
+          id: @id,
+          value: Map.get(item_entry, :value, "item-#{index}"),
+          disabled: Map.get(item_entry, :disabled, false),
+          aria_label: Map.get(item_entry, :aria_label),
+          values: @value, orientation: @orientation,
+          dir: @dir,
+          disabled_root: @disabled})}
         {Connect.item(%Item{
           id: @id,
           value: Map.get(item_entry, :value, "item-#{index}"),
@@ -248,7 +257,7 @@ defmodule Corex.ToggleGroup do
       </button>
   """
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
-    JS.dispatch("phx:toggle-group:set-value",
+    JS.dispatch("corex:toggle-group:set-value",
       to: "##{toggle_group_id}",
       detail: %{value: Connect.validate_value!(value)}
     )

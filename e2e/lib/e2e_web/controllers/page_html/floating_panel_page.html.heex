@@ -2,33 +2,20 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Floating Panel</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.floating_panel id="my-floating-panel" default_open={false} class="floating-panel">
-    <:open_trigger>Close panel</:open_trigger>
-    <:closed_trigger>Open panel</:closed_trigger>
-    <:minimize_trigger>
-      <.heroicon name="hero-arrow-down-left" class="icon" />
-    </:minimize_trigger>
-    <:maximize_trigger>
-      <.heroicon name="hero-arrows-pointing-out" class="icon" />
-    </:maximize_trigger>
-    <:default_trigger>
-      <.heroicon name="hero-rectangle-stack" class="icon" />
-    </:default_trigger>
-    <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
-    </:close_trigger>
-    <:content>
-      <p>
-        Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
-        non, pellentesque elit. Pellentesque sagittis fermentum.
-      </p>
-    </:content>
-  </.floating_panel>
+  <.demo_page
+    id="floating-panel-anatomy-page"
+    title="Floating Panel"
+    subtitle="Floating window with stage controls."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="floating-panel-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.FloatingPanelDemo.anatomy_basic_code()}
+    >
+      <:preview><E2eWeb.Demos.FloatingPanelDemo.anatomy_basic_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

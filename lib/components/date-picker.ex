@@ -48,9 +48,35 @@ defmodule Corex.DatePicker do
   end
   ```
 
+  Pass an ISO-8601 string, or a `Date` struct via `Date.to_iso8601/1` (for a single day use `~D[...]`):
+
+  ```heex
+  <.date_picker
+    id="due"
+    controlled
+    value={@due && Date.to_iso8601(@due)}
+    on_value_change="date_changed"
+  >
+    <:label>Due</:label>
+    <:trigger>
+      <.heroicon name="hero-calendar" />
+    </:trigger>
+    <:prev_trigger>
+      <.heroicon name="hero-chevron-left" class="icon" />
+    </:prev_trigger>
+    <:next_trigger>
+      <.heroicon name="hero-chevron-right" class="icon" />
+    </:next_trigger>
+  </.date_picker>
+  ```
+
+  ```elixir
+  assign(socket, :due, ~D[2024-01-15])
+  ```
+
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
@@ -67,7 +93,7 @@ defmodule Corex.DatePicker do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.date_picker field={f[:date]} class="date-picker" trigger_aria_label="Select date" input_aria_label="Select date">
       <:label>Date</:label>
       <:trigger>
@@ -135,7 +161,7 @@ defmodule Corex.DatePicker do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Birth date</:label>
           <:trigger>
@@ -208,11 +234,21 @@ defmodule Corex.DatePicker do
   </.date_picker>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/date-picker#modifiers)
+  In `selection_mode` `"range"`, the control shows two fields with optional `range_start_label` and `range_end_label` (overrides the `translation` map’s range labels, defaulting to **From** / **To** with gettext). In `"multiple"`, a single field shows a comma‑separated list of the formatted selected dates. Use `max_selected_dates` to cap how many days can be selected in multiple mode; omit for no cap.
+
+  ## Localization and `translation`
+
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with `Corex.DatePicker.default_translation/0` (Zag’s `translations` for open/close, prev/next, view, month/year, week, placeholders, and `input`). Without gettext, the defaults are English. With gettext, call `translation={%Corex.DatePicker.Translation{ open_calendar: gettext("Open calendar") }}` for partial overrides.
+
+  The `trigger_aria_label` and `input_aria_label` attributes are merged with `translation` and sent to the client in `data-translation` (JSON): they set the open/close trigger strings and the input label (`translation.open_calendar`, `translation.close_calendar`, and `translation.input`).
+
   '''
 
   use Phoenix.Component
-  alias Corex.DatePicker.{Anatomy, Connect}
+  import Corex.Gettext, only: [gettext: 1]
+  alias Corex.DatePicker.Anatomy
+  alias Corex.DatePicker.Connect
+  alias Corex.DatePicker.Translation, as: DatePickerTranslation
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -246,8 +282,8 @@ defmodule Corex.DatePicker do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the date picker. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -298,8 +334,9 @@ defmodule Corex.DatePicker do
   )
 
   attr(:close_on_select, :boolean,
-    default: true,
-    doc: "Whether the calendar should close after the date selection is complete"
+    default: false,
+    doc:
+      "If true, close the popover when selection is complete. For `selection_mode` :multiple or :range, the default false keeps the panel open until dismissed unless you set this to true."
   )
 
   attr(:min, :string,
@@ -316,11 +353,6 @@ defmodule Corex.DatePicker do
     default: nil,
     doc:
       "The initial focused date when the calendar opens (ISO date string). Used as default in the picker."
-  )
-
-  attr(:num_of_months, :integer,
-    default: 1,
-    doc: "The number of months to display"
   )
 
   attr(:start_of_week, :integer,
@@ -344,22 +376,46 @@ defmodule Corex.DatePicker do
     doc: "The placeholder text to display in the input"
   )
 
+  attr(:translation, :any,
+    default: nil,
+    doc:
+      "Merges with `default_translation/0` to override Zag and Corex strings; see the module section on localization."
+  )
+
   attr(:trigger_aria_label, :string,
     default: nil,
     doc:
-      "Accessible name for the trigger button when it contains only an icon (e.g. \"Select date\")"
+      "Overrides `translation` for the popover button’s accessible name (same in open and closed state). If unset, the client uses open/close strings from the translation (Zag: open vs. closed calendar labels)."
   )
 
   attr(:input_aria_label, :string,
     default: nil,
     doc:
-      "Accessible name for the input when it's not associated with a visible label (e.g. \"Select date\")"
+      "Overrides `translation.input` for the text input when the slot label is not used. Zag does not provide this; it is a Corex field."
   )
 
-  attr(:default_view, :string,
+  attr(:range_start_label, :string,
+    default: nil,
+    doc:
+      "When `selection_mode` is \"range\", overrides `translation.range_start` for the first field side label (default in `default_translation/0` is **From**)."
+  )
+
+  attr(:range_end_label, :string,
+    default: nil,
+    doc: "When `selection_mode` is \"range\", overrides `translation.range_end` (default **To**)."
+  )
+
+  attr(:max_selected_dates, :integer,
+    default: nil,
+    doc:
+      "When `selection_mode` is \"multiple\", limits how many days can be selected. Omit for no cap."
+  )
+
+  attr(:view, :string,
     default: "day",
     values: ["day", "month", "year"],
-    doc: "The initial view of the calendar (day, month, or year)"
+    doc:
+      "The initial view of the calendar (day, month, or year); passed to the client as the default view"
   )
 
   attr(:min_view, :string,
@@ -387,6 +443,18 @@ defmodule Corex.DatePicker do
   attr(:on_open_change, :string,
     default: nil,
     doc: "The server event name when the calendar opens or closes"
+  )
+
+  attr(:on_value_change_client, :string,
+    default: nil,
+    doc:
+      "Fires a window-bubbling CustomEvent with this name when the value changes (optional; use with on_value_change for both)"
+  )
+
+  attr(:on_open_change_client, :string,
+    default: nil,
+    doc:
+      "Fires a window-bubbling CustomEvent with this name when the calendar opens or closes (optional; use with on_open_change for both)"
   )
 
   attr(:errors, :list,
@@ -437,11 +505,14 @@ defmodule Corex.DatePicker do
     assigns =
       assigns
       |> assign(:id, assigns[:id] || "date-picker-#{System.unique_integer([:positive])}")
+      |> merge_date_picker_assigns()
 
     ~H"""
     <div
       id={@id}
       phx-hook="DatePicker"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Anatomy.Props{
         id: @id,
@@ -461,12 +532,11 @@ defmodule Corex.DatePicker do
         min: @min,
         max: @max,
         focused_value: @focused_value,
-        num_of_months: @num_of_months,
         start_of_week: @start_of_week,
         fixed_weeks: @fixed_weeks,
         selection_mode: @selection_mode,
         placeholder: @placeholder,
-        default_view: @default_view,
+        view: @view,
         min_view: @min_view,
         max_view: @max_view,
         positioning: @positioning,
@@ -475,39 +545,85 @@ defmodule Corex.DatePicker do
         on_focus_change: @on_focus_change,
         on_view_change: @on_view_change,
         on_visible_range_change: @on_visible_range_change,
-        on_open_change: @on_open_change
+        on_open_change: @on_open_change,
+        on_value_change_client: @on_value_change_client,
+        on_open_change_client: @on_open_change_client,
+        max_selected_dates: @max_selected_dates,
+        translation: @translation
       })}
     >
-      <div {Connect.root(%Anatomy.Root{id: @id, dir: @dir})}>
-        <span :if={@label != []} {Connect.label(%Anatomy.Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir})}>
+        <label
+          :if={@label != []}
+          phx-mounted={Connect.ignore_label(%Anatomy.Label{id: @id, dir: @dir})}
+          {Connect.label(%Anatomy.Label{id: @id, dir: @dir})}
+        >
           {render_slot(@label)}
-        </span>
-        <div {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
+        </label>
+        <div phx-mounted={Connect.ignore_control(%Anatomy.Control{id: @id, dir: @dir})} {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
           <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
+          <%= if @selection_mode == "range" do %>
+            <div class="date-picker__control-inputs date-picker__control-inputs--range">
+              <span class="date-picker__range-label" id={"#{@id}-range-start-label"}>{@range_start_label}</span>
+              <input
+                phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+                {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+                aria-labelledby={@id <> "-range-start-label"}
+                aria-label={@input_aria_label || @translation.input}
+              />
+              <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@range_end_label}</span>
+              <input
+                phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
+                {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
+                aria-labelledby={@id <> "-range-end-label"}
+                aria-label={@input_aria_label || @translation.input}
+              />
+            </div>
+          <% else %>
             <input
-              {Connect.input(%Anatomy.Input{id: @id, dir: @dir})}
-              aria-label={@input_aria_label}
+              phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+              {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
+              aria-label={@input_aria_label || @translation.input}
             />
+          <% end %>
           <button
             :if={@trigger != []}
+            phx-mounted={Connect.ignore_trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
             {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
-            aria-label={@trigger_aria_label}
+            aria-label={@trigger_aria_label || @translation.open_calendar}
           >
             {render_slot(@trigger)}
           </button>
         </div>
-        <div :if={@error != []} :for={msg <- @errors} data-scope="date-picker" data-part="error">
+        <div
+          :if={@error != []}
+          :for={{msg, idx} <- Enum.with_index(@errors)}
+          phx-mounted={Connect.ignore_error(%Anatomy.Error{id: @id, index: idx})}
+          {Connect.error(%Anatomy.Error{id: @id, index: idx})}
+        >
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir})} style="position:fixed;isolation:isolate;min-width:max-content;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);z-index:var(--z-index);">
-          <div {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
+        <div
+          phx-mounted={Connect.ignore_positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
+          {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
+        >
+          <div phx-mounted={Connect.ignore_content(%Anatomy.Content{id: @id, dir: @dir})} {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
             <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
               <div data-scope="date-picker" data-part="view-control" data-view="day">
-                <button data-scope="date-picker" data-part="prev-trigger">
+                <button
+                  phx-mounted={Connect.ignore_view_prev(%{id: @id, view: "day"})}
+                  {Connect.view_prev(%{id: @id, view: "day", dir: @dir || "ltr"})}
+                >
                 {render_slot(@prev_trigger)}
                 </button>
-                <button data-scope="date-picker" data-part="view-trigger"></button>
-                <button data-scope="date-picker" data-part="next-trigger">
+                <button
+                  phx-mounted={Connect.ignore_view_trigger(%{id: @id, view: "day"})}
+                  {Connect.view_trigger(%{id: @id, view: "day", dir: @dir || "ltr"})}
+                ></button>
+                <button
+                  phx-mounted={Connect.ignore_view_next(%{id: @id, view: "day"})}
+                  {Connect.view_next(%{id: @id, view: "day", dir: @dir || "ltr"})}
+                >
                 {render_slot(@next_trigger)}
                 </button>
               </div>
@@ -523,11 +639,20 @@ defmodule Corex.DatePicker do
             </div>
             <div data-scope="date-picker" data-part="month-view" hidden>
               <div data-scope="date-picker" data-part="view-control" data-view="month">
-                <button data-scope="date-picker" data-part="prev-trigger">
+                <button
+                  phx-mounted={Connect.ignore_view_prev(%{id: @id, view: "month"})}
+                  {Connect.view_prev(%{id: @id, view: "month", dir: @dir || "ltr"})}
+                >
                 {render_slot(@prev_trigger)}
                 </button>
-                <button data-scope="date-picker" data-part="view-trigger"></button>
-                <button data-scope="date-picker" data-part="next-trigger">
+                <button
+                  phx-mounted={Connect.ignore_view_trigger(%{id: @id, view: "month"})}
+                  {Connect.view_trigger(%{id: @id, view: "month", dir: @dir || "ltr"})}
+                ></button>
+                <button
+                  phx-mounted={Connect.ignore_view_next(%{id: @id, view: "month"})}
+                  {Connect.view_next(%{id: @id, view: "month", dir: @dir || "ltr"})}
+                >
                 {render_slot(@next_trigger)}
                 </button>
               </div>
@@ -538,11 +663,17 @@ defmodule Corex.DatePicker do
             </div>
             <div data-scope="date-picker" data-part="year-view" hidden>
               <div data-scope="date-picker" data-part="view-control" data-view="year">
-                <button data-scope="date-picker" data-part="prev-trigger">
+                <button
+                  phx-mounted={Connect.ignore_view_prev(%{id: @id, view: "year"})}
+                  {Connect.view_prev(%{id: @id, view: "year", dir: @dir || "ltr"})}
+                >
                 {render_slot(@prev_trigger)}
                 </button>
-                <span data-scope="date-picker" data-part="decade"></span>
-                <button data-scope="date-picker" data-part="next-trigger">
+                <span phx-mounted={Connect.ignore_decade(%Anatomy.Decade{id: @id, dir: @dir || "ltr"})} {Connect.decade(%Anatomy.Decade{id: @id, dir: @dir || "ltr"})}></span>
+                <button
+                  phx-mounted={Connect.ignore_view_next(%{id: @id, view: "year"})}
+                  {Connect.view_next(%{id: @id, view: "year", dir: @dir || "ltr"})}
+                >
                 {render_slot(@next_trigger)}
                 </button>
               </div>
@@ -568,12 +699,19 @@ defmodule Corex.DatePicker do
         Set Date
       </button>
   """
-  def set_value(date_picker_id, value) when is_binary(date_picker_id) and is_binary(value) do
-    JS.dispatch("phx:date-picker:set-value",
-      to: "##{date_picker_id}",
-      detail: %{value: value},
-      bubbles: false
-    )
+  def set_value(date_picker_id, value) when is_binary(date_picker_id) do
+    case normalize_date_value(value) do
+      nil ->
+        raise ArgumentError,
+              "set_value/2 expected an ISO-8601 date string or a Date, got: #{inspect(value)}"
+
+      iso ->
+        JS.dispatch("corex:date-picker:set-value",
+          to: "##{date_picker_id}",
+          detail: %{value: iso},
+          bubbles: false
+        )
+    end
   end
 
   @doc type: :api
@@ -586,14 +724,87 @@ defmodule Corex.DatePicker do
         socket = Corex.DatePicker.set_value(socket, "my-date-picker", "2024-01-15")
         {:noreply, socket}
       end
+
+      def handle_event("set_birthdate", _params, socket) do
+        socket = Corex.DatePicker.set_value(socket, "my-date-picker", ~D[2024-01-15])
+        {:noreply, socket}
+      end
   """
   def set_value(socket, date_picker_id, value)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) and
-             is_binary(value) do
-    LiveView.push_event(socket, "date_picker_set_value", %{
-      date_picker_id: date_picker_id,
-      value: value
-    })
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) do
+    case normalize_date_value(value) do
+      nil ->
+        raise ArgumentError,
+              "set_value/3 expected an ISO-8601 date string or a Date, got: #{inspect(value)}"
+
+      iso ->
+        LiveView.push_event(socket, "date_picker_set_value", %{
+          date_picker_id: date_picker_id,
+          value: iso
+        })
+    end
+  end
+
+  defp merge_date_picker_assigns(%{} = assigns) do
+    default = default_translation()
+    t = merge_date_picker_translation(Map.get(assigns, :translation), default)
+    range_start = Map.get(assigns, :range_start_label) || t.range_start
+    range_end = Map.get(assigns, :range_end_label) || t.range_end
+    assign(assigns, translation: t, range_start_label: range_start, range_end_label: range_end)
+  end
+
+  defp merge_date_picker_translation(nil, default), do: default
+
+  defp merge_date_picker_translation(%DatePickerTranslation{} = p, %DatePickerTranslation{} = d) do
+    m_p = Map.from_struct(p)
+    m_d = Map.from_struct(d)
+
+    merged =
+      for {k, fallback} <- Map.to_list(m_d), into: %{} do
+        {k, take_translation_override(Map.get(m_p, k), fallback)}
+      end
+
+    struct!(DatePickerTranslation, merged)
+  end
+
+  defp take_translation_override(override, fallback) do
+    if is_binary(override) and String.trim(override) != "" do
+      override
+    else
+      fallback
+    end
+  end
+
+  @doc """
+  Returns the merged default translatable strings. Uses gettext; override per call site with the `translation` attr.
+  """
+  @spec default_translation() :: DatePickerTranslation.t()
+  def default_translation do
+    %DatePickerTranslation{
+      content: gettext("calendar"),
+      month_select: gettext("Select month"),
+      year_select: gettext("Select year"),
+      clear_trigger: gettext("Clear selected dates"),
+      week_column_header: gettext("Wk"),
+      open_calendar: gettext("Open calendar"),
+      close_calendar: gettext("Close calendar"),
+      view_trigger_year: gettext("Switch to month view"),
+      view_trigger_month: gettext("Switch to day view"),
+      view_trigger_day: gettext("Switch to year view"),
+      prev_trigger_year: gettext("Switch to previous decade"),
+      prev_trigger_month: gettext("Switch to previous year"),
+      prev_trigger_day: gettext("Switch to previous month"),
+      next_trigger_year: gettext("Switch to next decade"),
+      next_trigger_month: gettext("Switch to next year"),
+      next_trigger_day: gettext("Switch to next month"),
+      week_number: gettext("Week __N__"),
+      placeholder_day: gettext("dd"),
+      placeholder_month: gettext("mm"),
+      placeholder_year: gettext("yyyy"),
+      input: gettext("Select date"),
+      range_start: gettext("From"),
+      range_end: gettext("To")
+    }
   end
 
   defp normalize_date_value(nil), do: nil

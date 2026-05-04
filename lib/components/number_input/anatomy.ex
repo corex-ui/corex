@@ -9,7 +9,6 @@ defmodule Corex.NumberInput.Anatomy do
       :id,
       value: nil,
       default_value: nil,
-      controlled: false,
       min: nil,
       max: nil,
       step: 1,
@@ -21,14 +20,15 @@ defmodule Corex.NumberInput.Anatomy do
       name: nil,
       form: nil,
       on_value_change: nil,
-      on_value_change_client: nil
+      on_value_change_client: nil,
+      dir: "ltr",
+      orientation: "horizontal"
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t() | nil,
             default_value: String.t() | nil,
-            controlled: boolean(),
             min: number() | nil,
             max: number() | nil,
             step: number(),
@@ -40,29 +40,70 @@ defmodule Corex.NumberInput.Anatomy do
             name: String.t() | nil,
             form: String.t() | nil,
             on_value_change: String.t() | nil,
-            on_value_change_client: String.t() | nil
+            on_value_change_client: String.t() | nil,
+            dir: String.t(),
+            orientation: String.t()
           }
   end
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-disabled",
+      "data-focus",
+      "data-invalid",
+      "data-scrubbing"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-disabled",
+      "data-focus",
+      "data-invalid",
+      "data-required",
+      "data-scrubbing",
+      "for",
+      "htmlFor"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "role",
+      "aria-disabled",
+      "data-focus",
+      "data-disabled",
+      "data-invalid",
+      "data-scrubbing",
+      "aria-invalid"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ValueText do
@@ -74,36 +115,109 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled]
+    defstruct [:id, :disabled, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            disabled: boolean(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "name",
+      "form",
+      "role",
+      "type",
+      "disabled",
+      "readonly",
+      "readOnly",
+      "required",
+      "inputmode",
+      "inputMode",
+      "pattern",
+      "data-invalid",
+      "data-disabled",
+      "autocomplete",
+      "autoComplete",
+      "autoCorrect",
+      "autocorrect",
+      "spellcheck",
+      "spellCheck",
+      "aria-invalid",
+      "aria-roledescription",
+      "aria-valuemin",
+      "aria-valuemax",
+      "aria-valuenow",
+      "aria-valuetext",
+      "data-scrubbing",
+      "defaultValue",
+      "value"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule TriggerGroup do
     @moduledoc false
-    defstruct []
+    defstruct dir: "ltr", orientation: "horizontal"
 
-    @type t :: %__MODULE__{}
+    @type t :: %__MODULE__{dir: String.t(), orientation: String.t()}
   end
 
   defmodule DecrementTrigger do
     @moduledoc false
-    defstruct [:id, :aria_label]
+    defstruct [:id, :aria_label, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            aria_label: String.t() | nil,
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "disabled",
+      "data-disabled",
+      "aria-label",
+      "type",
+      "tabIndex",
+      "aria-controls",
+      "data-scrubbing",
+      "role"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule IncrementTrigger do
     @moduledoc false
-    defstruct [:id, :aria_label]
+    defstruct [:id, :aria_label, dir: "ltr", orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
-  end
+    @type t :: %__MODULE__{
+            id: String.t(),
+            aria_label: String.t() | nil,
+            dir: String.t(),
+            orientation: String.t()
+          }
 
-  defmodule Scrubber do
-    @moduledoc false
-    defstruct [:id, :aria_label]
-
-    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "disabled",
+      "data-disabled",
+      "aria-label",
+      "type",
+      "tabIndex",
+      "aria-controls",
+      "data-scrubbing",
+      "role"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

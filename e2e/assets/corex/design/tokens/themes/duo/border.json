@@ -1,0 +1,38 @@
+{
+  "theme": {
+    "radius": {
+      "2xl": {
+        "type": "borderRadius",
+        "value": "1.22rem"
+      },
+      "3xl": {
+        "type": "borderRadius",
+        "value": "1.83rem"
+      },
+      "4xl": {
+        "type": "borderRadius",
+        "value": "2.44rem"
+      },
+      "lg": {
+        "type": "borderRadius",
+        "value": "0.61rem"
+      },
+      "md": {
+        "type": "borderRadius",
+        "value": "0.4575rem"
+      },
+      "sm": {
+        "type": "borderRadius",
+        "value": "0.305rem"
+      },
+      "xl": {
+        "type": "borderRadius",
+        "value": "0.915rem"
+      },
+      "xs": {
+        "type": "borderRadius",
+        "value": "0.1525rem"
+      }
+    }
+  }
+}

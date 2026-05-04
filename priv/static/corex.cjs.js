@@ -31,10 +31,168 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var corex_exports = {};
 __export(corex_exports, {
   Hooks: () => Hooks,
+  animateHeightClose: () => animateHeightClose,
+  animateHeightOpen: () => animateHeightOpen,
+  animateScaleClose: () => animateScaleClose,
+  animateScaleOpen: () => animateScaleOpen,
+  applyClosedHeight: () => applyClosedHeight,
+  applyClosedScale: () => applyClosedScale,
+  applyOpenHeight: () => applyOpenHeight,
+  applyOpenScale: () => applyOpenScale,
   default: () => corex_default,
+  findAccordionContent: () => findAccordionContent,
+  findDialogBackdrop: () => findDialogBackdrop,
+  findDialogContent: () => findDialogContent,
+  findTreeBranch: () => findTreeBranch,
   hooks: () => hooks
 });
 module.exports = __toCommonJS(corex_exports);
+
+// lib/custom-animation.ts
+var DEFAULT_DURATION = 0.3;
+var DEFAULT_EASING = "ease-out";
+var DEFAULT_OPACITY_START = 0;
+var DEFAULT_OPACITY_END = 1;
+var DEFAULT_SCALE_START = 0.96;
+var DEFAULT_SCALE_END = 1;
+function reducedMotion() {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function applyClosedHeight(el) {
+  el.style.opacity = "0";
+  el.style.height = "0px";
+  el.style.overflow = "hidden";
+}
+function applyOpenHeight(el) {
+  el.style.opacity = "";
+  el.style.height = "";
+  el.style.overflow = "";
+}
+function findAccordionContent(rootEl, value) {
+  return rootEl.querySelector(
+    `[data-scope="accordion"][data-part="item"][data-value="${CSS.escape(value)}"] [data-part="item-content"]`
+  );
+}
+function findTreeBranch(rootEl, value) {
+  return rootEl.querySelector(
+    `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`
+  );
+}
+function findDialogBackdrop(rootEl) {
+  return rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+}
+function findDialogContent(rootEl) {
+  return rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+}
+function applyClosedScale(el, opts = {}) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  el.style.opacity = String(opacityStart);
+  if (!isBackdrop && scaleStart !== 1) {
+    el.style.transform = `scale(${scaleStart})`;
+  } else {
+    el.style.removeProperty("transform");
+  }
+}
+function applyOpenScale(el) {
+  el.style.opacity = "";
+  el.style.removeProperty("transform");
+}
+function animateHeightOpen(el, opts) {
+  if (reducedMotion()) {
+    applyOpenHeight(el);
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const toHeight = `${el.scrollHeight}px`;
+  el.style.height = "0px";
+  el.style.overflow = "hidden";
+  return Promise.resolve(
+    opts.animator(
+      el,
+      { height: ["0px", toHeight], opacity: [opacityStart, opacityEnd] },
+      { duration, easing }
+    ).finished.then(() => {
+      applyOpenHeight(el);
+    })
+  ).then(() => void 0);
+}
+function animateHeightClose(el, opts) {
+  if (reducedMotion()) {
+    applyClosedHeight(el);
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const fromHeight = `${el.scrollHeight}px`;
+  el.style.height = fromHeight;
+  el.style.overflow = "hidden";
+  return Promise.resolve(
+    opts.animator(
+      el,
+      { height: [fromHeight, "0px"], opacity: [opacityEnd, opacityStart] },
+      { duration, easing }
+    ).finished.then(() => {
+      applyClosedHeight(el);
+    })
+  ).then(() => void 0);
+}
+function animateScaleOpen(el, opts) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyOpenScale(el);
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+  const keyframes = {
+    opacity: [opacityStart, opacityEnd]
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleStart})`, `scale(${scaleEnd})`];
+  }
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyOpenScale(el);
+    })
+  ).then(() => void 0);
+}
+function animateScaleClose(el, opts) {
+  const isBackdrop = el.dataset.part === "backdrop";
+  if (reducedMotion()) {
+    applyClosedScale(el, { scaleStart: opts.scaleStart, opacityStart: opts.opacityStart });
+    return Promise.resolve();
+  }
+  const duration = opts.duration ?? DEFAULT_DURATION;
+  const easing = opts.easing ?? DEFAULT_EASING;
+  const opacityStart = opts.opacityStart ?? DEFAULT_OPACITY_START;
+  const opacityEnd = opts.opacityEnd ?? DEFAULT_OPACITY_END;
+  const scaleStart = opts.scaleStart ?? DEFAULT_SCALE_START;
+  const scaleEnd = opts.scaleEnd ?? DEFAULT_SCALE_END;
+  const keyframes = {
+    opacity: [opacityEnd, opacityStart]
+  };
+  if (!isBackdrop && (scaleStart !== scaleEnd || scaleStart !== 1 || scaleEnd !== 1)) {
+    keyframes.transform = [`scale(${scaleEnd})`, `scale(${scaleStart})`];
+  }
+  return Promise.resolve(
+    opts.animator(el, keyframes, { duration, easing }).finished.then(() => {
+      applyClosedScale(el, { scaleStart, opacityStart });
+    })
+  ).then(() => void 0);
+}
+
+// hooks/corex.ts
 function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
@@ -67,6 +225,7 @@ var Hooks = {
   Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
   Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
   Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
+  Code: createLazyHook(() => import("corex/code"), "Code"),
   Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
   Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
   ColorPicker: createLazyHook(() => import("corex/color-picker"), "ColorPicker"),
@@ -87,6 +246,7 @@ var Hooks = {
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
   Timer: createLazyHook(() => import("corex/timer"), "Timer"),
   Toast: createLazyHook(() => import("corex/toast"), "Toast"),
+  Tooltip: createLazyHook(() => import("corex/tooltip"), "Tooltip"),
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };

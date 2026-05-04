@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/switch";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class Switch extends Component<Props, Api> {
@@ -9,7 +9,7 @@ export class Switch extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {
@@ -17,28 +17,31 @@ export class Switch extends Component<Props, Api> {
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const inputEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="switch"][data-part="hidden-input"]'
+    const inputEl = rootEl.querySelector<HTMLElement>(
+      ':scope > [data-scope="switch"][data-part="hidden-input"]'
     );
     if (inputEl) {
       this.spreadProps(inputEl, this.api.getHiddenInputProps());
     }
 
-    const labelEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="label"]');
-    if (labelEl) {
-      this.spreadProps(labelEl, this.api.getLabelProps());
-    }
+    rootEl
+      .querySelectorAll<HTMLElement>(':scope > [data-scope="switch"][data-part="label"]')
+      .forEach((labelEl) => {
+        this.spreadProps(labelEl, this.api.getLabelProps());
+      });
 
-    const controlEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="switch"][data-part="control"]'
+    const controlEl = rootEl.querySelector<HTMLElement>(
+      ':scope > [data-scope="switch"][data-part="control"]'
     );
     if (controlEl) {
       this.spreadProps(controlEl, this.api.getControlProps());
-    }
 
-    const thumbEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="thumb"]');
-    if (thumbEl) {
-      this.spreadProps(thumbEl, this.api.getThumbProps());
+      const thumbEl = controlEl.querySelector<HTMLElement>(
+        ':scope > [data-scope="switch"][data-part="thumb"]'
+      );
+      if (thumbEl) {
+        this.spreadProps(thumbEl, this.api.getThumbProps());
+      }
     }
   }
 }

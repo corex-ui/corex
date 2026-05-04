@@ -1,129 +1,87 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Clipboard } from "../components/clipboard";
-import type { ValueChangeDetails } from "@zag-js/clipboard";
-import type { Direction } from "@zag-js/types";
 
-import { getString, getNumber, getBoolean } from "../lib/util";
+import { getString, getNumber, canPushEvent } from "../lib/util";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type ClipboardHookState = {
   clipboard?: Clipboard;
-  handlers?: Array<CallbackRef>;
-  onCopy?: (event: Event) => void;
-  onSetValue?: (event: Event) => void;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const liveSocket = this.liveSocket;
+    const canPush = () => canPushEvent(this.liveSocket);
 
     const clipboard = new Clipboard(el, {
       id: el.id,
       timeout: getNumber(el, "timeout"),
-      ...(getBoolean(el, "controlled")
-        ? { value: getString(el, "value") }
-        : { defaultValue: getString(el, "defaultValue") }),
+      defaultValue: getString(el, "defaultValue"),
 
-      onValueChange: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null,
-          });
-        }
-      },
       onStatusChange: (details) => {
-        const eventName = getString(el, "onStatusChange");
-        if (eventName && liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            copied: details.copied,
-          });
-        }
-        const eventNameClient = getString(el, "onStatusChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-            })
-          );
-        }
+        if (details?.copied !== true) return;
+        const value = clipboard.api.value ?? getString(el, "defaultValue");
+
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value },
+          serverEventName: getString(el, "onCopy"),
+          clientEventName: getString(el, "onCopyClient"),
+        });
       },
     });
 
     clipboard.init();
     this.clipboard = clipboard;
 
-    this.onCopy = () => {
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add("corex:clipboard:copy", () => {
       clipboard.api.copy();
-    };
-    el.addEventListener("phx:clipboard:copy", this.onCopy);
+    });
 
-    this.onSetValue = (event: Event) => {
-      const { value } = (event as CustomEvent<{ value: string }>).detail;
-      clipboard.api.setValue(value);
-    };
-    el.addEventListener("phx:clipboard:set-value", this.onSetValue);
+    domRegistry.add<CustomEvent<{ value: string }>>("corex:clipboard:set-value", (event) => {
+      const v = event.detail?.value;
+      if (typeof v === "string") clipboard.api.setValue(v);
+    });
 
-    this.handlers = [];
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
 
-    this.handlers.push(
-      this.handleEvent("clipboard_copy", (payload: { clipboard_id?: string }) => {
-        const targetId = payload.clipboard_id;
-        if (targetId && targetId !== el.id) return;
-        clipboard.api.copy();
-      })
-    );
+    registry.add("clipboard_copy", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      clipboard.api.copy();
+    });
 
-    this.handlers.push(
-      this.handleEvent(
-        "clipboard_set_value",
-        (payload: { clipboard_id?: string; value: string }) => {
-          const targetId = payload.clipboard_id;
-          if (targetId && targetId !== el.id) return;
-          clipboard.api.setValue(payload.value);
-        }
-      )
-    );
-
-    this.handlers.push(
-      this.handleEvent("clipboard_copied", () => {
-        this.pushEvent("clipboard_copied_response", {
-          value: clipboard.api.copied,
-        });
-      })
-    );
+    registry.add("clipboard_set_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!payload || typeof payload !== "object") return;
+      const o = payload as Record<string, unknown>;
+      const v = o.value ?? o["value"];
+      if (typeof v === "string") clipboard.api.setValue(v);
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
     this.clipboard?.updateProps({
       id: this.el.id,
       timeout: getNumber(this.el, "timeout"),
-      ...(getBoolean(this.el, "controlled")
-        ? { value: getString(this.el, "value") }
-        : { defaultValue: getString(this.el, "value") }),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+      defaultValue: getString(this.el, "defaultValue"),
     });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ClipboardHookState) {
-    if (this.onCopy) {
-      this.el.removeEventListener("phx:clipboard:copy", this.onCopy);
-    }
-
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:clipboard:set-value", this.onSetValue);
-    }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.clipboard?.destroy();
   },
 };

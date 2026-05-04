@@ -15,7 +15,7 @@ defmodule Corex.TimerTest do
     test "returns root attributes" do
       assigns = %{id: "test-timer"}
       result = Connect.root(assigns)
-      assert result["id"] == "timer:test-timer"
+      assert result["id"] == "timer:test-timer:root"
       assert result["data-scope"] == "timer"
       assert result["data-part"] == "root"
     end

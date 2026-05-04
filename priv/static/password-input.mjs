@@ -1,7 +1,18 @@
 import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadVisible
+} from "./chunks/chunk-LIWT33BG.mjs";
+import {
   Component,
   VanillaMachine,
   ariaAttr,
+  canPushEvent,
   createAnatomy,
   createMachine,
   dataAttr,
@@ -9,11 +20,10 @@ import {
   getDir,
   getString,
   isLeftClick,
-  normalizeProps,
   uuid
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
   "root",
   "input",
@@ -24,11 +34,11 @@ var anatomy = createAnatomy("password-input").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
 var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
 function connect(service, normalize) {
   const { scope, prop, context } = service;
   const visible = context.get("visible");
@@ -143,7 +153,7 @@ var passwordManagerProps = {
   "data-protonpass-ignore": "true"
 };
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -235,7 +245,7 @@ var PasswordInput = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="password-input"][data-part="root"]') ?? this.el;
@@ -267,9 +277,11 @@ var PasswordInput = class extends Component {
 var PasswordInputHook = {
   mounted() {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new PasswordInput(el, {
       id: el.id,
-      ...getBoolean(el, "controlledVisible") ? { visible: getBoolean(el, "visible") } : { defaultVisible: getBoolean(el, "defaultVisible") },
+      defaultVisible: getBoolean(el, "defaultVisible"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readOnly"),
@@ -277,34 +289,55 @@ var PasswordInputHook = {
       ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
       name: getString(el, "name"),
       dir: getDir(el),
-      autoComplete: getString(el, "autoComplete", [
-        "current-password",
-        "new-password"
-      ]),
+      autoComplete: getString(el, "autoComplete"),
       onVisibilityChange: (details) => {
-        const eventName = getString(el, "onVisibilityChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { visible: details.visible, id: el.id });
-        }
-        const clientName = getString(el, "onVisibilityChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, visible: details.visible },
+          serverEventName: getString(el, "onVisibilityChange"),
+          clientEventName: getString(el, "onVisibilityChangeClient")
+        });
       }
     });
     zag.init();
     this.passwordInput = zag;
     this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add(
+      "corex:password-input:set-visible",
+      (event) => {
+        const vis = event.detail?.visible;
+        if (typeof vis === "boolean") zag.api.setVisible(vis);
+      }
+    );
+    domRegistry.add("corex:password-input:toggle-visible", () => {
+      zag.api.toggleVisible();
+    });
+    domRegistry.add("corex:password-input:focus", () => {
+      zag.api.focus();
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("password_input_set_visible", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const vis = readPayloadVisible(payload);
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
+    registry.add("password_input_toggle_visible", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.toggleVisible();
+    });
+    registry.add("password_input_focus", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.focus();
+    });
   },
   updated() {
     this.passwordInput?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlledVisible") ? { visible: getBoolean(this.el, "visible") } : {},
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       readOnly: getBoolean(this.el, "readOnly"),
@@ -318,6 +351,8 @@ var PasswordInputHook = {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.passwordInput?.destroy();
   }
 };

@@ -1,0 +1,52 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="uno"][data-mode="light"] {
+  --theme-color-selected-ink: #c0d0e8; /** 10.0:1 contrast against selected (#212428) */
+  --theme-color-ink-success: #006c4e; /** 6.0:1 contrast against ui (#f3f7fc) */
+  --theme-color-ui-active: #d1d5d9; /** Surface ui active stop (base 94% lightness, chroma #EEF2F7). */
+  --theme-color-brand-muted: #f6fbff; /** Semantic brand muted fill at 95% lightness (chroma #EEF2F7). */
+  --theme-color-alert-muted: #e3e7ec; /** Semantic alert muted fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-accent-muted: #e3e7ec; /** Semantic accent muted fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-accent-ink: #465468; /** 5.5:1 contrast against accent (#d7dbe0) */
+  --theme-color-ui-hover: #dadee3; /** Surface ui hover stop (base 94% lightness, chroma #EEF2F7). */
+  --theme-color-selected-hover: #181b1e; /** Semantic selected hover fill at 26% lightness (chroma #EEF2F7). */
+  --theme-color-ink-accent: #515f74; /** 6.0:1 contrast against ui (#f3f7fc) */
+  --theme-color-layer: #f1f5fa; /** Surface layer at 97% lightness (chroma #EEF2F7). */
+  --theme-color-brand-ink: #006883; /** 5.5:1 contrast against brand (#ebeff4) */
+  --theme-color-accent-active: #c1c4c9; /** Semantic accent active fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-alert-ink: #ab000d; /** 5.5:1 contrast against alert (#d7dbe0) */
+  --theme-color-alert: #d7dbe0; /** Semantic alert default fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-link: #006399; /** 6.01:1 contrast against ui (#f3f7fc) */
+  --theme-color-brand-active: #d4d8dd; /** Semantic brand active fill at 95% lightness (chroma #EEF2F7). */
+  --theme-color-selected-active: #111417; /** Semantic selected active fill at 26% lightness (chroma #EEF2F7). */
+  --theme-color-ink-alert: #b91c1c; /** 6.0:1 contrast against ui (#f3f7fc) */
+  --theme-color-alert-active: #c1c4c9; /** Semantic alert active fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-success: #d7dbe0; /** Semantic success default fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-info: #d7dbe0; /** Semantic info default fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-success-active: #c1c4c9; /** Semantic success active fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-success-muted: #e3e7ec; /** Semantic success muted fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-selected-muted: #2a2d31; /** Semantic selected muted fill at 26% lightness (chroma #EEF2F7). */
+  --theme-color-selected: #212428; /** Semantic selected default fill at 26% lightness (chroma #EEF2F7). */
+  --theme-color-ui-muted: #f3f7fc; /** Surface ui muted stop (base 94% lightness, chroma #EEF2F7). */
+  --theme-color-root: #fcffff; /** Surface root at 100% lightness (chroma #EEF2F7). */
+  --theme-color-brand: #ebeff4; /** Semantic brand default fill at 95% lightness (chroma #EEF2F7). */
+  --theme-color-shadow: #e8ecf1; /** 1.1:1 contrast against ui (#f3f7fc) */
+  --theme-color-ink: #45484c; /** 8.5:1 contrast against ui (#f3f7fc) */
+  --theme-color-accent: #d7dbe0; /** Semantic accent default fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-alert-hover: #caced3; /** Semantic alert hover fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-success-ink: #006044; /** 5.5:1 contrast against success (#d7dbe0) */
+  --theme-color-ink-brand: #006781; /** 6.0:1 contrast against ui (#f3f7fc) */
+  --theme-color-info-active: #c1c4c9; /** Semantic info active fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-success-hover: #caced3; /** Semantic success hover fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-info-ink: #00578a; /** 5.5:1 contrast against info (#d7dbe0) */
+  --theme-color-brand-hover: #dee2e7; /** Semantic brand hover fill at 95% lightness (chroma #EEF2F7). */
+  --theme-color-ink-muted: #676b6f; /** 5.0:1 contrast against ui (#f3f7fc) */
+  --theme-color-info-hover: #caced3; /** Semantic info hover fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-ink-info: #006399; /** 6.01:1 contrast against ui (#f3f7fc) */
+  --theme-color-info-muted: #e3e7ec; /** Semantic info muted fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-accent-hover: #caced3; /** Semantic accent hover fill at 89% lightness (chroma #EEF2F7). */
+  --theme-color-ui: #e8ecf0; /** Surface ui default stop (base 94% lightness, chroma #EEF2F7). */
+  --theme-color-border: #d5d9de; /** 1.32:1 contrast against ui (#f3f7fc) */
+}

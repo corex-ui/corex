@@ -1,3 +1,4 @@
+# Installation
 
 ![Hex.pm License](https://img.shields.io/hexpm/l/corex)
 ![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
@@ -5,75 +6,89 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
 
-# Corex
+## Introduction
 
-Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
+**The Phoenix UI with a real API.** Accessible, unstyled Phoenix components with a full server-and-client API, powered by [Zag.js](https://zagjs.com) state machines.
 
-Corex bridges the gap between Phoenix and modern JavaScript UI patterns by leveraging Zag.js: a collection of framework-agnostic UI component state machines. This approach gives you:
+- **Server & client API.** Drive every component from LiveView or JavaScript and listen back from either side.
+- **LiveView-native.** Update props at runtime without resetting component state.
+- **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
+- **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
 
-- **Accessible by default** - Built-in ARIA attributes and keyboard navigation
-- **Unstyled components** - Complete control over styling and design
-- **Type-safe state management** - Powered by Zag.js state machines
-- **Works everywhere** - Phoenix Controllers and LiveView
-- **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
+> #### Beta Stage
+>
+> Corex is under active development
+> The public API is stabilizing for most of the components
+> Please report any issues on [GitHub](https://github.com/corex-ui/corex).
 
-> **Alpha stage**
-> Corex is actively being developed and is currently in alpha stage.
-> It's not recommended for production use at this time.
-> You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
+## New Corex application
 
-## Live Demo
-
-To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
-
-You can also explore all components via [Live Captures](https://corex.gigalixirapp.com/captures/components/Elixir.CorexWeb.Accordion/accordion), a zero-boilerplate storybook for LiveView components. A big thanks to [@achempion](https://github.com/achempion) for assisting.
-
-This is still in an early stage and will evolve with future stable releases.
-
-Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
-
-
-## Documentation
-
-Full documentation is available at [hexdocs.pm/corex](http://hexdocs.pm/corex).
-
-## Installation
-
-Install the Corex project generator, then create a new Phoenix application with Corex:
+Install the archives once:
 
 ```bash
+mix archive.install hex phx_new
 mix archive.install hex corex_new
-mix corex.new my_app
-cd my_app
-mix deps.get
 ```
 
-To update the generator to the latest version first, run `mix local.corex` before `mix corex.new my_app`.
+Generate an application:
 
-The generated project includes Corex, configuration, and default styling.
+```bash
+mix corex.new my_app
+```
 
-## Existing Project
+By default Corex Design will be installed. You can use `--no-design` to opt out.
 
-To add Corex to an existing Phoenix app instead of using the generator, see [Manual installation](manual_installation.html).
+By default the installer also adds the **`plug Corex.MCP`** hook for development and test (see [MCP](https://hexdocs.pm/corex/mcp.html)); use **`--no-mcp`** if you do not want it.
 
+If you want the full feature set:
 
-### Add your first component
+```bash
+mix corex.new my_app --mode --theme --lang --designex
+```
 
-Example Accordion using `Corex.Content.new/1`:
+Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for every Corex-only flag.
+
+## Existing Phoenix application
+
+Follow the [manual installation guide](https://hexdocs.pm/corex/manual_installation.html)
+
+## Try your first component
+
+### Accordion
 
 ```heex
 <.accordion
+  id="my-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 />
 ```
 
-More Accordion examples (with indicator, custom slots, controlled, async) and API control are in the [Installation guide](https://hexdocs.pm/corex/installation.html#add-your-first-component).
+If you are using Corex Design import the accordion css
 
-## License
+```css
+@import "../corex/components/accordion.css";
+```
 
-[MIT](./LICENSE) © [Netoum.com](https://netoum.com)
+### API
+
+Every Corex component exposes JS commands for client-side control and matching `socket` helpers for server-side control. You need an `id` on the component.
+
+```heex
+<.action class="button" phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}>
+  Open the first panel
+</.action>
+```
+
+## Next steps
+
+- [MCP](https://hexdocs.pm/corex/mcp.html) Corex MCP for AI tooling in development.
+- [Dark mode](https://hexdocs.pm/corex/dark_mode.html) light/dark wiring after `--mode`.
+- [Theming](https://hexdocs.pm/corex/theming.html) theme picker after `--theme`.
+- [Localize](https://hexdocs.pm/corex/localize.html) locales and routes after `--lang`.
+- [Production](https://hexdocs.pm/corex/production.html) prod build and run.
+- [Manual installation](https://hexdocs.pm/corex/manual_installation.html) add Corex to an existing Phoenix app.

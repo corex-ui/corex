@@ -23,6 +23,8 @@ export default [
         console: "readonly",
         navigator: "readonly",
         HTMLElement: "readonly",
+        HTMLTemplateElement: "readonly",
+        DocumentFragment: "readonly",
         Element: "readonly",
         NodeList: "readonly",
         Event: "readonly",
@@ -37,6 +39,9 @@ export default [
         SVGRectElement: "readonly",
         requestAnimationFrame: "readonly",
         setTimeout: "readonly",
+        clearTimeout: "readonly",
+        queueMicrotask: "readonly",
+        Animation: "readonly",
       },
     },
     plugins: {

@@ -1,31 +1,28 @@
 defmodule Corex.Content do
   @moduledoc ~S'''
-   Content items for components with trigger/content patterns to be used with:
+  Content items for components with trigger/content patterns to be used with:
 
-   - [Accordion](Corex.Accordion.html)
-   - [Tabs](Corex.Tabs.html)
+  - [Accordion](Corex.Accordion.html)
+  - [Tabs](Corex.Tabs.html)
 
-   Use `Corex.Content.new/1` to build a list of items from keyword lists or maps.
-
+  Use `Corex.Content.new/1` to build a list of items from maps.
   '''
 
   defmodule Item do
     @moduledoc """
-      Content item structure.
-      Use it to create content items for components with trigger/content patterns:
-      - [Accordion](Corex.Accordion.html)
-      - [Tabs](Corex.Tabs.html)
+    Content item structure.
+    Use it to create content items for components with trigger/content patterns:
+    - [Accordion](Corex.Accordion.html)
+    - [Tabs](Corex.Tabs.html)
 
     ## Examples
 
-    ```elixir
-        Corex.Content.Item.new(trigger: "Lorem", content: "Consectetur adipiscing elit.")
-    ```
+        Corex.Content.Item.new(%{trigger: "Lorem", content: "Consectetur adipiscing elit."})
+
     """
 
-    @enforce_keys [:trigger, :content]
+    @enforce_keys [:value, :trigger, :content]
     defstruct [
-      :id,
       :value,
       :trigger,
       :content,
@@ -34,8 +31,7 @@ defmodule Corex.Content do
     ]
 
     @type t :: %__MODULE__{
-            id: String.t(),
-            value: String.t() | nil,
+            value: String.t(),
             trigger: String.t(),
             content: String.t(),
             meta: map(),
@@ -43,16 +39,12 @@ defmodule Corex.Content do
           }
 
     @doc """
-    Creates a single Content.Item with an auto-generated ID if not provided.
+    Creates a single `Content.Item` from a map, auto-generating an ID if not provided.
 
-    Raises `ArgumentError` if attrs is not a keyword list or map.
+    Raises `ArgumentError` if `attrs` is not a map or is missing required fields.
     """
-    def new(attrs) when is_list(attrs) or is_map(attrs) do
-      attrs =
-        attrs
-        |> Enum.into([])
-        |> Keyword.put_new(:id, Corex.Content.generate_id())
-
+    @spec new(map()) :: t()
+    def new(attrs) when is_map(attrs) do
       struct!(__MODULE__, attrs)
     rescue
       e in [KeyError, ArgumentError] ->
@@ -60,75 +52,80 @@ defmodule Corex.Content do
                 """
                 Failed to create Content.Item: #{Exception.message(e)}
 
-                Required fields: [:trigger, :content]
-                Optional fields: [:id, :value, :disabled, :meta]
+                Required fields: [:value, :trigger, :content]
+                Optional fields: [:value, :disabled, :meta]
 
                 Example:
-                  Corex.Content.Item.new(trigger: "Lorem", content: "Consectetur adipiscing elit.")
+                  Corex.Content.Item.new(%{value: "item-1", trigger: "Lorem", content: "Consectetur adipiscing elit."})
                 """,
                 __STACKTRACE__
     end
 
     def new(attrs) do
       raise ArgumentError, """
-      Expected a keyword list or map, got: #{inspect(attrs)}
+      Expected a map, got: #{inspect(attrs)}
 
       Example:
-        Corex.Content.Item.new(trigger: "Lorem", content: "Consectetur adipiscing elit.")
+        Corex.Content.Item.new(%{value: "item-1", trigger: "Lorem", content: "Consectetur adipiscing elit."})
       """
     end
   end
 
   @doc """
-  Creates a list of content items from a list of keyword lists or maps.
+  Creates a list of `Content.Item` structs from a list of maps.
 
-  * `:id` - (optional) Unique identifier, auto-generated if not provided
+  ## Fields
+
   * `:trigger` - (required) Content to display in the trigger
-  * `:content` - (required) Content to display in the content
-  * `:value` - (optional) Deprecated, use `:id`
-  * `:disabled` - (optional) Whether the item is disabled
-  * `:meta` - (optional) Additional metadata for the item
+  * `:content` - (required) Content to display in the content area
+  * `:value` - (optional) Unique identifier
+  * `:disabled` - (optional) Whether the item is disabled, defaults to `false`
+  * `:meta` - (optional) Additional metadata map for the item
 
   ## Examples
 
       Corex.Content.new([
-        [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."],
-        [id: "duis", trigger: "Duis", content: "Nullam eget vestibulum ligula."],
-        [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a.", disabled: true]
+        %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{value: "duis", trigger: "Duis", content: "Nullam eget vestibulum ligula."},
+        %{value: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a.", disabled: true}
       ])
 
-  Raises `ArgumentError` if items is not a list or contains invalid items.
+  Raises `ArgumentError` if `items` is not a list of maps.
   """
-
+  @spec new(list(map())) :: list(Item.t())
   def new([]), do: []
 
-  def new([first | _rest] = items) when is_list(first) or is_map(first) do
-    Enum.map(items, &Item.new/1)
+  def new([first | _rest] = items) when is_map(first) do
+    items
+    |> Enum.with_index(1)
+    |> Enum.map(fn {attrs, index} ->
+      attrs = Map.put_new(attrs, :value, "item-#{index}")
+      Item.new(attrs)
+    end)
   end
 
-  @spec new(list(keyword() | map())) :: list(Item.t())
   def new(items) when is_list(items) do
     raise ArgumentError, """
-    Expected a list of keyword lists or maps, got invalid item format.
+    Expected a list of maps, but the list contains non-map items.
 
     Example:
       Corex.Content.new([
-        [trigger: "Lorem: "Consectetur adipiscing elit."],
-        [trigger: "Duis", content: "Nullam eget vestibulum ligula."],
-        [trigger: "Donec", content: "Congue molestie ipsum gravida a."]
+        %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{trigger: "Duis", content: "Nullam eget vestibulum ligula."},
+        %{trigger: "Donec", content: "Congue molestie ipsum gravida a."}
       ])
     """
   end
 
   def new(items) do
     raise ArgumentError, """
-    Expected a list, got: #{inspect(items)}
+    Expected a list of maps, got: #{inspect(items)}
 
     Example:
       Corex.Content.new([
-        [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."],
-        [trigger: "Duis", content: "Nullam eget vestibulum ligula."],
-        [trigger: "Donec", content: "Congue molestie ipsum gravida a."]
+        %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{trigger: "Duis", content: "Nullam eget vestibulum ligula."},
+        %{trigger: "Donec", content: "Congue molestie ipsum gravida a."}
       ])
     """
   end

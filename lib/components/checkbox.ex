@@ -2,6 +2,20 @@ defmodule Corex.Checkbox do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
+  ## API and events
+
+  Client DOM dispatches (handled by the `Checkbox` hook on the component root):
+
+  - `corex:checkbox:set-checked` — `detail.checked` must be a boolean; clears indeterminate.
+  - `corex:checkbox:toggle-checked` — toggles checked.
+
+  Server pushes (from `set_checked/3`, `toggle_checked/2`):
+
+  - `checkbox_set_checked` — `%{"id" => id, "checked" => boolean}`
+  - `checkbox_toggle_checked` — `%{"id" => id}`
+
+  Declarative `checked` may be `true`, `false`, or `:indeterminate` (Zag `CheckedState`). Imperative `set_checked/2` remains boolean-only.
+
   ## Examples
   <!-- tabs-open -->
 
@@ -21,8 +35,11 @@ defmodule Corex.Checkbox do
       Accept the terms
     </:label>
     <:indicator>
-      <.heroicon name="hero-check" class="data-checked" />
+      <.heroicon name="hero-check" />
     </:indicator>
+    <:indeterminate>
+      <.heroicon name="hero-minus" />
+    </:indeterminate>
   </.checkbox>
   ```
 
@@ -44,11 +61,11 @@ defmodule Corex.Checkbox do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
-  Build the form from an Ecto changeset and pass it to the template. Use `Corex.Form.get_form_id/1` for the form `id`:
+  Build the form from an Ecto changeset and pass it to the template. Pass `id` into `to_form/2` so the template can use `id={@form.id}`:
 
   ```elixir
   def checkbox_form_page(conn, _params) do
@@ -61,7 +78,7 @@ defmodule Corex.Checkbox do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.checkbox field={f[:terms]} class="checkbox">
       <:label>Accept terms</:label>
       <:error :let={msg}>
@@ -108,30 +125,29 @@ defmodule Corex.Checkbox do
   defmodule MyAppWeb.CheckboxFormLive do
     use MyAppWeb, :live_view
     alias MyApp.Form.Terms
-    alias Corex.Form
 
     def mount(_params, _session, socket) do
-      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms)
+      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms, id: "checkbox-form-terms")
       {:ok, assign(socket, :form, form)}
     end
 
     def handle_event("validate", %{"terms" => params}, socket) do
       changeset = Terms.changeset(%Terms{}, params)
-      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms))}
+      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms, id: "checkbox-form-terms"))}
     end
 
     def handle_event("save", %{"terms" => params}, socket) do
       case Terms.changeset(%Terms{}, params) do
         %Ecto.Changeset{valid?: true} = _ ->
-          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms))}
+          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms, id: "checkbox-form-terms"))}
         changeset ->
-          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms))}
+          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms, id: "checkbox-form-terms"))}
       end
     end
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+      <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>Accept terms</:label>
           <:error :let={msg}>
@@ -176,7 +192,7 @@ defmodule Corex.Checkbox do
   [data-scope="checkbox"][data-part="root"] {}
   [data-scope="checkbox"][data-part="control"] {}
   [data-scope="checkbox"][data-part="label"] {}
-  [data-scope="checkbox"][data-part="input"] {}
+  [data-scope="checkbox"][data-part="hidden-input"] {}
   [data-scope="checkbox"][data-part="error"] {}
   ```
 
@@ -195,14 +211,24 @@ defmodule Corex.Checkbox do
   <.checkbox class="checkbox checkbox--accent checkbox--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/checkbox#modifiers)
+  components/checkbox#modifiers)
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Checkbox.Anatomy.{Control, HiddenInput, Indicator, Label, Props, Root}
+  alias Corex.Checkbox.Anatomy.{
+    Control,
+    HiddenInput,
+    Indeterminate,
+    Indicator,
+    Label,
+    Props,
+    Root
+  }
+
   alias Corex.Checkbox.Connect
+  alias Corex.Helpers
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -216,9 +242,10 @@ defmodule Corex.Checkbox do
     doc: "The id of the checkbox, useful for API to identify the checkbox"
   )
 
-  attr(:checked, :boolean,
+  attr(:checked, :any,
     default: false,
-    doc: "The initial checked state or the controlled checked state"
+    doc:
+      "Checked state: true, false, or :indeterminate (Zag CheckedState). Form fields still use boolean."
   )
 
   attr(:controlled, :boolean,
@@ -246,8 +273,8 @@ defmodule Corex.Checkbox do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the checkbox. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -303,6 +330,10 @@ defmodule Corex.Checkbox do
     attr(:class, :string, required: false)
   end
 
+  slot :indeterminate, required: false do
+    attr(:class, :string, required: false)
+  end
+
   slot :error, required: false do
     attr(:class, :string, required: false)
   end
@@ -328,12 +359,14 @@ defmodule Corex.Checkbox do
       |> assign_new(:id, fn -> "checkbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
 
     ~H"""
     <div
       id={@id}
       phx-hook="Checkbox"
-      data-js="pending"
+      data-loading 
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -342,6 +375,7 @@ defmodule Corex.Checkbox do
         name: @name,
         form: @form,
         dir: @dir,
+        orientation: @orientation,
         read_only: @read_only,
         invalid: @invalid,
         required: @required,
@@ -353,24 +387,93 @@ defmodule Corex.Checkbox do
       })}
     >
 
-      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
 
-      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <input
+        phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+        {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+      />
+      <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span
+            :if={@indicator != []}
+            phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+            {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          >
           {render_slot(@indicator)}
           </span>
+          <span
+            :if={@indeterminate != []}
+            phx-mounted={Connect.ignore_indeterminate(%Indeterminate{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+            {Connect.indeterminate(%Indeterminate{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          >
+          {render_slot(@indeterminate)}
+          </span>
       </div>
-      <span :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <span
+        :if={@label != []}
+        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+      >
       {render_slot(@label)}
       </span>
-      <span :if={@label == [] && @aria_label} class="sr-only" {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <span
+        :if={@label == [] && @aria_label}
+        class="sr-only"
+        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+      >
       {@aria_label}
       </span>
       </label>
       <div :if={@error} :for={msg <- @errors} data-scope="checkbox" data-part="error">
         {render_slot(@error, msg)}
+      </div>
+    </div>
+    """
+  end
+
+  attr(:skeleton_label, :boolean,
+    default: true,
+    doc:
+      "When true, renders a compact label-line placeholder (same line height band as the real checkbox label)."
+  )
+
+  attr(:dir, :string,
+    default: "ltr",
+    values: ["ltr", "rtl"],
+    doc: "Same as checkbox: logical direction for layout."
+  )
+
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["vertical", "horizontal"],
+    doc: "Same as checkbox: layout orientation for the skeleton root."
+  )
+
+  attr(:rest, :global)
+
+  def checkbox_skeleton(assigns) do
+    ~H"""
+    <div data-dir={@dir} data-orientation={@orientation} {@rest}>
+      <div
+        data-scope="checkbox"
+        data-part="root"
+        data-loading
+        dir={@dir}
+        data-orientation={@orientation}
+      >
+        <div data-scope="checkbox" data-part="control" aria-hidden="true">
+          <span data-scope="checkbox" data-part="indicator">
+          </span>
+        </div>
+        <div
+          :if={@skeleton_label}
+          data-scope="checkbox"
+          data-part="label"
+          aria-hidden="true"
+        >
+        </div>
       </div>
     </div>
     """
@@ -391,7 +494,7 @@ defmodule Corex.Checkbox do
       </button>
   """
   def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
-    JS.dispatch("phx:checkbox:set-checked",
+    JS.dispatch("corex:checkbox:set-checked",
       to: "##{checkbox_id}",
       detail: %{checked: checked},
       bubbles: false
@@ -413,8 +516,8 @@ defmodule Corex.Checkbox do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
              is_boolean(checked) do
     LiveView.push_event(socket, "checkbox_set_checked", %{
-      id: checkbox_id,
-      checked: checked
+      "id" => checkbox_id,
+      "checked" => checked
     })
   end
 
@@ -429,7 +532,7 @@ defmodule Corex.Checkbox do
       </button>
   """
   def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
-    JS.dispatch("phx:checkbox:toggle-checked",
+    JS.dispatch("corex:checkbox:toggle-checked",
       to: "##{checkbox_id}",
       bubbles: false
     )
@@ -448,8 +551,6 @@ defmodule Corex.Checkbox do
   """
   def toggle_checked(socket, checkbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
-    LiveView.push_event(socket, "checkbox_toggle_checked", %{
-      id: checkbox_id
-    })
+    LiveView.push_event(socket, "checkbox_toggle_checked", %{"id" => checkbox_id})
   end
 end

@@ -1,5 +1,5 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { FloatingPanel } from "../components/floating-panel";
 import type {
   Props,
@@ -8,11 +8,15 @@ import type {
   SizeChangeDetails,
   StageChangeDetails,
 } from "@zag-js/floating-panel";
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type FloatingPanelHookState = {
   floatingPanel?: FloatingPanel;
-  handlers?: Array<CallbackRef>;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
 function parseSize(val: string | undefined): { width: number; height: number } | undefined {
@@ -41,19 +45,21 @@ function parsePoint(val: string | undefined): { x: number; y: number } | undefin
   return undefined;
 }
 
-const FloatingPanelHook: Hook<object & FloatingPanelHookState, HTMLElement> = {
+const FloatingPanelHook: Hook<
+  object & HookInterface<HTMLElement> & FloatingPanelHookState,
+  HTMLElement
+> = {
   mounted(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
     const el = this.el;
-    const open = getBoolean(el, "open");
-    const defaultOpen = getBoolean(el, "defaultOpen");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const size = parseSize(el.dataset.size);
     const defaultSize = parseSize(el.dataset.defaultSize);
     const position = parsePoint(el.dataset.position);
     const defaultPosition = parsePoint(el.dataset.defaultPosition);
     const zag = new FloatingPanel(el, {
       id: el.id,
-      ...(controlled ? { open } : { defaultOpen }),
+      defaultOpen: false,
       draggable: getBoolean(el, "draggable") !== false,
       resizable: getBoolean(el, "resizable") !== false,
       allowOverflow: getBoolean(el, "allowOverflow") !== false,
@@ -69,68 +75,84 @@ const FloatingPanelHook: Hook<object & FloatingPanelHookState, HTMLElement> = {
       persistRect: getBoolean(el, "persistRect"),
       gridSize: Number(el.dataset.gridSize) || 1,
       onOpenChange: (details: OpenChangeDetails) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { open: details.open, id: el.id });
-        }
-        const clientName = getString(el, "onOpenChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            open: details.open,
+          } as Record<string, unknown>,
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient"),
+        });
       },
       onPositionChange: (details: PositionChangeDetails) => {
-        const eventName = getString(el, "onPositionChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            position: details.position,
-            id: el.id,
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, position: details.position } as Record<string, unknown>,
+          serverEventName: getString(el, "onPositionChange"),
+          clientEventName: getString(el, "onPositionChangeClient"),
+        });
       },
       onSizeChange: (details: SizeChangeDetails) => {
-        const eventName = getString(el, "onSizeChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            size: details.size,
-            id: el.id,
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, size: details.size } as Record<string, unknown>,
+          serverEventName: getString(el, "onSizeChange"),
+          clientEventName: getString(el, "onSizeChangeClient"),
+        });
       },
       onStageChange: (details: StageChangeDetails) => {
-        const eventName = getString(el, "onStageChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            stage: details.stage,
-            id: el.id,
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, stage: details.stage } as Record<string, unknown>,
+          serverEventName: getString(el, "onStageChange"),
+          clientEventName: getString(el, "onStageChangeClient"),
+        });
       },
     } as Props);
     zag.init();
     this.floatingPanel = zag;
-    this.handlers = [];
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:floating-panel:set-open", (event) => {
+      const { open } = event.detail;
+      zag.api.setOpen(open);
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("floating_panel_set_open", (payload: unknown) => {
+      if (!payload || typeof payload !== "object") return;
+      const o = payload as { open?: boolean };
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof o.open === "boolean") zag.api.setOpen(o.open);
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
-    const open = getBoolean(this.el, "open");
-    const controlled = getBoolean(this.el, "controlled");
     this.floatingPanel?.updateProps({
       id: this.el.id,
-      ...(controlled ? { open } : {}),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.domRegistry = undefined;
+    this.handleRegistry?.teardown();
+    this.handleRegistry = undefined;
     this.floatingPanel?.destroy();
   },
 };

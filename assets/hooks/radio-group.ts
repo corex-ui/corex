@@ -1,84 +1,76 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { RadioGroup } from "../components/radio-group";
 import type { Props, ValueChangeDetails } from "@zag-js/radio-group";
-import type { Direction } from "@zag-js/types";
-import { getString, getBoolean } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readStringControlledZagProps, readStringControlledZagUpdate } from "../lib/read-props";
+import { notifyChange } from "../lib/respond-to";
 
 type RadioGroupHookState = {
   radioGroup?: RadioGroup;
-  handlers?: Array<CallbackRef>;
 };
+
+function valueChangePayload(el: HTMLElement, details: ValueChangeDetails): Record<string, unknown> {
+  return {
+    id: el.id,
+    value: details.value,
+  };
+}
 
 const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
     const el = this.el;
-    const value = getString(el, "value");
-    const defaultValue = getString(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new RadioGroup(el, {
       id: el.id,
-      ...(controlled && value !== undefined
-        ? { value: value ?? null }
-        : { defaultValue: defaultValue ?? null }),
+      ...readStringControlledZagProps(el, "value", "defaultValue"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       readOnly: getBoolean(el, "readOnly"),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-      orientation: getString<"horizontal" | "vertical">(el, "orientation", [
-        "horizontal",
-        "vertical",
-      ]),
+      dir: getDir(el),
+      orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       onValueChange: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            id: el.id,
-          });
+        const checked = el.querySelector<HTMLInputElement>(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+        );
+        if (checked) {
+          checked.dispatchEvent(new Event("input", { bubbles: true }));
+          checked.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient"),
+        });
       },
     } as Props);
     zag.init();
     this.radioGroup = zag;
-    this.handlers = [];
   },
 
   updated(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    const value = getString(this.el, "value");
-    const controlled = getBoolean(this.el, "controlled");
     this.radioGroup?.updateProps({
       id: this.el.id,
-      ...(controlled && value !== undefined ? { value: value ?? null } : {}),
+      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       readOnly: getBoolean(this.el, "readOnly"),
-      orientation: getString<"horizontal" | "vertical">(this.el, "orientation", [
-        "horizontal",
-        "vertical",
-      ]),
+      orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
+      dir: getDir(this.el),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
     this.radioGroup?.destroy();
   },
 };

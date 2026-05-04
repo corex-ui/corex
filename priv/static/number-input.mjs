@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunk-BYLQVWJG.mjs";
+} from "./chunks/chunk-L2ZNUIWL.mjs";
 import {
   clampValue,
   decrementValue,
@@ -10,7 +10,10 @@ import {
   isValueWithinRange,
   roundToDpr,
   wrap
-} from "./chunk-MV633JPN.mjs";
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
+  notifyChange
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   MAX_Z_INDEX,
@@ -22,6 +25,7 @@ import {
   createAnatomy,
   dataAttr,
   getBoolean,
+  getDir,
   getEventPoint,
   getEventStep,
   getNumber,
@@ -31,7 +35,6 @@ import {
   isLeftClick,
   isModifierKey,
   isSafari,
-  normalizeProps,
   observeAttributes,
   raf,
   requestPointerLock,
@@ -39,9 +42,9 @@ import {
   setElementValue,
   setup,
   trackFormControl
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",
@@ -54,7 +57,7 @@ var anatomy = createAnatomy("numberInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/cursor.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/cursor.mjs
 function recordCursor(inputEl, scope) {
   if (!inputEl || !scope.isActiveElement(inputEl)) return;
   try {
@@ -134,7 +137,7 @@ function getNextCursorPosition(oldValue, newValue, oldPosition) {
   return newValue.length;
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
 var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
@@ -222,7 +225,7 @@ var createVirtualCursor = (ctx, point) => {
   doc.body.appendChild(el);
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, computed } = service;
   const focused = state.hasTag("focus");
@@ -850,7 +853,7 @@ function $6c7bd7858deea686$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
 var createFormatter = (locale, options = {}) => {
   return new Intl.NumberFormat(locale, options);
 };
@@ -877,7 +880,7 @@ var getDefaultStep = (step, formatOptions) => {
   return defaultStep;
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.36.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
 var { choose, guards, createMachine } = setup();
 var { not, and } = guards;
 var machine = createMachine({
@@ -1301,7 +1304,7 @@ var NumberInput = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="number-input"][data-part="root"]') ?? this.el;
@@ -1330,14 +1333,6 @@ var NumberInput = class extends Component {
       '[data-scope="number-input"][data-part="increment-trigger"]'
     );
     if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
-    const scrubberEl = this.el.querySelector(
-      '[data-scope="number-input"][data-part="scrubber"]'
-    );
-    if (scrubberEl) {
-      this.spreadProps(scrubberEl, this.api.getScrubberProps());
-      scrubberEl.setAttribute("aria-label", "Scrub to adjust value");
-      scrubberEl.removeAttribute("role");
-    }
   }
 };
 
@@ -1345,12 +1340,12 @@ var NumberInput = class extends Component {
 var NumberInputHook = {
   mounted() {
     const el = this.el;
-    const valueStr = getString(el, "value");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const defaultValueStr = getString(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
     const zag = new NumberInput(el, {
       id: el.id,
-      ...controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr },
+      defaultValue: defaultValueStr,
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
@@ -1361,6 +1356,7 @@ var NumberInputHook = {
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       name: getString(el, "name"),
       form: getString(el, "form"),
+      dir: getDir(el),
       onValueChange: (details) => {
         if (details.value !== void 0) {
           const valueInput = el.querySelector(
@@ -1368,38 +1364,32 @@ var NumberInputHook = {
           );
           if (valueInput) {
             valueInput.value = details.value ?? "";
+            valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+            valueInput.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          this.pushEvent(eventName, {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
             value: details.value,
-            valueAsNumber: details.valueAsNumber,
-            id: el.id
-          });
-        }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+            valueAsNumber: details.valueAsNumber
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       }
     });
     zag.init();
     this.numberInput = zag;
-    this.handlers = [];
   },
   updated() {
-    const valueStr = getString(this.el, "value");
-    const controlled = getBoolean(this.el, "controlled");
     const defaultValueStr = getString(this.el, "defaultValue");
     this.numberInput?.updateProps({
       id: this.el.id,
-      ...controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr },
+      defaultValue: defaultValueStr,
       min: getNumber(this.el, "min"),
       max: getNumber(this.el, "max"),
       step: getNumber(this.el, "step"),
@@ -1408,13 +1398,11 @@ var NumberInputHook = {
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       name: getString(this.el, "name"),
-      form: getString(this.el, "form")
+      form: getString(this.el, "form"),
+      dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
     this.numberInput?.destroy();
   }
 };

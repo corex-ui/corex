@@ -2,44 +2,53 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Date Picker form</:title>
-    <:subtitle>Controller Form</:subtitle>
-  </.layout_heading>
-  <p>Controller Form (field=)</p>
-  <.form
-    :let={f}
-    for={@form}
-    action={~p"/#{@locale}/date-picker/form"}
-    method="post"
-    id={Corex.Form.get_form_id(@form)}
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
+  <.demo_page
+    id="date-picker-form-page"
+    title="Date Picker · Form"
+    subtitle="Phoenix to_form/2, validation, and plain HTML"
   >
-    <.date_picker
-      field={f[:date]}
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
-      class="date-picker"
+    <.demo_section
+      id="date-picker-form-changeset"
+      title="Phoenix Form (changeset)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
     >
-      <:label>Date</:label>
-      <:trigger>
-        <.heroicon name="hero-calendar" class="icon" />
-      </:trigger>
-      <:prev_trigger>
-        <.heroicon name="hero-chevron-left" class="icon" />
-      </:prev_trigger>
-      <:next_trigger>
-        <.heroicon name="hero-chevron-right" class="icon" />
-      </:next_trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.date_picker>
-    <.action type="submit" id="date-picker-form-submit" class="button button--accent">
-      Submit
-    </.action>
-  </.form>
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_changeset form={@form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-validate"
+      title="Ecto Changeset (validation)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_validate form={@validate_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-controller"
+      title="Native form (plain HTML)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_native />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

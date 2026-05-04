@@ -2,105 +2,85 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Code</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <h3>Elixir</h3>
-  <section class="layout__section">
-    <div class="relative w-full">
-      <.clipboard
-        id="code-elixir"
-        class="clipboard clipboard--sm absolute top-ui-padding right-ui-padding z-10"
-        value={@code_examples.elixir}
-        input={false}
-        trigger_aria_label="Copy code"
-      >
-        <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
-      </.clipboard>
-      <.code code={@code_examples.elixir} language={:elixir} class="code" />
-    </div>
-  </section>
+  <.demo_page
+    id="code-anatomy-page"
+    title="Code Anatomy"
+    subtitle="Syntax highlighting, inline and block, optional clipboard, and other languages."
+  >
+    <.demo_section
+      id="code-anatomy-inline"
+      title="Inline"
+      code={E2eWeb.Demos.CodeDemo.anatomy_inline_code()}
+    >
+      <:preview>
+        <.code inline class="code" language={:elixir} code={~S|conn.request_path|} />
+      </:preview>
+    </.demo_section>
 
-  <h3>HTML</h3>
-  <section class="layout__section">
-    <div class="relative w-full">
-      <.clipboard
-        id="code-html"
-        class="clipboard clipboard--sm absolute top-ui-padding right-ui-padding z-10"
-        value={@code_examples.html}
-        input={false}
-        trigger_aria_label="Copy code"
-      >
-        <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
-      </.clipboard>
-      <.code code={@code_examples.html} language={:html} class="code" />
-    </div>
-  </section>
+    <.demo_section
+      id="code-anatomy-block"
+      title="Block"
+      code={E2eWeb.Demos.CodeDemo.anatomy_block_code()}
+    >
+      <:preview>
+        <.code
+          class="code"
+          language={:elixir}
+          code="defmodule Greeter do  def hi, do: :ok end"
+        />
+      </:preview>
+    </.demo_section>
 
-  <h3>CSS</h3>
-  <section class="layout__section">
-    <div class="relative w-full">
-      <.clipboard
-        id="code-css"
-        class="clipboard clipboard--sm absolute top-ui-padding right-ui-padding z-10"
-        value={@code_examples.css}
-        input={false}
-        trigger_aria_label="Copy code"
-      >
-        <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
-      </.clipboard>
-      <.code code={@code_examples.css} language={:css} class="code" />
-    </div>
-  </section>
+    <.demo_section
+      id="code-anatomy-block-clipboard"
+      title="Block with clipboard"
+      code={E2eWeb.Demos.CodeDemo.anatomy_block_clipboard_code()}
+    >
+      <:preview>
+        <div class="relative">
+          <.code
+            class="code"
+            language={:elixir}
+            code={E2eWeb.Demos.CodeDemo.examples().elixir}
+          />
+          <.clipboard
+            id="code-anatomy-block-clipboard-copy"
+            class="clipboard clipboard--sm absolute top-2 right-2 z-10"
+            value={E2eWeb.Demos.CodeDemo.examples().elixir}
+            input={false}
+            trigger_aria_label="Copy code"
+          >
+            <:copy>
+              <.heroicon name="hero-clipboard" />
+            </:copy>
+            <:copied>
+              <.heroicon name="hero-check" />
+            </:copied>
+          </.clipboard>
+        </div>
+      </:preview>
+    </.demo_section>
 
-  <h3>JavaScript</h3>
-  <section class="layout__section">
-    <div class="relative w-full">
-      <.clipboard
-        id="code-js"
-        class="clipboard clipboard--sm absolute top-ui-padding right-ui-padding z-10"
-        value={@code_examples.js}
-        input={false}
-        trigger_aria_label="Copy code"
-      >
-        <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
-      </.clipboard>
-      <.code code={@code_examples.js} language={:js} class="code" />
-    </div>
-  </section>
+    <.demo_section
+      id="code-anatomy-javascript"
+      title="JavaScript"
+      code={E2eWeb.Demos.CodeDemo.anatomy_javascript_code()}
+    >
+      <:preview>
+        <.code class="code" language={:js} code={E2eWeb.Demos.CodeDemo.examples().js} />
+      </:preview>
+    </.demo_section>
 
-  <h3>Inline with heredoc</h3>
-  <section class="layout__section">
-    <div class="relative w-full">
-      <.clipboard
-        id="code-heredoc"
-        class="clipboard clipboard--sm absolute top-ui-padding right-ui-padding z-10"
-        value={@heredoc_example}
-        input={false}
-        trigger_aria_label="Copy code"
-      >
-        <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
-      </.clipboard>
-      <.code language={:elixir} class="code" code={@heredoc_example} />
-    </div>
-  </section>
+    <.demo_section
+      id="code-anatomy-from-file"
+      title="From file"
+      code={E2eWeb.Demos.CodeDemo.anatomy_from_file_code()}
+    >
+      <:preview>
+        <.code class="code" language={:elixir} code={E2eWeb.CodeExamples.load("hello.ex")} />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>
