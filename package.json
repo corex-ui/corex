@@ -12,6 +12,7 @@
       "import": "./priv/static/corex.mjs",
       "require": "./priv/static/corex.cjs.js"
     },
+    "./hooks": "./priv/static/hooks.mjs",
     "./accordion": "./priv/static/accordion.mjs",
     "./angle-slider": "./priv/static/angle-slider.mjs",
     "./avatar": "./priv/static/avatar.mjs",

@@ -142,7 +142,7 @@ function animateScaleClose(el, opts) {
   ).then(() => void 0);
 }
 
-// hooks/corex.ts
+// hooks/lazy-hook.ts
 function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
@@ -168,6 +168,8 @@ function createLazyHook(importFn, exportName) {
     }
   };
 }
+
+// hooks/corex.ts
 var Hooks = {
   Accordion: createLazyHook(() => import("corex/accordion"), "Accordion"),
   AngleSlider: createLazyHook(() => import("corex/angle-slider"), "AngleSlider"),
@@ -200,11 +202,6 @@ var Hooks = {
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };
-function hooks(componentNames) {
-  return Object.fromEntries(
-    componentNames.filter((name) => name in Hooks).map((name) => [name, Hooks[name]])
-  );
-}
 var corex_default = Hooks;
 export {
   Hooks,
@@ -220,7 +217,6 @@ export {
   findAccordionContent,
   findDialogBackdrop,
   findDialogContent,
-  findTreeBranch,
-  hooks
+  findTreeBranch
 };
 //# sourceMappingURL=corex.mjs.map

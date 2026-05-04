@@ -43,8 +43,7 @@ __export(corex_exports, {
   findAccordionContent: () => findAccordionContent,
   findDialogBackdrop: () => findDialogBackdrop,
   findDialogContent: () => findDialogContent,
-  findTreeBranch: () => findTreeBranch,
-  hooks: () => hooks
+  findTreeBranch: () => findTreeBranch
 });
 module.exports = __toCommonJS(corex_exports);
 
@@ -192,7 +191,7 @@ function animateScaleClose(el, opts) {
   ).then(() => void 0);
 }
 
-// hooks/corex.ts
+// hooks/lazy-hook.ts
 function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
@@ -218,6 +217,8 @@ function createLazyHook(importFn, exportName) {
     }
   };
 }
+
+// hooks/corex.ts
 var Hooks = {
   Accordion: createLazyHook(() => import("corex/accordion"), "Accordion"),
   AngleSlider: createLazyHook(() => import("corex/angle-slider"), "AngleSlider"),
@@ -250,10 +251,5 @@ var Hooks = {
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };
-function hooks(componentNames) {
-  return Object.fromEntries(
-    componentNames.filter((name) => name in Hooks).map((name) => [name, Hooks[name]])
-  );
-}
 var corex_default = Hooks;
 //# sourceMappingURL=corex.cjs.js.map

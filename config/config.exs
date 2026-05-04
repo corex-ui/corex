@@ -24,6 +24,14 @@ if Mix.env() == :dev do
     ]
   end
 
+  esbuild_corex_hooks = fn args ->
+    [
+      args: ~w(./hooks/hooks --bundle) ++ args,
+      cd: Path.expand("../assets", __DIR__),
+      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+    ]
+  end
+
   hooks_entries =
     ~w(
       ./hooks/accordion.ts
@@ -65,6 +73,8 @@ if Mix.env() == :dev do
 
   config :esbuild,
     version: "0.25.4",
+    corex_hooks:
+      esbuild_corex_hooks.(~w(--format=esm --sourcemap --outfile=../priv/static/hooks.mjs)),
     module:
       esbuild.(~w(--format=esm --sourcemap --outfile=../priv/static/corex.mjs) ++ corex_externals),
     main:

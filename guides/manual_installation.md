@@ -69,17 +69,28 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-`import corex from "corex"` registers **every** Corex hook. In production you can opt into the named export to register only the hooks you actually use:
+`import corex from "corex"` registers **every** Corex hook and keeps the full lazy registry in your bundle graph. To register **only** some hooks **without** pulling that full table into your app bundle, import **`hooks`** from **`corex/hooks`** and pass **lazy factories** (object keys must match **`phx-hook`** names, e.g. **`Dialog`**):
 
 ```javascript
-import { hooks } from "corex"
+import { hooks } from "corex/hooks"
 
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: { ...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"]) }
+  hooks: {
+    ...colocatedHooks,
+    ...hooks({
+      Accordion: () => import("corex/accordion"),
+      Dialog: () => import("corex/dialog"),
+      Combobox: () => import("corex/combobox"),
+    }),
+  },
 })
 ```
+
+Each value must be a **zero-argument function** returning the same dynamic import your bundler would use for that subpath. Esbuild then emits chunks **only** for those modules.
+
+If you already **eager-import** hook implementations from **`corex/<component>`**, you can still merge them with the same **`hooks`** helper: pass an object whose values are **hook objects** (not functions), and **`hooks`** returns that object unchanged (useful with **`colocatedHooks`**).
 
 ## 4. Root layout: load `app.js` as a module
 

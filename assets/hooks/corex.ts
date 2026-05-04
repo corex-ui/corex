@@ -1,5 +1,3 @@
-import type { Hook } from "phoenix_live_view";
-
 export type {
   AccordionChangedDetail,
   TreeViewExpandedChangedDetail,
@@ -24,33 +22,9 @@ export {
   findDialogContent,
 } from "../lib/custom-animation";
 
-type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
+import { createLazyHook } from "./lazy-hook";
 
-function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {
-  return {
-    async mounted() {
-      const mod = await importFn();
-      const real = mod[exportName];
-      (this as { _realHook?: Hook<object, HTMLElement> })._realHook = real;
-      if (real?.mounted) return real.mounted.call(this);
-    },
-    updated() {
-      (this as { _realHook?: Hook })._realHook?.updated?.call(this);
-    },
-    destroyed() {
-      (this as { _realHook?: Hook })._realHook?.destroyed?.call(this);
-    },
-    disconnected() {
-      (this as { _realHook?: Hook })._realHook?.disconnected?.call(this);
-    },
-    reconnected() {
-      (this as { _realHook?: Hook })._realHook?.reconnected?.call(this);
-    },
-    beforeUpdate() {
-      (this as { _realHook?: Hook })._realHook?.beforeUpdate?.call(this);
-    },
-  };
-}
+export type { HookModule } from "./lazy-hook";
 
 export const Hooks = {
   Accordion: createLazyHook(() => import("corex/accordion"), "Accordion"),
@@ -84,13 +58,5 @@ export const Hooks = {
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView"),
 };
-
-export function hooks<T extends keyof typeof Hooks>(
-  componentNames: readonly T[]
-): Pick<typeof Hooks, T> {
-  return Object.fromEntries(
-    componentNames.filter((name): name is T => name in Hooks).map((name) => [name, Hooks[name]])
-  ) as Pick<typeof Hooks, T>;
-}
 
 export default Hooks;

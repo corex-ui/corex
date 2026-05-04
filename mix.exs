@@ -70,6 +70,7 @@ defmodule Corex.MixProject do
       "assets.build": [
         &copy_design_to_installer/1,
         "esbuild module",
+        "esbuild corex_hooks",
         &clean_priv_static_chunks/1,
         "esbuild hooks",
         "esbuild cdn",
@@ -143,6 +144,7 @@ defmodule Corex.MixProject do
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
+        "guides/tableau.md",
         "guides/dark_mode.md",
         "guides/theming.md",
         "guides/localize.md",
@@ -163,6 +165,7 @@ defmodule Corex.MixProject do
           "guides/manual_installation.md"
         ],
         Guides: [
+          "guides/tableau.md",
           "guides/MCP.md",
           "guides/dark_mode.md",
           "guides/theming.md",
