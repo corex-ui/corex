@@ -12,9 +12,6 @@ in order:
    (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGPORT`, `DATABASE_URL` set in the workflow).
 3. **`mix test --include database:sqlite3`** — no extra service (file-based SQLite).
 
-**MySQL** and **MSSQL** tagged tests are **not** run in CI; run them locally with **`docker-compose`** (or equivalent)
-and **`mix test --include database:mysql`** / **`database:mssql`**, or **`mix test --include database`** for everything.
-
 The **`dev_corex_new_test.exs`** module focuses on **`mix corex.new ... --dev <repo>`** (esbuild ESM,
 hooks, `config :corex`, `use Corex`, `corex.mjs`). The filename keeps `dev_corex` for history; the
 CLI flag is **`--dev <repo>`**, not `--dev-corex`.
@@ -46,22 +43,17 @@ Or run only the dev checkout test:
 To run the full suite with tests that target a specific database:
 
     $ mix test --include database:postgresql
-    $ mix test --include database:mysql
-    $ mix test --include database:mssql
     $ mix test --include database:sqlite3
 
-For **MySQL**, **MSSQL**, or a single machine that matches **`mix test --include database`**, use
-`docker-compose.yml`:
-
-    $ docker-compose up
-
-Then:
+To run every test tagged with `:database` (PostgreSQL and SQLite3):
 
     $ mix test --include database
 
-Or with Docker Compose installed, **`./docker.sh`** starts services and runs that include.
+For local runs that need Postgres on **`localhost:5432`**, use **`docker-compose.yml`**:
 
-CI does **not** start MySQL/MSSQL containers; use compose (or install those servers) when you need those tags locally.
+    $ docker-compose up
+
+Or with Docker Compose installed, **`./docker.sh`** starts services and runs `mix test --include database`.
 
 ## How tests are written
 
