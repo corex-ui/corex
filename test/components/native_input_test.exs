@@ -131,5 +131,17 @@ defmodule Corex.NativeInputTest do
       assert result =~ "Icon Content"
       refute result =~ "data-no-icon"
     end
+
+    test "renders errors without :error slot" do
+      result =
+        render_component(&Corex.NativeInput.native_input/1,
+          type: "text",
+          name: "user[name]",
+          errors: ["can't be blank"]
+        )
+
+      assert result =~ "can&#39;t be blank"
+      assert [_] = find_in_html(result, ~s([data-part="error"]))
+    end
   end
 end

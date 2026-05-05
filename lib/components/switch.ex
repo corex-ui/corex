@@ -186,9 +186,9 @@ defmodule Corex.Switch do
   @doc type: :component
   use Phoenix.Component
 
+  alias Corex.Helpers
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
   alias Corex.Switch.Connect
-  alias Corex.Helpers
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS

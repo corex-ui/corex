@@ -184,8 +184,12 @@ defmodule Corex.NativeInput do
           <span :for={label <- @label} >{render_slot(label)}</span>
         </label>
       </div>
-      <div :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="native-input" data-part="error">
-        {render_slot(@error, msg)}
+      <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
+        <%= if @error != [] do %>
+          {render_slot(@error, msg)}
+        <% else %>
+          {msg}
+        <% end %>
       </div>
     </div>
     """
@@ -216,8 +220,12 @@ defmodule Corex.NativeInput do
           {Phoenix.HTML.Form.options_for_select(@options || [], @value)}
         </select>
       </div>
-      <div :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="native-input" data-part="error">
-        {render_slot(@error, msg)}
+      <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
+        <%= if @error != [] do %>
+          {render_slot(@error, msg)}
+        <% else %>
+          {msg}
+        <% end %>
       </div>
     </div>
     """
@@ -251,8 +259,12 @@ defmodule Corex.NativeInput do
           <label for={"#{@id}-input-#{opt_value}"} data-invalid={@invalid && ""}>{opt_label}</label>
         </div>
       </div>
-      <div :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="native-input" data-part="error">
-        {render_slot(@error, msg)}
+      <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
+        <%= if @error != [] do %>
+          {render_slot(@error, msg)}
+        <% else %>
+          {msg}
+        <% end %>
       </div>
     </div>
     """
@@ -297,11 +309,22 @@ defmodule Corex.NativeInput do
           />
         </div>
       </div>
-      <div :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="native-input" data-part="error">
-        {render_slot(@error, msg)}
+      <div :for={msg <- @errors} class={error_wrapper_class(@error)} data-scope="native-input" data-part="error">
+        <%= if @error != [] do %>
+          {render_slot(@error, msg)}
+        <% else %>
+          {msg}
+        <% end %>
       </div>
     </div>
     """
+  end
+
+  defp error_wrapper_class(error_slot) do
+    case List.first(List.wrap(error_slot)) do
+      m when is_map(m) -> Map.get(m, :class) || Map.get(m, "class")
+      _ -> nil
+    end
   end
 
   defp show_icon?(%{type: type, icon: icon}) do
