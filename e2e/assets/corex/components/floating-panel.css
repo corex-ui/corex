@@ -61,6 +61,15 @@
       box-shadow: inset 0 0 0 2px var(--color-ink);
       border-radius: var(--radius-md);
     }
+
+    &[data-minimized] {
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    &[data-minimized] [data-scope="floating-panel"][data-part="drag-trigger"] {
+      border-radius: var(--radius-md);
+    }
   }
 
   .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"],
@@ -134,5 +143,22 @@
       width: 10px;
       height: 10px;
     }
+  }
+
+  .floating-panel:not([data-resizable])
+    [data-scope="floating-panel"][data-part="resize-trigger"],
+  .floating-panel
+    [data-scope="floating-panel"][data-part="resize-trigger"][data-disabled] {
+    display: none;
+  }
+
+  .floating-panel:not([data-draggable])
+    [data-scope="floating-panel"][data-part="drag-trigger"],
+  .floating-panel
+    [data-scope="floating-panel"][data-part="drag-trigger"][data-disabled] {
+    cursor: default !important;
+    touch-action: auto !important;
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
   }
 }
