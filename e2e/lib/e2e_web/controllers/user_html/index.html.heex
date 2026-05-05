@@ -20,9 +20,10 @@
     rows={@users}
     row_click={&JS.navigate(~p"/users/#{&1}")}
   >
+    <:empty>No users yet.</:empty>
     <:col
       :let={user}
-      :for={field <- fields(Enum.at(@users, 0))}
+      :for={field <- @fields}
       label={label(field)}
     >
       <.record_field_value record={user} field={field} />
@@ -41,14 +42,15 @@
       </.navigate>
     </:action>
     <:action :let={user}>
-      <.action
-        phx-click={JS.push("delete", value: %{id: user.id})}
+      <.navigate
+        to={~p"/users/#{user}"}
+        method="delete"
         data-confirm="Are you sure?"
         class="button button--sm button--alert button--square"
-        aria-label={"Delete #{user.name}"}
+        aria_label={"Delete #{user.name}"}
       >
         <.heroicon name="hero-trash" />
-      </.action>
+      </.navigate>
     </:action>
   </.data_table>
 </Layouts.app>

@@ -337,12 +337,12 @@ defmodule E2eWeb.HomeLive do
               Install Corex <span class="home__display__accent">in one command.</span>
             </h2>
             <p class="home__lede">
-              Igniter wires up the dependency, the design tokens and the assets pipeline for you.
+              Corex generator wires up the dependency, the design tokens and the assets pipeline for you.
             </p>
 
             <.clipboard
               id="home-install-clipboard"
-              class="clipboard"
+              class="clipboard max-w-md"
               value={@install_command}
               trigger_aria_label="Copy install command"
             >

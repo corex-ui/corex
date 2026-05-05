@@ -28,6 +28,7 @@ defmodule E2eWeb.AdminLive.Index do
         rows={@streams.admins}
         row_click={fn {_id, admin} -> JS.navigate(~p"/admins/#{admin}") end}
       >
+        <:empty>No admins yet.</:empty>
         <:col
           :let={{_id, admin}}
           :for={field <- @fields}

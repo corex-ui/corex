@@ -8,7 +8,8 @@ defmodule E2eWeb.UserController do
 
   def index(conn, _params) do
     users = Accounts.list_users()
-    render(conn, :index, users: users)
+    fields = E2eWeb.RecordFields.fields(struct(User))
+    render(conn, :index, users: users, fields: fields)
   end
 
   def new(conn, _params) do
