@@ -265,7 +265,7 @@ defmodule Corex.FileUpload do
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
-        <div phx-mounted={Connect.ignore_dropzone(%Dropzone{id: @id})} {Connect.dropzone(%Dropzone{id: @id})}>
+        <div data-scope="file-upload" data-part="region">
           <input
             :if={@name}
             phx-mounted={
@@ -284,11 +284,13 @@ defmodule Corex.FileUpload do
             }
             {Connect.hidden_input(%HiddenInput{id: @id, disabled: @disabled, name: @name, form: @form})}
           />
-          <%= if @dropzone != [] do %>
-            {render_slot(@dropzone)}
-          <% else %>
-            <span>{@translation.dropzone}</span>
-          <% end %>
+          <div phx-mounted={Connect.ignore_dropzone(%Dropzone{id: @id})} {Connect.dropzone(%Dropzone{id: @id})}>
+            <%= if @dropzone != [] do %>
+              {render_slot(@dropzone)}
+            <% else %>
+              <span>{@translation.dropzone}</span>
+            <% end %>
+          </div>
           <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir})} {Connect.trigger(%Trigger{id: @id, dir: @dir})}>
             <%= if @open != [] do %>
               {render_slot(@open)}

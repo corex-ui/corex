@@ -12,7 +12,7 @@
   }
 
   .file-upload[data-loading] [data-scope="file-upload"][data-part="hidden-input"],
-  .file-upload[data-loading] [data-scope="file-upload"][data-part="dropzone"] input[type="file"] {
+  .file-upload[data-loading] [data-scope="file-upload"][data-part="hidden-input-sentinel"] {
     opacity: 0;
     position: absolute;
     width: 1px;
@@ -24,7 +24,7 @@
   }
 
   .file-upload [data-scope="file-upload"][data-part="hidden-input"],
-  .file-upload [data-scope="file-upload"][data-part="dropzone"] input[type="file"] {
+  .file-upload [data-scope="file-upload"][data-part="hidden-input-sentinel"] {
     opacity: 0;
     position: absolute;
     width: 1px;
@@ -56,7 +56,7 @@
     text-align: center;
   }
 
-  .file-upload [data-scope="file-upload"][data-part="dropzone"] {
+  .file-upload [data-scope="file-upload"][data-part="region"] {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -66,13 +66,24 @@
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--spacing-space);
-    cursor: pointer;
-    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .file-upload [data-scope="file-upload"][data-part="dropzone"][data-dragging] {
+  .file-upload [data-scope="file-upload"][data-part="region"]:has([data-scope="file-upload"][data-part="dropzone"][data-dragging]) {
     border-color: var(--color-brand);
     background: color-mix(in srgb, var(--color-brand) 8%, transparent);
+  }
+
+  .file-upload [data-scope="file-upload"][data-part="dropzone"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+    cursor: pointer;
+    text-align: center;
   }
 
   .file-upload [data-scope="file-upload"][data-part="trigger"] {

@@ -181,32 +181,41 @@ defmodule Corex.FileUploadLive do
         >
           {render_slot(@label)}
         </label>
-        <label
-          for={@upload.ref}
-          phx-drop-target={@upload.ref}
-          data-scope="file-upload"
-          data-part="dropzone"
-          id={"file:#{@id}:dropzone"}
-        >
+        <div data-scope="file-upload" data-part="region">
           <.live_file_input
             upload={@upload}
             disabled={@disabled}
             data-scope="file-upload"
             data-part="hidden-input"
           />
-          <%= if @dropzone != [] do %>
-            {render_slot(@dropzone)}
-          <% else %>
-            <span>{@translation.dropzone}</span>
-          <% end %>
-          <span data-scope="file-upload" data-part="trigger" id={"file:#{@id}:trigger"} dir={@dir}>
+          <label
+            for={@upload.ref}
+            phx-drop-target={@upload.ref}
+            data-scope="file-upload"
+            data-part="dropzone"
+            id={"file:#{@id}:dropzone"}
+            dir={@dir}
+          >
+            <%= if @dropzone != [] do %>
+              {render_slot(@dropzone)}
+            <% else %>
+              <span>{@translation.dropzone}</span>
+            <% end %>
+          </label>
+          <label
+            for={@upload.ref}
+            data-scope="file-upload"
+            data-part="trigger"
+            id={"file:#{@id}:trigger"}
+            dir={@dir}
+          >
             <%= if @open != [] do %>
               {render_slot(@open)}
             <% else %>
               {@translation.open}
             <% end %>
-          </span>
-        </label>
+          </label>
+        </div>
         <ul
           :if={@upload.entries != []}
           data-scope="file-upload"
