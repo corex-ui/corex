@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.ListboxDemo do
   use E2eWeb, :html
 
-  @pattern_snippets Path.join(__DIR__, "listbox_pattern_snippets")
-
   def items_minimal do
     Corex.List.new([
       %{label: "France", id: "fra"},
@@ -182,7 +180,111 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_my_app, do: read_pattern_snippet("patterns_stream_my_app.txt")
+  def patterns_stream_elixir do
+    ~S'''
+    defmodule MyAppWeb.ListboxStreamDemoLive do
+      use MyAppWeb, :live_view
+
+      @impl true
+      def mount(_params, _session, socket) do
+        initial = [
+          %{id: "1", label: "Apple"},
+          %{id: "2", label: "Banana"},
+          %{id: "3", label: "Cherry"}
+        ]
+
+        socket =
+          socket
+          |> stream_configure(:items, dom_id: &("listbox:stream-listbox:item:" <> to_string(&1.id)))
+          |> stream(:items, initial)
+          |> assign(:items_list, initial)
+          |> assign(:next_id, 4)
+
+        if connected?(socket) do
+          Process.send_after(self(), :add_timestamp_item, 3_000)
+        end
+
+        {:ok, socket}
+      end
+
+      @impl true
+      def handle_info(:add_timestamp_item, socket) do
+        Process.send_after(self(), :add_timestamp_item, 10_000)
+        id = to_string(socket.assigns.next_id)
+
+        time =
+          DateTime.utc_now()
+          |> DateTime.truncate(:second)
+          |> DateTime.to_time()
+          |> Time.to_string()
+
+        item = %{id: id, label: "Item " <> id <> " @ " <> time}
+
+        {:noreply,
+         socket
+         |> stream_insert(:items, item)
+         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:next_id, socket.assigns.next_id + 1)}
+      end
+
+      @impl true
+      def handle_event("add_item", _params, socket) do
+        id = to_string(socket.assigns.next_id)
+        item = %{id: id, label: "Item " <> id}
+
+        {:noreply,
+         socket
+         |> stream_insert(:items, item)
+         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:next_id, socket.assigns.next_id + 1)}
+      end
+
+      @impl true
+      def handle_event("reset", _params, socket) do
+        initial = [
+          %{id: "1", label: "Apple"},
+          %{id: "2", label: "Banana"},
+          %{id: "3", label: "Cherry"}
+        ]
+
+        {:noreply,
+         socket
+         |> stream(:items, initial, reset: true)
+         |> assign(:items_list, initial)
+         |> assign(:next_id, 4)}
+      end
+
+      @impl true
+      def render(assigns) do
+        ~H"""
+        <Layouts.app
+          flash={@flash}
+          path={@path}
+          mode={@mode}
+          theme={@theme}
+          locale={@locale}
+        >
+          <div class="flex flex-col gap-3 w-full max-w-xl">
+            <div class="flex flex-wrap gap-2">
+              <.action phx-click="add_item" class="button button--sm button--accent">
+                <.heroicon name="hero-plus" /> Add item
+              </.action>
+              <.action phx-click="reset" class="button button--sm button--alert">
+                Reset
+              </.action>
+            </div>
+            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+              <:label>Choose an item</:label>
+              <:empty>No items</:empty>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
+          </div>
+        </Layouts.app>
+        """
+      end
+    end
+    '''
+  end
 
   def patterns_stream_grouped_demo_heex do
     ~S"""
@@ -219,8 +321,103 @@ defmodule E2eWeb.Demos.ListboxDemo do
     """
   end
 
-  def patterns_stream_grouped_my_app,
-    do: read_pattern_snippet("patterns_stream_grouped_my_app.txt")
+  def patterns_stream_grouped_elixir do
+    ~S'''
+    defmodule MyAppWeb.ListboxStreamGroupedDemoLive do
+      use MyAppWeb, :live_view
+
+      @impl true
+      def mount(_params, _session, socket) do
+        initial = [
+          %{id: "g1", label: "France", group: "Europe"},
+          %{id: "g2", label: "Japan", group: "Asia"},
+          %{id: "g3", label: "Germany", group: "Europe"}
+        ]
+
+        socket =
+          socket
+          |> stream_configure(:grouped_items, dom_id: &("listbox:stream-grouped-listbox:item:" <> to_string(&1.id)))
+          |> stream(:grouped_items, initial)
+          |> assign(:grouped_items_list, initial)
+          |> assign(:next_grouped_id, 4)
+
+        {:ok, socket}
+      end
+
+      @impl true
+      def handle_event("add_to_group", %{"group" => group}, socket) do
+        n = socket.assigns.next_grouped_id
+        id = "g" <> Integer.to_string(n)
+        item = %{id: id, label: "Item " <> Integer.to_string(n), group: group}
+
+        {:noreply,
+         socket
+         |> stream_insert(:grouped_items, item)
+         |> assign(:grouped_items_list, socket.assigns.grouped_items_list ++ [item])
+         |> assign(:next_grouped_id, n + 1)}
+      end
+
+      @impl true
+      def handle_event("reset_grouped", _params, socket) do
+        initial = [
+          %{id: "g1", label: "France", group: "Europe"},
+          %{id: "g2", label: "Japan", group: "Asia"},
+          %{id: "g3", label: "Germany", group: "Europe"}
+        ]
+
+        {:noreply,
+         socket
+         |> stream(:grouped_items, initial, reset: true)
+         |> assign(:grouped_items_list, initial)
+         |> assign(:next_grouped_id, 4)}
+      end
+
+      @impl true
+      def render(assigns) do
+        ~H"""
+        <Layouts.app
+          flash={@flash}
+          path={@path}
+          mode={@mode}
+          theme={@theme}
+          locale={@locale}
+        >
+          <div class="flex flex-col gap-3 w-full max-w-xl">
+            <div class="flex flex-wrap gap-2">
+              <.action
+                phx-click="add_to_group"
+                phx-value-group="Europe"
+                class="button button--sm button--accent"
+              >
+                <.heroicon name="hero-plus" /> Add to Europe
+              </.action>
+              <.action
+                phx-click="add_to_group"
+                phx-value-group="Asia"
+                class="button button--sm button--accent"
+              >
+                <.heroicon name="hero-plus" /> Add to Asia
+              </.action>
+              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+                Reset
+              </.action>
+            </div>
+            <.listbox
+              id="stream-grouped-listbox"
+              class="listbox"
+              items={Corex.List.new(@grouped_items_list)}
+            >
+              <:label>Choose a country</:label>
+              <:empty>No items</:empty>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
+          </div>
+        </Layouts.app>
+        """
+      end
+    end
+    '''
+  end
 
   def patterns_controlled_heex do
     ~S"""
@@ -252,12 +449,63 @@ defmodule E2eWeb.Demos.ListboxDemo do
   end
 
   def patterns_controlled_elixir do
-    patterns_controlled_my_app()
+    ~S'''
+    defmodule MyAppWeb.ListboxControlledDemoLive do
+      use MyAppWeb, :live_view
+
+      @impl true
+      def mount(_params, _session, socket) do
+        {:ok, assign(socket, :listbox_controlled_value, ["fra", "bel"])}
+      end
+
+      @impl true
+      def handle_event("listbox_patterns_controlled_value", %{"value" => value}, socket)
+          when is_list(value) do
+        {:noreply, assign(socket, :listbox_controlled_value, value)}
+      end
+
+      @impl true
+      def render(assigns) do
+        ~H"""
+        <Layouts.app
+          flash={@flash}
+          path={@path}
+          mode={@mode}
+          theme={@theme}
+          locale={@locale}
+        >
+          <div class="flex flex-col gap-3 max-w-xl w-full">
+            <.listbox
+              id="listbox-patterns-controlled-field"
+              class="listbox"
+              items={
+                Corex.List.new([
+                  %{label: "France", id: "fra"},
+                  %{label: "Belgium", id: "bel"},
+                  %{label: "Germany", id: "deu"},
+                  %{label: "Netherlands", id: "nld"},
+                  %{label: "Switzerland", id: "che"},
+                  %{label: "Austria", id: "aut"}
+                ])
+              }
+              selection_mode="multiple"
+              controlled
+              value={@listbox_controlled_value}
+              on_value_change="listbox_patterns_controlled_value"
+            >
+              <:label>Choose countries</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
+            <p class="text-sm text-ink-muted font-mono" id="listbox-patterns-controlled-state">
+              value: {inspect(@listbox_controlled_value)}
+            </p>
+          </div>
+        </Layouts.app>
+        """
+      end
+    end
+    '''
   end
-
-  def patterns_controlled_my_app, do: read_pattern_snippet("patterns_controlled_my_app.txt")
-
-  defp read_pattern_snippet(name), do: File.read!(Path.join(@pattern_snippets, name))
 
   def api_set_value_client_binding_code do
     ~S"""

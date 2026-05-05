@@ -7,8 +7,6 @@ defmodule E2e.Application do
 
   @impl true
   def start(_type, _args) do
-    :ok = Corex.MCP.Server.init_tools()
-
     children = [
       E2eWeb.Telemetry,
       E2e.Repo,

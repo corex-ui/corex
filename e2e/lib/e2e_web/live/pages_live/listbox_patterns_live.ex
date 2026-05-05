@@ -116,16 +116,16 @@ defmodule E2eWeb.ListboxPatternsLive do
           title="Stream"
           code_tabs={[
             %{
-              value: "listbox-demo",
-              label: "Listbox demo",
+              value: "heex",
+              label: "Heex",
               language: :heex,
               code: Demo.patterns_stream_demo_heex()
             },
             %{
-              value: "myapp",
-              label: "MyApp",
+              value: "elixir",
+              label: "Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_my_app()
+              code: Demo.patterns_stream_elixir()
             }
           ]}
         >
@@ -153,16 +153,16 @@ defmodule E2eWeb.ListboxPatternsLive do
           title="Stream grouped"
           code_tabs={[
             %{
-              value: "listbox-demo",
-              label: "Listbox demo",
+              value: "heex",
+              label: "Heex",
               language: :heex,
               code: Demo.patterns_stream_grouped_demo_heex()
             },
             %{
-              value: "myapp",
-              label: "MyApp",
+              value: "elixir",
+              label: "Elixir",
               language: :elixir,
-              code: Demo.patterns_stream_grouped_my_app()
+              code: Demo.patterns_stream_grouped_elixir()
             }
           ]}
         >
@@ -205,16 +205,16 @@ defmodule E2eWeb.ListboxPatternsLive do
           title="Controlled (value)"
           code_tabs={[
             %{
-              value: "listbox-demo",
-              label: "Listbox demo",
+              value: "heex",
+              label: "Heex",
               language: :heex,
               code: Demo.patterns_controlled_heex()
             },
             %{
-              value: "myapp",
-              label: "MyApp",
+              value: "elixir",
+              label: "Elixir",
               language: :elixir,
-              code: Demo.patterns_controlled_my_app()
+              code: Demo.patterns_controlled_elixir()
             }
           ]}
         >
