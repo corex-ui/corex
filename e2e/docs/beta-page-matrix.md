@@ -20,6 +20,8 @@ This file classifies each Corex demo component and lists which **page types** ex
 | date-picker | Zag + form | yes | — | yes | yes | yes | yes | yes | — | live-form, controlled |
 | dialog | Zag | yes | — | — | yes | yes | yes | yes | yes | — |
 | editable | Zag + form | yes | yes | yes | yes | yes | yes | — | — | live-form |
+| file-upload | Zag + form | yes | — | yes | yes | yes | yes | — | — | controller form |
+| file-upload-live | LV uploads | yes | — | yes | yes | — | — | — | — | live-form |
 | floating-panel | Zag | yes | — | — | yes | yes | yes | yes | — | — |
 | layout-heading | non-Zag | yes | yes | — | — | — | — | — | — | — |
 | listbox | Zag | yes | — | — | yes | yes | yes | yes | — | stream |

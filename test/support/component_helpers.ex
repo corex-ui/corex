@@ -15,7 +15,10 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.DatePicker
   import Corex.Dialog
   import Corex.Editable
+  import Corex.FileUpload
+  import Corex.FileUploadLive
   import Corex.FloatingPanel
+  import Corex.Heroicon
   import Corex.Listbox
   import Corex.Marquee
   import Corex.Menu
@@ -632,6 +635,95 @@ defmodule CorexTest.ComponentHelpers do
   def render_navigate_method(assigns) do
     ~H"""
     <.navigate to={@to} type="navigate" method="post">Link</.navigate>
+    """
+  end
+
+  def render_file_upload_minimal(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.file_upload name="doc">
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def render_file_upload_full(assigns) do
+    ~H"""
+    <.file_upload id="file-upload-test-full" name="document" class="file-upload">
+      <:label>Attachment</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def render_file_upload_with_field(assigns) do
+    form = Phoenix.Component.to_form(%{"avatar" => nil}, as: :user)
+    field = form[:avatar]
+    assigns = assign(assigns, :field, field)
+
+    ~H"""
+    <.file_upload field={@field} class="file-upload">
+      <:label>Avatar</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def render_file_upload_with_close(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.file_upload id="file-upload-test-close" name="doc" class="file-upload">
+      <:label>Files</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" data-test-close />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def render_file_upload_live_minimal(assigns) do
+    _ = assigns
+
+    upload = %Phoenix.LiveView.UploadConfig{
+      name: :attachment,
+      ref: "phx-test-ref",
+      entries: [],
+      errors: [],
+      max_entries: 1,
+      max_file_size: 8_000_000,
+      chunk_size: 64_000,
+      chunk_timeout: 10_000,
+      accept: :any,
+      acceptable_types: MapSet.new(),
+      acceptable_exts: MapSet.new(),
+      external: false,
+      allowed?: true,
+      auto_upload?: false,
+      progress_event: nil,
+      writer: nil,
+      cid: nil,
+      client_key: "ck",
+      entry_refs_to_pids: %{},
+      entry_refs_to_metas: %{}
+    }
+
+    assigns = assign(assigns, :upload, upload)
+
+    ~H"""
+    <.file_upload_live upload={@upload} field={:attachment} id="file-upload-live-test">
+      <:label>Files</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload_live>
     """
   end
 

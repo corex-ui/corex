@@ -32,7 +32,9 @@ export default [
         CSS: "readonly",
         EventListener: "readonly",
         MouseEvent: "readonly",
+        File: "readonly",
         HTMLInputElement: "readonly",
+        HTMLLIElement: "readonly",
         HTMLSelectElement: "readonly",
         HTMLFormElement: "readonly",
         SVGSVGElement: "readonly",
@@ -42,6 +44,7 @@ export default [
         clearTimeout: "readonly",
         queueMicrotask: "readonly",
         Animation: "readonly",
+        VoidFunction: "readonly",
       },
     },
     plugins: {

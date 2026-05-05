@@ -1,6 +1,6 @@
 import {
   getBooleanValue
-} from "./chunk-OVJ3SUQN.mjs";
+} from "./chunk-LTYT3NRU.mjs";
 
 // lib/animation.ts
 function readRequiredAttrString(el, dataAttr, label) {

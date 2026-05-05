@@ -31,7 +31,7 @@ defmodule E2eWeb.Helpers do
   defp maybe_add(list, true, fun), do: list ++ [fun.()]
   defp maybe_add(list, false, _fun), do: list
 
-  @aside_no_zag ~w(action navigate data-list data-table layout-heading code native-input)
+  @aside_no_zag ~w(action navigate data-list data-table layout-heading code native-input file-upload-live)
 
   defp components_docs_node(%{label: label, id: id} = cfg) do
     badges =
@@ -361,6 +361,30 @@ defmodule E2eWeb.Helpers do
           forms: [
             doc_form_menu_item("Controller Form", ~p"/editable/form"),
             doc_form_menu_item("Live Form", ~p"/editable/live-form")
+          ]
+        },
+        %{
+          label: "File upload",
+          id: "file-upload",
+          anatomy_to: ~p"/file-upload/anatomy",
+          playground_to: ~p"/file-upload/playground",
+          api_to: ~p"/file-upload/api",
+          events_to: ~p"/file-upload/events",
+          pattern: false,
+          forms: [
+            doc_form_menu_item("Controller Form", ~p"/file-upload/form")
+          ]
+        },
+        %{
+          label: "File upload live",
+          id: "file-upload-live",
+          anatomy_to: ~p"/file-upload-live/anatomy",
+          playground_to: ~p"/file-upload-live/playground",
+          api: false,
+          event: false,
+          pattern: false,
+          forms: [
+            doc_form_menu_item("Live Form", ~p"/file-upload-live/form")
           ]
         },
         %{

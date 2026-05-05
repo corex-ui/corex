@@ -1,0 +1,533 @@
+defmodule E2eWeb.Demos.FileUploadDemo do
+  use E2eWeb, :html
+
+  alias Phoenix.LiveView.JS
+
+  def anatomy_minimal_code do
+    ~S"""
+    <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def anatomy_minimal_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def anatomy_with_label_code do
+    ~S"""
+    <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+      <:label>Files</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def anatomy_with_label_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+      <:label>Files</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def live_anatomy_minimal_code do
+    ~S"""
+    <form phx-change="validate">
+      <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal} id="file-upload-live-anatomy-minimal">
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload_live>
+    </form>
+    """
+  end
+
+  def live_anatomy_with_label_code do
+    ~S"""
+    <form phx-change="validate">
+      <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label} id="file-upload-live-anatomy-label">
+        <:label>Files</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload_live>
+    </form>
+    """
+  end
+
+  def anatomy_custom_slots_code do
+    ~S"""
+    <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+      <:dropzone>
+        <span>Custom dropzone</span>
+      </:dropzone>
+      <:open>
+        <span>Custom trigger</span>
+      </:open>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def anatomy_custom_slots_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+      <:dropzone>
+        <span>Custom dropzone</span>
+      </:dropzone>
+      <:open>
+        <span>Custom trigger</span>
+      </:open>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def live_anatomy_custom_slots_code do
+    ~S"""
+    <form phx-change="validate">
+      <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom} id="file-upload-live-anatomy-custom">
+        <:dropzone>
+          <span>Custom dropzone</span>
+        </:dropzone>
+        <:open>
+          <span>Custom trigger</span>
+        </:open>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload_live>
+    </form>
+    """
+  end
+
+  def form_ecto do
+    ~S"""
+    defmodule E2e.Form.FileUploadForm do
+      use Ecto.Schema
+      import Ecto.Changeset
+
+      embedded_schema do
+        field :attachment, :map, virtual: true
+      end
+
+      def changeset(form, attrs \\ %{}) do
+        cast(form, attrs, [:attachment])
+      end
+
+      def changeset_validate(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:attachment])
+        |> validate_attachment_required()
+      end
+
+      defp validate_attachment_required(changeset) do
+        upload = get_change(changeset, :attachment)
+
+        if present_upload?(upload) do
+          changeset
+        else
+          add_error(changeset, :attachment, "can't be blank", validation: :required)
+        end
+      end
+
+      defp present_upload?(%Plug.Upload{filename: name}) when is_binary(name) and name != "", do: true
+      defp present_upload?(_), do: false
+    end
+    """
+  end
+
+  def form_changeset_heex do
+    ~S"""
+    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+      <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
+      <.file_upload field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" class="button button--accent w-full">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_changeset_elixir do
+    ~S"""
+    changeset = E2e.Form.FileUploadForm.changeset(%E2e.Form.FileUploadForm{}, %{})
+    to_form(changeset, as: :file_upload_changeset, id: "file-upload-changeset-form")
+    """
+  end
+
+  def form_validate_heex do
+    ~S"""
+    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+      <input type="hidden" name="file_upload_validate[_sent]" value="1" />
+      <.file_upload field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" class="button button--accent w-full">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_validate_elixir do
+    ~S"""
+    changeset = E2e.Form.FileUploadForm.changeset_validate(%E2e.Form.FileUploadForm{}, %{})
+    to_form(changeset, as: :file_upload_validate, id: "file-upload-validate-form")
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/file-upload/form"} method="post" id="file-upload-plain-form" multipart class="w-full max-w-2xs flex flex-col gap-space">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
+        <:label>Avatar</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" id="file-upload-native-submit" class="button button--accent w-full">Submit</.action>
+    </form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_changeset(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/file-upload/form"}
+      method="post"
+      id={@form.id}
+      multipart
+      class="w-full max-w-2xs flex flex-col gap-space items-center"
+    >
+      <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
+      <.file_upload id="file-upload-cs-field" field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" id="file-upload-cs-submit" class="button button--accent w-full">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_validate(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/file-upload/form"}
+      method="post"
+      id={@form.id}
+      multipart
+      class="w-full max-w-2xs flex flex-col gap-space items-center"
+    >
+      <input type="hidden" name="file_upload_validate[_sent]" value="1" />
+      <.file_upload id="file-upload-val-field" field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" id="file-upload-val-submit" class="button button--accent w-full">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form
+      action={~p"/file-upload/form"}
+      method="post"
+      id="file-upload-plain-form"
+      multipart
+      class="w-full max-w-2xs flex flex-col gap-space items-center"
+    >
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
+        <:label>Avatar</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" id="file-upload-native-submit" class="button button--accent w-full">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  def api_open_phoenix_binding_heex do
+    ~S"""
+    <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button button--sm">
+      Open picker
+    </.action>
+    <.file_upload id="file-upload-api-phx" name="demo[]" class="file-upload" max_files={3}>
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def api_open_server_heex do
+    ~S"""
+    <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button button--sm">
+      Open picker
+    </.action>
+    <.file_upload id="file-upload-api-server" name="demo[]" class="file-upload" max_files={3}>
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def api_open_server_elixir do
+    ~S"""
+    def handle_event("api_fu_open_server", %{"id" => id}, socket) do
+      {:noreply, Corex.FileUpload.open_file_picker(socket, id)}
+    end
+    """
+  end
+
+  def api_open_client_js do
+    ~S"""
+    const el = document.getElementById("file-upload-api-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:file-upload:open", {
+        bubbles: false,
+      })
+    );
+    """
+  end
+
+  def api_open_phoenix_binding_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+      <.action
+        phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")}
+        class="button button--sm"
+      >
+        Open picker
+      </.action>
+    </div>
+    <.file_upload id="file-upload-api-phx" name="demo[]" class="file-upload" max_files={3}>
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def api_open_server_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+      <.action
+        phx-click="api_fu_open_server"
+        phx-value-id="file-upload-api-server"
+        class="button button--sm"
+      >
+        Open picker
+      </.action>
+    </div>
+    <.file_upload id="file-upload-api-server" name="demo[]" class="file-upload" max_files={3}>
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def api_open_client_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4 items-center w-full justify-center">
+      <.action
+        type="button"
+        class="button button--sm"
+        phx-click={JS.dispatch("corex:file-upload:open", to: "#file-upload-api-js", bubbles: false)}
+      >
+        Open picker (JS)
+      </.action>
+    </div>
+    <.file_upload id="file-upload-api-js" name="demo[]" class="file-upload" max_files={3}>
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def events_server_heex do
+    ~S"""
+    <.file_upload
+      id="file-upload-events-server"
+      class="file-upload"
+      name="ev-server[]"
+      on_file_change="fu_ev_server"
+    >
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def events_server_elixir do
+    ~S"""
+    def handle_event("fu_ev_server", %{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = payload, socket) do
+      name = Map.get(payload, "firstAcceptedName")
+      suffix = if is_binary(name) and name != "", do: " (#{name})", else: ""
+      log = %{time: "12:00:00", dom_id: id, value: "#{c} accepted, #{r} rejected#{suffix}"}
+      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
+    end
+    """
+  end
+
+  def events_client_heex do
+    ~S"""
+    <.file_upload
+      id="file-upload-events-client"
+      class="file-upload"
+      name="ev-client[]"
+      on_file_change_client="file-upload-file-change"
+    >
+      <:label>Upload</:label>
+      <:close>
+        <.heroicon name="hero-x-mark" />
+      </:close>
+    </.file_upload>
+    """
+  end
+
+  def events_client_js do
+    ~S"""
+    const el = document.getElementById("file-upload-events-client");
+    el?.addEventListener("file-upload-file-change", (event) => console.log(event.detail));
+    """
+  end
+
+  def events_client_elixir do
+    ~S"""
+    def handle_event("fu_ev_client", %{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = payload, socket) do
+      name = Map.get(payload, "firstAcceptedName")
+      suffix = if is_binary(name) and name != "", do: " (#{name})", else: ""
+      log = %{time: "12:00:00", dom_id: id, value: "#{c} accepted, #{r} rejected#{suffix}"}
+      {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
+    end
+    """
+  end
+
+  def form_live_upload_heex do
+    ~S"""
+    <form phx-change="validate" phx-submit="save" id="file-upload-live-form">
+      <.file_upload_live upload={@uploads.attachment} field={:attachment} id="file-upload-live-field">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload_live>
+      <.action type="submit" class="button button--accent w-full">Submit</.action>
+    </form>
+    """
+  end
+
+  def form_live_upload_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      {:ok,
+       allow_upload(socket, :attachment,
+         accept: ~w(.jpg .jpeg .png .pdf .txt),
+         max_entries: 3,
+         max_file_size: 8_000_000
+       )}
+    end
+
+    def handle_event("validate", _params, socket), do: {:noreply, socket}
+
+    def handle_event("save", _params, socket) do
+      _results =
+        consume_uploaded_entries(socket, :attachment, fn %{path: path}, entry ->
+          File.rm!(path)
+          {:ok, entry.client_name}
+        end)
+
+      {:noreply, socket}
+    end
+
+    def handle_event("file_upload_live_cancel", params, socket) do
+      %{"ref" => ref, "upload_field" => field} = params
+      {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+    end
+    """
+  end
+end

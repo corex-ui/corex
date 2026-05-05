@@ -30,7 +30,7 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-OVJ3SUQN.mjs";
+} from "./chunks/chunk-LTYT3NRU.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");

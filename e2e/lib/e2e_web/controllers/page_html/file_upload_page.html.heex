@@ -1,0 +1,29 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    id="file-upload-anatomy-page"
+    title="File Upload Anatomy"
+    subtitle="Dropzone, trigger, and accepted file list."
+  >
+    <.demo_section
+      id="file-upload-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.FileUploadDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.FileUploadDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="file-upload-anatomy-label"
+      title="With label"
+      code={E2eWeb.Demos.FileUploadDemo.anatomy_with_label_code()}
+    >
+      <:preview><E2eWeb.Demos.FileUploadDemo.anatomy_with_label_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="file-upload-anatomy-custom-slots"
+      title="Custom slots"
+      code={E2eWeb.Demos.FileUploadDemo.anatomy_custom_slots_code()}
+    >
+      <:preview><E2eWeb.Demos.FileUploadDemo.anatomy_custom_slots_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

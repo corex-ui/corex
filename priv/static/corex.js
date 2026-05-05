@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-OVJ3SUQN.mjs
+  // ../priv/static/chunks/chunk-LTYT3NRU.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -176,6 +176,14 @@ var Corex = (() => {
       return rows;
     }, []);
   }
+  function flatArray(arr) {
+    return arr.reduce((flat, item) => {
+      if (Array.isArray(item)) {
+        return flat.concat(flatArray(item));
+      }
+      return flat.concat(item);
+    }, []);
+  }
   function partition(arr, fn) {
     return arr.reduce(
       ([pass, fail], value) => {
@@ -217,6 +225,17 @@ var Corex = (() => {
         }, wait - timeSinceLastCall);
       }
     };
+  }
+  function toName(code) {
+    let name = "";
+    let x2;
+    for (x2 = Math.abs(code); x2 > 52; x2 = x2 / 52 | 0) name = toChar(x2 % 52) + name;
+    return toChar(x2 % 52) + name;
+  }
+  function toPhash(h2, x2) {
+    let i2 = x2.length;
+    while (i2) h2 = h2 * 33 ^ x2.charCodeAt(--i2);
+    return h2;
   }
   function compact(obj) {
     if (!isPlainObject(obj) || obj === void 0) return obj;
@@ -265,8 +284,8 @@ var Corex = (() => {
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
-  function joinStatePath(parts30) {
-    return parts30.join(STATE_DELIMITER);
+  function joinStatePath(parts31) {
+    return parts31.join(STATE_DELIMITER);
   }
   function isAbsoluteStatePath(value) {
     return value.includes(STATE_DELIMITER);
@@ -283,7 +302,7 @@ var Corex = (() => {
   function appendStatePath(base, segment) {
     return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
   }
-  function buildStateIndex(machine30) {
+  function buildStateIndex(machine31) {
     const index = /* @__PURE__ */ new Map();
     const idIndex = /* @__PURE__ */ new Map();
     const visit2 = (basePath, state2) => {
@@ -309,32 +328,32 @@ var Corex = (() => {
         visit2(childPath, childState);
       }
     };
-    for (const [topKey, topState] of Object.entries(machine30.states)) {
+    for (const [topKey, topState] of Object.entries(machine31.states)) {
       if (!topState) continue;
       visit2(topKey, topState);
     }
     return { index, idIndex };
   }
-  function ensureStateIndex(machine30) {
-    const cached = stateIndexCache.get(machine30);
+  function ensureStateIndex(machine31) {
+    const cached = stateIndexCache.get(machine31);
     if (cached) return cached;
-    const { index, idIndex } = buildStateIndex(machine30);
-    stateIndexCache.set(machine30, index);
-    stateIdIndexCache.set(machine30, idIndex);
+    const { index, idIndex } = buildStateIndex(machine31);
+    stateIndexCache.set(machine31, index);
+    stateIdIndexCache.set(machine31, idIndex);
     return index;
   }
-  function getStatePathById(machine30, stateId) {
+  function getStatePathById(machine31, stateId) {
     var _a4;
-    ensureStateIndex(machine30);
-    return (_a4 = stateIdIndexCache.get(machine30)) == null ? void 0 : _a4.get(stateId);
+    ensureStateIndex(machine31);
+    return (_a4 = stateIdIndexCache.get(machine31)) == null ? void 0 : _a4.get(stateId);
   }
   function toSegments(value) {
     if (!value) return [];
     return String(value).split(STATE_DELIMITER).filter(Boolean);
   }
-  function getStateChain(machine30, state2) {
+  function getStateChain(machine31, state2) {
     if (!state2) return [];
-    const stateIndex = ensureStateIndex(machine30);
+    const stateIndex = ensureStateIndex(machine31);
     const segments = toSegments(state2);
     const chain = [];
     const statePath = [];
@@ -347,8 +366,8 @@ var Corex = (() => {
     }
     return chain;
   }
-  function resolveAbsoluteStateValue(machine30, value) {
-    const stateIndex = ensureStateIndex(machine30);
+  function resolveAbsoluteStateValue(machine31, value) {
+    const stateIndex = ensureStateIndex(machine31);
     const segments = toSegments(value);
     if (!segments.length) return value;
     const resolved = [];
@@ -368,48 +387,48 @@ var Corex = (() => {
     }
     return resolvedPath;
   }
-  function hasStatePath(machine30, value) {
-    const stateIndex = ensureStateIndex(machine30);
+  function hasStatePath(machine31, value) {
+    const stateIndex = ensureStateIndex(machine31);
     return stateIndex.has(value);
   }
-  function resolveStateValue(machine30, value, source) {
+  function resolveStateValue(machine31, value, source) {
     const stateValue = String(value);
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
-      const statePath = getStatePathById(machine30, stateId);
+      const statePath = getStatePathById(machine31, stateId);
       ensure(statePath, () => `[zag-js] Unknown state id: "${stateId}"`);
-      return resolveAbsoluteStateValue(machine30, statePath);
+      return resolveAbsoluteStateValue(machine31, statePath);
     }
     if (isChildTarget(stateValue) && source) {
       const childPath = appendStatePath(source, stateValue.slice(1));
-      return resolveAbsoluteStateValue(machine30, childPath);
+      return resolveAbsoluteStateValue(machine31, childPath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
       for (let index = sourceSegments.length - 1; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
-        if (hasStatePath(machine30, candidate)) return resolveAbsoluteStateValue(machine30, candidate);
+        if (hasStatePath(machine31, candidate)) return resolveAbsoluteStateValue(machine31, candidate);
       }
-      if (hasStatePath(machine30, stateValue)) return resolveAbsoluteStateValue(machine30, stateValue);
+      if (hasStatePath(machine31, stateValue)) return resolveAbsoluteStateValue(machine31, stateValue);
     }
-    return resolveAbsoluteStateValue(machine30, stateValue);
+    return resolveAbsoluteStateValue(machine31, stateValue);
   }
-  function findTransition(machine30, state2, eventType) {
+  function findTransition(machine31, state2, eventType) {
     var _a4, _b;
-    const chain = getStateChain(machine30, state2);
+    const chain = getStateChain(machine31, state2);
     for (let index = chain.length - 1; index >= 0; index--) {
       const transitionMap = (_a4 = chain[index]) == null ? void 0 : _a4.state.on;
       const transition = transitionMap == null ? void 0 : transitionMap[eventType];
       if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
     }
-    const rootTransitionMap = machine30.on;
+    const rootTransitionMap = machine31.on;
     return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
   }
-  function getExitEnterStates(machine30, prevState, nextState, reenter) {
+  function getExitEnterStates(machine31, prevState, nextState, reenter) {
     var _a4, _b, _c, _d;
-    const prevChain = prevState ? getStateChain(machine30, prevState) : [];
-    const nextChain = getStateChain(machine30, nextState);
+    const prevChain = prevState ? getStateChain(machine31, prevState) : [];
+    const nextChain = getStateChain(machine31, nextState);
     let commonIndex = 0;
     while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a4 = prevChain[commonIndex]) == null ? void 0 : _a4.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
       commonIndex += 1;
@@ -427,8 +446,8 @@ var Corex = (() => {
     if (!current) return false;
     return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
   }
-  function hasTag(machine30, state2, tag) {
-    return getStateChain(machine30, state2).some((item) => {
+  function hasTag(machine31, state2, tag) {
+    return getStateChain(machine31, state2).some((item) => {
       var _a4;
       return (_a4 = item.state.tags) == null ? void 0 : _a4.includes(tag);
     });
@@ -1761,9 +1780,9 @@ var Corex = (() => {
       }
     };
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_OVJ3SUQN = __esm({
-    "../priv/static/chunks/chunk-OVJ3SUQN.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_LTYT3NRU = __esm({
+    "../priv/static/chunks/chunk-LTYT3NRU.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1908,6 +1927,8 @@ var Corex = (() => {
           return fallback2 == null ? void 0 : fallback2();
         }
       };
+      toChar = (code) => String.fromCharCode(code + (code > 25 ? 39 : 97));
+      hash = (value) => toName(toPhash(5381, value) >>> 0);
       STATE_DELIMITER = ".";
       ABSOLUTE_PREFIX = "#";
       stateIndexCache = /* @__PURE__ */ new WeakMap();
@@ -2297,9 +2318,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine30, userProps = {}) {
+        constructor(machine31, userProps = {}) {
           var _a4, _b, _c;
-          __publicField2(this, "machine", machine30);
+          __publicField2(this, "machine", machine31);
           __publicField2(this, "scope");
           __publicField2(this, "context");
           __publicField2(this, "prop");
@@ -2445,11 +2466,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a5, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props = (_b2 = (_a5 = machine30.props) == null ? void 0 : _a5.call(machine30, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            const props = (_b2 = (_a5 = machine31.props) == null ? void 0 : _a5.call(machine31, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
             return props[key];
           };
           this.prop = prop;
-          const context = (_a4 = machine30.context) == null ? void 0 : _a4.call(machine30, {
+          const context = (_a4 = machine31.context) == null ? void 0 : _a4.call(machine31, {
             prop,
             bindable,
             scope: this.scope,
@@ -2490,8 +2511,8 @@ var Corex = (() => {
           };
           this.context = ctx;
           const computed = (key) => {
-            ensure(machine30.computed, () => `[zag-js] No computed object found on machine`);
-            return machine30.computed[key]({
+            ensure(machine31.computed, () => `[zag-js] No computed object found on machine`);
+            return machine31.computed[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2501,10 +2522,10 @@ var Corex = (() => {
             });
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine30.refs) == null ? void 0 : _b.call(machine30, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine31.refs) == null ? void 0 : _b.call(machine31, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: resolveStateValue(machine30, machine30.initialState({ prop })),
+            defaultValue: resolveStateValue(machine31, machine31.initialState({ prop })),
             onChange: (nextState, prevState) => {
               var _a5, _b2;
               const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a5 = this.transition) == null ? void 0 : _a5.reenter);
@@ -2524,8 +2545,8 @@ var Corex = (() => {
                 if (cleanup) this.effects.set(item.path, cleanup);
               });
               if (prevState === INIT_STATE) {
-                this.action(machine30.entry);
-                const cleanup = this.effect(machine30.effects);
+                this.action(machine31.entry);
+                const cleanup = this.effect(machine31.effects);
                 if (cleanup) this.effects.set(INIT_STATE, cleanup);
               }
               entering.forEach((item) => {
@@ -2674,18 +2695,18 @@ var Corex = (() => {
           return connectFn(this.machine.service, normalizeProps);
         }
       };
-      createAnatomy = (name, parts30 = []) => ({
+      createAnatomy = (name, parts31 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts30)) {
+          if (isEmpty(parts31)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts30, ...values]),
-        omit: (...values) => createAnatomy(name, parts30.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts30),
-        keys: () => parts30,
-        build: () => [...new Set(parts30)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts31, ...values]),
+        omit: (...values) => createAnatomy(name, parts31.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts31),
+        keys: () => parts31,
+        build: () => [...new Set(parts31)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -2703,7 +2724,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4PSVMPGM.mjs
+  // ../priv/static/chunks/chunk-OPWAZ7L4.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2939,10 +2960,10 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_4PSVMPGM = __esm({
-    "../priv/static/chunks/chunk-4PSVMPGM.mjs"() {
+  var init_chunk_OPWAZ7L4 = __esm({
+    "../priv/static/chunks/chunk-OPWAZ7L4.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
@@ -3232,10 +3253,10 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_4PSVMPGM();
+      init_chunk_OPWAZ7L4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3667,7 +3688,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-22L7SRUM.mjs
+  // ../priv/static/chunks/chunk-VKYKN6FK.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
   }
@@ -3679,10 +3700,10 @@ var Corex = (() => {
     return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
   }
   var z;
-  var init_chunk_22L7SRUM = __esm({
-    "../priv/static/chunks/chunk-22L7SRUM.mjs"() {
+  var init_chunk_VKYKN6FK = __esm({
+    "../priv/static/chunks/chunk-VKYKN6FK.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -4068,12 +4089,12 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_22L7SRUM();
+      init_chunk_VKYKN6FK();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4491,7 +4512,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5159,7 +5180,7 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5906,7 +5927,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ZNA2UPG2.mjs
+  // ../priv/static/chunks/chunk-MG52DTQN.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6025,10 +6046,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_ZNA2UPG2 = __esm({
-    "../priv/static/chunks/chunk-ZNA2UPG2.mjs"() {
+  var init_chunk_MG52DTQN = __esm({
+    "../priv/static/chunks/chunk-MG52DTQN.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6203,10 +6224,10 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_ZNA2UPG2();
+      init_chunk_MG52DTQN();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6500,7 +6521,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-CT2QXKAA.mjs
+  // ../priv/static/chunks/chunk-JKQYJH2V.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6523,10 +6544,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_CT2QXKAA = __esm({
-    "../priv/static/chunks/chunk-CT2QXKAA.mjs"() {
+  var init_chunk_JKQYJH2V = __esm({
+    "../priv/static/chunks/chunk-JKQYJH2V.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6700,10 +6721,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_CT2QXKAA();
+      init_chunk_JKQYJH2V();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7065,7 +7086,7 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7495,7 +7516,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-FZ6PQ5YA.mjs
+  // ../priv/static/chunks/chunk-4EUE6P2Z.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -7532,14 +7553,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_FZ6PQ5YA = __esm({
-    "../priv/static/chunks/chunk-FZ6PQ5YA.mjs"() {
+  var init_chunk_4EUE6P2Z = __esm({
+    "../priv/static/chunks/chunk-4EUE6P2Z.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
     }
   });
 
-  // ../priv/static/chunks/chunk-AOAQEX4D.mjs
+  // ../priv/static/chunks/chunk-RJABPW5C.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8903,10 +8924,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_AOAQEX4D = __esm({
-    "../priv/static/chunks/chunk-AOAQEX4D.mjs"() {
+  var init_chunk_RJABPW5C = __esm({
+    "../priv/static/chunks/chunk-RJABPW5C.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -9616,7 +9637,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-AOJTHBPA.mjs
+  // ../priv/static/chunks/chunk-K2P3QAIZ.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -9841,17 +9862,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_AOJTHBPA = __esm({
-    "../priv/static/chunks/chunk-AOJTHBPA.mjs"() {
+  var init_chunk_K2P3QAIZ = __esm({
+    "../priv/static/chunks/chunk-K2P3QAIZ.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-FXKWDXRF.mjs
+  // ../priv/static/chunks/chunk-ZZR3S6PP.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10010,11 +10031,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_FXKWDXRF = __esm({
-    "../priv/static/chunks/chunk-FXKWDXRF.mjs"() {
+  var init_chunk_ZZR3S6PP = __esm({
+    "../priv/static/chunks/chunk-ZZR3S6PP.mjs"() {
       "use strict";
-      init_chunk_AOJTHBPA();
-      init_chunk_OVJ3SUQN();
+      init_chunk_K2P3QAIZ();
+      init_chunk_LTYT3NRU();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10195,7 +10216,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5YSYSNPK.mjs
+  // ../priv/static/chunks/chunk-5M7MXCQU.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -10595,10 +10616,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_5YSYSNPK = __esm({
-    "../priv/static/chunks/chunk-5YSYSNPK.mjs"() {
+  var init_chunk_5M7MXCQU = __esm({
+    "../priv/static/chunks/chunk-5M7MXCQU.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12143,17 +12164,17 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_FZ6PQ5YA();
-      init_chunk_AOAQEX4D();
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
+      init_chunk_4EUE6P2Z();
+      init_chunk_RJABPW5C();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
       init_chunk_7NUJK5QP();
-      init_chunk_5YSYSNPK();
+      init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
-      init_chunk_ZNA2UPG2();
+      init_chunk_MG52DTQN();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -14306,13 +14327,13 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_FZ6PQ5YA();
-      init_chunk_AOAQEX4D();
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
+      init_chunk_4EUE6P2Z();
+      init_chunk_RJABPW5C();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -15110,9 +15131,9 @@ var Corex = (() => {
       ({ and: and3 } = createGuards());
       hashObject = (obj) => {
         var _a4;
-        let hash = "";
-        for (const key in obj) hash += `${key}:${(_a4 = obj[key]) != null ? _a4 : ""};`;
-        return hash;
+        let hash2 = "";
+        for (const key in obj) hash2 += `${key}:${(_a4 = obj[key]) != null ? _a4 : ""};`;
+        return hash2;
       };
       DEFAULT_COLOR = parse("#000000");
       machine9 = createMachine({
@@ -15970,7 +15991,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-L2ZNUIWL.mjs
+  // ../priv/static/chunks/chunk-TDQG4Q55.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -15985,10 +16006,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_L2ZNUIWL = __esm({
-    "../priv/static/chunks/chunk-L2ZNUIWL.mjs"() {
+  var init_chunk_TDQG4Q55 = __esm({
+    "../priv/static/chunks/chunk-TDQG4Q55.mjs"() {
       "use strict";
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
     }
   });
 
@@ -18240,15 +18261,15 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_L2ZNUIWL();
+      init_chunk_TDQG4Q55();
       init_chunk_7BZGUIUZ();
-      init_chunk_FZ6PQ5YA();
-      init_chunk_AOAQEX4D();
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
+      init_chunk_4EUE6P2Z();
+      init_chunk_RJABPW5C();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -20735,12 +20756,12 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
-      init_chunk_4PSVMPGM();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
+      init_chunk_OPWAZ7L4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -22118,10 +22139,10 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_AOJTHBPA();
+      init_chunk_K2P3QAIZ();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
+      init_chunk_LTYT3NRU();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -22526,6 +22547,1208 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/file-upload.mjs
+  var file_upload_exports = {};
+  __export(file_upload_exports, {
+    FileUpload: () => FileUploadHook
+  });
+  function isMIMEType(v2) {
+    return v2 === "audio/*" || v2 === "video/*" || v2 === "image/*" || v2 === "text/*" || /\w+\/[-+.\w]+/g.test(v2);
+  }
+  function isExt(v2) {
+    return /^.*\.[\w]+$/.test(v2);
+  }
+  function getAcceptAttrString(accept) {
+    if (accept == null) return;
+    if (typeof accept === "string") {
+      return accept;
+    }
+    if (Array.isArray(accept)) {
+      return accept.filter(isValidMIME).join(",");
+    }
+    return Object.entries(accept).reduce((a2, [mimeType, ext]) => [...a2, mimeType, ...ext], []).filter(isValidMIME).join(",");
+  }
+  function isValidFileSize(file, minSize, maxSize) {
+    if (isDefined(file.size)) {
+      if (isDefined(minSize) && isDefined(maxSize)) {
+        if (file.size > maxSize) return [false, "FILE_TOO_LARGE"];
+        if (file.size < minSize) return [false, "FILE_TOO_SMALL"];
+      } else if (isDefined(minSize) && file.size < minSize) {
+        return [false, "FILE_TOO_SMALL"];
+      } else if (isDefined(maxSize) && file.size > maxSize) {
+        return [false, "FILE_TOO_LARGE"];
+      }
+    }
+    return [true, null];
+  }
+  function getFileMimeType(name) {
+    const extension = name.split(".").pop();
+    return extension ? mimeTypesMap.get(extension) || null : null;
+  }
+  function isFileAccepted(file, accept) {
+    if (file && accept) {
+      const types = Array.isArray(accept) ? accept : typeof accept === "string" ? accept.split(",") : [];
+      if (types.length === 0) return true;
+      const fileName = file.name || "";
+      const mimeType = (file.type || getFileMimeType(fileName) || "").toLowerCase();
+      const baseMimeType = mimeType.replace(/\/.*$/, "");
+      return types.some((type) => {
+        const validType = type.trim().toLowerCase();
+        if (validType.charAt(0) === ".") {
+          return fileName.toLowerCase().endsWith(validType);
+        }
+        if (validType.endsWith("/*")) {
+          return baseMimeType === validType.replace(/\/.*$/, "");
+        }
+        return mimeType === validType;
+      });
+    }
+    return true;
+  }
+  function isValidFileType(file, accept) {
+    const isAcceptable = file.type === "application/x-moz-file" || isFileAccepted(file, accept);
+    return [isAcceptable, isAcceptable ? null : "FILE_INVALID_TYPE"];
+  }
+  function i18nCache(Ins) {
+    const formatterCache = /* @__PURE__ */ new Map();
+    return function create(locale, options) {
+      const cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
+      if (formatterCache.has(cacheKey)) {
+        return formatterCache.get(cacheKey);
+      }
+      let formatter = new Ins(locale, options);
+      formatterCache.set(cacheKey, formatter);
+      return formatter;
+    };
+  }
+  function formatNumber(v2, locale, options = {}) {
+    const formatter = getNumberFormatter(locale, options);
+    return formatter.format(v2);
+  }
+  function isEventWithFiles(event) {
+    const target = getEventTarget(event);
+    if (!event.dataTransfer) return !!target && "files" in target;
+    return event.dataTransfer.types.some((type) => {
+      return type === "Files" || type === "application/x-moz-file";
+    });
+  }
+  function isFilesWithinRange(ctx, incomingCount, currentAcceptedFiles) {
+    const { prop, computed } = ctx;
+    if (!computed("multiple") && incomingCount > 1) return false;
+    if (!computed("multiple") && incomingCount + currentAcceptedFiles.length === 2) return true;
+    if (incomingCount + currentAcceptedFiles.length > prop("maxFiles")) return false;
+    return true;
+  }
+  function getEventFiles(ctx, files, currentAcceptedFiles = [], currentRejectedFiles = []) {
+    const { prop, computed } = ctx;
+    const acceptedFiles = [];
+    const rejectedFiles = [];
+    const validateParams = {
+      acceptedFiles: currentAcceptedFiles,
+      rejectedFiles: currentRejectedFiles
+    };
+    files.forEach((file) => {
+      var _a4;
+      const [accepted, acceptError] = isValidFileType(file, computed("acceptAttr"));
+      const [sizeMatch, sizeError] = isValidFileSize(file, prop("minFileSize"), prop("maxFileSize"));
+      const isDuplicate = currentAcceptedFiles.some((f2) => isFileEqual(f2, file)) || acceptedFiles.some((f2) => isFileEqual(f2, file));
+      const validateErrors = (_a4 = prop("validate")) == null ? void 0 : _a4(file, validateParams);
+      const valid = validateErrors ? validateErrors.length === 0 : true;
+      if (accepted && sizeMatch && valid && !isDuplicate) {
+        acceptedFiles.push(file);
+      } else {
+        const errors = [acceptError, sizeError];
+        if (isDuplicate) errors.push("FILE_EXISTS");
+        if (!valid) errors.push(...validateErrors != null ? validateErrors : []);
+        rejectedFiles.push({ file, errors: errors.filter(Boolean) });
+      }
+    });
+    if (!isFilesWithinRange(ctx, acceptedFiles.length, currentAcceptedFiles)) {
+      acceptedFiles.forEach((file) => {
+        rejectedFiles.push({ file, errors: ["TOO_MANY_FILES"] });
+      });
+      acceptedFiles.splice(0);
+    }
+    return {
+      acceptedFiles,
+      rejectedFiles
+    };
+  }
+  function setInputFiles(inputEl, files) {
+    const win = getWindow(inputEl);
+    try {
+      if ("DataTransfer" in win) {
+        const dataTransfer = new win.DataTransfer();
+        files.forEach((file) => {
+          dataTransfer.items.add(file);
+        });
+        inputEl.files = dataTransfer.files;
+      }
+    } catch (e2) {
+    }
+  }
+  function isInteractiveTarget(element, container) {
+    if (!element || element.getAttribute("type") === "file") return false;
+    const interactive = element.closest(INTERACTIVE_SELECTOR);
+    return interactive != container && contains(container, interactive);
+  }
+  function connect13(service, normalize) {
+    const { state: state2, send, prop, computed, scope, context } = service;
+    const disabled = !!prop("disabled");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const allowDrop = prop("allowDrop");
+    const translations = prop("translations");
+    const dragging = state2.matches("dragging");
+    const focused = state2.matches("focused") && !disabled;
+    const acceptedFiles = context.get("acceptedFiles");
+    const maxFiles = prop("maxFiles");
+    return {
+      dragging,
+      focused,
+      disabled,
+      readOnly,
+      transforming: context.get("transforming"),
+      maxFilesReached: acceptedFiles.length >= maxFiles,
+      remainingFiles: Math.max(0, maxFiles - acceptedFiles.length),
+      openFilePicker() {
+        if (disabled || readOnly) return;
+        send({ type: "OPEN" });
+      },
+      deleteFile(file, type = DEFAULT_ITEM_TYPE) {
+        if (disabled || readOnly) return;
+        send({ type: "FILE.DELETE", file, itemType: type });
+      },
+      acceptedFiles,
+      rejectedFiles: context.get("rejectedFiles"),
+      setFiles(files) {
+        if (disabled || readOnly) return;
+        send({ type: "FILES.SET", files, count: files.length });
+      },
+      clearRejectedFiles() {
+        if (disabled || readOnly) return;
+        send({ type: "REJECTED_FILES.CLEAR" });
+      },
+      clearFiles() {
+        if (disabled || readOnly) return;
+        send({ type: "FILES.CLEAR" });
+      },
+      getFileSize(file) {
+        return formatBytes(file.size, prop("locale"));
+      },
+      createFileUrl(file, cb) {
+        const win = scope.getWin();
+        const url = win.URL.createObjectURL(file);
+        cb(url);
+        return () => win.URL.revokeObjectURL(url);
+      },
+      setClipboardFiles(dt) {
+        var _a4;
+        if (disabled || readOnly) return false;
+        const items = Array.from((_a4 = dt == null ? void 0 : dt.items) != null ? _a4 : []);
+        const files = items.reduce((acc, item) => {
+          if (item.kind !== "file") return acc;
+          const file = item.getAsFile();
+          if (!file) return acc;
+          return [...acc, file];
+        }, []);
+        if (!files.length) return false;
+        send({ type: "FILE.SELECT", files });
+        return true;
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+          dir: prop("dir"),
+          id: getRootId12(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-dragging": dataAttr(dragging)
+        }));
+      },
+      getDropzoneProps(props = {}) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.dropzone.attrs), {
+          dir: prop("dir"),
+          id: getDropzoneId(scope),
+          tabIndex: disabled || readOnly || props.disableClick ? void 0 : 0,
+          role: props.disableClick ? "application" : "button",
+          "aria-label": translations.dropzone,
+          "aria-disabled": disabled || readOnly || void 0,
+          "data-invalid": dataAttr(prop("invalid")),
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-dragging": dataAttr(dragging),
+          onKeyDown(event) {
+            if (disabled || readOnly) return;
+            if (event.defaultPrevented) return;
+            const target = getEventTarget(event);
+            if (!contains(event.currentTarget, target)) return;
+            if (isInteractiveTarget(target, event.currentTarget)) return;
+            if (props.disableClick) return;
+            if (event.key !== "Enter" && event.key !== " ") return;
+            send({ type: "DROPZONE.CLICK", src: "keydown" });
+          },
+          onClick(event) {
+            if (disabled || readOnly) return;
+            if (event.defaultPrevented) return;
+            if (props.disableClick) return;
+            const target = getEventTarget(event);
+            if (!contains(event.currentTarget, target)) return;
+            if (isInteractiveTarget(target, event.currentTarget)) return;
+            if (event.currentTarget.localName === "label") {
+              event.preventDefault();
+            }
+            send({ type: "DROPZONE.CLICK" });
+          },
+          onDragOver(event) {
+            if (disabled || readOnly) return;
+            if (!allowDrop) return;
+            event.preventDefault();
+            event.stopPropagation();
+            try {
+              event.dataTransfer.dropEffect = "copy";
+            } catch (e2) {
+            }
+            const hasFiles = isEventWithFiles(event);
+            if (!hasFiles) return;
+            const count = event.dataTransfer.items.length;
+            send({ type: "DROPZONE.DRAG_OVER", count });
+          },
+          onDragLeave(event) {
+            if (disabled || readOnly) return;
+            if (!allowDrop) return;
+            if (contains(event.currentTarget, event.relatedTarget)) return;
+            send({ type: "DROPZONE.DRAG_LEAVE" });
+          },
+          onDrop(event) {
+            if (disabled || readOnly) return;
+            if (allowDrop) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            const hasFiles = isEventWithFiles(event);
+            if (!hasFiles) return;
+            getFileEntries(event.dataTransfer.items, prop("directory")).then((files) => {
+              send({ type: "DROPZONE.DROP", files: flatArray(files) });
+            });
+          },
+          onFocus() {
+            if (disabled || readOnly) return;
+            send({ type: "DROPZONE.FOCUS" });
+          },
+          onBlur() {
+            if (disabled || readOnly) return;
+            send({ type: "DROPZONE.BLUR" });
+          }
+        }));
+      },
+      getTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.trigger.attrs), {
+          dir: prop("dir"),
+          id: getTriggerId6(scope),
+          disabled: disabled || readOnly,
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-invalid": dataAttr(prop("invalid")),
+          type: "button",
+          onClick(event) {
+            if (disabled || readOnly) return;
+            if (contains(getDropzoneEl(scope), event.currentTarget)) {
+              event.stopPropagation();
+            }
+            send({ type: "OPEN" });
+          }
+        }));
+      },
+      getHiddenInputProps() {
+        return normalize.input({
+          id: getHiddenInputId4(scope),
+          tabIndex: -1,
+          disabled: disabled || readOnly,
+          type: "file",
+          required: prop("required"),
+          capture: prop("capture"),
+          name: prop("name"),
+          accept: computed("acceptAttr"),
+          webkitdirectory: prop("directory") ? "" : void 0,
+          multiple: computed("multiple") || prop("maxFiles") > 1,
+          // exclude from accessibility tree since the dropzone/trigger provides the accessible interface
+          "aria-hidden": true,
+          onClick(event) {
+            event.stopPropagation();
+            event.currentTarget.value = "";
+          },
+          onInput(event) {
+            if (disabled || readOnly) return;
+            const { files } = event.currentTarget;
+            send({ type: "FILE.SELECT", files: files ? Array.from(files) : [] });
+          },
+          style: visuallyHiddenStyle
+        });
+      },
+      getItemGroupProps(props = {}) {
+        const { type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroup.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemProps(props) {
+        const { file, type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.item.attrs), {
+          dir: prop("dir"),
+          id: getItemId4(scope, getFileId(file)),
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemNameProps(props) {
+        const { file, type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemName.attrs), {
+          dir: prop("dir"),
+          id: getItemNameId(scope, getFileId(file)),
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemSizeTextProps(props) {
+        const { file, type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemSizeText.attrs), {
+          dir: prop("dir"),
+          id: getItemSizeTextId(scope, getFileId(file)),
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemPreviewProps(props) {
+        const { file, type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemPreview.attrs), {
+          dir: prop("dir"),
+          id: getItemPreviewId(scope, getFileId(file)),
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemPreviewImageProps(props) {
+        var _a4;
+        const { file, url, type = DEFAULT_ITEM_TYPE } = props;
+        const isImage = file.type.startsWith("image/");
+        if (!isImage) {
+          throw new Error("Preview Image is only supported for image files");
+        }
+        return normalize.img(__spreadProps(__spreadValues({}, parts13.itemPreviewImage.attrs), {
+          alt: (_a4 = translations.itemPreview) == null ? void 0 : _a4.call(translations, file),
+          src: url,
+          "data-disabled": dataAttr(disabled),
+          "data-type": type
+        }));
+      },
+      getItemDeleteTriggerProps(props) {
+        var _a4;
+        const { file, type = DEFAULT_ITEM_TYPE } = props;
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.itemDeleteTrigger.attrs), {
+          dir: prop("dir"),
+          id: getItemDeleteTriggerId(scope, getFileId(file)),
+          type: "button",
+          disabled: disabled || readOnly,
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-type": type,
+          "aria-label": (_a4 = translations.deleteFile) == null ? void 0 : _a4.call(translations, file),
+          onClick() {
+            if (disabled || readOnly) return;
+            send({ type: "FILE.DELETE", file, itemType: type });
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts13.label.attrs), {
+          dir: prop("dir"),
+          id: getLabelId8(scope),
+          htmlFor: getHiddenInputId4(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-required": dataAttr(required)
+        }));
+      },
+      getClearTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.clearTrigger.attrs), {
+          dir: prop("dir"),
+          type: "button",
+          disabled: disabled || readOnly,
+          hidden: acceptedFiles.length === 0,
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (disabled || readOnly) return;
+            send({ type: "FILES.CLEAR" });
+          }
+        }));
+      }
+    };
+  }
+  function toChar2(code) {
+    return String.fromCharCode(code + (code > 25 ? 39 : 97));
+  }
+  function toName2(code) {
+    let name = "";
+    let x2;
+    for (x2 = Math.abs(code); x2 > 52; x2 = x2 / 52 | 0) name = toChar2(x2 % 52) + name;
+    return toChar2(x2 % 52) + name;
+  }
+  function toPhash2(h2, x2) {
+    let i2 = x2.length;
+    while (i2) h2 = h2 * 33 ^ x2.charCodeAt(--i2);
+    return h2;
+  }
+  function zagFileId(value) {
+    return toName2(toPhash2(5381, value) >>> 0);
+  }
+  function fileKeyFor(file) {
+    return zagFileId(`${file.name}-${file.size}`);
+  }
+  function fileChangePayload(el, details) {
+    var _a4, _b;
+    const first2 = details.acceptedFiles[0];
+    return {
+      id: el.id,
+      acceptedCount: details.acceptedFiles.length,
+      rejectedCount: details.rejectedFiles.length,
+      firstAcceptedName: (_a4 = first2 == null ? void 0 : first2.name) != null ? _a4 : null,
+      firstAcceptedType: (_b = first2 == null ? void 0 : first2.type) != null ? _b : null
+    };
+  }
+  function fileAcceptPayload(el, details) {
+    return {
+      id: el.id,
+      count: details.files.length
+    };
+  }
+  function fileRejectPayload(el, details) {
+    return {
+      id: el.id,
+      count: details.files.length
+    };
+  }
+  var anatomy13, parts13, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId12, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId8, getItemId4, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine13, ACCEPTED, FileUpload, FileUploadHook;
+  var init_file_upload = __esm({
+    "../priv/static/file-upload.mjs"() {
+      "use strict";
+      init_chunk_77HPO22C();
+      init_chunk_LIWT33BG();
+      init_chunk_LTYT3NRU();
+      anatomy13 = createAnatomy("file-upload").parts(
+        "root",
+        "dropzone",
+        "item",
+        "itemDeleteTrigger",
+        "itemGroup",
+        "itemName",
+        "itemPreview",
+        "itemPreviewImage",
+        "itemSizeText",
+        "label",
+        "trigger",
+        "clearTrigger"
+      );
+      parts13 = anatomy13.build();
+      getItemEntry = (item) => typeof item.getAsEntry === "function" ? item.getAsEntry() : typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry() : null;
+      isDirectoryEntry = (entry) => entry.isDirectory;
+      isFileEntry = (entry) => entry.isFile;
+      addRelativePath = (file, path) => {
+        Object.defineProperty(file, "relativePath", { value: path ? `${path}/${file.name}` : file.name });
+        return file;
+      };
+      getFileEntries = (items, traverseDirectories) => Promise.all(
+        Array.from(items).filter((item) => item.kind === "file").map((item) => {
+          const entry = getItemEntry(item);
+          if (!entry) return null;
+          if (isDirectoryEntry(entry) && traverseDirectories) {
+            return getDirectoryFiles(entry.createReader(), `${entry.name}`);
+          }
+          if (isFileEntry(entry) && typeof item.getAsFile === "function") {
+            const file = item.getAsFile();
+            return Promise.resolve(file ? addRelativePath(file, "") : null);
+          }
+          if (isFileEntry(entry)) {
+            return new Promise((resolve) => {
+              entry.file((file) => {
+                resolve(addRelativePath(file, ""));
+              });
+            });
+          }
+        }).filter((b2) => b2)
+      );
+      getDirectoryFiles = (reader, path = "") => new Promise((resolve) => {
+        const entryPromises = [];
+        const readDirectoryEntries = () => {
+          reader.readEntries((entries) => {
+            if (entries.length === 0) {
+              resolve(Promise.all(entryPromises).then((entries2) => entries2.flat()));
+              return;
+            }
+            const promises = entries.map((entry) => {
+              if (!entry) return null;
+              if (isDirectoryEntry(entry)) {
+                return getDirectoryFiles(entry.createReader(), `${path}${entry.name}`);
+              }
+              if (isFileEntry(entry)) {
+                return new Promise((resolve2) => {
+                  entry.file((file) => {
+                    resolve2(addRelativePath(file, path));
+                  });
+                });
+              }
+            }).filter((b2) => b2);
+            entryPromises.push(Promise.all(promises));
+            readDirectoryEntries();
+          });
+        };
+        readDirectoryEntries();
+      });
+      isValidMIME = (v2) => isMIMEType(v2) || isExt(v2);
+      isFileEqual = (file1, file2) => {
+        return file1.name === file2.name && file1.size === file2.size && file1.type === file2.type;
+      };
+      isDefined = (v2) => v2 !== void 0 && v2 !== null;
+      mimeTypes = "3g2_video/3gpp2[3gp,3gpp_video/3gpp[3mf_model/3mf[7z_application/x-7z-compressed[aac_audio/aac[ac_application/pkix-attr-cert[adp_audio/adpcm[adts_audio/aac[ai_application/postscript[aml_application/automationml-aml+xml[amlx_application/automationml-amlx+zip[amr_audio/amr[apk_application/vnd.android.package-archive[apng_image/apng[appcache,manifest_text/cache-manifest[appinstaller_application/appinstaller[appx_application/appx[appxbundle_application/appxbundle[asc_application/pgp-keys[atom_application/atom+xml[atomcat_application/atomcat+xml[atomdeleted_application/atomdeleted+xml[atomsvc_application/atomsvc+xml[au,snd_audio/basic[avi_video/x-msvideo[avci_image/avci[avcs_image/avcs[avif_image/avif[aw_application/applixware[bdoc_application/bdoc[bin,bpk,buffer,deb,deploy,dist,distz,dll,dmg,dms,dump,elc,exe,img,iso,lrf,mar,msi,msm,msp,pkg,so_application/octet-stream[bmp,dib_image/bmp[btf,btif_image/prs.btif[bz2_application/x-bzip2[c_text/x-c[ccxml_application/ccxml+xml[cdfx_application/cdfx+xml[cdmia_application/cdmi-capability[cdmic_application/cdmi-container[cdmid_application/cdmi-domain[cdmio_application/cdmi-object[cdmiq_application/cdmi-queue[cer_application/pkix-cert[cgm_image/cgm[cjs_application/node[class_application/java-vm[coffee,litcoffee_text/coffeescript[conf,def,in,ini,list,log,text,txt_text/plain[cpp,cxx,cc_text/x-c++src[cpl_application/cpl+xml[cpt_application/mac-compactpro[crl_application/pkix-crl[css_text/css[csv_text/csv[cu_application/cu-seeme[cwl_application/cwl[cww_application/prs.cww[davmount_application/davmount+xml[dbk_application/docbook+xml[doc_application/msword[docx_application/vnd.openxmlformats-officedocument.wordprocessingml.document[dsc_text/prs.lines.tag[dssc_application/dssc+der[dtd_application/xml-dtd[dwd_application/atsc-dwd+xml[ear,jar,war_application/java-archive[ecma_application/ecmascript[emf_image/emf[eml,mime_message/rfc822[emma_application/emma+xml[emotionml_application/emotionml+xml[eot_application/vnd.ms-fontobject[eps,ps_application/postscript[epub_application/epub+zip[exi_application/exi[exp_application/express[exr_image/aces[ez_application/andrew-inset[fdf_application/fdf[fdt_application/fdt+xml[fits_image/fits[flac_audio/flac[flv_video/x-flv[g3_image/g3fax[geojson_application/geo+json[gif_image/gif[glb_model/gltf-binary[gltf_model/gltf+json[gml_application/gml+xml[go_text/x-go[gpx_application/gpx+xml[gz_application/gzip[h_text/x-h[h261_video/h261[h263_video/h263[h264_video/h264[heic_image/heic[heics_image/heic-sequence[heif_image/heif[heifs_image/heif-sequence[htm,html,shtml_text/html[ico_image/x-icon[icns_image/x-icns[ics,ifb_text/calendar[iges,igs_model/iges[ink,inkml_application/inkml+xml[ipa_application/octet-stream[java_text/x-java-source[jp2,jpg2_image/jp2[jpeg,jpe,jpg_image/jpeg[jpf,jpx_image/jpx[jpm,jpgm_image/jpm[jpgv_video/jpeg[jph_image/jph[js,mjs_text/javascript[json_application/json[json5_application/json5[jsonld_application/ld+json[jsx_text/jsx[jxl_image/jxl[jxr_image/jxr[ktx_image/ktx[ktx2_image/ktx2[less_text/less[m1v,m2v,mpe,mpeg,mpg_video/mpeg[m4a_audio/mp4[m4v_video/x-m4v[md,markdown_text/markdown[mid,midi,kar,rmi_audio/midi[mkv_video/x-matroska[mp2,mp2a,mp3,mpga,m3a,m2a_audio/mpeg[mp4,mp4v,mpg4_video/mp4[mp4a_audio/mp4[mp4s,m4p_application/mp4[odp_application/vnd.oasis.opendocument.presentation[oda_application/oda[ods_application/vnd.oasis.opendocument.spreadsheet[odt_application/vnd.oasis.opendocument.text[oga,ogg,opus,spx_audio/ogg[ogv_video/ogg[ogx_application/ogg[otf_font/otf[p12,pfx_application/x-pkcs12[pdf_application/pdf[pem_application/x-pem-file[php_text/x-php[png_image/png[ppt_application/vnd.ms-powerpoint[pptx_application/vnd.openxmlformats-officedocument.presentationml.presentation[pskcxml_application/pskc+xml[psd_image/vnd.adobe.photoshop[py_text/x-python[qt,mov_video/quicktime[rar_application/vnd.rar[rdf_application/rdf+xml[rtf_text/rtf[sass_text/x-sass[scss_text/x-scss[sgm,sgml_text/sgml[sh_application/x-sh[svg,svgz_image/svg+xml[swf_application/x-shockwave-flash[tar_application/x-tar[tif,tiff_image/tiff[toml_application/toml[ts_video/mp2t[tsx_text/tsx[tsv_text/tab-separated-values[ttc_font/collection[ttf_font/ttf[vtt_text/vtt[wasm_application/wasm[wav_audio/wav[weba_audio/webm[webm_video/webm[webmanifest_application/manifest+json[webp_image/webp[wma_audio/x-ms-wma[wmv_video/x-ms-wmv[woff_font/woff[woff2_font/woff2[xls_application/vnd.ms-excel[xlsx_application/vnd.openxmlformats-officedocument.spreadsheetml.sheet[xml_application/xml[xz_application/x-xz[yaml,yml_text/yaml[zip_application/zip";
+      mimeTypesMap = new Map(
+        mimeTypes.split("[").flatMap((mime) => {
+          const [extensions, mimeType] = mime.split("_");
+          return extensions.split(",").map((ext) => [ext, mimeType]);
+        })
+      );
+      getNumberFormatter = i18nCache(Intl.NumberFormat);
+      bitPrefixes = ["", "kilo", "mega", "giga", "tera"];
+      bytePrefixes = ["", "kilo", "mega", "giga", "tera", "peta"];
+      formatBytes = (bytes, locale = "en-US", options = {}) => {
+        if (Number.isNaN(bytes)) return "";
+        if (bytes === 0) return "0 B";
+        const { unitSystem = "decimal", precision = 3, unit = "byte", unitDisplay = "short" } = options;
+        const factor = unitSystem === "binary" ? 1024 : 1e3;
+        const prefix = unit === "bit" ? bitPrefixes : bytePrefixes;
+        const isNegative = bytes < 0;
+        const absoluteBytes = Math.abs(bytes);
+        let value = absoluteBytes;
+        let index = 0;
+        while (value >= factor && index < prefix.length - 1) {
+          value /= factor;
+          index++;
+        }
+        const v2 = parseFloat(value.toPrecision(precision));
+        const finalValue = isNegative ? -v2 : v2;
+        return formatNumber(finalValue, locale, {
+          style: "unit",
+          unit: prefix[index] + unit,
+          unitDisplay
+        });
+      };
+      getRootId12 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `file:${ctx.id}`;
+      };
+      getDropzoneId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.dropzone) != null ? _b : `file:${ctx.id}:dropzone`;
+      };
+      getHiddenInputId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `file:${ctx.id}:input`;
+      };
+      getTriggerId6 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `file:${ctx.id}:trigger`;
+      };
+      getLabelId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `file:${ctx.id}:label`;
+      };
+      getItemId4 = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item:${id}`;
+      };
+      getItemNameId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemName) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item-name:${id}`;
+      };
+      getItemSizeTextId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemSizeText) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item-size:${id}`;
+      };
+      getItemPreviewId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemPreview) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item-preview:${id}`;
+      };
+      getItemDeleteTriggerId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemDeleteTrigger) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item-delete:${id}`;
+      };
+      getFileId = (file) => hash(`${file.name}-${file.size}`);
+      getRootEl4 = (ctx) => ctx.getById(getRootId12(ctx));
+      getHiddenInputEl4 = (ctx) => ctx.getById(getHiddenInputId4(ctx));
+      getDropzoneEl = (ctx) => ctx.getById(getDropzoneId(ctx));
+      DEFAULT_ITEM_TYPE = "accepted";
+      INTERACTIVE_SELECTOR = "button, a[href], input:not([type='file']), select, textarea, [tabindex], [contenteditable]";
+      machine13 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            minFileSize: 0,
+            maxFileSize: Number.POSITIVE_INFINITY,
+            maxFiles: 1,
+            allowDrop: true,
+            preventDocumentDrop: true,
+            defaultAcceptedFiles: []
+          }, props), {
+            translations: __spreadValues({
+              dropzone: "dropzone",
+              itemPreview: (file) => `preview of ${file.name}`,
+              deleteFile: (file) => `delete file ${file.name}`
+            }, props.translations)
+          });
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          return {
+            acceptedFiles: bindable2(() => ({
+              defaultValue: prop("defaultAcceptedFiles"),
+              value: prop("acceptedFiles"),
+              isEqual: (a2, b2) => a2.length === (b2 == null ? void 0 : b2.length) && a2.every((file, i2) => isFileEqual(file, b2[i2])),
+              hash(value) {
+                return value.map((file) => `${file.name}-${file.size}`).join(",");
+              },
+              onChange(value) {
+                var _a4, _b;
+                const ctx = getContext();
+                (_a4 = prop("onFileAccept")) == null ? void 0 : _a4({ files: value });
+                (_b = prop("onFileChange")) == null ? void 0 : _b({ acceptedFiles: value, rejectedFiles: ctx.get("rejectedFiles") });
+              }
+            })),
+            rejectedFiles: bindable2(() => ({
+              defaultValue: [],
+              isEqual: (a2, b2) => a2.length === (b2 == null ? void 0 : b2.length) && a2.every((file, i2) => isFileEqual(file.file, b2[i2].file)),
+              onChange(value) {
+                var _a4, _b;
+                const ctx = getContext();
+                (_a4 = prop("onFileReject")) == null ? void 0 : _a4({ files: value });
+                (_b = prop("onFileChange")) == null ? void 0 : _b({ acceptedFiles: ctx.get("acceptedFiles"), rejectedFiles: value });
+              }
+            })),
+            transforming: bindable2(() => ({
+              defaultValue: false
+            }))
+          };
+        },
+        computed: {
+          acceptAttr: ({ prop }) => getAcceptAttrString(prop("accept")),
+          multiple: ({ prop }) => prop("maxFiles") > 1
+        },
+        watch({ track, context, action }) {
+          track([() => context.hash("acceptedFiles")], () => {
+            action(["syncInputElement"]);
+          });
+        },
+        on: {
+          "FILES.SET": {
+            actions: ["setFiles"]
+          },
+          "FILE.SELECT": {
+            actions: ["setEventFiles"]
+          },
+          "FILE.DELETE": {
+            actions: ["removeFile"]
+          },
+          "FILES.CLEAR": {
+            actions: ["clearFiles"]
+          },
+          "REJECTED_FILES.CLEAR": {
+            actions: ["clearRejectedFiles"]
+          }
+        },
+        effects: ["preventDocumentDrop"],
+        states: {
+          idle: {
+            on: {
+              OPEN: {
+                actions: ["openFilePicker"]
+              },
+              "DROPZONE.CLICK": {
+                actions: ["openFilePicker"]
+              },
+              "DROPZONE.FOCUS": {
+                target: "focused"
+              },
+              "DROPZONE.DRAG_OVER": {
+                target: "dragging"
+              }
+            }
+          },
+          focused: {
+            on: {
+              "DROPZONE.BLUR": {
+                target: "idle"
+              },
+              OPEN: {
+                actions: ["openFilePicker"]
+              },
+              "DROPZONE.CLICK": {
+                actions: ["openFilePicker"]
+              },
+              "DROPZONE.DRAG_OVER": {
+                target: "dragging"
+              }
+            }
+          },
+          dragging: {
+            on: {
+              "DROPZONE.DROP": {
+                target: "idle",
+                actions: ["setEventFiles"]
+              },
+              "DROPZONE.DRAG_LEAVE": {
+                target: "idle"
+              }
+            }
+          }
+        },
+        implementations: {
+          effects: {
+            preventDocumentDrop({ prop, scope }) {
+              if (!prop("preventDocumentDrop")) return;
+              if (!prop("allowDrop")) return;
+              if (prop("disabled")) return;
+              const doc = scope.getDoc();
+              const onDragOver = (event) => {
+                event == null ? void 0 : event.preventDefault();
+              };
+              const onDrop = (event) => {
+                if (contains(getRootEl4(scope), getEventTarget(event))) return;
+                event.preventDefault();
+              };
+              return callAll(addDomEvent(doc, "dragover", onDragOver, false), addDomEvent(doc, "drop", onDrop, false));
+            }
+          },
+          actions: {
+            syncInputElement({ scope, context }) {
+              queueMicrotask(() => {
+                const inputEl = getHiddenInputEl4(scope);
+                if (!inputEl) return;
+                setInputFiles(inputEl, context.get("acceptedFiles"));
+                const win = scope.getWin();
+                inputEl.dispatchEvent(new win.Event("change", { bubbles: true }));
+              });
+            },
+            openFilePicker({ scope }) {
+              raf(() => {
+                var _a4;
+                (_a4 = getHiddenInputEl4(scope)) == null ? void 0 : _a4.click();
+              });
+            },
+            setFiles(params) {
+              const { computed, context, event } = params;
+              const { acceptedFiles, rejectedFiles } = getEventFiles(params, event.files);
+              context.set(
+                "acceptedFiles",
+                computed("multiple") ? acceptedFiles : acceptedFiles.length > 0 ? [acceptedFiles[0]] : []
+              );
+              context.set("rejectedFiles", rejectedFiles);
+            },
+            setEventFiles(params) {
+              const { computed, context, event, prop } = params;
+              const currentAcceptedFiles = context.get("acceptedFiles");
+              const currentRejectedFiles = context.get("rejectedFiles");
+              const { acceptedFiles, rejectedFiles } = getEventFiles(
+                params,
+                event.files,
+                currentAcceptedFiles,
+                currentRejectedFiles
+              );
+              const set = (files) => {
+                if (computed("multiple")) {
+                  context.set("acceptedFiles", (prev2) => [...prev2, ...files]);
+                  context.set("rejectedFiles", rejectedFiles);
+                  return;
+                }
+                if (files.length) {
+                  context.set("acceptedFiles", [files[0]]);
+                  context.set("rejectedFiles", rejectedFiles);
+                  return;
+                }
+                if (rejectedFiles.length) {
+                  context.set("acceptedFiles", context.get("acceptedFiles"));
+                  context.set("rejectedFiles", rejectedFiles);
+                }
+              };
+              const transform = prop("transformFiles");
+              if (transform) {
+                context.set("transforming", true);
+                transform(acceptedFiles).then(set).catch((err) => {
+                  warn(`[zag-js/file-upload] error transforming files
+${err}`);
+                }).finally(() => {
+                  context.set("transforming", false);
+                });
+              } else {
+                set(acceptedFiles);
+              }
+            },
+            removeFile({ context, event }) {
+              if (event.itemType === "rejected") {
+                const rejectedFiles = context.get("rejectedFiles").filter((item) => !isFileEqual(item.file, event.file));
+                context.set("rejectedFiles", rejectedFiles);
+              } else {
+                const files = context.get("acceptedFiles").filter((file) => !isFileEqual(file, event.file));
+                context.set("acceptedFiles", files);
+              }
+            },
+            clearRejectedFiles({ context }) {
+              context.set("rejectedFiles", []);
+            },
+            clearFiles({ context }) {
+              context.set("acceptedFiles", []);
+              context.set("rejectedFiles", []);
+            }
+          }
+        }
+      });
+      ACCEPTED = "accepted";
+      FileUpload = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "previewCleanup", /* @__PURE__ */ new Map());
+          __publicField(this, "sentinelSnapshot", "");
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine13, props);
+        }
+        initApi() {
+          return this.zagConnect(connect13);
+        }
+        cleanupPreviews() {
+          for (const cleanup of this.previewCleanup.values()) cleanup();
+          this.previewCleanup.clear();
+        }
+        render() {
+          var _a4, _b, _c;
+          const rootEl = (_a4 = this.el.querySelector('[data-scope="file-upload"][data-part="root"]')) != null ? _a4 : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="file-upload"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const dropzoneEl = this.el.querySelector(
+            '[data-scope="file-upload"][data-part="dropzone"]'
+          );
+          if (dropzoneEl) this.spreadProps(dropzoneEl, this.api.getDropzoneProps());
+          const triggerEl = this.el.querySelector(
+            '[data-scope="file-upload"][data-part="trigger"]'
+          );
+          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          const hiddenInputEl = (_b = this.el.querySelector('[data-scope="file-upload"][data-part="hidden-input"]')) != null ? _b : rootEl.querySelector('input[type="file"]');
+          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          const acceptedGroup = this.el.querySelector(
+            'ul[data-scope="file-upload"][data-part="item-group"][data-file-type="accepted"]'
+          );
+          if (acceptedGroup) {
+            this.spreadProps(acceptedGroup, this.api.getItemGroupProps({ type: ACCEPTED }));
+            this.syncAcceptedItems(acceptedGroup);
+          }
+          const itemEls = this.el.querySelectorAll(
+            '[data-scope="file-upload"][data-part="item"]'
+          );
+          for (const itemEl of Array.from(itemEls)) {
+            const file = this.getAcceptedFileForElement(itemEl);
+            if (!file) continue;
+            this.spreadProps(itemEl, this.api.getItemProps({ file, type: ACCEPTED }));
+            const itemNameEl = itemEl.querySelector(
+              '[data-scope="file-upload"][data-part="item-name"]'
+            );
+            if (itemNameEl)
+              this.spreadProps(itemNameEl, this.api.getItemNameProps({ file, type: ACCEPTED }));
+            const itemPreviewEl = itemEl.querySelector(
+              '[data-scope="file-upload"][data-part="item-preview"]'
+            );
+            if (itemPreviewEl)
+              this.spreadProps(itemPreviewEl, this.api.getItemPreviewProps({ file, type: ACCEPTED }));
+            const itemPreviewImageEl = itemEl.querySelector(
+              '[data-scope="file-upload"][data-part="item-preview-image"]'
+            );
+            if (itemPreviewImageEl && file.type.startsWith("image/")) {
+              const fk = fileKeyFor(file);
+              const needsInit = itemPreviewImageEl.dataset.corexPreviewKey !== fk || !itemPreviewImageEl.getAttribute("src");
+              if (needsInit) {
+                const prev2 = this.previewCleanup.get(itemPreviewImageEl);
+                prev2 == null ? void 0 : prev2();
+                itemPreviewImageEl.removeAttribute("src");
+                const cleanup = this.api.createFileUrl(file, (url) => {
+                  this.spreadProps(
+                    itemPreviewImageEl,
+                    this.api.getItemPreviewImageProps({
+                      file,
+                      type: ACCEPTED,
+                      url
+                    })
+                  );
+                });
+                this.previewCleanup.set(itemPreviewImageEl, cleanup);
+                itemPreviewImageEl.dataset.corexPreviewKey = fk;
+              } else {
+                const url = (_c = itemPreviewImageEl.getAttribute("src")) != null ? _c : "";
+                if (url) {
+                  this.spreadProps(
+                    itemPreviewImageEl,
+                    this.api.getItemPreviewImageProps({
+                      file,
+                      type: ACCEPTED,
+                      url
+                    })
+                  );
+                }
+              }
+            }
+            const itemSizeTextEl = itemEl.querySelector(
+              '[data-scope="file-upload"][data-part="item-size-text"]'
+            );
+            if (itemSizeTextEl) {
+              this.spreadProps(itemSizeTextEl, this.api.getItemSizeTextProps({ file, type: ACCEPTED }));
+              itemSizeTextEl.textContent = this.api.getFileSize(file);
+            }
+            const itemDeleteTriggerEl = itemEl.querySelector(
+              '[data-scope="file-upload"][data-part="item-delete-trigger"]'
+            );
+            if (itemDeleteTriggerEl) {
+              this.spreadProps(
+                itemDeleteTriggerEl,
+                this.api.getItemDeleteTriggerProps({ file, type: ACCEPTED })
+              );
+            }
+          }
+          this.touchSentinel();
+        }
+        touchSentinel() {
+          const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
+          if (!sentinel) return;
+          const snap = this.api.acceptedFiles.map((f2) => fileKeyFor(f2)).join(",");
+          if (snap === this.sentinelSnapshot) return;
+          this.sentinelSnapshot = snap;
+          sentinel.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        syncAcceptedItems(ul) {
+          this.syncItemList(ul, this.api.acceptedFiles);
+        }
+        syncItemList(ul, files) {
+          const desiredKeys = files.map((f2) => fileKeyFor(f2));
+          const desiredSet = new Set(desiredKeys);
+          const byKey = /* @__PURE__ */ new Map();
+          ul.querySelectorAll("li[data-corex-file-item]").forEach((li) => {
+            const k2 = li.dataset.fileKey;
+            if (k2) byKey.set(k2, li);
+          });
+          for (const k2 of [...byKey.keys()]) {
+            if (!desiredSet.has(k2)) {
+              const li = byKey.get(k2);
+              if (!li) continue;
+              li.querySelectorAll('img[data-part="item-preview-image"]').forEach((img) => {
+                const c2 = this.previewCleanup.get(img);
+                if (c2) {
+                  c2();
+                  this.previewCleanup.delete(img);
+                }
+              });
+              li.remove();
+              byKey.delete(k2);
+            }
+          }
+          for (const file of files) {
+            const k2 = fileKeyFor(file);
+            let li = byKey.get(k2);
+            if (!li) {
+              li = this.buildItemLi(file, k2);
+              byKey.set(k2, li);
+            }
+            ul.appendChild(li);
+          }
+        }
+        buildItemLi(file, key) {
+          const doc = this.doc;
+          const li = doc.createElement("li");
+          li.setAttribute("data-scope", "file-upload");
+          li.setAttribute("data-part", "item");
+          li.setAttribute("data-corex-file-item", "");
+          li.dataset.fileKey = key;
+          li.dataset.fileType = ACCEPTED;
+          const lead = doc.createElement("div");
+          lead.setAttribute("data-scope", "file-upload");
+          lead.setAttribute("data-part", "item-lead");
+          if (file.type.startsWith("image/")) {
+            const prev2 = doc.createElement("div");
+            prev2.setAttribute("data-scope", "file-upload");
+            prev2.setAttribute("data-part", "item-preview");
+            const img = doc.createElement("img");
+            img.setAttribute("data-scope", "file-upload");
+            img.setAttribute("data-part", "item-preview-image");
+            prev2.appendChild(img);
+            lead.appendChild(prev2);
+          }
+          li.appendChild(lead);
+          const nameEl = doc.createElement("div");
+          nameEl.setAttribute("data-scope", "file-upload");
+          nameEl.setAttribute("data-part", "item-name");
+          nameEl.textContent = file.name;
+          li.appendChild(nameEl);
+          const sizeEl = doc.createElement("div");
+          sizeEl.setAttribute("data-scope", "file-upload");
+          sizeEl.setAttribute("data-part", "item-size-text");
+          li.appendChild(sizeEl);
+          const del = doc.createElement("button");
+          del.setAttribute("data-scope", "file-upload");
+          del.setAttribute("data-part", "item-delete-trigger");
+          del.type = "button";
+          this.fillDeleteTriggerContent(del);
+          li.appendChild(del);
+          return li;
+        }
+        fillDeleteTriggerContent(btn) {
+          const tpl = this.el.querySelector(
+            "[data-file-upload-item-close-template]"
+          );
+          if (!(tpl == null ? void 0 : tpl.content)) return;
+          btn.replaceChildren();
+          const frag = tpl.content.cloneNode(true);
+          for (const node of Array.from(frag.childNodes)) {
+            if (node.nodeType === 1) {
+              btn.appendChild(node);
+            }
+          }
+        }
+        getAcceptedFileForElement(el) {
+          const k2 = el.dataset.fileKey;
+          if (!k2) return void 0;
+          return this.api.acceptedFiles.find((f2) => fileKeyFor(f2) === k2);
+        }
+      };
+      FileUploadHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const maxFiles = getNumber(el, "maxFiles");
+          const maxFileSize = getNumber(el, "maxFileSize");
+          const minFileSize = getNumber(el, "minFileSize");
+          const allowDropRaw = el.dataset.allowDrop;
+          const preventDropRaw = el.dataset.preventDocumentDrop;
+          const dropzoneI18n = getString(el, "translationDropzone");
+          const zag = new FileUpload(el, {
+            id: el.id,
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            name: getString(el, "name"),
+            dir: getDir(el),
+            allowDrop: allowDropRaw === void 0 ? true : allowDropRaw !== "false",
+            preventDocumentDrop: preventDropRaw === void 0 ? true : preventDropRaw !== "false",
+            maxFiles: maxFiles != null ? maxFiles : 1,
+            maxFileSize: maxFileSize != null ? maxFileSize : Number.POSITIVE_INFINITY,
+            minFileSize: minFileSize != null ? minFileSize : 0,
+            accept: getString(el, "accept"),
+            directory: getBoolean(el, "directory"),
+            translations: dropzoneI18n ? { dropzone: dropzoneI18n } : void 0,
+            onFileChange: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: fileChangePayload(el, details),
+                serverEventName: getString(el, "onFileChange"),
+                clientEventName: getString(el, "onFileChangeClient")
+              });
+            },
+            onFileAccept: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: fileAcceptPayload(el, details),
+                serverEventName: getString(el, "onFileAccept"),
+                clientEventName: getString(el, "onFileAcceptClient")
+              });
+            },
+            onFileReject: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: fileRejectPayload(el, details),
+                serverEventName: getString(el, "onFileReject"),
+                clientEventName: getString(el, "onFileRejectClient")
+              });
+            }
+          });
+          zag.init();
+          this.fileUpload = zag;
+          this.handlers = [];
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:file-upload:clear-files", () => {
+            zag.api.clearFiles();
+          });
+          domRegistry.add("corex:file-upload:clear-rejected", () => {
+            zag.api.clearRejectedFiles();
+          });
+          domRegistry.add("corex:file-upload:open", () => {
+            zag.api.openFilePicker();
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("file_upload_clear_files", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearFiles();
+          });
+          registry.add("file_upload_clear_rejected", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearRejectedFiles();
+          });
+          registry.add("file_upload_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.openFilePicker();
+          });
+        },
+        updated() {
+          var _a4, _b, _c, _d;
+          (_d = this.fileUpload) == null ? void 0 : _d.updateProps({
+            id: this.el.id,
+            disabled: getBoolean(this.el, "disabled"),
+            invalid: getBoolean(this.el, "invalid"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            required: getBoolean(this.el, "required"),
+            name: getString(this.el, "name"),
+            dir: getDir(this.el),
+            allowDrop: this.el.dataset.allowDrop === void 0 ? true : this.el.dataset.allowDrop !== "false",
+            preventDocumentDrop: this.el.dataset.preventDocumentDrop === void 0 ? true : this.el.dataset.preventDocumentDrop !== "false",
+            maxFiles: (_a4 = getNumber(this.el, "maxFiles")) != null ? _a4 : 1,
+            maxFileSize: (_b = getNumber(this.el, "maxFileSize")) != null ? _b : Number.POSITIVE_INFINITY,
+            minFileSize: (_c = getNumber(this.el, "minFileSize")) != null ? _c : 0,
+            accept: getString(this.el, "accept"),
+            directory: getBoolean(this.el, "directory")
+          });
+        },
+        destroyed() {
+          var _a4, _b, _c, _d;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.fileUpload) == null ? void 0 : _c.cleanupPreviews();
+          (_d = this.fileUpload) == null ? void 0 : _d.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/floating-panel.mjs
   var floating_panel_exports = {};
   __export(floating_panel_exports, {
@@ -22723,7 +23946,7 @@ var Corex = (() => {
         throw new Error(`Invalid axis: ${axis}`);
     }
   }
-  function connect13(service, normalize) {
+  function connect14(service, normalize) {
     const { state: state2, send, scope, prop, computed, context } = service;
     const open = state2.hasTag("open");
     const dragging = state2.matches("open.dragging");
@@ -22765,11 +23988,11 @@ var Corex = (() => {
         send({ type: "RESTORE" });
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts14.trigger.attrs), {
           dir: prop("dir"),
           type: "button",
           disabled: prop("disabled"),
-          id: getTriggerId6(scope),
+          id: getTriggerId7(scope),
           "data-state": open ? "open" : "closed",
           "data-dragging": dataAttr(dragging),
           "aria-controls": getContentId6(scope),
@@ -22782,7 +24005,7 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId5(scope),
           style: {
@@ -22797,7 +24020,7 @@ var Corex = (() => {
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.content.attrs), {
           dir: prop("dir"),
           role: "dialog",
           tabIndex: 0,
@@ -22850,7 +24073,7 @@ var Corex = (() => {
         }));
       },
       getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.closeTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts14.closeTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "aria-label": "Close Window",
@@ -22880,7 +24103,7 @@ var Corex = (() => {
             hidden: !isStaged
           })
         });
-        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts13.stageTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts14.stageTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "data-stage": props.stage
@@ -22899,7 +24122,7 @@ var Corex = (() => {
         }));
       },
       getResizeTriggerProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.resizeTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.resizeTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canResize),
           "data-axis": props.axis,
@@ -22928,7 +24151,7 @@ var Corex = (() => {
         }));
       },
       getDragTriggerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.dragTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.dragTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canDrag),
           onPointerDown(event) {
@@ -22967,7 +24190,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.control.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(prop("disabled")),
           "data-stage": context.get("stage"),
@@ -22977,13 +24200,13 @@ var Corex = (() => {
         }));
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.title.attrs), {
           dir: prop("dir"),
           id: getTitleId2(scope)
         }));
       },
       getHeaderProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.header.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.header.attrs), {
           dir: prop("dir"),
           id: getHeaderId(scope),
           "data-dragging": dataAttr(dragging),
@@ -22995,7 +24218,7 @@ var Corex = (() => {
         }));
       },
       getBodyProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.body.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.body.attrs), {
           dir: prop("dir"),
           "data-dragging": dataAttr(dragging),
           "data-minimized": dataAttr(isMinimized),
@@ -23028,7 +24251,7 @@ var Corex = (() => {
     }
     return void 0;
   }
-  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine13, FloatingPanel, FloatingPanelHook;
+  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
@@ -23036,8 +24259,8 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy13 = createAnatomy("floating-panel").parts(
+      init_chunk_LTYT3NRU();
+      anatomy14 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
         "content",
@@ -23050,7 +24273,7 @@ var Corex = (() => {
         "closeTrigger",
         "control"
       );
-      parts13 = anatomy13.build();
+      parts14 = anatomy14.build();
       AffineTransform = class _AffineTransform {
         constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
           __publicField4(this, "m00");
@@ -23269,7 +24492,7 @@ var Corex = (() => {
         nw: "se"
       };
       ({ sign: sign2, abs: abs2, min: min3 } = Math);
-      getTriggerId6 = (ctx) => {
+      getTriggerId7 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `float:${ctx.id}:trigger`;
       };
@@ -23289,7 +24512,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.header) != null ? _b : `float:${ctx.id}:header`;
       };
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId6(ctx));
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId7(ctx));
       getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
       getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
       getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
@@ -23347,7 +24570,7 @@ var Corex = (() => {
       };
       FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
       FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
-      machine13 = createMachine({
+      machine14 = createMachine({
         props({ props }) {
           ensureProps(props, ["id"], "floating-panel");
           return __spreadProps(__spreadValues({
@@ -23869,10 +25092,10 @@ var Corex = (() => {
       FloatingPanel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine13, props);
+          return new VanillaMachine(machine14, props);
         }
         initApi() {
-          return this.zagConnect(connect13);
+          return this.zagConnect(connect14);
         }
         render() {
           const triggerEl = this.el.querySelector(
@@ -24044,7 +25267,7 @@ var Corex = (() => {
   __export(listbox_exports, {
     Listbox: () => ListboxHook
   });
-  function connect14(service, normalize) {
+  function connect15(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
     const disabled = prop("disabled");
     const collection22 = prop("collection");
@@ -24058,7 +25281,7 @@ var Corex = (() => {
     const highlightedItem = context.get("highlightedItem");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId4(scope, highlightedValue) : void 0;
+    const ariaActiveDescendant = highlightedValue ? getItemId5(scope, highlightedValue) : void 0;
     function getItemState(props) {
       const itemDisabled = collection22.getItemDisabled(props.item);
       const value2 = collection22.getItemValue(props.item);
@@ -24123,9 +25346,9 @@ var Corex = (() => {
       },
       getItemState,
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
           dir: prop("dir"),
-          id: getRootId12(scope),
+          id: getRootId13(scope),
           "data-orientation": prop("orientation"),
           "data-disabled": dataAttr(disabled)
         }));
@@ -24133,7 +25356,7 @@ var Corex = (() => {
       getInputProps(props = {}) {
         var _a4;
         const keyboardPriority = (_a4 = props.keyboardPriority) != null ? _a4 : "caret";
-        return normalize.input(__spreadProps(__spreadValues({}, parts14.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts15.input.attrs), {
           dir: prop("dir"),
           disabled,
           "data-disabled": dataAttr(disabled),
@@ -24207,13 +25430,13 @@ var Corex = (() => {
       getLabelProps() {
         return normalize.element(__spreadProps(__spreadValues({
           dir: prop("dir"),
-          id: getLabelId8(scope)
-        }, parts14.label.attrs), {
+          id: getLabelId9(scope)
+        }, parts15.label.attrs), {
           "data-disabled": dataAttr(disabled)
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled)
         }));
@@ -24221,9 +25444,9 @@ var Corex = (() => {
       getItemProps(props) {
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
-          id: getItemId4(scope, itemState.value),
+          id: getItemId5(scope, itemState.value),
           role: "option"
-        }, parts14.item.attrs), {
+        }, parts15.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -24263,7 +25486,7 @@ var Corex = (() => {
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
@@ -24271,7 +25494,7 @@ var Corex = (() => {
       },
       getItemIndicatorProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
@@ -24279,7 +25502,7 @@ var Corex = (() => {
       },
       getItemGroupLabelProps(props) {
         const { htmlFor } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroupLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemGroupLabel.attrs), {
           id: getItemGroupLabelId2(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
@@ -24287,7 +25510,7 @@ var Corex = (() => {
       },
       getItemGroupProps(props) {
         const { id } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
           "data-empty": dataAttr(collection22.size === 0),
@@ -24302,12 +25525,12 @@ var Corex = (() => {
           dir: prop("dir"),
           id: getContentId7(scope),
           role: "listbox"
-        }, parts14.content.attrs), {
+        }, parts15.content.attrs), {
           "data-activedescendant": ariaActiveDescendant,
           "aria-activedescendant": ariaActiveDescendant,
           "data-orientation": prop("orientation"),
           "aria-multiselectable": computed("multiple") ? true : void 0,
-          "aria-labelledby": getLabelId8(scope),
+          "aria-labelledby": getLabelId9(scope),
           tabIndex: 0,
           "data-layout": layout,
           "data-empty": dataAttr(collection22.size === 0),
@@ -24493,18 +25716,18 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy14, parts14, collection2, gridCollection, getRootId12, getContentId7, getLabelId8, getItemId4, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine14, diff2, Listbox, ListboxHook;
+  var anatomy15, parts15, collection2, gridCollection, getRootId13, getContentId7, getLabelId9, getItemId5, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine15, diff2, Listbox, ListboxHook;
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
       init_chunk_7NUJK5QP();
-      init_chunk_5YSYSNPK();
+      init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
-      init_chunk_ZNA2UPG2();
+      init_chunk_MG52DTQN();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy14 = createAnatomy("listbox").parts(
+      init_chunk_LTYT3NRU();
+      anatomy15 = createAnatomy("listbox").parts(
         "label",
         "input",
         "item",
@@ -24516,7 +25739,7 @@ var Corex = (() => {
         "root",
         "valueText"
       );
-      parts14 = anatomy14.build();
+      parts15 = anatomy15.build();
       collection2 = (options) => {
         return new ListCollection(options);
       };
@@ -24529,7 +25752,7 @@ var Corex = (() => {
       gridCollection.empty = () => {
         return new GridCollection({ items: [], columnCount: 0 });
       };
-      getRootId12 = (ctx) => {
+      getRootId13 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `listbox:${ctx.id}`;
       };
@@ -24537,11 +25760,11 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `listbox:${ctx.id}:content`;
       };
-      getLabelId8 = (ctx) => {
+      getLabelId9 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `listbox:${ctx.id}:label`;
       };
-      getItemId4 = (ctx, id) => {
+      getItemId5 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
       };
@@ -24554,10 +25777,10 @@ var Corex = (() => {
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
       };
       getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
-      getItemEl2 = (ctx, id) => ctx.getById(getItemId4(ctx, id));
+      getItemEl2 = (ctx, id) => ctx.getById(getItemId5(ctx, id));
       ({ guards: guards2, createMachine: createMachine3 } = setup());
       ({ or } = guards2);
-      machine14 = createMachine3({
+      machine15 = createMachine3({
         props({ props }) {
           return __spreadValues({
             loopFocus: false,
@@ -24995,14 +26218,14 @@ var Corex = (() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine14, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine15, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             }
           }));
         }
         initApi() {
-          return this.zagConnect(connect14);
+          return this.zagConnect(connect15);
         }
         renderItems() {
           var _a4, _b;
@@ -25208,7 +26431,7 @@ var Corex = (() => {
   __export(marquee_exports, {
     Marquee: () => MarqueeHook
   });
-  function connect15(service, normalize) {
+  function connect16(service, normalize) {
     const { scope, send, context, computed, prop } = service;
     const side = prop("side");
     const paused = context.get("paused");
@@ -25236,7 +26459,7 @@ var Corex = (() => {
       },
       getRootProps() {
         const dir = prop("dir");
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.root.attrs), {
           id: dom.getRootId(scope),
           dir,
           role: "region",
@@ -25275,7 +26498,7 @@ var Corex = (() => {
         }));
       },
       getViewportProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.viewport.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.viewport.attrs), {
           id: dom.getViewportId(scope),
           "data-part": "viewport",
           "data-orientation": orientation,
@@ -25303,7 +26526,7 @@ var Corex = (() => {
       getContentProps(props) {
         const { index } = props;
         const clone = index > 0;
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.content.attrs), {
           id: dom.getContentId(scope, index),
           dir: prop("dir"),
           "data-part": "content",
@@ -25333,7 +26556,7 @@ var Corex = (() => {
       getEdgeProps(props) {
         const { side: side2 } = props;
         const dir = prop("dir");
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.edge.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.edge.attrs), {
           dir,
           "data-part": "edge",
           "data-side": side2,
@@ -25345,7 +26568,7 @@ var Corex = (() => {
         }));
       },
       getItemProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.item.attrs), {
           dir: prop("dir"),
           style: {
             [isVertical ? "marginBlock" : "marginInline"]: "calc(var(--marquee-spacing) / 2)"
@@ -25378,14 +26601,14 @@ var Corex = (() => {
       dir: getDir(el)
     };
   }
-  var anatomy15, parts15, dom, getEdgePositionStyles, getMarqueeTranslate, machine15, Marquee, MarqueeHook;
+  var anatomy16, parts16, dom, getEdgePositionStyles, getMarqueeTranslate, machine16, Marquee, MarqueeHook;
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
-      parts15 = anatomy15.build();
+      init_chunk_LTYT3NRU();
+      anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
+      parts16 = anatomy16.build();
       dom = {
         getRootId: (ctx) => {
           var _a4, _b;
@@ -25443,7 +26666,7 @@ var Corex = (() => {
         const shouldBeNegative = side === "start" && dir === "ltr" || side === "end" && dir === "rtl";
         return shouldBeNegative ? "-100%" : "100%";
       };
-      machine15 = createMachine({
+      machine16 = createMachine({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -25619,10 +26842,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine15, props);
+          return new VanillaMachine(machine16, props);
         }
         initApi() {
-          return this.zagConnect(connect15);
+          return this.zagConnect(connect16);
         }
         buildDom() {
           const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
@@ -25894,16 +27117,16 @@ var Corex = (() => {
     const hasChildren = Object.keys(children).length > 0;
     if (!value) return null;
     if (!hasChildren) {
-      return getItemId5(scope, value);
+      return getItemId6(scope, value);
     }
     for (const id in children) {
       const childMenu = children[id];
-      const childTriggerId = getTriggerId7(childMenu.scope);
+      const childTriggerId = getTriggerId8(childMenu.scope);
       if (childTriggerId === value) {
         return childTriggerId;
       }
     }
-    return getItemId5(scope, value);
+    return getItemId6(scope, value);
   }
   function setParentRoutingLock(parent, locked) {
     if (!parent) return;
@@ -25917,7 +27140,7 @@ var Corex = (() => {
     for (const id in children) {
       const child = children[id];
       if (!child.state.hasTag("open")) continue;
-      if (getTriggerId7(child.scope) === highlighted) return true;
+      if (getTriggerId8(child.scope) === highlighted) return true;
     }
     return false;
   }
@@ -25933,7 +27156,7 @@ var Corex = (() => {
       setParentRoutingLock(parent, false);
     }
   }
-  function connect16(service, normalize) {
+  function connect17(service, normalize) {
     const { context, send, state: state2, computed, prop, scope } = service;
     const open = state2.hasTag("open");
     const isSubmenu = context.get("isSubmenu");
@@ -25948,7 +27171,7 @@ var Corex = (() => {
     }));
     function getItemState(props) {
       return {
-        id: getItemId5(scope, props.value),
+        id: getItemId6(scope, props.value),
         disabled: !!props.disabled,
         highlighted: highlightedValue === props.value
       };
@@ -25967,8 +27190,8 @@ var Corex = (() => {
     function getItemProps(props) {
       const { closeOnSelect, valueText, value } = props;
       const itemState = getItemState(props);
-      const id = getItemId5(scope, value);
-      return normalize.element(__spreadProps(__spreadValues({}, parts16.item.attrs), {
+      const id = getItemId6(scope, value);
+      return normalize.element(__spreadProps(__spreadValues({}, parts17.item.attrs), {
         id,
         role: "menuitem",
         "aria-disabled": ariaAttr(itemState.disabled),
@@ -26050,7 +27273,7 @@ var Corex = (() => {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
         const contextTriggerId = getContextTriggerId(scope, value);
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.contextTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.contextTrigger.attrs), {
           dir: prop("dir"),
           id: contextTriggerId,
           "data-ownedby": scope.id,
@@ -26098,8 +27321,8 @@ var Corex = (() => {
       getTriggerProps(props = {}) {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
-        const triggerId = getTriggerId7(scope, value);
-        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts16.triggerItem.attrs : parts16.trigger.attrs), {
+        const triggerId = getTriggerId8(scope, value);
+        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts17.triggerItem.attrs : parts17.trigger.attrs), {
           "data-placement": context.get("currentPlacement"),
           type: "button",
           dir: prop("dir"),
@@ -26184,13 +27407,13 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.indicator.attrs), {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed"
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId6(scope),
           style: popperStyles.floating
@@ -26199,19 +27422,19 @@ var Corex = (() => {
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId(scope)
-        }, parts16.arrow.attrs), {
+        }, parts17.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.content.attrs), {
           id: getContentId8(scope),
           "aria-label": prop("aria-label"),
           hidden: !open,
@@ -26220,7 +27443,7 @@ var Corex = (() => {
           tabIndex: 0,
           dir: prop("dir"),
           "aria-activedescendant": computed("highlightedId") || void 0,
-          "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId7(scope, triggerValue != null ? triggerValue : void 0),
+          "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId8(scope, triggerValue != null ? triggerValue : void 0),
           "data-placement": currentPlacement,
           onPointerEnter(event) {
             if (event.pointerType !== "mouse") return;
@@ -26288,7 +27511,7 @@ var Corex = (() => {
         }));
       },
       getSeparatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.separator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.separator.attrs), {
           role: "separator",
           dir: prop("dir"),
           "aria-orientation": "horizontal"
@@ -26303,7 +27526,7 @@ var Corex = (() => {
         const itemState = getOptionItemState(props);
         return __spreadValues(__spreadValues({}, getItemProps(option)), normalize.element(__spreadProps(__spreadValues({
           "data-type": type
-        }, parts16.item.attrs), {
+        }, parts17.item.attrs), {
           dir: prop("dir"),
           "data-value": option.value,
           role: `menuitem${type}`,
@@ -26321,7 +27544,7 @@ var Corex = (() => {
       getItemIndicatorProps(props) {
         const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -26332,7 +27555,7 @@ var Corex = (() => {
       getItemTextProps(props) {
         const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -26340,7 +27563,7 @@ var Corex = (() => {
         }));
       },
       getItemGroupLabelProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.itemGroupLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.itemGroupLabel.attrs), {
           id: getGroupLabelId(scope, props.htmlFor),
           dir: prop("dir")
         }));
@@ -26348,7 +27571,7 @@ var Corex = (() => {
       getItemGroupProps(props) {
         return normalize.element(__spreadProps(__spreadValues({
           id: getGroupId(scope, props.id)
-        }, parts16.itemGroup.attrs), {
+        }, parts17.itemGroup.attrs), {
           dir: prop("dir"),
           "aria-labelledby": getGroupLabelId(scope, props.id),
           role: "group"
@@ -26394,19 +27617,19 @@ var Corex = (() => {
       child.destroy();
     }
   }
-  var anatomy16, parts16, clsx, CSS_REGEX, serialize, css, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, Menu, MenuHook;
+  var anatomy17, parts17, clsx, CSS_REGEX, serialize, css, getTriggerId8, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId6, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine17, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_FZ6PQ5YA();
-      init_chunk_AOAQEX4D();
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
+      init_chunk_4EUE6P2Z();
+      init_chunk_RJABPW5C();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
-      init_chunk_ZNA2UPG2();
-      init_chunk_OVJ3SUQN();
-      anatomy16 = createAnatomy("menu").parts(
+      init_chunk_MG52DTQN();
+      init_chunk_LTYT3NRU();
+      anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
         "content",
@@ -26422,7 +27645,7 @@ var Corex = (() => {
         "trigger",
         "triggerItem"
       );
-      parts16 = anatomy16.build();
+      parts17 = anatomy17.build();
       clsx = (...args) => args.map((str) => {
         var _a4;
         return (_a4 = str == null ? void 0 : str.trim) == null ? void 0 : _a4.call(str);
@@ -26445,7 +27668,7 @@ var Corex = (() => {
         }
         return Object.assign({}, a2 != null ? a2 : {}, b2 != null ? b2 : {});
       };
-      getTriggerId7 = (ctx, value) => {
+      getTriggerId8 = (ctx, value) => {
         var _a4;
         const customId = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger;
         if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -26473,7 +27696,7 @@ var Corex = (() => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.group) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `menu:${ctx.id}:group:${id}`;
       };
-      getItemId5 = (ctx, id) => `${ctx.id}/${id}`;
+      getItemId6 = (ctx, id) => `${ctx.id}/${id}`;
       getItemValue = (el) => {
         var _a4;
         return (_a4 = el == null ? void 0 : el.dataset.value) != null ? _a4 : null;
@@ -26484,8 +27707,8 @@ var Corex = (() => {
       };
       getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
       getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
-      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId7(ctx));
-      getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId5(ctx, value)) : null;
+      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId6(ctx, value)) : null;
       getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
       getTriggerEls3 = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
       getContextTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
@@ -26494,7 +27717,7 @@ var Corex = (() => {
         if (value == null) {
           return (_a4 = getTriggerEl5(ctx)) != null ? _a4 : getTriggerEls3(ctx)[0];
         }
-        return ctx.getById(getTriggerId7(ctx, value));
+        return ctx.getById(getTriggerId8(ctx, value));
       };
       getElements = (ctx) => {
         const ownerId = CSS.escape(getContentId8(ctx));
@@ -26534,7 +27757,7 @@ var Corex = (() => {
       };
       itemSelectEvent = "menu:select";
       ({ not: not5, and: and6, or: or2 } = createGuards());
-      machine16 = createMachine({
+      machine17 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             closeOnSelect: true,
@@ -27255,7 +28478,7 @@ var Corex = (() => {
             unlockParentOnOpen({ refs, context, scope }) {
               const parent = refs.get("parent");
               if (context.get("isSubmenu")) {
-                const value = getTriggerId7(scope);
+                const value = getTriggerId8(scope);
                 parent == null ? void 0 : parent.send({ type: "HIGHLIGHTED.SUGGEST", value });
               }
               setParentRoutingLock(parent, false);
@@ -27434,10 +28657,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine16, props);
+          return new VanillaMachine(machine17, props);
         }
         initApi() {
-          return this.zagConnect(connect16);
+          return this.zagConnect(connect17);
         }
         setChild(child) {
           this.api.setChild(child.machine.service);
@@ -27778,7 +29001,7 @@ var Corex = (() => {
     }
     return newValue.length;
   }
-  function connect17(service, normalize) {
+  function connect18(service, normalize) {
     const { state: state2, send, prop, scope, computed } = service;
     const focused = state2.hasTag("focus");
     const disabled = computed("isDisabled");
@@ -27820,8 +29043,8 @@ var Corex = (() => {
       },
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({
-          id: getRootId13(scope)
-        }, parts17.root.attrs), {
+          id: getRootId14(scope)
+        }, parts18.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
@@ -27830,14 +29053,14 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts17.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts18.label.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
           "data-invalid": dataAttr(invalid),
           "data-required": dataAttr(required),
           "data-scrubbing": dataAttr(scrubbing),
-          id: getLabelId9(scope),
+          id: getLabelId10(scope),
           htmlFor: getInputId5(scope),
           onClick() {
             raf(() => {
@@ -27847,7 +29070,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts17.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.control.attrs), {
           dir: prop("dir"),
           role: "group",
           "aria-disabled": disabled,
@@ -27859,7 +29082,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts17.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -27868,7 +29091,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts17.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts18.input.attrs), {
           dir: prop("dir"),
           name: prop("name"),
           form: prop("form"),
@@ -27950,7 +29173,7 @@ var Corex = (() => {
         }));
       },
       getDecrementTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts17.decrementTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts18.decrementTrigger.attrs), {
           dir: prop("dir"),
           id: getDecrementTriggerId(scope),
           disabled: isDecrementDisabled,
@@ -27982,7 +29205,7 @@ var Corex = (() => {
         }));
       },
       getIncrementTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts17.incrementTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts18.incrementTrigger.attrs), {
           dir: prop("dir"),
           id: getIncrementTriggerId(scope),
           disabled: isIncrementDisabled,
@@ -28012,7 +29235,7 @@ var Corex = (() => {
         }));
       },
       getScrubberProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts17.scrubber.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.scrubber.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           id: getScrubberId(scope),
@@ -28161,15 +29384,15 @@ var Corex = (() => {
   function $6c7bd7858deea686$var$escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
-  var anatomy17, parts17, getRootId13, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId9, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine17, NumberInput, NumberInputHook;
+  var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_L2ZNUIWL();
+      init_chunk_TDQG4Q55();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy17 = createAnatomy("numberInput").parts(
+      init_chunk_LTYT3NRU();
+      anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
         "input",
@@ -28179,8 +29402,8 @@ var Corex = (() => {
         "decrementTrigger",
         "scrubber"
       );
-      parts17 = anatomy17.build();
-      getRootId13 = (ctx) => {
+      parts18 = anatomy18.build();
+      getRootId14 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `number-input:${ctx.id}`;
       };
@@ -28201,7 +29424,7 @@ var Corex = (() => {
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.scrubber) != null ? _b : `number-input:${ctx.id}:scrubber`;
       };
       getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
-      getLabelId9 = (ctx) => {
+      getLabelId10 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `number-input:${ctx.id}:label`;
       };
@@ -28540,7 +29763,7 @@ var Corex = (() => {
       };
       ({ choose: choose2, guards: guards3, createMachine: createMachine4 } = setup());
       ({ not: not6, and: and7 } = guards3);
-      machine17 = createMachine4({
+      machine18 = createMachine4({
         props({ props }) {
           const step = getDefaultStep(props.step, props.formatOptions);
           return __spreadProps(__spreadValues({
@@ -28973,10 +30196,10 @@ var Corex = (() => {
       NumberInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine17, props);
+          return new VanillaMachine(machine18, props);
         }
         initApi() {
-          return this.zagConnect(connect17);
+          return this.zagConnect(connect18);
         }
         render() {
           var _a4;
@@ -29088,7 +30311,7 @@ var Corex = (() => {
   __export(password_input_exports, {
     PasswordInput: () => PasswordInputHook
   });
-  function connect18(service, normalize) {
+  function connect19(service, normalize) {
     const { scope, prop, context } = service;
     const visible = context.get("visible");
     const disabled = !!prop("disabled");
@@ -29112,7 +30335,7 @@ var Corex = (() => {
         service.send({ type: "VISIBILITY.SET", value: !visible });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts18.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -29120,7 +30343,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts18.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts19.label.attrs), {
           htmlFor: getInputId6(scope),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -29129,7 +30352,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts18.input.attrs), {
+        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts19.input.attrs), {
           id: getInputId6(scope),
           autoCapitalize: "off",
           name: prop("name"),
@@ -29148,7 +30371,7 @@ var Corex = (() => {
       },
       getVisibilityTriggerProps() {
         var _a4;
-        return normalize.button(__spreadProps(__spreadValues({}, parts18.visibilityTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts19.visibilityTrigger.attrs), {
           type: "button",
           tabIndex: -1,
           "aria-controls": getInputId6(scope),
@@ -29167,7 +30390,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts18.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.indicator.attrs), {
           "aria-hidden": true,
           "data-state": visible ? "visible" : "hidden",
           "data-disabled": dataAttr(disabled),
@@ -29176,7 +30399,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts18.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.control.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
@@ -29184,14 +30407,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy18, parts18, getInputId6, getInputEl5, passwordManagerProps, machine18, PasswordInput, PasswordInputHook;
+  var anatomy19, parts19, getInputId6, getInputEl5, passwordManagerProps, machine19, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy18 = createAnatomy("password-input").parts(
+      init_chunk_LTYT3NRU();
+      anatomy19 = createAnatomy("password-input").parts(
         "root",
         "input",
         "label",
@@ -29199,7 +30422,7 @@ var Corex = (() => {
         "indicator",
         "visibilityTrigger"
       );
-      parts18 = anatomy18.build();
+      parts19 = anatomy19.build();
       getInputId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `p-input-${ctx.id}-input`;
@@ -29217,7 +30440,7 @@ var Corex = (() => {
         // Proton Pass
         "data-protonpass-ignore": "true"
       };
-      machine18 = createMachine({
+      machine19 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             id: uuid(),
@@ -29303,10 +30526,10 @@ var Corex = (() => {
       PasswordInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine18, props);
+          return new VanillaMachine(machine19, props);
         }
         initApi() {
-          return this.zagConnect(connect18);
+          return this.zagConnect(connect19);
         }
         render() {
           var _a4;
@@ -29437,7 +30660,7 @@ var Corex = (() => {
     const regex = new RegExp(pattern, "g");
     return regex.test(value);
   }
-  function connect19(service, normalize) {
+  function connect20(service, normalize) {
     const { send, context, computed, prop, scope } = service;
     const complete = computed("isValueComplete");
     const disabled = !!prop("disabled");
@@ -29472,8 +30695,8 @@ var Corex = (() => {
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({
           dir: prop("dir")
-        }, parts19.root.attrs), {
-          id: getRootId14(scope),
+        }, parts20.root.attrs), {
+          id: getRootId15(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
           "data-complete": dataAttr(complete),
@@ -29481,10 +30704,10 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts19.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
           dir: prop("dir"),
-          htmlFor: getHiddenInputId4(scope),
-          id: getLabelId10(scope),
+          htmlFor: getHiddenInputId5(scope),
+          id: getLabelId11(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
           "data-complete": dataAttr(complete),
@@ -29501,7 +30724,7 @@ var Corex = (() => {
           "aria-hidden": true,
           type: "text",
           tabIndex: -1,
-          id: getHiddenInputId4(scope),
+          id: getHiddenInputId5(scope),
           readOnly,
           disabled,
           required,
@@ -29513,7 +30736,7 @@ var Corex = (() => {
         });
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
           dir: prop("dir"),
           id: getControlId7(scope)
         }));
@@ -29524,7 +30747,7 @@ var Corex = (() => {
         const inputType = prop("type") === "numeric" ? "tel" : "text";
         const valueLength = computed("valueLength");
         const tabbableIndex = focusedIndex !== -1 ? focusedIndex : Math.min(computed("filledValueLength"), valueLength - 1);
-        return normalize.input(__spreadProps(__spreadValues({}, parts19.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts20.input.attrs), {
           dir: prop("dir"),
           disabled,
           tabIndex: index === tabbableIndex ? 0 : -1,
@@ -29533,7 +30756,7 @@ var Corex = (() => {
           "data-filled": dataAttr(context.get("value")[index] !== ""),
           id: getInputId7(scope, index.toString()),
           "data-index": index,
-          "data-ownedby": getRootId14(scope),
+          "data-ownedby": getRootId15(scope),
           "aria-label": (_a4 = translations == null ? void 0 : translations.inputLabel) == null ? void 0 : _a4.call(translations, index, computed("valueLength")),
           inputMode: prop("otp") || prop("type") === "numeric" ? "numeric" : "text",
           "aria-invalid": ariaAttr(invalid),
@@ -29644,7 +30867,7 @@ var Corex = (() => {
           },
           onBlur(event) {
             const target = event.relatedTarget;
-            if (isHTMLElement(target) && target.dataset.ownedby === getRootId14(scope)) return;
+            if (isHTMLElement(target) && target.dataset.ownedby === getRootId15(scope)) return;
             send({ type: "INPUT.BLUR", index });
           }
         }));
@@ -29737,17 +30960,17 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy19, parts19, getRootId14, getInputId7, getHiddenInputId4, getLabelId10, getControlId7, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl4, setInputValue, REGEX, choose3, createMachine5, machine19, PinInput, PinInputHook;
+  var anatomy20, parts20, getRootId15, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, choose3, createMachine5, machine20, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
-      parts19 = anatomy19.build();
-      getRootId14 = (ctx) => {
+      init_chunk_LTYT3NRU();
+      anatomy20 = createAnatomy("pinInput").parts("root", "label", "input", "control");
+      parts20 = anatomy20.build();
+      getRootId15 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `pin-input:${ctx.id}`;
       };
@@ -29755,11 +30978,11 @@ var Corex = (() => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `pin-input:${ctx.id}:${id}`;
       };
-      getHiddenInputId4 = (ctx) => {
+      getHiddenInputId5 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `pin-input:${ctx.id}:hidden`;
       };
-      getLabelId10 = (ctx) => {
+      getLabelId11 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `pin-input:${ctx.id}:label`;
       };
@@ -29767,15 +30990,15 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `pin-input:${ctx.id}:control`;
       };
-      getRootEl4 = (ctx) => ctx.getById(getRootId14(ctx));
+      getRootEl5 = (ctx) => ctx.getById(getRootId15(ctx));
       getInputEls2 = (ctx) => {
-        const ownerId = CSS.escape(getRootId14(ctx));
+        const ownerId = CSS.escape(getRootId15(ctx));
         const selector = `input[data-ownedby=${ownerId}]`;
-        return queryAll(getRootEl4(ctx), selector);
+        return queryAll(getRootEl5(ctx), selector);
       };
       getInputElAtIndex = (ctx, index) => getInputEls2(ctx)[index];
       getFirstInputEl = (ctx) => getInputEls2(ctx)[0];
-      getHiddenInputEl4 = (ctx) => ctx.getById(getHiddenInputId4(ctx));
+      getHiddenInputEl5 = (ctx) => ctx.getById(getHiddenInputId5(ctx));
       setInputValue = (inputEl, value) => {
         inputEl.value = value;
         inputEl.setAttribute("value", value);
@@ -29786,7 +31009,7 @@ var Corex = (() => {
         alphanumeric: /^[a-zA-Z0-9]+$/i
       };
       ({ choose: choose3, createMachine: createMachine5 } = setup());
-      machine19 = createMachine5({
+      machine20 = createMachine5({
         props({ props }) {
           return __spreadProps(__spreadValues({
             placeholder: "\u25CB",
@@ -29932,7 +31155,7 @@ var Corex = (() => {
           },
           actions: {
             dispatchInputEvent({ computed, scope }) {
-              const inputEl = getHiddenInputEl4(scope);
+              const inputEl = getHiddenInputEl5(scope);
               dispatchInputValueEvent(inputEl, { value: computed("valueAsString") });
             },
             setInputCount({ scope, context, prop }) {
@@ -30071,13 +31294,13 @@ var Corex = (() => {
             requestFormSubmit({ computed, prop, scope }) {
               var _a4;
               if (!prop("name") || !computed("isValueComplete")) return;
-              const inputEl = getHiddenInputEl4(scope);
+              const inputEl = getHiddenInputEl5(scope);
               (_a4 = inputEl == null ? void 0 : inputEl.form) == null ? void 0 : _a4.requestSubmit();
             },
             autoSubmitIfNeeded({ computed, prop, scope }) {
               var _a4;
               if (!prop("autoSubmit") || !computed("isValueComplete")) return;
-              const inputEl = getHiddenInputEl4(scope);
+              const inputEl = getHiddenInputEl5(scope);
               (_a4 = inputEl == null ? void 0 : inputEl.form) == null ? void 0 : _a4.requestSubmit();
             }
           }
@@ -30086,10 +31309,10 @@ var Corex = (() => {
       PinInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine19, props);
+          return new VanillaMachine(machine20, props);
         }
         initApi() {
-          return this.zagConnect(connect19);
+          return this.zagConnect(connect20);
         }
         render() {
           var _a4;
@@ -30204,7 +31427,7 @@ var Corex = (() => {
   __export(radio_group_exports, {
     RadioGroup: () => RadioGroupHook
   });
-  function connect20(service, normalize) {
+  function connect21(service, normalize) {
     const { context, send, computed, prop, scope } = service;
     const groupDisabled = computed("isDisabled");
     const groupInvalid = prop("invalid");
@@ -30250,10 +31473,10 @@ var Corex = (() => {
         send({ type: "SET_VALUE", value: null, isTrusted: false });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.root.attrs), {
           role: "radiogroup",
-          id: getRootId15(scope),
-          "aria-labelledby": getLabelId11(scope),
+          id: getRootId16(scope),
+          "aria-labelledby": getLabelId12(scope),
           "aria-required": prop("required") || void 0,
           "aria-disabled": groupDisabled || void 0,
           "aria-readonly": readOnly || void 0,
@@ -30269,22 +31492,22 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.label.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           "data-disabled": dataAttr(groupDisabled),
           "data-invalid": dataAttr(groupInvalid),
           "data-required": dataAttr(prop("required")),
-          id: getLabelId11(scope),
+          id: getLabelId12(scope),
           onClick: focus
         }));
       },
       getItemState,
       getItemProps(props) {
         const itemState = getItemState(props);
-        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts20.item.attrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts21.item.attrs), {
           dir: prop("dir"),
-          id: getItemId6(scope, props.value),
+          id: getItemId7(scope, props.value),
           htmlFor: getItemHiddenInputId(scope, props.value)
         }), getItemDataAttrs(props)), {
           onPointerMove() {
@@ -30317,14 +31540,14 @@ var Corex = (() => {
         }));
       },
       getItemTextProps(props) {
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts20.itemText.attrs), {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts21.itemText.attrs), {
           dir: prop("dir"),
           id: getItemLabelId(scope, props.value)
         }), getItemDataAttrs(props)));
       },
       getItemControlProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts20.itemControl.attrs), {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts21.itemControl.attrs), {
           dir: prop("dir"),
           id: getItemControlId(scope, props.value),
           "data-active": dataAttr(itemState.active),
@@ -30334,7 +31557,7 @@ var Corex = (() => {
       getItemHiddenInputProps(props) {
         const itemState = getItemState(props);
         return normalize.input({
-          "data-ownedby": getRootId15(scope),
+          "data-ownedby": getRootId16(scope),
           id: getItemHiddenInputId(scope, props.value),
           type: "radio",
           name: prop("name") || prop("id"),
@@ -30381,7 +31604,7 @@ var Corex = (() => {
         const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId2(scope)
-        }, parts20.indicator.attrs), {
+        }, parts21.indicator.attrs), {
           dir: prop("dir"),
           hidden: context.get("value") == null || isRectEmpty(rect),
           "data-disabled": dataAttr(groupDisabled),
@@ -30413,16 +31636,16 @@ var Corex = (() => {
       value: details.value
     };
   }
-  var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine20, RadioGroup, RadioGroupHook;
+  var anatomy21, parts21, getRootId16, getLabelId12, getItemId7, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl6, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine21, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_22L7SRUM();
-      init_chunk_ZNA2UPG2();
+      init_chunk_VKYKN6FK();
+      init_chunk_MG52DTQN();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy20 = createAnatomy("radio-group").parts(
+      init_chunk_LTYT3NRU();
+      anatomy21 = createAnatomy("radio-group").parts(
         "root",
         "label",
         "item",
@@ -30430,16 +31653,16 @@ var Corex = (() => {
         "itemControl",
         "indicator"
       );
-      parts20 = anatomy20.build();
-      getRootId15 = (ctx) => {
+      parts21 = anatomy21.build();
+      getRootId16 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `radio-group:${ctx.id}`;
       };
-      getLabelId11 = (ctx) => {
+      getLabelId12 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `radio-group:${ctx.id}:label`;
       };
-      getItemId6 = (ctx, value) => {
+      getItemId7 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `radio-group:${ctx.id}:radio:${value}`;
       };
@@ -30459,25 +31682,25 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.indicator) != null ? _b : `radio-group:${ctx.id}:indicator`;
       };
-      getRootEl5 = (ctx) => ctx.getById(getRootId15(ctx));
+      getRootEl6 = (ctx) => ctx.getById(getRootId16(ctx));
       getItemHiddenInputEl = (ctx, value) => ctx.getById(getItemHiddenInputId(ctx, value));
       getIndicatorEl2 = (ctx) => ctx.getById(getIndicatorId2(ctx));
       getFirstEnabledInputEl = (ctx) => {
         var _a4;
-        return (_a4 = getRootEl5(ctx)) == null ? void 0 : _a4.querySelector("input:not(:disabled)");
+        return (_a4 = getRootEl6(ctx)) == null ? void 0 : _a4.querySelector("input:not(:disabled)");
       };
       getFirstEnabledAndCheckedInputEl = (ctx) => {
         var _a4;
-        return (_a4 = getRootEl5(ctx)) == null ? void 0 : _a4.querySelector("input:not(:disabled):checked");
+        return (_a4 = getRootEl6(ctx)) == null ? void 0 : _a4.querySelector("input:not(:disabled):checked");
       };
       getInputEls3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId15(ctx));
+        const ownerId = CSS.escape(getRootId16(ctx));
         const selector = `input[type=radio][data-ownedby='${ownerId}']:not([disabled])`;
-        return queryAll(getRootEl5(ctx), selector);
+        return queryAll(getRootEl6(ctx), selector);
       };
       getRadioEl = (ctx, value) => {
         if (!value) return;
-        return ctx.getById(getItemId6(ctx, value));
+        return ctx.getById(getItemId7(ctx, value));
       };
       getOffsetRect = (el) => {
         var _a4, _b, _c, _d;
@@ -30490,7 +31713,7 @@ var Corex = (() => {
       };
       isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ not: not7 } = createGuards());
-      machine20 = createMachine({
+      machine21 = createMachine({
         props({ props }) {
           return __spreadValues({
             orientation: "vertical"
@@ -30585,7 +31808,7 @@ var Corex = (() => {
           },
           effects: {
             trackFormControlState({ context, scope }) {
-              return trackFormControl(getRootEl5(scope), {
+              return trackFormControl(getRootEl6(scope), {
                 onFieldsetDisabledChange(disabled) {
                   context.set("fieldsetDisabled", disabled);
                 },
@@ -30671,10 +31894,10 @@ var Corex = (() => {
       RadioGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine20, props);
+          return new VanillaMachine(machine21, props);
         }
         initApi() {
-          return this.zagConnect(connect20);
+          return this.zagConnect(connect21);
         }
         render() {
           var _a4;
@@ -30794,7 +32017,7 @@ var Corex = (() => {
   __export(select_exports, {
     Select: () => SelectHook
   });
-  function connect21(service, normalize) {
+  function connect22(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
     const translations = prop("translations");
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
@@ -30811,7 +32034,7 @@ var Corex = (() => {
     const currentPlacement = context.get("currentPlacement");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId7(scope, highlightedValue) : void 0;
+    const ariaActiveDescendant = highlightedValue ? getItemId8(scope, highlightedValue) : void 0;
     function getItemState(props) {
       const _disabled = collection22.getItemDisabled(props.item);
       const value = collection22.getItemValue(props.item);
@@ -30875,9 +32098,9 @@ var Corex = (() => {
       },
       getItemState,
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
           dir: prop("dir"),
-          id: getRootId16(scope),
+          id: getRootId17(scope),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
         }));
@@ -30885,8 +32108,8 @@ var Corex = (() => {
       getLabelProps() {
         return normalize.label(__spreadProps(__spreadValues({
           dir: prop("dir"),
-          id: getLabelId12(scope)
-        }, parts21.label.attrs), {
+          id: getLabelId13(scope)
+        }, parts22.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -30901,7 +32124,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
           dir: prop("dir"),
           id: getControlId8(scope),
           "data-state": open ? "open" : "closed",
@@ -30911,7 +32134,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -30920,7 +32143,7 @@ var Corex = (() => {
       },
       getTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
-          id: getTriggerId8(scope),
+          id: getTriggerId9(scope),
           disabled,
           dir: prop("dir"),
           type: "button",
@@ -30931,8 +32154,8 @@ var Corex = (() => {
           "data-state": open ? "open" : "closed",
           "aria-invalid": invalid,
           "aria-required": required,
-          "aria-labelledby": getLabelId12(scope)
-        }, parts21.trigger.attrs), {
+          "aria-labelledby": getLabelId13(scope)
+        }, parts22.trigger.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -30999,7 +32222,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.indicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
           "data-state": open ? "open" : "closed",
@@ -31011,9 +32234,9 @@ var Corex = (() => {
       getItemProps(props) {
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
-          id: getItemId7(scope, itemState.value),
+          id: getItemId8(scope, itemState.value),
           role: "option"
-        }, parts21.item.attrs), {
+        }, parts22.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -31044,7 +32267,7 @@ var Corex = (() => {
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
@@ -31054,14 +32277,14 @@ var Corex = (() => {
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts21.itemIndicator.attrs), {
+        }, parts22.itemIndicator.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
       getItemGroupLabelProps(props) {
         const { htmlFor } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.itemGroupLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemGroupLabel.attrs), {
           id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
@@ -31069,7 +32292,7 @@ var Corex = (() => {
       },
       getItemGroupProps(props) {
         const { id } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.itemGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getItemGroupId4(scope, id),
           "aria-labelledby": getItemGroupLabelId3(scope, id),
@@ -31078,7 +32301,7 @@ var Corex = (() => {
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts21.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts22.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
           "aria-label": translations.clearTriggerLabel,
@@ -31120,11 +32343,11 @@ var Corex = (() => {
             var _a4;
             (_a4 = getTriggerEl6(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
           },
-          "aria-labelledby": getLabelId12(scope)
+          "aria-labelledby": getLabelId13(scope)
         });
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId7(scope),
           style: popperStyles.floating
@@ -31136,13 +32359,13 @@ var Corex = (() => {
           dir: prop("dir"),
           id: getContentId9(scope),
           role: composite ? "listbox" : "dialog"
-        }, parts21.content.attrs), {
+        }, parts22.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-activedescendant": ariaActiveDescendant,
           "aria-activedescendant": composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
-          "aria-labelledby": getLabelId12(scope),
+          "aria-labelledby": getLabelId13(scope),
           tabIndex: 0,
           onKeyDown(event) {
             if (!interactive) return;
@@ -31197,10 +32420,10 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.list.attrs), {
           tabIndex: 0,
           role: !composite ? "listbox" : void 0,
-          "aria-labelledby": getTriggerId8(scope),
+          "aria-labelledby": getTriggerId9(scope),
           "aria-activedescendant": !composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": !composite && prop("multiple") ? true : void 0
         }));
@@ -31238,22 +32461,22 @@ var Corex = (() => {
       isItemDisabled: (item) => !!item.disabled
     });
   }
-  var anatomy21, parts21, collection3, getRootId16, getContentId9, getTriggerId8, getClearTriggerId3, getLabelId12, getControlId8, getItemId7, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine21, Select, SelectHook;
+  var anatomy22, parts22, collection3, getRootId17, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId8, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine22, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_FZ6PQ5YA();
-      init_chunk_AOAQEX4D();
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
+      init_chunk_4EUE6P2Z();
+      init_chunk_RJABPW5C();
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
       init_chunk_7NUJK5QP();
-      init_chunk_5YSYSNPK();
+      init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
-      init_chunk_ZNA2UPG2();
+      init_chunk_MG52DTQN();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy21 = createAnatomy("select").parts(
+      init_chunk_LTYT3NRU();
+      anatomy22 = createAnatomy("select").parts(
         "label",
         "positioner",
         "trigger",
@@ -31270,14 +32493,14 @@ var Corex = (() => {
         "control",
         "valueText"
       );
-      parts21 = anatomy21.build();
+      parts22 = anatomy22.build();
       collection3 = (options) => {
         return new ListCollection(options);
       };
       collection3.empty = () => {
         return new ListCollection({ items: [] });
       };
-      getRootId16 = (ctx) => {
+      getRootId17 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `select:${ctx.id}`;
       };
@@ -31285,7 +32508,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `select:${ctx.id}:content`;
       };
-      getTriggerId8 = (ctx) => {
+      getTriggerId9 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `select:${ctx.id}:trigger`;
       };
@@ -31293,7 +32516,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.clearTrigger) != null ? _b : `select:${ctx.id}:clear-trigger`;
       };
-      getLabelId12 = (ctx) => {
+      getLabelId13 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `select:${ctx.id}:label`;
       };
@@ -31301,7 +32524,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `select:${ctx.id}:control`;
       };
-      getItemId7 = (ctx, id) => {
+      getItemId8 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `select:${ctx.id}:option:${id}`;
       };
@@ -31323,18 +32546,18 @@ var Corex = (() => {
       };
       getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
       getContentEl9 = (ctx) => ctx.getById(getContentId9(ctx));
-      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId9(ctx));
       getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
       getPositionerEl7 = (ctx) => ctx.getById(getPositionerId7(ctx));
       getItemEl4 = (ctx, id) => {
         if (id == null) return null;
-        return ctx.getById(getItemId7(ctx, id));
+        return ctx.getById(getItemId8(ctx, id));
       };
       getSelectedValues = (el) => {
         return el.multiple ? Array.from(el.selectedOptions, (o2) => o2.value) : el.value ? [el.value] : [];
       };
       ({ and: and8, not: not8, or: or3 } = createGuards());
-      machine21 = createMachine({
+      machine22 = createMachine({
         props({ props }) {
           var _a4;
           return __spreadProps(__spreadValues({
@@ -32074,14 +33297,14 @@ var Corex = (() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine21, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine22, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             }
           }));
         }
         initApi() {
-          return this.zagConnect(connect21);
+          return this.zagConnect(connect22);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -32310,7 +33533,7 @@ var Corex = (() => {
   __export(signature_pad_exports, {
     SignaturePad: () => SignaturePadHook
   });
-  function connect22(service, normalize) {
+  function connect23(service, normalize) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
     const empty = computed("isEmpty");
@@ -32331,11 +33554,11 @@ var Corex = (() => {
         return getDataUrl2(scope, { type, quality });
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts22.label.attrs), {
-          id: getLabelId13(scope),
+        return normalize.label(__spreadProps(__spreadValues({}, parts23.label.attrs), {
+          id: getLabelId14(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required),
-          htmlFor: getHiddenInputId5(scope),
+          htmlFor: getHiddenInputId6(scope),
           onClick(event) {
             if (!interactive) return;
             if (event.defaultPrevented) return;
@@ -32345,13 +33568,13 @@ var Corex = (() => {
         }));
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.root.attrs), {
           "data-disabled": dataAttr(disabled),
-          id: getRootId17(scope)
+          id: getRootId18(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.control.attrs), {
           tabIndex: disabled ? void 0 : 0,
           id: getControlId9(scope),
           role: "application",
@@ -32387,7 +33610,7 @@ var Corex = (() => {
         }));
       },
       getSegmentProps() {
-        return normalize.svg(__spreadProps(__spreadValues({}, parts22.segment.attrs), {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts23.segment.attrs), {
           style: {
             position: "absolute",
             top: 0,
@@ -32400,17 +33623,17 @@ var Corex = (() => {
         }));
       },
       getSegmentPathProps(props) {
-        return normalize.path(__spreadProps(__spreadValues({}, parts22.segmentPath.attrs), {
+        return normalize.path(__spreadProps(__spreadValues({}, parts23.segmentPath.attrs), {
           d: props.path
         }));
       },
       getGuideProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.guide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.guide.attrs), {
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts22.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts23.clearTrigger.attrs), {
           type: "button",
           "aria-label": translations.clearTrigger,
           hidden: !context.get("paths").length || drawing,
@@ -32422,7 +33645,7 @@ var Corex = (() => {
       },
       getHiddenInputProps(props) {
         return normalize.input({
-          id: getHiddenInputId5(scope),
+          id: getHiddenInputId6(scope),
           type: "text",
           hidden: true,
           disabled,
@@ -32666,13 +33889,13 @@ var Corex = (() => {
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
   }
-  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine22, SignaturePad, PHX_HAS_FOCUSED, SignaturePadHook;
+  var anatomy23, parts23, getRootId18, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine23, SignaturePad, PHX_HAS_FOCUSED, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy22 = createAnatomy("signature-pad").parts(
+      init_chunk_LTYT3NRU();
+      anatomy23 = createAnatomy("signature-pad").parts(
         "root",
         "control",
         "segment",
@@ -32681,8 +33904,8 @@ var Corex = (() => {
         "clearTrigger",
         "label"
       );
-      parts22 = anatomy22.build();
-      getRootId17 = (ctx) => {
+      parts23 = anatomy23.build();
+      getRootId18 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `signature-${ctx.id}`;
       };
@@ -32690,11 +33913,11 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `signature-control-${ctx.id}`;
       };
-      getLabelId13 = (ctx) => {
+      getLabelId14 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `signature-label-${ctx.id}`;
       };
-      getHiddenInputId5 = (ctx) => {
+      getHiddenInputId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `signature-input-${ctx.id}`;
       };
@@ -32714,7 +33937,7 @@ var Corex = (() => {
       F = [0, 0];
       z2 = R;
       average = (a2, b2) => (a2 + b2) / 2;
-      machine22 = createMachine({
+      machine23 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
@@ -32889,7 +34112,7 @@ var Corex = (() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           this.name = props.name;
-          return new VanillaMachine(machine22, props);
+          return new VanillaMachine(machine23, props);
         }
         setName(name) {
           this.name = name;
@@ -32898,7 +34121,7 @@ var Corex = (() => {
           this.paths = paths;
         }
         initApi() {
-          return this.zagConnect(connect22);
+          return this.zagConnect(connect23);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -33069,7 +34292,7 @@ var Corex = (() => {
   __export(switch_exports, {
     Switch: () => SwitchHook
   });
-  function connect23(service, normalize) {
+  function connect24(service, normalize) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -33100,10 +34323,10 @@ var Corex = (() => {
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts23.root.attrs), dataAttrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts24.root.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getRootId18(scope),
-          htmlFor: getHiddenInputId6(scope),
+          id: getRootId19(scope),
+          htmlFor: getHiddenInputId7(scope),
           onPointerMove() {
             if (disabled) return;
             send({ type: "CONTEXT.SET", context: { hovered: true } });
@@ -33116,30 +34339,30 @@ var Corex = (() => {
             var _a4;
             if (disabled) return;
             const target = getEventTarget(event);
-            if (target === getHiddenInputEl5(scope)) {
+            if (target === getHiddenInputEl6(scope)) {
               event.stopPropagation();
             }
             if (isSafari()) {
-              (_a4 = getHiddenInputEl5(scope)) == null ? void 0 : _a4.focus();
+              (_a4 = getHiddenInputEl6(scope)) == null ? void 0 : _a4.focus();
             }
           }
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts23.label.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.label.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getLabelId14(scope)
+          id: getLabelId15(scope)
         }));
       },
       getThumbProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts23.thumb.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.thumb.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getThumbId2(scope),
           "aria-hidden": true
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts23.control.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.control.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getControlId10(scope),
           "aria-hidden": true
@@ -33147,12 +34370,12 @@ var Corex = (() => {
       },
       getHiddenInputProps() {
         return normalize.input({
-          id: getHiddenInputId6(scope),
+          id: getHiddenInputId7(scope),
           type: "checkbox",
           required: prop("required"),
           defaultChecked: checked,
           disabled,
-          "aria-labelledby": getLabelId14(scope),
+          "aria-labelledby": getLabelId15(scope),
           "aria-invalid": prop("invalid"),
           name: prop("name"),
           form: prop("form"),
@@ -33183,21 +34406,21 @@ var Corex = (() => {
       checked: details.checked
     };
   }
-  var anatomy23, parts23, getRootId18, getLabelId14, getThumbId2, getControlId10, getHiddenInputId6, getRootEl6, getHiddenInputEl5, not9, machine23, Switch, SwitchHook;
+  var anatomy24, parts24, getRootId19, getLabelId15, getThumbId2, getControlId10, getHiddenInputId7, getRootEl7, getHiddenInputEl6, not9, machine24, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_ZNA2UPG2();
+      init_chunk_MG52DTQN();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-      parts23 = anatomy23.build();
-      getRootId18 = (ctx) => {
+      init_chunk_LTYT3NRU();
+      anatomy24 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+      parts24 = anatomy24.build();
+      getRootId19 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `switch:${ctx.id}`;
       };
-      getLabelId14 = (ctx) => {
+      getLabelId15 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `switch:${ctx.id}:label`;
       };
@@ -33209,14 +34432,14 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `switch:${ctx.id}:control`;
       };
-      getHiddenInputId6 = (ctx) => {
+      getHiddenInputId7 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `switch:${ctx.id}:input`;
       };
-      getRootEl6 = (ctx) => ctx.getById(getRootId18(ctx));
-      getHiddenInputEl5 = (ctx) => ctx.getById(getHiddenInputId6(ctx));
+      getRootEl7 = (ctx) => ctx.getById(getRootId19(ctx));
+      getHiddenInputEl6 = (ctx) => ctx.getById(getHiddenInputId7(ctx));
       ({ not: not9 } = createGuards());
-      machine23 = createMachine({
+      machine24 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultChecked: false,
@@ -33300,8 +34523,8 @@ var Corex = (() => {
             trackPressEvent({ computed, scope, context }) {
               if (computed("isDisabled")) return;
               return trackPress({
-                pointerNode: getRootEl6(scope),
-                keyboardNode: getHiddenInputEl5(scope),
+                pointerNode: getRootEl7(scope),
+                keyboardNode: getHiddenInputEl6(scope),
                 isValidKey: (event) => event.key === " ",
                 onPress: () => context.set("active", false),
                 onPressStart: () => context.set("active", true),
@@ -33313,7 +34536,7 @@ var Corex = (() => {
               return trackFocusVisible({ root: scope.getRootNode() });
             },
             trackFormControlState({ context, send, scope }) {
-              return trackFormControl(getHiddenInputEl5(scope), {
+              return trackFormControl(getHiddenInputEl6(scope), {
                 onFieldsetDisabledChange(disabled) {
                   context.set("fieldsetDisabled", disabled);
                 },
@@ -33331,7 +34554,7 @@ var Corex = (() => {
               }
             },
             syncInputElement({ context, scope }) {
-              const inputEl = getHiddenInputEl5(scope);
+              const inputEl = getHiddenInputEl6(scope);
               if (!inputEl) return;
               setElementChecked(inputEl, !!context.get("checked"));
             },
@@ -33348,7 +34571,7 @@ var Corex = (() => {
             },
             dispatchChangeEvent({ context, scope }) {
               queueMicrotask(() => {
-                const inputEl = getHiddenInputEl5(scope);
+                const inputEl = getHiddenInputEl6(scope);
                 dispatchInputCheckedEvent(inputEl, { checked: context.get("checked") });
               });
             }
@@ -33358,10 +34581,10 @@ var Corex = (() => {
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine23, props);
+          return new VanillaMachine(machine24, props);
         }
         initApi() {
-          return this.zagConnect(connect23);
+          return this.zagConnect(connect24);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -33494,7 +34717,7 @@ var Corex = (() => {
   __export(tabs_exports, {
     Tabs: () => TabsHook
   });
-  function connect24(service, normalize) {
+  function connect25(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
@@ -33518,7 +34741,7 @@ var Corex = (() => {
         send({ type: "CLEAR_VALUE" });
       },
       setIndicatorRect(value) {
-        const id = getTriggerId9(scope, value);
+        const id = getTriggerId10(scope, value);
         send({ type: "SET_INDICATOR_RECT", id });
       },
       syncTabIndex() {
@@ -33539,15 +34762,15 @@ var Corex = (() => {
         (_a4 = getTriggerEl7(scope, value)) == null ? void 0 : _a4.focus();
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
-          id: getRootId19(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
+          id: getRootId20(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
           dir: prop("dir")
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -33600,7 +34823,7 @@ var Corex = (() => {
       getTriggerProps(props) {
         const { value, disabled } = props;
         const triggerState = getTriggerState(props);
-        return normalize.button(__spreadProps(__spreadValues({}, parts24.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts25.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -33615,7 +34838,7 @@ var Corex = (() => {
           "aria-controls": triggerState.selected ? getContentId10(scope, value) : void 0,
           "data-ownedby": getListId(scope),
           "data-ssr": dataAttr(context.get("ssr")),
-          id: getTriggerId9(scope, value),
+          id: getTriggerId10(scope, value),
           tabIndex: triggerState.selected && composite ? 0 : -1,
           onFocus() {
             send({ type: "TAB_FOCUS", value });
@@ -33640,11 +34863,11 @@ var Corex = (() => {
       getContentProps(props) {
         const { value } = props;
         const selected = context.get("value") === value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.content.attrs), {
           dir: prop("dir"),
           id: getContentId10(scope, value),
           tabIndex: composite ? 0 : -1,
-          "aria-labelledby": getTriggerId9(scope, value),
+          "aria-labelledby": getTriggerId10(scope, value),
           role: "tabpanel",
           "data-ownedby": getListId(scope),
           "data-selected": dataAttr(selected),
@@ -33657,7 +34880,7 @@ var Corex = (() => {
         const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
-        }, parts24.indicator.attrs), {
+        }, parts25.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: isRectEmpty2(rect),
@@ -33691,17 +34914,17 @@ var Corex = (() => {
       trigger: (value) => `tabs-${rootId}-trigger-${value}`
     };
   }
-  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine24, Tabs, TabsHook;
+  var anatomy25, parts25, getRootId20, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine25, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts24 = anatomy24.build();
-      getRootId19 = (ctx) => {
+      init_chunk_LTYT3NRU();
+      anatomy25 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts25 = anatomy25.build();
+      getRootId20 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tabs:${ctx.id}`;
       };
@@ -33713,7 +34936,7 @@ var Corex = (() => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `tabs:${ctx.id}:content-${value}`;
       };
-      getTriggerId9 = (ctx, value) => {
+      getTriggerId10 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `tabs:${ctx.id}:trigger-${value}`;
       };
@@ -33723,7 +34946,7 @@ var Corex = (() => {
       };
       getListEl = (ctx) => ctx.getById(getListId(ctx));
       getContentEl10 = (ctx, value) => ctx.getById(getContentId10(ctx, value));
-      getTriggerEl7 = (ctx, value) => value != null ? ctx.getById(getTriggerId9(ctx, value)) : null;
+      getTriggerEl7 = (ctx, value) => value != null ? ctx.getById(getTriggerId10(ctx, value)) : null;
       getIndicatorEl3 = (ctx) => ctx.getById(getIndicatorId3(ctx));
       getElements2 = (ctx) => {
         const ownerId = CSS.escape(getListId(ctx));
@@ -33732,8 +34955,8 @@ var Corex = (() => {
       };
       getFirstTriggerEl2 = (ctx) => first(getElements2(ctx));
       getLastTriggerEl2 = (ctx) => last(getElements2(ctx));
-      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId9(ctx, opts.value), opts.loopFocus);
-      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId9(ctx, opts.value), opts.loopFocus);
+      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId10(ctx, opts.value), opts.loopFocus);
+      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId10(ctx, opts.value), opts.loopFocus);
       getOffsetRect2 = (el) => {
         var _a4, _b, _c, _d;
         return {
@@ -33744,12 +34967,12 @@ var Corex = (() => {
         };
       };
       getRectByValue = (ctx, value) => {
-        const tab = itemById(getElements2(ctx), getTriggerId9(ctx, value));
+        const tab = itemById(getElements2(ctx), getTriggerId10(ctx, value));
         return getOffsetRect2(tab);
       };
       isRectEmpty2 = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ createMachine: createMachine6 } = setup());
-      machine24 = createMachine6({
+      machine25 = createMachine6({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -34050,10 +35273,10 @@ var Corex = (() => {
         initMachine(props) {
           var _a4;
           const id = (_a4 = props.id) != null ? _a4 : this.el.id;
-          return new VanillaMachine(machine24, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          return new VanillaMachine(machine25, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
         }
         initApi() {
-          return this.zagConnect(connect24);
+          return this.zagConnect(connect25);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -34170,7 +35393,7 @@ var Corex = (() => {
   __export(timer_exports, {
     Timer: () => TimerHook
   });
-  function connect25(service, normalize) {
+  function connect26(service, normalize) {
     const { state: state2, send, computed, scope, prop } = service;
     const translations = prop("translations");
     const running = state2.matches("running");
@@ -34201,8 +35424,8 @@ var Corex = (() => {
       },
       getRootProps() {
         return normalize.element(__spreadValues({
-          id: getRootId20(scope)
-        }, parts25.root.attrs));
+          id: getRootId21(scope)
+        }, parts26.root.attrs));
       },
       getAreaProps() {
         var _a4;
@@ -34211,14 +35434,14 @@ var Corex = (() => {
           id: getAreaId3(scope),
           "aria-label": (_a4 = translations.areaLabel) == null ? void 0 : _a4.call(translations, time, formattedTime),
           "aria-atomic": true
-        }, parts25.area.attrs));
+        }, parts26.area.attrs));
       },
       getControlProps() {
-        return normalize.element(__spreadValues({}, parts25.control.attrs));
+        return normalize.element(__spreadValues({}, parts26.control.attrs));
       },
       getItemProps(props) {
         const value = time[props.type];
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
           "data-type": props.type,
           style: {
             "--value": value
@@ -34226,19 +35449,19 @@ var Corex = (() => {
         }));
       },
       getItemLabelProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.itemLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemLabel.attrs), {
           "data-type": props.type
         }));
       },
       getItemValueProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.itemValue.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemValue.attrs), {
           "data-type": props.type
         }));
       },
       getSeparatorProps() {
         return normalize.element(__spreadValues({
           "aria-hidden": true
-        }, parts25.separator.attrs));
+        }, parts26.separator.attrs));
       },
       getActionTriggerProps(props) {
         if (!validActions.has(props.action)) {
@@ -34246,7 +35469,7 @@ var Corex = (() => {
             `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
-        return normalize.button(__spreadProps(__spreadValues({}, parts25.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts26.actionTrigger.attrs), {
           hidden: match(props.action, {
             start: () => running || paused,
             pause: () => !running,
@@ -34330,15 +35553,15 @@ var Corex = (() => {
       );
     }
   }
-  var anatomy25, parts25, getRootId20, getAreaId3, validActions, machine25, Timer2, TimerHook;
+  var anatomy26, parts26, getRootId21, getAreaId3, validActions, machine26, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_L2ZNUIWL();
-      init_chunk_CT2QXKAA();
+      init_chunk_TDQG4Q55();
+      init_chunk_JKQYJH2V();
       init_chunk_PE34YET2();
-      init_chunk_OVJ3SUQN();
-      anatomy25 = createAnatomy("timer").parts(
+      init_chunk_LTYT3NRU();
+      anatomy26 = createAnatomy("timer").parts(
         "root",
         "area",
         "control",
@@ -34348,8 +35571,8 @@ var Corex = (() => {
         "actionTrigger",
         "separator"
       );
-      parts25 = anatomy25.build();
-      getRootId20 = (ctx) => {
+      parts26 = anatomy26.build();
+      getRootId21 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `timer:${ctx.id}:root`;
       };
@@ -34358,7 +35581,7 @@ var Corex = (() => {
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.area) != null ? _b : `timer:${ctx.id}:area`;
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
-      machine25 = createMachine({
+      machine26 = createMachine({
         props({ props }) {
           validateProps(props);
           return __spreadProps(__spreadValues({
@@ -34528,10 +35751,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine25, props);
+          return new VanillaMachine(machine26, props);
         }
         initApi() {
-          return this.zagConnect(connect25);
+          return this.zagConnect(connect26);
         }
         render() {
           var _a4;
@@ -34833,7 +36056,7 @@ var Corex = (() => {
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.group.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           role: "region",
@@ -34874,7 +36097,7 @@ var Corex = (() => {
       }
     };
   }
-  function connect26(service, normalize) {
+  function connect27(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
     const translations = prop("translations");
     const visible = state2.hasTag("visible");
@@ -34906,9 +36129,9 @@ var Corex = (() => {
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
           dir: prop("dir"),
-          id: getRootId21(scope),
+          id: getRootId22(scope),
           "data-state": visible ? "open" : "closed",
           "data-type": type,
           "data-placement": placement,
@@ -34950,17 +36173,17 @@ var Corex = (() => {
         });
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.title.attrs), {
           id: getTitleId3(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.description.attrs), {
           id: getDescriptionId2(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts26.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts27.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a4;
@@ -34973,7 +36196,7 @@ var Corex = (() => {
       getCloseTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
           id: getCloseTriggerId2(scope)
-        }, parts26.closeTrigger.attrs), {
+        }, parts27.closeTrigger.attrs), {
           type: "button",
           "aria-label": translations == null ? void 0 : translations.closeTriggerLabel,
           onClick(event) {
@@ -35238,15 +36461,15 @@ var Corex = (() => {
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy26, parts26, getRegionId, getRegionEl, getRootId21, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine26, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
+  var anatomy27, parts27, getRegionId, getRegionEl, getRootId22, getRootEl8, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine27, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_FXKWDXRF();
-      init_chunk_AOJTHBPA();
-      init_chunk_CT2QXKAA();
-      init_chunk_OVJ3SUQN();
-      anatomy26 = createAnatomy("toast").parts(
+      init_chunk_ZZR3S6PP();
+      init_chunk_K2P3QAIZ();
+      init_chunk_JKQYJH2V();
+      init_chunk_LTYT3NRU();
+      anatomy27 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -35254,11 +36477,11 @@ var Corex = (() => {
         "actionTrigger",
         "closeTrigger"
       );
-      parts26 = anatomy26.build();
+      parts27 = anatomy27.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
-      getRootId21 = (ctx) => `toast:${ctx.id}`;
-      getRootEl7 = (ctx) => ctx.getById(getRootId21(ctx));
+      getRootId22 = (ctx) => `toast:${ctx.id}`;
+      getRootEl8 = (ctx) => ctx.getById(getRootId22(ctx));
       getTitleId3 = (ctx) => `toast:${ctx.id}:title`;
       getDescriptionId2 = (ctx) => `toast:${ctx.id}:description`;
       getCloseTriggerId2 = (ctx) => `toast${ctx.id}:close`;
@@ -35526,7 +36749,7 @@ var Corex = (() => {
         }
       });
       ({ not: not10 } = createGuards());
-      machine26 = createMachine({
+      machine27 = createMachine({
         props({ props }) {
           ensureProps(props, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
@@ -35689,7 +36912,7 @@ var Corex = (() => {
             trackHeight({ scope, prop }) {
               let cleanup;
               raf(() => {
-                const rootEl = getRootEl7(scope);
+                const rootEl = getRootEl8(scope);
                 if (!rootEl) return;
                 const syncHeight = () => {
                   const originalHeight = rootEl.style.height;
@@ -35723,7 +36946,7 @@ var Corex = (() => {
             },
             measureHeight({ scope, prop, context }) {
               queueMicrotask(() => {
-                const rootEl = getRootEl7(scope);
+                const rootEl = getRootEl8(scope);
                 if (!rootEl) return;
                 const originalHeight = rootEl.style.height;
                 rootEl.style.height = "auto";
@@ -35843,10 +37066,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine26, props);
+          return new VanillaMachine(machine27, props);
         }
         initApi() {
-          return this.zagConnect(connect26);
+          return this.zagConnect(connect27);
         }
         render() {
           var _a4, _b;
@@ -36160,7 +37383,7 @@ var Corex = (() => {
       snapshot: snapshot2
     };
   }
-  function connect27(service, normalize) {
+  function connect28(service, normalize) {
     const { state: state2, context, send, scope, prop, event: _event } = service;
     const id = prop("id");
     const hasAriaLabel = !!prop("aria-label");
@@ -36188,8 +37411,8 @@ var Corex = (() => {
       getTriggerProps(props = {}) {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
-        const triggerId = getTriggerId10(scope, value);
-        return normalize.button(__spreadProps(__spreadValues({}, parts27.trigger.attrs), {
+        const triggerId = getTriggerId11(scope, value);
+        return normalize.button(__spreadProps(__spreadValues({}, parts28.trigger.attrs), {
           id: triggerId,
           "data-ownedby": scope.id,
           "data-value": value,
@@ -36258,13 +37481,13 @@ var Corex = (() => {
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId2(scope)
-        }, parts27.arrow.attrs), {
+        }, parts28.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
@@ -36272,7 +37495,7 @@ var Corex = (() => {
       getPositionerProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPositionerId8(scope)
-        }, parts27.positioner.attrs), {
+        }, parts28.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
@@ -36281,7 +37504,7 @@ var Corex = (() => {
         const isCurrentTooltip = store.get("id") === id;
         const isPrevTooltip = store.get("prevId") === id;
         const instant = store.get("instant") && (open && isCurrentTooltip || isPrevTooltip);
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.content.attrs), {
           dir: prop("dir"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -36308,17 +37531,17 @@ var Corex = (() => {
     if (interactive && (raw === void 0 || raw === 0)) return 400;
     return raw;
   }
-  var anatomy27, parts27, getTriggerId10, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and10, not11, machine27, Tooltip, TooltipHook;
+  var anatomy28, parts28, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and10, not11, machine28, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_AOAQEX4D();
-      init_chunk_ZNA2UPG2();
+      init_chunk_RJABPW5C();
+      init_chunk_MG52DTQN();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy27 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
-      parts27 = anatomy27.build();
-      getTriggerId10 = (scope, value) => {
+      init_chunk_LTYT3NRU();
+      anatomy28 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
+      parts28 = anatomy28.build();
+      getTriggerId11 = (scope, value) => {
         var _a4;
         const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
         if (customId != null) return isFunction(customId) ? customId(value) : customId;
@@ -36339,7 +37562,7 @@ var Corex = (() => {
       getPositionerEl8 = (scope) => scope.getById(getPositionerId8(scope));
       getTriggerEls4 = (scope) => queryAll(scope.getDoc(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
       getActiveTriggerEl3 = (scope, value) => {
-        return value == null ? getTriggerEls4(scope)[0] : scope.getById(getTriggerId10(scope, value));
+        return value == null ? getTriggerEls4(scope)[0] : scope.getById(getTriggerId11(scope, value));
       };
       store = createStore({
         id: null,
@@ -36347,7 +37570,7 @@ var Corex = (() => {
         instant: false
       });
       ({ and: and10, not: not11 } = createGuards());
-      machine27 = createMachine({
+      machine28 = createMachine({
         initialState: ({ prop }) => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
@@ -36758,10 +37981,10 @@ var Corex = (() => {
       Tooltip = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine27, props);
+          return new VanillaMachine(machine28, props);
         }
         initApi() {
-          return this.zagConnect(connect27);
+          return this.zagConnect(connect28);
         }
         render() {
           const rootEl = this.el;
@@ -36885,7 +38108,7 @@ var Corex = (() => {
   __export(toggle_group_exports, {
     ToggleGroup: () => ToggleGroupHook
   });
-  function connect28(service, normalize) {
+  function connect29(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
@@ -36893,7 +38116,7 @@ var Corex = (() => {
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
     function getItemState(props) {
-      const id = getItemId8(scope, props.value);
+      const id = getItemId9(scope, props.value);
       return {
         id,
         disabled: Boolean(props.disabled || disabled),
@@ -36907,8 +38130,8 @@ var Corex = (() => {
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
-          id: getRootId22(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
+          id: getRootId23(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
           tabIndex: context.get("isTabbingBackward") ? -1 : 0,
@@ -36939,10 +38162,10 @@ var Corex = (() => {
       getItemProps(props) {
         const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts28.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts29.item.attrs), {
           id: itemState.id,
           type: "button",
-          "data-ownedby": getRootId22(scope),
+          "data-ownedby": getRootId23(scope),
           "data-focus": dataAttr(itemState.focused),
           disabled: itemState.disabled,
           tabIndex: rovingFocus ? rovingTabIndex : void 0,
@@ -37024,35 +38247,35 @@ var Corex = (() => {
     if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
-  var anatomy28, parts28, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine28, ToggleGroup, ToggleGroupHook;
+  var anatomy29, parts29, getRootId23, getItemId9, getRootEl9, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine29, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy28 = createAnatomy("toggle-group").parts("root", "item");
-      parts28 = anatomy28.build();
-      getRootId22 = (ctx) => {
+      init_chunk_LTYT3NRU();
+      anatomy29 = createAnatomy("toggle-group").parts("root", "item");
+      parts29 = anatomy29.build();
+      getRootId23 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `toggle-group:${ctx.id}`;
       };
-      getItemId8 = (ctx, value) => {
+      getItemId9 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `toggle-group:${ctx.id}:${value}`;
       };
-      getRootEl8 = (ctx) => ctx.getById(getRootId22(ctx));
+      getRootEl9 = (ctx) => ctx.getById(getRootId23(ctx));
       getElements3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId22(ctx));
+        const ownerId = CSS.escape(getRootId23(ctx));
         const selector = `[data-ownedby='${ownerId}']:not([data-disabled])`;
-        return queryAll(getRootEl8(ctx), selector);
+        return queryAll(getRootEl9(ctx), selector);
       };
       getFirstEl2 = (ctx) => first(getElements3(ctx));
       getLastEl2 = (ctx) => last(getElements3(ctx));
       getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
       getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
       ({ not: not12, and: and11 } = createGuards());
-      machine28 = createMachine({
+      machine29 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultValue: [],
@@ -37176,7 +38399,7 @@ var Corex = (() => {
             },
             checkIfWithinToolbar({ context, scope }) {
               var _a4;
-              const closestToolbar = (_a4 = getRootEl8(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
+              const closestToolbar = (_a4 = getRootEl9(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
               context.set("isWithinToolbar", !!closestToolbar);
             },
             setFocusedId({ context, event }) {
@@ -37232,10 +38455,10 @@ var Corex = (() => {
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine28, props);
+          return new VanillaMachine(machine29, props);
         }
         initApi() {
-          return this.zagConnect(connect28);
+          return this.zagConnect(connect29);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -37363,7 +38586,7 @@ var Corex = (() => {
     });
     return map2;
   }
-  function connect29(service, normalize) {
+  function connect30(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const translations = prop("translations");
@@ -37466,24 +38689,24 @@ var Corex = (() => {
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
-          id: getRootId23(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.root.attrs), {
+          id: getRootId24(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.label.attrs), {
-          id: getLabelId15(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.label.attrs), {
+          id: getLabelId16(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
           "aria-label": translations.treeLabel,
-          "aria-labelledby": getLabelId15(scope),
+          "aria-labelledby": getLabelId16(scope),
           "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
           tabIndex: -1,
           onKeyDown(event) {
@@ -37587,7 +38810,7 @@ var Corex = (() => {
       getNodeState,
       getItemProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
@@ -37628,7 +38851,7 @@ var Corex = (() => {
       },
       getItemTextProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
@@ -37636,7 +38859,7 @@ var Corex = (() => {
       },
       getItemIndicatorProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -37646,7 +38869,7 @@ var Corex = (() => {
       },
       getBranchProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branch.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -37670,7 +38893,7 @@ var Corex = (() => {
       },
       getBranchIndicatorProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -37681,7 +38904,7 @@ var Corex = (() => {
       },
       getBranchTriggerProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -37698,7 +38921,7 @@ var Corex = (() => {
       },
       getBranchControlProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchControl.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
@@ -37732,7 +38955,7 @@ var Corex = (() => {
       },
       getBranchTextProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -37741,7 +38964,7 @@ var Corex = (() => {
       },
       getBranchContentProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchContent.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -37753,14 +38976,14 @@ var Corex = (() => {
       },
       getBranchIndentGuideProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchIndentGuide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
       getNodeCheckboxProps(props) {
         const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -37779,7 +39002,7 @@ var Corex = (() => {
       },
       getNodeRenameInputProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.input(__spreadProps(__spreadValues({}, parts29.nodeRenameInput.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts30.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": translations.renameInputLabel,
@@ -37925,18 +39148,18 @@ var Corex = (() => {
     }
     return JSON.parse(raw);
   }
-  var anatomy29, parts29, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine29, TreeView, TreeViewHook;
+  var anatomy30, parts30, collection4, getRootId24, getLabelId16, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine30, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_5YSYSNPK();
+      init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_4PSVMPGM();
+      init_chunk_OPWAZ7L4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_OVJ3SUQN();
-      anatomy29 = createAnatomy("tree-view").parts(
+      init_chunk_LTYT3NRU();
+      anatomy30 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -37953,18 +39176,18 @@ var Corex = (() => {
         "root",
         "tree"
       );
-      parts29 = anatomy29.build();
+      parts30 = anatomy30.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
       collection4.empty = () => {
         return new TreeCollection({ rootNode: { children: [] } });
       };
-      getRootId23 = (ctx) => {
+      getRootId24 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tree:${ctx.id}:root`;
       };
-      getLabelId15 = (ctx) => {
+      getLabelId16 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `tree:${ctx.id}:label`;
       };
@@ -37986,7 +39209,7 @@ var Corex = (() => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
       ({ and: and12 } = createGuards());
-      machine29 = createMachine({
+      machine30 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             selectionMode: "single",
@@ -38626,10 +39849,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine29, __spreadValues({}, props));
+          return new VanillaMachine(machine30, __spreadValues({}, props));
         }
         initApi() {
-          return this.zagConnect(connect29);
+          return this.zagConnect(connect30);
         }
         getNodeAt(indexPath) {
           var _a4;
@@ -38986,8 +40209,7 @@ var Corex = (() => {
     findAccordionContent: () => findAccordionContent,
     findDialogBackdrop: () => findDialogBackdrop,
     findDialogContent: () => findDialogContent,
-    findTreeBranch: () => findTreeBranch,
-    hooks: () => hooks
+    findTreeBranch: () => findTreeBranch
   });
 
   // lib/custom-animation.ts
@@ -39139,7 +40361,7 @@ var Corex = (() => {
     ).then(() => void 0);
   }
 
-  // hooks/corex.ts
+  // hooks/lazy-hook.ts
   function createLazyHook(importFn, exportName) {
     return {
       mounted() {
@@ -39172,6 +40394,8 @@ var Corex = (() => {
       }
     };
   }
+
+  // hooks/corex.ts
   var Hooks = {
     Accordion: createLazyHook(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
     AngleSlider: createLazyHook(() => Promise.resolve().then(() => (init_angle_slider(), angle_slider_exports)), "AngleSlider"),
@@ -39186,6 +40410,7 @@ var Corex = (() => {
     DatePicker: createLazyHook(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
     Dialog: createLazyHook(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
     Editable: createLazyHook(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
+    FileUpload: createLazyHook(() => Promise.resolve().then(() => (init_file_upload(), file_upload_exports)), "FileUpload"),
     FloatingPanel: createLazyHook(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
     Listbox: createLazyHook(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
     Marquee: createLazyHook(() => Promise.resolve().then(() => (init_marquee(), marquee_exports)), "Marquee"),
@@ -39204,11 +40429,6 @@ var Corex = (() => {
     ToggleGroup: createLazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
     TreeView: createLazyHook(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };
-  function hooks(componentNames) {
-    return Object.fromEntries(
-      componentNames.filter((name) => name in Hooks).map((name) => [name, Hooks[name]])
-    );
-  }
   var corex_default = Hooks;
   return __toCommonJS(corex_exports);
 })();

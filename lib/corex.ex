@@ -29,6 +29,8 @@ defmodule Corex do
     dialog:
       {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
     editable: {Corex.Editable, [editable: 1]},
+    file_upload: {Corex.FileUpload, [file_upload: 1]},
+    file_upload_live: {Corex.FileUploadLive, [file_upload_live: 1]},
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     heroicon: {Corex.Heroicon, [heroicon: 1]},
     native_input: {Corex.NativeInput, [native_input: 1]},

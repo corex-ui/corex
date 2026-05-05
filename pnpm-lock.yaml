@@ -56,6 +56,9 @@ importers:
       '@zag-js/editable':
         specifier: ^1.39.1
         version: 1.40.0
+      '@zag-js/file-upload':
+        specifier: ^1.39.1
+        version: 1.40.0
       '@zag-js/floating-panel':
         specifier: ^1.39.1
         version: 1.40.0
@@ -350,6 +353,12 @@ packages:
   '@zag-js/editable@1.40.0':
     resolution: {integrity: sha512-X23wOg42BPvFWfJQi3yd8HiL8xtisrpL5ouFEzba56SQIxWZHDRpeWoqXqyLODq2/z2+SsZ0wV3laRD3ZH0C2g==}
 
+  '@zag-js/file-upload@1.40.0':
+    resolution: {integrity: sha512-hUZlJYjSGk7SAflTmQIjZv6M+icujaHS6I+dik2LM48rLWwNa/GYTNx+uY4zJLd9oW1eEj+6NcCYZpPWzKku4Q==}
+
+  '@zag-js/file-utils@1.40.0':
+    resolution: {integrity: sha512-BGny4rafiBQ5TPCBXfzbH7lSyFdnoix7brq/+FllKpDqpWPQz0tIsgSZueF/Z8GPTrAkwMKOFI99P7OVhAhRig==}
+
   '@zag-js/floating-panel@1.40.0':
     resolution: {integrity: sha512-e2QXwapCbjLJnU+MAz06CoByj4XJ3sdSBgWF+PSe2X2T8dd/FkZUnaDPaX0yyfyTWKzBbyRRNyon2LMAs8ndHw==}
 
@@ -358,6 +367,9 @@ packages:
 
   '@zag-js/focus-visible@1.40.0':
     resolution: {integrity: sha512-63byl/kLVzDYlnHFma4HKEKrqB1Vx2zg0sBmUSENPyh+Ia1xhEVVC5vu6GX7nu4t/8QRy3Jn0q7T5og81FGb1A==}
+
+  '@zag-js/i18n-utils@1.40.0':
+    resolution: {integrity: sha512-8D3ki9V81gMKZvtRfNVoHCBDVYjr+WJLBvdfSv3cdOsVM2/E8//xAfYbYzl5Fdmeny3H71fxBNqOX05GN4K6OA==}
 
   '@zag-js/interact-outside@1.40.0':
     resolution: {integrity: sha512-Fws+O4uD9vS0I5KVcf3U2tNjLKvqlv+RExFbTywckDLOCJ145M/pMQWTr1FHil04jk5PFyM1iGfsbom8tozHpQ==}
@@ -1159,6 +1171,20 @@ snapshots:
       '@zag-js/types': 1.40.0
       '@zag-js/utils': 1.40.0
 
+  '@zag-js/file-upload@1.40.0':
+    dependencies:
+      '@zag-js/anatomy': 1.40.0
+      '@zag-js/core': 1.40.0
+      '@zag-js/dom-query': 1.40.0
+      '@zag-js/file-utils': 1.40.0
+      '@zag-js/i18n-utils': 1.40.0
+      '@zag-js/types': 1.40.0
+      '@zag-js/utils': 1.40.0
+
+  '@zag-js/file-utils@1.40.0':
+    dependencies:
+      '@zag-js/i18n-utils': 1.40.0
+
   '@zag-js/floating-panel@1.40.0':
     dependencies:
       '@zag-js/anatomy': 1.40.0
@@ -1175,6 +1201,10 @@ snapshots:
       '@zag-js/dom-query': 1.40.0
 
   '@zag-js/focus-visible@1.40.0':
+    dependencies:
+      '@zag-js/dom-query': 1.40.0
+
+  '@zag-js/i18n-utils@1.40.0':
     dependencies:
       '@zag-js/dom-query': 1.40.0
 

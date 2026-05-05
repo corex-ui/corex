@@ -1362,6 +1362,143 @@ defmodule E2eWeb.PageController do
     end
   end
 
+  def file_upload_page(conn, _params) do
+    render(conn, :file_upload_page)
+  end
+
+  defp assign_file_upload_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.FileUploadDemo.form_ecto())
+    |> assign(:changeset_heex, E2eWeb.Demos.FileUploadDemo.form_changeset_heex())
+    |> assign(:changeset_elixir, E2eWeb.Demos.FileUploadDemo.form_changeset_elixir())
+    |> assign(:validate_heex, E2eWeb.Demos.FileUploadDemo.form_validate_heex())
+    |> assign(:validate_elixir, E2eWeb.Demos.FileUploadDemo.form_validate_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.FileUploadDemo.form_native_heex())
+  end
+
+  def file_upload_form_page(conn, _params) do
+    changeset =
+      %E2e.Form.FileUploadForm{}
+      |> E2e.Form.FileUploadForm.changeset(%{})
+
+    validate_changeset =
+      %E2e.Form.FileUploadForm{}
+      |> E2e.Form.FileUploadForm.changeset_validate(%{})
+
+    form =
+      Phoenix.Component.to_form(changeset,
+        as: :file_upload_changeset,
+        id: "file-upload-changeset-form"
+      )
+
+    validate_form =
+      Phoenix.Component.to_form(validate_changeset,
+        as: :file_upload_validate,
+        id: "file-upload-validate-form"
+      )
+
+    conn
+    |> assign_file_upload_form_docs(nil)
+    |> render(:file_upload_form_page, form: form, validate_form: validate_form)
+  end
+
+  def file_upload_form_submit(conn, params) do
+    cond do
+      is_map(params["file_upload_changeset"]) ->
+        nested = params["file_upload_changeset"] || %{}
+        upload = nested["attachment"]
+
+        changeset =
+          %E2e.Form.FileUploadForm{}
+          |> E2e.Form.FileUploadForm.changeset(nested)
+
+        if changeset.valid? do
+          conn
+          |> put_flash(
+            :info,
+            "Submitted (changeset): attachment=#{file_upload_attachment_label(upload)}"
+          )
+          |> redirect(to: ~p"/file-upload/form#file-upload-form-changeset")
+        else
+          changeset = Map.put(changeset, :action, :insert)
+
+          form =
+            Phoenix.Component.to_form(changeset,
+              as: :file_upload_changeset,
+              id: "file-upload-changeset-form"
+            )
+
+          validate_form =
+            %E2e.Form.FileUploadForm{}
+            |> E2e.Form.FileUploadForm.changeset_validate(%{})
+            |> Phoenix.Component.to_form(
+              as: :file_upload_validate,
+              id: "file-upload-validate-form"
+            )
+
+          conn
+          |> assign_file_upload_form_docs("file-upload-form-changeset")
+          |> render(:file_upload_form_page, form: form, validate_form: validate_form)
+        end
+
+      is_map(params["file_upload_validate"]) ->
+        nested = params["file_upload_validate"] || %{}
+        upload = nested["attachment"]
+
+        changeset =
+          %E2e.Form.FileUploadForm{}
+          |> E2e.Form.FileUploadForm.changeset_validate(nested)
+
+        if changeset.valid? do
+          conn
+          |> put_flash(
+            :info,
+            "Submitted (validated): attachment=#{file_upload_attachment_label(upload)}"
+          )
+          |> redirect(to: ~p"/file-upload/form#file-upload-form-validate")
+        else
+          changeset = Map.put(changeset, :action, :insert)
+
+          validate_form =
+            Phoenix.Component.to_form(changeset,
+              as: :file_upload_validate,
+              id: "file-upload-validate-form"
+            )
+
+          form =
+            %E2e.Form.FileUploadForm{}
+            |> E2e.Form.FileUploadForm.changeset(%{})
+            |> Phoenix.Component.to_form(
+              as: :file_upload_changeset,
+              id: "file-upload-changeset-form"
+            )
+
+          conn
+          |> assign_file_upload_form_docs("file-upload-form-validate")
+          |> render(:file_upload_form_page, form: form, validate_form: validate_form)
+        end
+
+      is_map(params["user"]) ->
+        upload = get_in(params, ["user", "avatar"])
+
+        conn
+        |> put_flash(:info, "Submitted (native): avatar=#{file_upload_attachment_label(upload)}")
+        |> redirect(to: ~p"/file-upload/form#file-upload-form-controller")
+
+      true ->
+        conn
+        |> put_flash(:error, "Unexpected form payload")
+        |> redirect(to: ~p"/file-upload/form")
+    end
+  end
+
+  defp file_upload_attachment_label(%Plug.Upload{filename: name})
+       when is_binary(name) and name != "",
+       do: name
+
+  defp file_upload_attachment_label(_), do: "(none)"
+
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
   end

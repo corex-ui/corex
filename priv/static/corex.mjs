@@ -184,6 +184,7 @@ var Hooks = {
   DatePicker: createLazyHook(() => import("corex/date-picker"), "DatePicker"),
   Dialog: createLazyHook(() => import("corex/dialog"), "Dialog"),
   Editable: createLazyHook(() => import("corex/editable"), "Editable"),
+  FileUpload: createLazyHook(() => import("corex/file-upload"), "FileUpload"),
   FloatingPanel: createLazyHook(() => import("corex/floating-panel"), "FloatingPanel"),
   Listbox: createLazyHook(() => import("corex/listbox"), "Listbox"),
   Marquee: createLazyHook(() => import("corex/marquee"), "Marquee"),

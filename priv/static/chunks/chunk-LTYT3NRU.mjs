@@ -117,6 +117,14 @@ function chunk(v, size) {
     return rows;
   }, []);
 }
+function flatArray(arr) {
+  return arr.reduce((flat, item) => {
+    if (Array.isArray(item)) {
+      return flat.concat(flatArray(item));
+    }
+    return flat.concat(item);
+  }, []);
+}
 function partition(arr, fn) {
   return arr.reduce(
     ([pass, fail], value) => {
@@ -248,6 +256,19 @@ function throttle(fn, wait = 0) {
     }
   };
 }
+var toChar = (code) => String.fromCharCode(code + (code > 25 ? 39 : 97));
+function toName(code) {
+  let name = "";
+  let x;
+  for (x = Math.abs(code); x > 52; x = x / 52 | 0) name = toChar(x % 52) + name;
+  return toChar(x % 52) + name;
+}
+function toPhash(h, x) {
+  let i = x.length;
+  while (i) h = h * 33 ^ x.charCodeAt(--i);
+  return h;
+}
+var hash = (value) => toName(toPhash(5381, value) >>> 0);
 
 // ../node_modules/.pnpm/@zag-js+utils@1.40.0/node_modules/@zag-js/utils/dist/object.mjs
 function compact(obj) {
@@ -2733,6 +2754,7 @@ export {
   prevIndex,
   prev,
   chunk,
+  flatArray,
   partition,
   isEqual,
   isArray,
@@ -2750,6 +2772,7 @@ export {
   match,
   tryCatch,
   throttle,
+  hash,
   compact,
   pick,
   warn,
