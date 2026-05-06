@@ -7516,7 +7516,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4EUE6P2Z.mjs
+  // ../priv/static/chunks/chunk-5ZLJUF5L.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -7553,14 +7553,6 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_4EUE6P2Z = __esm({
-    "../priv/static/chunks/chunk-4EUE6P2Z.mjs"() {
-      "use strict";
-      init_chunk_LTYT3NRU();
-    }
-  });
-
-  // ../priv/static/chunks/chunk-RJABPW5C.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8924,8 +8916,8 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_RJABPW5C = __esm({
-    "../priv/static/chunks/chunk-RJABPW5C.mjs"() {
+  var init_chunk_5ZLJUF5L = __esm({
+    "../priv/static/chunks/chunk-5ZLJUF5L.mjs"() {
       "use strict";
       init_chunk_LTYT3NRU();
       sides = ["top", "right", "bottom", "left"];
@@ -12164,8 +12156,7 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_4EUE6P2Z();
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_7NUJK5QP();
@@ -14327,8 +14318,7 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_PE34YET2();
@@ -18263,8 +18253,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_TDQG4Q55();
       init_chunk_7BZGUIUZ();
-      init_chunk_4EUE6P2Z();
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_PE34YET2();
@@ -27621,8 +27610,7 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_FOQSALVP();
@@ -32465,8 +32453,7 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_7NUJK5QP();
@@ -37535,7 +37522,7 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_RJABPW5C();
+      init_chunk_5ZLJUF5L();
       init_chunk_MG52DTQN();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -37986,12 +37973,20 @@ ${err}`);
         initApi() {
           return this.zagConnect(connect28);
         }
+        syncDom() {
+          this.api = this.initApi();
+          this.render();
+        }
         render() {
           const rootEl = this.el;
-          const triggerEl = rootEl.querySelector(
+          const triggerEls = rootEl.querySelectorAll(
             '[data-scope="tooltip"][data-part="trigger"]'
           );
-          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          triggerEls.forEach((triggerEl) => {
+            const raw = triggerEl.dataset.value;
+            const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+          });
           const positionerEl = rootEl.querySelector(
             '[data-scope="tooltip"][data-part="positioner"]'
           );
@@ -38012,11 +38007,20 @@ ${err}`);
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const placement = getString(el, "placement");
-          const positioning = placement ? { placement } : void 0;
-          const tooltip = new Tooltip(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+          const positioning = readPositioningOptions(el);
+          const onTriggerValueChange = (details) => {
+            var _a4;
+            const eventName = getString(el, "onTriggerValueChange");
+            if (eventName && canPushEvent(this.liveSocket)) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a4 = details.value) != null ? _a4 : ""
+              });
+            }
+          };
+          const tooltip = new Tooltip(el, {
+            id: el.id,
+            defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             openDelay: getNumber(el, "openDelay"),
@@ -38027,6 +38031,7 @@ ${err}`);
             closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
             closeOnScroll: getBoolean(el, "closeOnScroll"),
             interactive: getBoolean(el, "interactive"),
+            onTriggerValueChange,
             onOpenChange: (details) => {
               const eventName = getString(el, "onOpenChange");
               if (eventName && canPushEvent(this.liveSocket)) {
@@ -38048,7 +38053,7 @@ ${err}`);
                 );
               }
             }
-          }));
+          });
           tooltip.init();
           this.tooltip = tooltip;
           this.onSetOpen = (event) => {
@@ -38066,25 +38071,38 @@ ${err}`);
         },
         updated() {
           var _a4;
-          const placement = getString(this.el, "placement");
-          const positioning = placement ? { placement } : void 0;
-          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el),
-            openDelay: getNumber(this.el, "openDelay"),
-            closeDelay: getCloseDelay(this.el),
+          const el = this.el;
+          const positioning = readPositioningOptions(el);
+          const pushEvent = this.pushEvent.bind(this);
+          const onTriggerValueChange = (details) => {
+            var _a5;
+            const eventName = getString(el, "onTriggerValueChange");
+            if (eventName && canPushEvent(this.liveSocket)) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a5 = details.value) != null ? _a5 : ""
+              });
+            }
+          };
+          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps({
+            id: el.id,
+            defaultOpen: getBoolean(el, "defaultOpen"),
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            openDelay: getNumber(el, "openDelay"),
+            closeDelay: getCloseDelay(el),
             positioning,
-            closeOnEscape: getBoolean(this.el, "closeOnEscape"),
-            closeOnClick: getBoolean(this.el, "closeOnClick"),
-            closeOnPointerDown: getBoolean(this.el, "closeOnPointerDown"),
-            closeOnScroll: getBoolean(this.el, "closeOnScroll"),
-            interactive: getBoolean(this.el, "interactive")
-          }));
+            closeOnEscape: getBoolean(el, "closeOnEscape"),
+            closeOnClick: getBoolean(el, "closeOnClick"),
+            closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+            closeOnScroll: getBoolean(el, "closeOnScroll"),
+            interactive: getBoolean(el, "interactive"),
+            onTriggerValueChange
+          });
           queueMicrotask(() => {
-            var _a5, _b, _c;
-            (_c = (_a5 = this.tooltip) == null ? void 0 : (_b = _a5.api).reposition) == null ? void 0 : _c.call(_b);
+            var _a5, _b, _c, _d;
+            (_a5 = this.tooltip) == null ? void 0 : _a5.syncDom();
+            (_d = (_b = this.tooltip) == null ? void 0 : (_c = _b.api).reposition) == null ? void 0 : _d.call(_c);
           });
         },
         destroyed() {

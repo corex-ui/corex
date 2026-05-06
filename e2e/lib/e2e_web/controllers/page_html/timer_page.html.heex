@@ -7,9 +7,25 @@
   <.demo_page
     id="timer-anatomy-page"
     title="Timer · Anatomy"
-    subtitle="Count up or down with controls."
+    subtitle="Display-only, controls, countdown, and tick interval."
     heading_class="layout-heading"
   >
+    <.demo_section
+      id="timer-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.TimerDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.TimerDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="timer-anatomy-with-triggers"
+      title="With triggers"
+      code={E2eWeb.Demos.TimerDemo.anatomy_with_triggers_code()}
+    >
+      <:preview><E2eWeb.Demos.TimerDemo.anatomy_with_triggers_example /></:preview>
+    </.demo_section>
+
     <.demo_section
       id="timer-anatomy-countdown"
       title="Countdown"
@@ -24,14 +40,6 @@
       code={E2eWeb.Demos.TimerDemo.anatomy_timing_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_timing_example /></:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="timer-anatomy-direction"
-      title="Direction and orientation"
-      code={E2eWeb.Demos.TimerDemo.anatomy_direction_code()}
-    >
-      <:preview><E2eWeb.Demos.TimerDemo.anatomy_direction_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

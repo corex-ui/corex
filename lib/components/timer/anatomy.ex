@@ -10,7 +10,7 @@ defmodule Corex.Timer.Anatomy do
       countdown: false,
       start_ms: 0,
       target_ms: nil,
-      auto_start: false,
+      auto_start: true,
       interval: 1000,
       on_tick: nil,
       on_tick_client: nil,

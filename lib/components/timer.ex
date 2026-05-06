@@ -18,7 +18,7 @@ defmodule Corex.Timer do
   ### Countdown
 
   ```heex
-  <.timer id="t" countdown start_ms={90_000} target_ms={0} auto_start class="timer">
+  <.timer id="t" countdown start_ms={90_000} target_ms={0} class="timer">
     <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
     <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
     <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
@@ -26,7 +26,7 @@ defmodule Corex.Timer do
   </.timer>
   ```
 
-  Required slots: `:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`.
+  Action slots (`:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`) are optional. Omit them for a display-only timer, or pass only the controls you need.
 
   ## Styling
 
@@ -69,7 +69,7 @@ defmodule Corex.Timer do
   attr(:countdown, :boolean, default: false)
   attr(:start_ms, :integer, default: 0)
   attr(:target_ms, :integer, default: nil)
-  attr(:auto_start, :boolean, default: false)
+  attr(:auto_start, :boolean, default: true)
   attr(:interval, :integer, default: 1000)
   attr(:on_tick, :string, default: nil)
   attr(:on_tick_client, :string, default: nil)
@@ -90,29 +90,35 @@ defmodule Corex.Timer do
 
   attr(:rest, :global)
 
-  slot :start_trigger, required: true do
+  slot :start_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :pause_trigger, required: true do
+  slot :pause_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :resume_trigger, required: true do
+  slot :resume_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :reset_trigger, required: true do
+  slot :reset_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
   def timer(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+
     assigns =
       assigns
-      |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
       |> assign(:time_values, time_values(assigns.start_ms))
       |> assign(:running, assigns.auto_start)
       |> assign(:paused, false)
+      |> assign(
+        :has_timer_controls?,
+        assigns.start_trigger != [] or assigns.pause_trigger != [] or assigns.resume_trigger != [] or
+          assigns.reset_trigger != []
+      )
 
     ~H"""
     <div
@@ -146,17 +152,41 @@ defmodule Corex.Timer do
           <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})}>:</div>
           <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})}></div>
         </div>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}>
+        <div
+          :if={@has_timer_controls?}
+          phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}
+        >
+          <button
+            :if={@start_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@start_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@pause_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@pause_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@resume_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@resume_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@reset_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@reset_trigger)}
           </button>
         </div>
