@@ -486,6 +486,17 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_timer_paused(assigns) do
+    ~H"""
+    <.timer start_ms={60_000} auto_start={false}>
+      <:start_trigger>Start</:start_trigger>
+      <:pause_trigger>Pause</:pause_trigger>
+      <:resume_trigger>Resume</:resume_trigger>
+      <:reset_trigger>Reset</:reset_trigger>
+    </.timer>
+    """
+  end
+
   def render_signature_pad(assigns) do
     ~H"""
     <.signature_pad name="sig">
