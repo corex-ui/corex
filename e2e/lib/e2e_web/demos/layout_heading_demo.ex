@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def title_only_code do
     ~S"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
     </.layout_heading>
     """
@@ -11,7 +11,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def title_only_example(assigns) do
     ~H"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
     </.layout_heading>
     """
@@ -19,7 +19,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def title_and_subtitle_code do
     ~S"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
       <:subtitle>Controller View</:subtitle>
     </.layout_heading>
@@ -28,7 +28,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def title_and_subtitle_example(assigns) do
     ~H"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
       <:subtitle>Controller View</:subtitle>
     </.layout_heading>
@@ -37,7 +37,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def with_actions_code do
     ~S"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
       <:subtitle>Controller View</:subtitle>
       <:actions>
@@ -51,7 +51,7 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
 
   def with_actions_example(assigns) do
     ~H"""
-    <.layout_heading>
+    <.layout_heading class="layout-heading">
       <:title>Page Title</:title>
       <:subtitle>Controller View</:subtitle>
       <:actions>
