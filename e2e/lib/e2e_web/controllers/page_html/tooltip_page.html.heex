@@ -7,14 +7,22 @@
   <.demo_page
     id="tooltip-anatomy-page"
     title="Tooltip · Anatomy"
-    subtitle="Placement and variants."
+    subtitle="Minimal usage, arrow, placement, and Corex.Positioning."
   >
     <.demo_section
-      id="tooltip-anatomy-default-open"
-      title="Default open"
-      code={E2eWeb.Demos.TooltipDemo.anatomy_default_open_code()}
+      id="tooltip-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.TooltipDemo.anatomy_minimal_code()}
     >
-      <:preview><E2eWeb.Demos.TooltipDemo.anatomy_default_open_example /></:preview>
+      <:preview><E2eWeb.Demos.TooltipDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tooltip-anatomy-with-arrow"
+      title="With arrow"
+      code={E2eWeb.Demos.TooltipDemo.anatomy_with_arrow_code()}
+    >
+      <:preview><E2eWeb.Demos.TooltipDemo.anatomy_with_arrow_example /></:preview>
     </.demo_section>
 
     <.demo_section
@@ -26,11 +34,11 @@
     </.demo_section>
 
     <.demo_section
-      id="tooltip-anatomy-variants"
-      title="Variants"
-      code={E2eWeb.Demos.TooltipDemo.anatomy_variants_code()}
+      id="tooltip-anatomy-positioning"
+      title="Positioning"
+      code={E2eWeb.Demos.TooltipDemo.anatomy_positioning_code()}
     >
-      <:preview><E2eWeb.Demos.TooltipDemo.anatomy_variants_example /></:preview>
+      <:preview><E2eWeb.Demos.TooltipDemo.anatomy_positioning_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

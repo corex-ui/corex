@@ -599,9 +599,11 @@ defmodule E2eWeb.Helpers do
           id: "tooltip",
           style: true,
           playground: false,
+          pattern: true,
           anatomy_to: ~p"/tooltip/anatomy",
           api_to: ~p"/tooltip/api",
           events_to: ~p"/tooltip/events",
+          patterns_to: ~p"/tooltip/patterns",
           style_to: ~p"/tooltip/style"
         },
         %{

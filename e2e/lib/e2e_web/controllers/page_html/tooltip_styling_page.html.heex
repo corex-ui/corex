@@ -7,25 +7,35 @@
   <.demo_page
     id="tooltip-styling-page"
     title="Tooltip · Style"
-    subtitle="Size and color modifiers on the root."
+    subtitle="Semantic surfaces (tooltip--accent, …), density (tooltip--size-sm, …), and typography (tooltip--text-sm, …) on the root."
   >
     <.demo_section
-      id="tooltip-styling-sizes"
-      title="Sizes"
-      code={E2eWeb.Demos.TooltipDemo.styling_sizes_code()}
+      id="tooltip-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.TooltipDemo.styling_color_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TooltipDemo.styling_sizes_example />
+        <E2eWeb.Demos.TooltipDemo.styling_color_example />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="tooltip-styling-colors"
-      title="Colors"
-      code={E2eWeb.Demos.TooltipDemo.styling_colors_code()}
+      id="tooltip-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.TooltipDemo.styling_size_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TooltipDemo.styling_colors_example />
+        <E2eWeb.Demos.TooltipDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tooltip-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.TooltipDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TooltipDemo.styling_text_example />
       </:preview>
     </.demo_section>
   </.demo_page>

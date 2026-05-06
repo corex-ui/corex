@@ -2,12 +2,10 @@ import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
-  readPositioningOptions
-} from "./chunks/chunk-4EUE6P2Z.mjs";
-import {
   getPlacement,
-  getPlacementStyles
-} from "./chunks/chunk-RJABPW5C.mjs";
+  getPlacementStyles,
+  readPositioningOptions
+} from "./chunks/chunk-5ZLJUF5L.mjs";
 import {
   trackDismissableElement
 } from "./chunks/chunk-ZZR3S6PP.mjs";

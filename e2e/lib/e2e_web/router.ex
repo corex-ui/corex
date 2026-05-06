@@ -201,6 +201,7 @@ defmodule E2eWeb.Router do
 
       live("/tooltip/api", TooltipApiLive)
       live("/tooltip/events", TooltipEventsLive)
+      live("/tooltip/patterns", TooltipPatternsLive)
 
       live("/", HomeLive, :index)
     end

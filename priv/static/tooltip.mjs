@@ -1,7 +1,8 @@
 import {
   getPlacement,
-  getPlacementStyles
-} from "./chunks/chunk-RJABPW5C.mjs";
+  getPlacementStyles,
+  readPositioningOptions
+} from "./chunks/chunk-5ZLJUF5L.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
@@ -663,12 +664,20 @@ var Tooltip = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  syncDom() {
+    this.api = this.initApi();
+    this.render();
+  }
   render() {
     const rootEl = this.el;
-    const triggerEl = rootEl.querySelector(
+    const triggerEls = rootEl.querySelectorAll(
       '[data-scope="tooltip"][data-part="trigger"]'
     );
-    if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+    triggerEls.forEach((triggerEl) => {
+      const raw = triggerEl.dataset.value;
+      const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+      this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+    });
     const positionerEl = rootEl.querySelector(
       '[data-scope="tooltip"][data-part="positioner"]'
     );
@@ -697,11 +706,19 @@ var TooltipHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const placement = getString(el, "placement");
-    const positioning = placement ? { placement } : void 0;
+    const positioning = readPositioningOptions(el);
+    const onTriggerValueChange = (details) => {
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(this.liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: details.value ?? ""
+        });
+      }
+    };
     const tooltip = new Tooltip(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      defaultOpen: getBoolean(el, "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),
@@ -712,6 +729,7 @@ var TooltipHook = {
       closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
       closeOnScroll: getBoolean(el, "closeOnScroll"),
       interactive: getBoolean(el, "interactive"),
+      onTriggerValueChange,
       onOpenChange: (details) => {
         const eventName = getString(el, "onOpenChange");
         if (eventName && canPushEvent(this.liveSocket)) {
@@ -750,23 +768,35 @@ var TooltipHook = {
     );
   },
   updated() {
-    const placement = getString(this.el, "placement");
-    const positioning = placement ? { placement } : void 0;
+    const el = this.el;
+    const positioning = readPositioningOptions(el);
+    const pushEvent = this.pushEvent.bind(this);
+    const onTriggerValueChange = (details) => {
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(this.liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: details.value ?? ""
+        });
+      }
+    };
     this.tooltip?.updateProps({
-      id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el),
-      openDelay: getNumber(this.el, "openDelay"),
-      closeDelay: getCloseDelay(this.el),
+      id: el.id,
+      defaultOpen: getBoolean(el, "defaultOpen"),
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      openDelay: getNumber(el, "openDelay"),
+      closeDelay: getCloseDelay(el),
       positioning,
-      closeOnEscape: getBoolean(this.el, "closeOnEscape"),
-      closeOnClick: getBoolean(this.el, "closeOnClick"),
-      closeOnPointerDown: getBoolean(this.el, "closeOnPointerDown"),
-      closeOnScroll: getBoolean(this.el, "closeOnScroll"),
-      interactive: getBoolean(this.el, "interactive")
+      closeOnEscape: getBoolean(el, "closeOnEscape"),
+      closeOnClick: getBoolean(el, "closeOnClick"),
+      closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+      closeOnScroll: getBoolean(el, "closeOnScroll"),
+      interactive: getBoolean(el, "interactive"),
+      onTriggerValueChange
     });
     queueMicrotask(() => {
+      this.tooltip?.syncDom();
       this.tooltip?.api.reposition?.();
     });
   },

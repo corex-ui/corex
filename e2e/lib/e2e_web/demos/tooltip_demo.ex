@@ -1,19 +1,41 @@
 defmodule E2eWeb.Demos.TooltipDemo do
   use E2eWeb, :html
 
-  def anatomy_default_open_code do
+  def anatomy_minimal_code do
     ~S"""
-    <.tooltip id="tooltip-default-open" class="tooltip" open>
-      <:trigger>Hover or focus (starts open)</:trigger>
+    <.tooltip class="tooltip" show_arrow={false}>
+      <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
     """
   end
 
-  def anatomy_default_open_example(assigns) do
+  def anatomy_minimal_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <.tooltip id="tooltip-default-open" class="tooltip" open>
-      <:trigger>Hover or focus (starts open)</:trigger>
+    <.tooltip class="tooltip" show_arrow={false}>
+      <:trigger>Hover me</:trigger>
+      <:content>Tooltip content</:content>
+    </.tooltip>
+    """
+  end
+
+  def anatomy_with_arrow_code do
+    ~S"""
+    <.tooltip class="tooltip">
+      <:trigger>Hover me</:trigger>
+      <:content>Tooltip content</:content>
+    </.tooltip>
+    """
+  end
+
+  def anatomy_with_arrow_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.tooltip class="tooltip">
+      <:trigger>Hover me</:trigger>
       <:content>Tooltip content</:content>
     </.tooltip>
     """
@@ -22,19 +44,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_placement_code do
     ~S"""
     <div class="layout__row gap-2">
-      <.tooltip class="tooltip" placement="bottom">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
         <:trigger>Bottom</:trigger>
         <:content>Tooltip below</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="top">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
         <:trigger>Top</:trigger>
         <:content>Tooltip above</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="left">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
         <:trigger>Left</:trigger>
         <:content>Tooltip on the left</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="right">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
         <:trigger>Right</:trigger>
         <:content>Tooltip on the right</:content>
       </.tooltip>
@@ -45,19 +67,19 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def anatomy_placement_example(assigns) do
     ~H"""
     <div class="layout__row gap-2">
-      <.tooltip class="tooltip" placement="bottom">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
         <:trigger>Bottom</:trigger>
         <:content>Tooltip below</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="top">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
         <:trigger>Top</:trigger>
         <:content>Tooltip above</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="left">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
         <:trigger>Left</:trigger>
         <:content>Tooltip on the left</:content>
       </.tooltip>
-      <.tooltip class="tooltip" placement="right">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
         <:trigger>Right</:trigger>
         <:content>Tooltip on the right</:content>
       </.tooltip>
@@ -65,49 +87,205 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
-  def anatomy_variants_code do
+  def anatomy_positioning_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm">
-        <:trigger>Small</:trigger>
-        <:content>Small tooltip</:content>
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
+        <:trigger>Gutter 4</:trigger>
+        <:content>Tight gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip">
-        <:trigger>Default</:trigger>
-        <:content>Default tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
+        <:trigger>Gutter 32</:trigger>
+        <:content>Wide gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
-        <:trigger>Large</:trigger>
-        <:content>Large tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 0}}>
+        <:trigger>Shift 0</:trigger>
+        <:content>Centered along the placement edge</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
-        <:trigger>Accent</:trigger>
-        <:content>Accent tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 32}}>
+        <:trigger>Shift 32</:trigger>
+        <:content>Tooltip slid along the edge</:content>
       </.tooltip>
     </div>
     """
   end
 
-  def anatomy_variants_example(assigns) do
+  def anatomy_positioning_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm">
-        <:trigger>Small</:trigger>
-        <:content>Small tooltip</:content>
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 4}}>
+        <:trigger>Gutter 4</:trigger>
+        <:content>Tight gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip">
-        <:trigger>Default</:trigger>
-        <:content>Default tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", gutter: 32}}>
+        <:trigger>Gutter 32</:trigger>
+        <:content>Wide gap between trigger and tooltip</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
-        <:trigger>Large</:trigger>
-        <:content>Large tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 0}}>
+        <:trigger>Shift 0</:trigger>
+        <:content>Centered along the placement edge</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--accent">
-        <:trigger>Accent</:trigger>
-        <:content>Accent tooltip</:content>
+      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top", shift: 32}}>
+        <:trigger>Shift 32</:trigger>
+        <:content>Tooltip slid along the edge</:content>
       </.tooltip>
     </div>
+    """
+  end
+
+  def patterns_multi_trigger_heex do
+    ~S"""
+    <.tooltip
+      id="tooltip-pattern-users"
+      class="tooltip"
+      show_arrow={false}
+      on_trigger_value_change="tooltip_pattern_trigger_value"
+    >
+      <:trigger :for={user <- @users} value={user.id}>
+        {user.first_name}
+      </:trigger>
+      <:content>
+        {@active_user_detail}
+      </:content>
+    </.tooltip>
+    """
+  end
+
+  def patterns_multi_trigger_elixir do
+    ~S"""
+    on_mount({__MODULE__, :assign_users})
+
+    def on_mount(:assign_users, _params, _session, socket) do
+      users = [
+        %{id: "1", first_name: "Alice", full_name: "Alice Johnson"},
+        %{id: "2", first_name: "Bob", full_name: "Bob Martinez"},
+        %{id: "3", first_name: "Carol", full_name: "Carol Nguyen"}
+      ]
+
+      {:cont,
+       socket
+       |> assign(:users, users)
+       |> assign(:active_user_detail, "Hover a first name to show the full name here.")}
+    end
+
+    def mount(_params, _session, socket) do
+      {:ok, socket}
+    end
+
+    def handle_event("tooltip_pattern_trigger_value", %{"value" => value}, socket) do
+      body =
+        case Enum.find(socket.assigns.users, &(&1.id == value)) do
+          nil -> socket.assigns.active_user_detail
+          user -> user.full_name
+        end
+
+      {:noreply, assign(socket, :active_user_detail, body)}
+    end
+    """
+  end
+
+  def patterns_profile_links_heex do
+    ~S"""
+    <ul class="flex flex-col gap-2 list-none p-0 m-0 w-full max-w-xl">
+      <li :for={user <- @users}>
+        <.tooltip
+          id={"tooltip-profile-" <> user.id}
+          class="tooltip"
+          show_arrow={false}
+          trigger_tag={:span}
+        >
+          <:trigger>
+            <.navigate to={~p"/admins"} type="navigate" class="link">
+              {user.first_name}
+            </.navigate>
+          </:trigger>
+          <:content>
+            {user.full_name}
+          </:content>
+        </.tooltip>
+      </li>
+    </ul>
+    """
+  end
+
+  def patterns_profile_links_elixir do
+    ~S"""
+    on_mount({__MODULE__, :assign_users})
+
+    def on_mount(:assign_users, _params, _session, socket) do
+      users = [
+        %{id: "1", first_name: "Alice", full_name: "Alice Johnson"},
+        %{id: "2", first_name: "Bob", full_name: "Bob Martinez"},
+        %{id: "3", first_name: "Carol", full_name: "Carol Nguyen"}
+      ]
+
+      {:cont, assign(socket, :users, users)}
+    end
+
+    def mount(_params, _session, socket) do
+      {:ok, socket}
+    end
+    """
+  end
+
+  def patterns_profile_links_multi_heex do
+    ~S"""
+    <div class="flex flex-col gap-2 items-start w-full max-w-xl">
+      <.tooltip
+        id="tooltip-pattern-profile-link-multi-tool"
+        class="tooltip"
+        show_arrow={false}
+        trigger_tag={:span}
+        on_trigger_value_change="tooltip_pattern_link_multi_value"
+      >
+        <:trigger :for={user <- @users} value={user.id}>
+          <.navigate to={~p"/admins"} type="navigate" class="link">
+            {user.first_name}
+          </.navigate>
+        </:trigger>
+        <:content>
+          {@active_link_tooltip_detail}
+        </:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def patterns_profile_links_multi_elixir do
+    ~S"""
+    on_mount({__MODULE__, :assign_users})
+
+    def on_mount(:assign_users, _params, _session, socket) do
+      users = [
+        %{id: "1", first_name: "Alice", full_name: "Alice Johnson"},
+        %{id: "2", first_name: "Bob", full_name: "Bob Martinez"},
+        %{id: "3", first_name: "Carol", full_name: "Carol Nguyen"}
+      ]
+
+      {:cont,
+       socket
+       |> assign(:users, users)
+       |> assign(
+         :active_link_tooltip_detail,
+         "Hover a first name to show the full name here."
+       )}
+    end
+
+    def mount(_params, _session, socket) do
+      {:ok, socket}
+    end
+
+    def handle_event("tooltip_pattern_link_multi_value", %{"value" => value}, socket) do
+      body =
+        case Enum.find(socket.assigns.users, &(&1.id == value)) do
+          nil -> socket.assigns.active_link_tooltip_detail
+          user -> user.full_name
+        end
+
+      {:noreply, assign(socket, :active_link_tooltip_detail, body)}
+    end
     """
   end
 
@@ -269,48 +447,55 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def api_client_binding_example(assigns), do: api_set_open_client_binding_example(assigns)
 
-  def patterns_controlled_heex do
+  def patterns_set_open_heex do
     ~S"""
-    <.tooltip
-      id="tooltip-patterns-controlled"
-      class="tooltip"
-      controlled
-      open={@open}
-      on_open_change="tooltip_pattern_open"
-    >
-      <:trigger>Controlled</:trigger>
-      <:content>Synced with assign</:content>
+    <div class="layout__row">
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button button--sm">Open</.action>
+      <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button button--sm">Close</.action>
+    </div>
+    <.tooltip id="tooltip-patterns-set-open" class="tooltip">
+      <:trigger>Hover or buttons</:trigger>
+      <:content>Open state from Corex.Tooltip.set_open/2</:content>
     </.tooltip>
     """
   end
 
-  def patterns_controlled_elixir do
+  def patterns_set_open_elixir do
     ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :open, false)}
+    def handle_event("tooltip_pattern_open", _params, socket) do
+      {:noreply, Corex.Tooltip.set_open(socket, "tooltip-patterns-set-open", true)}
     end
 
-    def handle_event("tooltip_pattern_open", %{"open" => open, "id" => _}, socket) do
-      o = open == true or open == "true"
-      {:noreply, assign(socket, :open, o)}
+    def handle_event("tooltip_pattern_close", _params, socket) do
+      {:noreply, Corex.Tooltip.set_open(socket, "tooltip-patterns-set-open", false)}
     end
     """
   end
 
-  attr :open, :boolean, default: false
+  def patterns_set_open_example(assigns) do
+    _ = assigns
 
-  def patterns_controlled_example(assigns) do
     ~H"""
-    <.tooltip
-      id="tooltip-patterns-controlled"
-      class="tooltip"
-      controlled
-      open={@open}
-      on_open_change="tooltip_pattern_open"
-    >
-      <:trigger>Controlled</:trigger>
-      <:content>Synced with assign</:content>
-    </.tooltip>
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
+      <div class="layout__row">
+        <.action
+          phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)}
+          class="button button--sm"
+        >
+          Open
+        </.action>
+        <.action
+          phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)}
+          class="button button--sm"
+        >
+          Close
+        </.action>
+      </div>
+      <.tooltip id="tooltip-patterns-set-open" class="tooltip">
+        <:trigger>Hover or buttons</:trigger>
+        <:content>Open state from Corex.Tooltip.set_open/2</:content>
+      </.tooltip>
+    </div>
     """
   end
 
@@ -346,69 +531,169 @@ defmodule E2eWeb.Demos.TooltipDemo do
     """
   end
 
-  def styling_sizes_code do
+  def styling_color_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm">
-        <:trigger>Small</:trigger>
-        <:content>Small tooltip</:content>
-      </.tooltip>
-      <.tooltip class="tooltip">
-        <:trigger>Default</:trigger>
-        <:content>Default size</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
-        <:trigger>Large</:trigger>
-        <:content>Large tooltip</:content>
-      </.tooltip>
-    </div>
-    """
-  end
-
-  def styling_sizes_example(assigns) do
-    ~H"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip tooltip--sm">
-        <:trigger>Small</:trigger>
-        <:content>Small tooltip</:content>
-      </.tooltip>
-      <.tooltip class="tooltip">
-        <:trigger>Default</:trigger>
-        <:content>Default size</:content>
-      </.tooltip>
-      <.tooltip class="tooltip tooltip--lg">
-        <:trigger>Large</:trigger>
-        <:content>Large tooltip</:content>
-      </.tooltip>
-    </div>
-    """
-  end
-
-  def styling_colors_code do
-    ~S"""
-    <div class="layout__row gap-2">
+    <div class="layout__row flex-wrap gap-2">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
       <.tooltip class="tooltip tooltip--accent">
         <:trigger>Accent</:trigger>
-        <:content>Accent surface</:content>
+        <:content>tooltip--accent</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--brand">
+        <:trigger>Brand</:trigger>
+        <:content>tooltip--brand</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--alert">
+        <:trigger>Alert</:trigger>
+        <:content>tooltip--alert</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--success">
+        <:trigger>Success</:trigger>
+        <:content>tooltip--success</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--info">
+        <:trigger>Info</:trigger>
+        <:content>tooltip--info</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--selected">
+        <:trigger>Selected</:trigger>
+        <:content>tooltip--selected</:content>
       </.tooltip>
     </div>
     """
   end
 
-  def styling_colors_example(assigns) do
+  def styling_color_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="layout__row gap-2">
+    <div class="layout__row flex-wrap gap-2">
       <.tooltip class="tooltip">
         <:trigger>Default</:trigger>
         <:content>Neutral surface</:content>
       </.tooltip>
       <.tooltip class="tooltip tooltip--accent">
         <:trigger>Accent</:trigger>
-        <:content>Accent surface</:content>
+        <:content>tooltip--accent</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--brand">
+        <:trigger>Brand</:trigger>
+        <:content>tooltip--brand</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--alert">
+        <:trigger>Alert</:trigger>
+        <:content>tooltip--alert</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--success">
+        <:trigger>Success</:trigger>
+        <:content>tooltip--success</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--info">
+        <:trigger>Info</:trigger>
+        <:content>tooltip--info</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--selected">
+        <:trigger>Selected</:trigger>
+        <:content>tooltip--selected</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    ~S"""
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip tooltip--size-sm">
+        <:trigger>Sm</:trigger>
+        <:content>tooltip--size-sm</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-md">
+        <:trigger>Md</:trigger>
+        <:content>tooltip--size-md</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-lg">
+        <:trigger>Lg</:trigger>
+        <:content>tooltip--size-lg</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-xl">
+        <:trigger>Xl</:trigger>
+        <:content>tooltip--size-xl</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip tooltip--size-sm">
+        <:trigger>Sm</:trigger>
+        <:content>tooltip--size-sm</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-md">
+        <:trigger>Md</:trigger>
+        <:content>tooltip--size-md</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-lg">
+        <:trigger>Lg</:trigger>
+        <:content>tooltip--size-lg</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--size-xl">
+        <:trigger>Xl</:trigger>
+        <:content>tooltip--size-xl</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_text_code do
+    ~S"""
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip tooltip--text-sm">
+        <:trigger>Text sm</:trigger>
+        <:content>tooltip--text-sm</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-xl">
+        <:trigger>Text xl</:trigger>
+        <:content>tooltip--text-xl</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-2xl">
+        <:trigger>Text 2xl</:trigger>
+        <:content>tooltip--text-2xl</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-4xl">
+        <:trigger>Text 4xl</:trigger>
+        <:content>tooltip--text-4xl</:content>
+      </.tooltip>
+    </div>
+    """
+  end
+
+  def styling_text_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row flex-wrap gap-2">
+      <.tooltip class="tooltip tooltip--text-sm">
+        <:trigger>Text sm</:trigger>
+        <:content>tooltip--text-sm</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-xl">
+        <:trigger>Text xl</:trigger>
+        <:content>tooltip--text-xl</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-2xl">
+        <:trigger>Text 2xl</:trigger>
+        <:content>tooltip--text-2xl</:content>
+      </.tooltip>
+      <.tooltip class="tooltip tooltip--text-4xl">
+        <:trigger>Text 4xl</:trigger>
+        <:content>tooltip--text-4xl</:content>
       </.tooltip>
     </div>
     """

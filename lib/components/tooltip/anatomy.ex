@@ -7,46 +7,44 @@ defmodule Corex.Tooltip.Anatomy do
 
     defstruct [
       :id,
-      open: false,
-      controlled: false,
+      positioning: %Corex.Positioning{},
       disabled: false,
       dir: "ltr",
       orientation: "horizontal",
       open_delay: nil,
       close_delay: nil,
-      placement: nil,
       close_on_escape: nil,
       close_on_click: nil,
       close_on_pointer_down: nil,
       close_on_scroll: nil,
       interactive: false,
       on_open_change: nil,
-      on_open_change_client: nil
+      on_open_change_client: nil,
+      on_trigger_value_change: nil
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            open: boolean(),
-            controlled: boolean(),
+            positioning: Corex.Positioning.t(),
             disabled: boolean(),
             dir: String.t(),
             orientation: String.t(),
             open_delay: non_neg_integer() | nil,
             close_delay: non_neg_integer() | nil,
-            placement: String.t() | nil,
             close_on_escape: boolean() | nil,
             close_on_click: boolean() | nil,
             close_on_pointer_down: boolean() | nil,
             close_on_scroll: boolean() | nil,
             interactive: boolean(),
             on_open_change: String.t() | nil,
-            on_open_change_client: String.t() | nil
+            on_open_change_client: String.t() | nil,
+            on_trigger_value_change: String.t() | nil
           }
   end
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, :disabled, orientation: "horizontal", tag: :button]
+    defstruct [:id, :dir, :open, :disabled, orientation: "horizontal", tag: :button, value: nil]
 
     @ignored_attrs [
       "type",
@@ -59,7 +57,11 @@ defmodule Corex.Tooltip.Anatomy do
       "data-placement",
       "aria-describedby",
       "aria-expanded",
-      "data-focus"
+      "data-focus",
+      "data-ownedby",
+      "data-value",
+      "data-current",
+      "data-expanded"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

@@ -194,6 +194,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/tooltip/anatomy", "#tooltip-anatomy-page"},
     {"/en/tooltip/api", "#tooltip-api-page"},
     {"/en/tooltip/events", "#tooltip-events-page"},
+    {"/en/tooltip/patterns", "#tooltip-patterns-page"},
     {"/en/tooltip/style", "#tooltip-styling-page"},
     {"/en/tree-view/playground", "#playground-tree"},
     {"/en/tree-view/anatomy", "#tree-view-anatomy-page"},
