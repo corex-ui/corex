@@ -1339,7 +1339,7 @@ var Select = class extends Component {
     const valueText = this.el.querySelector(
       '[data-scope="select"][data-part="item-text"]'
     );
-    if (valueText) {
+    if (valueText && this.el.dataset.updateTrigger !== "false") {
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];

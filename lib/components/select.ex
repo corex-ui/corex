@@ -7,7 +7,7 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder text comes from the Translation struct. Use `translation={%Select.Translation{ placeholder: gettext("Select") }}` to customize.
+  The placeholder text comes from the `translation` attribute (default placeholder is gettext `"Select"`). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
 
   ### Minimal
 
@@ -357,17 +357,6 @@ defmodule Corex.Select do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for Select component strings.
-
-    Without gettext: `translation={%Select.Translation{ placeholder: "Choose an option" }}`
-
-    With gettext: `translation={%Select.Translation{ placeholder: gettext("Select") }}`
-    """
-    defstruct [:placeholder]
-  end
-
   use Phoenix.Component
 
   alias Phoenix.LiveView
@@ -409,9 +398,9 @@ defmodule Corex.Select do
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the select on select")
 
   attr(:dir, :string,
-    default: nil,
-    doc:
-      "The direction of the select. When nil, derived from document (html lang + config :rtl_locales)"
+    default: "ltr",
+    values: ["ltr", "rtl"],
+    doc: "The direction of the select (ltr or rtl)."
   )
 
   attr(:orientation, :string,
@@ -427,11 +416,15 @@ defmodule Corex.Select do
   attr(:form, :string, doc: "The id of the form of the select")
   attr(:read_only, :boolean, default: false, doc: "Whether the select is read only")
   attr(:required, :boolean, default: false, doc: "Whether the select is required")
-  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
 
   attr(:deselectable, :boolean,
     default: false,
     doc: "Whether the selected items can be deselected"
+  )
+
+  attr(:update_trigger, :boolean,
+    default: true,
+    doc: "When false, the hook does not overwrite trigger item-text from the selected label."
   )
 
   attr(:on_value_change, :string,
@@ -464,7 +457,11 @@ defmodule Corex.Select do
     doc: "Positioning options for the dropdown"
   )
 
-  attr(:translation, Corex.Select.Translation, default: nil, doc: "Override translatable strings")
+  attr(:translation, Corex.Select.Translation,
+    default: %Corex.Select.Translation{placeholder: gettext("Select")},
+    doc: "Translatable strings for the select"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false, doc: "The label content" do
@@ -503,7 +500,6 @@ defmodule Corex.Select do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     value = get_value(field.value)
-    selected_label = get_selected_label(assigns.items, value)
 
     assigns
     |> assign(field: nil)
@@ -511,17 +507,12 @@ defmodule Corex.Select do
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
-    |> assign_new(:controlled, fn -> true end)
     |> assign(:value, value)
-    |> assign(:selected_label, selected_label)
     |> select()
   end
 
   def select(assigns) do
     items = normalize_items(assigns.items)
-    default_translation = %Translation{placeholder: gettext("Select")}
-    translation = assigns[:translation] || default_translation
-    placeholder = translation.placeholder
 
     assigns =
       assigns
@@ -529,19 +520,11 @@ defmodule Corex.Select do
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:controlled, fn -> false end)
-      |> assign(:translation, translation)
-      |> assign(:placeholder, placeholder)
 
-    value = Map.get(assigns, :value, [])
-
-    value_list = get_value(value)
-    selected_label = get_selected_label(items, value_list)
+    value_list = get_value(assigns[:value])
 
     assigns =
       assigns
-      |> assign(:selected_label, selected_label)
       |> assign(:value, value_list)
 
     options = transform_collection_to_options(items)
@@ -579,13 +562,14 @@ defmodule Corex.Select do
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, controlled: @controlled, placeholder: @placeholder, value: @value,
+      id: @id, items: @items, controlled: @controlled, placeholder: @translation.placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, orientation: @orientation, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
       positioning: @positioning,
-      deselectable: @deselectable
+      deselectable: @deselectable,
+      update_trigger: @update_trigger
     })}>
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
@@ -599,9 +583,9 @@ defmodule Corex.Select do
           {render_slot(@label)}
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={@selected_label || @placeholder}>
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={get_selected_label(@items, @value) || @translation.placeholder}>
             <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})}>
-              {if @selected_label, do: @selected_label, else: @placeholder}
+              {get_selected_label(@items, @value) || @translation.placeholder}
             </span>
             {render_slot(@trigger)}
           </button>
