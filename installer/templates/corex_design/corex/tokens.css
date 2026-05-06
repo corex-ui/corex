@@ -5,3 +5,8 @@
 @import "./tokens/semantic/text.css";
 @import "./tokens/semantic/font.css";
 @import "./tokens/semantic/effect.css";
+
+@theme inline {
+  --text-md: var(--text-base);
+  --text-md--line-height: var(--text-base--line-height);
+}
