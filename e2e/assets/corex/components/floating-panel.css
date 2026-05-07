@@ -2,6 +2,10 @@
 @import "./scrollbar.css";
 
 @layer components {
+  .floating-panel[data-loading] [data-scope="floating-panel"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .floating-panel [data-scope="floating-panel"][data-part="trigger"] {
     @apply ui-trigger;
   }

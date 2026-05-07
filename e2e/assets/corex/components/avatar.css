@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .avatar[data-loading] [data-scope="avatar"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .avatar[dir="rtl"] [data-scope="avatar"][data-part="fallback"] {
     text-align: end;
   }

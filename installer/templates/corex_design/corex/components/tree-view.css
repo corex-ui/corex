@@ -1,6 +1,9 @@
 @import "../main.css";
 
 @layer components {
+  .tree-view[data-loading] [data-scope="tree-view"][data-part="root"] {
+    @apply ui-loading;
+  }
 
   .tree-view {
     width: 100%;
@@ -95,6 +98,10 @@
     right: 0;
     pointer-events: none;
     opacity: 0.65;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="root"][data-loading] {
+    @apply ui-loading;
   }
 
   .tree-view [data-scope="tree-view"][data-part="root"][data-loading] [data-scope="tree-view"][data-part="branch-text"],

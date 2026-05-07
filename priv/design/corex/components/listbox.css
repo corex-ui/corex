@@ -2,6 +2,10 @@
 @import "./scrollbar.css";
 
 @layer components {
+  .listbox[data-loading] [data-scope="listbox"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .listbox {
     width: 100%;
     max-width: var(--container-5xs);

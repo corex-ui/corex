@@ -1,6 +1,9 @@
 @import "../main.css";
 
 @layer components {
+  .collapsible[data-loading] [data-scope="collapsible"][data-part="root"] {
+    @apply ui-loading;
+  }
 
   .collapsible {
     width: 100%;
@@ -70,7 +73,8 @@
 
   .collapsible [data-scope="collapsible"][data-part="root"][data-loading],
   [data-scope="collapsible"][data-part="root"][data-loading] {
-    pointer-events: none;
+    @apply ui-loading;
+
     min-height: var(--spacing-size);
     min-width: var(--container-7xs);
   }

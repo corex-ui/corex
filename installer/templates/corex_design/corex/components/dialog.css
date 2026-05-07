@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .dialog[data-loading] > * {
+    @apply ui-loading;
+  }
+
   .dialog [data-scope="dialog"][data-part="trigger"] {
     @apply ui-trigger;
   }

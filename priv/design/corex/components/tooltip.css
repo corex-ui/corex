@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .tooltip[data-loading] > * {
+    @apply ui-loading;
+  }
+
   .tooltip [data-scope="tooltip"][data-part="positioner"] {
     z-index: 50;
     position: absolute;

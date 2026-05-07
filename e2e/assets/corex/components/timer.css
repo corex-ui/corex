@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .timer[data-loading] [data-scope="timer"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .timer {
     width: 100%;
     max-width: fit-content;

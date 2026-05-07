@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .tabs[data-loading] [data-scope="tabs"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .tabs {
     width: 100%;
     max-width: none;
