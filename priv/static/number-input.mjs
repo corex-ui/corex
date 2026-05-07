@@ -1342,10 +1342,10 @@ var NumberInputHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const defaultValueStr = getString(el, "defaultValue");
+    const controlled = getBoolean(el, "controlled");
     const zag = new NumberInput(el, {
       id: el.id,
-      defaultValue: defaultValueStr,
+      ...controlled ? { value: getString(el, "value") ?? "" } : { defaultValue: getString(el, "defaultValue") },
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
@@ -1386,10 +1386,8 @@ var NumberInputHook = {
     this.numberInput = zag;
   },
   updated() {
-    const defaultValueStr = getString(this.el, "defaultValue");
-    this.numberInput?.updateProps({
+    const next = {
       id: this.el.id,
-      defaultValue: defaultValueStr,
       min: getNumber(this.el, "min"),
       max: getNumber(this.el, "max"),
       step: getNumber(this.el, "step"),
@@ -1397,10 +1395,15 @@ var NumberInputHook = {
       readOnly: getBoolean(this.el, "readOnly"),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
+      allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       dir: getDir(this.el)
-    });
+    };
+    if (getBoolean(this.el, "controlled")) {
+      next.value = getString(this.el, "value") ?? "";
+    }
+    this.numberInput?.updateProps(next);
   },
   destroyed() {
     this.numberInput?.destroy();

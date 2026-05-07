@@ -463,7 +463,8 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/number-input/playground",
           api_to: ~p"/number-input/api",
           events_to: ~p"/number-input/events",
-          pattern: false,
+          pattern: true,
+          patterns_to: ~p"/number-input/patterns",
           style_to: ~p"/number-input/style",
           forms: [
             doc_form_menu_item("Controller Form", ~p"/number-input/form"),

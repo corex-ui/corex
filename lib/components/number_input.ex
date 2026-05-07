@@ -55,6 +55,10 @@ defmodule Corex.NumberInput do
 
   ### Live View with Ecto changeset
 
+  With `field={@form[:key]}`, the input stays **uncontrolled** in the Zag sense so increment and decrement work locally; the hidden field still updates for `phx-change` and submit. The `controlled` attribute is ignored when `field` is set.
+
+  For a **standalone** server-owned value (no `field`), use `controlled`, `value`, and `on_value_change` so each change is applied on the server (see Number input · Patterns in the demo app).
+
   Use a changeset and standard form events; the field value is submitted with the form.
 
   ```elixir
@@ -163,6 +167,10 @@ defmodule Corex.NumberInput do
   attr(:invalid, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
+  attr(:controlled, :boolean,
+    default: false,
+    doc: "Server-driven value; use with value and on_value_change. Ignored when field is set (forms stay uncontrolled for working steppers)."
+  )
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
@@ -206,6 +214,7 @@ defmodule Corex.NumberInput do
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
     |> assign(:invalid, errors != [])
+    |> assign(:controlled, false)
     |> number_input()
   end
 
@@ -238,6 +247,7 @@ defmodule Corex.NumberInput do
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
+        controlled: @controlled,
         value: @value,
         default_value: @default_value,
         min: @min,
@@ -259,6 +269,7 @@ defmodule Corex.NumberInput do
     >
       <input
         :if={@name}
+        id={"number-input:#{@id}:value-input"}
         type="hidden"
         name={@name}
         form={@form}

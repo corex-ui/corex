@@ -128,6 +128,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/number-input/anatomy", "#number-input-anatomy-page"},
     {"/en/number-input/api", "#number-input-api-page"},
     {"/en/number-input/events", "#number-input-events-page"},
+    {"/en/number-input/patterns", "#number-input-patterns-page"},
     {"/en/number-input/style", "#number-input-styling-page"},
     {"/en/number-input/form", "#number-input-form-page"},
     {"/en/number-input/live-form", "#number-input-form-live-page"},

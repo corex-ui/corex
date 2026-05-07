@@ -274,7 +274,6 @@ defmodule Corex.Select.Anatomy do
 
     @ignored_attrs [
       "id",
-      "value",
       "data-orientation",
       "dir",
       "name",

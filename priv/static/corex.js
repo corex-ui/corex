@@ -30223,13 +30223,14 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const defaultValueStr = getString(el, "defaultValue");
-          const zag = new NumberInput(el, {
-            id: el.id,
-            defaultValue: defaultValueStr,
+          const controlled = getBoolean(el, "controlled");
+          const zag = new NumberInput(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: getString(el, "defaultValue") }), {
             min: getNumber(el, "min"),
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
@@ -30242,13 +30243,13 @@ ${err}`);
             form: getString(el, "form"),
             dir: getDir(el),
             onValueChange: (details) => {
-              var _a4;
+              var _a5;
               if (details.value !== void 0) {
                 const valueInput = el.querySelector(
                   '[data-scope="number-input"][data-part="value-input"]'
                 );
                 if (valueInput) {
-                  valueInput.value = (_a4 = details.value) != null ? _a4 : "";
+                  valueInput.value = (_a5 = details.value) != null ? _a5 : "";
                   valueInput.dispatchEvent(new Event("input", { bubbles: true }));
                   valueInput.dispatchEvent(new Event("change", { bubbles: true }));
                 }
@@ -30266,16 +30267,14 @@ ${err}`);
                 clientEventName: getString(el, "onValueChangeClient")
               });
             }
-          });
+          }));
           zag.init();
           this.numberInput = zag;
         },
         updated() {
-          var _a4;
-          const defaultValueStr = getString(this.el, "defaultValue");
-          (_a4 = this.numberInput) == null ? void 0 : _a4.updateProps({
+          var _a4, _b;
+          const next2 = {
             id: this.el.id,
-            defaultValue: defaultValueStr,
             min: getNumber(this.el, "min"),
             max: getNumber(this.el, "max"),
             step: getNumber(this.el, "step"),
@@ -30283,10 +30282,15 @@ ${err}`);
             readOnly: getBoolean(this.el, "readOnly"),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
+            allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             dir: getDir(this.el)
-          });
+          };
+          if (getBoolean(this.el, "controlled")) {
+            next2.value = (_a4 = getString(this.el, "value")) != null ? _a4 : "";
+          }
+          (_b = this.numberInput) == null ? void 0 : _b.updateProps(next2);
         },
         destroyed() {
           var _a4;

@@ -147,6 +147,7 @@ defmodule E2eWeb.Router do
       live("/number-input/playground", NumberInputPlayLive)
       live("/number-input/api", NumberInputApiLive)
       live("/number-input/events", NumberInputEventsLive)
+      live("/number-input/patterns", NumberInputPatternsLive)
       live("/number-input/live-form", NumberInputFormLive)
 
       live("/password-input/playground", PasswordInputPlayLive)
