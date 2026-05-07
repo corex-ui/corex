@@ -7,7 +7,7 @@ defmodule E2eWeb.ListboxPlayLive do
 
   @listbox_id "listbox-play"
 
-  defp country_rows do
+  defp rows_vertical do
     [
       {"fra", "France"},
       {"bel", "Belgium"},
@@ -18,24 +18,28 @@ defmodule E2eWeb.ListboxPlayLive do
     ]
   end
 
+  defp rows_for_controls do
+    rows_vertical()
+  end
+
   defp listbox_items(controls) do
     disabled = Map.get(controls, :disabled_items, [])
 
     Corex.List.new(
-      for {id, label} <- country_rows() do
+      for {id, label} <- rows_for_controls() do
         %{id: id, label: label, disabled: id in disabled}
       end
     )
   end
 
   defp disabled_select_items do
-    for {id, label} <- country_rows(), do: %{label: label, id: id}
+    for {id, label} <- rows_for_controls(), do: %{label: label, id: id}
   end
 
   defp playground_listbox_reset_value(controls) do
     disabled = Map.get(controls, :disabled_items, [])
 
-    case Enum.find(country_rows(), fn {id, _} -> id not in disabled end) do
+    case Enum.find(rows_for_controls(), fn {id, _} -> id not in disabled end) do
       nil -> []
       {id, _} -> [id]
     end
@@ -97,7 +101,15 @@ defmodule E2eWeb.ListboxPlayLive do
   defp control_id(id), do: id
 
   defp sync_items(socket) do
-    assign(socket, :items, listbox_items(socket.assigns.controls))
+    controls = socket.assigns.controls
+    available_ids = rows_for_controls() |> Enum.map(&elem(&1, 0))
+    filtered_disabled = Enum.filter(controls.disabled_items, &(&1 in available_ids))
+    controls = %{controls | disabled_items: filtered_disabled}
+
+    socket
+    |> assign(:controls, controls)
+    |> assign(:items, listbox_items(controls))
+    |> assign(:disabled_select_items, disabled_select_items())
   end
 
   defp push_playground_listbox_value(socket) do

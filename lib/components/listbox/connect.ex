@@ -211,8 +211,6 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-indicator",
-      "dir" => Map.get(assigns, :dir, "ltr"),
-      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-indicator:#{val}"
     }
   end

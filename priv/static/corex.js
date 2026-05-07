@@ -26186,7 +26186,10 @@ ${err}`);
           this._options = Array.isArray(options) ? options : [];
         }
         itemsFingerprint() {
-          return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+          var _a4, _b;
+          const dir = (_a4 = this.el.dataset.dir) != null ? _a4 : "";
+          const orientation = (_b = this.el.dataset.orientation) != null ? _b : "";
+          return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
         }
         getOrderedGroupIds() {
           var _a4;
@@ -26399,7 +26402,6 @@ ${err}`);
           if (this.listbox) {
             this.listbox.hasGroups = hasGroups;
             this.listbox.setOptions(newItems);
-            this.listbox.render();
             this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
               collection: this.listbox.getCollection()
             }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));

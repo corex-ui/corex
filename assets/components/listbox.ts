@@ -34,7 +34,9 @@ export class Listbox extends Component<Props<Item>, Api> {
   }
 
   private itemsFingerprint(): string {
-    return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+    const dir = this.el.dataset.dir ?? "";
+    const orientation = this.el.dataset.orientation ?? "";
+    return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
   }
 
   getOrderedGroupIds(): string[] {

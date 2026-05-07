@@ -82,7 +82,9 @@
     background: var(--color-selected-ink);
   }
 
-  [dir="rtl"] .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+  .switch
+    [data-scope="switch"][data-part="root"][dir="rtl"]
+    [data-scope="switch"][data-part="thumb"][data-state="checked"] {
     transform: translateX(calc(var(--switch-thumb-x) * -1));
   }
 

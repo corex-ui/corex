@@ -1,4 +1,5 @@
 @import "../main.css";
+@import "./scrollbar.css";
 
 @layer components {
   .listbox {
@@ -6,11 +7,28 @@
     max-width: var(--container-5xs);
   }
 
+  .listbox[data-orientation="horizontal"] {
+    max-width: var(--container-md);
+  }
+
   .listbox [data-scope="listbox"][data-part="root"] {
     @apply ui-root;
 
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
     width: 100%;
     gap: var(--spacing-space);
+  }
+
+  .listbox [data-scope="listbox"][data-part="root"] > [data-scope="listbox"][data-part="content"] {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .listbox [data-scope="listbox"][data-part="root"][data-orientation="horizontal"] {
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .listbox [data-scope="listbox"][data-part="label"] {
@@ -25,7 +43,6 @@
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     text-align: start;
-    padding-inline: --spacing(4);
     padding-block: --spacing(4);
     background-color: var(--color-root);
     color: var(--color-ink);
@@ -36,6 +53,29 @@
     [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="vertical"] {
     display: flex;
     flex-direction: column;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="horizontal"] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="horizontal"]:not(
+      :has([data-part="item-group"])
+    ) {
+    @apply scrollbar scrollbar--sm;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    gap: 1px;
   }
 
   .listbox
@@ -64,8 +104,8 @@
   }
 
   .listbox
-    [data-scope="listbox"][data-part="content"]:not(
-      :has([data-part="item-group"])
+    [data-scope="listbox"][data-part="content"]:not(:has([data-part="item-group"])):not(
+      [data-layout="list"][data-orientation="horizontal"]
     ),
   .listbox [data-scope="listbox"][data-part="item-group"] {
     background-color: var(--color-border);
@@ -80,19 +120,82 @@
   }
 
   .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="horizontal"]:not(
+      :has([data-part="item-group"])
+    )
+    > [data-scope="listbox"][data-part="item"] {
+    flex: 0 0 auto;
+    min-width: max-content;
+    width: auto;
+  }
+
+  .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    text-align: start;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="horizontal"]:not(
+      :has([data-part="item-group"])
+    )
+    > [data-scope="listbox"][data-part="item"]
+    [data-scope="listbox"][data-part="item-text"] {
+    flex: none;
+    min-width: auto;
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+
+  .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] {
+    flex-shrink: 0;
+  }
+
+  .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] .icon,
+  .listbox
+    [data-scope="listbox"][data-part="content"]
+    [data-scope="listbox"][data-part="item-indicator"]
+    [class^="hero-"] {
+    transition: none !important;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][dir="rtl"]
+    [data-scope="listbox"][data-part="item-indicator"]
+    .icon,
+  .listbox
+    [data-scope="listbox"][data-part="content"][dir="rtl"]
+    [data-scope="listbox"][data-part="item-indicator"]
+    [class^="hero-"],
+  .listbox
+    [data-scope="listbox"][data-part="content"]
+    [data-scope="listbox"][data-part="item"][dir="rtl"]
+    > [data-scope="listbox"][data-part="item-indicator"]
+    .icon,
+  .listbox
+    [data-scope="listbox"][data-part="content"]
+    [data-scope="listbox"][data-part="item"][dir="rtl"]
+    > [data-scope="listbox"][data-part="item-indicator"]
+    [class^="hero-"] {
+    transform: scaleX(-1) !important;
+  }
+
+  .listbox
     [data-scope="listbox"][data-part="content"][dir="rtl"]
     [data-scope="listbox"][data-part="item"] {
     border-radius: 0;
   }
-
-  [dir="rtl"] .listbox [data-scope="listbox"][data-part="item-indicator"] {
-    transform: scaleX(-1);
-  }
 }
 
 @utility listbox--* {
-  max-width: --value(--container-*, [length]);
-
   [data-scope="listbox"][data-part="root"] {
     width: 100%;
     gap: --value(--spacing-space-*, [length]);
@@ -106,7 +209,6 @@
   [data-scope="listbox"][data-part="item"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    
   }
 
   [data-scope="listbox"][data-part="item"][data-selected] {
