@@ -35546,6 +35546,89 @@ ${err}`);
       );
     }
   }
+  function collapseStartIndex(vals) {
+    const rec = (idx) => {
+      if (idx > 2) return idx;
+      const restAfter = vals.length - idx;
+      if (idx < 3 && vals[idx] === 0 && restAfter > 2) {
+        return rec(idx + 1);
+      }
+      return idx;
+    };
+    return rec(0);
+  }
+  function computeItemHidden(root, time) {
+    const types = ["days", "hours", "minutes", "seconds"];
+    const vals = [time.days, time.hours, time.minutes, time.seconds].map(Number);
+    const segments = getStringList(root, "segments");
+    const countdown = root.dataset.countdown === "true";
+    const collapseRaw = root.dataset.collapseLeadingZeros;
+    if (segments && segments.length > 0) {
+      return types.map((t2) => !segments.includes(t2));
+    }
+    if (collapseRaw === "false") {
+      return [false, false, false, false];
+    }
+    if (collapseRaw === "true" || collapseRaw !== "false" && countdown) {
+      const start = collapseStartIndex(vals);
+      return types.map((_2, i2) => i2 < start);
+    }
+    return [false, false, false, false];
+  }
+  function applyTimerItemVisibility(root, api) {
+    const hidden = computeItemHidden(root, api.time);
+    const types = ["days", "hours", "minutes", "seconds"];
+    const hostId = root.id;
+    types.forEach((type, i2) => {
+      const segmentEl = root.querySelector(
+        `[data-timer-segment][data-type="${type}"]`
+      );
+      if (segmentEl) {
+        if (hidden[i2]) {
+          segmentEl.setAttribute("hidden", "");
+        } else {
+          segmentEl.removeAttribute("hidden");
+        }
+      }
+      const itemEl = root.querySelector(
+        `[data-scope="timer"][data-part="item"][data-type="${type}"]`
+      );
+      if (itemEl) {
+        if (hidden[i2]) {
+          itemEl.setAttribute("hidden", "");
+          itemEl.setAttribute("aria-hidden", "true");
+        } else {
+          itemEl.removeAttribute("hidden");
+          itemEl.setAttribute("aria-hidden", "false");
+        }
+      }
+    });
+    for (let k2 = 0; k2 < 3; k2++) {
+      const sepId = `timer:${hostId}:sep:${k2}`;
+      const sepEl = root.querySelector(`[id="${CSS.escape(sepId)}"]`);
+      if (sepEl) {
+        if (hidden[k2]) {
+          sepEl.setAttribute("hidden", "");
+        } else {
+          sepEl.removeAttribute("hidden");
+        }
+      }
+    }
+  }
+  function parseTimerTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) return void 0;
+    try {
+      const o2 = JSON.parse(raw);
+      if (typeof o2.areaLabel === "string" && o2.areaLabel.length > 0) {
+        const label = o2.areaLabel;
+        return { areaLabel: () => label };
+      }
+    } catch (e2) {
+      return void 0;
+    }
+    return void 0;
+  }
   var anatomy26, parts26, getRootId21, getAreaId3, validActions, machine26, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
@@ -35767,6 +35850,12 @@ ${err}`);
             if (itemEl) {
               this.spreadProps(itemEl, this.api.getItemProps({ type }));
             }
+            const labelEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
+            );
+            if (labelEl) {
+              this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+            }
           });
           this.el.querySelectorAll('[data-scope="timer"][data-part="separator"]').forEach((separatorEl) => {
             this.spreadProps(separatorEl, this.api.getSeparatorProps());
@@ -35782,6 +35871,7 @@ ${err}`);
                 this.api.getActionTriggerProps({ action })
               );
           });
+          applyTimerItemVisibility(this.el, this.api);
         }
       };
       TimerHook = {
@@ -35797,6 +35887,7 @@ ${err}`);
             interval: getNumber(el, "interval"),
             dir: getDir(el),
             orientation: getString(el, "orientation"),
+            translations: parseTimerTranslations(el),
             onTick: (details) => {
               const eventName = getString(el, "onTick");
               if (eventName && canPushEvent(this.liveSocket)) {
@@ -35852,7 +35943,8 @@ ${err}`);
             autoStart: getBoolean(this.el, "autoStart"),
             interval: getNumber(this.el, "interval"),
             dir: getDir(this.el),
-            orientation: getString(this.el, "orientation")
+            orientation: getString(this.el, "orientation"),
+            translations: parseTimerTranslations(this.el)
           });
         },
         destroyed() {

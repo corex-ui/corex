@@ -1,7 +1,8 @@
 defmodule Corex.Timer.Connect do
   @moduledoc false
   alias Corex.Selectors
-  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, Props, Root, Separator}
+  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, ItemLabel, Props, Root, Segment, Separator}
+  alias Corex.Timer.Translation, as: TimerTranslation
 
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
@@ -20,9 +21,43 @@ defmodule Corex.Timer.Connect do
       "data-on-complete" => assigns.on_complete,
       "data-on-complete-client" => assigns.on_complete_client,
       "data-dir" => Map.get(assigns, :dir, "ltr"),
-      "data-orientation" => Map.get(assigns, :orientation, "vertical")
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "data-collapse-leading-zeros" => collapse_dataset(assigns),
+      "data-segments" => segments_dataset(assigns),
+      "data-translation" => translation_json(assigns)
     }
   end
+
+  defp collapse_dataset(%Props{collapse_leading_zeros: false}), do: "false"
+
+  defp collapse_dataset(%Props{collapse_leading_zeros: true}), do: "true"
+
+  defp collapse_dataset(%Props{segments: segs})
+       when is_list(segs) and segs != [],
+       do: "false"
+
+  defp collapse_dataset(%Props{countdown: true}), do: "true"
+
+  defp collapse_dataset(%Props{}), do: "false"
+
+  defp segments_dataset(%Props{segments: list}) when is_list(list) and list != [] do
+    list |> Enum.map(&Atom.to_string/1) |> Enum.join(",")
+  end
+
+  defp segments_dataset(_), do: nil
+
+  defp translation_json(%Props{translation: %TimerTranslation{} = t}) do
+    t
+    |> TimerTranslation.to_camel_map()
+    |> Enum.reject(fn {_, v} -> v in [nil, ""] end)
+    |> Map.new()
+    |> then(fn
+      m when map_size(m) == 0 -> nil
+      m -> Corex.Json.encode!(m)
+    end)
+  end
+
+  defp translation_json(_), do: nil
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -79,7 +114,7 @@ defmodule Corex.Timer.Connect do
   def item(assigns) do
     value = Map.get(assigns, :value, 0)
 
-    %{
+    base = %{
       "data-scope" => "timer",
       "data-part" => "item",
       "data-type" => assigns.type,
@@ -88,6 +123,14 @@ defmodule Corex.Timer.Connect do
       "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
+
+    if Map.get(assigns, :hidden, false) do
+      base
+      |> Map.put("hidden", "")
+      |> Map.put("aria-hidden", "true")
+    else
+      base
+    end
   end
 
   def ignore_item(assigns) do
@@ -97,9 +140,50 @@ defmodule Corex.Timer.Connect do
     )
   end
 
+  @spec segment(Segment.t()) :: map()
+  def segment(assigns) do
+    base = %{
+      "data-timer-segment" => "",
+      "id" => "timer:#{assigns.id}:segment:#{assigns.type}",
+      "data-type" => assigns.type
+    }
+
+    if Map.get(assigns, :hidden, false) do
+      base |> Map.put("hidden", "")
+    else
+      base
+    end
+  end
+
+  def ignore_segment(assigns) do
+    JS.ignore_attributes(
+      Segment.ignored_attrs(),
+      to: Selectors.css_id("timer:#{assigns.id}:segment:#{assigns.type}")
+    )
+  end
+
+  @spec item_label(ItemLabel.t()) :: map()
+  def item_label(assigns) do
+    %{
+      "data-scope" => "timer",
+      "data-part" => "item-label",
+      "data-type" => assigns.type,
+      "id" => "timer:#{assigns.id}:label:#{assigns.type}",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical")
+    }
+  end
+
+  def ignore_item_label(assigns) do
+    JS.ignore_attributes(
+      ItemLabel.ignored_attrs(),
+      to: Selectors.css_id("timer:#{assigns.id}:label:#{assigns.type}")
+    )
+  end
+
   @spec separator(Separator.t()) :: map()
   def separator(assigns) do
-    %{
+    base = %{
       "data-scope" => "timer",
       "data-part" => "separator",
       "aria-hidden" => "true",
@@ -107,6 +191,12 @@ defmodule Corex.Timer.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal")
     }
+
+    if Map.get(assigns, :hidden, false) do
+      base |> Map.put("hidden", "")
+    else
+      base
+    end
   end
 
   def ignore_separator(assigns) do

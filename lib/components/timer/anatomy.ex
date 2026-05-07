@@ -17,7 +17,10 @@ defmodule Corex.Timer.Anatomy do
       on_complete: nil,
       on_complete_client: nil,
       dir: nil,
-      orientation: "horizontal"
+      orientation: "horizontal",
+      collapse_leading_zeros: nil,
+      segments: nil,
+      translation: nil
     ]
 
     @type t :: %__MODULE__{
@@ -32,7 +35,10 @@ defmodule Corex.Timer.Anatomy do
             on_complete: String.t() | nil,
             on_complete_client: String.t() | nil,
             dir: String.t() | nil,
-            orientation: String.t()
+            orientation: String.t(),
+            collapse_leading_zeros: boolean() | nil,
+            segments: list(atom()) | nil,
+            translation: Corex.Timer.Translation.t() | nil
           }
   end
 
@@ -40,7 +46,7 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
-    @ignored_attrs ["data-orientation", "dir", "id", "role", "aria-label", "aria-atomic"]
+    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -48,7 +54,17 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
-    @ignored_attrs ["data-orientation", "dir", "id", "role", "aria-label", "aria-atomic"]
+    @ignored_attrs [
+      "data-orientation",
+      "dir",
+      "id",
+      "role",
+      "aria-label",
+      "aria-atomic",
+      "data-scope",
+      "data-part"
+    ]
+
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -56,13 +72,13 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, dir: nil, orientation: "horizontal"]
 
-    @ignored_attrs ["data-orientation", "dir", "id"]
+    @ignored_attrs ["data-orientation", "dir", "id", "data-scope", "data-part"]
     def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Item do
     @moduledoc false
-    defstruct [:id, :type, :value, dir: nil, orientation: "horizontal"]
+    defstruct [:id, :type, :value, dir: nil, orientation: "horizontal", hidden: false]
 
     @ignored_attrs [
       "id",
@@ -70,17 +86,57 @@ defmodule Corex.Timer.Anatomy do
       "style",
       "data-orientation",
       "dir",
+      "data-scope",
+      "data-part",
       "data-value",
-      "data-state"
+      "data-state",
+      "hidden",
+      "aria-hidden"
     ]
+
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemLabel do
+    @moduledoc false
+    defstruct [:id, :type, dir: nil, orientation: "horizontal"]
+
+    @ignored_attrs [
+      "id",
+      "data-type",
+      "data-orientation",
+      "dir",
+      "data-part",
+      "data-scope",
+      "aria-labelledby",
+      "aria-label"
+    ]
+
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Segment do
+    @moduledoc false
+    defstruct [:id, :type, hidden: false]
+
+    @ignored_attrs ["hidden", "id", "data-type"]
     def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Separator do
     @moduledoc false
-    defstruct [:id, dir: nil, orientation: "horizontal"]
+    defstruct [:id, dir: nil, orientation: "horizontal", hidden: false]
 
-    @ignored_attrs ["id", "aria-hidden", "data-orientation", "dir"]
+    @ignored_attrs [
+      "id",
+      "aria-hidden",
+      "data-orientation",
+      "dir",
+      "hidden",
+      "data-scope",
+      "data-part"
+    ]
+
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -97,8 +153,13 @@ defmodule Corex.Timer.Anatomy do
       "dir",
       "id",
       "disabled",
-      "data-disabled"
+      "data-disabled",
+      "data-scope",
+      "data-part",
+      "tabindex",
+      "tabIndex"
     ]
+
     def ignored_attrs, do: @ignored_attrs
   end
 end

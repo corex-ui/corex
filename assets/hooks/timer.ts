@@ -11,6 +11,21 @@ type TimerHookState = {
   handlers?: Array<CallbackRef>;
 };
 
+function parseTimerTranslations(el: HTMLElement): Props["translations"] {
+  const raw = el.dataset.translation;
+  if (!raw) return undefined;
+  try {
+    const o = JSON.parse(raw) as { areaLabel?: string };
+    if (typeof o.areaLabel === "string" && o.areaLabel.length > 0) {
+      const label = o.areaLabel;
+      return { areaLabel: () => label };
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
 const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TimerHookState) {
     const el = this.el;
@@ -24,6 +39,7 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
       interval: getNumber(el, "interval"),
       dir: getDir(el),
       orientation: getString<Orientation>(el, "orientation"),
+      translations: parseTimerTranslations(el),
       onTick: (details: TickDetails) => {
         const eventName = getString(el, "onTick");
         if (eventName && canPushEvent(this.liveSocket)) {
@@ -82,6 +98,7 @@ const TimerHook: Hook<object & TimerHookState, HTMLElement> = {
       interval: getNumber(this.el, "interval"),
       dir: getDir(this.el),
       orientation: getString<Orientation>(this.el, "orientation"),
+      translations: parseTimerTranslations(this.el),
     } as Partial<Props>);
   },
 

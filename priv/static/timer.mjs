@@ -18,6 +18,7 @@ import {
   getDir,
   getNumber,
   getString,
+  getStringList,
   match
 } from "./chunks/chunk-LTYT3NRU.mjs";
 
@@ -365,6 +366,75 @@ function validateProps(props) {
 }
 
 // components/timer.ts
+function collapseStartIndex(vals) {
+  const rec = (idx) => {
+    if (idx > 2) return idx;
+    const restAfter = vals.length - idx;
+    if (idx < 3 && vals[idx] === 0 && restAfter > 2) {
+      return rec(idx + 1);
+    }
+    return idx;
+  };
+  return rec(0);
+}
+function computeItemHidden(root, time) {
+  const types = ["days", "hours", "minutes", "seconds"];
+  const vals = [time.days, time.hours, time.minutes, time.seconds].map(Number);
+  const segments = getStringList(root, "segments");
+  const countdown = root.dataset.countdown === "true";
+  const collapseRaw = root.dataset.collapseLeadingZeros;
+  if (segments && segments.length > 0) {
+    return types.map((t) => !segments.includes(t));
+  }
+  if (collapseRaw === "false") {
+    return [false, false, false, false];
+  }
+  if (collapseRaw === "true" || collapseRaw !== "false" && countdown) {
+    const start = collapseStartIndex(vals);
+    return types.map((_, i) => i < start);
+  }
+  return [false, false, false, false];
+}
+function applyTimerItemVisibility(root, api) {
+  const hidden = computeItemHidden(root, api.time);
+  const types = ["days", "hours", "minutes", "seconds"];
+  const hostId = root.id;
+  types.forEach((type, i) => {
+    const segmentEl = root.querySelector(
+      `[data-timer-segment][data-type="${type}"]`
+    );
+    if (segmentEl) {
+      if (hidden[i]) {
+        segmentEl.setAttribute("hidden", "");
+      } else {
+        segmentEl.removeAttribute("hidden");
+      }
+    }
+    const itemEl = root.querySelector(
+      `[data-scope="timer"][data-part="item"][data-type="${type}"]`
+    );
+    if (itemEl) {
+      if (hidden[i]) {
+        itemEl.setAttribute("hidden", "");
+        itemEl.setAttribute("aria-hidden", "true");
+      } else {
+        itemEl.removeAttribute("hidden");
+        itemEl.setAttribute("aria-hidden", "false");
+      }
+    }
+  });
+  for (let k = 0; k < 3; k++) {
+    const sepId = `timer:${hostId}:sep:${k}`;
+    const sepEl = root.querySelector(`[id="${CSS.escape(sepId)}"]`);
+    if (sepEl) {
+      if (hidden[k]) {
+        sepEl.setAttribute("hidden", "");
+      } else {
+        sepEl.removeAttribute("hidden");
+      }
+    }
+  }
+}
 var Timer = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -399,6 +469,12 @@ var Timer = class extends Component {
       if (itemEl) {
         this.spreadProps(itemEl, this.api.getItemProps({ type }));
       }
+      const labelEl = this.el.querySelector(
+        `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
+      );
+      if (labelEl) {
+        this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+      }
     });
     this.el.querySelectorAll('[data-scope="timer"][data-part="separator"]').forEach((separatorEl) => {
       this.spreadProps(separatorEl, this.api.getSeparatorProps());
@@ -414,10 +490,25 @@ var Timer = class extends Component {
           this.api.getActionTriggerProps({ action })
         );
     });
+    applyTimerItemVisibility(this.el, this.api);
   }
 };
 
 // hooks/timer.ts
+function parseTimerTranslations(el) {
+  const raw = el.dataset.translation;
+  if (!raw) return void 0;
+  try {
+    const o = JSON.parse(raw);
+    if (typeof o.areaLabel === "string" && o.areaLabel.length > 0) {
+      const label = o.areaLabel;
+      return { areaLabel: () => label };
+    }
+  } catch {
+    return void 0;
+  }
+  return void 0;
+}
 var TimerHook = {
   mounted() {
     const el = this.el;
@@ -431,6 +522,7 @@ var TimerHook = {
       interval: getNumber(el, "interval"),
       dir: getDir(el),
       orientation: getString(el, "orientation"),
+      translations: parseTimerTranslations(el),
       onTick: (details) => {
         const eventName = getString(el, "onTick");
         if (eventName && canPushEvent(this.liveSocket)) {
@@ -485,7 +577,8 @@ var TimerHook = {
       autoStart: getBoolean(this.el, "autoStart"),
       interval: getNumber(this.el, "interval"),
       dir: getDir(this.el),
-      orientation: getString(this.el, "orientation")
+      orientation: getString(this.el, "orientation"),
+      translations: parseTimerTranslations(this.el)
     });
   },
   destroyed() {

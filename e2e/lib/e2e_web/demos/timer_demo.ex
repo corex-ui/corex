@@ -719,4 +719,180 @@ defmodule E2eWeb.Demos.TimerDemo do
     </div>
     """
   end
+
+  def anatomy_collapse_code do
+    ~S"""
+    <.timer
+      id="timer-anatomy-collapse"
+      countdown
+      start_ms={86_400_000 * 4 + 3_600_000 * 12}
+      target_ms={0}
+      class="timer"
+    />
+    """
+  end
+
+  def anatomy_collapse_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-anatomy-collapse"
+      countdown
+      start_ms={86_400_000 * 4 + 3_600_000 * 12}
+      target_ms={0}
+      class="timer"
+    />
+    """
+  end
+
+  def layout_segments_code do
+    ~S"""
+    <.timer
+      id="timer-segments-fixed"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    />
+    """
+  end
+
+  def layout_segments_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-segments-fixed"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    />
+    """
+  end
+
+  def layout_separator_code do
+    ~S"""
+    <.timer id="timer-separator-dot" start_ms={60_000} class="timer">
+      <:separator> · </:separator>
+    </.timer>
+    """
+  end
+
+  def layout_separator_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer id="timer-separator-dot" start_ms={60_000} class="timer">
+      <:separator> · </:separator>
+    </.timer>
+    """
+  end
+
+  def layout_translation_code do
+    ~S"""
+    <.timer
+      id="timer-translation"
+      countdown
+      start_ms={60_000}
+      target_ms={0}
+      class="timer"
+      translation={%Corex.Timer.Translation{area_label: "Countdown"}}
+    />
+    """
+  end
+
+  def layout_translation_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-translation"
+      countdown
+      start_ms={60_000}
+      target_ms={0}
+      class="timer"
+      translation={%Corex.Timer.Translation{area_label: "Countdown"}}
+    />
+    """
+  end
+
+  def layout_unit_labels_code do
+    ~S"""
+    <.timer
+      id="timer-unit-labels"
+      countdown
+      start_ms={86_400_000 + 3_600_000}
+      target_ms={0}
+      class="timer"
+    >
+      <:day_label>d</:day_label>
+      <:hour_label>h</:hour_label>
+      <:minute_label>m</:minute_label>
+      <:second_label>s</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_unit_labels_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-unit-labels"
+      countdown
+      start_ms={86_400_000 + 3_600_000}
+      target_ms={0}
+      class="timer"
+    >
+      <:day_label>d</:day_label>
+      <:hour_label>h</:hour_label>
+      <:minute_label>m</:minute_label>
+      <:second_label>s</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_separator_and_labels_code do
+    ~S"""
+    <.timer
+      id="timer-layout-separator-labels"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    >
+      <:separator>:</:separator>
+      <:day_label>Days</:day_label>
+      <:hour_label>Hours</:hour_label>
+      <:minute_label>Minutes</:minute_label>
+      <:second_label>Seconds</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_separator_and_labels_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-layout-separator-labels"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    >
+      <:separator>:</:separator>
+      <:day_label>Days</:day_label>
+      <:hour_label>Hours</:hour_label>
+      <:minute_label>Minutes</:minute_label>
+      <:second_label>Seconds</:second_label>
+    </.timer>
+    """
+  end
 end
