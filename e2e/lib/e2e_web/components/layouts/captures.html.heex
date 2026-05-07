@@ -94,6 +94,7 @@
     </script>
   </head>
   <body class="typo layout">
+    <.navigate to="#main-content" class="link link--skip">{gettext("Skip to content")}</.navigate>
     <.toast_group id="layout-toast" class="toast" phx-update="ignore" flash={@flash}>
       <:loading>
         <.heroicon name="hero-arrow-path" class="icon" />
@@ -122,7 +123,7 @@
         </div>
       </div>
     </header>
-    <main class="layout__main">
+    <main id="main-content" class="layout__main">
       <div class="layout__content">
         <div class="layout__article">
           {@inner_content}

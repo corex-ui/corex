@@ -4,6 +4,34 @@
   .link {
     @apply ui-link;
    }
+
+  .link.link--skip {
+    position: fixed;
+    inset-inline-start: var(--spacing-space-4);
+    inset-block-start: -9999px;
+    z-index: 10000;
+    max-width: min(100vw - var(--spacing-space-8), 20rem);
+    padding-block: var(--spacing-space-3);
+    padding-inline: var(--spacing-space-4);
+    margin: 0;
+    overflow: visible;
+    background: var(--color-layer);
+    color: var(--color-ink);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
+    transition: inset-block-start 0.15s ease;
+  }
+
+  .link.link--skip:focus,
+  .link.link--skip:focus-visible {
+    inset-block-start: var(--spacing-space-4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link.link--skip {
+      transition: none;
+    }
+  }
 }
 @utility link--* {
   color: --value(--color-ink, [color]);

@@ -11,28 +11,28 @@ msgstr ""
 "Language: ar\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
-#: lib/e2e_web/components/app/header.ex:136
+#: lib/e2e_web/components/app/header.ex:131
 #, elixir-autogen, elixir-format
 msgid "Components"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:101
+#: lib/e2e_web/components/app/header.ex:96
 #, elixir-autogen, elixir-format
 msgid "Display settings"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:75
-#: lib/e2e_web/components/app/header.ex:143
+#: lib/e2e_web/components/app/header.ex:79
+#: lib/e2e_web/components/app/header.ex:138
 #, elixir-autogen, elixir-format
 msgid "Documentation"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:155
+#: lib/e2e_web/live/pages_live/home_live.ex:146
 #, elixir-autogen, elixir-format
 msgid "Interactive preview"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:130
+#: lib/e2e_web/components/app/header.ex:125
 #, elixir-autogen, elixir-format
 msgid "Main"
 msgstr ""
@@ -60,33 +60,19 @@ msgstr ""
 msgid "We're trying to reconnect you..."
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:66
-#, elixir-autogen, elixir-format, fuzzy
-msgid "Documentation links"
-msgstr ""
-
-#: lib/e2e_web/components/app/header.ex:150
+#: lib/e2e_web/components/app/header.ex:146
+#: lib/e2e_web/components/app/header.ex:192
 #, elixir-autogen, elixir-format
 msgid "MCP"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:142
-#: lib/e2e_web/live/pages_live/home_live.ex:288
+#: lib/e2e_web/live/pages_live/home_live.ex:131
+#: lib/e2e_web/live/pages_live/home_live.ex:364
 #, elixir-autogen, elixir-format
 msgid "Browse components"
 msgstr ""
 
-#: lib/e2e_web/live/pages_live/home_live.ex:280
-#, elixir-autogen, elixir-format
-msgid "Get started"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:304
-#, elixir-autogen, elixir-format
-msgid "Visit GitHub"
-msgstr ""
-
-#: lib/e2e_web/live/pages_live/home_live.ex:296
+#: lib/e2e_web/live/pages_live/home_live.ex:139
 #, elixir-autogen, elixir-format
 msgid "Visit Hexdocs"
 msgstr ""
@@ -96,17 +82,33 @@ msgstr ""
 msgid "Dark Mode"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:167
+#: lib/e2e_web/components/app/header.ex:164
 #, elixir-autogen, elixir-format
 msgid "Installation"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:173
+#: lib/e2e_web/components/app/header.ex:171
 #, elixir-autogen, elixir-format
 msgid "Localize"
 msgstr ""
 
-#: lib/e2e_web/components/app/header.ex:179
+#: lib/e2e_web/components/app/header.ex:178
 #, elixir-autogen, elixir-format
 msgid "Theming"
+msgstr ""
+
+#: lib/e2e_web/live/pages_live/home_live.ex:261
+#, elixir-autogen, elixir-format
+msgid "Corex by the numbers"
+msgstr ""
+
+#: lib/e2e_web/components/layouts/captures.html.heex:97
+#: lib/e2e_web/components/layouts/root.html.heex:97
+#, elixir-autogen, elixir-format
+msgid "Skip to content"
+msgstr "تخطي إلى المحتوى"
+
+#: lib/e2e_web/live/pages_live/home_live.ex:372
+#, elixir-autogen, elixir-format
+msgid "Star on GitHub"
 msgstr ""
