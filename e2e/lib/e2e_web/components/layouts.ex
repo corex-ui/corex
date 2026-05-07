@@ -40,7 +40,7 @@ defmodule E2eWeb.Layouts do
     <.header path={@path} theme={@theme} mode={@mode} />
     <div class="layout__wrapper">
       <.aside path={@path} />
-      <main class="layout__main">
+      <main id="main-content" class="layout__main">
         <.pagination path={@path} />
         <div class="layout__content">
           <div class="layout__article">
@@ -89,7 +89,7 @@ defmodule E2eWeb.Layouts do
     ~H"""
     <.header path={@path} theme={@theme} mode={@mode} />
     <div class="layout__wrapper">
-      <main class="layout__main layout__main--marketing">
+      <main id="main-content" class="layout__main layout__main--marketing">
         <div class="layout__content--marketing">
           {render_slot(@inner_block)}
         </div>
