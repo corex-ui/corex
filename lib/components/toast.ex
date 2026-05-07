@@ -82,7 +82,7 @@ defmodule Corex.Toast do
 
     Without gettext: `translation={%Toast.Translation{ info: "Info", error: "Error" }}`
 
-    With gettext: `translation={%Toast.Translation{ info: gettext("Info"), error: gettext("Error") }}`
+    With gettext: `translation={%Toast.Translation{ info: Corex.Gettext.gettext("Info"), error: Corex.Gettext.gettext("Error") }}`
     """
     defstruct [:info, :error]
   end
@@ -91,8 +91,6 @@ defmodule Corex.Toast do
   use Phoenix.Component
 
   alias Phoenix.LiveView.JS
-  import Corex.Gettext, only: [gettext: 1]
-
   alias Corex.Flash
 
   @doc """
@@ -168,7 +166,11 @@ defmodule Corex.Toast do
     info_flash = Phoenix.Flash.get(assigns.flash, :info)
     error_flash = Phoenix.Flash.get(assigns.flash, :error)
 
-    default_translation = %Translation{info: gettext("Info"), error: gettext("Error")}
+    default_translation = %Translation{
+      info: Corex.Gettext.gettext("Info"),
+      error: Corex.Gettext.gettext("Error")
+    }
+
     translation = merge_translation(assigns[:translation], default_translation)
 
     flash_info =

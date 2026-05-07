@@ -1,13 +1,11 @@
 defmodule Corex.Select do
-  import Corex.Gettext, only: [gettext: 1]
-
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
 
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder text comes from the `translation` attribute (default placeholder is gettext `"Select"`). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
+  The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through `Corex.Gettext` at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
 
   ### Minimal
 
@@ -458,7 +456,7 @@ defmodule Corex.Select do
   )
 
   attr(:translation, Corex.Select.Translation,
-    default: %Corex.Select.Translation{placeholder: gettext("Select")},
+    default: %Corex.Select.Translation{placeholder: "Select"},
     doc: "Translatable strings for the select"
   )
 
@@ -512,6 +510,17 @@ defmodule Corex.Select do
   end
 
   def select(assigns) do
+    assigns =
+      case assigns.translation do
+        %Corex.Select.Translation{placeholder: "Select"} ->
+          assign(assigns, :translation, %Corex.Select.Translation{
+            placeholder: Corex.Gettext.gettext("Select")
+          })
+
+        _ ->
+          assigns
+      end
+
     items = normalize_items(assigns.items)
 
     assigns =

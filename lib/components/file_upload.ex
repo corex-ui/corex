@@ -95,14 +95,12 @@ defmodule Corex.FileUpload do
 
     Without gettext: `translation={%FileUpload.Translation{dropzone: "Drop files"}}`
 
-    With gettext: `translation={%FileUpload.Translation{dropzone: gettext("Drag your file(s) here")}}`
+    With gettext: `translation={%FileUpload.Translation{dropzone: Corex.Gettext.gettext("Drag your file(s) here")}}`
     """
     defstruct [:dropzone, :open]
   end
 
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.FileUpload.Anatomy.{
     Dropzone,
@@ -200,8 +198,8 @@ defmodule Corex.FileUpload do
 
   def file_upload(assigns) do
     default_translation = %Translation{
-      dropzone: gettext("Drag your file(s) here"),
-      open: gettext("Upload file(s)")
+      dropzone: Corex.Gettext.gettext("Drag your file(s) here"),
+      open: Corex.Gettext.gettext("Upload file(s)")
     }
 
     translation = merge_translation(Map.get(assigns, :translation), default_translation)

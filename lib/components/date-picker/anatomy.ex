@@ -18,8 +18,6 @@ defmodule Corex.DatePicker.Anatomy do
       :focused_value,
       :placeholder,
       :positioning,
-      :trigger_aria_label,
-      :input_aria_label,
       controlled: false,
       disabled: false,
       read_only: false,

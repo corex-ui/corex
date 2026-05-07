@@ -95,8 +95,13 @@ defmodule E2eWeb.DatePickerEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.date_picker
                 id="date-picker-e-sv"
-                trigger_aria_label="Select date"
-                input_aria_label="Select date"
+                translation={
+                  %Corex.DatePicker.Translation{
+                    open_calendar: "Select date",
+                    close_calendar: "Select date",
+                    input: "Select date"
+                  }
+                }
                 class="date-picker"
                 on_value_change="dpe_on_value_server"
               >
@@ -134,8 +139,13 @@ defmodule E2eWeb.DatePickerEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.date_picker
                 id="date-picker-e-so"
-                trigger_aria_label="Select date"
-                input_aria_label="Select date"
+                translation={
+                  %Corex.DatePicker.Translation{
+                    open_calendar: "Select date",
+                    close_calendar: "Select date",
+                    input: "Select date"
+                  }
+                }
                 class="date-picker"
                 on_open_change="dpe_on_open_server"
               >
@@ -174,8 +184,13 @@ defmodule E2eWeb.DatePickerEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.date_picker
                 id="date-picker-e-cv"
-                trigger_aria_label="Select date"
-                input_aria_label="Select date"
+                translation={
+                  %Corex.DatePicker.Translation{
+                    open_calendar: "Select date",
+                    close_calendar: "Select date",
+                    input: "Select date"
+                  }
+                }
                 class="date-picker"
                 on_value_change_client="date-picker-value-changed"
               >
@@ -234,8 +249,13 @@ defmodule E2eWeb.DatePickerEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <.date_picker
                 id="date-picker-e-co"
-                trigger_aria_label="Select date"
-                input_aria_label="Select date"
+                translation={
+                  %Corex.DatePicker.Translation{
+                    open_calendar: "Select date",
+                    close_calendar: "Select date",
+                    input: "Select date"
+                  }
+                }
                 class="date-picker"
                 on_open_change_client="date-picker-open-changed"
               >

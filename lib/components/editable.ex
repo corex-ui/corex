@@ -75,15 +75,13 @@ defmodule Corex.Editable do
 
     Without gettext: `translation={%Editable.Translation{ input: "Edit this field" }}`
 
-    With gettext: `translation={%Editable.Translation{ input: gettext("editable input") }}`
+    With gettext: `translation={%Editable.Translation{ input: Corex.Gettext.gettext("editable input") }}`
     """
     defstruct [:input, :edit, :submit, :cancel]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
@@ -194,10 +192,10 @@ defmodule Corex.Editable do
 
   def editable(assigns) do
     default_translation = %Translation{
-      input: gettext("editable input"),
-      edit: gettext("edit"),
-      submit: gettext("submit"),
-      cancel: gettext("cancel")
+      input: Corex.Gettext.gettext("editable input"),
+      edit: Corex.Gettext.gettext("edit"),
+      submit: Corex.Gettext.gettext("submit"),
+      cancel: Corex.Gettext.gettext("cancel")
     }
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))

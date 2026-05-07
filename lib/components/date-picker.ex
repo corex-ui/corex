@@ -94,7 +94,15 @@ defmodule Corex.DatePicker do
 
   ```heex
   <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
-    <.date_picker field={f[:date]} class="date-picker" trigger_aria_label="Select date" input_aria_label="Select date">
+    <.date_picker
+      field={f[:date]}
+      class="date-picker"
+      translation={%Corex.DatePicker.Translation{
+        open_calendar: "Select date",
+        close_calendar: "Select date",
+        input: "Select date"
+      }}
+    >
       <:label>Date</:label>
       <:trigger>
         <.heroicon name="hero-calendar" class="icon" />
@@ -238,14 +246,11 @@ defmodule Corex.DatePicker do
 
   ## Localization and `translation`
 
-  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with `Corex.DatePicker.default_translation/0` (Zag’s `translations` for open/close, prev/next, view, month/year, week, placeholders, and `input`). Without gettext, the defaults are English. With gettext, call `translation={%Corex.DatePicker.Translation{ open_calendar: gettext("Open calendar") }}` for partial overrides.
-
-  The `trigger_aria_label` and `input_aria_label` attributes are merged with `translation` and sent to the client in `data-translation` (JSON): they set the open/close trigger strings and the input label (`translation.open_calendar`, `translation.close_calendar`, and `translation.input`).
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with `Corex.DatePicker.default_translation/0` (Zag’s `translations` for open/close, prev/next, view, month/year, week, placeholders, and `input`). Use `open_calendar`, `close_calendar`, and `input` for the popover trigger and fields (SSR `aria-label` and client `data-translation` JSON). Without gettext, the defaults are English. With gettext, call `translation={%Corex.DatePicker.Translation{open_calendar: Corex.Gettext.gettext("Open calendar")}}` for partial overrides.
 
   '''
 
   use Phoenix.Component
-  import Corex.Gettext, only: [gettext: 1]
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
@@ -382,18 +387,6 @@ defmodule Corex.DatePicker do
       "Merges with `default_translation/0` to override Zag and Corex strings; see the module section on localization."
   )
 
-  attr(:trigger_aria_label, :string,
-    default: nil,
-    doc:
-      "Overrides `translation` for the popover button’s accessible name (same in open and closed state). If unset, the client uses open/close strings from the translation (Zag: open vs. closed calendar labels)."
-  )
-
-  attr(:input_aria_label, :string,
-    default: nil,
-    doc:
-      "Overrides `translation.input` for the text input when the slot label is not used. Zag does not provide this; it is a Corex field."
-  )
-
   attr(:range_start_label, :string,
     default: nil,
     doc:
@@ -518,8 +511,6 @@ defmodule Corex.DatePicker do
         id: @id,
         controlled: @controlled,
         value: @value,
-        trigger_aria_label: @trigger_aria_label,
-        input_aria_label: @input_aria_label,
         locale: @locale,
         time_zone: @time_zone,
         name: @name,
@@ -569,28 +560,28 @@ defmodule Corex.DatePicker do
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 aria-labelledby={@id <> "-range-start-label"}
-                aria-label={@input_aria_label || @translation.input}
+                aria-label={@translation.input}
               />
               <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@range_end_label}</span>
               <input
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 aria-labelledby={@id <> "-range-end-label"}
-                aria-label={@input_aria_label || @translation.input}
+                aria-label={@translation.input}
               />
             </div>
           <% else %>
             <input
               phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
               {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
-              aria-label={@input_aria_label || @translation.input}
+              aria-label={@translation.input}
             />
           <% end %>
           <button
             :if={@trigger != []}
             phx-mounted={Connect.ignore_trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
             {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
-            aria-label={@trigger_aria_label || @translation.open_calendar}
+            aria-label={@translation.open_calendar}
           >
             {render_slot(@trigger)}
           </button>
@@ -781,29 +772,29 @@ defmodule Corex.DatePicker do
   @spec default_translation() :: DatePickerTranslation.t()
   def default_translation do
     %DatePickerTranslation{
-      content: gettext("calendar"),
-      month_select: gettext("Select month"),
-      year_select: gettext("Select year"),
-      clear_trigger: gettext("Clear selected dates"),
-      week_column_header: gettext("Wk"),
-      open_calendar: gettext("Open calendar"),
-      close_calendar: gettext("Close calendar"),
-      view_trigger_year: gettext("Switch to month view"),
-      view_trigger_month: gettext("Switch to day view"),
-      view_trigger_day: gettext("Switch to year view"),
-      prev_trigger_year: gettext("Switch to previous decade"),
-      prev_trigger_month: gettext("Switch to previous year"),
-      prev_trigger_day: gettext("Switch to previous month"),
-      next_trigger_year: gettext("Switch to next decade"),
-      next_trigger_month: gettext("Switch to next year"),
-      next_trigger_day: gettext("Switch to next month"),
-      week_number: gettext("Week __N__"),
-      placeholder_day: gettext("dd"),
-      placeholder_month: gettext("mm"),
-      placeholder_year: gettext("yyyy"),
-      input: gettext("Select date"),
-      range_start: gettext("From"),
-      range_end: gettext("To")
+      content: Corex.Gettext.gettext("calendar"),
+      month_select: Corex.Gettext.gettext("Select month"),
+      year_select: Corex.Gettext.gettext("Select year"),
+      clear_trigger: Corex.Gettext.gettext("Clear selected dates"),
+      week_column_header: Corex.Gettext.gettext("Wk"),
+      open_calendar: Corex.Gettext.gettext("Open calendar"),
+      close_calendar: Corex.Gettext.gettext("Close calendar"),
+      view_trigger_year: Corex.Gettext.gettext("Switch to month view"),
+      view_trigger_month: Corex.Gettext.gettext("Switch to day view"),
+      view_trigger_day: Corex.Gettext.gettext("Switch to year view"),
+      prev_trigger_year: Corex.Gettext.gettext("Switch to previous decade"),
+      prev_trigger_month: Corex.Gettext.gettext("Switch to previous year"),
+      prev_trigger_day: Corex.Gettext.gettext("Switch to previous month"),
+      next_trigger_year: Corex.Gettext.gettext("Switch to next decade"),
+      next_trigger_month: Corex.Gettext.gettext("Switch to next year"),
+      next_trigger_day: Corex.Gettext.gettext("Switch to next month"),
+      week_number: Corex.Gettext.gettext("Week __N__"),
+      placeholder_day: Corex.Gettext.gettext("dd"),
+      placeholder_month: Corex.Gettext.gettext("mm"),
+      placeholder_year: Corex.Gettext.gettext("yyyy"),
+      input: Corex.Gettext.gettext("Select date"),
+      range_start: Corex.Gettext.gettext("From"),
+      range_end: Corex.Gettext.gettext("To")
     }
   end
 

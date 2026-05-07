@@ -129,15 +129,13 @@ defmodule Corex.NumberInput do
 
     Without gettext: `translation={%NumberInput.Translation{ decrease: "Decrease value" }}`
 
-    With gettext: `translation={%NumberInput.Translation{ decrease: gettext("Decrease value") }}`
+    With gettext: `translation={%NumberInput.Translation{ decrease: Corex.Gettext.gettext("Decrease value") }}`
     """
     defstruct [:decrease, :increase]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Phoenix.HTML.Form
 
@@ -215,8 +213,8 @@ defmodule Corex.NumberInput do
     validate_triggers!(assigns)
 
     default_translation = %Translation{
-      decrease: gettext("Decrease value"),
-      increase: gettext("Increase value")
+      decrease: Corex.Gettext.gettext("Decrease value"),
+      increase: Corex.Gettext.gettext("Increase value")
     }
 
     assigns =

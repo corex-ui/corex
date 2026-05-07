@@ -79,38 +79,10 @@ defmodule Corex.DatePicker.Connect do
   defp translation_json(assigns) do
     case Map.get(assigns, :translation) do
       %DatePickerTranslation{} = t ->
-        t
-        |> apply_translation_aria_overrides(
-          Map.get(assigns, :trigger_aria_label),
-          Map.get(assigns, :input_aria_label)
-        )
-        |> encode_translation_to_json()
+        encode_translation_to_json(t)
 
       _ ->
         nil
-    end
-  end
-
-  defp apply_translation_aria_overrides(
-         %DatePickerTranslation{} = t,
-         trigger_aria,
-         input_aria
-       ) do
-    t =
-      if is_binary(trigger_aria) and String.trim(trigger_aria) != "" do
-        %DatePickerTranslation{
-          t
-          | open_calendar: trigger_aria,
-            close_calendar: trigger_aria
-        }
-      else
-        t
-      end
-
-    if is_binary(input_aria) and String.trim(input_aria) != "" do
-      %DatePickerTranslation{t | input: input_aria}
-    else
-      t
     end
   end
 

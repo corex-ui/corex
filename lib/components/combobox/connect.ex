@@ -187,7 +187,6 @@ defmodule Corex.Combobox.Connect do
       "data-part" => "clear-trigger",
       "type" => "button",
       "dir" => Map.get(assigns, :dir, "ltr"),
-      "aria-label" => "Clear selection",
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:clear-trigger",
       "data-disabled" => get_boolean(assigns.disabled),

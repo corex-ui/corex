@@ -215,23 +215,33 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
+  ## Localization
+
+  Default `placeholder`, `empty`, `trigger`, and `clear_selection` use English literals; at render
+  they are passed through `Corex.Gettext.gettext/1` unless you set `translation`. Omit keys or use
+  `nil` to keep the built-in default for that field. Same pattern as `Corex.Select`.
+
   '''
 
   defmodule Translation do
     @moduledoc """
     Translation struct for Combobox component strings.
 
-    Without gettext: `translation={%Combobox.Translation{ placeholder: "Select...", empty: "No results" }}`
+    Defaults are English literals (`"Select"`, `"No results"`); at render time Corex passes them
+    through `Corex.Gettext.gettext/1` unless you override. Partial structs fill missing fields
+    the same way.
 
-    With gettext: `translation={%Combobox.Translation{ placeholder: gettext("Select..."), empty: gettext("No results") }}`
+    Override: `translation={%Corex.Combobox.Translation{placeholder: "Search…", empty: "Nothing found"}}`
+
+    Trigger and clear buttons use `translation.trigger` and `translation.clear_selection` (defaults **Open options** and **Clear selection**).
+
+    With explicit gettext at the call site: `placeholder: Corex.Gettext.gettext("…")`
     """
-    defstruct [:placeholder, :empty]
+    defstruct [:placeholder, :empty, :trigger, :clear_selection]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   import Corex.Helpers,
     only: [
@@ -384,17 +394,6 @@ defmodule Corex.Combobox do
     doc: "The positioning of the combobox"
   )
 
-  attr(:trigger_aria_label, :string,
-    default: nil,
-    doc:
-      "Accessible name for the open/close trigger button. Defaults to gettext(\"Open options\")."
-  )
-
-  attr(:clear_trigger_aria_label, :string,
-    default: nil,
-    doc: "Accessible name for the clear trigger button. Defaults to gettext(\"Clear selection\")."
-  )
-
   attr(:rest, :global)
 
   slot :label, required: false, doc: "The label content" do
@@ -460,12 +459,7 @@ defmodule Corex.Combobox do
   end
 
   def combobox(assigns) do
-    default_translation = %Translation{
-      placeholder: gettext("Select"),
-      empty: gettext("No results")
-    }
-
-    translation = assigns[:translation] || default_translation
+    translation = normalize_combobox_translation(assigns[:translation])
     placeholder = assigns[:placeholder] || translation.placeholder
     empty_text = translation.empty
 
@@ -534,10 +528,10 @@ defmodule Corex.Combobox do
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
           <input phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
-          <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@clear_trigger_aria_label || gettext("Clear selection")}>
+          <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@translation.clear_selection}>
             {render_slot(@clear_trigger)}
           </button>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@trigger_aria_label || gettext("Open options")}>
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@translation.trigger}>
             {render_slot(@trigger)}
           </button>
         </div>
@@ -624,6 +618,48 @@ defmodule Corex.Combobox do
       </div>
     </div>
     """
+  end
+
+  defp normalize_combobox_translation(nil) do
+    %Translation{
+      placeholder: combobox_field(nil, "Select"),
+      empty: combobox_field(nil, "No results"),
+      trigger: combobox_field(nil, "Open options"),
+      clear_selection: combobox_field(nil, "Clear selection")
+    }
+  end
+
+  defp normalize_combobox_translation(%Translation{} = t) do
+    %Translation{
+      placeholder: combobox_field(t.placeholder, "Select"),
+      empty: combobox_field(t.empty, "No results"),
+      trigger: combobox_field(t.trigger, "Open options"),
+      clear_selection: combobox_field(t.clear_selection, "Clear selection")
+    }
+  end
+
+  defp normalize_combobox_translation(m) when is_map(m) do
+    ph = Map.get(m, :placeholder) || Map.get(m, "placeholder")
+    em = Map.get(m, :empty) || Map.get(m, "empty")
+    tr = Map.get(m, :trigger) || Map.get(m, "trigger")
+    cl = Map.get(m, :clear_selection) || Map.get(m, "clear_selection")
+
+    normalize_combobox_translation(%Translation{
+      placeholder: ph,
+      empty: em,
+      trigger: tr,
+      clear_selection: cl
+    })
+  end
+
+  defp combobox_field(nil, msgid), do: Corex.Gettext.gettext(msgid)
+
+  defp combobox_field(s, msgid) when is_binary(s) do
+    case String.trim(s) do
+      "" -> Corex.Gettext.gettext(msgid)
+      ^msgid -> Corex.Gettext.gettext(msgid)
+      trimmed -> trimmed
+    end
   end
 
   defp item_attrs(id, entry, dir, orientation) do

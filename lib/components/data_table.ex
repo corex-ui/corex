@@ -9,14 +9,13 @@ defmodule Corex.DataTable do
 
     Without gettext: `translation={%DataTable.Translation{ actions: "Actions", select_all: "Select all", select_row: "Select row" }}`
 
-    With gettext: `translation={%DataTable.Translation{ actions: gettext("Actions"), select_all: gettext("Select all"), select_row: gettext("Select row") }}`
+    With gettext: `translation={%DataTable.Translation{ actions: Corex.Gettext.gettext("Actions"), select_all: Corex.Gettext.gettext("Select all"), select_row: Corex.Gettext.gettext("Select row") }}`
     """
     defstruct [:actions, :select_all, :select_row]
   end
 
   @doc type: :component
   use Phoenix.Component
-  import Corex.Gettext, only: [gettext: 1]
 
   @doc ~S'''
    Renders a table with data.
@@ -240,9 +239,9 @@ defmodule Corex.DataTable do
       assigns
       |> assign_new(:translation, fn ->
         %Translation{
-          actions: gettext("Actions"),
-          select_all: gettext("Select all"),
-          select_row: gettext("Select row")
+          actions: Corex.Gettext.gettext("Actions"),
+          select_all: Corex.Gettext.gettext("Select all"),
+          select_row: Corex.Gettext.gettext("Select row")
         }
       end)
       |> resolve_row_id()

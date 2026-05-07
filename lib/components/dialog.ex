@@ -199,15 +199,13 @@ defmodule Corex.Dialog do
 
     Without gettext: `translation={%Dialog.Translation{ close: "Close" }}`
 
-    With gettext: `translation={%Dialog.Translation{ close: gettext("Close") }}`
+    With gettext: `translation={%Dialog.Translation{ close: Corex.Gettext.gettext("Close") }}`
     """
     defstruct [:close]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -333,7 +331,7 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
-    default_translation = %Translation{close: gettext("Close")}
+    default_translation = %Translation{close: Corex.Gettext.gettext("Close")}
 
     assigns =
       assigns
@@ -454,7 +452,7 @@ defmodule Corex.Dialog do
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
-    assigns = assign_new(assigns, :aria_label, fn -> gettext("Close") end)
+    assigns = assign_new(assigns, :aria_label, fn -> Corex.Gettext.gettext("Close") end)
 
     ~H"""
     <button

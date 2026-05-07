@@ -63,8 +63,13 @@ defmodule E2eWeb.DatePickerPatternsLive do
                 controlled
                 value={@selected && [@selected]}
                 on_value_change="pattern_date_changed"
-                trigger_aria_label="Select date"
-                input_aria_label="Select date"
+                translation={
+                  %Corex.DatePicker.Translation{
+                    open_calendar: "Select date",
+                    close_calendar: "Select date",
+                    input: "Select date"
+                  }
+                }
               >
                 <:label>Date</:label>
                 <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>

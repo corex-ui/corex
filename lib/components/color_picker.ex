@@ -59,15 +59,13 @@ defmodule Corex.ColorPicker do
 
     Without gettext: `translation={%ColorPicker.Translation{ hex: "Hex color value" }}`
 
-    With gettext: `translation={%ColorPicker.Translation{ hex: gettext("Hex color value") }}`
+    With gettext: `translation={%ColorPicker.Translation{ hex: Corex.Gettext.gettext("Hex color value") }}`
     """
     defstruct [:hex, :alpha]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.ColorPicker.Anatomy.{
     Area,
@@ -157,8 +155,8 @@ defmodule Corex.ColorPicker do
 
   def color_picker(assigns) do
     default_translation = %Translation{
-      hex: gettext("Hex color value"),
-      alpha: gettext("Alpha (opacity) value")
+      hex: Corex.Gettext.gettext("Hex color value"),
+      alpha: Corex.Gettext.gettext("Alpha (opacity) value")
     }
 
     assigns =

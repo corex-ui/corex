@@ -196,8 +196,13 @@ defmodule E2eWeb.DatePickerPlayLive do
         <:canvas>
           <.date_picker
             id="date-picker-playground"
-            trigger_aria_label="Select date"
-            input_aria_label="Select date"
+            translation={
+              %Corex.DatePicker.Translation{
+                open_calendar: "Select date",
+                close_calendar: "Select date",
+                input: "Select date"
+              }
+            }
             class="date-picker"
             dir={@controls.dir}
             locale={@controls.locale}

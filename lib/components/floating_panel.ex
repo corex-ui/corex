@@ -76,15 +76,13 @@ defmodule Corex.FloatingPanel do
 
     Without gettext: `translation={%FloatingPanel.Translation{ close: "Close window" }}`
 
-    With gettext: `translation={%FloatingPanel.Translation{ close: gettext("Close window") }}`
+    With gettext: `translation={%FloatingPanel.Translation{ close: Corex.Gettext.gettext("Close window") }}`
     """
     defstruct [:minimize, :maximize, :restore, :close]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.FloatingPanel.Anatomy.{
     Body,
@@ -178,10 +176,10 @@ defmodule Corex.FloatingPanel do
 
   def floating_panel(assigns) do
     default_translation = %Translation{
-      minimize: gettext("Minimize window"),
-      maximize: gettext("Maximize window"),
-      restore: gettext("Restore window"),
-      close: gettext("Close window")
+      minimize: Corex.Gettext.gettext("Minimize window"),
+      maximize: Corex.Gettext.gettext("Maximize window"),
+      restore: Corex.Gettext.gettext("Restore window"),
+      close: Corex.Gettext.gettext("Close window")
     }
 
     assigns =

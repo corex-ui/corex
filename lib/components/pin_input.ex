@@ -62,7 +62,6 @@ defmodule Corex.PinInput do
   alias Corex.PinInput.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
-  import Corex.Gettext, only: [gettext: 2]
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
 
   attr(:id, :string, required: false)
@@ -190,8 +189,8 @@ defmodule Corex.PinInput do
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
-            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            {Connect.input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
           />
         </div>
       </div>

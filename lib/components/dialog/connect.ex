@@ -1,8 +1,6 @@
 defmodule Corex.Dialog.Connect do
   @moduledoc false
 
-  import Corex.Gettext, only: [gettext: 1]
-
   alias Corex.Animation.Scale
   alias Corex.Selectors
 
@@ -51,7 +49,7 @@ defmodule Corex.Dialog.Connect do
     Map.put(
       merged,
       "data-dialog-default-label",
-      assigns.dialog_default_label || gettext("Dialog")
+      assigns.dialog_default_label || Corex.Gettext.gettext("Dialog")
     )
   end
 
@@ -190,7 +188,7 @@ defmodule Corex.Dialog.Connect do
       "type" => "button",
       "dir" => Map.get(assigns, :dir, "ltr"),
       "id" => "dialog:#{assigns.id}:close-trigger",
-      "aria-label" => Map.get(assigns, :aria_label) || gettext("Close dialog")
+      "aria-label" => Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Close dialog")
     }
   end
 
