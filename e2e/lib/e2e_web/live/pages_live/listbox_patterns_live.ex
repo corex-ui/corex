@@ -130,21 +130,19 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-xl">
-              <div class="flex flex-wrap gap-2">
-                <.action phx-click="add_item" class="button button--sm button--accent">
-                  <.heroicon name="hero-plus" /> Add item
-                </.action>
-                <.action phx-click="reset" class="button button--sm button--alert">
-                  Reset
-                </.action>
-              </div>
-              <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
-                <:label>Choose an item</:label>
-                <:empty>No items</:empty>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action phx-click="add_item" class="button button--sm button--accent">
+                <.heroicon name="hero-plus" /> Add item
+              </.action>
+              <.action phx-click="reset" class="button button--sm button--alert">
+                Reset
+              </.action>
             </div>
+            <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+              <:label>Choose an item</:label>
+              <:empty>No items</:empty>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -167,36 +165,34 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-xl">
-              <div class="flex flex-wrap gap-2">
-                <.action
-                  phx-click="add_to_group"
-                  phx-value-group="Europe"
-                  class="button button--sm button--accent"
-                >
-                  <.heroicon name="hero-plus" /> Add to Europe
-                </.action>
-                <.action
-                  phx-click="add_to_group"
-                  phx-value-group="Asia"
-                  class="button button--sm button--accent"
-                >
-                  <.heroicon name="hero-plus" /> Add to Asia
-                </.action>
-                <.action phx-click="reset_grouped" class="button button--sm button--alert">
-                  Reset
-                </.action>
-              </div>
-              <.listbox
-                id="stream-grouped-listbox"
-                class="listbox"
-                items={Corex.List.new(@grouped_items_list)}
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action
+                phx-click="add_to_group"
+                phx-value-group="Europe"
+                class="button button--sm button--accent"
               >
-                <:label>Choose a country</:label>
-                <:empty>No items</:empty>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
+                <.heroicon name="hero-plus" /> Add to Europe
+              </.action>
+              <.action
+                phx-click="add_to_group"
+                phx-value-group="Asia"
+                class="button button--sm button--accent"
+              >
+                <.heroicon name="hero-plus" /> Add to Asia
+              </.action>
+              <.action phx-click="reset_grouped" class="button button--sm button--alert">
+                Reset
+              </.action>
             </div>
+            <.listbox
+              id="stream-grouped-listbox"
+              class="listbox"
+              items={Corex.List.new(@grouped_items_list)}
+            >
+              <:label>Choose a country</:label>
+              <:empty>No items</:empty>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -219,7 +215,7 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 max-w-xl w-full">
+            <div class="flex flex-col gap-3 max-w-md">
               <.listbox
                 id="listbox-patterns-controlled-field"
                 class="listbox"

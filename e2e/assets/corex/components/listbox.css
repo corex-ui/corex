@@ -40,9 +40,12 @@
   }
 
   .listbox [data-scope="listbox"][data-part="item-group-label"] {
+    display: flex;
+    align-items: center;
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     text-align: start;
+    min-height: var(--spacing-size);
     padding-inline: var(--spacing-space);
     background-color: var(--color-root);
     color: var(--color-ink);
