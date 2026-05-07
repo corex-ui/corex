@@ -90,8 +90,8 @@ defmodule Corex.Toast do
   @doc type: :component
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
   alias Corex.Flash
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a toast group (toaster) that manages multiple toast notifications.

@@ -167,10 +167,13 @@ defmodule Corex.NumberInput do
   attr(:invalid, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
+
   attr(:controlled, :boolean,
     default: false,
-    doc: "Server-driven value; use with value and on_value_change. Ignored when field is set (forms stay uncontrolled for working steppers)."
+    doc:
+      "Server-driven value; use with value and on_value_change. Ignored when field is set (forms stay uncontrolled for working steppers)."
   )
+
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)

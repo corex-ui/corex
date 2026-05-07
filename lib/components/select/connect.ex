@@ -27,21 +27,8 @@ defmodule Corex.Select.Connect do
   def props(assigns) do
     sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    joined = if vlist == [], do: nil, else: Enum.map_join(vlist, ",", &to_string/1)
-
-    value_str =
-      if assigns.controlled and joined do
-        joined
-      else
-        nil
-      end
-
-    default_value_str =
-      if not assigns.controlled and joined do
-        joined
-      else
-        nil
-      end
+    joined = joined_csv_values(vlist)
+    {value_str, default_value_str} = controlled_dataset_values(assigns.controlled, joined)
 
     base = %{
       "id" => assigns.id,
@@ -65,6 +52,21 @@ defmodule Corex.Select.Connect do
 
     base
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
+    |> merge_optional_select_props(assigns)
+  end
+
+  defp joined_csv_values([]), do: nil
+
+  defp joined_csv_values(vlist) do
+    Enum.map_join(vlist, ",", &to_string/1)
+  end
+
+  defp controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
+  defp controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
+  defp controlled_dataset_values(_controlled, _joined), do: {nil, nil}
+
+  defp merge_optional_select_props(base, assigns) do
+    base
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
