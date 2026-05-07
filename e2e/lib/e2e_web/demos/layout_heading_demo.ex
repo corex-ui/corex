@@ -63,38 +63,186 @@ defmodule E2eWeb.Demos.LayoutHeadingDemo do
     """
   end
 
-  def styling_wrapper_code do
+  def styling_color_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-size w-full">
+      <.layout_heading class="layout-heading">
+        <:title>Default</:title>
+        <:subtitle>Neutral ink on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading layout-heading--accent">
+        <:title>Accent</:title>
+        <:subtitle>Semantic accent on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading layout-heading--brand">
+        <:title>Brand</:title>
+        <:subtitle>Semantic brand on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading layout-heading--alert">
+        <:title>Alert</:title>
+        <:subtitle>Semantic alert on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading layout-heading--success">
+        <:title>Success</:title>
+        <:subtitle>Semantic success on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading layout-heading--info">
+        <:title>Info</:title>
+        <:subtitle>Semantic info on title and subtitle.</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+    </div>
+    """
+  end
+
+  def styling_color_code do
     ~S"""
     <.layout_heading class="layout-heading">
-      <:title>Full width</:title>
-      <:subtitle>Default spacing from the layout-heading stylesheet.</:subtitle>
+      <:title>Default</:title>
+      <:subtitle>Neutral ink on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading layout-heading--accent">
+      <:title>Accent</:title>
+      <:subtitle>Semantic accent on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading layout-heading--brand">
+      <:title>Brand</:title>
+      <:subtitle>Semantic brand on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading layout-heading--alert">
+      <:title>Alert</:title>
+      <:subtitle>Semantic alert on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading layout-heading--success">
+      <:title>Success</:title>
+      <:subtitle>Semantic success on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading layout-heading--info">
+      <:title>Info</:title>
+      <:subtitle>Semantic info on title and subtitle.</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
     </.layout_heading>
     """
   end
 
-  def styling_wrapper_example(assigns) do
+  def styling_max_width_example(assigns) do
     ~H"""
-    <.layout_heading class="layout-heading">
-      <:title>Full width</:title>
-      <:subtitle>Default spacing from the layout-heading stylesheet.</:subtitle>
-    </.layout_heading>
+    <div class="flex flex-col gap-size w-full items-center">
+      <.layout_heading class="layout-heading max-w-xs">
+        <:title>Narrow</:title>
+        <:subtitle>max-w-xs</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading max-w-md">
+        <:title>Medium block</:title>
+        <:subtitle>max-w-md</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading max-w-xl">
+        <:title>Wide block</:title>
+        <:subtitle>max-w-xl</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+      <.layout_heading class="layout-heading max-w-2xl">
+        <:title>Extra wide</:title>
+        <:subtitle>max-w-2xl</:subtitle>
+        <:actions>
+          <.action type="button" class="button button--sm">Save</.action>
+          <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+        </:actions>
+      </.layout_heading>
+    </div>
     """
   end
 
-  def styling_constrained_code do
+  def styling_max_width_code do
     ~S"""
-    <.layout_heading class="layout-heading max-w-3xl mx-auto">
-      <:title>Constrained width</:title>
-      <:subtitle>Combine utility classes on the same element as the component root.</:subtitle>
+    <.layout_heading class="layout-heading max-w-xs">
+      <:title>Narrow</:title>
+      <:subtitle>max-w-xs</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
     </.layout_heading>
-    """
-  end
-
-  def styling_constrained_example(assigns) do
-    ~H"""
-    <.layout_heading class="layout-heading max-w-3xl mx-auto">
-      <:title>Constrained width</:title>
-      <:subtitle>Combine utility classes on the same element as the component root.</:subtitle>
+    <.layout_heading class="layout-heading max-w-md">
+      <:title>Medium block</:title>
+      <:subtitle>max-w-md</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading max-w-xl">
+      <:title>Wide block</:title>
+      <:subtitle>max-w-xl</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
+    </.layout_heading>
+    <.layout_heading class="layout-heading max-w-2xl">
+      <:title>Extra wide</:title>
+      <:subtitle>max-w-2xl</:subtitle>
+      <:actions>
+        <.action type="button" class="button button--sm">Save</.action>
+        <.action type="button" class="button button--sm button--ghost">Cancel</.action>
+      </:actions>
     </.layout_heading>
     """
   end

@@ -31,7 +31,7 @@ defmodule Corex.Layout.Heading do
 
   ## Styling
 
-  The e2e demo includes static **Anatomy** and **Style** pages (`/layout-heading/anatomy`, `/layout-heading/style`) built from `E2eWeb.Demos.LayoutHeadingDemo`, showing the `layout-heading` wrapper class with optional width utilities.
+  The e2e demo includes static **Anatomy** and **Style** pages (`/layout-heading/anatomy`, `/layout-heading/style`) built from `E2eWeb.Demos.LayoutHeadingDemo`. Use the `layout-heading` root class, optional `layout-heading--*` modifiers for semantic ink on the title and subtitle (same pattern as other primitives), Tailwind `max-w-*` on the root for width, and typography utilities on the `:title` / `:subtitle` slots when you need scale beyond default `h1` / `h2`.
 
   Target elements with data attributes:
 

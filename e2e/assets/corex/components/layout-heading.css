@@ -27,6 +27,13 @@
     margin: 0;
   }
 
+  .layout-heading [data-scope="layout-heading"][data-part="title"] {
+    color: var(--color-ink);
+  }
+
+  .layout-heading [data-scope="layout-heading"][data-part="subtitle"] {
+    color: var(--color-ink-muted);
+  }
 
   .layout-heading [data-scope="layout-heading"][data-part="actions"] {
     display: flex;
@@ -35,5 +42,16 @@
     gap: var(--spacing-space);
     padding: 0;
     align-items: start;
+  }
+}
+
+@utility layout-heading--* {
+
+  [data-scope="layout-heading"][data-part="title"] {
+    color: --value(--color-ink-*, [color]);
+  }
+
+  [data-scope="layout-heading"][data-part="subtitle"] {
+    color: --value(--color-ink-*, [color]);
   }
 }
