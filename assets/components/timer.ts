@@ -42,9 +42,7 @@ function applyTimerItemVisibility(root: HTMLElement, api: Api): void {
   const hostId = root.id;
 
   types.forEach((type, i) => {
-    const segmentEl = root.querySelector<HTMLElement>(
-      `[data-timer-segment][data-type="${type}"]`
-    );
+    const segmentEl = root.querySelector<HTMLElement>(`[data-timer-segment][data-type="${type}"]`);
     if (segmentEl) {
       if (hidden[i]) {
         segmentEl.setAttribute("hidden", "");

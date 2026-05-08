@@ -35580,9 +35580,7 @@ ${err}`);
     const types = ["days", "hours", "minutes", "seconds"];
     const hostId = root.id;
     types.forEach((type, i2) => {
-      const segmentEl = root.querySelector(
-        `[data-timer-segment][data-type="${type}"]`
-      );
+      const segmentEl = root.querySelector(`[data-timer-segment][data-type="${type}"]`);
       if (segmentEl) {
         if (hidden[i2]) {
           segmentEl.setAttribute("hidden", "");
