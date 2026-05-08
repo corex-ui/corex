@@ -32,7 +32,7 @@ defmodule Corex.ToggleGroup.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    %{
+    base = %{
       "data-scope" => "toggle-group",
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir, "ltr"),
@@ -41,6 +41,11 @@ defmodule Corex.ToggleGroup.Connect do
       "data-disabled" => assigns.disabled,
       "style" => "outline: none;"
     }
+
+    case Map.get(assigns, :aria_labelledby) do
+      id when is_binary(id) -> Map.put(base, "aria-labelledby", id)
+      _ -> base
+    end
   end
 
   def ignore_root(assigns) do

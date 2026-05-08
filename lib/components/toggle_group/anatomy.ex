@@ -38,13 +38,14 @@ defmodule Corex.ToggleGroup.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, orientation: "vertical", dir: "ltr", disabled: false]
+    defstruct [:id, orientation: "vertical", dir: "ltr", disabled: false, aria_labelledby: nil]
 
     @type t :: %__MODULE__{
             id: String.t(),
             orientation: String.t(),
             dir: String.t(),
-            disabled: boolean()
+            disabled: boolean(),
+            aria_labelledby: String.t() | nil
           }
 
     @ignored_attrs [
