@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.2"
+  @version "0.1.0-beta.3"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -60,7 +60,8 @@ defmodule Corex.MixProject do
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:ex_slop, "~> 0.1", only: [:dev, :test], runtime: false}
     ]
   end
 

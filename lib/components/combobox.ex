@@ -639,10 +639,11 @@ defmodule Corex.Combobox do
   end
 
   defp normalize_combobox_translation(m) when is_map(m) do
-    ph = Map.get(m, :placeholder) || Map.get(m, "placeholder")
-    em = Map.get(m, :empty) || Map.get(m, "empty")
-    tr = Map.get(m, :trigger) || Map.get(m, "trigger")
-    cl = Map.get(m, :clear_selection) || Map.get(m, "clear_selection")
+    sm = Map.new(m, fn {k, v} -> {to_string(k), v} end)
+    ph = Map.get(sm, "placeholder")
+    em = Map.get(sm, "empty")
+    tr = Map.get(sm, "trigger")
+    cl = Map.get(sm, "clear_selection")
 
     normalize_combobox_translation(%Translation{
       placeholder: ph,

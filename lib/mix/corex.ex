@@ -1,6 +1,7 @@
 defmodule Mix.Corex do
-  # Conveniences for Corex tasks.
   @moduledoc false
+
+  alias Phoenix.Naming
 
   @doc """
   Evals EEx files from source dir.
@@ -145,12 +146,12 @@ defmodule Mix.Corex do
   def inflect(singular) do
     base = Mix.Corex.base()
     web_module = base |> web_module() |> inspect()
-    scoped = Phoenix.Naming.camelize(singular)
-    path = Phoenix.Naming.underscore(scoped)
+    scoped = Naming.camelize(singular)
+    path = Naming.underscore(scoped)
     singular = String.split(path, "/") |> List.last()
     module = Module.concat(base, scoped) |> inspect
     alias = String.split(module, ".") |> List.last()
-    human = Phoenix.Naming.humanize(singular)
+    human = Naming.humanize(singular)
 
     [
       alias: alias,

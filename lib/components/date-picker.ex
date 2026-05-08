@@ -254,6 +254,7 @@ defmodule Corex.DatePicker do
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+  alias Corex.Gettext
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -487,7 +488,7 @@ defmodule Corex.DatePicker do
 
     assigns
     |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+    |> assign(:errors, Enum.map(errors, &Gettext.translate_error(&1)))
     |> assign(:id, field.id)
     |> assign(:name, field.name)
     |> assign(:value, normalize_date_value(field.value))
@@ -772,29 +773,29 @@ defmodule Corex.DatePicker do
   @spec default_translation() :: DatePickerTranslation.t()
   def default_translation do
     %DatePickerTranslation{
-      content: Corex.Gettext.gettext("calendar"),
-      month_select: Corex.Gettext.gettext("Select month"),
-      year_select: Corex.Gettext.gettext("Select year"),
-      clear_trigger: Corex.Gettext.gettext("Clear selected dates"),
-      week_column_header: Corex.Gettext.gettext("Wk"),
-      open_calendar: Corex.Gettext.gettext("Open calendar"),
-      close_calendar: Corex.Gettext.gettext("Close calendar"),
-      view_trigger_year: Corex.Gettext.gettext("Switch to month view"),
-      view_trigger_month: Corex.Gettext.gettext("Switch to day view"),
-      view_trigger_day: Corex.Gettext.gettext("Switch to year view"),
-      prev_trigger_year: Corex.Gettext.gettext("Switch to previous decade"),
-      prev_trigger_month: Corex.Gettext.gettext("Switch to previous year"),
-      prev_trigger_day: Corex.Gettext.gettext("Switch to previous month"),
-      next_trigger_year: Corex.Gettext.gettext("Switch to next decade"),
-      next_trigger_month: Corex.Gettext.gettext("Switch to next year"),
-      next_trigger_day: Corex.Gettext.gettext("Switch to next month"),
-      week_number: Corex.Gettext.gettext("Week __N__"),
-      placeholder_day: Corex.Gettext.gettext("dd"),
-      placeholder_month: Corex.Gettext.gettext("mm"),
-      placeholder_year: Corex.Gettext.gettext("yyyy"),
-      input: Corex.Gettext.gettext("Select date"),
-      range_start: Corex.Gettext.gettext("From"),
-      range_end: Corex.Gettext.gettext("To")
+      content: Gettext.gettext("calendar"),
+      month_select: Gettext.gettext("Select month"),
+      year_select: Gettext.gettext("Select year"),
+      clear_trigger: Gettext.gettext("Clear selected dates"),
+      week_column_header: Gettext.gettext("Wk"),
+      open_calendar: Gettext.gettext("Open calendar"),
+      close_calendar: Gettext.gettext("Close calendar"),
+      view_trigger_year: Gettext.gettext("Switch to month view"),
+      view_trigger_month: Gettext.gettext("Switch to day view"),
+      view_trigger_day: Gettext.gettext("Switch to year view"),
+      prev_trigger_year: Gettext.gettext("Switch to previous decade"),
+      prev_trigger_month: Gettext.gettext("Switch to previous year"),
+      prev_trigger_day: Gettext.gettext("Switch to previous month"),
+      next_trigger_year: Gettext.gettext("Switch to next decade"),
+      next_trigger_month: Gettext.gettext("Switch to next year"),
+      next_trigger_day: Gettext.gettext("Switch to next month"),
+      week_number: Gettext.gettext("Week __N__"),
+      placeholder_day: Gettext.gettext("dd"),
+      placeholder_month: Gettext.gettext("mm"),
+      placeholder_year: Gettext.gettext("yyyy"),
+      input: Gettext.gettext("Select date"),
+      range_start: Gettext.gettext("From"),
+      range_end: Gettext.gettext("To")
     }
   end
 

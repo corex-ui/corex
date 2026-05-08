@@ -126,7 +126,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
-  @doc false
+  @impl Mix.Task
   def run(args) do
     if Mix.Project.umbrella?() do
       Mix.raise(
@@ -200,7 +200,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     []
   end
 
-  @doc false
+  @doc "Lists files emitted by the HTML generator for conflict prompts."
   def files_to_be_generated(%Context{schema: schema, context_app: context_app}) do
     singular = schema.singular
     web_prefix = Mix.Corex.web_path(context_app)
@@ -223,8 +223,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     ]
   end
 
-  @doc false
-  def copy_new_files(%Context{} = context, binding) do
+  defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
     template_dirs = Mix.Corex.generator_template_dirs("corex.gen.html")
     Mix.Corex.copy_from(template_dirs, "", binding, files)
@@ -234,8 +233,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     context
   end
 
-  @doc false
-  def print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
+  defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     layout_opts = layout_generators_opts(context, web_app_name(context))
     layout_locale = layout_locale?(layout_opts)
 
@@ -282,7 +280,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     if context.generate?, do: Mix.Corex.Gen.Context.print_shell_instructions(context)
   end
 
-  @doc false
+  @doc "Builds HEEx snippets for each schema attribute used by corex.gen.html templates."
   def inputs(%Schema{} = schema) do
     schema.attrs
     |> Enum.reject(fn {_key, type} -> type == :map end)
@@ -497,7 +495,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     is_list(themes)
   end
 
-  @doc false
+  @doc "Pads generated input snippets when emitted into generator templates."
   def indent_inputs(inputs, column_padding) do
     columns = String.duplicate(" ", column_padding)
 

@@ -322,8 +322,13 @@ defmodule Corex.NativeInput do
 
   defp error_wrapper_class(error_slot) do
     case List.first(List.wrap(error_slot)) do
-      m when is_map(m) -> Map.get(m, :class) || Map.get(m, "class")
-      _ -> nil
+      m when is_map(m) ->
+        m
+        |> Map.new(fn {k, v} -> {to_string(k), v} end)
+        |> Map.get("class")
+
+      _ ->
+        nil
     end
   end
 

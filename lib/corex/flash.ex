@@ -2,9 +2,7 @@ defmodule Corex.Flash do
   @moduledoc false
 
   defmodule Info do
-    @moduledoc """
-    This struct is used to configure the info flash message toast notifications in `Corex.Toast.toast_group/1`
-    """
+    @moduledoc false
     defstruct [:title, :type, :duration]
 
     @type t :: %__MODULE__{
@@ -15,9 +13,7 @@ defmodule Corex.Flash do
   end
 
   defmodule Error do
-    @moduledoc """
-    This struct is used to configure the error flash message toast notifications in `Corex.Toast.toast_group/1`
-    """
+    @moduledoc false
     defstruct [:title, :type, :duration]
 
     @type t :: %__MODULE__{

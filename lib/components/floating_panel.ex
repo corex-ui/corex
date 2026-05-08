@@ -101,6 +101,7 @@ defmodule Corex.FloatingPanel do
   }
 
   alias Corex.FloatingPanel.Connect
+  alias Corex.Gettext
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -176,10 +177,10 @@ defmodule Corex.FloatingPanel do
 
   def floating_panel(assigns) do
     default_translation = %Translation{
-      minimize: Corex.Gettext.gettext("Minimize window"),
-      maximize: Corex.Gettext.gettext("Maximize window"),
-      restore: Corex.Gettext.gettext("Restore window"),
-      close: Corex.Gettext.gettext("Close window")
+      minimize: Gettext.gettext("Minimize window"),
+      maximize: Gettext.gettext("Maximize window"),
+      restore: Gettext.gettext("Restore window"),
+      close: Gettext.gettext("Close window")
     }
 
     assigns =

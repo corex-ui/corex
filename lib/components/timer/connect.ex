@@ -41,7 +41,7 @@ defmodule Corex.Timer.Connect do
   defp collapse_dataset(%Props{}), do: "false"
 
   defp segments_dataset(%Props{segments: list}) when is_list(list) and list != [] do
-    list |> Enum.map(&Atom.to_string/1) |> Enum.join(",")
+    Enum.map_join(list, ",", &Atom.to_string/1)
   end
 
   defp segments_dataset(_), do: nil

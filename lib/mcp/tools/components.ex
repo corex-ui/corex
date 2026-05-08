@@ -104,9 +104,9 @@ defmodule Corex.MCP.Tools.Components do
     end
   end
 
-  defp source_path_from_meta(meta) do
-    p = Map.get(meta, :source_path) || Map.get(meta, "source_path")
-    normalize_source_path_string(p)
+  defp source_path_from_meta(meta) when is_map(meta) do
+    meta = Map.new(meta, fn {k, v} -> {to_string(k), v} end)
+    normalize_source_path_string(Map.get(meta, "source_path"))
   end
 
   defp compile_source_path(mod) do

@@ -112,7 +112,7 @@ defmodule Corex.PinInput do
   def pin_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = form_field_to_pin_list(field)
-    value_str = Enum.join(value, "")
+    value_str = Enum.join(value)
 
     assigns
     |> assign(:field, nil)
@@ -145,7 +145,7 @@ defmodule Corex.PinInput do
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:value, validate_value!(value || []))
 
-    assigns = assign(assigns, :value_str, Enum.join(assigns.value, ""))
+    assigns = assign(assigns, :value_str, Enum.join(assigns.value))
 
     ~H"""
     <div

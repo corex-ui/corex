@@ -102,6 +102,7 @@ defmodule Corex.Editable do
   }
 
   alias Corex.Editable.Connect
+  alias Corex.Gettext
 
   attr(:id, :string, required: false, doc: "The id of the editable component")
 
@@ -192,10 +193,10 @@ defmodule Corex.Editable do
 
   def editable(assigns) do
     default_translation = %Translation{
-      input: Corex.Gettext.gettext("editable input"),
-      edit: Corex.Gettext.gettext("edit"),
-      submit: Corex.Gettext.gettext("submit"),
-      cancel: Corex.Gettext.gettext("cancel")
+      input: Gettext.gettext("editable input"),
+      edit: Gettext.gettext("edit"),
+      submit: Gettext.gettext("submit"),
+      cancel: Gettext.gettext("cancel")
     }
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))

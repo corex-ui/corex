@@ -1,6 +1,7 @@
 defmodule Mix.Corex.Gen.Context do
   @moduledoc false
 
+  alias Mix.Corex, as: MixCorex
   alias Mix.Phoenix.{Context, Schema}
 
   def files_to_be_generated(%Context{schema: schema} = context) do
@@ -42,13 +43,13 @@ defmodule Mix.Corex.Gen.Context do
   end
 
   defp copy_schema_and_migration(schema, binding) do
-    roots = Mix.Corex.generator_template_dirs("corex.gen.schema")
-    content = Mix.Corex.eval_from_roots(roots, "schema.ex", binding)
+    roots = MixCorex.generator_template_dirs("corex.gen.schema")
+    content = MixCorex.eval_from_roots(roots, "schema.ex", binding)
     Mix.Generator.create_file(schema.file, content)
 
     if schema.migration? do
       path = migration_path_for(schema)
-      migration_content = Mix.Corex.eval_from_roots(roots, "migration.exs", binding)
+      migration_content = MixCorex.eval_from_roots(roots, "migration.exs", binding)
       File.mkdir_p!(Path.dirname(path))
       Mix.Generator.create_file(path, migration_content)
     end
@@ -83,18 +84,18 @@ defmodule Mix.Corex.Gen.Context do
 
   defp ensure_context_file_exists(%Context{file: file} = context, binding) do
     unless Context.pre_existing?(context) do
-      roots = Mix.Corex.generator_template_dirs("corex.gen.context")
-      content = Mix.Corex.eval_from_roots(roots, "context.ex", binding)
+      roots = MixCorex.generator_template_dirs("corex.gen.context")
+      content = MixCorex.eval_from_roots(roots, "context.ex", binding)
       Mix.Generator.create_file(file, content)
     end
   end
 
   defp inject_schema_access(context, binding) do
     ensure_context_file_exists(context, binding)
-    roots = Mix.Corex.generator_template_dirs("corex.gen.context")
+    roots = MixCorex.generator_template_dirs("corex.gen.context")
     template = schema_access_template(context)
-    content = Mix.Corex.eval_from_roots(roots, template, binding)
-    Mix.Corex.inject_eex_before_final_end(content, context.file, binding)
+    content = MixCorex.eval_from_roots(roots, template, binding)
+    MixCorex.inject_eex_before_final_end(content, context.file, binding)
   end
 
   defp schema_access_template(%Context{schema: schema}) do
@@ -108,34 +109,34 @@ defmodule Mix.Corex.Gen.Context do
 
   defp ensure_test_file_exists(context, binding) do
     unless Context.pre_existing_tests?(context) do
-      roots = Mix.Corex.generator_template_dirs("corex.gen.context")
-      content = Mix.Corex.eval_from_roots(roots, "context_test.exs", binding)
+      roots = MixCorex.generator_template_dirs("corex.gen.context")
+      content = MixCorex.eval_from_roots(roots, "context_test.exs", binding)
       Mix.Generator.create_file(context.test_file, content)
     end
   end
 
   defp inject_tests(context, binding) do
     ensure_test_file_exists(context, binding)
-    roots = Mix.Corex.generator_template_dirs("corex.gen.context")
+    roots = MixCorex.generator_template_dirs("corex.gen.context")
     file = if context.schema.scope, do: "test_cases_scope.exs", else: "test_cases.exs"
-    content = Mix.Corex.eval_from_roots(roots, file, binding)
-    Mix.Corex.inject_eex_before_final_end(content, context.test_file, binding)
+    content = MixCorex.eval_from_roots(roots, file, binding)
+    MixCorex.inject_eex_before_final_end(content, context.test_file, binding)
   end
 
   defp ensure_test_fixtures_file_exists(context, binding) do
     unless Context.pre_existing_test_fixtures?(context) do
-      roots = Mix.Corex.generator_template_dirs("corex.gen.context")
-      content = Mix.Corex.eval_from_roots(roots, "fixtures_module.ex", binding)
+      roots = MixCorex.generator_template_dirs("corex.gen.context")
+      content = MixCorex.eval_from_roots(roots, "fixtures_module.ex", binding)
       Mix.Generator.create_file(context.test_fixtures_file, content)
     end
   end
 
   defp inject_test_fixture(context, binding) do
     ensure_test_fixtures_file_exists(context, binding)
-    roots = Mix.Corex.generator_template_dirs("corex.gen.context")
-    content = Mix.Corex.eval_from_roots(roots, "fixtures.ex", binding)
-    content = Mix.Corex.prepend_newline(content)
-    Mix.Corex.inject_eex_before_final_end(content, context.test_fixtures_file, binding)
+    roots = MixCorex.generator_template_dirs("corex.gen.context")
+    content = MixCorex.eval_from_roots(roots, "fixtures.ex", binding)
+    content = MixCorex.prepend_newline(content)
+    MixCorex.inject_eex_before_final_end(content, context.test_fixtures_file, binding)
   end
 
   defp maybe_print_unimplemented_fixture_functions(%Context{} = context) do

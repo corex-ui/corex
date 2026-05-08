@@ -147,10 +147,13 @@ defmodule Corex.Helpers do
   end
 
   def entry_value(entry) when is_map(entry) do
-    to_string(
-      Map.get(entry, :value) || Map.get(entry, :id) || Map.get(entry, "value") ||
-        Map.get(entry, "id") || ""
-    )
+    entry
+    |> Map.new(fn {k, v} -> {to_string(k), v} end)
+    |> then(fn m -> Map.get(m, "value") || Map.get(m, "id") end)
+    |> case do
+      nil -> ""
+      v -> to_string(v)
+    end
   end
 
   def entry_selected?(entry, value_list) when is_map(entry) and is_list(value_list) do

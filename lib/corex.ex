@@ -155,12 +155,12 @@ defmodule Corex do
   defp include?(name, :all, except), do: name not in except
   defp include?(name, only, _except) when is_list(only), do: name in only
 
-  @doc false
+  @doc "Returns sorted ids from the component registry for MCP and tooling."
   def component_ids do
     @components |> Map.keys() |> Enum.sort()
   end
 
-  @doc false
+  @doc "Resolves a registered component id to module and function-component metadata."
   def component_spec(id) when is_atom(id) do
     case Map.fetch(@components, id) do
       {:ok, {mod, functions}} ->
@@ -181,7 +181,7 @@ defmodule Corex do
     end
   end
 
-  @doc false
+  @doc "Maps a string MCP component id to its implementing module when registered."
   def component_module_for_mcp_id(id) when is_binary(id) do
     allowed = MapSet.new(for a <- component_ids(), do: to_string(a))
 

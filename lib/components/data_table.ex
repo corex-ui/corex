@@ -17,6 +17,8 @@ defmodule Corex.DataTable do
   @doc type: :component
   use Phoenix.Component
 
+  alias Corex.Gettext
+
   @doc ~S'''
    Renders a table with data.
 
@@ -239,9 +241,9 @@ defmodule Corex.DataTable do
       assigns
       |> assign_new(:translation, fn ->
         %Translation{
-          actions: Corex.Gettext.gettext("Actions"),
-          select_all: Corex.Gettext.gettext("Select all"),
-          select_row: Corex.Gettext.gettext("Select row")
+          actions: Gettext.gettext("Actions"),
+          select_all: Gettext.gettext("Select all"),
+          select_row: Gettext.gettext("Select row")
         }
       end)
       |> resolve_row_id()
