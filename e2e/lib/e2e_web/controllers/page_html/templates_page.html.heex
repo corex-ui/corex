@@ -30,11 +30,14 @@
               loop
               items={@soonex_carousel_items}
               class="carousel carousel--accent w-full max-w-none"
-            ><:prev_trigger>
+            >
+              <:prev_trigger>
                 <.heroicon name="hero-arrow-left" />
-              </:prev_trigger><:next_trigger>
+              </:prev_trigger>
+              <:next_trigger>
                 <.heroicon name="hero-arrow-right" />
-              </:next_trigger></.carousel>
+              </:next_trigger>
+            </.carousel>
           </div>
 
           <p class="m-0 text-lg font-semibold tracking-tight text-ink">

@@ -375,7 +375,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:close_trigger>
         <:content>
           <p>
-            Uses <code class="text-sm">positioning={%Corex.Positioning{}}</code>
+            Uses <code class="text-sm">{"positioning={%Corex.Positioning{}}"}</code>
             so the hook passes <code class="text-sm">getAnchorPosition</code>
             with placement and gutter (flip keeps it in view).
           </p>
@@ -429,7 +429,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       </:close_trigger>
       <:content>
         <p>
-          <code class="text-sm">size={%{width: 380, height: 220}}</code>
+          <code class="text-sm">{"size={%{width: 380, height: 220}}"}</code>
           maps to Zag <code class="text-sm">defaultSize</code>; optional
           <code class="text-sm">min_size</code>
           constrains resize.

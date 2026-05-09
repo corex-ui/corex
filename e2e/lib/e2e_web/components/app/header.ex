@@ -236,6 +236,7 @@ defmodule E2eWeb.App.Header do
   end
 
   defp normalize_header_path(p) when p in [nil, ""], do: ""
+
   defp normalize_header_path(p) when is_binary(p) do
     p
     |> String.trim()

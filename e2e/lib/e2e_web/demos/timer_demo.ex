@@ -787,7 +787,7 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <.timer id="timer-separator-dot" start_ms={60_000} class="timer">
-      <:separator> · </:separator>
+      <:separator>·</:separator>
     </.timer>
     """
   end
