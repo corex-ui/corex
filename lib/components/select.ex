@@ -5,7 +5,7 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through `Corex.Gettext` at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
+  The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through the host Phoenix gettext backend at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
 
   ### Minimal
 

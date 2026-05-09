@@ -268,6 +268,7 @@ defmodule Corex.MixProject do
         Corex.PasswordInput.Translation,
         Corex.PinInput.Translation,
         Corex.Select.Translation,
+        Corex.Timer.Translation,
         Corex.Toast.Translation
       ]
     ]

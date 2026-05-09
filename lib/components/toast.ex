@@ -41,8 +41,8 @@ defmodule Corex.Toast do
 
   ## Flash Messages
   You can use the `flash` attribute to display flash messages as toasts.
-  You can use `%Corex.Flash.Info{}' and `%Corex.Flash.Error{}' to configure the flash messages title, type and duration.
-  The descritpion will come from the Phoenix flash message
+  Optional `flash_info` and `flash_error` accept maps with atom keys `title`, `type`, and `duration` for defaults when rendering info and error flashes.
+  The description comes from the Phoenix flash message.
 
   ```heex
 
@@ -50,8 +50,8 @@ defmodule Corex.Toast do
   id="layout-toast"
   class="toast"
   flash={@flash}
-  flash_info={%Corex.Flash.Info{title: "Success", type: :success, duration: 5000}}
-  flash_error={%Corex.Flash.Error{title: "Error", type: :error, duration: :infinity}}/>
+  flash_info={%{title: "Success", type: :success, duration: 5000}}
+  flash_error={%{title: "Error", type: :error, duration: :infinity}}/>
   ```
 
   ## Styling
@@ -110,16 +110,16 @@ defmodule Corex.Toast do
 
   ## Flash Messages
   You can use the `flash` attribute to display flash messages as toasts.
-  You can use `%Corex.Flash.Info{}' and `%Corex.Flash.Error{}' to configure the flash messages title, type and duration.
-  The descritpion will come from the Phoenix flash message
+  Optional `flash_info` and `flash_error` accept maps with atom keys `title`, `type`, and `duration` for defaults when rendering info and error flashes.
+  The description comes from the Phoenix flash message.
 
   ```heex
   <.toast_group
   id="layout-toast"
   class="toast"
   flash={@flash}
-  flash_info={%Corex.Flash.Info{title: "Success", type: :success, duration: 5000}}
-  flash_error={%Corex.Flash.Error{title: "Error", type: :error, duration: :infinity}}/>
+  flash_info={%{title: "Success", type: :success, duration: 5000}}
+  flash_error={%{title: "Error", type: :error, duration: :infinity}}/>
   ```
 
   """
@@ -138,12 +138,14 @@ defmodule Corex.Toast do
   attr(:pause_on_page_idle, :boolean, default: false, doc: "Pause duration when page is idle")
   attr(:flash, :map, default: %{}, doc: "The map of flash messages to display as toasts")
 
-  attr(:flash_info, Flash.Info,
-    doc: "configuration for info flash messages (Corex.Flash.Info struct)"
+  attr(:flash_info, :any,
+    default: nil,
+    doc: "Defaults for info flashes: map or struct with title, type, and duration keys"
   )
 
-  attr(:flash_error, Flash.Error,
-    doc: "configuration for error flash messages (Corex.Flash.Error struct)"
+  attr(:flash_error, :any,
+    default: nil,
+    doc: "Defaults for error flashes: map or struct with title, type, and duration keys"
   )
 
   attr(:translation, Corex.Toast.Translation,

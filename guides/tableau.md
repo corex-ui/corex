@@ -520,7 +520,7 @@ defmodule MyApp.Gettext do
 end
 ```
 
-In **`config/config.exs`**, wire Corex to the host catalog via **Phoenix** (see **`Corex.Gettext`** — it reads `Application.get_env(:phoenix, :gettext_backend)`), set JSON for Phoenix, and declare **Localize** supported locales (must use literals or fixed atoms here: config is evaluated before your app modules are compiled, so you cannot call `Gettext.known_locales/1` from this file):
+In **`config/config.exs`**, wire Corex to the host catalog via **Phoenix**. Corex resolves the host Gettext backend from `Application.get_env(:phoenix, :gettext_backend)` at render time. Set JSON for Phoenix, and declare **Localize** supported locales (must use literals or fixed atoms here: config is evaluated before your app modules are compiled, so you cannot call `Gettext.known_locales/1` from this file):
 
 ```elixir
 config :phoenix,
@@ -711,9 +711,9 @@ Edit **`priv/gettext/<locale>/LC_MESSAGES/default.po`** and fill in the **`msgst
 
 ## 9. MCP via Bandit (optional)
 
-**`mix corex.new`** for Phoenix wires **`plug Corex.MCP`** directly into the endpoint. Tableau builds static HTML and has no endpoint, so MCP runs as a **separate Bandit child** in the application supervisor on a dedicated port (default **`4004`**).
+**`mix corex.new`** for Phoenix wires the **MCP plug** directly into the endpoint (`plug` line in the snippet below). Tableau builds static HTML and has no endpoint, so MCP runs as a **separate Bandit child** in the application supervisor on a dedicated port (default **`4004`**).
 
-For what **`Corex.MCP`** exposes and how it's used by AI tools, see [MCP](mcp.html).
+For what that plug exposes and how it is used by AI tools, see [MCP](mcp.html).
 
 ### 9.1. The plug
 
@@ -736,7 +736,7 @@ defmodule MyApp.McpPlug do
 end
 ```
 
-**`Corex.MCP`** halts the conn for the routes it handles; the **`:not_found`** fallback returns a 404 for everything else so the Bandit child doesn't sit silent on unrelated paths.
+The **MCP plug** halts the conn for the routes it handles; the **`:not_found`** fallback returns a 404 for everything else so the Bandit child doesn't sit silent on unrelated paths.
 
 ### 9.2. The supervisor child
 
@@ -797,4 +797,4 @@ After **`mix compile`** and your usual Tableau asset build (for example **`mix t
 - [Manual installation](manual_installation.html) — Esbuild details, **`mix corex.design`**, **`type="module"`**, **`use Corex`**, toasts, MCP, and Phoenix-only layout notes.
 - [Dark mode](dark_mode.html) and [Theming](theming.html) — Phoenix-flow equivalents of §7 with cookies + plugs.
 - [Localize](localize.html) — Phoenix-flow equivalent of §8 with **`localize_web`** plugs and **`localize do … end`**.
-- [MCP](mcp.html) — what **`Corex.MCP`** does and the standard Phoenix-pipeline integration.
+- [MCP](mcp.html) — what the **MCP plug** does and the standard Phoenix-pipeline integration.
