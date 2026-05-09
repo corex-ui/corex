@@ -18,7 +18,9 @@ defmodule Corex.Checkbox.Connect do
       checkbox_checked_controlled_attr: 2,
       checkbox_checked_default_attr: 2,
       checkbox_native_checked: 1,
-      checkbox_visual_state: 1
+      checkbox_visual_state: 1,
+      maybe_put_data_dir: 2,
+      maybe_put_dir: 2
     ]
 
   alias Phoenix.LiveView.JS
@@ -35,7 +37,6 @@ defmodule Corex.Checkbox.Connect do
       "data-value" => assigns.value,
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
       "data-read-only" => get_boolean(assigns.read_only),
@@ -44,6 +45,7 @@ defmodule Corex.Checkbox.Connect do
       "data-on-checked-change" => assigns.on_checked_change,
       "data-on-checked-change-client" => assigns.on_checked_change_client
     }
+    |> maybe_put_data_dir(assigns.dir)
   end
 
   @spec root(Root.t()) :: map()
@@ -55,12 +57,12 @@ defmodule Corex.Checkbox.Connect do
       "data-scope" => "checkbox",
       "data-part" => "root",
       "data-orientation" => orientation,
-      "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}",
       "htmlFor" => "checkbox:#{assigns.id}:input",
       "for" => "checkbox:#{assigns.id}:input",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -104,10 +106,10 @@ defmodule Corex.Checkbox.Connect do
       "data-part" => "control",
       "data-orientation" => orientation,
       "aria-hidden" => "true",
-      "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:control",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_control(assigns) do
@@ -125,10 +127,10 @@ defmodule Corex.Checkbox.Connect do
       "data-scope" => "checkbox",
       "data-part" => "label",
       "data-orientation" => orientation,
-      "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:label",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_label(assigns) do
@@ -146,10 +148,10 @@ defmodule Corex.Checkbox.Connect do
       "data-scope" => "checkbox",
       "data-part" => "indicator",
       "data-orientation" => orientation,
-      "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:indicator",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_indicator(assigns) do
@@ -167,10 +169,10 @@ defmodule Corex.Checkbox.Connect do
       "data-scope" => "checkbox",
       "data-part" => "indeterminate",
       "data-orientation" => orientation,
-      "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:indeterminate",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_indeterminate(assigns) do

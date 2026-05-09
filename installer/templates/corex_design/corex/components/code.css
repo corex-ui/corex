@@ -24,29 +24,34 @@
     background-attachment: local;
     background-position: 0 0;
 
-    & code {
+    & code[data-part="content"] {
       padding-inline-end: --spacing(11);
+      white-space: pre-wrap;
     }
   }
 
   code.code {
-    display: inline-flex;
-    width: fit-content;
+    display: inline-block;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    padding-inline: var(--spacing-space);
+    overflow: visible;
+    vertical-align: baseline;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    font-family: var(--font-code);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    padding-inline: var(--spacing-space-sm);
+    padding-block: 0.12em;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    justify-content: start;
-    align-items: start;
-    white-space: wrap;
-    overflow-wrap: break-word;
-    flex-wrap: wrap;
+    background-color: var(--color-layer);
+    color: var(--color-ink);
     user-select: all;
+  }
+
+  code.code > span[data-part="content"] {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
   }
 
   pre.code.unselectable,
@@ -147,6 +152,11 @@
   line-height: --value(--text-*--line-height, [length]);
 
   &:is(pre) > code[data-part="content"] {
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  &:is(code.code) > span[data-part="content"] {
     font-size: inherit;
     line-height: inherit;
   }

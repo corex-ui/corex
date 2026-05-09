@@ -484,8 +484,8 @@ defmodule Corex.TreeView do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "The direction of the tree."
   )
 
@@ -938,14 +938,7 @@ defmodule Corex.TreeView do
   end
 
   def tree_branch(assigns) do
-    branch =
-      case assigns.row do
-        %Branch{} = b ->
-          %Branch{b | animation: assigns.animation}
-
-        m when is_map(m) ->
-          struct(Branch, Map.put(m, :animation, assigns.animation))
-      end
+    branch = Branch.with_animation(assigns.row, assigns.animation)
 
     assigns = assign(assigns, :branch_connect, branch)
 

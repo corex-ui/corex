@@ -121,7 +121,6 @@ defmodule Corex.Code do
 
     assigns =
       assigns
-      |> assign(:lexer, lexer_for(assigns.language))
       |> then(&assign(&1, :highlighted_html, highlight_code(&1)))
 
     ~H"""
@@ -140,26 +139,19 @@ defmodule Corex.Code do
     """
   end
 
-  defp lexer_for(language) do
-    name = to_string(language)
+  defp highlight_code(assigns) do
+    name = to_string(assigns.language)
     registry = Module.concat(["Elixir", "Makeup", "Registry"])
+    makeup = Module.concat(["Elixir", "Makeup"])
 
     case registry.fetch_lexer_by_name(name) do
-      {:ok, {lexer, _opts}} -> lexer
-      :error -> nil
-    end
-  end
+      {:ok, _} ->
+        makeup.highlight_inner_html(assigns.code, lexer: name)
 
-  defp highlight_code(assigns) do
-    case assigns.lexer do
-      nil ->
+      :error ->
         assigns.code
         |> Phoenix.HTML.html_escape()
         |> Phoenix.HTML.safe_to_string()
-
-      lexer ->
-        makeup = Module.concat(["Elixir", "Makeup"])
-        makeup.highlight_inner_html(assigns.code, lexer: lexer)
     end
   end
 end

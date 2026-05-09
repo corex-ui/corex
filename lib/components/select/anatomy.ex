@@ -28,7 +28,8 @@ defmodule Corex.Select.Anatomy do
       on_value_change_client: nil,
       redirect: false,
       positioning: nil,
-      deselectable: false
+      deselectable: false,
+      update_trigger: true
     ]
 
     @type t :: %__MODULE__{
@@ -52,7 +53,8 @@ defmodule Corex.Select.Anatomy do
             on_value_change_client: String.t() | nil,
             redirect: boolean(),
             positioning: Corex.Positioning.t() | nil,
-            deselectable: boolean()
+            deselectable: boolean(),
+            update_trigger: boolean()
           }
   end
 
@@ -272,7 +274,6 @@ defmodule Corex.Select.Anatomy do
 
     @ignored_attrs [
       "id",
-      "value",
       "data-orientation",
       "dir",
       "name",

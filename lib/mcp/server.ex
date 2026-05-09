@@ -21,7 +21,7 @@ defmodule Corex.MCP.Server do
     |> List.flatten()
   end
 
-  @doc false
+  @doc "Loads tool specs and callbacks into `:corex_mcp_tools` ETS."
   def init_tools do
     tools = raw_tools()
     dispatch_map = Map.new(tools, fn tool -> {tool.name, tool.callback} end)
@@ -39,7 +39,7 @@ defmodule Corex.MCP.Server do
     :ok
   end
 
-  @doc false
+  @doc "Returns the stored `{tools, dispatch}` tuple from ETS."
   def tools_and_dispatch do
     [{:tools, tools}] = :ets.lookup(:corex_mcp_tools, :tools)
     tools
@@ -335,7 +335,7 @@ defmodule Corex.MCP.Server do
     |> send_resp(200, Corex.Json.encode!(response))
   end
 
-  @doc false
+  @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do
     :ok = init_tools()
     Logger.info("Received #{conn.method} message")

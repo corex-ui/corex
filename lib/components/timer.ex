@@ -2,6 +2,8 @@ defmodule Corex.Timer do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Timer](https://zagjs.com/components/react/timer).
 
+  Countdown-only leading-zero collapse (hide unused day/hour columns) is **on by default** when `countdown` is true. Override with `collapse_leading_zeros={false}` or with fixed `segments`.
+
   ## Examples
 
   ### Basic
@@ -18,7 +20,7 @@ defmodule Corex.Timer do
   ### Countdown
 
   ```heex
-  <.timer id="t" countdown start_ms={90_000} target_ms={0} auto_start class="timer">
+  <.timer id="t" countdown start_ms={90_000} target_ms={0} class="timer">
     <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
     <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
     <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
@@ -26,31 +28,58 @@ defmodule Corex.Timer do
   </.timer>
   ```
 
-  Required slots: `:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`.
+  ### Fixed segments (always four columns)
+
+  ```heex
+  <.timer id="t" countdown start_ms={@ms} segments={[:days, :hours, :minutes, :seconds]} class="timer" />
+  ```
+
+  ### Separator slot
+
+  Omit `:separator` to render nothing between digit columns. Pass it to supply markup (for example `:` or `·`) between segments.
+
+  ```heex
+  <.timer id="t" start_ms={60_000} class="timer">
+    <:separator>·</:separator>
+  </.timer>
+  ```
+
+  ### Region label (a11y)
+
+  ```heex
+  <.timer id="t" translation={%Corex.Timer.Translation{area_label: "Countdown"}} class="timer" />
+  ```
+
+  ### Unit labels (optional)
+
+  Per-column caption under each digit cell (stacked column). Omit a slot to hide that unit’s label.
+
+  ```heex
+  <.timer id="t" countdown start_ms={@ms} target_ms={0} class="timer">
+    <:day_label>Days</:day_label>
+    <:hour_label>Hours</:hour_label>
+    <:minute_label>Minutes</:minute_label>
+    <:second_label>Seconds</:second_label>
+  </.timer>
+  ```
+
+  Action slots (`:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`) are optional.
 
   ## Styling
-
-  Use data attributes to target elements:
 
   ```css
   [data-scope="timer"][data-part="root"] {}
   [data-scope="timer"][data-part="area"] {}
+  [data-scope="timer"][data-part="item-label"] {}
   [data-scope="timer"][data-part="item"] {}
   [data-scope="timer"][data-part="separator"] {}
   [data-scope="timer"][data-part="control"] {}
   [data-scope="timer"][data-part="action-trigger"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `timer` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/timer.css";
   ```
-
-  You can then use modifiers
 
   ```heex
   <.timer class="timer timer--accent timer--lg">
@@ -62,23 +91,54 @@ defmodule Corex.Timer do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, Props, Root, Separator}
+  alias Corex.Timer.Anatomy.{
+    ActionTrigger,
+    Area,
+    Control,
+    Item,
+    ItemLabel,
+    Props,
+    Root,
+    Segment,
+    Separator
+  }
+
   alias Corex.Timer.Connect
+  alias Corex.Timer.Translation, as: TimerTranslation
+
+  @parts [:days, :hours, :minutes, :seconds]
 
   attr(:id, :string, required: false)
   attr(:countdown, :boolean, default: false)
   attr(:start_ms, :integer, default: 0)
   attr(:target_ms, :integer, default: nil)
-  attr(:auto_start, :boolean, default: false)
+  attr(:auto_start, :boolean, default: true)
   attr(:interval, :integer, default: 1000)
   attr(:on_tick, :string, default: nil)
   attr(:on_tick_client, :string, default: nil)
   attr(:on_complete, :string, default: nil)
   attr(:on_complete_client, :string, default: nil)
 
+  attr(:collapse_leading_zeros, :boolean,
+    default: nil,
+    doc:
+      "When nil and countdown without fixed segments, leading zero units are hidden (minimum minutes and seconds visible)."
+  )
+
+  attr(:segments, :list,
+    default: nil,
+    doc:
+      "Fixed subset of [:days, :hours, :minutes, :seconds] in natural order; disables collapse when set."
+  )
+
+  attr(:translation, TimerTranslation,
+    default: nil,
+    doc: "Zag timer translations; supports area_label for the timer region aria-label."
+  )
+
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "Text direction for styling; nil follows the document."
   )
 
@@ -90,79 +150,249 @@ defmodule Corex.Timer do
 
   attr(:rest, :global)
 
-  slot :start_trigger, required: true do
+  slot(:separator, required: false)
+
+  slot(:day_label, required: false)
+  slot(:hour_label, required: false)
+  slot(:minute_label, required: false)
+  slot(:second_label, required: false)
+
+  slot :start_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :pause_trigger, required: true do
+  slot :pause_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :resume_trigger, required: true do
+  slot :resume_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :reset_trigger, required: true do
+  slot :reset_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
   def timer(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+    segments = normalize_segments(assigns.segments)
+    time_values = time_values(assigns.start_ms)
+
+    visibility_hidden =
+      visibility_hidden(
+        assigns.countdown,
+        assigns.collapse_leading_zeros,
+        segments,
+        time_values
+      )
+
     assigns =
       assigns
-      |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
-      |> assign(:time_values, time_values(assigns.start_ms))
+      |> assign(:time_values, time_values)
       |> assign(:running, assigns.auto_start)
       |> assign(:paused, false)
+      |> assign(:segments, segments)
+      |> assign(
+        :has_timer_controls?,
+        assigns.start_trigger != [] or assigns.pause_trigger != [] or assigns.resume_trigger != [] or
+          assigns.reset_trigger != []
+      )
+      |> assign(:visibility_hidden, visibility_hidden)
+      |> assign(:props_struct, props_struct(assigns, segments))
 
     ~H"""
     <div
       id={@id}
       phx-hook="Timer"
-      data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        countdown: @countdown,
-        start_ms: @start_ms,
-        target_ms: @target_ms,
-        auto_start: @auto_start,
-        interval: @interval,
-        on_tick: @on_tick,
-        on_tick_client: @on_tick_client,
-        on_complete: @on_complete,
-        on_complete_client: @on_complete_client,
-        dir: @dir,
-        orientation: @orientation
-      })}
+      {Connect.props(@props_struct)}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
         <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, orientation: @orientation})}>
-          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "days", value: @time_values.days, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "days", value: @time_values.days, dir: @dir, orientation: @orientation})}></div>
-          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:0", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:0", dir: @dir, orientation: @orientation})}>:</div>
-          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "hours", value: @time_values.hours, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "hours", value: @time_values.hours, dir: @dir, orientation: @orientation})}></div>
-          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:1", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:1", dir: @dir, orientation: @orientation})}>:</div>
-          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "minutes", value: @time_values.minutes, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "minutes", value: @time_values.minutes, dir: @dir, orientation: @orientation})}></div>
-          <div phx-mounted={Connect.ignore_separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})} {Connect.separator(%Separator{id: "timer:#{@id}:sep:2", dir: @dir, orientation: @orientation})}>:</div>
-          <div phx-mounted={Connect.ignore_item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, type: "seconds", value: @time_values.seconds, dir: @dir, orientation: @orientation})}></div>
+          <%= for {part, i} <- Enum.with_index([:days, :hours, :minutes, :seconds]) do %>
+            <% hv = Enum.at(@visibility_hidden, i) %>
+            <% ls = label_slot(assigns, part) %>
+            <div
+              phx-mounted={Connect.ignore_segment(%Segment{id: @id, type: to_string(part), hidden: hv})}
+              {Connect.segment(%Segment{id: @id, type: to_string(part), hidden: hv})}
+            >
+              <div
+                phx-mounted={Connect.ignore_item(%Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv})}
+                {Connect.item(%Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv})}
+              >
+              </div>
+              <%= if ls != [] do %>
+                <span
+                  phx-mounted={Connect.ignore_item_label(%ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation})}
+                  {Connect.item_label(%ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation})}
+                >
+                  {render_slot(ls)}
+                </span>
+              <% end %>
+            </div>
+            <%= if i < 3 and @separator != [] do %>
+              <% sh = Enum.at(@visibility_hidden, i) %>
+              <div
+                phx-mounted={
+                  Connect.ignore_separator(%Separator{
+                    id: "timer:#{@id}:sep:#{i}",
+                    dir: @dir,
+                    orientation: @orientation,
+                    hidden: sh
+                  })
+                }
+                {Connect.separator(%Separator{
+                  id: "timer:#{@id}:sep:#{i}",
+                  dir: @dir,
+                  orientation: @orientation,
+                  hidden: sh
+                })}
+              >
+                {render_slot(@separator)}
+              </div>
+            <% end %>
+          <% end %>
         </div>
-        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}>
+        <div
+          :if={@has_timer_controls?}
+          phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}
+        >
+          <button
+            :if={@start_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@start_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@pause_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@pause_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@resume_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@resume_trigger)}
           </button>
-          <button type="button" phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})} {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}>
+          <button
+            :if={@reset_trigger != []}
+            type="button"
+            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
+            {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@reset_trigger)}
           </button>
         </div>
       </div>
     </div>
     """
+  end
+
+  defp label_slot(assigns, :days), do: assigns.day_label
+  defp label_slot(assigns, :hours), do: assigns.hour_label
+  defp label_slot(assigns, :minutes), do: assigns.minute_label
+  defp label_slot(assigns, :seconds), do: assigns.second_label
+
+  defp props_struct(assigns, segments) do
+    %Props{
+      id: assigns.id,
+      countdown: assigns.countdown,
+      start_ms: assigns.start_ms,
+      target_ms: assigns.target_ms,
+      auto_start: assigns.auto_start,
+      interval: assigns.interval,
+      on_tick: assigns.on_tick,
+      on_tick_client: assigns.on_tick_client,
+      on_complete: assigns.on_complete,
+      on_complete_client: assigns.on_complete_client,
+      dir: assigns.dir,
+      orientation: assigns.orientation,
+      collapse_leading_zeros: assigns.collapse_leading_zeros,
+      segments: segments,
+      translation: assigns.translation
+    }
+  end
+
+  defp normalize_segments(nil), do: nil
+
+  defp normalize_segments([]) do
+    raise ArgumentError, "Corex.Timer: segments must not be empty when provided"
+  end
+
+  defp normalize_segments(list) when is_list(list) do
+    allowed = MapSet.new(@parts)
+
+    unless MapSet.subset?(MapSet.new(list), allowed) do
+      raise ArgumentError, "Corex.Timer: segments must be a subset of #{inspect(@parts)}"
+    end
+
+    idx = fn atom -> Enum.find_index(@parts, &(&1 == atom)) end
+
+    indexes =
+      list
+      |> Enum.map(fn a ->
+        case idx.(a) do
+          nil -> raise ArgumentError, "Corex.Timer: invalid segment #{inspect(a)}"
+          i -> i
+        end
+      end)
+
+    unless indexes == Enum.sort(indexes) do
+      raise ArgumentError, "Corex.Timer: segments must follow order #{inspect(@parts)}"
+    end
+
+    list
+  end
+
+  defp visibility_hidden(_countdown, _collapse_opt, segments, _time_values)
+       when is_list(segments) do
+    Enum.map(@parts, fn atom -> atom not in segments end)
+  end
+
+  defp visibility_hidden(countdown, collapse_opt, nil, time_values) do
+    vals = Enum.map(@parts, &Map.fetch!(time_values, &1))
+
+    cond do
+      collapse_opt == false ->
+        [false, false, false, false]
+
+      collapse_opt == true ->
+        start_i = collapse_start_index(vals)
+        Enum.map(0..3, fn i -> i < start_i end)
+
+      countdown ->
+        start_i = collapse_start_index(vals)
+        Enum.map(0..3, fn i -> i < start_i end)
+
+      true ->
+        [false, false, false, false]
+    end
+  end
+
+  defp collapse_start_index(vals) do
+    collapse_start_index(vals, 0)
+  end
+
+  defp collapse_start_index(_vals, idx) when idx > 2 do
+    idx
+  end
+
+  defp collapse_start_index(vals, idx) do
+    rest_after = length(vals) - idx
+
+    if idx < 3 && Enum.at(vals, idx) == 0 && rest_after > 2 do
+      collapse_start_index(vals, idx + 1)
+    else
+      idx
+    end
   end
 
   @doc type: :component
@@ -176,13 +406,21 @@ defmodule Corex.Timer do
     <div id={@id} {@rest}>
       <div {Connect.root(%Root{id: @id, dir: "ltr", orientation: "horizontal"})}>
         <div {Connect.area(%Area{id: @id, dir: "ltr", orientation: "horizontal"})}>
-          <div {Connect.item(%Item{id: @id, type: "days", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.segment(%Segment{id: @id, type: "days", hidden: false})}>
+            <div {Connect.item(%Item{id: @id, type: "days", value: 0, dir: "ltr", orientation: "horizontal", hidden: false})}></div>
+          </div>
           <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:0", dir: "ltr", orientation: "horizontal"})}>:</div>
-          <div {Connect.item(%Item{id: @id, type: "hours", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.segment(%Segment{id: @id, type: "hours", hidden: false})}>
+            <div {Connect.item(%Item{id: @id, type: "hours", value: 0, dir: "ltr", orientation: "horizontal", hidden: false})}></div>
+          </div>
           <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:1", dir: "ltr", orientation: "horizontal"})}>:</div>
-          <div {Connect.item(%Item{id: @id, type: "minutes", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.segment(%Segment{id: @id, type: "minutes", hidden: false})}>
+            <div {Connect.item(%Item{id: @id, type: "minutes", value: 0, dir: "ltr", orientation: "horizontal", hidden: false})}></div>
+          </div>
           <div {Connect.separator(%Separator{id: "timer:#{@id}:sep:2", dir: "ltr", orientation: "horizontal"})}>:</div>
-          <div {Connect.item(%Item{id: @id, type: "seconds", value: 0, dir: "ltr", orientation: "horizontal"})}></div>
+          <div {Connect.segment(%Segment{id: @id, type: "seconds", hidden: false})}>
+            <div {Connect.item(%Item{id: @id, type: "seconds", value: 0, dir: "ltr", orientation: "horizontal", hidden: false})}></div>
+          </div>
         </div>
         <div {Connect.control(%Control{id: @id, dir: "ltr", orientation: "horizontal"})}>
           <div class="timer-skeleton__btn" data-scope="timer" data-part="action-trigger" aria-hidden="true"></div>

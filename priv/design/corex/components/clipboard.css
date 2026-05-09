@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .clipboard[data-loading] [data-scope="clipboard"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .clipboard {
     width: fit-content;
   }

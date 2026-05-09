@@ -163,7 +163,6 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     if (this.listbox) {
       this.listbox.hasGroups = hasGroups;
       this.listbox.setOptions(newItems);
-      this.listbox.render();
       this.listbox.updateProps({
         ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
         collection: this.listbox.getCollection(),

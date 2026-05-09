@@ -181,8 +181,8 @@ defmodule Corex.Collapsible do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the collapsible. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -303,8 +303,8 @@ defmodule Corex.Collapsible do
   end
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "Same as collapsible: logical direction for the skeleton root."
   )
 

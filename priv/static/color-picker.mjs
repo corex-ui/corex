@@ -1,7 +1,4 @@
 import {
-  readPositioningOptions
-} from "./chunks/chunk-4EUE6P2Z.mjs";
-import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-RJABPW5C.mjs";
@@ -9,6 +6,9 @@ import {
   trackDismissableElement
 } from "./chunks/chunk-ZZR3S6PP.mjs";
 import "./chunks/chunk-K2P3QAIZ.mjs";
+import {
+  readPositioningOptions
+} from "./chunks/chunk-6QZYI6OY.mjs";
 import {
   clampValue,
   getPercentValue,

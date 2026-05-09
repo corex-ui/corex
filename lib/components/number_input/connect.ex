@@ -21,13 +21,31 @@ defmodule Corex.NumberInput.Connect do
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
+  defp value_attr(nil), do: nil
+  defp value_attr(v), do: to_string(v)
+
+  defp controlled_value_str(%{controlled: true} = assigns) do
+    case assigns.value do
+      nil -> ""
+      v -> to_string(v)
+    end
+  end
+
+  defp controlled_value_str(_), do: nil
+
+  defp uncontrolled_default_str(%{controlled: false} = assigns) do
+    value_attr(assigns.default_value || assigns.value)
+  end
+
+  defp uncontrolled_default_str(_), do: nil
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    default_value = assigns.default_value || assigns.value
-
     %{
       "id" => assigns.id,
-      "data-default-value" => default_value,
+      "data-controlled" => get_boolean(assigns.controlled),
+      "data-value" => controlled_value_str(assigns),
+      "data-default-value" => uncontrolled_default_str(assigns),
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
@@ -40,7 +58,7 @@ defmodule Corex.NumberInput.Connect do
       "data-form" => assigns.form,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -87,7 +105,7 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "root",
       "id" => "number-input:#{assigns.id}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -99,7 +117,7 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "label",
       "id" => "number-input:#{assigns.id}:label",
       "for" => "number-input:#{assigns.id}:input",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -110,7 +128,7 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "control",
       "id" => "number-input:#{assigns.id}:control",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -120,7 +138,7 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "trigger-group",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -132,7 +150,7 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "input",
       "disabled" => get_boolean(assigns.disabled),
       "id" => "number-input:#{assigns.id}:input",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -145,7 +163,7 @@ defmodule Corex.NumberInput.Connect do
       "type" => "button",
       "id" => "number-input:#{assigns.id}:dec",
       "aria-label" => assigns.aria_label,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end
@@ -158,7 +176,7 @@ defmodule Corex.NumberInput.Connect do
       "type" => "button",
       "id" => "number-input:#{assigns.id}:inc",
       "aria-label" => assigns.aria_label,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
   end

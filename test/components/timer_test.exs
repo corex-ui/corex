@@ -1,6 +1,9 @@
 defmodule Corex.TimerTest do
   use CorexTest.ComponentCase, async: true
 
+  import Phoenix.Component
+  import Corex.Timer, only: [timer: 1]
+
   alias Corex.Timer.Connect
 
   describe "timer/1" do
@@ -8,6 +11,29 @@ defmodule Corex.TimerTest do
       html = render_component(&CorexTest.ComponentHelpers.render_timer/1, [])
       assert html =~ ~r/data-scope="timer"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ "data-auto-start"
+    end
+
+    test "omits auto_start attribute when false" do
+      html = render_component(&CorexTest.ComponentHelpers.render_timer_paused/1, [])
+      refute html =~ "data-auto-start"
+    end
+
+    test "omits separator markup when separator slot is absent" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <.timer id="no-sep" start_ms={60_000}>
+            </.timer>
+            """
+          end,
+          %{}
+        )
+
+      refute html =~ ~s(data-part="separator")
     end
   end
 

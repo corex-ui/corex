@@ -21,27 +21,14 @@ defmodule Corex.Select.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    joined = if vlist == [], do: nil, else: Enum.map_join(vlist, ",", &to_string/1)
-
-    value_str =
-      if assigns.controlled and joined do
-        joined
-      else
-        nil
-      end
-
-    default_value_str =
-      if not assigns.controlled and joined do
-        joined
-      else
-        nil
-      end
+    joined = joined_csv_values(vlist)
+    {value_str, default_value_str} = controlled_dataset_values(assigns.controlled, joined)
 
     base = %{
       "id" => assigns.id,
@@ -59,16 +46,35 @@ defmodule Corex.Select.Connect do
       "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
-      "data-dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 
     base
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
+    |> merge_optional_select_props(assigns)
+    |> maybe_put_data_dir(assigns.dir)
+  end
+
+  defp joined_csv_values([]), do: nil
+
+  defp joined_csv_values(vlist) do
+    Enum.map_join(vlist, ",", &to_string/1)
+  end
+
+  defp controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
+  defp controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
+  defp controlled_dataset_values(_controlled, _joined), do: {nil, nil}
+
+  defp merge_optional_select_props(base, assigns) do
+    base
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
     |> maybe_put("data-deselectable", get_boolean(Map.get(assigns, :deselectable)))
+    |> maybe_put(
+      "data-update-trigger",
+      if(Map.get(assigns, :update_trigger, true), do: nil, else: "false")
+    )
   end
 
   defp sort_items_by_group(items) do
@@ -84,17 +90,17 @@ defmodule Corex.Select.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     orientation = Map.get(assigns, :orientation, "vertical")
-    dir = Map.get(assigns, :dir, "ltr")
+    dir = Map.get(assigns, :dir)
 
     %{
       "data-scope" => "select",
       "data-part" => "root",
       "data-orientation" => orientation,
-      "dir" => dir,
       "id" => "select:#{assigns.id}",
       "data-invalid" => get_boolean(assigns.invalid),
       "data-readonly" => get_boolean(assigns.read_only)
     }
+    |> maybe_put_dir(dir)
   end
 
   def ignore_root(assigns) do

@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .menu[data-loading] [data-scope="menu"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .menu [data-scope="menu"][data-part="content"] {
     @apply ui-content;
 

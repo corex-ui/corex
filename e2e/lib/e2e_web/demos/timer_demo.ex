@@ -1,24 +1,62 @@
 defmodule E2eWeb.Demos.TimerDemo do
   use E2eWeb, :html
 
+  def anatomy_minimal_code do
+    ~S"""
+    <.timer id="timer-anatomy-minimal" start_ms={60_000} class="timer" />
+    """
+  end
+
+  def anatomy_minimal_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer id="timer-anatomy-minimal" start_ms={60_000} class="timer" />
+    """
+  end
+
+  def anatomy_with_triggers_code do
+    ~S"""
+    <.timer id="timer-anatomy-controls" start_ms={60_000} class="timer">
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
+    </.timer>
+    """
+  end
+
+  def anatomy_with_triggers_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer id="timer-anatomy-controls" start_ms={60_000} class="timer">
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+    </.timer>
+    """
+  end
+
   def anatomy_countdown_code do
     ~S"""
-    <.timer id="timer-anatomy" countdown start_ms={60_000} target_ms={0} class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+    <.timer id="timer-anatomy-countdown" countdown start_ms={60_000} target_ms={0} class="timer">
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
 
   def anatomy_countdown_example(assigns) do
     ~H"""
-    <.timer id="timer-anatomy" countdown start_ms={60_000} target_ms={0} class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+    <.timer id="timer-anatomy-countdown" countdown start_ms={60_000} target_ms={0} class="timer">
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -26,10 +64,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def anatomy_timing_code do
     ~S"""
     <.timer id="timer-anatomy-interval" start_ms={60_000} interval={2000} auto_start class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
@@ -39,34 +77,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <.timer id="timer-anatomy-interval" start_ms={60_000} interval={2000} auto_start class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-    </.timer>
-    """
-  end
-
-  def anatomy_direction_code do
-    ~S"""
-    <.timer id="timer-anatomy-dir" start_ms={0} target_ms={30_000} dir="rtl" class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-    </.timer>
-    """
-  end
-
-  def anatomy_direction_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <.timer id="timer-anatomy-dir" start_ms={0} target_ms={30_000} dir="rtl" class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -84,10 +98,10 @@ defmodule E2eWeb.Demos.TimerDemo do
       on_complete="timer_complete"
       on_complete_client="timer-complete"
     >
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
@@ -103,10 +117,10 @@ defmodule E2eWeb.Demos.TimerDemo do
       on_tick="timer_tick"
       on_complete="timer_complete"
     >
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
@@ -122,10 +136,10 @@ defmodule E2eWeb.Demos.TimerDemo do
       on_tick_client="timer-tick"
       on_complete_client="timer-complete"
     >
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
@@ -242,10 +256,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <.timer id="timer-api-tpl-countdown" countdown start_ms={60_000} target_ms={0} class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -255,10 +269,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <.timer id="timer-api-tpl-timing" start_ms={60_000} interval={2000} auto_start class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -268,10 +282,10 @@ defmodule E2eWeb.Demos.TimerDemo do
 
     ~H"""
     <.timer id="timer-api-tpl-direction" start_ms={0} target_ms={30_000} dir="rtl" class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -293,10 +307,10 @@ defmodule E2eWeb.Demos.TimerDemo do
     ~S"""
     <.action phx-click="timer_api_remount" class="button button--sm">Remount</.action>
     <.timer id="timer-api-remount" countdown start_ms={45_000} target_ms={0} class="timer">
-      <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
     </.timer>
     """
   end
@@ -332,10 +346,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-md"
@@ -344,10 +358,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-lg"
@@ -356,10 +370,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-xl"
@@ -368,10 +382,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
     </div>
     """
@@ -398,10 +412,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-text-xl"
@@ -410,10 +424,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-text-2xl"
@@ -422,10 +436,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-text-4xl"
@@ -434,10 +448,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
     </div>
     """
@@ -465,10 +479,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-rounded-md"
@@ -477,10 +491,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-rounded-lg"
@@ -489,10 +503,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-rounded-xl"
@@ -501,10 +515,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-rounded-full"
@@ -513,76 +527,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-      </.timer>
-    </div>
-    """
-  end
-
-  def styling_max_width_code do
-    ~S"""
-    <.timer id="timer-style-max-2xs" class="timer w-full max-w-2xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer id="timer-style-max-md" class="timer w-full max-w-md" start_ms={60_000} target_ms={0} countdown />
-    <.timer id="timer-style-max-xl" class="timer w-full max-w-xl" start_ms={60_000} target_ms={0} countdown />
-    <.timer id="timer-style-max-2xl" class="timer w-full max-w-2xl" start_ms={60_000} target_ms={0} countdown />
-    """
-  end
-
-  def styling_max_width_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-col gap-4 w-full items-stretch">
-      <.timer
-        id="timer-style-max-2xs"
-        class="timer w-full max-w-2xs"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-max-md"
-        class="timer w-full max-w-md"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-max-xl"
-        class="timer w-full max-w-xl"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
-      </.timer>
-      <.timer
-        id="timer-style-max-2xl"
-        class="timer w-full max-w-2xl"
-        start_ms={60_000}
-        target_ms={0}
-        countdown
-      >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
     </div>
     """
@@ -591,8 +539,11 @@ defmodule E2eWeb.Demos.TimerDemo do
   def styling_mix_modifiers_code do
     ~S"""
     <.timer id="timer-style-mix-1" class="timer timer--sm timer--brand timer--rounded-lg w-full max-w-2xs" start_ms={60_000} target_ms={0} countdown />
-    <.timer id="timer-style-mix-2" class="timer timer--lg timer--accent timer--rounded-md w-full max-w-md" start_ms={60_000} target_ms={0} countdown />
-    <.timer id="timer-style-mix-3" class="timer timer--md timer--alert timer--text-lg w-full max-w-lg" start_ms={60_000} target_ms={0} countdown />
+    <.timer id="timer-style-mix-2" class="timer timer--lg timer--accent timer--rounded-md timer--text-xl w-full max-w-md" start_ms={60_000} target_ms={0} countdown />
+    <.timer id="timer-style-mix-3" class="timer timer--md timer--alert timer--text-lg timer--rounded-none w-full max-w-lg" start_ms={60_000} target_ms={0} countdown />
+    <.timer id="timer-style-mix-4" class="timer timer--xl timer--success timer--rounded-full timer--text-2xl w-full max-w-xl" start_ms={60_000} target_ms={0} countdown />
+    <.timer id="timer-style-mix-5" class="timer timer--sm timer--info timer--rounded-xl timer--text-sm w-full max-w-sm" start_ms={60_000} target_ms={0} countdown />
+    <.timer id="timer-style-mix-6" class="timer timer--md timer--brand timer--rounded-lg timer--text-base w-full max-w-xs mx-auto" start_ms={60_000} target_ms={0} countdown />
     """
   end
 
@@ -608,34 +559,70 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-mix-2"
-        class="timer timer--lg timer--accent timer--rounded-md w-full max-w-md"
+        class="timer timer--lg timer--accent timer--rounded-md timer--text-xl w-full max-w-md"
         start_ms={60_000}
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-style-mix-3"
-        class="timer timer--md timer--alert timer--text-lg w-full max-w-lg"
+        class="timer timer--md timer--alert timer--text-lg timer--rounded-none w-full max-w-lg"
         start_ms={60_000}
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-mix-4"
+        class="timer timer--xl timer--success timer--rounded-full timer--text-2xl w-full max-w-xl"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-mix-5"
+        class="timer timer--sm timer--info timer--rounded-xl timer--text-sm w-full max-w-sm"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
+      </.timer>
+      <.timer
+        id="timer-style-mix-6"
+        class="timer timer--md timer--brand timer--rounded-lg timer--text-base w-full max-w-xs mx-auto"
+        start_ms={60_000}
+        target_ms={0}
+        countdown
+      >
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
     </div>
     """
@@ -664,10 +651,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-c-ac"
@@ -676,10 +663,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-c-br"
@@ -688,10 +675,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-c-al"
@@ -700,10 +687,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-c-in"
@@ -712,10 +699,10 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
       <.timer
         id="timer-c-su"
@@ -724,12 +711,188 @@ defmodule E2eWeb.Demos.TimerDemo do
         target_ms={0}
         countdown
       >
-        <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-        <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-        <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-        <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+        <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+        <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+        <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+        <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
       </.timer>
     </div>
+    """
+  end
+
+  def anatomy_collapse_code do
+    ~S"""
+    <.timer
+      id="timer-anatomy-collapse"
+      countdown
+      start_ms={86_400_000 * 4 + 3_600_000 * 12}
+      target_ms={0}
+      class="timer"
+    />
+    """
+  end
+
+  def anatomy_collapse_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-anatomy-collapse"
+      countdown
+      start_ms={86_400_000 * 4 + 3_600_000 * 12}
+      target_ms={0}
+      class="timer"
+    />
+    """
+  end
+
+  def layout_segments_code do
+    ~S"""
+    <.timer
+      id="timer-segments-fixed"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    />
+    """
+  end
+
+  def layout_segments_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-segments-fixed"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    />
+    """
+  end
+
+  def layout_separator_code do
+    ~S"""
+    <.timer id="timer-separator-dot" start_ms={60_000} class="timer">
+      <:separator> · </:separator>
+    </.timer>
+    """
+  end
+
+  def layout_separator_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer id="timer-separator-dot" start_ms={60_000} class="timer">
+      <:separator>·</:separator>
+    </.timer>
+    """
+  end
+
+  def layout_translation_code do
+    ~S"""
+    <.timer
+      id="timer-translation"
+      countdown
+      start_ms={60_000}
+      target_ms={0}
+      class="timer"
+      translation={%Corex.Timer.Translation{area_label: "Countdown"}}
+    />
+    """
+  end
+
+  def layout_translation_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-translation"
+      countdown
+      start_ms={60_000}
+      target_ms={0}
+      class="timer"
+      translation={%Corex.Timer.Translation{area_label: "Countdown"}}
+    />
+    """
+  end
+
+  def layout_unit_labels_code do
+    ~S"""
+    <.timer
+      id="timer-unit-labels"
+      countdown
+      start_ms={86_400_000 + 3_600_000}
+      target_ms={0}
+      class="timer"
+    >
+      <:day_label>d</:day_label>
+      <:hour_label>h</:hour_label>
+      <:minute_label>m</:minute_label>
+      <:second_label>s</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_unit_labels_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-unit-labels"
+      countdown
+      start_ms={86_400_000 + 3_600_000}
+      target_ms={0}
+      class="timer"
+    >
+      <:day_label>d</:day_label>
+      <:hour_label>h</:hour_label>
+      <:minute_label>m</:minute_label>
+      <:second_label>s</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_separator_and_labels_code do
+    ~S"""
+    <.timer
+      id="timer-layout-separator-labels"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    >
+      <:separator>:</:separator>
+      <:day_label>Days</:day_label>
+      <:hour_label>Hours</:hour_label>
+      <:minute_label>Minutes</:minute_label>
+      <:second_label>Seconds</:second_label>
+    </.timer>
+    """
+  end
+
+  def layout_separator_and_labels_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.timer
+      id="timer-layout-separator-labels"
+      countdown
+      start_ms={86_400_000 * 2 + 3_600_000}
+      target_ms={0}
+      class="timer"
+      segments={[:days, :hours, :minutes, :seconds]}
+    >
+      <:separator>:</:separator>
+      <:day_label>Days</:day_label>
+      <:hour_label>Hours</:hour_label>
+      <:minute_label>Minutes</:minute_label>
+      <:second_label>Seconds</:second_label>
+    </.timer>
     """
   end
 end

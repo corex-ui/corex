@@ -37,7 +37,7 @@ defmodule Corex.FileUpload.Connect do
       "data-required" => get_boolean(assigns.required),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-max-files" => Integer.to_string(assigns.max_files),
       "data-allow-drop" => if(assigns.allow_drop, do: "true", else: "false"),
       "data-prevent-document-drop" =>
@@ -100,7 +100,7 @@ defmodule Corex.FileUpload.Connect do
     %{
       "data-scope" => "file-upload",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => zid(assigns.id)
     }
   end
@@ -110,7 +110,7 @@ defmodule Corex.FileUpload.Connect do
     %{
       "data-scope" => "file-upload",
       "data-part" => "label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "#{zid(assigns.id)}:label",
       "for" => "#{zid(assigns.id)}:input"
     }
@@ -161,7 +161,7 @@ defmodule Corex.FileUpload.Connect do
     %{
       "data-scope" => "file-upload",
       "data-part" => "trigger",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "type" => "button",
       "id" => "#{zid(assigns.id)}:trigger"
     }
@@ -175,7 +175,7 @@ defmodule Corex.FileUpload.Connect do
       "data-file-type" => assigns.type,
       "data-type" => assigns.type,
       "id" => "#{zid(assigns.id)}:item-group:#{assigns.type}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-disabled" => get_boolean(Map.get(assigns, :disabled, false))
     }
     |> Map.reject(fn {_k, v} -> is_nil(v) end)

@@ -47,7 +47,7 @@ defmodule Corex.Combobox.Connect do
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
       "data-auto-focus" => get_boolean(assigns.auto_focus),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-input-behavior" => assigns.input_behavior,
       "data-loop-focus" => get_boolean(assigns.loop_focus),
@@ -75,7 +75,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}",
       "data-invalid" => get_boolean(assigns.invalid),
@@ -94,7 +94,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:label",
       "htmlFor" => "combobox:#{assigns.id}:input",
@@ -117,7 +117,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "control",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:control",
       "data-disabled" => get_boolean(assigns.disabled),
@@ -142,7 +142,7 @@ defmodule Corex.Combobox.Connect do
       "spellCheck" => "false",
       "type" => "text",
       "role" => "combobox",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:input",
       "data-disabled" => get_boolean(assigns.disabled),
@@ -166,7 +166,7 @@ defmodule Corex.Combobox.Connect do
       "data-scope" => "combobox",
       "data-part" => "trigger",
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:trigger",
       "data-disabled" => get_boolean(assigns.disabled),
@@ -186,8 +186,7 @@ defmodule Corex.Combobox.Connect do
       "data-scope" => "combobox",
       "data-part" => "clear-trigger",
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
-      "aria-label" => "Clear selection",
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:clear-trigger",
       "data-disabled" => get_boolean(assigns.disabled),
@@ -206,7 +205,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "positioner",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "style" => "display: none;",
       "id" => "combobox:#{assigns.id}:positioner"
@@ -224,7 +223,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "content",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:content",
       "tabindex" => -1,
@@ -245,7 +244,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "list",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:list"
     }
@@ -263,7 +262,7 @@ defmodule Corex.Combobox.Connect do
       "data-scope" => "combobox",
       "data-part" => "item-group",
       "data-id" => assigns.group_id,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:item-group:#{assigns.group_id}"
     }
@@ -282,7 +281,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "item-group-label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:item-group-label:#{assigns.html_for}"
     }
@@ -302,7 +301,7 @@ defmodule Corex.Combobox.Connect do
       "data-scope" => "combobox",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:item:#{assigns.value}"
     }
@@ -332,9 +331,10 @@ defmodule Corex.Combobox.Connect do
     )
   end
 
-  defp item_value(item) do
-    Map.get(item, :value) || Map.get(item, "value") || Map.get(item, :id) || Map.get(item, "id") ||
-      ""
+  defp item_value(item) when is_map(item) do
+    item
+    |> Map.new(fn {k, v} -> {to_string(k), v} end)
+    |> then(fn m -> Map.get(m, "value") || Map.get(m, "id") || "" end)
   end
 
   @spec item_text(ItemText.t()) :: map()
@@ -344,7 +344,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "item-text",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:item-text:#{val}"
     }
@@ -367,7 +367,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "item-indicator",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:item-indicator:#{val}"
     }
@@ -388,7 +388,7 @@ defmodule Corex.Combobox.Connect do
     %{
       "data-scope" => "combobox",
       "data-part" => "empty",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:empty"
     }

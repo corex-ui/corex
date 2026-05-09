@@ -12,14 +12,23 @@ export class Tooltip extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
+  syncDom(): void {
+    this.api = this.initApi();
+    this.render();
+  }
+
   render(): void {
     const rootEl = this.el;
 
-    const triggerEl = rootEl.querySelector<HTMLElement>(
+    const triggerEls = rootEl.querySelectorAll<HTMLElement>(
       '[data-scope="tooltip"][data-part="trigger"]'
     );
 
-    if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+    triggerEls.forEach((triggerEl) => {
+      const raw = triggerEl.dataset.value;
+      const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+      this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+    });
 
     const positionerEl = rootEl.querySelector<HTMLElement>(
       '[data-scope="tooltip"][data-part="positioner"]'

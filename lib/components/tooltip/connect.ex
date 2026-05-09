@@ -8,13 +8,12 @@ defmodule Corex.Tooltip.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    positioning = Map.get(assigns, :positioning, %Corex.Positioning{})
+
     base = %{
       "id" => assigns.id,
-      "data-default-open" => data_default_open(assigns),
-      "data-open" => data_open(assigns),
-      "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
@@ -28,36 +27,52 @@ defmodule Corex.Tooltip.Connect do
     base
     |> maybe_put("data-open-delay", assigns.open_delay)
     |> maybe_put("data-close-delay", assigns.close_delay)
-    |> maybe_put("data-placement", assigns.placement)
+    |> maybe_put("data-on-trigger-value-change", Map.get(assigns, :on_trigger_value_change))
+    |> Map.merge(Corex.Positioning.to_dataset(positioning))
   end
 
   defp maybe_put(map, _key, nil), do: map
   defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
+  @spec trigger_id(String.t(), String.t() | nil) :: String.t()
+  def trigger_id(tooltip_id, nil), do: "tooltip:#{tooltip_id}:trigger"
+
+  def trigger_id(tooltip_id, value) when is_binary(value),
+    do: "tooltip:#{tooltip_id}:trigger:#{value}"
+
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
+    value = Map.get(assigns, :value)
+    dom_id = trigger_id(assigns.id, value)
 
     base = %{
       "data-scope" => "tooltip",
       "data-part" => "trigger",
       "tabindex" => if(assigns.disabled, do: -1, else: 0),
       "data-disabled" => assigns.disabled,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-state" => data_state,
-      "id" => "tooltip:#{assigns.id}:trigger"
+      "id" => dom_id
     }
 
-    case Map.get(assigns, :tag, :button) do
-      :span -> base
-      _ -> Map.put(base, "type", "button")
-    end
+    base
+    |> maybe_put("data-value", value)
+    |> then(fn m ->
+      case Map.get(assigns, :tag, :button) do
+        :span -> m
+        _ -> Map.put(m, "type", "button")
+      end
+    end)
   end
 
   def ignore_trigger(assigns) do
+    value = Map.get(assigns, :value)
+    dom_id = trigger_id(assigns.id, value)
+
     JS.ignore_attributes(Trigger.ignored_attrs(),
-      to: Selectors.css_id("tooltip:#{assigns.id}:trigger")
+      to: Selectors.css_id(dom_id)
     )
   end
 
@@ -66,15 +81,15 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "positioner",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "tooltip:#{assigns.id}:positioner"
+      "id" => "tooltip:#{assigns.id}:popper"
     }
   end
 
   def ignore_positioner(assigns) do
     JS.ignore_attributes(Positioner.ignored_attrs(),
-      to: Selectors.css_id("tooltip:#{assigns.id}:positioner")
+      to: Selectors.css_id("tooltip:#{assigns.id}:popper")
     )
   end
 
@@ -85,7 +100,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "content",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-state" => data_state,
       "id" => "tooltip:#{assigns.id}:content"
@@ -103,7 +118,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "arrow",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "tooltip:#{assigns.id}:arrow"
     }
@@ -120,7 +135,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "arrow-tip",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "tooltip:#{assigns.id}:arrow-tip"
     }
@@ -130,17 +145,5 @@ defmodule Corex.Tooltip.Connect do
     JS.ignore_attributes(ArrowTip.ignored_attrs(),
       to: Selectors.css_id("tooltip:#{assigns.id}:arrow-tip")
     )
-  end
-
-  defp data_default_open(assigns) do
-    if !assigns.controlled && assigns.open, do: "", else: nil
-  end
-
-  defp data_open(assigns) do
-    if assigns.controlled do
-      if assigns.open, do: "", else: nil
-    else
-      nil
-    end
   end
 end

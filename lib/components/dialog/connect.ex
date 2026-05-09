@@ -1,8 +1,6 @@
 defmodule Corex.Dialog.Connect do
   @moduledoc false
 
-  import Corex.Gettext, only: [gettext: 1]
-
   alias Corex.Animation.Scale
   alias Corex.Selectors
 
@@ -35,7 +33,7 @@ defmodule Corex.Dialog.Connect do
       "data-close-on-escape-key-down" => get_boolean(assigns.close_on_escape),
       "data-prevent-scroll" => get_boolean(assigns.prevent_scroll),
       "data-restore-focus" => get_boolean(assigns.restore_focus),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-animation" => animation
@@ -51,7 +49,7 @@ defmodule Corex.Dialog.Connect do
     Map.put(
       merged,
       "data-dialog-default-label",
-      assigns.dialog_default_label || gettext("Dialog")
+      assigns.dialog_default_label || Corex.Gettext.gettext("Dialog")
     )
   end
 
@@ -64,7 +62,7 @@ defmodule Corex.Dialog.Connect do
       "data-part" => "trigger",
       "data-state" => data_state,
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:trigger",
       "aria-haspopup" => "dialog",
       "aria-expanded" => if(assigns.open, do: "true", else: "false"),
@@ -86,7 +84,7 @@ defmodule Corex.Dialog.Connect do
       "data-scope" => "dialog",
       "data-part" => "backdrop",
       "data-state" => state,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:backdrop"
     }
 
@@ -111,7 +109,7 @@ defmodule Corex.Dialog.Connect do
       "data-scope" => "dialog",
       "data-part" => "positioner",
       "data-state" => state,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:positioner"
     }
   end
@@ -131,7 +129,7 @@ defmodule Corex.Dialog.Connect do
       "data-part" => "content",
       "data-state" => data_state,
       "role" => "dialog",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:content",
       "aria-labelledby" => "dialog:#{assigns.id}:title",
       "aria-describedby" => "dialog:#{assigns.id}:description"
@@ -155,7 +153,7 @@ defmodule Corex.Dialog.Connect do
     %{
       "data-scope" => "dialog",
       "data-part" => "title",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:title"
     }
   end
@@ -171,7 +169,7 @@ defmodule Corex.Dialog.Connect do
     %{
       "data-scope" => "dialog",
       "data-part" => "description",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:description"
     }
   end
@@ -188,9 +186,9 @@ defmodule Corex.Dialog.Connect do
       "data-scope" => "dialog",
       "data-part" => "close-trigger",
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:close-trigger",
-      "aria-label" => Map.get(assigns, :aria_label) || gettext("Close dialog")
+      "aria-label" => Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Close dialog")
     }
   end
 

@@ -9,6 +9,8 @@ import type {
   StageChangeDetails,
 } from "@zag-js/floating-panel";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readPositioningOptions } from "../lib/positioning";
+import { anchorPointFromPositioning } from "../lib/floating-panel-anchor";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -45,6 +47,20 @@ function parsePoint(val: string | undefined): { x: number; y: number } | undefin
   return undefined;
 }
 
+const FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
+
+function buildAnchorProps(el: HTMLElement) {
+  const defaultSize = parseSize(el.dataset.defaultSize) ?? FALLBACK_DEFAULT_SIZE;
+  const defaultPosition = parsePoint(el.dataset.defaultPosition);
+  const positioning = readPositioningOptions(el);
+  const getAnchorPosition =
+    defaultPosition == null && positioning
+      ? (details: { triggerRect: DOMRect | null; boundaryRect: DOMRect | null }) =>
+          anchorPointFromPositioning(positioning, details, defaultSize, getDir(el))
+      : undefined;
+  return { defaultPosition, getAnchorPosition } as const;
+}
+
 const FloatingPanelHook: Hook<
   object & HookInterface<HTMLElement> & FloatingPanelHookState,
   HTMLElement
@@ -55,8 +71,7 @@ const FloatingPanelHook: Hook<
     const canPush = () => canPushEvent(this.liveSocket);
     const size = parseSize(el.dataset.size);
     const defaultSize = parseSize(el.dataset.defaultSize);
-    const position = parsePoint(el.dataset.position);
-    const defaultPosition = parsePoint(el.dataset.defaultPosition);
+    const anchorProps = buildAnchorProps(el);
     const zag = new FloatingPanel(el, {
       id: el.id,
       defaultOpen: false,
@@ -68,8 +83,8 @@ const FloatingPanelHook: Hook<
       dir: getDir(el),
       size,
       defaultSize,
-      position,
-      defaultPosition,
+      defaultPosition: anchorProps.defaultPosition,
+      getAnchorPosition: anchorProps.getAnchorPosition,
       minSize: parseSize(el.dataset.minSize),
       maxSize: parseSize(el.dataset.maxSize),
       persistRect: getBoolean(el, "persistRect"),
@@ -141,10 +156,14 @@ const FloatingPanelHook: Hook<
   },
 
   updated(this: object & HookInterface<HTMLElement> & FloatingPanelHookState) {
+    const el = this.el;
+    const anchorProps = buildAnchorProps(el);
     this.floatingPanel?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el),
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      defaultPosition: anchorProps.defaultPosition,
+      getAnchorPosition: anchorProps.getAnchorPosition,
     } as Partial<Props>);
   },
 

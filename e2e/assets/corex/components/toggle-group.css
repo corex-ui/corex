@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .toggle-group[data-loading] [data-scope="toggle-group"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .toggle-group {
     width: 100%;
     max-width: var(--container-5xs);

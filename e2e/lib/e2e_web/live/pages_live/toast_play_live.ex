@@ -3,20 +3,22 @@ defmodule E2eWeb.ToastPlayLive do
 
   import E2eWeb.DemoPage, only: [demo_playground: 1]
 
+  @toast_form_id "toast-playground-form"
+
   @type_items [
     %{label: "Info", id: "info"},
     %{label: "Success", id: "success"},
-    %{label: "Error", id: "error"},
-    %{label: "Loading", id: "loading"}
+    %{label: "Error", id: "error"}
   ]
 
-  @toast_types ~w(info success error loading)
+  @toast_types ~w(info success error)
 
   @toast_field_types %{
     title: :string,
     message: :string,
     type: :string,
-    duration: :string
+    duration: :string,
+    loading: :boolean
   }
 
   @toast_fields Map.keys(@toast_field_types)
@@ -29,28 +31,34 @@ defmodule E2eWeb.ToastPlayLive do
         title: "Saved",
         message: "From the playground form.",
         type: "info",
-        duration: "5000"
+        duration: "5000",
+        loading: false
       })
 
     {:ok,
      socket
-     |> assign(:form, to_form(changeset, as: :toast))
+     |> assign(:form, to_form(changeset, as: :toast, id: @toast_form_id))
      |> assign(:type_items, @type_items)}
   end
 
   @impl true
   def handle_event("validate_toast", %{"toast" => params}, socket) do
+    params = normalize_toast_params(params)
+
     changeset =
-      {%{}, @toast_field_types}
+      socket.assigns.form.source
       |> Ecto.Changeset.cast(params, @toast_fields)
 
-    {:noreply, assign(socket, :form, to_form(changeset, as: :toast, action: :validate))}
+    {:noreply,
+     assign(socket, :form, to_form(changeset, as: :toast, action: :validate, id: @toast_form_id))}
   end
 
   @impl true
   def handle_event("create_toast", %{"toast" => params}, socket) do
+    params = normalize_toast_params(params)
+
     changeset =
-      {%{}, @toast_field_types}
+      socket.assigns.form.source
       |> Ecto.Changeset.cast(params, @toast_fields)
       |> Ecto.Changeset.validate_required(@toast_fields)
       |> Ecto.Changeset.validate_inclusion(:type, @toast_types)
@@ -58,19 +66,48 @@ defmodule E2eWeb.ToastPlayLive do
 
     if changeset.valid? do
       socket = push_layout_toast(socket, changeset)
+      next_changeset = toast_form_changeset_after_success(changeset)
 
       {:noreply,
        socket
        |> put_flash(:info, "Toast pushed to the shell group.")
-       |> assign(:form, to_form(changeset, as: :toast))}
+       |> assign(:form, to_form(next_changeset, as: :toast, id: @toast_form_id))}
     else
-      {:noreply, assign(socket, :form, to_form(changeset, as: :toast, action: :insert))}
+      {:noreply,
+       assign(socket, :form, to_form(changeset, as: :toast, action: :insert, id: @toast_form_id))}
     end
   end
 
   @impl true
   def handle_event("create_toast", _, socket) do
     {:noreply, put_flash(socket, :error, "Missing toast params.")}
+  end
+
+  defp normalize_toast_params(params) do
+    case Map.get(params, "duration") do
+      nil ->
+        params
+
+      v ->
+        s = v |> to_string() |> String.trim()
+
+        if s == "",
+          do: Map.delete(params, "duration"),
+          else: Map.put(params, "duration", s)
+    end
+  end
+
+  defp toast_form_changeset_after_success(cs) do
+    applied = Ecto.Changeset.apply_changes(cs)
+
+    {%{}, @toast_field_types}
+    |> Ecto.Changeset.change(%{
+      title: Map.fetch!(applied, :title),
+      message: Map.fetch!(applied, :message),
+      type: Map.fetch!(applied, :type),
+      duration: applied |> Map.fetch!(:duration) |> to_string(),
+      loading: Map.fetch!(applied, :loading)
+    })
   end
 
   defp validate_toast_duration(changeset) do
@@ -86,30 +123,18 @@ defmodule E2eWeb.ToastPlayLive do
     title = Ecto.Changeset.get_field(changeset, :title)
     message = Ecto.Changeset.get_field(changeset, :message)
     ty = Ecto.Changeset.get_field(changeset, :type)
+    loading? = Ecto.Changeset.get_field(changeset, :loading)
     {dur_int, _} = Integer.parse(to_string(Ecto.Changeset.get_field(changeset, :duration)))
     duration = if dur_int == 0, do: :infinity, else: dur_int
 
-    case ty do
-      "loading" ->
-        Corex.Toast.push_toast(
-          socket,
-          "layout-toast",
-          title,
-          message,
-          :loading,
-          duration,
-          loading: true
-        )
+    type_atom = toast_type_atom(ty)
+    opts = if loading?, do: [loading: true], else: []
 
-      other ->
-        type_atom = toast_type_atom(other)
-        Corex.Toast.push_toast(socket, "layout-toast", title, message, type_atom, duration)
-    end
+    Corex.Toast.push_toast(socket, "layout-toast", title, message, type_atom, duration, opts)
   end
 
   defp toast_type_atom("success"), do: :success
   defp toast_type_atom("error"), do: :error
-  defp toast_type_atom("loading"), do: :loading
   defp toast_type_atom(_), do: :info
 
   @impl true
@@ -131,15 +156,15 @@ defmodule E2eWeb.ToastPlayLive do
           <div class="flex w-full max-w-lg flex-col gap-size">
             <.form
               for={@form}
-              id="toast-playground-form"
+              id={@form.id}
               phx-change="validate_toast"
               phx-submit="create_toast"
               class="flex flex-col gap-space"
             >
-              <.native_input field={@form[:title]} type="text" required>
+              <.native_input field={@form[:title]} type="text" class="native-input w-full" required>
                 <:label>Title</:label>
               </.native_input>
-              <.native_input field={@form[:message]} type="text" required>
+              <.native_input field={@form[:message]} type="text" class="native-input w-full" required>
                 <:label>Message</:label>
               </.native_input>
               <.select
@@ -153,13 +178,14 @@ defmodule E2eWeb.ToastPlayLive do
                 </:trigger>
               </.select>
               <.number_input
+                id="toast-playground-duration"
                 field={@form[:duration]}
-                class="number-input"
+                class="number-input w-full"
                 min={0.0}
                 step={1.0}
                 required
               >
-                <:label>Duration (ms, 0 = infinite)</:label>
+                <:label>Duration</:label>
                 <:decrement_trigger>
                   <.heroicon name="hero-chevron-down" class="icon" />
                 </:decrement_trigger>
@@ -167,15 +193,13 @@ defmodule E2eWeb.ToastPlayLive do
                   <.heroicon name="hero-chevron-up" class="icon" />
                 </:increment_trigger>
               </.number_input>
+              <.switch field={@form[:loading]} class="switch">
+                <:label>Loading</:label>
+              </.switch>
               <footer class="flex w-full justify-end">
                 <.action type="submit" class="button button--accent">Create toast</.action>
               </footer>
             </.form>
-            <.toast_group id="toast-play-preview" class="toast" placement="bottom-end" flash={%{}}>
-              <:loading>
-                <.heroicon name="hero-arrow-path" class="icon" />
-              </:loading>
-            </.toast_group>
           </div>
         </:canvas>
       </.demo_playground>

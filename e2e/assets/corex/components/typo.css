@@ -271,4 +271,130 @@
     color: var(--color-ink);
     border-radius: var(--radius-md);
   }
+
+  .markdown ul,
+  .markdown ol {
+    margin-block: var(--spacing-space);
+    padding-inline-start: 1.5em;
+  }
+
+  .markdown li {
+    margin-block: var(--spacing-space-sm);
+  }
+
+  .markdown li > ul,
+  .markdown li > ol {
+    margin-block: var(--spacing-space-sm);
+  }
+
+  .markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: var(--spacing-space-lg);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .markdown thead {
+    background: var(--color-layer);
+    color: var(--color-ink);
+  }
+
+  .markdown th,
+  .markdown td {
+    padding: var(--spacing-space-sm) var(--spacing-space);
+    border-bottom: 1px solid var(--color-border);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .markdown tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .markdown img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    margin-block: var(--spacing-space);
+  }
+
+  .markdown .footnotes {
+    margin-block-start: var(--spacing-space-xl);
+    padding-block-start: var(--spacing-space-lg);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    color: var(--color-ink-muted);
+  }
+
+  .markdown .footnotes ol {
+    padding-inline-start: 1.25em;
+  }
+
+  .markdown .footnote-ref a {
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  .markdown .markdown-alert {
+    margin-block: var(--spacing-space-lg);
+    padding: var(--spacing-space);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-layer);
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .markdown .markdown-alert-title {
+    font-weight: var(--font-weight-semibold);
+    margin-block: 0 var(--spacing-space-sm);
+  }
+
+  .markdown .markdown-alert-note {
+    border-inline-start: 4px solid var(--color-info);
+  }
+
+  .markdown .markdown-alert-note .markdown-alert-title {
+    color: var(--color-info);
+  }
+
+  .markdown .markdown-alert-tip {
+    border-inline-start: 4px solid var(--color-success);
+  }
+
+  .markdown .markdown-alert-tip .markdown-alert-title {
+    color: var(--color-success);
+  }
+
+  .markdown .markdown-alert-important {
+    border-inline-start: 4px solid var(--color-accent);
+  }
+
+  .markdown .markdown-alert-important .markdown-alert-title {
+    color: var(--color-accent);
+  }
+
+  .markdown .markdown-alert-warning {
+    border-inline-start: 4px solid var(--color-alert);
+  }
+
+  .markdown .markdown-alert-warning .markdown-alert-title {
+    color: var(--color-alert);
+  }
+
+  .markdown .markdown-alert-caution {
+    border-inline-start: 4px solid var(--color-border);
+  }
+
+  .markdown .markdown-alert-caution .markdown-alert-title {
+    color: var(--color-ink-muted);
+  }
 }

@@ -7516,50 +7516,6 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-4EUE6P2Z.mjs
-  function readFlipAttr(el) {
-    const raw = el.dataset.positionFlip;
-    if (raw == null) return void 0;
-    if (raw === "true") return true;
-    if (raw === "false") return false;
-    const list = raw.split(",").map((v2) => v2.trim()).filter(Boolean);
-    return list.length > 0 ? list : void 0;
-  }
-  function readPositioningOptions(el) {
-    const options = {};
-    const strategy = getString(el, "positionStrategy");
-    if (strategy) options.strategy = strategy;
-    const placement = getString(el, "positionPlacement");
-    if (placement) options.placement = placement;
-    const gutter = getNumber(el, "positionGutter");
-    if (gutter !== void 0) options.gutter = gutter;
-    const shift3 = getNumber(el, "positionShift");
-    if (shift3 !== void 0) options.shift = shift3;
-    const overflowPadding = getNumber(el, "positionOverflowPadding");
-    if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
-    const arrowPadding = getNumber(el, "positionArrowPadding");
-    if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
-    const flip3 = readFlipAttr(el);
-    if (flip3 !== void 0) options.flip = flip3;
-    const slide = getBooleanValue(el, "positionSlide");
-    if (slide !== void 0) options.slide = slide;
-    const overlap = getBooleanValue(el, "positionOverlap");
-    if (overlap !== void 0) options.overlap = overlap;
-    const sameWidth = getBooleanValue(el, "positionSameWidth");
-    if (sameWidth !== void 0) options.sameWidth = sameWidth;
-    const fitViewport = getBooleanValue(el, "positionFitViewport");
-    if (fitViewport !== void 0) options.fitViewport = fitViewport;
-    const hideWhenDetached = getBooleanValue(el, "positionHideWhenDetached");
-    if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
-    return Object.keys(options).length > 0 ? options : void 0;
-  }
-  var init_chunk_4EUE6P2Z = __esm({
-    "../priv/static/chunks/chunk-4EUE6P2Z.mjs"() {
-      "use strict";
-      init_chunk_LTYT3NRU();
-    }
-  });
-
   // ../priv/static/chunks/chunk-RJABPW5C.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
@@ -10159,6 +10115,57 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-6QZYI6OY.mjs
+  function readFlipAttr(el) {
+    const raw = el.dataset.positionFlip;
+    if (raw == null) return void 0;
+    if (raw === "true") return true;
+    if (raw === "false") return false;
+    const list = raw.split(",").map((v2) => v2.trim()).filter(Boolean);
+    return list.length > 0 ? list : void 0;
+  }
+  function readPositioningOptions(el) {
+    const options = {};
+    const strategy = getString(el, "positionStrategy");
+    if (strategy) options.strategy = strategy;
+    const placement = getString(el, "positionPlacement");
+    if (placement) options.placement = placement;
+    const gutter = getNumber(el, "positionGutter");
+    if (gutter !== void 0) options.gutter = gutter;
+    const shift3 = getNumber(el, "positionShift");
+    if (shift3 !== void 0) options.shift = shift3;
+    const overflowPadding = getNumber(el, "positionOverflowPadding");
+    if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
+    const arrowPadding = getNumber(el, "positionArrowPadding");
+    if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
+    const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
+    const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
+    if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
+      options.offset = {};
+      if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
+      if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+    }
+    const flip3 = readFlipAttr(el);
+    if (flip3 !== void 0) options.flip = flip3;
+    const slide = getBooleanValue(el, "positionSlide");
+    if (slide !== void 0) options.slide = slide;
+    const overlap = getBooleanValue(el, "positionOverlap");
+    if (overlap !== void 0) options.overlap = overlap;
+    const sameWidth = getBooleanValue(el, "positionSameWidth");
+    if (sameWidth !== void 0) options.sameWidth = sameWidth;
+    const fitViewport = getBooleanValue(el, "positionFitViewport");
+    if (fitViewport !== void 0) options.fitViewport = fitViewport;
+    const hideWhenDetached = getBooleanValue(el, "positionHideWhenDetached");
+    if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
+    return Object.keys(options).length > 0 ? options : void 0;
+  }
+  var init_chunk_6QZYI6OY = __esm({
+    "../priv/static/chunks/chunk-6QZYI6OY.mjs"() {
+      "use strict";
+      init_chunk_LTYT3NRU();
+    }
+  });
+
   // ../priv/static/chunks/chunk-7NUJK5QP.mjs
   function itemToIdOrValue(item) {
     var _a4, _b;
@@ -12164,10 +12171,10 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_4EUE6P2Z();
       init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_7NUJK5QP();
       init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
@@ -14327,10 +14334,10 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
       init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -18263,10 +18270,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_TDQG4Q55();
       init_chunk_7BZGUIUZ();
-      init_chunk_4EUE6P2Z();
       init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -24229,6 +24236,63 @@ ${err}`);
       }
     };
   }
+  function anchorPointFromPositioning(positioning, details, panelSize, dir) {
+    var _a4, _b, _c, _d, _e, _f, _g;
+    const boundaryRect = details.boundaryRect;
+    if (!boundaryRect) return void 0;
+    const gutter = (_a4 = positioning.gutter) != null ? _a4 : 8;
+    const shift3 = (_b = positioning.shift) != null ? _b : 0;
+    const mainAxis = (_d = (_c = positioning.offset) == null ? void 0 : _c.mainAxis) != null ? _d : 0;
+    const crossAxis = (_f = (_e = positioning.offset) == null ? void 0 : _e.crossAxis) != null ? _f : 0;
+    const placement = (_g = positioning.placement) != null ? _g : "bottom";
+    const { width: pw, height: ph } = panelSize;
+    const b2 = boundaryRect;
+    const isRtl = dir === "rtl";
+    const xInnerLeft = b2.x + gutter;
+    const xInnerRight = b2.x + b2.width - pw - gutter;
+    const xCenter = b2.x + (b2.width - pw) / 2;
+    const yInnerTop = b2.y + gutter;
+    const yInnerBottom = b2.y + b2.height - ph - gutter;
+    const yCenter = b2.y + (b2.height - ph) / 2;
+    const parts210 = placement.split("-");
+    const side = parts210[0];
+    const align = parts210[1];
+    const xForBottomTop = () => {
+      if (align === "start") return isRtl ? xInnerRight : xInnerLeft;
+      if (align === "end") return isRtl ? xInnerLeft : xInnerRight;
+      return xCenter;
+    };
+    if (side === "bottom") {
+      return {
+        x: xForBottomTop() + shift3 + crossAxis,
+        y: yInnerBottom - mainAxis
+      };
+    }
+    if (side === "top") {
+      return {
+        x: xForBottomTop() + shift3 + crossAxis,
+        y: yInnerTop + mainAxis
+      };
+    }
+    if (side === "left") {
+      const y2 = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+      return {
+        x: b2.x + gutter + mainAxis,
+        y: y2 + shift3 + crossAxis
+      };
+    }
+    if (side === "right") {
+      const y2 = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+      return {
+        x: b2.x + b2.width - pw - gutter - mainAxis,
+        y: y2 + shift3 + crossAxis
+      };
+    }
+    return {
+      x: xCenter + crossAxis,
+      y: yCenter + mainAxis
+    };
+  }
   function parseSize(val) {
     if (!val) return void 0;
     try {
@@ -24251,10 +24315,19 @@ ${err}`);
     }
     return void 0;
   }
-  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FloatingPanelHook;
+  function buildAnchorProps(el) {
+    var _a4;
+    const defaultSize = (_a4 = parseSize(el.dataset.defaultSize)) != null ? _a4 : FALLBACK_DEFAULT_SIZE;
+    const defaultPosition = parsePoint(el.dataset.defaultPosition);
+    const positioning = readPositioningOptions(el);
+    const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
+    return { defaultPosition, getAnchorPosition };
+  }
+  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
+      init_chunk_6QZYI6OY();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
@@ -25155,6 +25228,7 @@ ${err}`);
           });
         }
       };
+      FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
       FloatingPanelHook = {
         mounted() {
           const el = this.el;
@@ -25162,8 +25236,7 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const size3 = parseSize(el.dataset.size);
           const defaultSize = parseSize(el.dataset.defaultSize);
-          const position = parsePoint(el.dataset.position);
-          const defaultPosition = parsePoint(el.dataset.defaultPosition);
+          const anchorProps = buildAnchorProps(el);
           const zag = new FloatingPanel(el, {
             id: el.id,
             defaultOpen: false,
@@ -25175,8 +25248,8 @@ ${err}`);
             dir: getDir(el),
             size: size3,
             defaultSize,
-            position,
-            defaultPosition,
+            defaultPosition: anchorProps.defaultPosition,
+            getAnchorPosition: anchorProps.getAnchorPosition,
             minSize: parseSize(el.dataset.minSize),
             maxSize: parseSize(el.dataset.maxSize),
             persistRect: getBoolean(el, "persistRect"),
@@ -25244,10 +25317,14 @@ ${err}`);
         },
         updated() {
           var _a4;
+          const el = this.el;
+          const anchorProps = buildAnchorProps(el);
           (_a4 = this.floatingPanel) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el)
+            id: el.id,
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            defaultPosition: anchorProps.defaultPosition,
+            getAnchorPosition: anchorProps.getAnchorPosition
           });
         },
         destroyed() {
@@ -26180,8 +26257,12 @@ ${err}`);
           __publicField(this, "hasGroups", false);
           __publicField(this, "lastItemsFingerprint", "");
           __publicField(this, "init", () => {
-            this.machine.start();
-            this.render();
+            try {
+              this.machine.start();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
             this.machine.subscribe(() => {
               this.api = this.initApi();
               this.render();
@@ -26197,7 +26278,10 @@ ${err}`);
           this._options = Array.isArray(options) ? options : [];
         }
         itemsFingerprint() {
-          return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+          var _a4, _b;
+          const dir = (_a4 = this.el.dataset.dir) != null ? _a4 : "";
+          const orientation = (_b = this.el.dataset.orientation) != null ? _b : "";
+          return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
         }
         getOrderedGroupIds() {
           var _a4;
@@ -26410,7 +26494,6 @@ ${err}`);
           if (this.listbox) {
             this.listbox.hasGroups = hasGroups;
             this.listbox.setOptions(newItems);
-            this.listbox.render();
             this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
               collection: this.listbox.getCollection()
             }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
@@ -27621,10 +27704,10 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
       init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
       init_chunk_MG52DTQN();
@@ -30233,13 +30316,14 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const defaultValueStr = getString(el, "defaultValue");
-          const zag = new NumberInput(el, {
-            id: el.id,
-            defaultValue: defaultValueStr,
+          const controlled = getBoolean(el, "controlled");
+          const zag = new NumberInput(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: getString(el, "defaultValue") }), {
             min: getNumber(el, "min"),
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
@@ -30252,13 +30336,13 @@ ${err}`);
             form: getString(el, "form"),
             dir: getDir(el),
             onValueChange: (details) => {
-              var _a4;
+              var _a5;
               if (details.value !== void 0) {
                 const valueInput = el.querySelector(
                   '[data-scope="number-input"][data-part="value-input"]'
                 );
                 if (valueInput) {
-                  valueInput.value = (_a4 = details.value) != null ? _a4 : "";
+                  valueInput.value = (_a5 = details.value) != null ? _a5 : "";
                   valueInput.dispatchEvent(new Event("input", { bubbles: true }));
                   valueInput.dispatchEvent(new Event("change", { bubbles: true }));
                 }
@@ -30276,16 +30360,14 @@ ${err}`);
                 clientEventName: getString(el, "onValueChangeClient")
               });
             }
-          });
+          }));
           zag.init();
           this.numberInput = zag;
         },
         updated() {
-          var _a4;
-          const defaultValueStr = getString(this.el, "defaultValue");
-          (_a4 = this.numberInput) == null ? void 0 : _a4.updateProps({
+          var _a4, _b;
+          const next2 = {
             id: this.el.id,
-            defaultValue: defaultValueStr,
             min: getNumber(this.el, "min"),
             max: getNumber(this.el, "max"),
             step: getNumber(this.el, "step"),
@@ -30293,10 +30375,15 @@ ${err}`);
             readOnly: getBoolean(this.el, "readOnly"),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
+            allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             dir: getDir(this.el)
-          });
+          };
+          if (getBoolean(this.el, "controlled")) {
+            next2.value = (_a4 = getString(this.el, "value")) != null ? _a4 : "";
+          }
+          (_b = this.numberInput) == null ? void 0 : _b.updateProps(next2);
         },
         destroyed() {
           var _a4;
@@ -32465,10 +32552,10 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_4EUE6P2Z();
       init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_7NUJK5QP();
       init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
@@ -33375,7 +33462,7 @@ ${err}`);
           const valueText = this.el.querySelector(
             '[data-scope="select"][data-part="item-text"]'
           );
-          if (valueText) {
+          if (valueText && this.el.dataset.updateTrigger !== "false") {
             const valueAsString = this.api.valueAsString;
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
@@ -35553,6 +35640,87 @@ ${err}`);
       );
     }
   }
+  function collapseStartIndex(vals) {
+    const rec = (idx) => {
+      if (idx > 2) return idx;
+      const restAfter = vals.length - idx;
+      if (idx < 3 && vals[idx] === 0 && restAfter > 2) {
+        return rec(idx + 1);
+      }
+      return idx;
+    };
+    return rec(0);
+  }
+  function computeItemHidden(root, time) {
+    const types = ["days", "hours", "minutes", "seconds"];
+    const vals = [time.days, time.hours, time.minutes, time.seconds].map(Number);
+    const segments = getStringList(root, "segments");
+    const countdown = root.dataset.countdown === "true";
+    const collapseRaw = root.dataset.collapseLeadingZeros;
+    if (segments && segments.length > 0) {
+      return types.map((t2) => !segments.includes(t2));
+    }
+    if (collapseRaw === "false") {
+      return [false, false, false, false];
+    }
+    if (collapseRaw === "true" || collapseRaw !== "false" && countdown) {
+      const start = collapseStartIndex(vals);
+      return types.map((_2, i2) => i2 < start);
+    }
+    return [false, false, false, false];
+  }
+  function applyTimerItemVisibility(root, api) {
+    const hidden = computeItemHidden(root, api.time);
+    const types = ["days", "hours", "minutes", "seconds"];
+    const hostId = root.id;
+    types.forEach((type, i2) => {
+      const segmentEl = root.querySelector(`[data-timer-segment][data-type="${type}"]`);
+      if (segmentEl) {
+        if (hidden[i2]) {
+          segmentEl.setAttribute("hidden", "");
+        } else {
+          segmentEl.removeAttribute("hidden");
+        }
+      }
+      const itemEl = root.querySelector(
+        `[data-scope="timer"][data-part="item"][data-type="${type}"]`
+      );
+      if (itemEl) {
+        if (hidden[i2]) {
+          itemEl.setAttribute("hidden", "");
+          itemEl.setAttribute("aria-hidden", "true");
+        } else {
+          itemEl.removeAttribute("hidden");
+          itemEl.setAttribute("aria-hidden", "false");
+        }
+      }
+    });
+    for (let k2 = 0; k2 < 3; k2++) {
+      const sepId = `timer:${hostId}:sep:${k2}`;
+      const sepEl = root.querySelector(`[id="${CSS.escape(sepId)}"]`);
+      if (sepEl) {
+        if (hidden[k2]) {
+          sepEl.setAttribute("hidden", "");
+        } else {
+          sepEl.removeAttribute("hidden");
+        }
+      }
+    }
+  }
+  function parseTimerTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) return void 0;
+    try {
+      const o2 = JSON.parse(raw);
+      if (typeof o2.areaLabel === "string" && o2.areaLabel.length > 0) {
+        const label = o2.areaLabel;
+        return { areaLabel: () => label };
+      }
+    } catch (e2) {
+      return void 0;
+    }
+    return void 0;
+  }
   var anatomy26, parts26, getRootId21, getAreaId3, validActions, machine26, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
@@ -35744,9 +35912,13 @@ ${err}`);
               this.api = this.initApi();
               this.render();
             });
-            this.machine.start();
-            this.api = this.initApi();
-            this.render();
+            try {
+              this.machine.start();
+              this.api = this.initApi();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35774,6 +35946,12 @@ ${err}`);
             if (itemEl) {
               this.spreadProps(itemEl, this.api.getItemProps({ type }));
             }
+            const labelEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
+            );
+            if (labelEl) {
+              this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+            }
           });
           this.el.querySelectorAll('[data-scope="timer"][data-part="separator"]').forEach((separatorEl) => {
             this.spreadProps(separatorEl, this.api.getSeparatorProps());
@@ -35789,6 +35967,7 @@ ${err}`);
                 this.api.getActionTriggerProps({ action })
               );
           });
+          applyTimerItemVisibility(this.el, this.api);
         }
       };
       TimerHook = {
@@ -35804,6 +35983,7 @@ ${err}`);
             interval: getNumber(el, "interval"),
             dir: getDir(el),
             orientation: getString(el, "orientation"),
+            translations: parseTimerTranslations(el),
             onTick: (details) => {
               const eventName = getString(el, "onTick");
               if (eventName && canPushEvent(this.liveSocket)) {
@@ -35859,7 +36039,8 @@ ${err}`);
             autoStart: getBoolean(this.el, "autoStart"),
             interval: getNumber(this.el, "interval"),
             dir: getDir(this.el),
-            orientation: getString(this.el, "orientation")
+            orientation: getString(this.el, "orientation"),
+            translations: parseTimerTranslations(this.el)
           });
         },
         destroyed() {
@@ -37525,6 +37706,40 @@ ${err}`);
       }
     };
   }
+  function createTooltipCallbacks(el, pushEvent, liveSocket) {
+    const onTriggerValueChange = (details) => {
+      var _a4;
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: (_a4 = details.value) != null ? _a4 : ""
+        });
+      }
+    };
+    const onOpenChange = (details) => {
+      const eventName = getString(el, "onOpenChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          open: details.open
+        });
+      }
+      const eventNameClient = getString(el, "onOpenChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              open: details.open
+            }
+          })
+        );
+      }
+    };
+    return { onOpenChange, onTriggerValueChange };
+  }
   function getCloseDelay(el) {
     const interactive = getBoolean(el, "interactive");
     const raw = getNumber(el, "closeDelay");
@@ -37536,6 +37751,7 @@ ${err}`);
     "../priv/static/tooltip.mjs"() {
       "use strict";
       init_chunk_RJABPW5C();
+      init_chunk_6QZYI6OY();
       init_chunk_MG52DTQN();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -37986,12 +38202,20 @@ ${err}`);
         initApi() {
           return this.zagConnect(connect28);
         }
+        syncDom() {
+          this.api = this.initApi();
+          this.render();
+        }
         render() {
           const rootEl = this.el;
-          const triggerEl = rootEl.querySelector(
+          const triggerEls = rootEl.querySelectorAll(
             '[data-scope="tooltip"][data-part="trigger"]'
           );
-          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          triggerEls.forEach((triggerEl) => {
+            const raw = triggerEl.dataset.value;
+            const valueProps = raw != null && raw !== "" ? { value: raw } : {};
+            this.spreadProps(triggerEl, this.api.getTriggerProps(valueProps));
+          });
           const positionerEl = rootEl.querySelector(
             '[data-scope="tooltip"][data-part="positioner"]'
           );
@@ -38012,11 +38236,12 @@ ${err}`);
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const placement = getString(el, "placement");
-          const positioning = placement ? { placement } : void 0;
-          const tooltip = new Tooltip(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+          const liveSocket = this.liveSocket;
+          const positioning = readPositioningOptions(el);
+          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
+          const tooltip = new Tooltip(el, __spreadValues({
+            id: el.id,
+            defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             openDelay: getNumber(el, "openDelay"),
@@ -38026,29 +38251,8 @@ ${err}`);
             closeOnClick: getBoolean(el, "closeOnClick"),
             closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
             closeOnScroll: getBoolean(el, "closeOnScroll"),
-            interactive: getBoolean(el, "interactive"),
-            onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: details.open
-                    }
-                  })
-                );
-              }
-            }
-          }));
+            interactive: getBoolean(el, "interactive")
+          }, callbacks));
           tooltip.init();
           this.tooltip = tooltip;
           this.onSetOpen = (event) => {
@@ -38066,25 +38270,29 @@ ${err}`);
         },
         updated() {
           var _a4;
-          const placement = getString(this.el, "placement");
-          const positioning = placement ? { placement } : void 0;
-          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el),
-            openDelay: getNumber(this.el, "openDelay"),
-            closeDelay: getCloseDelay(this.el),
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const liveSocket = this.liveSocket;
+          const positioning = readPositioningOptions(el);
+          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
+          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadValues({
+            id: el.id,
+            defaultOpen: getBoolean(el, "defaultOpen"),
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            openDelay: getNumber(el, "openDelay"),
+            closeDelay: getCloseDelay(el),
             positioning,
-            closeOnEscape: getBoolean(this.el, "closeOnEscape"),
-            closeOnClick: getBoolean(this.el, "closeOnClick"),
-            closeOnPointerDown: getBoolean(this.el, "closeOnPointerDown"),
-            closeOnScroll: getBoolean(this.el, "closeOnScroll"),
-            interactive: getBoolean(this.el, "interactive")
-          }));
+            closeOnEscape: getBoolean(el, "closeOnEscape"),
+            closeOnClick: getBoolean(el, "closeOnClick"),
+            closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+            closeOnScroll: getBoolean(el, "closeOnScroll"),
+            interactive: getBoolean(el, "interactive")
+          }, callbacks));
           queueMicrotask(() => {
-            var _a5, _b, _c;
-            (_c = (_a5 = this.tooltip) == null ? void 0 : (_b = _a5.api).reposition) == null ? void 0 : _c.call(_b);
+            var _a5, _b, _c, _d;
+            (_a5 = this.tooltip) == null ? void 0 : _a5.syncDom();
+            (_d = (_b = this.tooltip) == null ? void 0 : (_c = _b.api).reposition) == null ? void 0 : _d.call(_c);
           });
         },
         destroyed() {

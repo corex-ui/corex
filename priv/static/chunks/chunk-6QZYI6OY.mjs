@@ -27,6 +27,13 @@ function readPositioningOptions(el) {
   if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
   const arrowPadding = getNumber(el, "positionArrowPadding");
   if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
+  const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
+  const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
+  if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
+    options.offset = {};
+    if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
+    if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+  }
   const flip = readFlipAttr(el);
   if (flip !== void 0) options.flip = flip;
   const slide = getBooleanValue(el, "positionSlide");

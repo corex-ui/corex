@@ -88,6 +88,7 @@ defmodule Corex.Carousel do
   }
 
   alias Corex.Carousel.Connect
+  alias Corex.Carousel.Utils
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -95,13 +96,20 @@ defmodule Corex.Carousel do
   attr(:aria_label, :string, default: nil)
 
   attr(:items, :list,
-    required: true,
-    doc: "List of image URLs (strings) or maps with :url and optional :alt"
+    default: nil,
+    doc:
+      "List of image URLs (strings) or maps with :url and optional :alt. Omit in compound mode; use `item_count` when children do not pass through `items`."
+  )
+
+  attr(:item_count, :integer,
+    default: nil,
+    doc:
+      "When set, overrides the slide count used for the hook and compound context (use in compound mode without `items`)."
   )
 
   attr(:page, :integer, default: 0)
   attr(:controlled, :boolean, default: false)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])
   attr(:slides_per_page, :integer, default: 1)
 
@@ -144,21 +152,10 @@ defmodule Corex.Carousel do
   end
 
   def carousel(assigns) do
-    items = List.wrap(assigns.items)
-    slide_count = length(items)
-    slides_per_page = assigns.slides_per_page || 1
+    assigns = Utils.merge_attr_defaults(assigns)
 
-    total_pages =
-      if slide_count == 0 do
-        0
-      else
-        div(slide_count + slides_per_page - 1, slides_per_page)
-      end
-
-    page = assigns.page || 0
-    loop = assigns.loop || false
-    prev_disabled = !loop and page <= 0
-    next_disabled = !loop and (total_pages == 0 or page >= total_pages - 1)
+    {items, slide_count, total_pages, prev_disabled, next_disabled, slides_per_page} =
+      Utils.compute_slide_metrics(assigns)
 
     assigns =
       assigns
@@ -169,6 +166,7 @@ defmodule Corex.Carousel do
       |> assign(:total_pages, total_pages)
       |> assign(:prev_disabled, prev_disabled)
       |> assign(:next_disabled, next_disabled)
+      |> assign(:slides_per_page, slides_per_page)
 
     ctx = %{
       id: assigns.id,

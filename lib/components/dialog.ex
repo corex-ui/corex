@@ -199,15 +199,13 @@ defmodule Corex.Dialog do
 
     Without gettext: `translation={%Dialog.Translation{ close: "Close" }}`
 
-    With gettext: `translation={%Dialog.Translation{ close: gettext("Close") }}`
+    With gettext: `translation={%Dialog.Translation{ close: Corex.Gettext.gettext("Close") }}`
     """
     defstruct [:close]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -270,8 +268,8 @@ defmodule Corex.Dialog do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the dialog. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -333,7 +331,7 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
-    default_translation = %Translation{close: gettext("Close")}
+    default_translation = %Translation{close: Corex.Gettext.gettext("Close")}
 
     assigns =
       assigns
@@ -410,7 +408,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog title. Use inside `<:content>` when not using the top-level `<:title>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
@@ -429,7 +427,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog description. Use inside `<:content>` when not using the top-level `<:description>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
@@ -448,13 +446,13 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:aria_label, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
-    assigns = assign_new(assigns, :aria_label, fn -> gettext("Close") end)
+    assigns = assign_new(assigns, :aria_label, fn -> Corex.Gettext.gettext("Close") end)
 
     ~H"""
     <button

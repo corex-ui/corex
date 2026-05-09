@@ -1,7 +1,5 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
-  import Corex.Gettext, only: [gettext: 1]
-
   alias Corex.Selectors
 
   alias Corex.PasswordInput.Anatomy.{
@@ -20,7 +18,7 @@ defmodule Corex.PasswordInput.Connect do
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
   defp aria_label_for_trigger(assigns) do
-    Map.get(assigns, :aria_label) || gettext("Toggle password visibility")
+    Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Toggle password visibility")
   end
 
   @spec props(Props.t()) :: map()
@@ -35,7 +33,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
       "data-auto-complete" => assigns.auto_complete,
       "data-on-visibility-change" => assigns.on_visibility_change,
@@ -84,7 +82,7 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}"
     }

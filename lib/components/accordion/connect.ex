@@ -3,7 +3,9 @@ defmodule Corex.Accordion.Connect do
   alias Corex.Accordion.Anatomy.{Item, ItemContent, ItemIndicator, ItemTrigger, Props, Root}
   alias Corex.Animation.Height
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
+
+  import Corex.Helpers,
+    only: [validate_value!: 1, get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -24,7 +26,6 @@ defmodule Corex.Accordion.Connect do
       "data-controlled" => get_boolean(assigns.controlled),
       "data-multiple" => get_boolean(assigns.multiple),
       "data-orientation" => assigns.orientation,
-      "data-dir" => assigns.dir,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-on-focus-change" => assigns.on_focus_change,
@@ -32,11 +33,14 @@ defmodule Corex.Accordion.Connect do
       "data-animation" => assigns.animation
     }
 
-    if assigns.animation == "js" do
-      Map.merge(base, Height.to_dataset(assigns.animation_options))
-    else
-      base
-    end
+    merged =
+      if assigns.animation == "js" do
+        Map.merge(base, Height.to_dataset(assigns.animation_options))
+      else
+        base
+      end
+
+    maybe_put_data_dir(merged, assigns.dir)
   end
 
   # IDs match Zag's default scheme so the JS hook does not have to pass a
@@ -52,10 +56,10 @@ defmodule Corex.Accordion.Connect do
     %{
       "data-scope" => "accordion",
       "data-part" => "root",
-      "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
       "id" => root_id(assigns.id)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -71,10 +75,10 @@ defmodule Corex.Accordion.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "data-state" => if(assigns.value in assigns.values, do: "open", else: "closed"),
       "id" => item_id(assigns.id, assigns.value)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   @spec ignore_item(Item.t()) :: JS.t()
@@ -88,7 +92,7 @@ defmodule Corex.Accordion.Connect do
   def trigger(assigns) do
     expanded = assigns.value in assigns.values
 
-    %{
+    base_trigger = %{
       "data-scope" => "accordion",
       "data-part" => "item-trigger",
       "type" => "button",
@@ -97,13 +101,14 @@ defmodule Corex.Accordion.Connect do
       "disabled" => assigns.disabled,
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "data-state" => if(expanded, do: "open", else: "closed"),
       "id" => trigger_id(assigns.id, assigns.value),
       "data-controls" => content_id(assigns.id, assigns.value),
       "aria-controls" => content_id(assigns.id, assigns.value),
       "data-ownedby" => root_id(assigns.id)
     }
+
+    maybe_put_dir(base_trigger, assigns.dir)
   end
 
   @spec ignore_trigger(Item.t()) :: JS.t()
@@ -125,21 +130,23 @@ defmodule Corex.Accordion.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "id" => content_id(assigns.id, assigns.value)
     }
 
-    cond do
-      expanded ->
-        base
+    result =
+      cond do
+        expanded ->
+          base
 
-      animation in ["js", "custom"] ->
-        base
+        animation in ["js", "custom"] ->
+          base
 
-      true ->
-        Map.put(base, "hidden", true)
-    end
+        true ->
+          Map.put(base, "hidden", true)
+      end
+
+    maybe_put_dir(result, assigns.dir)
   end
 
   @spec ignore_content(Item.t()) :: JS.t()
@@ -160,9 +167,9 @@ defmodule Corex.Accordion.Connect do
       "data-state" => if(expanded, do: "open", else: "closed"),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-focus" => get_boolean(false),
-      "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir
+      "data-orientation" => assigns.orientation
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   @spec ignore_indicator(Item.t()) :: JS.t()

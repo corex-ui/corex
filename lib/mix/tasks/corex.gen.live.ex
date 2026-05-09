@@ -128,7 +128,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
-  @doc false
+  @impl Mix.Task
   def run(args) do
     if Mix.Project.umbrella?() do
       Mix.raise(
@@ -253,8 +253,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     context
   end
 
-  @doc false
-  def print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
+  defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     layout_opts = layout_generators_opts(context, web_app_name(context))
     layout_locale = layout_locale?(layout_opts)
     prefix = Module.concat(context.web_module, schema.web_namespace)
@@ -326,7 +325,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     ]
   end
 
-  @doc false
+  @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
   def inputs(%Schema{} = schema) do
     schema.attrs
     |> Enum.reject(fn {_key, type} -> type == :map end)

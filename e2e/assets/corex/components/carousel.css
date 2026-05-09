@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .carousel[data-loading] [data-scope="carousel"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .carousel {
     width: 100%;
     max-width: var(--container-md);

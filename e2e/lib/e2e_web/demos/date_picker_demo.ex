@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def minimal_code do
     ~S"""
-    <.date_picker id="date-picker-anatomy-minimal" trigger_aria_label="Select date" input_aria_label="Select date" class="date-picker">
+    <.date_picker id="date-picker-anatomy-minimal" translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
       <:label>Select a date</:label>
       <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
       <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
@@ -16,8 +16,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~H"""
     <.date_picker
       id="date-picker-anatomy-minimal"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select date",
+          close_calendar: "Select date",
+          input: "Select date"
+        }
+      }
       class="date-picker"
     >
       <:label>Select a date</:label>
@@ -34,8 +39,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       id="date-picker-anatomy-range"
       selection_mode="range"
       value="2024-06-01,2024-06-15"
-      trigger_aria_label="Select date range"
-      input_aria_label="Date range"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range"}}
       class="date-picker"
     >
       <:label>Range</:label>
@@ -52,8 +56,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       id="date-picker-anatomy-range"
       selection_mode="range"
       value="2024-06-01,2024-06-15"
-      trigger_aria_label="Select date range"
-      input_aria_label="Date range"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select date range",
+          close_calendar: "Select date range",
+          input: "Date range"
+        }
+      }
       class="date-picker"
     >
       <:label>Range</:label>
@@ -71,8 +80,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       selection_mode="multiple"
       max_selected_dates={3}
       value="2024-06-03,2024-06-10,2024-06-17"
-      trigger_aria_label="Select dates"
-      input_aria_label="Dates"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select dates", close_calendar: "Select dates", input: "Dates"}}
       class="date-picker"
     >
       <:label>Multiple</:label>
@@ -90,8 +98,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       selection_mode="multiple"
       max_selected_dates={3}
       value="2024-06-03,2024-06-10,2024-06-17"
-      trigger_aria_label="Select dates"
-      input_aria_label="Dates"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select dates",
+          close_calendar: "Select dates",
+          input: "Dates"
+        }
+      }
       class="date-picker"
     >
       <:label>Multiple</:label>
@@ -113,8 +126,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
     <.date_picker
       id="date-picker-api-sv-client"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
     >
       <:label>Select a date</:label>
@@ -144,8 +156,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
     <.date_picker
       id="date-picker-api-sv-client"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select date",
+          close_calendar: "Select date",
+          input: "Select date"
+        }
+      }
       class="date-picker"
     >
       <:label>Select a date</:label>
@@ -224,8 +241,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     </div>
     <.date_picker
       id="date-picker-api-sv-js"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select date",
+          close_calendar: "Select date",
+          input: "Select date"
+        }
+      }
       class="date-picker"
     >
       <:label>Select a date</:label>
@@ -242,7 +264,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       Set to 2024-01-15
     </.action>
 
-    <.date_picker id="date-picker-api-sv-server" trigger_aria_label="Select date" input_aria_label="Select date" class="date-picker">
+    <.date_picker id="date-picker-api-sv-server" translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
       <:label>Select a date</:label>
       <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
       <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
@@ -279,8 +301,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     </div>
     <.date_picker
       id="date-picker-api-sv-server"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={
+        %Corex.DatePicker.Translation{
+          open_calendar: "Select date",
+          close_calendar: "Select date",
+          input: "Select date"
+        }
+      }
       class="date-picker"
     >
       <:label>Select a date</:label>
@@ -295,8 +322,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       id="date-picker-e-sv"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_value_change="dpe_on_value_server"
     >
@@ -321,8 +347,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       id="date-picker-e-so"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_open_change="dpe_on_open_server"
     >
@@ -347,8 +372,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       id="date-picker-e-cv"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_value_change_client="date-picker-value-changed"
     >
@@ -377,8 +401,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.date_picker
       id="date-picker-e-co"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_open_change_client="date-picker-open-changed"
     >
@@ -411,8 +434,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       controlled
       value={@selected && [@selected]}
       on_value_change="pattern_date_changed"
-      trigger_aria_label="Select date"
-      input_aria_label="Select date"
+      translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
     >
       <:label>Date</:label>
       <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
@@ -465,8 +487,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     >
       <.date_picker
         field={f[:date]}
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
         id="date-picker-form-changeset-input"
       >
@@ -521,8 +542,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     >
       <.date_picker
         field={f[:date]}
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
         id="date-picker-form-validate-input"
       >
@@ -565,8 +585,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         name="date_picker_form[date]"
         id="date-picker-form-native"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
         <:label>Date</:label>
@@ -599,8 +618,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         controlled
         value={@date_display}
         on_value_change="date_changed_basic"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
         <:label>Date</:label>
@@ -641,8 +659,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         controlled
         value={@date_display}
         on_value_change="date_changed_validate"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
         <:label>Date (required)</:label>
@@ -691,8 +708,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={f[:date]}
         id="date-picker-form-changeset-input"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date</:label>
@@ -736,8 +758,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         field={f[:date]}
         id="date-picker-form-validate-input"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date (required)</:label>
@@ -780,8 +807,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         name="date_picker_form[date]"
         id="date-picker-form-native"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date</:label>
@@ -824,8 +856,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         controlled
         value={@date_display}
         on_value_change="date_changed_basic"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date</:label>
@@ -872,8 +909,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         controlled
         value={@date_display}
         on_value_change="date_changed_validate"
-        trigger_aria_label="Select date"
-        input_aria_label="Select date"
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date (required)</:label>

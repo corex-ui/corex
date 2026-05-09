@@ -34,7 +34,7 @@ defmodule Corex.Menu.Connect do
       "data-typeahead" => get_boolean(assigns.typeahead),
       "data-composite" => get_boolean(assigns.composite),
       "data-default-highlighted-value" => assigns.value,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-aria-label" => assigns.aria_label,
       "data-on-select" => assigns.on_select,
@@ -52,7 +52,7 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:root"
     }
@@ -74,7 +74,7 @@ defmodule Corex.Menu.Connect do
       "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
       "data-disabled" => get_boolean(assigns.disabled),
       "disabled" => assigns.disabled,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:trigger"
     }
@@ -91,7 +91,7 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-part" => "indicator",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:indicator"
     }
@@ -108,7 +108,7 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-part" => "positioner",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:positioner",
       "hidden" => "true"
@@ -127,7 +127,7 @@ defmodule Corex.Menu.Connect do
       "data-scope" => "menu",
       "data-part" => "content",
       "role" => "menu",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:content",
       "hidden" => "true"
@@ -148,7 +148,7 @@ defmodule Corex.Menu.Connect do
       "data-value" => assigns.value,
       "data-disabled" => get_boolean(assigns.disabled),
       "role" => "menuitem",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:item:#{assigns.value}",
       "data-nested-menu" => assigns.nested_menu_id,
@@ -183,7 +183,7 @@ defmodule Corex.Menu.Connect do
       "data-part" => "separator",
       "role" => "separator",
       "aria-orientation" => "horizontal",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -194,7 +194,7 @@ defmodule Corex.Menu.Connect do
       "data-scope" => "menu",
       "data-part" => "item-group-label",
       "id" => "menu:#{assigns.id}:group-label:#{assigns.group_id}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -213,7 +213,7 @@ defmodule Corex.Menu.Connect do
       "id" => "menu:#{assigns.id}:group:#{assigns.group_id}",
       "role" => "group",
       "aria-labelledby" => "menu:#{assigns.id}:group-label:#{assigns.group_id}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -229,7 +229,7 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-nested" => "menu",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}"
     }

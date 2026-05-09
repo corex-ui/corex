@@ -177,15 +177,13 @@ defmodule Corex.PasswordInput do
 
     Without gettext: `translation={%PasswordInput.Translation{ toggle_visibility: "Toggle password visibility" }}`
 
-    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: gettext("Toggle password visibility") }}`
+    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: Corex.Gettext.gettext("Toggle password visibility") }}`
     """
     defstruct [:toggle_visibility]
   end
 
   @doc type: :component
   use Phoenix.Component
-
-  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.PasswordInput.Anatomy.{
     Control,
@@ -210,7 +208,7 @@ defmodule Corex.PasswordInput do
   attr(:ignore_password_managers, :boolean, default: true)
   attr(:name, :string)
   attr(:form, :string)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:auto_complete, :string,
@@ -266,7 +264,9 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(assigns) do
-    default_translation = %Translation{toggle_visibility: gettext("Toggle password visibility")}
+    default_translation = %Translation{
+      toggle_visibility: Corex.Gettext.gettext("Toggle password visibility")
+    }
 
     assigns =
       assigns

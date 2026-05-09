@@ -16,7 +16,19 @@ defmodule Corex do
     action: {Corex.Action, [action: 1]},
     angle_slider: {Corex.AngleSlider, [angle_slider: 1, angle_slider_skeleton: 1]},
     avatar: {Corex.Avatar, [avatar: 1]},
-    carousel: {Corex.Carousel, [carousel: 1]},
+    carousel:
+      {Corex.Carousel,
+       [
+         carousel: 1,
+         carousel_root: 1,
+         carousel_item_group: 1,
+         carousel_item: 1,
+         carousel_control: 1,
+         carousel_prev_trigger: 1,
+         carousel_next_trigger: 1,
+         carousel_indicator_group: 1,
+         carousel_indicator: 1
+       ]},
     checkbox: {Corex.Checkbox, [checkbox: 1, checkbox_skeleton: 1]},
     clipboard: {Corex.Clipboard, [clipboard: 1]},
     code: {Corex.Code, [code: 1]},
@@ -155,12 +167,12 @@ defmodule Corex do
   defp include?(name, :all, except), do: name not in except
   defp include?(name, only, _except) when is_list(only), do: name in only
 
-  @doc false
+  @doc "Returns sorted ids from the component registry for MCP and tooling."
   def component_ids do
     @components |> Map.keys() |> Enum.sort()
   end
 
-  @doc false
+  @doc "Resolves a registered component id to module and function-component metadata."
   def component_spec(id) when is_atom(id) do
     case Map.fetch(@components, id) do
       {:ok, {mod, functions}} ->
@@ -181,7 +193,7 @@ defmodule Corex do
     end
   end
 
-  @doc false
+  @doc "Maps a string MCP component id to its implementing module when registered."
   def component_module_for_mcp_id(id) when is_binary(id) do
     allowed = MapSet.new(for a <- component_ids(), do: to_string(a))
 

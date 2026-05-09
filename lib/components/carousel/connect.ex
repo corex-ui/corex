@@ -14,7 +14,7 @@ defmodule Corex.Carousel.Connect do
 
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   defp slides_per_move_value(nil), do: nil
   defp slides_per_move_value("auto"), do: "auto"
@@ -30,7 +30,6 @@ defmodule Corex.Carousel.Connect do
       "data-page" => if(assigns.controlled, do: to_string(assigns.page), else: nil),
       "data-default-page" => if(assigns.controlled, do: nil, else: to_string(assigns.page)),
       "data-controlled" => get_boolean(assigns.controlled),
-      "data-dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
       "data-loop" => get_boolean(assigns.loop),
@@ -47,6 +46,7 @@ defmodule Corex.Carousel.Connect do
     }
 
     base
+    |> maybe_put_data_dir(assigns.dir)
     |> maybe_put("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
     |> maybe_put("data-padding", assigns.padding)
   end
@@ -65,14 +65,15 @@ defmodule Corex.Carousel.Connect do
     style =
       "width:100%;overflow:hidden;--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size};aspect-ratio:4/3"
 
-    base = %{
-      "data-scope" => "carousel",
-      "data-part" => "root",
-      "data-orientation" => assigns.orientation || "horizontal",
-      "dir" => assigns.dir,
-      "id" => "carousel:#{assigns.id}",
-      "style" => style
-    }
+    base =
+      %{
+        "data-scope" => "carousel",
+        "data-part" => "root",
+        "data-orientation" => assigns.orientation || "horizontal",
+        "id" => "carousel:#{assigns.id}",
+        "style" => style
+      }
+      |> maybe_put_dir(assigns.dir)
 
     case Map.get(assigns, :aria_label) do
       nil -> Map.put(base, "aria-label", "Carousel #{assigns.id}")
@@ -117,12 +118,12 @@ defmodule Corex.Carousel.Connect do
       "data-scope" => "carousel",
       "data-part" => "item-group",
       "data-orientation" => assigns.orientation || "horizontal",
-      "dir" => assigns.dir,
       "id" => "carousel:#{assigns.id}:item-group",
       "aria-live" => "polite",
       "style" => style,
       "tabindex" => "0"
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_item_group(%ItemGroup{} = assigns) do
@@ -144,13 +145,13 @@ defmodule Corex.Carousel.Connect do
       "data-part" => "item",
       "data-index" => to_string(assigns.index),
       "data-orientation" => assigns.orientation || "horizontal",
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "id" => "carousel:#{assigns.id}:item:#{assigns.index}",
       "role" => "group",
       "aria-roledescription" => "slide",
       "aria-label" => "#{assigns.index + 1} of #{slide_count}",
       "style" => style
     }
+    |> maybe_put_dir(Map.get(assigns, :dir))
   end
 
   def ignore_item(%Item{} = assigns) do
@@ -211,9 +212,9 @@ defmodule Corex.Carousel.Connect do
       "data-scope" => "carousel",
       "data-part" => "indicator-group",
       "data-orientation" => assigns.orientation || "horizontal",
-      "dir" => assigns.dir || "ltr",
       "id" => "carousel:#{assigns.id}:indicator-group"
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_indicator_group(%IndicatorGroup{} = assigns) do
@@ -232,10 +233,10 @@ defmodule Corex.Carousel.Connect do
       "data-index" => to_string(assigns.index),
       "data-current" => get_boolean(assigns.index == page),
       "data-orientation" => assigns.orientation || "horizontal",
-      "dir" => assigns.dir || "ltr",
       "type" => "button",
       "id" => "carousel:#{assigns.id}:indicator:#{assigns.index}"
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_indicator(%Indicator{} = assigns) do

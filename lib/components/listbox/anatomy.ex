@@ -193,8 +193,6 @@ defmodule Corex.Listbox.Anatomy do
     @ignored_attrs [
       "id",
       "hidden",
-      "data-orientation",
-      "dir",
       "data-state",
       "data-focus",
       "data-focus-visible"

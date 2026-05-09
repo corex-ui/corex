@@ -4,8 +4,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_code do
     ~S"""
     <.floating_panel id="floating-panel-anatomy" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -103,8 +106,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     </script>
 
     <.floating_panel id="floating-panel-api-js" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -211,11 +217,236 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  def anatomy_no_trigger_code do
+    ~S"""
+    <div class="flex flex-col gap-space">
+      <div class="flex flex-wrap gap-2">
+        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+          Open
+        </button>
+        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+          Close
+        </button>
+      </div>
+      <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
+        <:trigger class="sr-only">
+          <span data-closed>Open auxiliary panel</span>
+          <span data-open>Close auxiliary panel</span>
+        </:trigger>
+        <:title>Auxiliary panel</:title>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" class="icon" />
+        </:close_trigger>
+        <:content>
+          <p>Opened from external buttons; the Zag trigger stays in the tab order but is visually hidden.</p>
+        </:content>
+      </.floating_panel>
+    </div>
+    <script>
+      (() => {
+        const panel = document.getElementById("floating-panel-anatomy-no-trigger")
+        const openBtn = document.getElementById("floating-panel-anatomy-no-trigger-open")
+        const closeBtn = document.getElementById("floating-panel-anatomy-no-trigger-close")
+        if (!panel || !openBtn || !closeBtn) return
+        openBtn.addEventListener("click", () => {
+          panel.dispatchEvent(
+            new CustomEvent("corex:floating-panel:set-open", {
+              detail: { open: true },
+              bubbles: false,
+            })
+          )
+        })
+        closeBtn.addEventListener("click", () => {
+          panel.dispatchEvent(
+            new CustomEvent("corex:floating-panel:set-open", {
+              detail: { open: false },
+              bubbles: false,
+            })
+          )
+        })
+      })()
+    </script>
+    """
+  end
+
+  def anatomy_no_trigger_example(assigns) do
+    boot =
+      Phoenix.HTML.raw("""
+      <script>
+        (() => {
+          const panel = document.getElementById("floating-panel-anatomy-no-trigger")
+          const openBtn = document.getElementById("floating-panel-anatomy-no-trigger-open")
+          const closeBtn = document.getElementById("floating-panel-anatomy-no-trigger-close")
+          if (!panel || !openBtn || !closeBtn) return
+          openBtn.addEventListener("click", () => {
+            panel.dispatchEvent(
+              new CustomEvent("corex:floating-panel:set-open", {
+                detail: { open: true },
+                bubbles: false,
+              })
+            )
+          })
+          closeBtn.addEventListener("click", () => {
+            panel.dispatchEvent(
+              new CustomEvent("corex:floating-panel:set-open", {
+                detail: { open: false },
+                bubbles: false,
+              })
+            )
+          })
+        })()
+      </script>
+      """)
+
+    assigns = assign(assigns, :floating_panel_anatomy_no_trigger_boot, boot)
+
+    ~H"""
+    <div class="flex flex-col gap-space">
+      <div class="flex flex-wrap gap-2">
+        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+          Open
+        </button>
+        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+          Close
+        </button>
+      </div>
+      <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
+        <:trigger class="sr-only">
+          <span data-closed>Open auxiliary panel</span>
+          <span data-open>Close auxiliary panel</span>
+        </:trigger>
+        <:title>Auxiliary panel</:title>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" class="icon" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Opened from external buttons; the Zag trigger stays in the tab order but is visually hidden.
+          </p>
+        </:content>
+      </.floating_panel>
+    </div>
+    {@floating_panel_anatomy_no_trigger_boot}
+    """
+  end
+
+  def anatomy_positioning_code do
+    ~S"""
+    <div class="inline-block rounded-md border border-border p-space">
+      <.floating_panel
+        id="floating-panel-anatomy-positioning"
+        class="floating-panel"
+        positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
+      >
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open anchored panel</span>
+          <span data-open>Close anchored panel</span>
+        </:trigger>
+        <:title>Placement</:title>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" class="icon" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Uses <code class="text-sm">positioning={%Corex.Positioning{}}</code> so the hook passes
+            <code class="text-sm">getAnchorPosition</code> with placement and gutter (flip keeps it in view).
+          </p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def anatomy_positioning_example(assigns) do
+    ~H"""
+    <div class="inline-block rounded-md border border-border p-space">
+      <.floating_panel
+        id="floating-panel-anatomy-positioning"
+        class="floating-panel"
+        positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
+      >
+        <:trigger class="button button--ghost button--sm">
+          <span data-closed>Open anchored panel</span>
+          <span data-open>Close anchored panel</span>
+        </:trigger>
+        <:title>Placement</:title>
+        <:close_trigger>
+          <.heroicon name="hero-x-mark" class="icon" />
+        </:close_trigger>
+        <:content>
+          <p>
+            Uses <code class="text-sm">{"positioning={%Corex.Positioning{}}"}</code>
+            so the hook passes <code class="text-sm">getAnchorPosition</code>
+            with placement and gutter (flip keeps it in view).
+          </p>
+        </:content>
+      </.floating_panel>
+    </div>
+    """
+  end
+
+  def anatomy_size_code do
+    ~S"""
+    <.floating_panel
+      id="floating-panel-anatomy-size"
+      class="floating-panel"
+      size={%{width: 380, height: 220}}
+      min_size={%{width: 280, height: 160}}
+    >
+      <:trigger class="button button--ghost button--sm">
+        <span data-closed>Open sized panel</span>
+        <span data-open>Close sized panel</span>
+      </:trigger>
+      <:title>Default size</:title>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+      <:content>
+        <p>
+          <code class="text-sm">size={%{width: 380, height: 220}}</code> maps to Zag
+          <code class="text-sm">defaultSize</code>; optional <code class="text-sm">min_size</code> constrains resize.
+        </p>
+      </:content>
+    </.floating_panel>
+    """
+  end
+
+  def anatomy_size_example(assigns) do
+    ~H"""
+    <.floating_panel
+      id="floating-panel-anatomy-size"
+      class="floating-panel"
+      size={%{width: 380, height: 220}}
+      min_size={%{width: 280, height: 160}}
+    >
+      <:trigger class="button button--ghost button--sm">
+        <span data-closed>Open sized panel</span>
+        <span data-open>Close sized panel</span>
+      </:trigger>
+      <:title>Default size</:title>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+      <:content>
+        <p>
+          <code class="text-sm">{"size={%{width: 380, height: 220}}"}</code>
+          maps to Zag <code class="text-sm">defaultSize</code>; optional
+          <code class="text-sm">min_size</code>
+          constrains resize.
+        </p>
+      </:content>
+    </.floating_panel>
+    """
+  end
+
   def anatomy_basic_example(assigns) do
     ~H"""
     <.floating_panel id="floating-panel-anatomy" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -246,8 +477,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       on_open_change="floating_panel_open_changed"
       on_open_change_client="floating-panel-open-changed"
     >
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -273,8 +507,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def floating_panel_api_fixture(assigns) do
     ~H"""
     <.floating_panel id={@id} class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -297,8 +534,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   defp fp_api_panel_snippet(id, inner_text) do
     """
     <.floating_panel id="#{id}" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>

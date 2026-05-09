@@ -1,6 +1,10 @@
 @import "../main.css";
 
 @layer components {
+  .tabs[data-loading] [data-scope="tabs"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .tabs {
     width: 100%;
     max-width: none;
@@ -96,27 +100,33 @@
   }
 }
 
-@utility tabs--sm {
+@utility tabs--* {
   [data-scope="tabs"][data-part="root"] {
-    gap: var(--spacing-space-sm);
+    gap: --value(--spacing-space-*, [length]);
   }
-}
 
-@utility tabs--md {
-  [data-scope="tabs"][data-part="root"] {
-    gap: var(--spacing-space-md);
-  }
-}
+  [data-scope="tabs"][data-part="trigger"][data-selected] {
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
 
-@utility tabs--lg {
-  [data-scope="tabs"][data-part="root"] {
-    gap: var(--spacing-space-lg);
-  }
-}
+    &:hover {
+      background-color: --value(--color-*-hover, [color]);
+    }
 
-@utility tabs--xl {
-  [data-scope="tabs"][data-part="root"] {
-    gap: var(--spacing-space-xl);
+    &:active {
+      background-color: --value(--color-*-active, [color]);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+    }
   }
 }
 
@@ -142,132 +152,3 @@
   }
 }
 
-@utility tabs--accent {
-  [data-scope="tabs"][data-part="trigger"][data-selected] {
-    background-color: var(--color-accent);
-    color: var(--color-accent-ink);
-
-    &:hover {
-      background-color: var(--color-accent-hover);
-    }
-
-    &:active {
-      background-color: var(--color-accent-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-accent-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-accent-muted);
-    }
-  }
-}
-
-@utility tabs--brand {
-  [data-scope="tabs"][data-part="trigger"][data-selected] {
-    background-color: var(--color-brand);
-    color: var(--color-brand-ink);
-
-    &:hover {
-      background-color: var(--color-brand-hover);
-    }
-
-    &:active {
-      background-color: var(--color-brand-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-brand-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-brand-muted);
-    }
-  }
-}
-
-@utility tabs--alert {
-  [data-scope="tabs"][data-part="trigger"][data-selected] {
-    background-color: var(--color-alert);
-    color: var(--color-alert-ink);
-
-    &:hover {
-      background-color: var(--color-alert-hover);
-    }
-
-    &:active {
-      background-color: var(--color-alert-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-alert-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-alert-muted);
-    }
-  }
-}
-
-@utility tabs--info {
-  [data-scope="tabs"][data-part="trigger"][data-selected] {
-    background-color: var(--color-info);
-    color: var(--color-info-ink);
-
-    &:hover {
-      background-color: var(--color-info-hover);
-    }
-
-    &:active {
-      background-color: var(--color-info-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-info-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-info-muted);
-    }
-  }
-}
-
-@utility tabs--success {
-  [data-scope="tabs"][data-part="trigger"][data-selected] {
-    background-color: var(--color-success);
-    color: var(--color-success-ink);
-
-    &:hover {
-      background-color: var(--color-success-hover);
-    }
-
-    &:active {
-      background-color: var(--color-success-active);
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-success-ink);
-    }
-
-    &:disabled,
-    &[data-disabled],
-    &[disabled] {
-      background-color: var(--color-success-muted);
-    }
-  }
-}

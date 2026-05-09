@@ -62,26 +62,24 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-md">
-              <div class="flex flex-wrap gap-2 items-center">
-                <.action
-                  phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
-                  class="button button--sm"
-                >
-                  Belgium
-                </.action>
-                <.action
-                  phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}
-                  class="button button--sm"
-                >
-                  Clear
-                </.action>
-              </div>
-              <.listbox id="listbox-api-sv-client" class="listbox" items={Demo.items_minimal()}>
-                <:label>Choose a country</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action
+                phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])}
+                class="button button--sm"
+              >
+                Belgium
+              </.action>
+              <.action
+                phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}
+                class="button button--sm"
+              >
+                Clear
+              </.action>
             </div>
+            <.listbox id="listbox-api-sv-client" class="listbox" items={Demo.items_minimal()}>
+              <:label>Choose a country</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -99,15 +97,13 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-md">
-              <div class="flex flex-wrap gap-2 items-center">
-                <.action phx-click="listbox_api_set_value" class="button button--sm">Belgium</.action>
-              </div>
-              <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
-                <:label>Choose a country</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action phx-click="listbox_api_set_value" class="button button--sm">Belgium</.action>
             </div>
+            <.listbox id="listbox-api-sv-server" class="listbox" items={Demo.items_minimal()}>
+              <:label>Choose a country</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -119,25 +115,23 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-md">
-              <.action
-                type="button"
-                class="button button--sm"
-                phx-click={
-                  JS.dispatch("corex:listbox:set-value",
-                    to: "#listbox-api-sv-js",
-                    detail: %{value: ["deu"]},
-                    bubbles: false
-                  )
-                }
-              >
-                Germany (JS.dispatch)
-              </.action>
-              <.listbox id="listbox-api-sv-js" class="listbox" items={Demo.items_minimal()}>
-                <:label>Choose a country</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
-            </div>
+            <.action
+              type="button"
+              class="button button--sm"
+              phx-click={
+                JS.dispatch("corex:listbox:set-value",
+                  to: "#listbox-api-sv-js",
+                  detail: %{value: ["deu"]},
+                  bubbles: false
+                )
+              }
+            >
+              Germany (JS.dispatch)
+            </.action>
+            <.listbox id="listbox-api-sv-js" class="listbox" items={Demo.items_minimal()}>
+              <:label>Choose a country</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -149,18 +143,18 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-md">
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Listbox.value("listbox-api-val-client")}
                 class="button button--sm"
               >
                 Read selection
               </.action>
-              <.listbox id="listbox-api-val-client" class="listbox" items={Demo.items_minimal()}>
-                <:label>Choose a country</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
             </div>
+            <.listbox id="listbox-api-val-client" class="listbox" items={Demo.items_minimal()}>
+              <:label>Choose a country</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
 
@@ -178,15 +172,15 @@ defmodule E2eWeb.ListboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-md">
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action phx-click="listbox_api_value_server" class="button button--sm">
                 Read selection
               </.action>
-              <.listbox id="listbox-api-val-server" class="listbox" items={Demo.items_minimal()}>
-                <:label>Choose a country</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
             </div>
+            <.listbox id="listbox-api-val-server" class="listbox" items={Demo.items_minimal()}>
+              <:label>Choose a country</:label>
+              <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+            </.listbox>
           </:preview>
         </.demo_section>
       </.demo_page>

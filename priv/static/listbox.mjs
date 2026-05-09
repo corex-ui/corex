@@ -899,7 +899,9 @@ var Listbox = class extends Component {
     this._options = Array.isArray(options) ? options : [];
   }
   itemsFingerprint() {
-    return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+    const dir = this.el.dataset.dir ?? "";
+    const orientation = this.el.dataset.orientation ?? "";
+    return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
   }
   getOrderedGroupIds() {
     const seen = /* @__PURE__ */ new Set();
@@ -930,8 +932,12 @@ var Listbox = class extends Component {
     return this.zagConnect(connect);
   }
   init = () => {
-    this.machine.start();
-    this.render();
+    try {
+      this.machine.start();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
     this.machine.subscribe(() => {
       this.api = this.initApi();
       this.render();
@@ -1167,7 +1173,6 @@ var ListboxHook = {
     if (this.listbox) {
       this.listbox.hasGroups = hasGroups;
       this.listbox.setOptions(newItems);
-      this.listbox.render();
       this.listbox.updateProps({
         ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
         collection: this.listbox.getCollection(),

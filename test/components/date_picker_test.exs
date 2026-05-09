@@ -179,7 +179,16 @@ defmodule Corex.DatePickerTest do
       assert result["data-translation"] =~ "openCalendar"
     end
 
-    test "props/1 merges trigger_aria_label and input_aria_label into data-translation JSON" do
+    test "props/1 encodes translation open_calendar, close_calendar, and input in data-translation JSON" do
+      base = DatePicker.default_translation()
+
+      translation =
+        struct!(base, %{
+          open_calendar: "Pick a date",
+          close_calendar: "Pick a date",
+          input: "Event date"
+        })
+
       assigns = %{
         id: "test-dp",
         controlled: false,
@@ -187,9 +196,7 @@ defmodule Corex.DatePickerTest do
         locale: "en",
         time_zone: "UTC",
         dir: "ltr",
-        translation: DatePicker.default_translation(),
-        trigger_aria_label: "Pick a date",
-        input_aria_label: "Event date"
+        translation: translation
       }
 
       result = Connect.props(Map.merge(default_props(), assigns))
@@ -260,8 +267,6 @@ defmodule Corex.DatePickerTest do
       on_open_change: nil,
       on_value_change_client: nil,
       on_open_change_client: nil,
-      trigger_aria_label: nil,
-      input_aria_label: nil,
       max_selected_dates: nil,
       translation: nil
     }

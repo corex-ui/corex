@@ -166,8 +166,8 @@ defmodule Corex.ToggleGroup do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the toggle group. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -183,6 +183,10 @@ defmodule Corex.ToggleGroup do
   )
 
   attr(:rest, :global)
+
+  slot :label, required: false, doc: "Optional visible or screen-reader label for the group" do
+    attr(:class, :string, required: false)
+  end
 
   slot :item, required: true do
     attr(:value, :string,
@@ -204,6 +208,14 @@ defmodule Corex.ToggleGroup do
       |> assign_new(:id, fn -> "toggle-group-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
 
+    label_id =
+      case Map.get(assigns, :label, []) do
+        [] -> nil
+        _ -> "#{assigns.id}-label"
+      end
+
+    assigns = assign(assigns, :label_id, label_id)
+
     ~H"""
     <div id={@id} phx-hook="ToggleGroup" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} {@rest}
     {Connect.props(%Props{
@@ -220,7 +232,10 @@ defmodule Corex.ToggleGroup do
       on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client
     })}>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})}>
+      <span :if={@label != []} id={@label_id} class={Map.get(Enum.at(@label, 0), :class)}>
+        {render_slot(@label)}
+      </span>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, aria_labelledby: @label_id})} {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, aria_labelledby: @label_id})}>
         <button :for={{item_entry, index} <- Enum.with_index(@item)}
         phx-mounted={Connect.ignore_item(%Item{
           id: @id,

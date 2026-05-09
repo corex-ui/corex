@@ -91,7 +91,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="title"] {
-    color: var(--color-alert);
+    color: var(--color-ink-alert);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="progressbar"] {
@@ -101,7 +101,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="title"] {
-    color: var(--color-info);
+    color: var(--color-ink-info);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="progressbar"] {
@@ -111,7 +111,7 @@
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="title"] {
-    color: var(--color-success);
+    color: var(--color-ink-success);
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="progressbar"] {

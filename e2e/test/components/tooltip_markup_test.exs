@@ -33,6 +33,22 @@ defmodule E2eWeb.TooltipMarkupTest do
       assert html =~ ~r/data-part="content"/
     end
 
+    test "patterns page wires on_trigger_value_change for multi-trigger LiveView", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/tooltip/patterns")
+
+      assert html =~ "tooltip-patterns-page"
+      assert html =~ ~s(id="tooltip-pattern-users")
+      assert html =~ ~s(data-on-trigger-value-change="tooltip_pattern_trigger_value")
+      assert html =~ ~s(id="tooltip:tooltip-pattern-users:trigger:1")
+      assert html =~ "tooltip-pattern-profile-links"
+      assert html =~ ~s(id="tooltip-profile-1")
+      assert html =~ ~s(id="tooltip-profile-2")
+      assert html =~ "tooltip-pattern-profile-link-multi"
+      assert html =~ ~s(id="tooltip-pattern-profile-link-multi-tool")
+      assert html =~ ~s(data-on-trigger-value-change="tooltip_pattern_link_multi_value")
+      assert html =~ ~s(id="tooltip:tooltip-pattern-profile-link-multi-tool:trigger:1")
+    end
+
     test "renders arrow parts when show_arrow", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/tooltip/events")
 

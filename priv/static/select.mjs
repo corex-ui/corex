@@ -1,7 +1,4 @@
 import {
-  readPositioningOptions
-} from "./chunks/chunk-4EUE6P2Z.mjs";
-import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-RJABPW5C.mjs";
@@ -9,6 +6,9 @@ import {
   trackDismissableElement
 } from "./chunks/chunk-ZZR3S6PP.mjs";
 import "./chunks/chunk-K2P3QAIZ.mjs";
+import {
+  readPositioningOptions
+} from "./chunks/chunk-6QZYI6OY.mjs";
 import {
   zagIdValueLabelCollectionConfig
 } from "./chunks/chunk-7NUJK5QP.mjs";
@@ -1341,7 +1341,7 @@ var Select = class extends Component {
     const valueText = this.el.querySelector(
       '[data-scope="select"][data-part="item-text"]'
     );
-    if (valueText) {
+    if (valueText && this.el.dataset.updateTrigger !== "false") {
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];

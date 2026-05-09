@@ -62,7 +62,6 @@ defmodule Corex.PinInput do
   alias Corex.PinInput.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
-  import Corex.Gettext, only: [gettext: 2]
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
 
   attr(:id, :string, required: false)
@@ -84,7 +83,7 @@ defmodule Corex.PinInput do
   attr(:select_on_focus, :boolean, default: false)
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:type, :string, default: "numeric", values: ["alphanumeric", "numeric", "alphabetic"])
   attr(:placeholder, :string, default: "○")
@@ -113,7 +112,7 @@ defmodule Corex.PinInput do
   def pin_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = form_field_to_pin_list(field)
-    value_str = Enum.join(value, "")
+    value_str = Enum.join(value)
 
     assigns
     |> assign(:field, nil)
@@ -146,7 +145,7 @@ defmodule Corex.PinInput do
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:value, validate_value!(value || []))
 
-    assigns = assign(assigns, :value_str, Enum.join(assigns.value, ""))
+    assigns = assign(assigns, :value_str, Enum.join(assigns.value))
 
     ~H"""
     <div
@@ -190,8 +189,8 @@ defmodule Corex.PinInput do
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
-            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            {Connect.input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
           />
         </div>
       </div>

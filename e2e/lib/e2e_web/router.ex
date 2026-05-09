@@ -10,7 +10,7 @@ defmodule E2eWeb.Router do
     plug(E2eWeb.Plugs.Theme)
 
     plug(Localize.Plug.PutLocale,
-      from: [:path, :session, :accept_language, :query],
+      from: [:path, :session, :query],
       gettext: E2eWeb.Gettext,
       param: "locale",
       default: :en
@@ -34,6 +34,8 @@ defmodule E2eWeb.Router do
       on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive] do
       live("/", HomeLive, :index)
     end
+
+    get("/templates", PageController, :templates_page)
   end
 
   scope "/:locale", E2eWeb do
@@ -147,6 +149,7 @@ defmodule E2eWeb.Router do
       live("/number-input/playground", NumberInputPlayLive)
       live("/number-input/api", NumberInputApiLive)
       live("/number-input/events", NumberInputEventsLive)
+      live("/number-input/patterns", NumberInputPatternsLive)
       live("/number-input/live-form", NumberInputFormLive)
 
       live("/password-input/playground", PasswordInputPlayLive)
@@ -201,6 +204,7 @@ defmodule E2eWeb.Router do
 
       live("/tooltip/api", TooltipApiLive)
       live("/tooltip/events", TooltipEventsLive)
+      live("/tooltip/patterns", TooltipPatternsLive)
 
       live("/", HomeLive, :index)
     end

@@ -1,6 +1,15 @@
 @import "../main.css";
 
 @layer components {
+  .tooltip {
+    position: relative;
+    z-index: 20;
+  }
+
+  .tooltip[data-loading] > * {
+    @apply ui-loading;
+  }
+
   .tooltip [data-scope="tooltip"][data-part="positioner"] {
     z-index: 50;
     position: absolute;
@@ -53,24 +62,36 @@
 }
 
 @utility tooltip--* {
-  max-width: --value(--container-*, [length]);
-
   [data-scope="tooltip"][data-part="content"] {
-    padding: --value(--spacing-space-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    background: --value(--color-ui, [color]);
-    color: --value(--color-ink, [color]);
+    background: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
     border-color: --value(--color-border, [color]);
   }
 
   [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-size: calc(--value(--spacing-*, [length]) * 0.25);
-    --arrow-background: --value(--color-ui, [color]);
+    --arrow-background: --value(--color-*, [color]);
   }
 
   [data-scope="tooltip"][data-part="arrow-tip"] {
     background: var(--arrow-background);
     border-color: --value(--color-border, [color]);
+  }
+}
+
+@utility tooltip--text-* {
+  [data-scope="tooltip"][data-part="content"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+}
+
+@utility tooltip--size-* {
+  [data-scope="tooltip"][data-part="content"] {
+    max-width: --value(--container-*, [length]);
+    padding: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-size: calc(--value(--spacing-space-*, [length]) * 0.25);
   }
 }

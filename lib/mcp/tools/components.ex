@@ -47,9 +47,16 @@ defmodule Corex.MCP.Tools.Components do
   def get_component(%{"id" => id}) when is_binary(id) do
     case Corex.component_module_for_mcp_id(id) do
       {:ok, mod} ->
-        {:ok, spec} = Corex.component_spec(String.to_existing_atom(id))
-        payload = enrich_with_docs(spec, mod)
-        {:ok, Corex.Json.encode!(payload)}
+        atom_id = String.to_existing_atom(id)
+
+        case Corex.component_spec(atom_id) do
+          {:ok, spec} ->
+            payload = enrich_with_docs(spec, mod)
+            {:ok, Corex.Json.encode!(payload)}
+
+          :error ->
+            {:error, "Unknown component id. Use list_components for valid ids."}
+        end
 
       :error ->
         {:error, "Unknown component id. Use list_components for valid ids."}
@@ -104,9 +111,9 @@ defmodule Corex.MCP.Tools.Components do
     end
   end
 
-  defp source_path_from_meta(meta) do
-    p = Map.get(meta, :source_path) || Map.get(meta, "source_path")
-    normalize_source_path_string(p)
+  defp source_path_from_meta(meta) when is_map(meta) do
+    meta = Map.new(meta, fn {k, v} -> {to_string(k), v} end)
+    normalize_source_path_string(Map.get(meta, "source_path"))
   end
 
   defp compile_source_path(mod) do

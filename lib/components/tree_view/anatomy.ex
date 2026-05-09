@@ -175,6 +175,14 @@ defmodule Corex.TreeView.Anatomy do
       "aria-labelledby"
     ]
     def ignored_attrs, do: @ignored_attrs
+
+    def with_animation(%__MODULE__{} = b, animation) when is_binary(animation) do
+      struct!(b, %{animation: animation})
+    end
+
+    def with_animation(m, animation) when is_map(m) and is_binary(animation) do
+      struct!(__MODULE__, Map.put(m, :animation, animation))
+    end
   end
 
   defmodule BranchControl do

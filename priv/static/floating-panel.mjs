@@ -1,4 +1,7 @@
 import {
+  readPositioningOptions
+} from "./chunks/chunk-6QZYI6OY.mjs";
+import {
   __publicField,
   addPoints,
   createRect,
@@ -1419,6 +1422,64 @@ var FloatingPanel = class extends Component {
   }
 };
 
+// lib/floating-panel-anchor.ts
+function anchorPointFromPositioning(positioning, details, panelSize, dir) {
+  const boundaryRect = details.boundaryRect;
+  if (!boundaryRect) return void 0;
+  const gutter = positioning.gutter ?? 8;
+  const shift = positioning.shift ?? 0;
+  const mainAxis = positioning.offset?.mainAxis ?? 0;
+  const crossAxis = positioning.offset?.crossAxis ?? 0;
+  const placement = positioning.placement ?? "bottom";
+  const { width: pw, height: ph } = panelSize;
+  const b = boundaryRect;
+  const isRtl = dir === "rtl";
+  const xInnerLeft = b.x + gutter;
+  const xInnerRight = b.x + b.width - pw - gutter;
+  const xCenter = b.x + (b.width - pw) / 2;
+  const yInnerTop = b.y + gutter;
+  const yInnerBottom = b.y + b.height - ph - gutter;
+  const yCenter = b.y + (b.height - ph) / 2;
+  const parts2 = placement.split("-");
+  const side = parts2[0];
+  const align = parts2[1];
+  const xForBottomTop = () => {
+    if (align === "start") return isRtl ? xInnerRight : xInnerLeft;
+    if (align === "end") return isRtl ? xInnerLeft : xInnerRight;
+    return xCenter;
+  };
+  if (side === "bottom") {
+    return {
+      x: xForBottomTop() + shift + crossAxis,
+      y: yInnerBottom - mainAxis
+    };
+  }
+  if (side === "top") {
+    return {
+      x: xForBottomTop() + shift + crossAxis,
+      y: yInnerTop + mainAxis
+    };
+  }
+  if (side === "left") {
+    const y = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+    return {
+      x: b.x + gutter + mainAxis,
+      y: y + shift + crossAxis
+    };
+  }
+  if (side === "right") {
+    const y = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+    return {
+      x: b.x + b.width - pw - gutter - mainAxis,
+      y: y + shift + crossAxis
+    };
+  }
+  return {
+    x: xCenter + crossAxis,
+    y: yCenter + mainAxis
+  };
+}
+
 // hooks/floating-panel.ts
 function parseSize(val) {
   if (!val) return void 0;
@@ -1442,6 +1503,14 @@ function parsePoint(val) {
   }
   return void 0;
 }
+var FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
+function buildAnchorProps(el) {
+  const defaultSize = parseSize(el.dataset.defaultSize) ?? FALLBACK_DEFAULT_SIZE;
+  const defaultPosition = parsePoint(el.dataset.defaultPosition);
+  const positioning = readPositioningOptions(el);
+  const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
+  return { defaultPosition, getAnchorPosition };
+}
 var FloatingPanelHook = {
   mounted() {
     const el = this.el;
@@ -1449,8 +1518,7 @@ var FloatingPanelHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const size = parseSize(el.dataset.size);
     const defaultSize = parseSize(el.dataset.defaultSize);
-    const position = parsePoint(el.dataset.position);
-    const defaultPosition = parsePoint(el.dataset.defaultPosition);
+    const anchorProps = buildAnchorProps(el);
     const zag = new FloatingPanel(el, {
       id: el.id,
       defaultOpen: false,
@@ -1462,8 +1530,8 @@ var FloatingPanelHook = {
       dir: getDir(el),
       size,
       defaultSize,
-      position,
-      defaultPosition,
+      defaultPosition: anchorProps.defaultPosition,
+      getAnchorPosition: anchorProps.getAnchorPosition,
       minSize: parseSize(el.dataset.minSize),
       maxSize: parseSize(el.dataset.maxSize),
       persistRect: getBoolean(el, "persistRect"),
@@ -1530,10 +1598,14 @@ var FloatingPanelHook = {
     });
   },
   updated() {
+    const el = this.el;
+    const anchorProps = buildAnchorProps(el);
     this.floatingPanel?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      dir: getDir(this.el)
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      defaultPosition: anchorProps.defaultPosition,
+      getAnchorPosition: anchorProps.getAnchorPosition
     });
   },
   destroyed() {

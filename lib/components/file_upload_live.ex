@@ -104,8 +104,6 @@ defmodule Corex.FileUploadLive do
 
   use Phoenix.Component
 
-  import Corex.Gettext, only: [gettext: 1]
-
   alias Phoenix.LiveView.UploadConfig
   alias Phoenix.LiveView.UploadEntry
 
@@ -121,7 +119,7 @@ defmodule Corex.FileUploadLive do
     doc: "Stable prefix for internal ids; defaults to a generated id"
   )
 
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:invalid, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
 
@@ -151,8 +149,8 @@ defmodule Corex.FileUploadLive do
 
   def file_upload_live(assigns) do
     default_translation = %Corex.FileUpload.Translation{
-      dropzone: gettext("Drag your file(s) here"),
-      open: gettext("Upload file(s)")
+      dropzone: Corex.Gettext.gettext("Drag your file(s) here"),
+      open: Corex.Gettext.gettext("Upload file(s)")
     }
 
     translation = merge_translation(Map.get(assigns, :translation), default_translation)
@@ -301,15 +299,15 @@ defmodule Corex.FileUploadLive do
 
   defp format_bytes(n) when is_integer(n), do: Integer.to_string(n) <> " B"
 
-  defp upload_err_text(:too_many_files), do: gettext("Too many files")
+  defp upload_err_text(:too_many_files), do: Corex.Gettext.gettext("Too many files")
 
-  defp upload_err_text(:too_large), do: gettext("File is too large")
+  defp upload_err_text(:too_large), do: Corex.Gettext.gettext("File is too large")
 
-  defp upload_err_text(:not_accepted), do: gettext("Unacceptable file type")
+  defp upload_err_text(:not_accepted), do: Corex.Gettext.gettext("Unacceptable file type")
 
-  defp upload_err_text(:external_client_failure), do: gettext("Upload failed")
+  defp upload_err_text(:external_client_failure), do: Corex.Gettext.gettext("Upload failed")
 
-  defp upload_err_text({:writer_failure, _reason}), do: gettext("Upload failed")
+  defp upload_err_text({:writer_failure, _reason}), do: Corex.Gettext.gettext("Upload failed")
 
   defp upload_err_text(other), do: inspect(other)
 end

@@ -109,7 +109,7 @@ defmodule Corex.NumberInputTest do
       assert html =~ "-"
     end
 
-    test "does not emit data-controlled" do
+    test "does not emit data-controlled when uncontrolled" do
       html =
         render_component(
           fn assigns ->
@@ -126,6 +126,53 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ "data-controlled"
+    end
+
+    test "controlled emits data-controlled and data-value" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value="42" controlled>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "data-controlled"
+      assert html =~ ~s(data-value="42")
+      refute html =~ ~s(data-default-value="42")
+    end
+
+    test "field forces uncontrolled even when controlled is passed" do
+      changeset =
+        {%{}, %{value: :string}}
+        |> Ecto.Changeset.cast(%{"value" => "99"}, [:value])
+
+      form = to_form(changeset, as: :item, id: "item-form")
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input field={@form[:value]} controlled>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{form: form}
+        )
+
+      refute html =~ "data-controlled"
+      assert html =~ ~s(data-default-value="99")
     end
   end
 

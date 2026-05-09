@@ -1,15 +1,7 @@
-/**
- * Corex utility functions for working with Zag.js components.
- */
-
 import type { Direction } from "@zag-js/types";
 
 const DIR_VALUES: Direction[] = ["ltr", "rtl"];
 
-/**
- * Read dir for a component: element data-dir, else <html dir="...">, else "ltr".
- * Dir is set server-side; JS only reads the attribute.
- */
 export function getDir(element: HTMLElement): Direction {
   const fromEl = element.dataset.dir;
   if (fromEl !== undefined && DIR_VALUES.includes(fromEl as Direction)) {

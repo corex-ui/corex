@@ -167,7 +167,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 max-w-md w-full">
+            <div class="flex flex-col gap-3 max-w-md">
               <.combobox
                 id="combobox-patterns-controlled-field"
                 class="combobox"

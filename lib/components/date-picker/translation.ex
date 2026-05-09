@@ -4,9 +4,9 @@ defmodule Corex.DatePicker.Translation do
 
   These map to the [Zag.js date picker `translations` prop](https://zagjs.com/components/react/date-picker) (plus `input` and range labels, which the Corex host applies because Zag does not set every label from one place).
 
-  Without gettext: `translation={%DatePicker.Translation{ content: "calendar" }}`
+  Without gettext: `translation={%Corex.DatePicker.Translation{content: "calendar"}}`
 
-  With gettext: `translation={%DatePicker.Translation{ content: gettext("calendar") }}`
+  With gettext: `translation={%Corex.DatePicker.Translation{content: Corex.Gettext.gettext("calendar")}}`
   """
 
   @enforce_keys []

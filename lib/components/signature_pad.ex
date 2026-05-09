@@ -271,8 +271,8 @@ defmodule Corex.SignaturePad do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the signature pad. When nil, derived from document (html lang + config :rtl_locales)"
   )

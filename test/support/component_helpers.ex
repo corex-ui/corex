@@ -294,11 +294,28 @@ defmodule CorexTest.ComponentHelpers do
   def render_floating_panel(assigns) do
     ~H"""
     <.floating_panel>
-      <:open_trigger>Open</:open_trigger>
-      <:closed_trigger>Closed</:closed_trigger>
+      <:trigger>
+        <span data-open>Open</span>
+        <span data-closed>Closed</span>
+      </:trigger>
+      <:title>Title</:title>
       <:minimize_trigger>Min</:minimize_trigger>
       <:maximize_trigger>Max</:maximize_trigger>
       <:default_trigger>Default</:default_trigger>
+      <:close_trigger>Close</:close_trigger>
+      <:content>Content</:content>
+    </.floating_panel>
+    """
+  end
+
+  def render_floating_panel_without_stage_triggers(assigns) do
+    ~H"""
+    <.floating_panel id="fp-no-stage">
+      <:trigger>
+        <span data-open>Open</span>
+        <span data-closed>Closed</span>
+      </:trigger>
+      <:title>No stages</:title>
       <:close_trigger>Close</:close_trigger>
       <:content>Content</:content>
     </.floating_panel>
@@ -478,6 +495,17 @@ defmodule CorexTest.ComponentHelpers do
   def render_timer(assigns) do
     ~H"""
     <.timer start_ms={60_000}>
+      <:start_trigger>Start</:start_trigger>
+      <:pause_trigger>Pause</:pause_trigger>
+      <:resume_trigger>Resume</:resume_trigger>
+      <:reset_trigger>Reset</:reset_trigger>
+    </.timer>
+    """
+  end
+
+  def render_timer_paused(assigns) do
+    ~H"""
+    <.timer start_ms={60_000} auto_start={false}>
       <:start_trigger>Start</:start_trigger>
       <:pause_trigger>Pause</:pause_trigger>
       <:resume_trigger>Resume</:resume_trigger>

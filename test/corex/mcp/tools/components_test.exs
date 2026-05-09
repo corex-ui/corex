@@ -10,7 +10,12 @@ defmodule Corex.MCP.Tools.ComponentsTest do
   end
 
   test "list_components returns encoded ids" do
-    assert {:ok, json} = Components.list_components(%{})
+    json =
+      case Components.list_components(%{}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
     decoded = Corex.Json.decode!(json)
     assert is_list(decoded["components"])
     assert "accordion" in decoded["components"]
@@ -18,7 +23,12 @@ defmodule Corex.MCP.Tools.ComponentsTest do
   end
 
   test "get_component returns spec, docs, and source metadata for a known id" do
-    assert {:ok, json} = Components.get_component(%{"id" => "accordion"})
+    json =
+      case Components.get_component(%{"id" => "accordion"}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
     decoded = Corex.Json.decode!(json)
     assert decoded["id"] == "accordion"
     assert decoded["module"] =~ "Accordion"

@@ -27,6 +27,13 @@ export function readPositioningOptions(el: HTMLElement): PositioningOptions | un
   if (overflowPadding !== undefined) options.overflowPadding = overflowPadding;
   const arrowPadding = getNumber(el, "positionArrowPadding");
   if (arrowPadding !== undefined) options.arrowPadding = arrowPadding;
+  const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
+  const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
+  if (offsetMainAxis !== undefined || offsetCrossAxis !== undefined) {
+    options.offset = {};
+    if (offsetMainAxis !== undefined) options.offset.mainAxis = offsetMainAxis;
+    if (offsetCrossAxis !== undefined) options.offset.crossAxis = offsetCrossAxis;
+  }
   const flip = readFlipAttr(el);
   if (flip !== undefined) options.flip = flip;
   const slide = getBooleanValue(el, "positionSlide");
