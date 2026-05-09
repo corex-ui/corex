@@ -96,7 +96,7 @@ defmodule Corex.CheckboxTest do
       assert html =~ ~r/data-part="control"/
       assert html =~ ~r/data-part="indicator"/
       assert html =~ ~r/data-part="label"/
-      assert html =~ ~r/dir="ltr"/
+      refute html =~ ~r/\bdir=/
       assert html =~ ~r/data-orientation="horizontal"/
     end
 

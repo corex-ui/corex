@@ -132,8 +132,8 @@ defmodule Corex.DataList do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "Text direction"
   )
 

@@ -7516,43 +7516,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5ZLJUF5L.mjs
-  function readFlipAttr(el) {
-    const raw = el.dataset.positionFlip;
-    if (raw == null) return void 0;
-    if (raw === "true") return true;
-    if (raw === "false") return false;
-    const list = raw.split(",").map((v2) => v2.trim()).filter(Boolean);
-    return list.length > 0 ? list : void 0;
-  }
-  function readPositioningOptions(el) {
-    const options = {};
-    const strategy = getString(el, "positionStrategy");
-    if (strategy) options.strategy = strategy;
-    const placement = getString(el, "positionPlacement");
-    if (placement) options.placement = placement;
-    const gutter = getNumber(el, "positionGutter");
-    if (gutter !== void 0) options.gutter = gutter;
-    const shift3 = getNumber(el, "positionShift");
-    if (shift3 !== void 0) options.shift = shift3;
-    const overflowPadding = getNumber(el, "positionOverflowPadding");
-    if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
-    const arrowPadding = getNumber(el, "positionArrowPadding");
-    if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
-    const flip3 = readFlipAttr(el);
-    if (flip3 !== void 0) options.flip = flip3;
-    const slide = getBooleanValue(el, "positionSlide");
-    if (slide !== void 0) options.slide = slide;
-    const overlap = getBooleanValue(el, "positionOverlap");
-    if (overlap !== void 0) options.overlap = overlap;
-    const sameWidth = getBooleanValue(el, "positionSameWidth");
-    if (sameWidth !== void 0) options.sameWidth = sameWidth;
-    const fitViewport = getBooleanValue(el, "positionFitViewport");
-    if (fitViewport !== void 0) options.fitViewport = fitViewport;
-    const hideWhenDetached = getBooleanValue(el, "positionHideWhenDetached");
-    if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
-    return Object.keys(options).length > 0 ? options : void 0;
-  }
+  // ../priv/static/chunks/chunk-RJABPW5C.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8916,8 +8880,8 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_5ZLJUF5L = __esm({
-    "../priv/static/chunks/chunk-5ZLJUF5L.mjs"() {
+  var init_chunk_RJABPW5C = __esm({
+    "../priv/static/chunks/chunk-RJABPW5C.mjs"() {
       "use strict";
       init_chunk_LTYT3NRU();
       sides = ["top", "right", "bottom", "left"];
@@ -10148,6 +10112,57 @@ var Corex = (() => {
           this.remove(this.layers[0].node);
         }
       };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-6QZYI6OY.mjs
+  function readFlipAttr(el) {
+    const raw = el.dataset.positionFlip;
+    if (raw == null) return void 0;
+    if (raw === "true") return true;
+    if (raw === "false") return false;
+    const list = raw.split(",").map((v2) => v2.trim()).filter(Boolean);
+    return list.length > 0 ? list : void 0;
+  }
+  function readPositioningOptions(el) {
+    const options = {};
+    const strategy = getString(el, "positionStrategy");
+    if (strategy) options.strategy = strategy;
+    const placement = getString(el, "positionPlacement");
+    if (placement) options.placement = placement;
+    const gutter = getNumber(el, "positionGutter");
+    if (gutter !== void 0) options.gutter = gutter;
+    const shift3 = getNumber(el, "positionShift");
+    if (shift3 !== void 0) options.shift = shift3;
+    const overflowPadding = getNumber(el, "positionOverflowPadding");
+    if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
+    const arrowPadding = getNumber(el, "positionArrowPadding");
+    if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
+    const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
+    const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
+    if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
+      options.offset = {};
+      if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
+      if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+    }
+    const flip3 = readFlipAttr(el);
+    if (flip3 !== void 0) options.flip = flip3;
+    const slide = getBooleanValue(el, "positionSlide");
+    if (slide !== void 0) options.slide = slide;
+    const overlap = getBooleanValue(el, "positionOverlap");
+    if (overlap !== void 0) options.overlap = overlap;
+    const sameWidth = getBooleanValue(el, "positionSameWidth");
+    if (sameWidth !== void 0) options.sameWidth = sameWidth;
+    const fitViewport = getBooleanValue(el, "positionFitViewport");
+    if (fitViewport !== void 0) options.fitViewport = fitViewport;
+    const hideWhenDetached = getBooleanValue(el, "positionHideWhenDetached");
+    if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
+    return Object.keys(options).length > 0 ? options : void 0;
+  }
+  var init_chunk_6QZYI6OY = __esm({
+    "../priv/static/chunks/chunk-6QZYI6OY.mjs"() {
+      "use strict";
+      init_chunk_LTYT3NRU();
     }
   });
 
@@ -12156,9 +12171,10 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_7NUJK5QP();
       init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
@@ -14318,9 +14334,10 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -18253,9 +18270,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_TDQG4Q55();
       init_chunk_7BZGUIUZ();
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -24218,6 +24236,63 @@ ${err}`);
       }
     };
   }
+  function anchorPointFromPositioning(positioning, details, panelSize, dir) {
+    var _a4, _b, _c, _d, _e, _f, _g;
+    const boundaryRect = details.boundaryRect;
+    if (!boundaryRect) return void 0;
+    const gutter = (_a4 = positioning.gutter) != null ? _a4 : 8;
+    const shift3 = (_b = positioning.shift) != null ? _b : 0;
+    const mainAxis = (_d = (_c = positioning.offset) == null ? void 0 : _c.mainAxis) != null ? _d : 0;
+    const crossAxis = (_f = (_e = positioning.offset) == null ? void 0 : _e.crossAxis) != null ? _f : 0;
+    const placement = (_g = positioning.placement) != null ? _g : "bottom";
+    const { width: pw, height: ph } = panelSize;
+    const b2 = boundaryRect;
+    const isRtl = dir === "rtl";
+    const xInnerLeft = b2.x + gutter;
+    const xInnerRight = b2.x + b2.width - pw - gutter;
+    const xCenter = b2.x + (b2.width - pw) / 2;
+    const yInnerTop = b2.y + gutter;
+    const yInnerBottom = b2.y + b2.height - ph - gutter;
+    const yCenter = b2.y + (b2.height - ph) / 2;
+    const parts210 = placement.split("-");
+    const side = parts210[0];
+    const align = parts210[1];
+    const xForBottomTop = () => {
+      if (align === "start") return isRtl ? xInnerRight : xInnerLeft;
+      if (align === "end") return isRtl ? xInnerLeft : xInnerRight;
+      return xCenter;
+    };
+    if (side === "bottom") {
+      return {
+        x: xForBottomTop() + shift3 + crossAxis,
+        y: yInnerBottom - mainAxis
+      };
+    }
+    if (side === "top") {
+      return {
+        x: xForBottomTop() + shift3 + crossAxis,
+        y: yInnerTop + mainAxis
+      };
+    }
+    if (side === "left") {
+      const y2 = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+      return {
+        x: b2.x + gutter + mainAxis,
+        y: y2 + shift3 + crossAxis
+      };
+    }
+    if (side === "right") {
+      const y2 = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+      return {
+        x: b2.x + b2.width - pw - gutter - mainAxis,
+        y: y2 + shift3 + crossAxis
+      };
+    }
+    return {
+      x: xCenter + crossAxis,
+      y: yCenter + mainAxis
+    };
+  }
   function parseSize(val) {
     if (!val) return void 0;
     try {
@@ -24240,10 +24315,19 @@ ${err}`);
     }
     return void 0;
   }
-  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FloatingPanelHook;
+  function buildAnchorProps(el) {
+    var _a4;
+    const defaultSize = (_a4 = parseSize(el.dataset.defaultSize)) != null ? _a4 : FALLBACK_DEFAULT_SIZE;
+    const defaultPosition = parsePoint(el.dataset.defaultPosition);
+    const positioning = readPositioningOptions(el);
+    const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
+    return { defaultPosition, getAnchorPosition };
+  }
+  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
+      init_chunk_6QZYI6OY();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
@@ -25144,6 +25228,7 @@ ${err}`);
           });
         }
       };
+      FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
       FloatingPanelHook = {
         mounted() {
           const el = this.el;
@@ -25151,8 +25236,7 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const size3 = parseSize(el.dataset.size);
           const defaultSize = parseSize(el.dataset.defaultSize);
-          const position = parsePoint(el.dataset.position);
-          const defaultPosition = parsePoint(el.dataset.defaultPosition);
+          const anchorProps = buildAnchorProps(el);
           const zag = new FloatingPanel(el, {
             id: el.id,
             defaultOpen: false,
@@ -25164,8 +25248,8 @@ ${err}`);
             dir: getDir(el),
             size: size3,
             defaultSize,
-            position,
-            defaultPosition,
+            defaultPosition: anchorProps.defaultPosition,
+            getAnchorPosition: anchorProps.getAnchorPosition,
             minSize: parseSize(el.dataset.minSize),
             maxSize: parseSize(el.dataset.maxSize),
             persistRect: getBoolean(el, "persistRect"),
@@ -25233,10 +25317,14 @@ ${err}`);
         },
         updated() {
           var _a4;
+          const el = this.el;
+          const anchorProps = buildAnchorProps(el);
           (_a4 = this.floatingPanel) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            disabled: getBoolean(this.el, "disabled"),
-            dir: getDir(this.el)
+            id: el.id,
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            defaultPosition: anchorProps.defaultPosition,
+            getAnchorPosition: anchorProps.getAnchorPosition
           });
         },
         destroyed() {
@@ -27612,9 +27700,10 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
       init_chunk_MG52DTQN();
@@ -32459,9 +32548,10 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
+      init_chunk_6QZYI6OY();
       init_chunk_7NUJK5QP();
       init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
@@ -37608,6 +37698,40 @@ ${err}`);
       }
     };
   }
+  function createTooltipCallbacks(el, pushEvent, liveSocket) {
+    const onTriggerValueChange = (details) => {
+      var _a4;
+      const eventName = getString(el, "onTriggerValueChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: (_a4 = details.value) != null ? _a4 : ""
+        });
+      }
+    };
+    const onOpenChange = (details) => {
+      const eventName = getString(el, "onOpenChange");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          open: details.open
+        });
+      }
+      const eventNameClient = getString(el, "onOpenChangeClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              open: details.open
+            }
+          })
+        );
+      }
+    };
+    return { onOpenChange, onTriggerValueChange };
+  }
   function getCloseDelay(el) {
     const interactive = getBoolean(el, "interactive");
     const raw = getNumber(el, "closeDelay");
@@ -37618,7 +37742,8 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_5ZLJUF5L();
+      init_chunk_RJABPW5C();
+      init_chunk_6QZYI6OY();
       init_chunk_MG52DTQN();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -38103,18 +38228,10 @@ ${err}`);
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const liveSocket = this.liveSocket;
           const positioning = readPositioningOptions(el);
-          const onTriggerValueChange = (details) => {
-            var _a4;
-            const eventName = getString(el, "onTriggerValueChange");
-            if (eventName && canPushEvent(this.liveSocket)) {
-              pushEvent(eventName, {
-                id: el.id,
-                value: (_a4 = details.value) != null ? _a4 : ""
-              });
-            }
-          };
-          const tooltip = new Tooltip(el, {
+          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
+          const tooltip = new Tooltip(el, __spreadValues({
             id: el.id,
             defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
@@ -38126,30 +38243,8 @@ ${err}`);
             closeOnClick: getBoolean(el, "closeOnClick"),
             closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
             closeOnScroll: getBoolean(el, "closeOnScroll"),
-            interactive: getBoolean(el, "interactive"),
-            onTriggerValueChange,
-            onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: details.open
-                    }
-                  })
-                );
-              }
-            }
-          });
+            interactive: getBoolean(el, "interactive")
+          }, callbacks));
           tooltip.init();
           this.tooltip = tooltip;
           this.onSetOpen = (event) => {
@@ -38168,19 +38263,11 @@ ${err}`);
         updated() {
           var _a4;
           const el = this.el;
-          const positioning = readPositioningOptions(el);
           const pushEvent = this.pushEvent.bind(this);
-          const onTriggerValueChange = (details) => {
-            var _a5;
-            const eventName = getString(el, "onTriggerValueChange");
-            if (eventName && canPushEvent(this.liveSocket)) {
-              pushEvent(eventName, {
-                id: el.id,
-                value: (_a5 = details.value) != null ? _a5 : ""
-              });
-            }
-          };
-          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps({
+          const liveSocket = this.liveSocket;
+          const positioning = readPositioningOptions(el);
+          const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
+          (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadValues({
             id: el.id,
             defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
@@ -38192,9 +38279,8 @@ ${err}`);
             closeOnClick: getBoolean(el, "closeOnClick"),
             closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
             closeOnScroll: getBoolean(el, "closeOnScroll"),
-            interactive: getBoolean(el, "interactive"),
-            onTriggerValueChange
-          });
+            interactive: getBoolean(el, "interactive")
+          }, callbacks));
           queueMicrotask(() => {
             var _a5, _b, _c, _d;
             (_a5 = this.tooltip) == null ? void 0 : _a5.syncDom();

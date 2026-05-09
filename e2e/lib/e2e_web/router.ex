@@ -10,7 +10,7 @@ defmodule E2eWeb.Router do
     plug(E2eWeb.Plugs.Theme)
 
     plug(Localize.Plug.PutLocale,
-      from: [:path, :session, :accept_language, :query],
+      from: [:path, :session, :query],
       gettext: E2eWeb.Gettext,
       param: "locale",
       default: :en
@@ -34,6 +34,8 @@ defmodule E2eWeb.Router do
       on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive] do
       live("/", HomeLive, :index)
     end
+
+    get("/templates", PageController, :templates_page)
   end
 
   scope "/:locale", E2eWeb do

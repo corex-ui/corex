@@ -1,7 +1,11 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Tooltip } from "../components/tooltip";
-import type { OpenChangeDetails, TriggerValueChangeDetails } from "@zag-js/tooltip";
+import type {
+  OpenChangeDetails,
+  Props as TooltipProps,
+  TriggerValueChangeDetails,
+} from "@zag-js/tooltip";
 
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import { readPositioningOptions } from "../lib/positioning";
@@ -12,6 +16,47 @@ type TooltipHookState = {
   handlers?: Array<CallbackRef>;
   onSetOpen?: (event: Event) => void;
 };
+
+function createTooltipCallbacks(
+  el: HTMLElement,
+  pushEvent: HookInterface<HTMLElement>["pushEvent"],
+  liveSocket: HookInterface<HTMLElement>["liveSocket"]
+): Pick<TooltipProps, "onOpenChange" | "onTriggerValueChange"> {
+  const onTriggerValueChange = (details: TriggerValueChangeDetails) => {
+    const eventName = getString(el, "onTriggerValueChange");
+    if (eventName && canPushEvent(liveSocket)) {
+      pushEvent(eventName, {
+        id: el.id,
+        value: details.value ?? "",
+      });
+    }
+  };
+
+  const onOpenChange = (details: OpenChangeDetails) => {
+    const eventName = getString(el, "onOpenChange");
+    if (eventName && canPushEvent(liveSocket)) {
+      pushEvent(eventName, {
+        id: el.id,
+        open: details.open,
+      });
+    }
+
+    const eventNameClient = getString(el, "onOpenChangeClient");
+    if (eventNameClient) {
+      el.dispatchEvent(
+        new CustomEvent(eventNameClient, {
+          bubbles: true,
+          detail: {
+            id: el.id,
+            open: details.open,
+          },
+        })
+      );
+    }
+  };
+
+  return { onOpenChange, onTriggerValueChange };
+}
 
 function getCloseDelay(el: HTMLElement): number | undefined {
   const interactive = getBoolean(el, "interactive");
@@ -24,18 +69,10 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TooltipHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const liveSocket = this.liveSocket;
 
     const positioning = readPositioningOptions(el);
-
-    const onTriggerValueChange = (details: TriggerValueChangeDetails) => {
-      const eventName = getString(el, "onTriggerValueChange");
-      if (eventName && canPushEvent(this.liveSocket)) {
-        pushEvent(eventName, {
-          id: el.id,
-          value: details.value ?? "",
-        });
-      }
-    };
+    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
 
     const tooltip = new Tooltip(el, {
       id: el.id,
@@ -50,29 +87,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
       closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
       closeOnScroll: getBoolean(el, "closeOnScroll"),
       interactive: getBoolean(el, "interactive"),
-      onTriggerValueChange,
-      onOpenChange: (details: OpenChangeDetails) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open,
-          });
-        }
-
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open,
-              },
-            })
-          );
-        }
-      },
+      ...callbacks,
     });
 
     tooltip.init();
@@ -96,18 +111,10 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & TooltipHookState) {
     const el = this.el;
-    const positioning = readPositioningOptions(el);
     const pushEvent = this.pushEvent.bind(this);
-
-    const onTriggerValueChange = (details: TriggerValueChangeDetails) => {
-      const eventName = getString(el, "onTriggerValueChange");
-      if (eventName && canPushEvent(this.liveSocket)) {
-        pushEvent(eventName, {
-          id: el.id,
-          value: details.value ?? "",
-        });
-      }
-    };
+    const liveSocket = this.liveSocket;
+    const positioning = readPositioningOptions(el);
+    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
 
     this.tooltip?.updateProps({
       id: el.id,
@@ -122,7 +129,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
       closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
       closeOnScroll: getBoolean(el, "closeOnScroll"),
       interactive: getBoolean(el, "interactive"),
-      onTriggerValueChange,
+      ...callbacks,
     });
     queueMicrotask(() => {
       this.tooltip?.syncDom();

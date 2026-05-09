@@ -114,7 +114,7 @@ defmodule Corex.Marquee do
     doc: "When false, animation runs even when user has prefers-reduced-motion"
   )
 
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_pause_change, :string, default: nil, doc: "Server event when pause status changes")
 
   attr(:on_pause_change_client, :string,

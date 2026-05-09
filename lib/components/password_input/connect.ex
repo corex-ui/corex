@@ -33,7 +33,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
       "data-auto-complete" => assigns.auto_complete,
       "data-on-visibility-change" => assigns.on_visibility_change,
@@ -82,7 +82,7 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}"
     }

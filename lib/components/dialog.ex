@@ -268,8 +268,8 @@ defmodule Corex.Dialog do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the dialog. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -408,7 +408,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog title. Use inside `<:content>` when not using the top-level `<:title>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
@@ -427,7 +427,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog description. Use inside `<:content>` when not using the top-level `<:description>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
@@ -446,7 +446,7 @@ defmodule Corex.Dialog do
   @doc type: :component
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:aria_label, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)

@@ -208,7 +208,7 @@ defmodule Corex.PasswordInput do
   attr(:ignore_password_managers, :boolean, default: true)
   attr(:name, :string)
   attr(:form, :string)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:auto_complete, :string,

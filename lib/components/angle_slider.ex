@@ -222,7 +222,7 @@ defmodule Corex.AngleSlider do
   attr(:read_only, :boolean, default: false, doc: "Whether the slider is read-only")
   attr(:invalid, :boolean, default: false, doc: "Whether the slider is invalid")
   attr(:name, :string, default: nil, doc: "Name for form submission")
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"], doc: "Direction")
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Direction")
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:value_text_as, :string,

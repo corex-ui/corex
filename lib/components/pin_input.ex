@@ -83,7 +83,7 @@ defmodule Corex.PinInput do
   attr(:select_on_focus, :boolean, default: false)
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:type, :string, default: "numeric", values: ["alphanumeric", "numeric", "alphabetic"])
   attr(:placeholder, :string, default: "○")

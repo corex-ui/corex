@@ -18,7 +18,8 @@ defmodule Corex.Positioning do
             slide: true,
             overlap: false,
             same_width: false,
-            fit_viewport: true
+            fit_viewport: true,
+            offset: nil
 
   @type t :: %__MODULE__{
           hide_when_detached: boolean(),
@@ -32,14 +33,15 @@ defmodule Corex.Positioning do
           slide: boolean(),
           overlap: boolean(),
           same_width: boolean(),
-          fit_viewport: boolean()
+          fit_viewport: boolean(),
+          offset: Corex.Offset.t() | nil
         }
 
   @spec to_dataset(t() | nil) :: %{String.t() => String.t() | nil}
   def to_dataset(nil), do: %{}
 
   def to_dataset(%__MODULE__{} = p) do
-    %{
+    base = %{
       "data-position-strategy" => p.strategy,
       "data-position-placement" => p.placement,
       "data-position-gutter" => to_string(p.gutter),
@@ -53,7 +55,22 @@ defmodule Corex.Positioning do
       "data-position-fit-viewport" => bool_str(p.fit_viewport),
       "data-position-hide-when-detached" => bool_str(p.hide_when_detached)
     }
+
+    Map.merge(base, offset_to_dataset(p.offset))
   end
+
+  defp offset_to_dataset(nil), do: %{}
+
+  defp offset_to_dataset(%Corex.Offset{} = o) do
+    %{}
+    |> maybe_put_axis_key("data-position-offset-main-axis", o.main_axis)
+    |> maybe_put_axis_key("data-position-offset-cross-axis", o.cross_axis)
+  end
+
+  defp maybe_put_axis_key(map, _key, nil), do: map
+
+  defp maybe_put_axis_key(map, key, value) when is_number(value),
+    do: Map.put(map, key, to_string(value))
 
   defp bool_str(true), do: "true"
   defp bool_str(false), do: "false"

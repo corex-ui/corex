@@ -232,8 +232,8 @@ defmodule Corex.Switch do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -323,7 +323,7 @@ defmodule Corex.Switch do
     <div
       id={@id}
       phx-hook="Switch"
-      data-loading      
+      data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{

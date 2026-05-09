@@ -334,6 +334,7 @@ defmodule Corex.Combobox do
 
   attr(:dir, :string,
     default: nil,
+    values: [nil, "ltr", "rtl"],
     doc:
       "The direction of the combobox. When nil, derived from document (html lang + config :rtl_locales)"
   )

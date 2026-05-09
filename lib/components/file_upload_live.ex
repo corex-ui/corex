@@ -119,7 +119,7 @@ defmodule Corex.FileUploadLive do
     doc: "Stable prefix for internal ids; defaults to a generated id"
   )
 
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:invalid, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
 

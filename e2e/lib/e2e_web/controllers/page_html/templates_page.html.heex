@@ -1,0 +1,84 @@
+<Layouts.marketing flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <div class="layout__article w-full items-stretch">
+    <section class="layout__section w-full min-w-0 max-w-none" aria-labelledby="templates-heading">
+      <.layout_heading class="layout-heading max-w-3xl w-full">
+        <:title>
+          <span id="templates-heading">{gettext("Templates")}</span>
+        </:title>
+        <:subtitle>
+          {gettext("Starter kits and reference layouts")}
+        </:subtitle>
+      </.layout_heading>
+
+      <p class="m-0 max-w-prose text-ink-muted">
+        {gettext(
+          "Clone a layout, apply Corex themes, and ship—starting with a static coming-soon site."
+        )}
+      </p>
+
+      <div class="grid w-full gap-space-xl lg:grid-cols-2">
+        <article class="flex min-h-0 min-w-0 flex-col gap-space rounded-xl border border-border bg-layer p-size-lg shadow-md">
+          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
+            <.heroicon name="hero-bolt" class="icon" />
+            <span>{gettext("Starter kit")}</span>
+          </div>
+
+          <div class="overflow-hidden rounded-lg border border-border bg-root">
+            <.carousel
+              id="soonex-templates-carousel"
+              aria_label={gettext("Soonex preview slides")}
+              loop
+              items={@soonex_carousel_items}
+              class="carousel carousel--accent w-full max-w-none"
+            ><:prev_trigger>
+                <.heroicon name="hero-arrow-left" />
+              </:prev_trigger><:next_trigger>
+                <.heroicon name="hero-arrow-right" />
+              </:next_trigger></.carousel>
+          </div>
+
+          <p class="m-0 text-lg font-semibold tracking-tight text-ink">
+            {gettext("Soonex")}
+          </p>
+          <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
+            {gettext(
+              "Coming-soon landing with themes, Markdown posts, and static export ready for GitHub Pages."
+            )}
+          </p>
+
+          <div class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
+            <.navigate
+              to="https://corex-ui.github.io/soonex/"
+              class="button button--brand rounded-full"
+              external
+            >
+              {gettext("Live demo")}
+              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            </.navigate>
+            <.navigate
+              to="https://github.com/corex-ui/soonex"
+              class="button button--ghost rounded-full"
+              external
+            >
+              {gettext("GitHub")}
+              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            </.navigate>
+          </div>
+        </article>
+
+        <article class="flex min-h-[12rem] min-w-0 flex-col justify-center gap-space rounded-xl border border-dashed border-border bg-layer p-size-lg">
+          <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
+            <.heroicon name="hero-sparkles" class="icon" />
+            <span>{gettext("Coming soon")}</span>
+          </div>
+          <p class="m-0 text-lg font-semibold tracking-tight text-ink-muted">
+            {gettext("More templates")}
+          </p>
+          <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
+            {gettext("Phoenix app starters and more reference layouts are on the way.")}
+          </p>
+        </article>
+      </div>
+    </section>
+  </div>
+</Layouts.marketing>

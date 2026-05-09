@@ -73,13 +73,15 @@ defmodule E2eWeb.App.Header do
                   id="doc-menu-dialog"
                   class="tree-view tree-view--accent max-w-3xs w-full"
                   redirect
-                  value={[]}
+                  value={documentation_menu_selected_ids(@path)}
                   items={documentation_menu_items()}
                 >
-                  <:label>{gettext("Documentation")}</:label>
+                  <:label class="sr-only">{gettext("Corex Links")}</:label>
                   <:item :let={item}>
                     <span class="w-full">{item.label}</span>
-                    <.heroicon name="hero-arrow-top-right-on-square" class="icon shrink-0" />
+                    <%= if item_new_tab?(item) do %>
+                      <.heroicon name="hero-arrow-top-right-on-square" class="icon shrink-0" />
+                    <% end %>
                   </:item>
                 </.tree_view>
                 <.aside_nav_tree_views
@@ -127,8 +129,16 @@ defmodule E2eWeb.App.Header do
             <.navigate
               to={~p"/accordion/anatomy"}
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
+              aria-current={header_nav_components_aria_current(@path)}
             >
               {gettext("Components")}
+            </.navigate>
+            <.navigate
+              to="/templates"
+              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
+              aria-current={header_nav_templates_aria_current(@path)}
+            >
+              {gettext("Templates")}
             </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex"
@@ -193,7 +203,51 @@ defmodule E2eWeb.App.Header do
         to: "https://hexdocs.pm/corex/mcp.html",
         redirect: :href,
         new_tab: true
+      },
+      %{
+        id: "doc-templates",
+        label: gettext("Templates"),
+        to: "/templates",
+        redirect: :href,
+        new_tab: false
       }
     ])
   end
+
+  defp item_new_tab?(%{new_tab: true}), do: true
+  defp item_new_tab?(_), do: false
+
+  defp documentation_menu_selected_ids("/templates"), do: ["doc-templates"]
+  defp documentation_menu_selected_ids(_), do: []
+
+  defp header_nav_templates_aria_current("/templates"), do: "page"
+  defp header_nav_templates_aria_current(_), do: nil
+
+  defp header_nav_components_aria_current(raw_path) do
+    path = normalize_header_path(raw_path)
+
+    cond do
+      path == "" or path == "/templates" -> nil
+      String.starts_with?(path, "/admins") -> nil
+      not doc_navigation_path?(path) -> nil
+      path == "/accordion/anatomy" -> "page"
+      true -> "location"
+    end
+  end
+
+  defp normalize_header_path(p) when p in [nil, ""], do: ""
+  defp normalize_header_path(p) when is_binary(p) do
+    p
+    |> String.trim()
+    |> String.trim_trailing("/")
+    |> then(fn s -> if s == "/", do: "", else: s end)
+  end
+
+  defp doc_navigation_path?(path) when is_binary(path) and path != "" do
+    Enum.any?(E2eWeb.Helpers.flat_navigation_list(), fn %{to: to} ->
+      E2eWeb.Path.strip_after_locale(to) == path
+    end)
+  end
+
+  defp doc_navigation_path?(_), do: false
 end

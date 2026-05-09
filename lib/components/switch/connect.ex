@@ -9,7 +9,9 @@ defmodule Corex.Switch.Connect do
       checkbox_checked_controlled_attr: 2,
       checkbox_checked_default_attr: 2,
       checkbox_native_checked: 1,
-      data_state: 3
+      data_state: 3,
+      maybe_put_data_dir: 2,
+      maybe_put_dir: 2
     ]
 
   alias Phoenix.LiveView.JS
@@ -26,7 +28,6 @@ defmodule Corex.Switch.Connect do
       "data-value" => assigns.value,
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
       "data-read-only" => get_boolean(assigns.read_only),
@@ -35,6 +36,7 @@ defmodule Corex.Switch.Connect do
       "data-on-checked-change" => assigns.on_checked_change,
       "data-on-checked-change-client" => assigns.on_checked_change_client
     }
+    |> maybe_put_data_dir(assigns.dir)
   end
 
   @spec root(Root.t()) :: map()
@@ -46,12 +48,12 @@ defmodule Corex.Switch.Connect do
       "data-scope" => "switch",
       "data-part" => "root",
       "data-orientation" => orientation,
-      "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}",
       "htmlFor" => "switch:#{assigns.id}:input",
       "for" => "switch:#{assigns.id}:input",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_root(assigns) do
@@ -95,10 +97,10 @@ defmodule Corex.Switch.Connect do
       "data-part" => "control",
       "data-orientation" => orientation,
       "aria-hidden" => "true",
-      "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:control",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_control(assigns) do
@@ -117,10 +119,10 @@ defmodule Corex.Switch.Connect do
       "data-part" => "thumb",
       "data-orientation" => orientation,
       "aria-hidden" => "true",
-      "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:thumb",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_thumb(assigns) do
@@ -139,10 +141,10 @@ defmodule Corex.Switch.Connect do
       "data-part" => "label",
       "data-orientation" => orientation,
       "aria-hidden" => "true",
-      "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:label",
       "data-state" => state
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_label(assigns) do

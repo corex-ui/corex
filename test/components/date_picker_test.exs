@@ -4,7 +4,6 @@ defmodule Corex.DatePickerTest do
 
   alias Corex.DatePicker
   alias Corex.DatePicker.Connect
-  alias Corex.DatePicker.Translation, as: DatePickerTranslation
 
   describe "date_picker/1" do
     test "renders" do
@@ -183,12 +182,12 @@ defmodule Corex.DatePickerTest do
     test "props/1 encodes translation open_calendar, close_calendar, and input in data-translation JSON" do
       base = DatePicker.default_translation()
 
-      translation = %DatePickerTranslation{
-        base
-        | open_calendar: "Pick a date",
+      translation =
+        struct!(base, %{
+          open_calendar: "Pick a date",
           close_calendar: "Pick a date",
           input: "Event date"
-      }
+        })
 
       assigns = %{
         id: "test-dp",

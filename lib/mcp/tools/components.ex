@@ -47,9 +47,16 @@ defmodule Corex.MCP.Tools.Components do
   def get_component(%{"id" => id}) when is_binary(id) do
     case Corex.component_module_for_mcp_id(id) do
       {:ok, mod} ->
-        {:ok, spec} = Corex.component_spec(String.to_existing_atom(id))
-        payload = enrich_with_docs(spec, mod)
-        {:ok, Corex.Json.encode!(payload)}
+        atom_id = String.to_existing_atom(id)
+
+        case Corex.component_spec(atom_id) do
+          {:ok, spec} ->
+            payload = enrich_with_docs(spec, mod)
+            {:ok, Corex.Json.encode!(payload)}
+
+          :error ->
+            {:error, "Unknown component id. Use list_components for valid ids."}
+        end
 
       :error ->
         {:error, "Unknown component id. Use list_components for valid ids."}

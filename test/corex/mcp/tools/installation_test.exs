@@ -4,7 +4,12 @@ defmodule Corex.MCP.Tools.InstallationTest do
   alias Corex.MCP.Tools.Installation
 
   test "installation_guide all returns both sections" do
-    assert {:ok, json} = Installation.installation_guide(%{})
+    json =
+      case Installation.installation_guide(%{}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
     decoded = Corex.Json.decode!(json)
     assert decoded["scenario"] == "all"
     assert is_map(decoded["new_project"])
@@ -18,7 +23,12 @@ defmodule Corex.MCP.Tools.InstallationTest do
   end
 
   test "installation_guide new_project is scoped" do
-    assert {:ok, json} = Installation.installation_guide(%{"scenario" => "new_project"})
+    json =
+      case Installation.installation_guide(%{"scenario" => "new_project"}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
     decoded = Corex.Json.decode!(json)
     assert decoded["scenario"] == "new_project"
     assert decoded["intent"]
@@ -26,7 +36,12 @@ defmodule Corex.MCP.Tools.InstallationTest do
   end
 
   test "installation_guide existing_project is scoped" do
-    assert {:ok, json} = Installation.installation_guide(%{"scenario" => "existing_project"})
+    json =
+      case Installation.installation_guide(%{"scenario" => "existing_project"}) do
+        {:ok, j} -> j
+        other -> flunk("expected {:ok, json}, got #{inspect(other)}")
+      end
+
     decoded = Corex.Json.decode!(json)
     assert decoded["scenario"] == "existing_project"
     assert decoded["intent"]

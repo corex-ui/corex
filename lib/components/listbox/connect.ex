@@ -37,7 +37,7 @@ defmodule Corex.Listbox.Connect do
         end,
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-loop-focus" => get_boolean(assigns.loop_focus),
       "data-selection-mode" => assigns.selection_mode,
@@ -55,7 +55,7 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}"
     }
@@ -72,7 +72,7 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:label"
     }
@@ -89,7 +89,7 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "content",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:content"
     }
@@ -107,7 +107,7 @@ defmodule Corex.Listbox.Connect do
       "data-scope" => "listbox",
       "data-part" => "item-group",
       "data-id" => assigns.group_id,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-group:#{assigns.group_id}"
     }
@@ -126,7 +126,7 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-group-label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-group-label:#{assigns.html_for}"
     }
@@ -146,7 +146,7 @@ defmodule Corex.Listbox.Connect do
       "data-scope" => "listbox",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item:#{assigns.value}"
     }
@@ -189,7 +189,7 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-text",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-text:#{val}"
     }

@@ -12,7 +12,7 @@ defmodule Corex.Accordion.Anatomy do
       collapsible: true,
       multiple: true,
       orientation: "vertical",
-      dir: "ltr",
+      dir: nil,
       on_value_change: nil,
       on_value_change_client: nil,
       on_focus_change: nil,
@@ -28,7 +28,7 @@ defmodule Corex.Accordion.Anatomy do
             collapsible: boolean(),
             multiple: boolean(),
             orientation: String.t(),
-            dir: String.t(),
+            dir: String.t() | nil,
             on_value_change: String.t(),
             on_value_change_client: String.t(),
             on_focus_change: String.t(),
@@ -40,12 +40,12 @@ defmodule Corex.Accordion.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, orientation: "vertical", dir: "ltr"]
+    defstruct [:id, orientation: "vertical", dir: nil]
 
     @type t :: %__MODULE__{
             id: String.t(),
             orientation: String.t(),
-            dir: String.t()
+            dir: String.t() | nil
           }
 
     @ignored_attrs ["data-orientation", "dir", "id"]
@@ -57,7 +57,7 @@ defmodule Corex.Accordion.Anatomy do
     defstruct [
       :id,
       orientation: "vertical",
-      dir: "ltr",
+      dir: nil,
       values: [],
       value: nil,
       disabled: false,
@@ -69,7 +69,7 @@ defmodule Corex.Accordion.Anatomy do
             id: String.t(),
             data: map(),
             orientation: String.t(),
-            dir: String.t(),
+            dir: String.t() | nil,
             value: String.t() | nil,
             disabled: boolean(),
             values: list(String.t()),

@@ -93,8 +93,8 @@ defmodule Corex.Tooltip do
   attr(:disabled, :boolean, default: false, doc: "Whether the tooltip is disabled")
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "The direction of the tooltip. When nil, derived from document"
   )
 
@@ -131,7 +131,7 @@ defmodule Corex.Tooltip do
 
   attr(:close_on_pointer_down, :boolean,
     default: false,
-    doc: "Whether to close on pointer down. Default true"
+    doc: "Whether to close on pointer down on the trigger. Default false"
   )
 
   attr(:close_on_scroll, :boolean,

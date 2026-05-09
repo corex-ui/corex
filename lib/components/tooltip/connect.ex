@@ -13,7 +13,7 @@ defmodule Corex.Tooltip.Connect do
     base = %{
       "id" => assigns.id,
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
@@ -51,7 +51,7 @@ defmodule Corex.Tooltip.Connect do
       "data-part" => "trigger",
       "tabindex" => if(assigns.disabled, do: -1, else: 0),
       "data-disabled" => assigns.disabled,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-state" => data_state,
       "id" => dom_id
@@ -81,15 +81,15 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "positioner",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "id" => "tooltip:#{assigns.id}:positioner"
+      "id" => "tooltip:#{assigns.id}:popper"
     }
   end
 
   def ignore_positioner(assigns) do
     JS.ignore_attributes(Positioner.ignored_attrs(),
-      to: Selectors.css_id("tooltip:#{assigns.id}:positioner")
+      to: Selectors.css_id("tooltip:#{assigns.id}:popper")
     )
   end
 
@@ -100,7 +100,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "content",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-state" => data_state,
       "id" => "tooltip:#{assigns.id}:content"
@@ -118,7 +118,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "arrow",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "tooltip:#{assigns.id}:arrow"
     }
@@ -135,7 +135,7 @@ defmodule Corex.Tooltip.Connect do
     %{
       "data-scope" => "tooltip",
       "data-part" => "arrow-tip",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "tooltip:#{assigns.id}:arrow-tip"
     }

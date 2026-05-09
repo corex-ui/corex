@@ -36,6 +36,8 @@ defmodule Corex.Timer do
 
   ### Separator slot
 
+  Omit `:separator` to render nothing between digit columns. Pass it to supply markup (for example `:` or `·`) between segments.
+
   ```heex
   <.timer id="t" start_ms={60_000} class="timer">
     <:separator>·</:separator>
@@ -89,7 +91,18 @@ defmodule Corex.Timer do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, ItemLabel, Props, Root, Segment, Separator}
+  alias Corex.Timer.Anatomy.{
+    ActionTrigger,
+    Area,
+    Control,
+    Item,
+    ItemLabel,
+    Props,
+    Root,
+    Segment,
+    Separator
+  }
+
   alias Corex.Timer.Connect
   alias Corex.Timer.Translation, as: TimerTranslation
 
@@ -124,8 +137,8 @@ defmodule Corex.Timer do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "Text direction for styling; nil follows the document."
   )
 
@@ -137,12 +150,12 @@ defmodule Corex.Timer do
 
   attr(:rest, :global)
 
-  slot :separator, required: false
+  slot(:separator, required: false)
 
-  slot :day_label, required: false
-  slot :hour_label, required: false
-  slot :minute_label, required: false
-  slot :second_label, required: false
+  slot(:day_label, required: false)
+  slot(:hour_label, required: false)
+  slot(:minute_label, required: false)
+  slot(:second_label, required: false)
 
   slot :start_trigger, required: false do
     attr(:class, :string, required: false)
@@ -217,7 +230,7 @@ defmodule Corex.Timer do
                 </span>
               <% end %>
             </div>
-            <%= if i < 3 do %>
+            <%= if i < 3 and @separator != [] do %>
               <% sh = Enum.at(@visibility_hidden, i) %>
               <div
                 phx-mounted={
@@ -235,11 +248,7 @@ defmodule Corex.Timer do
                   hidden: sh
                 })}
               >
-                <%= if @separator != [] do %>
-                  {render_slot(@separator)}
-                <% else %>
-                  :
-                <% end %>
+                {render_slot(@separator)}
               </div>
             <% end %>
           <% end %>

@@ -1,7 +1,19 @@
 defmodule Corex.Timer.Connect do
   @moduledoc false
   alias Corex.Selectors
-  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, ItemLabel, Props, Root, Segment, Separator}
+
+  alias Corex.Timer.Anatomy.{
+    ActionTrigger,
+    Area,
+    Control,
+    Item,
+    ItemLabel,
+    Props,
+    Root,
+    Segment,
+    Separator
+  }
+
   alias Corex.Timer.Translation, as: TimerTranslation
 
   alias Phoenix.LiveView.JS
@@ -20,7 +32,7 @@ defmodule Corex.Timer.Connect do
       "data-on-tick-client" => assigns.on_tick_client,
       "data-on-complete" => assigns.on_complete,
       "data-on-complete-client" => assigns.on_complete_client,
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-collapse-leading-zeros" => collapse_dataset(assigns),
       "data-segments" => segments_dataset(assigns),
@@ -65,7 +77,7 @@ defmodule Corex.Timer.Connect do
       "data-scope" => "timer",
       "data-part" => "root",
       "id" => "timer:#{assigns.id}:root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -82,7 +94,7 @@ defmodule Corex.Timer.Connect do
       "data-scope" => "timer",
       "data-part" => "area",
       "id" => "timer:#{assigns.id}:area",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -99,7 +111,7 @@ defmodule Corex.Timer.Connect do
       "data-scope" => "timer",
       "data-part" => "control",
       "id" => "timer:#{assigns.id}:control",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -120,7 +132,7 @@ defmodule Corex.Timer.Connect do
       "data-type" => assigns.type,
       "id" => "timer:#{assigns.id}:item:#{assigns.type}",
       "style" => "--value:#{value};",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 
@@ -169,7 +181,7 @@ defmodule Corex.Timer.Connect do
       "data-part" => "item-label",
       "data-type" => assigns.type,
       "id" => "timer:#{assigns.id}:label:#{assigns.type}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
@@ -218,7 +230,7 @@ defmodule Corex.Timer.Connect do
       "type" => "button",
       "aria-label" => action_label(assigns.action),
       "id" => "timer:#{assigns.id}:action:#{assigns.action}",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 

@@ -294,11 +294,28 @@ defmodule CorexTest.ComponentHelpers do
   def render_floating_panel(assigns) do
     ~H"""
     <.floating_panel>
-      <:open_trigger>Open</:open_trigger>
-      <:closed_trigger>Closed</:closed_trigger>
+      <:trigger>
+        <span data-open>Open</span>
+        <span data-closed>Closed</span>
+      </:trigger>
+      <:title>Title</:title>
       <:minimize_trigger>Min</:minimize_trigger>
       <:maximize_trigger>Max</:maximize_trigger>
       <:default_trigger>Default</:default_trigger>
+      <:close_trigger>Close</:close_trigger>
+      <:content>Content</:content>
+    </.floating_panel>
+    """
+  end
+
+  def render_floating_panel_without_stage_triggers(assigns) do
+    ~H"""
+    <.floating_panel id="fp-no-stage">
+      <:trigger>
+        <span data-open>Open</span>
+        <span data-closed>Closed</span>
+      </:trigger>
+      <:title>No stages</:title>
       <:close_trigger>Close</:close_trigger>
       <:content>Content</:content>
     </.floating_panel>

@@ -16,7 +16,19 @@ defmodule Corex do
     action: {Corex.Action, [action: 1]},
     angle_slider: {Corex.AngleSlider, [angle_slider: 1, angle_slider_skeleton: 1]},
     avatar: {Corex.Avatar, [avatar: 1]},
-    carousel: {Corex.Carousel, [carousel: 1]},
+    carousel:
+      {Corex.Carousel,
+       [
+         carousel: 1,
+         carousel_root: 1,
+         carousel_item_group: 1,
+         carousel_item: 1,
+         carousel_control: 1,
+         carousel_prev_trigger: 1,
+         carousel_next_trigger: 1,
+         carousel_indicator_group: 1,
+         carousel_indicator: 1
+       ]},
     checkbox: {Corex.Checkbox, [checkbox: 1, checkbox_skeleton: 1]},
     clipboard: {Corex.Clipboard, [clipboard: 1]},
     code: {Corex.Code, [code: 1]},

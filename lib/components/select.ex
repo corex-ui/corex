@@ -396,8 +396,8 @@ defmodule Corex.Select do
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the select on select")
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
+    default: nil,
+    values: [nil, "ltr", "rtl"],
     doc: "The direction of the select (ltr or rtl)."
   )
 

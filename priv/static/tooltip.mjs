@@ -1,8 +1,10 @@
 import {
   getPlacement,
-  getPlacementStyles,
+  getPlacementStyles
+} from "./chunks/chunk-RJABPW5C.mjs";
+import {
   readPositioningOptions
-} from "./chunks/chunk-5ZLJUF5L.mjs";
+} from "./chunks/chunk-6QZYI6OY.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
@@ -696,6 +698,39 @@ var Tooltip = class extends Component {
 };
 
 // hooks/tooltip.ts
+function createTooltipCallbacks(el, pushEvent, liveSocket) {
+  const onTriggerValueChange = (details) => {
+    const eventName = getString(el, "onTriggerValueChange");
+    if (eventName && canPushEvent(liveSocket)) {
+      pushEvent(eventName, {
+        id: el.id,
+        value: details.value ?? ""
+      });
+    }
+  };
+  const onOpenChange = (details) => {
+    const eventName = getString(el, "onOpenChange");
+    if (eventName && canPushEvent(liveSocket)) {
+      pushEvent(eventName, {
+        id: el.id,
+        open: details.open
+      });
+    }
+    const eventNameClient = getString(el, "onOpenChangeClient");
+    if (eventNameClient) {
+      el.dispatchEvent(
+        new CustomEvent(eventNameClient, {
+          bubbles: true,
+          detail: {
+            id: el.id,
+            open: details.open
+          }
+        })
+      );
+    }
+  };
+  return { onOpenChange, onTriggerValueChange };
+}
 function getCloseDelay(el) {
   const interactive = getBoolean(el, "interactive");
   const raw = getNumber(el, "closeDelay");
@@ -706,16 +741,9 @@ var TooltipHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const liveSocket = this.liveSocket;
     const positioning = readPositioningOptions(el);
-    const onTriggerValueChange = (details) => {
-      const eventName = getString(el, "onTriggerValueChange");
-      if (eventName && canPushEvent(this.liveSocket)) {
-        pushEvent(eventName, {
-          id: el.id,
-          value: details.value ?? ""
-        });
-      }
-    };
+    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
     const tooltip = new Tooltip(el, {
       id: el.id,
       defaultOpen: getBoolean(el, "defaultOpen"),
@@ -729,28 +757,7 @@ var TooltipHook = {
       closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
       closeOnScroll: getBoolean(el, "closeOnScroll"),
       interactive: getBoolean(el, "interactive"),
-      onTriggerValueChange,
-      onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open
-              }
-            })
-          );
-        }
-      }
+      ...callbacks
     });
     tooltip.init();
     this.tooltip = tooltip;
@@ -769,17 +776,10 @@ var TooltipHook = {
   },
   updated() {
     const el = this.el;
-    const positioning = readPositioningOptions(el);
     const pushEvent = this.pushEvent.bind(this);
-    const onTriggerValueChange = (details) => {
-      const eventName = getString(el, "onTriggerValueChange");
-      if (eventName && canPushEvent(this.liveSocket)) {
-        pushEvent(eventName, {
-          id: el.id,
-          value: details.value ?? ""
-        });
-      }
-    };
+    const liveSocket = this.liveSocket;
+    const positioning = readPositioningOptions(el);
+    const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
     this.tooltip?.updateProps({
       id: el.id,
       defaultOpen: getBoolean(el, "defaultOpen"),
@@ -793,7 +793,7 @@ var TooltipHook = {
       closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
       closeOnScroll: getBoolean(el, "closeOnScroll"),
       interactive: getBoolean(el, "interactive"),
-      onTriggerValueChange
+      ...callbacks
     });
     queueMicrotask(() => {
       this.tooltip?.syncDom();

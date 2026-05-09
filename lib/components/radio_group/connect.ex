@@ -29,7 +29,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-read-only" => get_boolean(assigns.read_only),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
@@ -42,7 +42,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "root",
       "role" => "radiogroup",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}",
       "style" => "position:relative;"
@@ -66,7 +66,7 @@ defmodule Corex.RadioGroup.Connect do
     %{
       "data-scope" => "radio-group",
       "data-part" => "label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:label"
     }
@@ -83,7 +83,7 @@ defmodule Corex.RadioGroup.Connect do
     %{
       "data-scope" => "radio-group",
       "data-part" => "indicator",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:indicator",
       "hidden" => "",
@@ -107,7 +107,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item:#{assigns.value}"
     }
@@ -127,7 +127,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-value" => assigns.value,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-text:#{assigns.value}"
     }
@@ -149,7 +149,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-control:#{assigns.value}"
     }
@@ -175,7 +175,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-value" => assigns.value,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}",
       "style" =>

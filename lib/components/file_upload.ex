@@ -124,7 +124,7 @@ defmodule Corex.FileUpload do
   attr(:required, :boolean, default: false)
   attr(:name, :string)
   attr(:form, :string)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:max_files, :integer, default: 1)
   attr(:max_file_size, :integer, default: nil)
   attr(:min_file_size, :integer, default: nil)

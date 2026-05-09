@@ -90,6 +90,7 @@ defmodule Corex.Tooltip.Anatomy do
       "dir",
       "data-orientation",
       "data-state",
+      "data-instant",
       "id",
       "role",
       "data-placement",

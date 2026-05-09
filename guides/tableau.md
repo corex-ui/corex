@@ -506,42 +506,38 @@ mix localize.download_locales en ar
 
 ### 8.2. Configure Gettext + supported locales
 
+Put default and allowed locales on the Gettext backend (and optional small helpers), not scattered across `config :my_app`:
+
 ```elixir
 defmodule MyApp.Gettext do
-  use Gettext.Backend, otp_app: :my_app
+  use Gettext.Backend,
+    otp_app: :my_app,
+    default_locale: "en",
+    allowed_locales: ~w(en ar)
+
+  def default_locale, do: __gettext__(:default_locale)
+  def locales, do: Gettext.known_locales(__MODULE__)
 end
 ```
 
-In **`config/config.exs`**:
+In **`config/config.exs`**, wire Corex to the host catalog via **Phoenix** (see **`Corex.Gettext`** — it reads `Application.get_env(:phoenix, :gettext_backend)`), set JSON for Phoenix, and declare **Localize** supported locales (must use literals or fixed atoms here: config is evaluated before your app modules are compiled, so you cannot call `Gettext.known_locales/1` from this file):
 
 ```elixir
-my_app_default_locale = "en"
-my_app_locales = ~w(en ar)
-
-config :my_app,
-  default_locale: my_app_default_locale,
-  locales: my_app_locales
-
-config :my_app, MyApp.Gettext,
-  default_locale: my_app_default_locale,
-  locales: my_app_locales,
-  allowed_locales: my_app_locales
-
-config :localize,
-  supported_locales: Enum.map(my_app_locales, &String.to_atom/1)
-
-config :corex,
+config :phoenix,
   gettext_backend: MyApp.Gettext,
   json_library: Jason
+
+config :localize,
+  supported_locales: ~w(en ar)a
 ```
 
-**`config :corex, :gettext_backend`** is what makes Corex components (Select, Editable, Dialog, …) pull their default labels from your catalog. Override a single label with a **`Translation`** struct on the component.
+**`config :phoenix, :gettext_backend`** is what makes Corex components (Select, Editable, Dialog, …) pull their default labels from your catalog. Override a single label with a **`Translation`** struct on the component.
 
-Extend **`MyApp.Config`** (§7.2) with the locale accessors so layout, helpers, and tasks read from one place:
+Point **`MyApp.Config`** (§7.2) at Gettext for the same list the rest of the app uses:
 
 ```elixir
-def default_locale, do: Application.get_env(@app, :default_locale, "en")
-def locales, do: Application.get_env(@app, :locales, ["en"])
+def default_locale, do: MyApp.Gettext.default_locale()
+def locales, do: MyApp.Gettext.locales()
 ```
 
 ### 8.3. `MyApp.Locale`

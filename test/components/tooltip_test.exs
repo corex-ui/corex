@@ -23,6 +23,7 @@ defmodule Corex.TooltipTest do
         )
 
       assert html =~ ~s(data-scope="tooltip")
+      assert html =~ ~s(id="tooltip:tip-unit:popper")
       assert html =~ "Hover"
       assert html =~ "Details"
       assert html =~ ~s(data-part="arrow")

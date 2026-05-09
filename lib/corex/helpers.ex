@@ -160,6 +160,20 @@ defmodule Corex.Helpers do
     Enum.member?(value_list, entry_value(entry))
   end
 
+  def maybe_put_data_dir(map, nil), do: map
+  def maybe_put_data_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "data-dir", dir)
+  def maybe_put_data_dir(map, _), do: map
+
+  def maybe_put_dir(map, nil), do: map
+  def maybe_put_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "dir", dir)
+  def maybe_put_dir(map, _), do: map
+
+  def maybe_put_data_dir_from(map, assigns) when is_map(assigns),
+    do: maybe_put_data_dir(map, Map.get(assigns, :dir))
+
+  def maybe_put_dir_from(map, assigns) when is_map(assigns),
+    do: maybe_put_dir(map, Map.get(assigns, :dir))
+
   @spec respond_to_fields(keyword()) :: %{String.t() => String.t()}
   def respond_to_fields(opts) when is_list(opts) do
     case Keyword.get(opts, :respond_to, :server) do

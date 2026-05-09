@@ -175,6 +175,21 @@
     min-width: var(--container-md);
   }
 
+  .layout .layout__section-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-space);
+    width: 100%;
+    max-width: var(--container-md);
+    margin-inline: auto;
+  }
+
+  .layout .layout__section-intro > p {
+    margin: 0;
+  }
+
   .layout .layout__side,
   .layout .layout__aside {
     display: none;

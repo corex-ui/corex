@@ -39,6 +39,7 @@ export default [
         HTMLFormElement: "readonly",
         SVGSVGElement: "readonly",
         SVGRectElement: "readonly",
+        DOMRect: "readonly",
         requestAnimationFrame: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",

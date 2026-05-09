@@ -3,8 +3,13 @@ defmodule CorexTest.Assertions do
   import ExUnit.Assertions
 
   def assert_has_data(html, selector, expected) when is_binary(html) and is_map(expected) do
-    {:ok, doc} = Floki.parse_fragment(html)
-    assert_has_data(doc, selector, expected)
+    case Floki.parse_fragment(html) do
+      {:ok, doc} ->
+        assert_has_data(doc, selector, expected)
+
+      {:error, reason} ->
+        flunk("expected HTML fragment, got #{inspect(reason)}")
+    end
   end
 
   def assert_has_data(doc, selector, expected) when is_map(expected) do
@@ -21,8 +26,13 @@ defmodule CorexTest.Assertions do
   end
 
   def refute_data(html, selector, attr) when is_binary(html) do
-    {:ok, doc} = Floki.parse_fragment(html)
-    refute_data(doc, selector, attr)
+    case Floki.parse_fragment(html) do
+      {:ok, doc} ->
+        refute_data(doc, selector, attr)
+
+      {:error, reason} ->
+        flunk("expected HTML fragment, got #{inspect(reason)}")
+    end
   end
 
   def refute_data(doc, selector, attr) do

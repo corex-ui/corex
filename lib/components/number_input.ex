@@ -178,7 +178,7 @@ defmodule Corex.NumberInput do
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:translation, Corex.NumberInput.Translation,

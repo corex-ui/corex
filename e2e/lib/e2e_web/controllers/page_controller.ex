@@ -1800,4 +1800,20 @@ defmodule E2eWeb.PageController do
   def tooltip_styling_page(conn, _params) do
     render(conn, :tooltip_styling_page)
   end
+
+  def templates_page(conn, _params) do
+    soonex_carousel_items = [
+      %{url: "/images/templates/soonex/preview-hero.png", alt: gettext("Soonex hero")},
+      %{
+        url: "/images/templates/soonex/preview-highlights.png",
+        alt: gettext("Soonex highlights")
+      },
+      %{url: "/images/templates/soonex/preview-waitlist.png", alt: gettext("Soonex waitlist")}
+    ]
+
+    conn
+    |> assign(:page_title, gettext("Templates · Corex"))
+    |> assign(:soonex_carousel_items, soonex_carousel_items)
+    |> render(:templates_page)
+  end
 end

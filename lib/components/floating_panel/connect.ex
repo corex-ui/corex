@@ -38,17 +38,15 @@ defmodule Corex.FloatingPanel.Connect do
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
-      "id" => assigns.id,
       "data-draggable" => get_boolean(assigns.draggable),
       "data-resizable" => get_boolean(assigns.resizable),
       "data-allow-overflow" => get_boolean(assigns.allow_overflow),
       "data-close-on-escape" => get_boolean(assigns.close_on_escape),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-size" => encode_size(assigns.size),
       "data-default-size" => encode_size(assigns.default_size),
-      "data-position" => encode_point(assigns.position),
       "data-default-position" => encode_point(assigns.default_position),
       "data-min-size" => encode_size(assigns.min_size),
       "data-max-size" => encode_size(assigns.max_size),
@@ -67,7 +65,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "root",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}"
     }
@@ -85,7 +83,7 @@ defmodule Corex.FloatingPanel.Connect do
       "data-scope" => "floating-panel",
       "data-part" => "trigger",
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:trigger"
     }
@@ -104,7 +102,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "positioner",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:positioner"
     }
@@ -121,7 +119,7 @@ defmodule Corex.FloatingPanel.Connect do
     base = %{
       "data-scope" => "floating-panel",
       "data-part" => "content",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:content"
     }
@@ -140,7 +138,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "title",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:title"
     }
@@ -157,7 +155,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "header",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:header"
     }
@@ -174,7 +172,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "body",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:body"
     }
@@ -191,7 +189,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "drag-trigger",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:drag-trigger"
     }
@@ -209,7 +207,7 @@ defmodule Corex.FloatingPanel.Connect do
       "data-scope" => "floating-panel",
       "data-part" => "resize-trigger",
       "data-axis" => assigns.axis,
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:resize:#{assigns.axis}"
     }
@@ -227,7 +225,7 @@ defmodule Corex.FloatingPanel.Connect do
       "data-scope" => "floating-panel",
       "data-part" => "close-trigger",
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:close"
     }
@@ -244,7 +242,7 @@ defmodule Corex.FloatingPanel.Connect do
     %{
       "data-scope" => "floating-panel",
       "data-part" => "control",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:control"
     }
@@ -263,7 +261,7 @@ defmodule Corex.FloatingPanel.Connect do
       "data-part" => "stage-trigger",
       "data-stage" => assigns.stage,
       "type" => "button",
-      "dir" => Map.get(assigns, :dir, "ltr"),
+      "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "id" => "floating-panel:#{assigns.id}:stage:#{assigns.stage}"
     }

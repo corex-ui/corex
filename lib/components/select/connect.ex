@@ -21,7 +21,7 @@ defmodule Corex.Select.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -46,13 +46,13 @@ defmodule Corex.Select.Connect do
       "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
-      "data-dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
 
     base
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> merge_optional_select_props(assigns)
+    |> maybe_put_data_dir(assigns.dir)
   end
 
   defp joined_csv_values([]), do: nil
@@ -90,17 +90,17 @@ defmodule Corex.Select.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     orientation = Map.get(assigns, :orientation, "vertical")
-    dir = Map.get(assigns, :dir, "ltr")
+    dir = Map.get(assigns, :dir)
 
     %{
       "data-scope" => "select",
       "data-part" => "root",
       "data-orientation" => orientation,
-      "dir" => dir,
       "id" => "select:#{assigns.id}",
       "data-invalid" => get_boolean(assigns.invalid),
       "data-readonly" => get_boolean(assigns.read_only)
     }
+    |> maybe_put_dir(dir)
   end
 
   def ignore_root(assigns) do

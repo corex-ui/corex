@@ -239,7 +239,9 @@ defmodule Corex.MixProject do
         Corex.Flash.Error
       ],
       Positioning: [
-        Corex.Positioning
+        Corex.Positioning,
+        Corex.Offset,
+        Corex.Point
       ],
       Animation: [
         Corex.Animation,

@@ -10,6 +10,17 @@ defmodule Corex.PositioningTest do
       assert m["data-position-gutter"] == "12"
     end
 
+    test "emits offset axis keys when set" do
+      p = %Corex.Positioning{
+        offset: %Corex.Offset{main_axis: 1, cross_axis: 2}
+      }
+
+      m = Corex.Positioning.to_dataset(p)
+
+      assert m["data-position-offset-main-axis"] == "1"
+      assert m["data-position-offset-cross-axis"] == "2"
+    end
+
     test "empty map for nil" do
       assert Corex.Positioning.to_dataset(nil) == %{}
     end
