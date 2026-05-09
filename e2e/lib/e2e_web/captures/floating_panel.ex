@@ -8,8 +8,12 @@ defmodule CorexWeb.FloatingPanel do
   capture variants: [
             basic: %{
               class: "floating-panel",
-              open_trigger: [%{inner_block: "Close panel"}],
-              closed_trigger: [%{inner_block: "Open panel"}],
+              trigger: [
+                %{
+                  inner_block:
+                    ~s(<span data-closed>Open panel</span><span data-open>Close panel</span>)
+                }
+              ],
               minimize_trigger: [
                 %{inner_block: ~s(<.heroicon name="hero-arrow-down-left" class="icon" />)}
               ],

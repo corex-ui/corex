@@ -8,8 +8,11 @@ defmodule Corex.FloatingPanel do
 
   ```heex
   <.floating_panel id="my-floating-panel" class="floating-panel">
-    <:open_trigger>Close panel</:open_trigger>
-    <:closed_trigger>Open panel</:closed_trigger>
+    <:trigger class="button button--ghost button--sm">
+      <span data-closed>Open panel</span>
+      <span data-open>Close panel</span>
+    </:trigger>
+    <:title>Panel</:title>
     <:minimize_trigger>
       <.heroicon name="hero-arrow-down-left" class="icon" />
     </:minimize_trigger>
@@ -31,7 +34,19 @@ defmodule Corex.FloatingPanel do
   </.floating_panel>
   ```
 
-  Required slots: `:open_trigger`, `:closed_trigger`, `:minimize_trigger`, `:maximize_trigger`, `:default_trigger`, `:close_trigger`, `:content`.
+  Required slots: `:trigger`, `:title`, `:close_trigger`, `:content`.
+
+  Set **`class`** on **`:trigger`** to style the outer trigger button (e.g. `button button--ghost button--sm`).
+
+  Use **`data-open`** and **`data-closed`** on elements inside `:trigger` to swap label when the panel is open vs closed (see default rules in `floating-panel.css`). You can also target **`[data-part="trigger"][data-state="open"]`** / **`closed`** with your own selectors.
+
+  Optional slots: `:minimize_trigger`, `:maximize_trigger`, `:default_trigger`. Omit them to hide the minimize, maximize, and restore controls.
+
+  Set **`position={%Corex.Point{}}` or `position={%{x: n, y: n}}`** for a fixed initial Zag `Point` (**`data-default-position`** / **`defaultPosition`**). If **`position`** is set, it overrides anchor placement.
+
+  Set **`size={%{width:, height:}}`** for initial dimensions (**`data-default-size`** / Zag **`defaultSize`**). Use **`value_size`** for a controlled current size (**`data-size`** / Zag **`size`**).
+
+  Optional **`positioning={%Corex.Positioning{}}`** sets **`data-position-*`** for the client hook. When **`position`** is omitted, the hook passes Zag **`getAnchorPosition`** from placement and boundary (e.g. **`placement: "bottom-start"`** and **`gutter: 16`** for a bottom corner). Do not rely on both **`position`** and **`positioning`** for the same panel; prefer **`position`** for explicit pixels, **`positioning`** for placement rules.
 
   ## Styling
 
@@ -65,6 +80,13 @@ defmodule Corex.FloatingPanel do
 
   ```heex
   <.floating_panel class="floating-panel floating-panel--accent floating-panel--lg">
+    <:trigger>
+      <span data-closed>Closed</span>
+      <span data-open>Open</span>
+    </:trigger>
+    <:title>Title</:title>
+    <:close_trigger>Close</:close_trigger>
+    <:content>Body</:content>
   </.floating_panel>
   ```
 
@@ -102,6 +124,8 @@ defmodule Corex.FloatingPanel do
 
   alias Corex.FloatingPanel.Connect
   alias Corex.Gettext
+  alias Corex.Point
+  alias Corex.Positioning
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -122,10 +146,21 @@ defmodule Corex.FloatingPanel do
     doc: "Layout orientation for CSS and ignored attribute lists."
   )
 
-  attr(:size, :map, default: nil, doc: "Current size in Zag’s internal state")
-  attr(:default_size, :map, default: nil, doc: "Initial size before user resize")
-  attr(:position, :map, default: nil, doc: "Current position in Zag’s internal state")
-  attr(:default_position, :map, default: nil, doc: "Initial position before user drag")
+  attr(:size, :map, default: nil, doc: "Zag defaultSize; sets data-default-size on the hook root")
+  attr(:value_size, :map, default: nil, doc: "Zag controlled size; sets data-size when present")
+
+  attr(:position, :any,
+    default: nil,
+    doc:
+      "Initial Zag `Point` (`defaultPosition` / `data-default-position`). `%Corex.Point{}` or `%{x:, y:}`"
+  )
+
+  attr(:positioning, Corex.Positioning,
+    default: nil,
+    doc:
+      "Optional placement for `getAnchorPosition` on the client (`data-position-*`). Ignored for anchor math when `position` is set."
+  )
+
   attr(:min_size, :map, default: nil, doc: "Minimum size constraints")
   attr(:max_size, :map, default: nil, doc: "Maximum size constraints")
   attr(:persist_rect, :boolean, default: false, doc: "Whether to persist position and size")
@@ -147,23 +182,23 @@ defmodule Corex.FloatingPanel do
 
   attr(:rest, :global)
 
-  slot :open_trigger, required: true do
+  slot :trigger, required: true do
     attr(:class, :string, required: false)
   end
 
-  slot :closed_trigger, required: true do
+  slot :title, required: true do
     attr(:class, :string, required: false)
   end
 
-  slot :minimize_trigger, required: true do
+  slot :minimize_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :maximize_trigger, required: true do
+  slot :maximize_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot :default_trigger, required: true do
+  slot :default_trigger, required: false do
     attr(:class, :string, required: false)
   end
 
@@ -191,6 +226,8 @@ defmodule Corex.FloatingPanel do
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
+      |> assign(:default_position, Point.to_map(assigns.position))
+      |> assign(:trigger_entry, List.first(assigns.trigger))
 
     ~H"""
     <div
@@ -199,6 +236,7 @@ defmodule Corex.FloatingPanel do
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
+      {Positioning.to_dataset(@positioning)}
       {Connect.props(%Props{
         id: @id,
         draggable: @draggable,
@@ -208,9 +246,8 @@ defmodule Corex.FloatingPanel do
         disabled: @disabled,
         dir: @dir,
         orientation: @orientation,
-        size: @size,
-        default_size: @default_size,
-        position: @position,
+        size: @value_size,
+        default_size: @size,
         default_position: @default_position,
         min_size: @min_size,
         max_size: @max_size,
@@ -224,23 +261,29 @@ defmodule Corex.FloatingPanel do
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
-        <button type="button" phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}>
-          <span data-open>{render_slot(@open_trigger)}</span>
-          <span data-closed>{render_slot(@closed_trigger)}</span>
+        <button
+          type="button"
+          class={Map.get(@trigger_entry || %{}, :class)}
+          phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
+        >
+          {render_slot(@trigger_entry)}
         </button>
         <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
           <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
             <div phx-mounted={Connect.ignore_drag_trigger(%DragTrigger{id: @id, dir: @dir, orientation: @orientation})} {Connect.drag_trigger(%DragTrigger{id: @id, dir: @dir, orientation: @orientation})}>
               <div phx-mounted={Connect.ignore_header(%Header{id: @id, dir: @dir, orientation: @orientation})} {Connect.header(%Header{id: @id, dir: @dir, orientation: @orientation})}>
-                <div phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, orientation: @orientation})} {Connect.title(%Title{id: @id, dir: @dir, orientation: @orientation})}>Panel</div>
+                <div phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, orientation: @orientation})} {Connect.title(%Title{id: @id, dir: @dir, orientation: @orientation})} class={Map.get(Enum.at(@title, 0), :class)}>
+                  {render_slot(@title)}
+                </div>
                 <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-                  <button type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "minimized", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized", dir: @dir, orientation: @orientation})} aria-label={@translation.minimize}>
+                  <button :if={@minimize_trigger != []} type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "minimized", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized", dir: @dir, orientation: @orientation})} aria-label={@translation.minimize}>
                     {render_slot(@minimize_trigger)}
                   </button>
-                  <button type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "maximized", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized", dir: @dir, orientation: @orientation})} aria-label={@translation.maximize}>
+                  <button :if={@maximize_trigger != []} type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "maximized", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized", dir: @dir, orientation: @orientation})} aria-label={@translation.maximize}>
                     {render_slot(@maximize_trigger)}
                   </button>
-                  <button type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "default", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default", dir: @dir, orientation: @orientation})} aria-label={@translation.restore}>
+                  <button :if={@default_trigger != []} type="button" phx-mounted={Connect.ignore_stage_trigger(%StageTrigger{id: @id, stage: "default", dir: @dir, orientation: @orientation})} {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default", dir: @dir, orientation: @orientation})} aria-label={@translation.restore}>
                     {render_slot(@default_trigger)}
                   </button>
                   <button type="button" phx-mounted={Connect.ignore_close_trigger(%CloseTrigger{id: @id, dir: @dir, orientation: @orientation})} {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, orientation: @orientation})} aria-label={@translation.close}>

@@ -59,8 +59,11 @@ defmodule E2eWeb.FloatingPanelEventsLive do
                 on_open_change="floating_panel_open_changed"
                 on_open_change_client="floating-panel-open-changed"
               >
-                <:open_trigger>Close panel</:open_trigger>
-                <:closed_trigger>Open panel</:closed_trigger>
+                <:trigger>
+                  <span data-closed>Open panel</span>
+                  <span data-open>Close panel</span>
+                </:trigger>
+                <:title>Panel</:title>
                 <:minimize_trigger>
                   <.heroicon name="hero-arrow-down-left" class="icon" />
                 </:minimize_trigger>

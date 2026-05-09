@@ -4,8 +4,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_code do
     ~S"""
     <.floating_panel id="floating-panel-anatomy" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -103,8 +106,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     </script>
 
     <.floating_panel id="floating-panel-api-js" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -214,8 +220,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_example(assigns) do
     ~H"""
     <.floating_panel id="floating-panel-anatomy" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -246,8 +255,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
       on_open_change="floating_panel_open_changed"
       on_open_change_client="floating-panel-open-changed"
     >
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -273,8 +285,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def floating_panel_api_fixture(assigns) do
     ~H"""
     <.floating_panel id={@id} class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
@@ -297,8 +312,11 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   defp fp_api_panel_snippet(id, inner_text) do
     """
     <.floating_panel id="#{id}" class="floating-panel">
-      <:open_trigger>Close panel</:open_trigger>
-      <:closed_trigger>Open panel</:closed_trigger>
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
       <:minimize_trigger>
         <.heroicon name="hero-arrow-down-left" class="icon" />
       </:minimize_trigger>
