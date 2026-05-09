@@ -446,9 +446,13 @@ var Timer = class extends Component {
       this.api = this.initApi();
       this.render();
     });
-    this.machine.start();
-    this.api = this.initApi();
-    this.render();
+    try {
+      this.machine.start();
+      this.api = this.initApi();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
   };
   render() {
     const rootEl = this.el.querySelector('[data-scope="timer"][data-part="root"]') ?? this.el;

@@ -26257,8 +26257,12 @@ ${err}`);
           __publicField(this, "hasGroups", false);
           __publicField(this, "lastItemsFingerprint", "");
           __publicField(this, "init", () => {
-            this.machine.start();
-            this.render();
+            try {
+              this.machine.start();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
             this.machine.subscribe(() => {
               this.api = this.initApi();
               this.render();
@@ -35908,9 +35912,13 @@ ${err}`);
               this.api = this.initApi();
               this.render();
             });
-            this.machine.start();
-            this.api = this.initApi();
-            this.render();
+            try {
+              this.machine.start();
+              this.api = this.initApi();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

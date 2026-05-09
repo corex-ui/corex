@@ -932,8 +932,12 @@ var Listbox = class extends Component {
     return this.zagConnect(connect);
   }
   init = () => {
-    this.machine.start();
-    this.render();
+    try {
+      this.machine.start();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
     this.machine.subscribe(() => {
       this.api = this.initApi();
       this.render();

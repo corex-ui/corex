@@ -72,8 +72,12 @@ export class Listbox extends Component<Props<Item>, Api> {
   }
 
   init = (): void => {
-    this.machine.start();
-    this.render();
+    try {
+      this.machine.start();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
     this.machine.subscribe(() => {
       this.api = this.initApi();
       this.render();

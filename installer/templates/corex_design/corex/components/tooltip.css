@@ -1,6 +1,11 @@
 @import "../main.css";
 
 @layer components {
+  .tooltip {
+    position: relative;
+    z-index: 20;
+  }
+
   .tooltip[data-loading] > * {
     @apply ui-loading;
   }

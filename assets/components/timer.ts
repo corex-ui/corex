@@ -93,9 +93,13 @@ export class Timer extends Component<Props, Api> {
       (this as { api: Api }).api = this.initApi();
       this.render();
     });
-    this.machine.start();
-    (this as { api: Api }).api = this.initApi();
-    this.render();
+    try {
+      this.machine.start();
+      (this as { api: Api }).api = this.initApi();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
   };
 
   render(): void {
