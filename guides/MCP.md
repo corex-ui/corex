@@ -9,7 +9,7 @@ Corex MCP is based of [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.3"}
+    {:corex, "~> 0.1.0-beta.4"}
   ]
 end
 ```

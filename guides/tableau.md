@@ -25,7 +25,7 @@ What `tableau.new` already gives you
 ## 1. Elixir and the `corex` dependency
 
 ```elixir
-{:corex, "~> 0.1.0-beta.3"}
+{:corex, "~> 0.1.0-beta.4"}
 ```
 
 Then:

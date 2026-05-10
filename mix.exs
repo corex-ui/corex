@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.3"
+  @version "0.1.0-beta.4"
   @elixir_requirement "~> 1.17"
 
   def project do
