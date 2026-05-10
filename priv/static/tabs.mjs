@@ -1,4 +1,7 @@
 import {
+  readStringControlledZagProps
+} from "./chunks/chunk-CDKBKUQ4.mjs";
+import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
@@ -20,7 +23,6 @@ import {
   createAnatomy,
   dataAttr,
   first,
-  getBoolean,
   getEventKey,
   getEventTarget,
   getFocusables,
@@ -612,7 +614,7 @@ var TabsHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const tabs = new Tabs(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
+      ...readStringControlledZagProps(el, "value", "defaultValue"),
       orientation: getString(el, "orientation"),
       dir: getString(el, "dir"),
       onValueChange: (details) => {
@@ -669,7 +671,7 @@ var TabsHook = {
   updated() {
     this.tabs?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") },
+      ...readStringControlledZagProps(this.el, "value", "defaultValue"),
       orientation: getString(this.el, "orientation"),
       dir: getString(this.el, "dir")
     });

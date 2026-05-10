@@ -245,7 +245,7 @@ defmodule Corex.TreeView.Anatomy do
   defmodule ItemText do
     @moduledoc false
 
-    @ignored_attrs ["dir", "id", "data-value", "data-path"]
+    @ignored_attrs ["id", "data-value", "data-path"]
     def ignored_attrs, do: @ignored_attrs
   end
 

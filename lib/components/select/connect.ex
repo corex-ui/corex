@@ -335,7 +335,6 @@ defmodule Corex.Select.Connect do
     %{
       "data-scope" => "select",
       "data-part" => "item-text",
-      "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "select:#{assigns.id}:item-text:#{assigns.value}"
     }
@@ -352,7 +351,6 @@ defmodule Corex.Select.Connect do
     %{
       "data-scope" => "select",
       "data-part" => "item-indicator",
-      "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "select:#{assigns.id}:item-indicator:#{assigns.value}"
     }

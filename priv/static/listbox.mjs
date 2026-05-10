@@ -1062,21 +1062,7 @@ var Listbox = class extends Component {
 
 // hooks/listbox.ts
 function buildCollection(items, hasGroups) {
-  if (hasGroups) {
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled,
-      groupBy: (item) => item.group ?? ""
-    });
-  }
-  return collection({
-    items,
-    itemToValue: (item) => item.id ?? item.value ?? "",
-    itemToString: (item) => item.label,
-    isItemDisabled: (item) => !!item.disabled
-  });
+  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
 }
 function listboxZagPropsBase(el, liveSocket, pushEvent) {
   const redirectOn = getBoolean(el, "redirect");

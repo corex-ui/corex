@@ -2968,6 +2968,39 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-CDKBKUQ4.mjs
+  function readStringControlledZagProps(el, valueKey, defaultKey) {
+    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function readStringControlledZagUpdate(el, valueKey, defaultKey) {
+    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function readNumberControlledZagProps(el) {
+    const step = getNumber(el, "step");
+    return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
+  }
+  function readBooleanControlledZagProps(el, openKey, defaultOpenKey) {
+    return getBoolean(el, "controlled") ? { open: getBoolean(el, openKey) } : { defaultOpen: getBoolean(el, defaultOpenKey) };
+  }
+  function readControlledOrDefaultBoolean(el, openKey, defaultOpenKey) {
+    return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
+  }
+  function readStringListControlledZagProps(el, valueKey, defaultValueKey) {
+    return getBoolean(el, "controlled") ? { value: getStringList(el, valueKey) } : { defaultValue: getStringList(el, defaultValueKey) };
+  }
+  function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
+    var _a4;
+    return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
+  }
+  var z;
+  var init_chunk_CDKBKUQ4 = __esm({
+    "../priv/static/chunks/chunk-CDKBKUQ4.mjs"() {
+      "use strict";
+      init_chunk_LTYT3NRU();
+      z = (s2) => s2 === void 0 ? null : s2;
+    }
+  });
+
   // ../priv/static/chunks/chunk-77HPO22C.mjs
   function createHookHandleEventRegistry(hook) {
     const refs = [];
@@ -3254,6 +3287,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_OPWAZ7L4();
+      init_chunk_CDKBKUQ4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -3475,23 +3509,22 @@ var Corex = (() => {
       };
       AccordionHook = {
         mounted() {
-          var _a4, _b;
           const el = this.el;
           const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          self2.lastValue = getBoolean(el, "controlled") ? (_a4 = getStringList(el, "value")) != null ? _a4 : [] : (_b = getStringList(el, "defaultValue")) != null ? _b : [];
+          self2.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
           const accordion = new Accordion(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+          }, readStringListControlledZagProps(el, "value", "defaultValue")), {
             collapsible: getBoolean(el, "collapsible"),
             multiple: getBoolean(el, "multiple"),
             orientation: getString(el, "orientation"),
             dir: getDir(el),
             onValueChange: (details) => {
-              var _a5, _b2;
-              const next2 = (_a5 = details.value) != null ? _a5 : [];
-              const previousValue = (_b2 = self2.lastValue) != null ? _b2 : [];
+              var _a4, _b;
+              const next2 = (_a4 = details.value) != null ? _a4 : [];
+              const previousValue = (_b = self2.lastValue) != null ? _b : [];
               const { added, removed } = diffStringValues(next2, previousValue);
               self2.lastValue = next2;
               const payload = {
@@ -3525,12 +3558,12 @@ var Corex = (() => {
               }
             },
             onFocusChange: (details) => {
-              var _a5;
+              var _a4;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a5 = details.value) != null ? _a5 : null },
+                payload: { id: el.id, value: (_a4 = details.value) != null ? _a4 : null },
                 serverEventName: getString(el, "onFocusChange"),
                 clientEventName: getString(el, "onFocusChangeClient")
               });
@@ -3671,7 +3704,7 @@ var Corex = (() => {
           }
           (_d = this.accordion) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+          }, readStringListControlledZagProps(this.el, "value", "defaultValue")), {
             collapsible: getBoolean(this.el, "collapsible"),
             multiple: getBoolean(this.el, "multiple"),
             orientation: getString(this.el, "orientation"),
@@ -3685,26 +3718,6 @@ var Corex = (() => {
           (_c = this.accordion) == null ? void 0 : _c.destroy();
         }
       };
-    }
-  });
-
-  // ../priv/static/chunks/chunk-VKYKN6FK.mjs
-  function readStringControlledZagProps(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
-  }
-  function readStringControlledZagUpdate(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
-  }
-  function readNumberControlledZagProps(el) {
-    const step = getNumber(el, "step");
-    return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
-  }
-  var z;
-  var init_chunk_VKYKN6FK = __esm({
-    "../priv/static/chunks/chunk-VKYKN6FK.mjs"() {
-      "use strict";
-      init_chunk_LTYT3NRU();
-      z = (s2) => s2 === void 0 ? null : s2;
     }
   });
 
@@ -4089,8 +4102,8 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_VKYKN6FK();
       init_chunk_QB2YSZP6();
+      init_chunk_CDKBKUQ4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
@@ -7083,6 +7096,7 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
+      init_chunk_CDKBKUQ4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
@@ -7388,7 +7402,7 @@ var Corex = (() => {
           const canPush = () => canPushEvent(this.liveSocket);
           const collapsible = new Collapsible(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+          }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             onOpenChange: (details) => {
@@ -7448,7 +7462,7 @@ var Corex = (() => {
           var _a4;
           (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
+          }, readBooleanControlledZagProps(this.el, "open", "defaultOpen")), {
             disabled: getBoolean(this.el, "disabled"),
             dir: getDir(this.el)
           }));
@@ -13504,27 +13518,16 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4, _b, _c;
+          var _a4;
+          if (!this.combobox) return;
           const newCollection = JSON.parse((_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]");
           const hasGroups = newCollection.some((item) => Boolean(item.group));
-          if (!this.combobox) return;
           this.combobox.hasGroups = hasGroups;
           this.combobox.setAllOptions(newCollection);
-          const redirectOn = getBoolean(this.el, "redirect");
-          const controlled = getBoolean(this.el, "controlled");
-          this.combobox.updateProps(__spreadProps(__spreadValues({
-            collection: this.combobox.getCollection(),
-            id: this.el.id
-          }, controlled ? { value: (_b = getStringList(this.el, "value")) != null ? _b : [] } : { defaultValue: (_c = getStringList(this.el, "defaultValue")) != null ? _c : [] }), {
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            dir: getDir(this.el),
-            disabled: getBoolean(this.el, "disabled"),
-            multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            placeholder: getString(this.el, "placeholder")
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          this.combobox.updateProps(__spreadProps(__spreadValues(__spreadValues({}, buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(this.el)), {
+            collection: this.combobox.getCollection()
           }));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
@@ -20742,7 +20745,7 @@ var Corex = (() => {
   function getDialogUpdatePropsFromEl(el) {
     return __spreadProps(__spreadValues({
       id: el.id
-    }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+    }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
@@ -20766,6 +20769,7 @@ var Corex = (() => {
       init_chunk_ZZR3S6PP();
       init_chunk_K2P3QAIZ();
       init_chunk_OPWAZ7L4();
+      init_chunk_CDKBKUQ4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -21806,15 +21810,14 @@ var Corex = (() => {
       };
       DialogHook = {
         mounted() {
-          var _a4, _b;
           const el = this.el;
           const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          self2.lastOpen = getBoolean(el, "controlled") ? (_a4 = getBoolean(el, "open")) != null ? _a4 : false : (_b = getBoolean(el, "defaultOpen")) != null ? _b : false;
+          self2.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
           const dialog = new Dialog(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+          }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             modal: getBoolean(el, "modal"),
             closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
             closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
@@ -21823,8 +21826,8 @@ var Corex = (() => {
             dir: getDir(el),
             "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
-              var _a5;
-              const previousOpen = (_a5 = self2.lastOpen) != null ? _a5 : false;
+              var _a4;
+              const previousOpen = (_a4 = self2.lastOpen) != null ? _a4 : false;
               self2.lastOpen = details.open;
               const payload = {
                 id: el.id,
@@ -25733,30 +25736,7 @@ ${err}`);
     }
   }
   function buildCollection(items, hasGroups) {
-    if (hasGroups) {
-      return collection2({
-        items,
-        itemToValue: (item) => {
-          var _a4, _b;
-          return (_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "";
-        },
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => {
-          var _a4;
-          return (_a4 = item.group) != null ? _a4 : "";
-        }
-      });
-    }
-    return collection2({
-      items,
-      itemToValue: (item) => {
-        var _a4, _b;
-        return (_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "";
-      },
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    });
+    return collection2(zagIdValueLabelCollectionConfig(items, hasGroups));
   }
   function listboxZagPropsBase(el, liveSocket, pushEvent) {
     const redirectOn = getBoolean(el, "redirect");
@@ -31727,8 +31707,8 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_VKYKN6FK();
       init_chunk_MG52DTQN();
+      init_chunk_CDKBKUQ4();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -32523,30 +32503,54 @@ ${err}`);
     return v2 == null || !!v2;
   }
   function buildCollection2(items, hasGroups) {
-    if (hasGroups) {
-      return collection3({
-        items,
-        itemToValue: (item) => {
-          var _a4, _b;
-          return (_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "";
-        },
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => {
-          var _a4;
-          return (_a4 = item.group) != null ? _a4 : "";
+    return collection3(zagIdValueLabelCollectionConfig(items, hasGroups));
+  }
+  function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+    const redirectOn = getBoolean(el, "redirect");
+    return {
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getDir(el),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: redirectOn ? false : getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      deselectable: getBoolean(el, "deselectable"),
+      positioning: readPositioningOptions(el),
+      onValueChange: (details) => {
+        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+        if (getBoolean(el, "redirect") && firstValue) {
+          const itemEl = el.querySelector(
+            `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+          );
+          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
-      });
-    }
-    return collection3({
-      items,
-      itemToValue: (item) => {
-        var _a4, _b;
-        return (_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "";
-      },
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    });
+        const valueInput = el.querySelector(
+          '[data-scope="select"][data-part="value-input"]'
+        );
+        if (valueInput && getBoolean(el, "controlled")) {
+          valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            items: details.items
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      }
+    };
   }
   var anatomy22, parts22, collection3, getRootId17, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId8, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine22, Select, SelectHook;
   var init_select = __esm({
@@ -32560,6 +32564,7 @@ ${err}`);
       init_chunk_5M7MXCQU();
       init_chunk_FOQSALVP();
       init_chunk_MG52DTQN();
+      init_chunk_CDKBKUQ4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
       init_chunk_LTYT3NRU();
@@ -33492,62 +33497,14 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const allItems = JSON.parse(el.dataset.items || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const initialCollection = buildCollection2(allItems, hasGroups);
-          const redirectOn = getBoolean(el, "redirect");
-          const selectComponent = new Select(el, __spreadProps(__spreadValues({
-            id: el.id,
-            collection: initialCollection
-          }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-            disabled: getBoolean(el, "disabled"),
-            closeOnSelect: getBoolean(el, "closeOnSelect"),
-            dir: getDir(el),
-            loopFocus: getBoolean(el, "loopFocus"),
-            multiple: redirectOn ? false : getBoolean(el, "multiple"),
-            invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
-            readOnly: getBoolean(el, "readOnly"),
-            required: getBoolean(el, "required"),
-            deselectable: getBoolean(el, "deselectable"),
-            positioning: readPositioningOptions(el),
-            onValueChange: (details) => {
-              const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-              if (getBoolean(el, "redirect") && firstValue) {
-                const itemEl = el.querySelector(
-                  `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-                );
-                performRedirect(readDomItemRedirect(itemEl, firstValue), {
-                  liveSocket: this.liveSocket
-                });
-              }
-              const valueInput = el.querySelector(
-                '[data-scope="select"][data-part="value-input"]'
-              );
-              if (valueInput && getBoolean(el, "controlled")) {
-                valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-                valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-                valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-              notifyChange({
-                el,
-                canPushServer: canPush(),
-                pushEvent,
-                payload: {
-                  id: el.id,
-                  value: details.value,
-                  items: details.items
-                },
-                serverEventName: getString(el, "onValueChange"),
-                clientEventName: getString(el, "onValueChangeClient")
-              });
-            }
-          }));
+          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush)), {
+            collection: buildCollection2(allItems, hasGroups)
+          }), readStringListControlledZagProps(el, "value", "defaultValue")));
           selectComponent.hasGroups = hasGroups;
           selectComponent.setOptions(allItems);
           selectComponent.init();
           this.select = selectComponent;
           this.handlers = [];
-          this.lastItemsJson = el.dataset.items || "[]";
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:select:set-value", (event) => {
@@ -33569,36 +33526,16 @@ ${err}`);
           });
         },
         updated() {
-          const itemsJson = this.el.dataset.items || "[]";
-          const itemsUnchanged = itemsJson === this.lastItemsJson;
-          const redirectOn = getBoolean(this.el, "redirect");
-          const nextProps = __spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            disabled: getBoolean(this.el, "disabled"),
-            multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
-            dir: getDir(this.el),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            positioning: readPositioningOptions(this.el)
-          });
-          if (this.select && itemsUnchanged) {
-            this.select.updateProps(nextProps);
-            return;
-          }
-          this.lastItemsJson = itemsJson;
-          const newItems = JSON.parse(itemsJson);
+          if (!this.select) return;
+          const newItems = JSON.parse(this.el.dataset.items || "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
-          if (this.select) {
-            this.select.hasGroups = hasGroups;
-            this.select.setOptions(newItems);
-            this.select.updateProps(__spreadProps(__spreadValues({}, nextProps), {
-              collection: buildCollection2(newItems, hasGroups)
-            }));
-          }
+          this.select.hasGroups = hasGroups;
+          this.select.setOptions(newItems);
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush)), {
+            collection: this.select.getCollection()
+          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -35005,6 +34942,7 @@ ${err}`);
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
+      init_chunk_CDKBKUQ4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
@@ -35400,7 +35338,7 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const tabs = new Tabs(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
+          }, readStringControlledZagProps(el, "value", "defaultValue")), {
             orientation: getString(el, "orientation"),
             dir: getString(el, "dir"),
             onValueChange: (details) => {
@@ -35460,7 +35398,7 @@ ${err}`);
           var _a4;
           (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") }), {
+          }, readStringControlledZagProps(this.el, "value", "defaultValue")), {
             orientation: getString(this.el, "orientation"),
             dir: getString(this.el, "dir")
           }));

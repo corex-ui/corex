@@ -9,6 +9,10 @@ import {
   stripHiddenFromProps
 } from "./chunks/chunk-OPWAZ7L4.mjs";
 import {
+  readBooleanControlledZagProps,
+  readControlledOrDefaultBoolean
+} from "./chunks/chunk-CDKBKUQ4.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -1308,7 +1312,7 @@ var Dialog = class extends Component {
 function getDialogUpdatePropsFromEl(el) {
   return {
     id: el.id,
-    ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+    ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
     modal: getBoolean(el, "modal"),
     closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
     closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
@@ -1331,10 +1335,10 @@ var DialogHook = {
     const self = this;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    self.lastOpen = getBoolean(el, "controlled") ? getBoolean(el, "open") ?? false : getBoolean(el, "defaultOpen") ?? false;
+    self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
     const dialog = new Dialog(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),

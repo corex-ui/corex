@@ -8,6 +8,10 @@ import {
   stripHiddenFromProps
 } from "./chunks/chunk-OPWAZ7L4.mjs";
 import {
+  readControlledOrDefaultStringList,
+  readStringListControlledZagProps
+} from "./chunks/chunk-CDKBKUQ4.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -403,10 +407,10 @@ var AccordionHook = {
     const self = this;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    self.lastValue = getBoolean(el, "controlled") ? getStringList(el, "value") ?? [] : getStringList(el, "defaultValue") ?? [];
+    self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
     const accordion = new Accordion(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      ...readStringListControlledZagProps(el, "value", "defaultValue"),
       collapsible: getBoolean(el, "collapsible"),
       multiple: getBoolean(el, "multiple"),
       orientation: getString(el, "orientation"),
@@ -590,7 +594,7 @@ var AccordionHook = {
     }
     this.accordion?.updateProps({
       id: this.el.id,
-      ...controlled ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
       collapsible: getBoolean(this.el, "collapsible"),
       multiple: getBoolean(this.el, "multiple"),
       orientation: getString(this.el, "orientation"),

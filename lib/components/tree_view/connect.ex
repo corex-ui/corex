@@ -329,7 +329,6 @@ defmodule Corex.TreeView.Connect do
       "data-part" => "item-text",
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
-      "dir" => assigns.dir,
       "id" => tree_branch_part_id(assigns.id, "item-text", pk)
     }
   end

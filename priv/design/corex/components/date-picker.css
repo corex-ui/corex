@@ -186,7 +186,6 @@
     [data-scope="date-picker"][data-part="table-cell-trigger"][data-disabled] {
     color: var(--color-ink-muted);
     cursor: not-allowed;
-    pointer-events: none;
   }
 
   .date-picker

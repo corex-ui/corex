@@ -271,7 +271,6 @@
     background-color: var(--color-ui-muted);
     opacity: 0.7;
     cursor: not-allowed;
-    pointer-events: none;
   }
 
   &[data-invalid] {
@@ -343,7 +342,6 @@
     color: var(--color-ink-muted);
     background-color: var(--color-ui-muted);
     cursor: not-allowed;
-    pointer-events: none;
     box-shadow: none;
   }
 
@@ -461,6 +459,7 @@
   &[disabled] {
     background-color: --value(--color-*-muted, [color]);
     color: var(--color-ink-muted);
+    cursor: not-allowed;
   }
 
   &[data-selected],
