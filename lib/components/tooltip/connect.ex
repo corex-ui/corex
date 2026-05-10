@@ -4,7 +4,7 @@ defmodule Corex.Tooltip.Connect do
   alias Corex.Tooltip.Anatomy.{Arrow, ArrowTip, Content, Positioner, Props, Trigger}
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [data_state: 3, get_boolean: 1, maybe_put: 3]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -31,9 +31,6 @@ defmodule Corex.Tooltip.Connect do
     |> Map.merge(Corex.Positioning.to_dataset(positioning))
   end
 
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
-
   @spec trigger_id(String.t(), String.t() | nil) :: String.t()
   def trigger_id(tooltip_id, nil), do: "tooltip:#{tooltip_id}:trigger"
 
@@ -42,7 +39,6 @@ defmodule Corex.Tooltip.Connect do
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
     value = Map.get(assigns, :value)
     dom_id = trigger_id(assigns.id, value)
 
@@ -53,7 +49,7 @@ defmodule Corex.Tooltip.Connect do
       "data-disabled" => assigns.disabled,
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "id" => dom_id
     }
 
@@ -95,14 +91,12 @@ defmodule Corex.Tooltip.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     %{
       "data-scope" => "tooltip",
       "data-part" => "content",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "id" => "tooltip:#{assigns.id}:content"
     }
   end

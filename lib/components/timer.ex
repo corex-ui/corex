@@ -186,10 +186,15 @@ defmodule Corex.Timer do
         time_values
       )
 
+    id = assigns.id
+    dir = assigns.dir
+    orientation = assigns.orientation
+    running = assigns.auto_start
+
     assigns =
       assigns
       |> assign(:time_values, time_values)
-      |> assign(:running, assigns.auto_start)
+      |> assign(:running, running)
       |> assign(:paused, false)
       |> assign(:segments, segments)
       |> assign(
@@ -199,6 +204,49 @@ defmodule Corex.Timer do
       )
       |> assign(:visibility_hidden, visibility_hidden)
       |> assign(:props_struct, props_struct(assigns, segments))
+      |> assign(:root_struct, %Root{id: id, dir: dir, orientation: orientation})
+      |> assign(:area_struct, %Area{id: id, dir: dir, orientation: orientation})
+      |> assign(:control_struct, %Control{id: id, dir: dir, orientation: orientation})
+      |> assign(
+        :start_trigger_struct,
+        %ActionTrigger{
+          id: id,
+          action: "start",
+          hidden: running,
+          dir: dir,
+          orientation: orientation
+        }
+      )
+      |> assign(
+        :pause_trigger_struct,
+        %ActionTrigger{
+          id: id,
+          action: "pause",
+          hidden: not running,
+          dir: dir,
+          orientation: orientation
+        }
+      )
+      |> assign(
+        :resume_trigger_struct,
+        %ActionTrigger{
+          id: id,
+          action: "resume",
+          hidden: true,
+          dir: dir,
+          orientation: orientation
+        }
+      )
+      |> assign(
+        :reset_trigger_struct,
+        %ActionTrigger{
+          id: id,
+          action: "reset",
+          hidden: not running,
+          dir: dir,
+          orientation: orientation
+        }
+      )
 
     ~H"""
     <div
@@ -207,46 +255,37 @@ defmodule Corex.Timer do
       {@rest}
       {Connect.props(@props_struct)}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
-        <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, orientation: @orientation})}>
+      <div phx-mounted={Connect.ignore_root(@root_struct)} {Connect.root(@root_struct)}>
+        <div phx-mounted={Connect.ignore_area(@area_struct)} {Connect.area(@area_struct)}>
           <%= for {part, i} <- Enum.with_index([:days, :hours, :minutes, :seconds]) do %>
             <% hv = Enum.at(@visibility_hidden, i) %>
             <% ls = label_slot(assigns, part) %>
+            <% segment_struct = %Segment{id: @id, type: to_string(part), hidden: hv} %>
+            <% item_struct = %Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv} %>
+            <% item_label_struct = %ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation} %>
             <div
-              phx-mounted={Connect.ignore_segment(%Segment{id: @id, type: to_string(part), hidden: hv})}
-              {Connect.segment(%Segment{id: @id, type: to_string(part), hidden: hv})}
+              phx-mounted={Connect.ignore_segment(segment_struct)}
+              {Connect.segment(segment_struct)}
             >
               <div
-                phx-mounted={Connect.ignore_item(%Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv})}
-                {Connect.item(%Item{id: @id, type: to_string(part), value: Map.fetch!(@time_values, part), dir: @dir, orientation: @orientation, hidden: hv})}
+                phx-mounted={Connect.ignore_item(item_struct)}
+                {Connect.item(item_struct)}
               >
               </div>
               <%= if ls != [] do %>
                 <span
-                  phx-mounted={Connect.ignore_item_label(%ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation})}
-                  {Connect.item_label(%ItemLabel{id: @id, type: to_string(part), dir: @dir, orientation: @orientation})}
+                  phx-mounted={Connect.ignore_item_label(item_label_struct)}
+                  {Connect.item_label(item_label_struct)}
                 >
                   {render_slot(ls)}
                 </span>
               <% end %>
             </div>
             <%= if i < 3 and @separator != [] do %>
-              <% sh = Enum.at(@visibility_hidden, i) %>
+              <% separator_struct = %Separator{id: "timer:#{@id}:sep:#{i}", dir: @dir, orientation: @orientation, hidden: hv} %>
               <div
-                phx-mounted={
-                  Connect.ignore_separator(%Separator{
-                    id: "timer:#{@id}:sep:#{i}",
-                    dir: @dir,
-                    orientation: @orientation,
-                    hidden: sh
-                  })
-                }
-                {Connect.separator(%Separator{
-                  id: "timer:#{@id}:sep:#{i}",
-                  dir: @dir,
-                  orientation: @orientation,
-                  hidden: sh
-                })}
+                phx-mounted={Connect.ignore_separator(separator_struct)}
+                {Connect.separator(separator_struct)}
               >
                 {render_slot(@separator)}
               </div>
@@ -255,38 +294,38 @@ defmodule Corex.Timer do
         </div>
         <div
           :if={@has_timer_controls?}
-          phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})}
-          {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}
+          phx-mounted={Connect.ignore_control(@control_struct)}
+          {Connect.control(@control_struct)}
         >
           <button
             :if={@start_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
-            {Connect.action_trigger(%ActionTrigger{id: @id, action: "start", hidden: @running or @paused, dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_action_trigger(@start_trigger_struct)}
+            {Connect.action_trigger(@start_trigger_struct)}
           >
             {render_slot(@start_trigger)}
           </button>
           <button
             :if={@pause_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
-            {Connect.action_trigger(%ActionTrigger{id: @id, action: "pause", hidden: not @running, dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_action_trigger(@pause_trigger_struct)}
+            {Connect.action_trigger(@pause_trigger_struct)}
           >
             {render_slot(@pause_trigger)}
           </button>
           <button
             :if={@resume_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
-            {Connect.action_trigger(%ActionTrigger{id: @id, action: "resume", hidden: not @paused, dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_action_trigger(@resume_trigger_struct)}
+            {Connect.action_trigger(@resume_trigger_struct)}
           >
             {render_slot(@resume_trigger)}
           </button>
           <button
             :if={@reset_trigger != []}
             type="button"
-            phx-mounted={Connect.ignore_action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
-            {Connect.action_trigger(%ActionTrigger{id: @id, action: "reset", hidden: not @running and not @paused, dir: @dir, orientation: @orientation})}
+            phx-mounted={Connect.ignore_action_trigger(@reset_trigger_struct)}
+            {Connect.action_trigger(@reset_trigger_struct)}
           >
             {render_slot(@reset_trigger)}
           </button>

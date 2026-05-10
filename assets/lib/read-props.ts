@@ -1,4 +1,4 @@
-import { getBoolean, getNumber, getString } from "./util";
+import { getBoolean, getNumber, getString, getStringList } from "./util";
 
 const z = (s: string | undefined) => (s === undefined ? null : s);
 
@@ -31,4 +31,44 @@ export function readNumberControlledZagProps(el: HTMLElement): NumZag {
   return getBoolean(el, "controlled")
     ? { value: getNumber(el, "value"), step }
     : { defaultValue: getNumber(el, "defaultValue"), step };
+}
+
+export function readBooleanControlledZagProps(
+  el: HTMLElement,
+  openKey: string,
+  defaultOpenKey: string
+): { open: boolean } | { defaultOpen: boolean } {
+  return getBoolean(el, "controlled")
+    ? { open: getBoolean(el, openKey) }
+    : { defaultOpen: getBoolean(el, defaultOpenKey) };
+}
+
+export function readControlledOrDefaultBoolean(
+  el: HTMLElement,
+  openKey: string,
+  defaultOpenKey: string
+): boolean {
+  return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
+}
+
+export function readStringListControlledZagProps(
+  el: HTMLElement,
+  valueKey: string,
+  defaultValueKey: string
+): { value: string[] | undefined } | { defaultValue: string[] | undefined } {
+  return getBoolean(el, "controlled")
+    ? { value: getStringList(el, valueKey) }
+    : { defaultValue: getStringList(el, defaultValueKey) };
+}
+
+export function readControlledOrDefaultStringList(
+  el: HTMLElement,
+  valueKey: string,
+  defaultValueKey: string
+): string[] {
+  return (
+    (getBoolean(el, "controlled")
+      ? getStringList(el, valueKey)
+      : getStringList(el, defaultValueKey)) ?? []
+  );
 }

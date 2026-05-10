@@ -4,6 +4,7 @@ import { Collapsible } from "../components/collapsible";
 import type { OpenChangeDetails } from "@zag-js/collapsible";
 
 import { getBoolean, getDir, getString, canPushEvent } from "../lib/util";
+import { readBooleanControlledZagProps } from "../lib/read-props";
 import {
   emitResponse,
   idMatches,
@@ -36,9 +37,7 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
 
     const collapsible = new Collapsible(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
+      ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       onOpenChange: (details: OpenChangeDetails) => {
@@ -106,9 +105,7 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & CollapsibleHookState) {
     this.collapsible?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { open: getBoolean(this.el, "open") }
-        : { defaultOpen: getBoolean(this.el, "defaultOpen") }),
+      ...readBooleanControlledZagProps(this.el, "open", "defaultOpen"),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el),
     });

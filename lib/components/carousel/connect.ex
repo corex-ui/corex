@@ -47,12 +47,12 @@ defmodule Corex.Carousel.Connect do
 
     base
     |> maybe_put_data_dir(assigns.dir)
-    |> maybe_put("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
-    |> maybe_put("data-padding", assigns.padding)
+    |> maybe_put_string("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
+    |> maybe_put_string("data-padding", assigns.padding)
   end
 
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, to_string(value))
+  defp maybe_put_string(map, _key, nil), do: map
+  defp maybe_put_string(map, key, value), do: Map.put(map, key, to_string(value))
 
   @spec root(Root.t()) :: map()
   def root(assigns) do

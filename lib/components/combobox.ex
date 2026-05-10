@@ -218,7 +218,7 @@ defmodule Corex.Combobox do
   ## Localization
 
   Default `placeholder`, `empty`, `trigger`, and `clear_selection` use English literals; at render
-  they are passed through `Corex.Gettext.gettext/1` unless you set `translation`. Omit keys or use
+  they are passed through the host gettext backend gettext/1 unless you set `translation`. Omit keys or use
   `nil` to keep the built-in default for that field. Same pattern as `Corex.Select`.
 
   '''
@@ -228,14 +228,14 @@ defmodule Corex.Combobox do
     Translation struct for Combobox component strings.
 
     Defaults are English literals (`"Select"`, `"No results"`); at render time Corex passes them
-    through `Corex.Gettext.gettext/1` unless you override. Partial structs fill missing fields
+    through the host gettext backend gettext/1 unless you override. Partial structs fill missing fields
     the same way.
 
     Override: `translation={%Corex.Combobox.Translation{placeholder: "Search…", empty: "Nothing found"}}`
 
     Trigger and clear buttons use `translation.trigger` and `translation.clear_selection` (defaults **Open options** and **Clear selection**).
 
-    With explicit gettext at the call site: `placeholder: Corex.Gettext.gettext("…")`
+    With explicit gettext at the call site: pass your app Gettext module's `gettext("…")` as the field value.
     """
     defstruct [:placeholder, :empty, :trigger, :clear_selection]
   end

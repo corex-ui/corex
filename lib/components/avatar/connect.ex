@@ -4,6 +4,8 @@ defmodule Corex.Avatar.Connect do
   alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
+  import Corex.Helpers, only: [maybe_put: 3]
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
@@ -81,9 +83,6 @@ defmodule Corex.Avatar.Connect do
       to: Selectors.css_id("avatar:#{assigns.id}:skeleton")
     )
   end
-
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
   defp drop_nil(map, key) do
     case Map.get(map, key) do

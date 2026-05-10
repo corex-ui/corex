@@ -4,14 +4,16 @@ defmodule Corex.Collapsible.Connect do
   alias Corex.Selectors
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+
+  import Corex.Helpers,
+    only: [data_state: 3, get_boolean: 1, get_boolean: 2, get_default_boolean: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-open" => data_default_open(assigns),
-      "data-open" => data_open(assigns),
+      "data-default-open" => get_default_boolean(assigns.controlled, assigns.open),
+      "data-open" => get_boolean(assigns.controlled, assigns.open),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-dir" => assigns.dir,
@@ -23,15 +25,13 @@ defmodule Corex.Collapsible.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     %{
       "data-scope" => "collapsible",
       "data-part" => "root",
       "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "collapsible:#{assigns.id}",
-      "data-state" => data_state
+      "data-state" => data_state(assigns.open, "open", "closed")
     }
   end
 
@@ -43,8 +43,6 @@ defmodule Corex.Collapsible.Connect do
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     %{
       "data-scope" => "collapsible",
       "data-part" => "trigger",
@@ -56,7 +54,7 @@ defmodule Corex.Collapsible.Connect do
       "disabled" => assigns.disabled,
       "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "id" => "collapsible:#{assigns.id}:trigger",
       "data-controls" => "collapsible:#{assigns.id}:content",
       "aria-controls" => "collapsible:#{assigns.id}:content"
@@ -71,14 +69,12 @@ defmodule Corex.Collapsible.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     %{
       "data-scope" => "collapsible",
       "data-part" => "content",
       "data-collapsible" => "",
       "id" => "collapsible:#{assigns.id}:content",
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "data-disabled" => assigns.disabled,
       "hidden" => !assigns.open,
       "dir" => assigns.dir,
@@ -134,17 +130,5 @@ defmodule Corex.Collapsible.Connect do
     JS.ignore_attributes(Opened.ignored_attrs(),
       to: Selectors.css_id("collapsible:#{assigns.id}:opened")
     )
-  end
-
-  defp data_default_open(assigns) do
-    if !assigns.controlled && assigns.open, do: "", else: nil
-  end
-
-  defp data_open(assigns) do
-    if assigns.controlled do
-      if assigns.open, do: "", else: nil
-    else
-      nil
-    end
   end
 end

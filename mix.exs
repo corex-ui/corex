@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.3"
+  @version "0.1.0-beta.4"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -268,6 +268,7 @@ defmodule Corex.MixProject do
         Corex.PasswordInput.Translation,
         Corex.PinInput.Translation,
         Corex.Select.Translation,
+        Corex.Timer.Translation,
         Corex.Toast.Translation
       ]
     ]

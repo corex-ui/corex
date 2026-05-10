@@ -4,6 +4,7 @@ import { Dialog, dialogInitialAriaLabel } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readBooleanControlledZagProps, readControlledOrDefaultBoolean } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -24,9 +25,7 @@ type DialogHookState = {
 function getDialogUpdatePropsFromEl(el: HTMLElement) {
   return {
     id: el.id,
-    ...(getBoolean(el, "controlled")
-      ? { open: getBoolean(el, "open") }
-      : { defaultOpen: getBoolean(el, "defaultOpen") }),
+    ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
     modal: getBoolean(el, "modal"),
     closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
     closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
@@ -52,15 +51,11 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
 
-    self.lastOpen = getBoolean(el, "controlled")
-      ? (getBoolean(el, "open") ?? false)
-      : (getBoolean(el, "defaultOpen") ?? false);
+    self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
 
     const dialog = new Dialog(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
+      ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),

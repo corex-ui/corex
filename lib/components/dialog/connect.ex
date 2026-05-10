@@ -16,7 +16,9 @@ defmodule Corex.Dialog.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+
+  import Corex.Helpers,
+    only: [data_state: 3, get_boolean: 1, get_boolean: 2, get_default_boolean: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -25,8 +27,8 @@ defmodule Corex.Dialog.Connect do
 
     base = %{
       "id" => assigns.id,
-      "data-default-open" => data_default_open(assigns),
-      "data-open" => data_open(assigns),
+      "data-default-open" => get_default_boolean(assigns.controlled, assigns.open),
+      "data-open" => get_boolean(assigns.controlled, assigns.open),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-modal" => get_boolean(assigns.modal),
       "data-close-on-interact-outside" => get_boolean(assigns.close_on_interact_outside),
@@ -55,12 +57,10 @@ defmodule Corex.Dialog.Connect do
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     %{
       "data-scope" => "dialog",
       "data-part" => "trigger",
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:trigger",
@@ -78,12 +78,10 @@ defmodule Corex.Dialog.Connect do
 
   @spec backdrop(Backdrop.t(), String.t()) :: map()
   def backdrop(assigns, animation \\ "instant") do
-    state = if assigns.open, do: "open", else: "closed"
-
     base = %{
       "data-scope" => "dialog",
       "data-part" => "backdrop",
-      "data-state" => state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:backdrop"
     }
@@ -103,12 +101,10 @@ defmodule Corex.Dialog.Connect do
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    state = if Map.get(assigns, :open, false), do: "open", else: "closed"
-
     %{
       "data-scope" => "dialog",
       "data-part" => "positioner",
-      "data-state" => state,
+      "data-state" => data_state(Map.get(assigns, :open, false), "open", "closed"),
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:positioner"
     }
@@ -122,12 +118,10 @@ defmodule Corex.Dialog.Connect do
 
   @spec content(Content.t(), String.t()) :: map()
   def content(assigns, animation \\ "instant") do
-    data_state = if assigns.open, do: "open", else: "closed"
-
     base = %{
       "data-scope" => "dialog",
       "data-part" => "content",
-      "data-state" => data_state,
+      "data-state" => data_state(assigns.open, "open", "closed"),
       "role" => "dialog",
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:content",
@@ -196,17 +190,5 @@ defmodule Corex.Dialog.Connect do
     JS.ignore_attributes(CloseTrigger.ignored_attrs(),
       to: Selectors.css_id("dialog:#{assigns.id}:close-trigger")
     )
-  end
-
-  defp data_default_open(assigns) do
-    if !assigns.controlled && assigns.open, do: "", else: nil
-  end
-
-  defp data_open(assigns) do
-    if assigns.controlled do
-      if assigns.open, do: "", else: nil
-    else
-      nil
-    end
   end
 end

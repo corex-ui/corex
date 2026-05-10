@@ -1802,18 +1802,18 @@ defmodule E2eWeb.PageController do
   end
 
   def templates_page(conn, _params) do
-    soonex_carousel_items = [
-      %{url: "/images/templates/soonex/preview-hero.png", alt: gettext("Soonex hero")},
+    template_carousel_items = [
+      %{url: "/images/templates/soonex/preview-hero.png", alt: gettext("Hero section")},
       %{
         url: "/images/templates/soonex/preview-highlights.png",
-        alt: gettext("Soonex highlights")
+        alt: gettext("Highlights section")
       },
-      %{url: "/images/templates/soonex/preview-waitlist.png", alt: gettext("Soonex waitlist")}
+      %{url: "/images/templates/soonex/preview-waitlist.png", alt: gettext("Waitlist section")}
     ]
 
     conn
     |> assign(:page_title, gettext("Templates · Corex"))
-    |> assign(:soonex_carousel_items, soonex_carousel_items)
+    |> assign(:template_carousel_items, template_carousel_items)
     |> render(:templates_page)
   end
 end

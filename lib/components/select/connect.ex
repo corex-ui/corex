@@ -21,7 +21,8 @@ defmodule Corex.Select.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
+  import Corex.Helpers,
+    only: [get_boolean: 1, maybe_put: 3, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -83,9 +84,6 @@ defmodule Corex.Select.Connect do
     |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
     |> Enum.flat_map(fn {_group, group_items} -> group_items end)
   end
-
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -337,7 +335,6 @@ defmodule Corex.Select.Connect do
     %{
       "data-scope" => "select",
       "data-part" => "item-text",
-      "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "select:#{assigns.id}:item-text:#{assigns.value}"
     }
@@ -354,7 +351,6 @@ defmodule Corex.Select.Connect do
     %{
       "data-scope" => "select",
       "data-part" => "item-indicator",
-      "dir" => assigns.dir,
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "select:#{assigns.id}:item-indicator:#{assigns.value}"
     }

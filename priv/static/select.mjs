@@ -28,6 +28,9 @@ import {
   trackFocusVisible
 } from "./chunks/chunk-MG52DTQN.mjs";
 import {
+  readStringListControlledZagProps
+} from "./chunks/chunk-CDKBKUQ4.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -56,7 +59,6 @@ import {
   getInitialFocus,
   getNativeEvent,
   getString,
-  getStringList,
   isEditableElement,
   isEqual,
   isInternalChangeEvent,
@@ -1366,21 +1368,54 @@ var Select = class extends Component {
 
 // hooks/select.ts
 function buildCollection(items, hasGroups) {
-  if (hasGroups) {
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled,
-      groupBy: (item) => item.group ?? ""
-    });
-  }
-  return collection({
-    items,
-    itemToValue: (item) => item.id ?? item.value ?? "",
-    itemToString: (item) => item.label,
-    isItemDisabled: (item) => !!item.disabled
-  });
+  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
+}
+function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+  const redirectOn = getBoolean(el, "redirect");
+  return {
+    id: el.id,
+    disabled: getBoolean(el, "disabled"),
+    closeOnSelect: getBoolean(el, "closeOnSelect"),
+    dir: getDir(el),
+    loopFocus: getBoolean(el, "loopFocus"),
+    multiple: redirectOn ? false : getBoolean(el, "multiple"),
+    invalid: getBoolean(el, "invalid"),
+    name: getString(el, "name"),
+    form: getString(el, "form"),
+    readOnly: getBoolean(el, "readOnly"),
+    required: getBoolean(el, "required"),
+    deselectable: getBoolean(el, "deselectable"),
+    positioning: readPositioningOptions(el),
+    onValueChange: (details) => {
+      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+      if (getBoolean(el, "redirect") && firstValue) {
+        const itemEl = el.querySelector(
+          `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      }
+      const valueInput = el.querySelector(
+        '[data-scope="select"][data-part="value-input"]'
+      );
+      if (valueInput && getBoolean(el, "controlled")) {
+        valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          items: details.items
+        },
+        serverEventName: getString(el, "onValueChange"),
+        clientEventName: getString(el, "onValueChangeClient")
+      });
+    }
+  };
 }
 var SelectHook = {
   mounted() {
@@ -1389,62 +1424,16 @@ var SelectHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const allItems = JSON.parse(el.dataset.items || "[]");
     const hasGroups = allItems.some((item) => Boolean(item.group));
-    const initialCollection = buildCollection(allItems, hasGroups);
-    const redirectOn = getBoolean(el, "redirect");
     const selectComponent = new Select(el, {
-      id: el.id,
-      collection: initialCollection,
-      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
-      disabled: getBoolean(el, "disabled"),
-      closeOnSelect: getBoolean(el, "closeOnSelect"),
-      dir: getDir(el),
-      loopFocus: getBoolean(el, "loopFocus"),
-      multiple: redirectOn ? false : getBoolean(el, "multiple"),
-      invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
-      readOnly: getBoolean(el, "readOnly"),
-      required: getBoolean(el, "required"),
-      deselectable: getBoolean(el, "deselectable"),
-      positioning: readPositioningOptions(el),
-      onValueChange: (details) => {
-        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-        if (getBoolean(el, "redirect") && firstValue) {
-          const itemEl = el.querySelector(
-            `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
-          );
-          performRedirect(readDomItemRedirect(itemEl, firstValue), {
-            liveSocket: this.liveSocket
-          });
-        }
-        const valueInput = el.querySelector(
-          '[data-scope="select"][data-part="value-input"]'
-        );
-        if (valueInput && getBoolean(el, "controlled")) {
-          valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        notifyChange({
-          el,
-          canPushServer: canPush(),
-          pushEvent,
-          payload: {
-            id: el.id,
-            value: details.value,
-            items: details.items
-          },
-          serverEventName: getString(el, "onValueChange"),
-          clientEventName: getString(el, "onValueChangeClient")
-        });
-      }
+      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush),
+      collection: buildCollection(allItems, hasGroups),
+      ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
     selectComponent.hasGroups = hasGroups;
     selectComponent.setOptions(allItems);
     selectComponent.init();
     this.select = selectComponent;
     this.handlers = [];
-    this.lastItemsJson = el.dataset.items || "[]";
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:select:set-value", (event) => {
@@ -1466,37 +1455,18 @@ var SelectHook = {
     });
   },
   updated() {
-    const itemsJson = this.el.dataset.items || "[]";
-    const itemsUnchanged = itemsJson === this.lastItemsJson;
-    const redirectOn = getBoolean(this.el, "redirect");
-    const nextProps = {
-      id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      disabled: getBoolean(this.el, "disabled"),
-      multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
-      dir: getDir(this.el),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      positioning: readPositioningOptions(this.el)
-    };
-    if (this.select && itemsUnchanged) {
-      this.select.updateProps(nextProps);
-      return;
-    }
-    this.lastItemsJson = itemsJson;
-    const newItems = JSON.parse(itemsJson);
+    if (!this.select) return;
+    const newItems = JSON.parse(this.el.dataset.items || "[]");
     const hasGroups = newItems.some((item) => Boolean(item.group));
-    if (this.select) {
-      this.select.hasGroups = hasGroups;
-      this.select.setOptions(newItems);
-      this.select.updateProps({
-        ...nextProps,
-        collection: buildCollection(newItems, hasGroups)
-      });
-    }
+    this.select.hasGroups = hasGroups;
+    this.select.setOptions(newItems);
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    this.select.updateProps({
+      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush),
+      collection: this.select.getCollection(),
+      ...readStringListControlledZagProps(this.el, "value", "defaultValue")
+    });
   },
   destroyed() {
     if (this.handlers) {

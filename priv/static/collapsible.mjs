@@ -1,4 +1,7 @@
 import {
+  readBooleanControlledZagProps
+} from "./chunks/chunk-CDKBKUQ4.mjs";
+import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
@@ -425,7 +428,7 @@ var CollapsibleHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const collapsible = new Collapsible(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       onOpenChange: (details) => {
@@ -484,7 +487,7 @@ var CollapsibleHook = {
   updated() {
     this.collapsible?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
+      ...readBooleanControlledZagProps(this.el, "open", "defaultOpen"),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el)
     });

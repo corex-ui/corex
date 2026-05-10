@@ -4,7 +4,8 @@ import { Tabs } from "../components/tabs";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/tabs";
 import type { Direction, Orientation } from "@zag-js/types";
 
-import { getString, getBoolean, canPushEvent } from "../lib/util";
+import { getString, canPushEvent } from "../lib/util";
+import { readStringControlledZagProps } from "../lib/read-props";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -23,9 +24,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
 
     const tabs = new Tabs(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { value: getString(el, "value") }
-        : { defaultValue: getString(el, "defaultValue") }),
+      ...readStringControlledZagProps(el, "value", "defaultValue"),
       orientation: getString<Orientation>(el, "orientation"),
       dir: getString<Direction>(el, "dir"),
       onValueChange: (details: ValueChangeDetails) => {
@@ -90,9 +89,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & TabsHookState) {
     this.tabs?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { value: getString(this.el, "value") }
-        : { defaultValue: getString(this.el, "defaultValue") }),
+      ...readStringControlledZagProps(this.el, "value", "defaultValue"),
       orientation: getString<Orientation>(this.el, "orientation"),
       dir: getString<Direction>(this.el, "dir"),
     } as Props);

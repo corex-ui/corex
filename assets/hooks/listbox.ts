@@ -15,31 +15,12 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { type IdValueLabelItem, zagIdValueLabelCollectionConfig } from "../lib/list-collection";
 
-type ListboxItem = {
-  id?: string;
-  value?: string;
-  label: string;
-  disabled?: boolean;
-  group?: string;
-};
+type ListboxItem = IdValueLabelItem;
 
 function buildCollection(items: ListboxItem[], hasGroups: boolean) {
-  if (hasGroups) {
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? item.value ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled,
-      groupBy: (item) => item.group ?? "",
-    });
-  }
-  return collection({
-    items,
-    itemToValue: (item) => item.id ?? item.value ?? "",
-    itemToString: (item) => item.label,
-    isItemDisabled: (item) => !!item.disabled,
-  });
+  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
 }
 
 function listboxZagPropsBase(

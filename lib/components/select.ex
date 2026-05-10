@@ -5,7 +5,7 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through `Corex.Gettext` at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
+  The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through the host Phoenix gettext backend at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
 
   ### Minimal
 
@@ -593,7 +593,7 @@ defmodule Corex.Select do
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
           <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={get_selected_label(@items, @value) || @translation.placeholder}>
-            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})}>
+            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", orientation: @orientation})}>
               {get_selected_label(@items, @value) || @translation.placeholder}
             </span>
             {render_slot(@trigger)}
@@ -610,26 +610,26 @@ defmodule Corex.Select do
               </div>
               <ul>
                 <li :for={item <- group_items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
                     {render_slot(@item, item)}
                   </span>
-                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
                     {item.label}
                   </span>
-                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})}>
                     {render_slot(@item_indicator)}
                   </span>
                 </li>
               </ul>
             </li>
             <li :if={!@has_groups} :for={item <- @items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
                 {render_slot(@item, item)}
               </span>
-              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
                 {item.label}
               </span>
-              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
+              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})}>
                 {render_slot(@item_indicator)}
               </span>
             </li>

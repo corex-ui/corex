@@ -373,34 +373,31 @@ defmodule Corex.Select.Anatomy do
 
   defmodule ItemText do
     @moduledoc false
-    defstruct [:id, :value, :dir, :orientation]
+    defstruct [:id, :value, :orientation]
 
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t(),
-            dir: String.t(),
             orientation: String.t()
           }
 
-    @ignored_attrs ["id", "data-orientation", "dir", "data-focus", "data-focus-visible"]
+    @ignored_attrs ["id", "data-orientation", "data-focus", "data-focus-visible"]
     def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ItemIndicator do
     @moduledoc false
-    defstruct [:id, :value, :dir, :orientation]
+    defstruct [:id, :value, :orientation]
 
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t(),
-            dir: String.t(),
             orientation: String.t()
           }
 
     @ignored_attrs [
       "id",
       "data-orientation",
-      "dir",
       "data-state",
       "hidden",
       "data-focus",

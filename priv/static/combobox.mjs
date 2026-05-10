@@ -1863,26 +1863,17 @@ var ComboboxHook = {
     });
   },
   updated() {
+    if (!this.combobox) return;
     const newCollection = JSON.parse(this.el.getAttribute("data-items") ?? "[]");
     const hasGroups = newCollection.some((item) => Boolean(item.group));
-    if (!this.combobox) return;
     this.combobox.hasGroups = hasGroups;
     this.combobox.setAllOptions(newCollection);
-    const redirectOn = getBoolean(this.el, "redirect");
-    const controlled = getBoolean(this.el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     this.combobox.updateProps({
-      collection: this.combobox.getCollection(),
-      id: this.el.id,
-      ...controlled ? { value: getStringList(this.el, "value") ?? [] } : { defaultValue: getStringList(this.el, "defaultValue") ?? [] },
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      dir: getDir(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      placeholder: getString(this.el, "placeholder")
+      ...buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket),
+      ...comboboxValueBinding(this.el),
+      collection: this.combobox.getCollection()
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();

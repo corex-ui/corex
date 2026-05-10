@@ -17,7 +17,7 @@ defmodule Corex.Editable.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, maybe_put: 3]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -236,7 +236,4 @@ defmodule Corex.Editable.Connect do
       "hidden" => if(assigns.editing, do: nil, else: "")
     }
   end
-
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 end

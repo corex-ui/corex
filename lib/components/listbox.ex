@@ -348,7 +348,7 @@ defmodule Corex.Listbox do
           <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}>
             <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
             <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-              <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+              <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
                 <%= if @item == [] do %>
                   {entry[:label]}
                 <% else %>
@@ -365,7 +365,7 @@ defmodule Corex.Listbox do
             </div>
           </div>
           <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>{entry[:label]}</span>
+            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>{entry[:label]}</span>
             {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
             <span
               phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
@@ -384,7 +384,7 @@ defmodule Corex.Listbox do
         <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_template(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} data-template="true">
           <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label_template(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
           <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
-            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, orientation: @orientation})}>
               <%= if @item == [] do %>
                 {entry[:label]}
               <% else %>
@@ -401,7 +401,7 @@ defmodule Corex.Listbox do
           </div>
         </div>
         <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
-          <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+          <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, orientation: @orientation})}>
             <%= if @item == [] do %>
               {entry[:label]}
             <% else %>
