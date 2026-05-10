@@ -339,6 +339,25 @@ defmodule Corex.Dialog do
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
+    id = assigns.id
+    dir = assigns.dir
+    open = assigns.open
+
+    assigns =
+      assigns
+      |> assign(:trigger_struct, %Trigger{id: id, dir: dir, open: open})
+      |> assign(:backdrop_struct, %Backdrop{id: id, dir: dir, open: open})
+      |> assign(:positioner_struct, %Positioner{id: id, dir: dir, open: open})
+      |> assign(:content_struct, %Content{id: id, dir: dir, open: open})
+      |> assign(:title_struct, %Title{id: id, dir: dir, open: open})
+      |> assign(:description_struct, %Description{id: id, dir: dir, open: open})
+      |> assign(:close_trigger_struct, %CloseTrigger{
+        id: id,
+        dir: dir,
+        open: open,
+        aria_label: assigns.translation.close
+      })
+
     ~H"""
     <div
       id={@id}
@@ -364,37 +383,37 @@ defmodule Corex.Dialog do
       })}
     >
       <button
-        phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, open: @open})}
+        phx-mounted={Connect.ignore_trigger(@trigger_struct)}
         aria-label={Map.get(List.first(@trigger), :aria_label, nil)}
-        {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})}
+        {Connect.trigger(@trigger_struct)}
         class={Map.get(List.first(@trigger), :class, nil)}
       >
         {render_slot(@trigger)}
       </button>
 
-      <div phx-mounted={Connect.ignore_backdrop(%Backdrop{id: @id, dir: @dir, open: @open})} {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open}, @animation)}></div>
-      <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, open: @open})} {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
-        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open})} {Connect.content(%Content{id: @id, dir: @dir, open: @open}, @animation)}>
-        <div data-scope="dialog" data-part="header">
-        <h2
-          :if={@title != []}
-          phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, open: @open})}
-          {Connect.title(%Title{id: @id, dir: @dir, open: @open})}
-        >
-            {render_slot(@title)}
-          </h2>
-          <button
-            :if={@close_trigger != []}
-            phx-mounted={Connect.ignore_close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}
-            {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}
-          >
-          {render_slot(@close_trigger)}
-        </button>
-        </div>
+      <div phx-mounted={Connect.ignore_backdrop(@backdrop_struct)} {Connect.backdrop(@backdrop_struct, @animation)}></div>
+      <div phx-mounted={Connect.ignore_positioner(@positioner_struct)} {Connect.positioner(@positioner_struct)}>
+        <div phx-mounted={Connect.ignore_content(@content_struct)} {Connect.content(@content_struct, @animation)}>
+          <div data-scope="dialog" data-part="header">
+            <h2
+              :if={@title != []}
+              phx-mounted={Connect.ignore_title(@title_struct)}
+              {Connect.title(@title_struct)}
+            >
+              {render_slot(@title)}
+            </h2>
+            <button
+              :if={@close_trigger != []}
+              phx-mounted={Connect.ignore_close_trigger(@close_trigger_struct)}
+              {Connect.close_trigger(@close_trigger_struct)}
+            >
+              {render_slot(@close_trigger)}
+            </button>
+          </div>
           <p
             :if={@description != []}
-            phx-mounted={Connect.ignore_description(%Description{id: @id, dir: @dir, open: @open})}
-            {Connect.description(%Description{id: @id, dir: @dir, open: @open})}
+            phx-mounted={Connect.ignore_description(@description_struct)}
+            {Connect.description(@description_struct)}
           >
             {render_slot(@description)}
           </p>
@@ -413,10 +432,13 @@ defmodule Corex.Dialog do
   slot(:inner_block, required: true)
 
   def dialog_title(assigns) do
+    assigns =
+      assign(assigns, :title_struct, %Title{id: assigns.id, dir: assigns.dir, open: false})
+
     ~H"""
     <h2
-      phx-mounted={Connect.ignore_title(%Title{id: @id, dir: @dir, open: false})}
-      {Connect.title(%Title{id: @id, dir: @dir, open: false})}
+      phx-mounted={Connect.ignore_title(@title_struct)}
+      {Connect.title(@title_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -432,10 +454,17 @@ defmodule Corex.Dialog do
   slot(:inner_block, required: true)
 
   def dialog_description(assigns) do
+    assigns =
+      assign(assigns, :description_struct, %Description{
+        id: assigns.id,
+        dir: assigns.dir,
+        open: false
+      })
+
     ~H"""
     <p
-      phx-mounted={Connect.ignore_description(%Description{id: @id, dir: @dir, open: false})}
-      {Connect.description(%Description{id: @id, dir: @dir, open: false})}
+      phx-mounted={Connect.ignore_description(@description_struct)}
+      {Connect.description(@description_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -454,10 +483,18 @@ defmodule Corex.Dialog do
   def dialog_close_trigger(assigns) do
     assigns = assign_new(assigns, :aria_label, fn -> Corex.Gettext.gettext("Close") end)
 
+    assigns =
+      assign(assigns, :close_trigger_struct, %CloseTrigger{
+        id: assigns.id,
+        dir: assigns.dir,
+        open: false,
+        aria_label: assigns.aria_label
+      })
+
     ~H"""
     <button
-      phx-mounted={Connect.ignore_close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})}
-      {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})}
+      phx-mounted={Connect.ignore_close_trigger(@close_trigger_struct)}
+      {Connect.close_trigger(@close_trigger_struct)}
       {@rest}
     >
       {render_slot(@inner_block)}

@@ -4,37 +4,19 @@ import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
-import { getString, getBoolean, getStringList, canPushEvent, getDir } from "../lib/util";
+import { getString, getBoolean, canPushEvent, getDir } from "../lib/util";
+import { readStringListControlledZagProps } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { type IdValueLabelItem, zagIdValueLabelCollectionConfig } from "../lib/list-collection";
 
-type SelectItem = {
-  id?: string;
-  value?: string;
-  label: string;
-  disabled?: boolean;
-  group?: string;
-};
+type SelectItem = IdValueLabelItem;
 
 function buildCollection(items: SelectItem[], hasGroups: boolean) {
-  if (hasGroups) {
-    return collection({
-      items,
-      itemToValue: (item: SelectItem) => item.id ?? item.value ?? "",
-      itemToString: (item: SelectItem) => item.label,
-      isItemDisabled: (item: SelectItem) => !!item.disabled,
-      groupBy: (item: SelectItem) => item.group ?? "",
-    });
-  }
-  return collection({
-    items,
-    itemToValue: (item: SelectItem) => item.id ?? item.value ?? "",
-    itemToString: (item: SelectItem) => item.label,
-    isItemDisabled: (item: SelectItem) => !!item.disabled,
-  });
+  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
 }
 
 type SelectHookState = {
@@ -60,9 +42,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const selectComponent = new Select(el, {
       id: el.id,
       collection: initialCollection,
-      ...(getBoolean(el, "controlled")
-        ? { value: getStringList(el, "value") }
-        : { defaultValue: getStringList(el, "defaultValue") }),
+      ...readStringListControlledZagProps(el, "value", "defaultValue"),
       disabled: getBoolean(el, "disabled"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       dir: getDir(el),
@@ -157,9 +137,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
 
     const nextProps: Partial<Props> = {
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { value: getStringList(this.el, "value") }
-        : { defaultValue: getStringList(this.el, "defaultValue") }),
+      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       disabled: getBoolean(this.el, "disabled"),

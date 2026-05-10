@@ -9,6 +9,17 @@ export default [
   },
   js.configs.recommended,
   {
+    files: ["assets/scripts/**/*.{js,mjs,cjs}"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: {
+        process: "readonly",
+        console: "readonly",
+      },
+    },
+  },
+  {
     files: ["assets/**/*.ts", "assets/**/*.js"],
     languageOptions: {
       parser: tsParser,

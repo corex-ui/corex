@@ -2,6 +2,7 @@ defmodule Corex.Accordion.Connect do
   @moduledoc false
   alias Corex.Accordion.Anatomy.{Item, ItemContent, ItemIndicator, ItemTrigger, Props, Root}
   alias Corex.Animation.Height
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
@@ -63,7 +64,7 @@ defmodule Corex.Accordion.Connect do
   end
 
   def ignore_root(assigns) do
-    JS.ignore_attributes(Root.ignored_attrs(), to: to_selector(root_id(assigns.id)))
+    JS.ignore_attributes(Root.ignored_attrs(), to: Selectors.css_id(root_id(assigns.id)))
   end
 
   @spec item(Item.t()) :: map()
@@ -84,7 +85,7 @@ defmodule Corex.Accordion.Connect do
   @spec ignore_item(Item.t()) :: JS.t()
   def ignore_item(assigns) do
     JS.ignore_attributes(Item.ignored_attrs(),
-      to: to_selector(item_id(assigns.id, assigns.value))
+      to: Selectors.css_id(item_id(assigns.id, assigns.value))
     )
   end
 
@@ -114,7 +115,7 @@ defmodule Corex.Accordion.Connect do
   @spec ignore_trigger(Item.t()) :: JS.t()
   def ignore_trigger(assigns) do
     JS.ignore_attributes(ItemTrigger.ignored_attrs(),
-      to: to_selector(trigger_id(assigns.id, assigns.value))
+      to: Selectors.css_id(trigger_id(assigns.id, assigns.value))
     )
   end
 
@@ -152,7 +153,7 @@ defmodule Corex.Accordion.Connect do
   @spec ignore_content(Item.t()) :: JS.t()
   def ignore_content(assigns) do
     JS.ignore_attributes(ItemContent.ignored_attrs(),
-      to: to_selector(content_id(assigns.id, assigns.value))
+      to: Selectors.css_id(content_id(assigns.id, assigns.value))
     )
   end
 
@@ -175,29 +176,7 @@ defmodule Corex.Accordion.Connect do
   @spec ignore_indicator(Item.t()) :: JS.t()
   def ignore_indicator(assigns) do
     JS.ignore_attributes(ItemIndicator.ignored_attrs(),
-      to: to_selector("accordion:#{assigns.id}:indicator:#{assigns.value}")
+      to: Selectors.css_id("accordion:#{assigns.id}:indicator:#{assigns.value}")
     )
-  end
-
-  defp to_selector(id) when is_binary(id) do
-    "##{escape_css_identifier(id)}"
-  end
-
-  defp escape_css_identifier(id) when is_binary(id) do
-    id
-    |> String.to_charlist()
-    |> Enum.with_index()
-    |> Enum.map(fn
-      {ch, idx} when ch in ?a..?z or ch in ?A..?Z or ch in ?0..?9 or ch == ?- or ch == ?_ ->
-        if idx == 0 and ch in ?0..?9 do
-          ["\\", Integer.to_string(ch, 16), " "]
-        else
-          <<ch::utf8>>
-        end
-
-      {ch, _idx} ->
-        ["\\", <<ch::utf8>>]
-    end)
-    |> IO.iodata_to_binary()
   end
 end

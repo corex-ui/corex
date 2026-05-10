@@ -160,6 +160,16 @@ defmodule Corex.Helpers do
     Enum.member?(value_list, entry_value(entry))
   end
 
+  @doc """
+  Inserts `key => value` into `map` only when `value` is not nil.
+
+  Used by `Connect` modules to skip optional data attributes that should not
+  appear in the rendered HTML when they have no value.
+  """
+  @spec maybe_put(map(), term(), term()) :: map()
+  def maybe_put(map, _key, nil), do: map
+  def maybe_put(map, key, value), do: Map.put(map, key, value)
+
   def maybe_put_data_dir(map, nil), do: map
   def maybe_put_data_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "data-dir", dir)
   def maybe_put_data_dir(map, _), do: map

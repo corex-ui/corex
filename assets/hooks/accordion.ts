@@ -6,6 +6,10 @@ import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
 import {
+  readControlledOrDefaultStringList,
+  readStringListControlledZagProps,
+} from "../lib/read-props";
+import {
   readHeightAnimationOptions,
   prepareInitialHeightState,
   runOpenStateTransitionsHeight,
@@ -37,15 +41,11 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
 
-    self.lastValue = getBoolean(el, "controlled")
-      ? (getStringList(el, "value") ?? [])
-      : (getStringList(el, "defaultValue") ?? []);
+    self.lastValue = readControlledOrDefaultStringList(el, "value", "defaultValue");
 
     const accordion = new Accordion(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { value: getStringList(el, "value") }
-        : { defaultValue: getStringList(el, "defaultValue") }),
+      ...readStringListControlledZagProps(el, "value", "defaultValue"),
       collapsible: getBoolean(el, "collapsible"),
       multiple: getBoolean(el, "multiple"),
       orientation: getString<Orientation>(el, "orientation"),
@@ -249,9 +249,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
     this.accordion?.updateProps({
       id: this.el.id,
-      ...(controlled
-        ? { value: getStringList(this.el, "value") }
-        : { defaultValue: getStringList(this.el, "defaultValue") }),
+      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
       collapsible: getBoolean(this.el, "collapsible"),
       multiple: getBoolean(this.el, "multiple"),
       orientation: getString<Orientation>(this.el, "orientation"),
