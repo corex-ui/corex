@@ -36,6 +36,26 @@
       {msg}
     </:error>
   </.select>
+  <.combobox
+    field={f[:currency]}
+    class="combobox  max-w-none"
+    placeholder="Search currency"
+    items={currency_items()}
+  >
+    <:label>Preferred currency</:label>
+    <:empty>No results</:empty>
+    <:item :let={item}>
+      <span class="font-mono text-xs uppercase place-self-end">{item.id}</span>
+      <span>{item.label}</span>
+    </:item>
+    <:trigger>
+      <.heroicon name="hero-chevron-down" />
+    </:trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.combobox>
   <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
     <:label>Select a date</:label>
     <:trigger>

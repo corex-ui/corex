@@ -52,11 +52,11 @@ defmodule E2eWeb.PageController do
   def combobox_form_page(conn, _params) do
     changeset =
       %E2e.Form.Combobox{}
-      |> E2e.Form.Combobox.changeset(%{"airport" => ""})
+      |> E2e.Form.Combobox.changeset(%{"country" => ""})
 
     validate_changeset =
       %E2e.Form.Combobox{}
-      |> E2e.Form.Combobox.changeset_validate(%{"airport" => ""})
+      |> E2e.Form.Combobox.changeset_validate(%{"country" => ""})
 
     form =
       Phoenix.Component.to_form(changeset,
@@ -97,7 +97,7 @@ defmodule E2eWeb.PageController do
           data = Ecto.Changeset.apply_changes(changeset)
 
           conn
-          |> put_flash(:info, "Submitted (changeset): airport=#{inspect(data.airport)}")
+          |> put_flash(:info, "Submitted (changeset): country=#{inspect(data.country)}")
           |> redirect(to: ~p"/combobox/form#combobox-form-changeset")
         else
           changeset = Map.put(changeset, :action, :insert)
@@ -130,7 +130,7 @@ defmodule E2eWeb.PageController do
           data = Ecto.Changeset.apply_changes(changeset)
 
           conn
-          |> put_flash(:info, "Submitted (validated): airport=#{inspect(data.airport)}")
+          |> put_flash(:info, "Submitted (validated): country=#{inspect(data.country)}")
           |> redirect(to: ~p"/combobox/form#combobox-form-validate")
         else
           changeset = Map.put(changeset, :action, :insert)
@@ -156,18 +156,18 @@ defmodule E2eWeb.PageController do
 
       is_map(params["combobox_native"]) ->
         native = params["combobox_native"] || %{}
-        airport = native["airport"] || ""
+        country = native["country"] || ""
 
         conn
-        |> put_flash(:info, "Submitted (native): airport=#{inspect(airport)}")
+        |> put_flash(:info, "Submitted (native): country=#{inspect(country)}")
         |> redirect(to: ~p"/combobox/form#combobox-form-controller")
 
       true ->
         combobox_params = params["combobox"] || %{}
-        airport = combobox_params["airport"] || ""
+        country = combobox_params["country"] || ""
 
         conn
-        |> put_flash(:info, "Submitted: airport=#{inspect(airport)}")
+        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
         |> redirect(to: ~p"/combobox/form")
     end
   end

@@ -11,14 +11,16 @@ defmodule E2eWeb.AdminLiveTest do
     birth_date: "1990-01-15",
     signature: @valid_signature_path,
     terms: true,
-    level: 5
+    level: 5,
+    currency: "eur"
   }
   @update_attrs %{
     name: "some updated name",
     country: "deu",
     birth_date: "1995-06-20",
     terms: true,
-    level: 3
+    level: 3,
+    currency: "usd"
   }
   @invalid_attrs %{
     name: "",
@@ -26,14 +28,16 @@ defmodule E2eWeb.AdminLiveTest do
     birth_date: nil,
     signature: "",
     terms: false,
-    level: 1
+    level: 1,
+    currency: ""
   }
   @invalid_attrs_edit %{
     name: "",
     country: "fra",
     birth_date: "1990-01-15",
     terms: false,
-    level: 5
+    level: 5,
+    currency: "eur"
   }
 
   defp create_admin(_) do
@@ -176,7 +180,8 @@ defmodule E2eWeb.AdminLiveTest do
         "birth_date" => "1990-01-15",
         "signature" => @valid_signature_path,
         "terms" => "false",
-        "level" => "42"
+        "level" => "42",
+        "currency" => "eur"
       }
 
       html = render_change(form_live, "validate", %{"admin" => attrs})

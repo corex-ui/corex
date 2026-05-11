@@ -60,6 +60,27 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.select>
 
+        <.combobox
+          field={@form[:currency]}
+          class="combobox max-w-none"
+          placeholder={gettext("Search currency")}
+          items={currency_items()}
+        >
+          <:label>Preferred currency</:label>
+          <:empty>No results</:empty>
+          <:item :let={item}>
+            <span class="font-mono text-xs uppercase place-self-end">{item.id}</span>
+            <span>{item.label}</span>
+          </:item>
+          <:trigger>
+            <.heroicon name="hero-chevron-down" />
+          </:trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.combobox>
+
         <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
           <:label>Select a date</:label>
           <:trigger>
@@ -198,4 +219,19 @@ defmodule E2eWeb.AdminLive.Form do
 
   defp return_path("index", _admin), do: ~p"/admins"
   defp return_path("show", admin), do: ~p"/admins/#{admin}"
+
+  defp currency_items do
+    [
+      %{id: "eur", label: "Euro"},
+      %{id: "usd", label: "US Dollar"},
+      %{id: "gbp", label: "British Pound"},
+      %{id: "jpy", label: "Japanese Yen"},
+      %{id: "chf", label: "Swiss Franc"},
+      %{id: "cad", label: "Canadian Dollar"},
+      %{id: "aud", label: "Australian Dollar"},
+      %{id: "sek", label: "Swedish Krona"},
+      %{id: "nok", label: "Norwegian Krone"},
+      %{id: "sgd", label: "Singapore Dollar"}
+    ]
+  end
 end

@@ -24,6 +24,10 @@ export class Combobox extends Component<Props, Api> {
     this.options = options;
   }
 
+  restoreFilteredOptions() {
+    this.options = this.allOptions;
+  }
+
   getCollection() {
     const items = this.options || this.allOptions || [];
     return collection(zagComboboxCollectionConfig(items, this.hasGroups));
@@ -39,7 +43,7 @@ export class Combobox extends Component<Props, Api> {
         return getCollection();
       },
       onOpenChange: (details: OpenChangeDetails) => {
-        if (details.open) {
+        if (details.open && details.reason !== "input-change") {
           this.options = this.allOptions;
         }
         if (props.onOpenChange) {

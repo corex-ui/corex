@@ -12095,7 +12095,23 @@ var Corex = (() => {
     }
     return { defaultValue: (_b = getStringList(el, "defaultValue")) != null ? _b : [] };
   }
-  function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+  function comboboxValueBindingForUpdate(el) {
+    var _a4;
+    if (!getBoolean(el, "controlled")) return {};
+    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
+  }
+  function selectedItemLabel(items) {
+    const first2 = items == null ? void 0 : items[0];
+    if (!first2) return "";
+    return first2.label != null ? String(first2.label) : "";
+  }
+  function syncVisibleInputAttribute(el, value) {
+    const visible = el.querySelector(
+      '[data-scope="combobox"][data-part="input"]'
+    );
+    if (visible) visible.setAttribute("value", value);
+  }
+  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -12111,8 +12127,6 @@ var Corex = (() => {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: getString(el, "name"),
-      form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
       positioning: readPositioningOptions(el),
@@ -12132,6 +12146,8 @@ var Corex = (() => {
         });
       },
       onInputValueChange: (details) => {
+        var _a4;
+        syncVisibleInputAttribute(el, (_a4 = details.inputValue) != null ? _a4 : "");
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -12146,7 +12162,7 @@ var Corex = (() => {
         });
       },
       onValueChange: (details) => {
-        var _a4;
+        var _a4, _b;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (redirectOn && firstValue) {
           const itemEl = el.querySelector(
@@ -12165,6 +12181,8 @@ var Corex = (() => {
             hidden.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
+        (_b = getCombobox()) == null ? void 0 : _b.restoreFilteredOptions();
+        syncVisibleInputAttribute(el, selectedItemLabel(details.items));
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -12179,6 +12197,13 @@ var Corex = (() => {
         });
       }
     };
+  }
+  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
+    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox));
+    delete rest.onOpenChange;
+    delete rest.onInputValueChange;
+    delete rest.onValueChange;
+    return rest;
   }
   var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, Combobox, ComboboxHook;
   var init_combobox = __esm({
@@ -13289,6 +13314,9 @@ var Corex = (() => {
           this.allOptions = options;
           this.options = options;
         }
+        restoreFilteredOptions() {
+          this.options = this.allOptions;
+        }
         getCollection() {
           const items = this.options || this.allOptions || [];
           return collection(zagComboboxCollectionConfig(items, this.hasGroups));
@@ -13301,7 +13329,7 @@ var Corex = (() => {
               return getCollection();
             },
             onOpenChange: (details) => {
-              if (details.open) {
+              if (details.open && details.reason !== "input-change") {
                 this.options = this.allOptions;
               }
               if (props.onOpenChange) {
@@ -13497,14 +13525,18 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const allItems = JSON.parse((_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]");
+          const itemsJson = (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
+          const allItems = JSON.parse(itemsJson);
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(el));
+          let comboboxRef;
+          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef)), comboboxValueBinding(el));
           const combobox = new Combobox(el, props);
+          comboboxRef = combobox;
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
           this.combobox = combobox;
+          this.lastItemsJson = itemsJson;
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:combobox:set-value", (event) => {
@@ -13520,15 +13552,23 @@ var Corex = (() => {
         updated() {
           var _a4;
           if (!this.combobox) return;
-          const newCollection = JSON.parse((_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]");
-          const hasGroups = newCollection.some((item) => Boolean(item.group));
-          this.combobox.hasGroups = hasGroups;
-          this.combobox.setAllOptions(newCollection);
+          const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
+          if (newItemsJson !== this.lastItemsJson) {
+            this.lastItemsJson = newItemsJson;
+            const newCollection = JSON.parse(newItemsJson);
+            const hasGroups = newCollection.some((item) => Boolean(item.group));
+            this.combobox.hasGroups = hasGroups;
+            this.combobox.setAllOptions(newCollection);
+          }
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.combobox.updateProps(__spreadProps(__spreadValues(__spreadValues({}, buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(this.el)), {
-            collection: this.combobox.getCollection()
-          }));
+          this.combobox.updateProps(__spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
+            this.el,
+            pushEvent,
+            canPush,
+            this.liveSocket,
+            () => this.combobox
+          )), comboboxValueBindingForUpdate(this.el)));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }

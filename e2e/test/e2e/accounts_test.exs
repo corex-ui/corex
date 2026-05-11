@@ -8,7 +8,14 @@ defmodule E2e.AccountsTest do
 
     import E2e.AccountsFixtures
 
-    @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil, level: nil}
+    @invalid_attrs %{
+      name: nil,
+      country: nil,
+      birth_date: nil,
+      terms: nil,
+      level: nil,
+      currency: nil
+    }
 
     test "list_users/0 returns all users" do
       user = user_fixture()
@@ -28,7 +35,8 @@ defmodule E2e.AccountsTest do
         signature:
           "[\"M153.45,56.79 Q152.46,57.28 150.62,57.98 T148.61,58.72 148.29,58.71 147.99,58.61 147.74,58.41 147.56,58.14 147.48,57.84 147.50,57.52 147.62,57.22 147.83,56.98 148.11,56.82 148.42,56.75 148.74,56.79 149.03,56.93 149.25,57.15 149.40,57.44 149.45,57.75 149.39,58.07 149.24,58.35 149.01,58.56 148.72,58.69 148.40,58.73 148.09,58.65 147.82,58.49 147.61,58.24 147.50,57.94 147.48,57.62 147.57,57.32 147.75,57.05 148.01,56.86 148.15,56.79 149.87,56.14 152.07,55.24 152.67,54.96 152.90,54.90 153.14,54.91 153.37,54.97 153.58,55.08 153.76,55.25 153.89,55.45 153.97,55.67 153.99,55.91 153.96,56.15 153.87,56.37 153.73,56.56 153.55,56.72 Z\"]",
         terms: true,
-        level: 5
+        level: 5,
+        currency: "eur"
       }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
@@ -37,6 +45,7 @@ defmodule E2e.AccountsTest do
       assert user.birth_date == ~D[1990-01-15]
       assert user.terms == true
       assert user.level == 5
+      assert user.currency == "eur"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -50,11 +59,27 @@ defmodule E2e.AccountsTest do
         birth_date: "1990-01-15",
         signature: "M0,0L1,1Z",
         terms: true,
-        level: 6
+        level: 6,
+        currency: "eur"
       }
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
       assert Keyword.has_key?(errors, :level)
+    end
+
+    test "create_user/1 with unsupported currency returns error changeset" do
+      attrs = %{
+        name: "some name",
+        country: "some country",
+        birth_date: "1990-01-15",
+        signature: "M0,0L1,1Z",
+        terms: true,
+        level: 1,
+        currency: "xxx"
+      }
+
+      assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_user(attrs)
+      assert Keyword.has_key?(errors, :currency)
     end
 
     test "update_user/2 with valid data updates the user" do
@@ -65,7 +90,8 @@ defmodule E2e.AccountsTest do
         country: "some updated country",
         birth_date: "1995-06-20",
         terms: true,
-        level: 3
+        level: 3,
+        currency: "usd"
       }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
@@ -74,6 +100,7 @@ defmodule E2e.AccountsTest do
       assert user.birth_date == ~D[1995-06-20]
       assert user.terms == true
       assert user.level == 3
+      assert user.currency == "usd"
     end
 
     test "update_user/2 with invalid data returns error changeset" do
@@ -99,7 +126,14 @@ defmodule E2e.AccountsTest do
 
     import E2e.AccountsFixtures
 
-    @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil, level: nil}
+    @invalid_attrs %{
+      name: nil,
+      country: nil,
+      birth_date: nil,
+      terms: nil,
+      level: nil,
+      currency: nil
+    }
 
     test "list_admins/0 returns all admins" do
       admin = admin_fixture()
@@ -119,7 +153,8 @@ defmodule E2e.AccountsTest do
         signature:
           "[\"M153.45,56.79 Q152.46,57.28 150.62,57.98 T148.61,58.72 148.29,58.71 147.99,58.61 147.74,58.41 147.56,58.14 147.48,57.84 147.50,57.52 147.62,57.22 147.83,56.98 148.11,56.82 148.42,56.75 148.74,56.79 149.03,56.93 149.25,57.15 149.40,57.44 149.45,57.75 149.39,58.07 149.24,58.35 149.01,58.56 148.72,58.69 148.40,58.73 148.09,58.65 147.82,58.49 147.61,58.24 147.50,57.94 147.48,57.62 147.57,57.32 147.75,57.05 148.01,56.86 148.15,56.79 149.87,56.14 152.07,55.24 152.67,54.96 152.90,54.90 153.14,54.91 153.37,54.97 153.58,55.08 153.76,55.25 153.89,55.45 153.97,55.67 153.99,55.91 153.96,56.15 153.87,56.37 153.73,56.56 153.55,56.72 Z\"]",
         terms: true,
-        level: 5
+        level: 5,
+        currency: "eur"
       }
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(valid_attrs)
@@ -128,6 +163,7 @@ defmodule E2e.AccountsTest do
       assert admin.birth_date == ~D[1990-01-15]
       assert admin.terms == true
       assert admin.level == 5
+      assert admin.currency == "eur"
     end
 
     test "create_admin/1 with invalid data returns error changeset" do
@@ -141,11 +177,27 @@ defmodule E2e.AccountsTest do
         birth_date: "1990-01-15",
         signature: "M0,0L1,1Z",
         terms: true,
-        level: 6
+        level: 6,
+        currency: "eur"
       }
 
       assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_admin(attrs)
       assert Keyword.has_key?(errors, :level)
+    end
+
+    test "create_admin/1 with unsupported currency returns error changeset" do
+      attrs = %{
+        name: "some name",
+        country: :fra,
+        birth_date: "1990-01-15",
+        signature: "M0,0L1,1Z",
+        terms: true,
+        level: 1,
+        currency: "xxx"
+      }
+
+      assert {:error, %Ecto.Changeset{errors: errors}} = Accounts.create_admin(attrs)
+      assert Keyword.has_key?(errors, :currency)
     end
 
     test "update_admin/2 with valid data updates the admin" do
@@ -156,7 +208,8 @@ defmodule E2e.AccountsTest do
         country: :deu,
         birth_date: "1995-06-20",
         terms: true,
-        level: 3
+        level: 3,
+        currency: "usd"
       }
 
       assert {:ok, %Admin{} = admin} = Accounts.update_admin(admin, update_attrs)
@@ -165,6 +218,7 @@ defmodule E2e.AccountsTest do
       assert admin.birth_date == ~D[1995-06-20]
       assert admin.terms == true
       assert admin.level == 3
+      assert admin.currency == "usd"
     end
 
     test "update_admin/2 with invalid data returns error changeset" do

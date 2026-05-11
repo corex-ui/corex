@@ -275,6 +275,7 @@ defmodule Corex.Combobox do
   }
 
   alias Corex.Combobox.Connect
+  alias Corex.Selectors
 
   @doc """
   Renders a combobox component.
@@ -453,7 +454,6 @@ defmodule Corex.Combobox do
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
-    |> assign_new(:controlled, fn -> true end)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> combobox()
@@ -498,14 +498,14 @@ defmodule Corex.Combobox do
     <div id={@id} 
     phx-hook="Combobox" 
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])}
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, placeholder: @placeholder, value: @value, form: @form,
+      id: @id, items: @items, placeholder: @placeholder, value: @value,
       controlled: @controlled,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
-     name: @name, read_only: @read_only, required: @required,
+      read_only: @read_only, required: @required,
       on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client,
       positioning: @positioning,
@@ -517,10 +517,10 @@ defmodule Corex.Combobox do
         id={"#{@id}-hidden-value"}
         name={@name}
         form={@form}
-        phx-mounted={JS.ignore_attributes(["value"], to: "##{@id}-hidden-value")}
         data-scope="combobox"
         data-part="hidden-input"
         value={@value_for_hidden_input}
+        phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("#{@id}-hidden-value"))}
       />
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
@@ -528,7 +528,7 @@ defmodule Corex.Combobox do
           {render_slot(@label)}
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <input phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
+          <input value={@selected_label || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
           <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@translation.clear_selection}>
             {render_slot(@clear_trigger)}
           </button>

@@ -33,15 +33,10 @@ defmodule E2eWeb.ComboboxForm do
     socket
     |> assign(:form, form)
     |> assign(:strict_form, strict_form)
-    |> assign(:airport_field, "")
-    |> assign(:airport_field_strict, "")
   end
 
   def handle_event("validate", params, socket) do
     cparams = Map.get(params, "combobox", %{})
-    airport = cparams["airport"] || socket.assigns.airport_field || ""
-
-    cparams = Map.put(cparams, "airport", airport)
 
     changeset =
       %Combobox{}
@@ -60,20 +55,13 @@ defmodule E2eWeb.ComboboxForm do
      )}
   end
 
-  def handle_event("airport_sync", %{"value" => value}, socket) do
-    v = value |> List.wrap() |> List.first() |> to_string()
-    {:noreply, assign(socket, :airport_field, v)}
-  end
-
   def handle_event("save", params, socket) do
     cparams = Map.get(params, "combobox", %{})
-    airport = cparams["airport"] || socket.assigns.airport_field || ""
-    cparams = cparams |> Map.put("airport", airport)
 
     case Combobox.changeset(%Combobox{}, cparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: airport=#{data.airport}"
+        message = "Submitted: country=#{data.country}"
 
         {:noreply,
          socket
@@ -84,8 +72,7 @@ defmodule E2eWeb.ComboboxForm do
              as: :combobox,
              id: "combobox-live-form"
            )
-         )
-         |> assign(:airport_field, data.airport)}
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -103,8 +90,6 @@ defmodule E2eWeb.ComboboxForm do
 
   def handle_event("validate_strict", params, socket) do
     cparams = Map.get(params, "combobox_strict", %{})
-    airport = cparams["airport"] || socket.assigns.airport_field_strict || ""
-    cparams = Map.put(cparams, "airport", airport)
 
     changeset =
       %Combobox{}
@@ -123,20 +108,13 @@ defmodule E2eWeb.ComboboxForm do
      )}
   end
 
-  def handle_event("airport_sync_strict", %{"value" => value}, socket) do
-    v = value |> List.wrap() |> List.first() |> to_string()
-    {:noreply, assign(socket, :airport_field_strict, v)}
-  end
-
   def handle_event("save_strict", params, socket) do
     cparams = Map.get(params, "combobox_strict", %{})
-    airport = cparams["airport"] || socket.assigns.airport_field_strict || ""
-    cparams = Map.put(cparams, "airport", airport)
 
     case Combobox.changeset_validate(%Combobox{}, cparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: airport=#{data.airport}"
+        message = "Submitted: country=#{data.country}"
 
         {:noreply,
          socket
@@ -148,8 +126,7 @@ defmodule E2eWeb.ComboboxForm do
              as: :combobox_strict,
              id: "combobox-strict-form-live"
            )
-         )
-         |> assign(:airport_field_strict, data.airport)}
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -176,7 +153,7 @@ defmodule E2eWeb.ComboboxForm do
       <.demo_page
         id="combobox-form-live-page"
         title="Combobox · Form"
-        subtitle="LiveView form with hook-driven airport field."
+        subtitle="LiveView form with hook-driven country field."
       >
         <.demo_section
           id="combobox-live-form-changeset"

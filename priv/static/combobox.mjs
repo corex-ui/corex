@@ -1547,6 +1547,9 @@ var Combobox = class extends Component {
     this.allOptions = options;
     this.options = options;
   }
+  restoreFilteredOptions() {
+    this.options = this.allOptions;
+  }
   getCollection() {
     const items = this.options || this.allOptions || [];
     return collection(zagComboboxCollectionConfig(items, this.hasGroups));
@@ -1560,7 +1563,7 @@ var Combobox = class extends Component {
         return getCollection();
       },
       onOpenChange: (details) => {
-        if (details.open) {
+        if (details.open && details.reason !== "input-change") {
           this.options = this.allOptions;
         }
         if (props.onOpenChange) {
@@ -1750,7 +1753,22 @@ function comboboxValueBinding(el) {
   }
   return { defaultValue: getStringList(el, "defaultValue") ?? [] };
 }
-function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+function comboboxValueBindingForUpdate(el) {
+  if (!getBoolean(el, "controlled")) return {};
+  return { value: getStringList(el, "value") ?? [] };
+}
+function selectedItemLabel(items) {
+  const first = items?.[0];
+  if (!first) return "";
+  return first.label != null ? String(first.label) : "";
+}
+function syncVisibleInputAttribute(el, value) {
+  const visible = el.querySelector(
+    '[data-scope="combobox"][data-part="input"]'
+  );
+  if (visible) visible.setAttribute("value", value);
+}
+function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -1766,8 +1784,6 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
     invalid: getBoolean(el, "invalid"),
     allowCustomValue: false,
     selectionBehavior: "replace",
-    name: getString(el, "name"),
-    form: getString(el, "form"),
     readOnly: getBoolean(el, "readOnly"),
     required: getBoolean(el, "required"),
     positioning: readPositioningOptions(el),
@@ -1787,6 +1803,7 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
       });
     },
     onInputValueChange: (details) => {
+      syncVisibleInputAttribute(el, details.inputValue ?? "");
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1819,6 +1836,8 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
           hidden.dispatchEvent(new Event("change", { bubbles: true }));
         }
       }
+      getCombobox()?.restoreFilteredOptions();
+      syncVisibleInputAttribute(el, selectedItemLabel(details.items));
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1834,22 +1853,33 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
     }
   };
 }
+function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
+  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) };
+  delete rest.onOpenChange;
+  delete rest.onInputValueChange;
+  delete rest.onValueChange;
+  return rest;
+}
 var ComboboxHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const allItems = JSON.parse(el.getAttribute("data-items") ?? "[]");
+    const itemsJson = el.getAttribute("data-items") ?? "[]";
+    const allItems = JSON.parse(itemsJson);
     const hasGroups = allItems.some((item) => Boolean(item.group));
+    let comboboxRef;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket),
+      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef),
       ...comboboxValueBinding(el)
     };
     const combobox = new Combobox(el, props);
+    comboboxRef = combobox;
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
     this.combobox = combobox;
+    this.lastItemsJson = itemsJson;
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:combobox:set-value", (event) => {
@@ -1864,16 +1894,25 @@ var ComboboxHook = {
   },
   updated() {
     if (!this.combobox) return;
-    const newCollection = JSON.parse(this.el.getAttribute("data-items") ?? "[]");
-    const hasGroups = newCollection.some((item) => Boolean(item.group));
-    this.combobox.hasGroups = hasGroups;
-    this.combobox.setAllOptions(newCollection);
+    const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
+    if (newItemsJson !== this.lastItemsJson) {
+      this.lastItemsJson = newItemsJson;
+      const newCollection = JSON.parse(newItemsJson);
+      const hasGroups = newCollection.some((item) => Boolean(item.group));
+      this.combobox.hasGroups = hasGroups;
+      this.combobox.setAllOptions(newCollection);
+    }
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     this.combobox.updateProps({
-      ...buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket),
-      ...comboboxValueBinding(this.el),
-      collection: this.combobox.getCollection()
+      ...comboboxMachineDomPropsForUpdate(
+        this.el,
+        pushEvent,
+        canPush,
+        this.liveSocket,
+        () => this.combobox
+      ),
+      ...comboboxValueBindingForUpdate(this.el)
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();

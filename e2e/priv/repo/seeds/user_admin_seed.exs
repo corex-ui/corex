@@ -8,7 +8,8 @@ user_attrs = %{
   name: "some name",
   signature: signature,
   terms: true,
-  level: 5
+  level: 5,
+  currency: "eur"
 }
 
 admin_attrs = %{
@@ -17,7 +18,8 @@ admin_attrs = %{
   name: "some name",
   signature: signature,
   terms: true,
-  level: 5
+  level: 5,
+  currency: "eur"
 }
 
 {:ok, _} = Accounts.create_user(user_attrs)

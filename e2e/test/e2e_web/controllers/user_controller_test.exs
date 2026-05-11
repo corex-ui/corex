@@ -9,7 +9,8 @@ defmodule E2eWeb.UserControllerTest do
     birth_date: "1990-01-15",
     signature: "/path/to/signature.png",
     terms: true,
-    level: 5
+    level: 5,
+    currency: "eur"
   }
   @update_attrs %{
     name: "some updated name",
@@ -17,7 +18,8 @@ defmodule E2eWeb.UserControllerTest do
     birth_date: "1995-06-20",
     signature: "/path/to/updated-signature.png",
     terms: true,
-    level: 3
+    level: 3,
+    currency: "usd"
   }
   @invalid_attrs %{
     name: nil,
@@ -25,7 +27,8 @@ defmodule E2eWeb.UserControllerTest do
     birth_date: nil,
     signature: nil,
     terms: nil,
-    level: nil
+    level: nil,
+    currency: nil
   }
 
   describe "index" do

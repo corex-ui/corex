@@ -12,6 +12,21 @@ defmodule E2eWeb.UserHTML do
 
   def user_form(assigns)
 
+  def currency_items do
+    [
+      %{id: "eur", label: "Euro"},
+      %{id: "usd", label: "US Dollar"},
+      %{id: "gbp", label: "British Pound"},
+      %{id: "jpy", label: "Japanese Yen"},
+      %{id: "chf", label: "Swiss Franc"},
+      %{id: "cad", label: "Canadian Dollar"},
+      %{id: "aud", label: "Australian Dollar"},
+      %{id: "sek", label: "Swedish Krona"},
+      %{id: "nok", label: "Norwegian Krone"},
+      %{id: "sgd", label: "Singapore Dollar"}
+    ]
+  end
+
   attr :signature, :string, default: nil
 
   def signature_preview(assigns) do

@@ -370,7 +370,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@form.id}
     >
       <.combobox
-        field={f[:airport]}
+        field={f[:country]}
         class="combobox"
         placeholder="Select a country"
         items={Corex.List.new([
@@ -508,19 +508,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       import Ecto.Changeset
 
       embedded_schema do
-        field :airport, :string
+        field :country, :string
       end
 
       def changeset(form, attrs \\ %{}) do
         form
-        |> cast(attrs, [:airport])
-        |> validate_required([:airport])
+        |> cast(attrs, [:country])
+        |> validate_required([:country])
       end
 
       def changeset_validate(form, attrs \\ %{}) do
         form
-        |> cast(attrs, [:airport])
-        |> validate_required([:airport], message: "can't be blank")
+        |> cast(attrs, [:country])
+        |> validate_required([:country], message: "can't be blank")
       end
     end
     """
@@ -536,7 +536,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.combobox field={f[:airport]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
         <:label>Country</:label>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -576,7 +576,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.combobox field={f[:airport]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
         <:label>Country</:label>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -610,7 +610,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <form action={~p"/combobox/form"} method="post" class="w-full max-w-2xs flex flex-col gap-space items-center">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <input name="combobox_native[airport]" type="hidden" value="" />
+      <input name="combobox_native[country]" type="hidden" value="" />
       <.action type="submit" class="button button--accent w-full">Submit</.action>
     </form>
     """
@@ -626,12 +626,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={@form[:airport]}
-        id="combobox-live-airport"
+        field={@form[:country]}
+        id="combobox-live-country"
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
-        on_value_change="airport_sync"
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
@@ -649,20 +648,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def form_doc_live_changeset_elixir do
     ~S"""
     def handle_event("validate", %{"combobox" => params}, socket) do
-      airport = params["airport"] || socket.assigns[:airport_field] || ""
-      params = Map.put(params, "airport", airport)
-
       changeset =
         %MyApp.Forms.Travel{}
         |> MyApp.Forms.Travel.changeset(params)
         |> Map.put(:action, :validate)
 
       {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :validate, as: :combobox)))}
-    end
-
-    def handle_event("airport_sync", %{"value" => value}, socket) do
-      v = List.wrap(value) |> List.first() || ""
-      {:noreply, assign(socket, :airport_field, to_string(v))}
     end
     """
   end
@@ -677,12 +668,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={@strict_form[:airport]}
-        id="combobox-live-airport-strict"
+        field={@strict_form[:country]}
+        id="combobox-live-country-strict"
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
-        on_value_change="airport_sync_strict"
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
@@ -700,9 +690,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def form_doc_live_validate_elixir do
     ~S"""
     def handle_event("validate_strict", %{"combobox_strict" => params}, socket) do
-      airport = params["airport"] || socket.assigns[:airport_field_strict] || ""
-      params = Map.put(params, "airport", airport)
-
       changeset =
         %MyApp.Forms.Travel{}
         |> MyApp.Forms.Travel.changeset_validate(params)
@@ -714,11 +701,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
          :strict_form,
          Phoenix.Component.to_form(changeset, action: :validate, as: :combobox_strict)
        )}
-    end
-
-    def handle_event("airport_sync_strict", %{"value" => value}, socket) do
-      v = List.wrap(value) |> List.first() || ""
-      {:noreply, assign(socket, :airport_field_strict, to_string(v))}
     end
     """
   end
@@ -736,7 +718,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={f[:airport]}
+        field={f[:country]}
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
@@ -769,7 +751,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={f[:airport]}
+        field={f[:country]}
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
@@ -801,7 +783,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.combobox
         id="combobox-native-form-preview"
-        name="combobox_native[airport]"
+        name="combobox_native[country]"
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "No results"}}
         items={Corex.List.new(items_minimal())}
@@ -825,12 +807,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={@form[:airport]}
-        id="airport-combobox"
+        field={@form[:country]}
+        id="country-combobox"
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
-        on_value_change="airport_sync"
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
@@ -859,12 +840,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
-        field={@strict_form[:airport]}
-        id="combobox-live-airport-strict-preview"
+        field={@strict_form[:country]}
+        id="combobox-live-country-strict-preview"
         class="combobox"
         placeholder="Country"
         items={Corex.List.new(items_minimal())}
-        on_value_change="airport_sync_strict"
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
