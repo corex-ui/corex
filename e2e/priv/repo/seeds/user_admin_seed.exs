@@ -7,7 +7,8 @@ user_attrs = %{
   country: "some country",
   name: "some name",
   signature: signature,
-  terms: true
+  terms: true,
+  level: 5
 }
 
 admin_attrs = %{
@@ -15,7 +16,8 @@ admin_attrs = %{
   country: :fra,
   name: "some name",
   signature: signature,
-  terms: true
+  terms: true,
+  level: 5
 }
 
 {:ok, _} = Accounts.create_user(user_attrs)

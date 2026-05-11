@@ -15,7 +15,8 @@ defmodule E2e.AccountsFixtures do
         country: "some country",
         name: "some name",
         signature: "M0,0L1,1Z",
-        terms: true
+        terms: true,
+        level: 5
       })
       |> E2e.Accounts.create_user()
 
@@ -33,7 +34,8 @@ defmodule E2e.AccountsFixtures do
         country: :fra,
         name: "some name",
         signature: "M0,0L1,1Z",
-        terms: true
+        terms: true,
+        level: 5
       })
       |> E2e.Accounts.create_admin()
 

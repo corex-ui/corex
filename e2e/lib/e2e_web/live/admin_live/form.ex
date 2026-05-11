@@ -86,6 +86,25 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.signature_pad>
+        <.number_input
+          field={@form[:level]}
+          min={1.0}
+          max={10.0}
+          step={1.0}
+          class="number-input max-w-none"
+        >
+          <:label>Level</:label>
+          <:decrement_trigger>
+            <.heroicon name="hero-chevron-down" class="icon" />
+          </:decrement_trigger>
+          <:increment_trigger>
+            <.heroicon name="hero-chevron-up" class="icon" />
+          </:increment_trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.number_input>
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms
