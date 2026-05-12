@@ -10,7 +10,7 @@ Generate a secret:
 mix phx.gen.secret
 ```
 
-Create a `.env` file at the root of your project (and add it to `.gitignore`). Set your secret and database — for local testing you can point at the dev database:
+Create a `.env` file at the root of your project (and add it to `.gitignore`). Set your secret and database  -  for local testing you can point at the dev database:
 
 ```bash
 export SECRET_KEY_BASE="__YOUR_SECRET__"

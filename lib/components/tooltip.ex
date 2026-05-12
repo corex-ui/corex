@@ -71,9 +71,9 @@ defmodule Corex.Tooltip do
 
   On the root element, optional modifier classes:
 
-  - `tooltip--{semantic}` — surface and ink (for example `tooltip--accent`, `tooltip--brand`)
-  - `tooltip--size-{sm|md|lg|xl}` — max width, padding, and arrow scale
-  - `tooltip--text-{scale}` — content font size only (for example `tooltip--text-sm`, `tooltip--text-xl`)
+  - `tooltip--{semantic}`  -  surface and ink (for example `tooltip--accent`, `tooltip--brand`)
+  - `tooltip--size-{sm|md|lg|xl}`  -  max width, padding, and arrow scale
+  - `tooltip--text-{scale}`  -  content font size only (for example `tooltip--text-sm`, `tooltip--text-xl`)
   '''
 
   @doc type: :component

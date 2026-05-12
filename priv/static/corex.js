@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-LTYT3NRU.mjs
+  // ../priv/static/chunks/chunk-EE44DOTL.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -1781,8 +1781,8 @@ var Corex = (() => {
     };
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_LTYT3NRU = __esm({
-    "../priv/static/chunks/chunk-LTYT3NRU.mjs"() {
+  var init_chunk_EE44DOTL = __esm({
+    "../priv/static/chunks/chunk-EE44DOTL.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2657,7 +2657,7 @@ var Corex = (() => {
         return shouldPreserveCase ? attrName : attrName.toLowerCase();
       };
       Component = class {
-        constructor(el, props) {
+        constructor(el, props, beforeInitMachine) {
           __publicField(this, "el");
           __publicField(this, "doc");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2688,6 +2688,7 @@ var Corex = (() => {
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
+          beforeInitMachine == null ? void 0 : beforeInitMachine(this);
           this.machine = this.initMachine(props);
           this.api = this.initApi();
         }
@@ -2724,7 +2725,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-OPWAZ7L4.mjs
+  // ../priv/static/chunks/chunk-WG2KNE4C.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2960,15 +2961,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_OPWAZ7L4 = __esm({
-    "../priv/static/chunks/chunk-OPWAZ7L4.mjs"() {
+  var init_chunk_WG2KNE4C = __esm({
+    "../priv/static/chunks/chunk-WG2KNE4C.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-CDKBKUQ4.mjs
+  // ../priv/static/chunks/chunk-FBXRLPHX.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
   }
@@ -2993,10 +2994,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var z;
-  var init_chunk_CDKBKUQ4 = __esm({
-    "../priv/static/chunks/chunk-CDKBKUQ4.mjs"() {
+  var init_chunk_FBXRLPHX = __esm({
+    "../priv/static/chunks/chunk-FBXRLPHX.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -3286,11 +3287,11 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_OPWAZ7L4();
-      init_chunk_CDKBKUQ4();
+      init_chunk_WG2KNE4C();
+      init_chunk_FBXRLPHX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3601,8 +3602,8 @@ var Corex = (() => {
               domDetail: { id: el.id, value }
             });
           };
-          const emitItemState = (itemValue, disabled, respondTo) => {
-            const props = { value: itemValue, disabled };
+          const emitItemState = (itemValue2, disabled, respondTo) => {
+            const props = { value: itemValue2, disabled };
             const state2 = accordion.api.getItemState(props);
             emitResponse({
               respondTo,
@@ -3611,7 +3612,7 @@ var Corex = (() => {
               serverEventName: "accordion_item_state_response",
               serverPayload: {
                 id: el.id,
-                value: itemValue,
+                value: itemValue2,
                 state: {
                   expanded: state2.expanded,
                   focused: state2.focused,
@@ -3620,7 +3621,7 @@ var Corex = (() => {
               },
               el,
               domEventName: "accordion-item-state",
-              domDetail: { id: el.id, value: itemValue, state: state2 }
+              domDetail: { id: el.id, value: itemValue2, state: state2 }
             });
           };
           const domRegistry = createDomEventRegistry(el);
@@ -4103,11 +4104,11 @@ var Corex = (() => {
     "../priv/static/angle-slider.mjs"() {
       "use strict";
       init_chunk_QB2YSZP6();
-      init_chunk_CDKBKUQ4();
+      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4525,7 +4526,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5193,7 +5194,7 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5940,7 +5941,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-MG52DTQN.mjs
+  // ../priv/static/chunks/chunk-CTFBPAMI.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6059,10 +6060,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_MG52DTQN = __esm({
-    "../priv/static/chunks/chunk-MG52DTQN.mjs"() {
+  var init_chunk_CTFBPAMI = __esm({
+    "../priv/static/chunks/chunk-CTFBPAMI.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6237,10 +6238,10 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_MG52DTQN();
+      init_chunk_CTFBPAMI();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6534,7 +6535,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-JKQYJH2V.mjs
+  // ../priv/static/chunks/chunk-6Y5IFYJF.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6557,10 +6558,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_JKQYJH2V = __esm({
-    "../priv/static/chunks/chunk-JKQYJH2V.mjs"() {
+  var init_chunk_6Y5IFYJF = __esm({
+    "../priv/static/chunks/chunk-6Y5IFYJF.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6734,10 +6735,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_JKQYJH2V();
+      init_chunk_6Y5IFYJF();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7096,11 +7097,11 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_CDKBKUQ4();
+      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7530,7 +7531,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-RJABPW5C.mjs
+  // ../priv/static/chunks/chunk-NMOLO6CB.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8894,10 +8895,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_RJABPW5C = __esm({
-    "../priv/static/chunks/chunk-RJABPW5C.mjs"() {
+  var init_chunk_NMOLO6CB = __esm({
+    "../priv/static/chunks/chunk-NMOLO6CB.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -9607,7 +9608,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-K2P3QAIZ.mjs
+  // ../priv/static/chunks/chunk-B7AHHTCM.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -9832,17 +9833,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_K2P3QAIZ = __esm({
-    "../priv/static/chunks/chunk-K2P3QAIZ.mjs"() {
+  var init_chunk_B7AHHTCM = __esm({
+    "../priv/static/chunks/chunk-B7AHHTCM.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-ZZR3S6PP.mjs
+  // ../priv/static/chunks/chunk-MLVURBKI.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10001,11 +10002,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_ZZR3S6PP = __esm({
-    "../priv/static/chunks/chunk-ZZR3S6PP.mjs"() {
+  var init_chunk_MLVURBKI = __esm({
+    "../priv/static/chunks/chunk-MLVURBKI.mjs"() {
       "use strict";
-      init_chunk_K2P3QAIZ();
-      init_chunk_LTYT3NRU();
+      init_chunk_B7AHHTCM();
+      init_chunk_EE44DOTL();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10129,7 +10130,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6QZYI6OY.mjs
+  // ../priv/static/chunks/chunk-YM6Q7RBK.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10173,23 +10174,23 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_6QZYI6OY = __esm({
-    "../priv/static/chunks/chunk-6QZYI6OY.mjs"() {
+  var init_chunk_YM6Q7RBK = __esm({
+    "../priv/static/chunks/chunk-YM6Q7RBK.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
     }
   });
 
-  // ../priv/static/chunks/chunk-7NUJK5QP.mjs
-  function itemToIdOrValue(item) {
-    var _a4, _b;
-    return (_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "";
+  // ../priv/static/chunks/chunk-PWLG55J6.mjs
+  function itemValue(item) {
+    var _a4;
+    return (_a4 = item.value) != null ? _a4 : "";
   }
-  function zagIdValueLabelCollectionConfig(items, hasGroups) {
+  function zagListCollectionConfig(items, hasGroups) {
     if (hasGroups) {
       return {
         items,
-        itemToValue: (item) => itemToIdOrValue(item),
+        itemToValue: (item) => itemValue(item),
         itemToString: (item) => item.label,
         isItemDisabled: (item) => !!item.disabled,
         groupBy: (item) => {
@@ -10200,44 +10201,18 @@ var Corex = (() => {
     }
     return {
       items,
-      itemToValue: (item) => itemToIdOrValue(item),
+      itemToValue: (item) => itemValue(item),
       itemToString: (item) => item.label,
       isItemDisabled: (item) => !!item.disabled
     };
   }
-  function zagComboboxCollectionConfig(items, hasGroups) {
-    if (hasGroups) {
-      return {
-        items,
-        itemToValue: (item) => {
-          var _a4;
-          return (_a4 = item.id) != null ? _a4 : "";
-        },
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => {
-          var _a4;
-          return (_a4 = item.group) != null ? _a4 : "";
-        }
-      };
-    }
-    return {
-      items,
-      itemToValue: (item) => {
-        var _a4;
-        return (_a4 = item.id) != null ? _a4 : "";
-      },
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    };
-  }
-  var init_chunk_7NUJK5QP = __esm({
-    "../priv/static/chunks/chunk-7NUJK5QP.mjs"() {
+  var init_chunk_PWLG55J6 = __esm({
+    "../priv/static/chunks/chunk-PWLG55J6.mjs"() {
       "use strict";
     }
   });
 
-  // ../priv/static/chunks/chunk-5M7MXCQU.mjs
+  // ../priv/static/chunks/chunk-P32UGRVU.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -10637,10 +10612,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_5M7MXCQU = __esm({
-    "../priv/static/chunks/chunk-5M7MXCQU.mjs"() {
+  var init_chunk_P32UGRVU = __esm({
+    "../priv/static/chunks/chunk-P32UGRVU.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -10810,9 +10785,9 @@ var Corex = (() => {
               const groups = this.group();
               for (const [, items] of groups) {
                 for (const item of items) {
-                  const itemValue = this.getItemValue(item);
-                  if (itemValue != null) {
-                    this.indexMap.set(itemValue, idx);
+                  const itemValue2 = this.getItemValue(item);
+                  if (itemValue2 != null) {
+                    this.indexMap.set(itemValue2, idx);
                   }
                   idx++;
                 }
@@ -12095,7 +12070,21 @@ var Corex = (() => {
     }
     return { defaultValue: (_b = getStringList(el, "defaultValue")) != null ? _b : [] };
   }
-  function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+  function comboboxValueBindingForUpdate(el) {
+    var _a4;
+    if (!getBoolean(el, "controlled")) return {};
+    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
+  }
+  function selectedItemLabel(items) {
+    const first2 = items == null ? void 0 : items[0];
+    if (!first2) return "";
+    return first2.label != null ? String(first2.label) : "";
+  }
+  function syncVisibleInputAttribute(el, value) {
+    const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
+    if (visible) visible.setAttribute("value", value);
+  }
+  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -12111,8 +12100,6 @@ var Corex = (() => {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: getString(el, "name"),
-      form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
       positioning: readPositioningOptions(el),
@@ -12132,6 +12119,8 @@ var Corex = (() => {
         });
       },
       onInputValueChange: (details) => {
+        var _a4;
+        syncVisibleInputAttribute(el, (_a4 = details.inputValue) != null ? _a4 : "");
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -12146,7 +12135,7 @@ var Corex = (() => {
         });
       },
       onValueChange: (details) => {
-        var _a4;
+        var _a4, _b;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (redirectOn && firstValue) {
           const itemEl = el.querySelector(
@@ -12165,6 +12154,8 @@ var Corex = (() => {
             hidden.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
+        (_b = getCombobox()) == null ? void 0 : _b.restoreFilteredOptions();
+        syncVisibleInputAttribute(el, selectedItemLabel(details.items));
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -12180,22 +12171,29 @@ var Corex = (() => {
       }
     };
   }
+  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
+    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox));
+    delete rest.onOpenChange;
+    delete rest.onInputValueChange;
+    delete rest.onValueChange;
+    return rest;
+  }
   var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, Combobox, ComboboxHook;
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_RJABPW5C();
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_6QZYI6OY();
-      init_chunk_7NUJK5QP();
-      init_chunk_5M7MXCQU();
+      init_chunk_NMOLO6CB();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_YM6Q7RBK();
+      init_chunk_PWLG55J6();
+      init_chunk_P32UGRVU();
       init_chunk_FOQSALVP();
-      init_chunk_MG52DTQN();
+      init_chunk_CTFBPAMI();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -13279,19 +13277,33 @@ var Corex = (() => {
         }
       });
       Combobox = class extends Component {
-        constructor() {
-          super(...arguments);
-          __publicField(this, "options", []);
-          __publicField(this, "allOptions", []);
-          __publicField(this, "hasGroups", false);
+        constructor(el, props, allItems, hasGroups) {
+          super(el, props, (self2) => {
+            const c2 = self2;
+            c2.allOptions = allItems;
+            c2.options = allItems;
+            c2.hasGroups = hasGroups;
+          });
+          __publicField(this, "options");
+          __publicField(this, "allOptions");
+          __publicField(this, "hasGroups");
+          this.allOptions = allItems;
+          this.options = allItems;
+          this.hasGroups = hasGroups;
         }
         setAllOptions(options) {
           this.allOptions = options;
           this.options = options;
         }
+        restoreFilteredOptions() {
+          this.options = this.allOptions;
+        }
+        activeItems() {
+          return this.options.length > 0 ? this.options : this.allOptions;
+        }
         getCollection() {
-          const items = this.options || this.allOptions || [];
-          return collection(zagComboboxCollectionConfig(items, this.hasGroups));
+          const items = this.activeItems();
+          return collection(zagListCollectionConfig(items, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -13301,7 +13313,7 @@ var Corex = (() => {
               return getCollection();
             },
             onOpenChange: (details) => {
-              if (details.open) {
+              if (details.open && details.reason !== "input-change") {
                 this.options = this.allOptions;
               }
               if (props.onOpenChange) {
@@ -13317,8 +13329,9 @@ var Corex = (() => {
                 const q = String((_a4 = details.inputValue) != null ? _a4 : "").toLowerCase();
                 const filtered = this.allOptions.filter((item) => {
                   var _a5;
-                  const label = String((_a5 = item.label) != null ? _a5 : "");
-                  return label.toLowerCase().includes(q);
+                  const label = String((_a5 = item.label) != null ? _a5 : "").toLowerCase();
+                  const value = String(itemValue(item)).toLowerCase();
+                  return label.includes(q) || value.includes(q);
                 });
                 this.options = filtered.length > 0 ? filtered : this.allOptions;
               } else {
@@ -13331,9 +13344,9 @@ var Corex = (() => {
           return this.zagConnect(connect8);
         }
         getItemValue(item) {
-          var _a4, _b, _c;
+          var _a4, _b;
           const v2 = (_b = (_a4 = this.api.collection).getItemValue) == null ? void 0 : _b.call(_a4, item);
-          return (_c = v2 != null ? v2 : item.id) != null ? _c : "";
+          return v2 != null ? v2 : itemValue(item);
         }
         buildOrderedBlocks(items) {
           var _a4;
@@ -13358,7 +13371,6 @@ var Corex = (() => {
           return blocks;
         }
         renderItems() {
-          var _a4;
           const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
           if (!listEl) return;
           const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
@@ -13371,7 +13383,7 @@ var Corex = (() => {
               )
             ).filter(isOwnedByList).forEach((el) => el.remove());
           });
-          const items = ((_a4 = this.options) == null ? void 0 : _a4.length) ? this.options : this.allOptions;
+          const items = this.activeItems();
           if (items.length === 0) {
             const emptyTemplate = templatesRoot.querySelector(
               '[data-scope="combobox"][data-part="empty"][data-template]'
@@ -13422,14 +13434,13 @@ var Corex = (() => {
           }
         }
         applyItemProps() {
-          var _a4;
           const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
           if (!listEl) return;
           const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
           listEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]').forEach((groupEl) => {
-            var _a5;
+            var _a4;
             if (!isOwnedByList(groupEl)) return;
-            const groupId = (_a5 = groupEl.dataset.id) != null ? _a5 : "";
+            const groupId = (_a4 = groupEl.dataset.id) != null ? _a4 : "";
             this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
             const labelEl = groupEl.querySelector(
               '[data-scope="combobox"][data-part="item-group-label"]'
@@ -13438,7 +13449,7 @@ var Corex = (() => {
               this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
             }
           });
-          const sourceItems = ((_a4 = this.options) == null ? void 0 : _a4.length) ? this.options : this.allOptions;
+          const sourceItems = this.activeItems();
           const byValue = /* @__PURE__ */ new Map();
           for (const item of sourceItems) {
             byValue.set(this.getItemValue(item), item);
@@ -13448,9 +13459,9 @@ var Corex = (() => {
             if (!byValue.has(v2)) byValue.set(v2, item);
           }
           listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
-            var _a5;
+            var _a4;
             if (!isOwnedByList(itemEl)) return;
-            const value = (_a5 = itemEl.dataset.value) != null ? _a5 : "";
+            const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
             const item = byValue.get(value);
             if (!item) return;
             this.spreadProps(itemEl, this.api.getItemProps({ item }));
@@ -13497,14 +13508,16 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const allItems = JSON.parse((_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]");
+          const itemsJson = (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
+          const allItems = JSON.parse(itemsJson);
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(el));
-          const combobox = new Combobox(el, props);
-          combobox.hasGroups = hasGroups;
-          combobox.setAllOptions(allItems);
+          let comboboxRef;
+          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef)), comboboxValueBinding(el));
+          const combobox = new Combobox(el, props, allItems, hasGroups);
+          comboboxRef = combobox;
           combobox.init();
           this.combobox = combobox;
+          this.lastItemsJson = itemsJson;
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:combobox:set-value", (event) => {
@@ -13520,15 +13533,23 @@ var Corex = (() => {
         updated() {
           var _a4;
           if (!this.combobox) return;
-          const newCollection = JSON.parse((_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]");
-          const hasGroups = newCollection.some((item) => Boolean(item.group));
-          this.combobox.hasGroups = hasGroups;
-          this.combobox.setAllOptions(newCollection);
+          const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
+          if (newItemsJson !== this.lastItemsJson) {
+            this.lastItemsJson = newItemsJson;
+            const newCollection = JSON.parse(newItemsJson);
+            const hasGroups = newCollection.some((item) => Boolean(item.group));
+            this.combobox.hasGroups = hasGroups;
+            this.combobox.setAllOptions(newCollection);
+          }
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.combobox.updateProps(__spreadProps(__spreadValues(__spreadValues({}, buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(this.el)), {
-            collection: this.combobox.getCollection()
-          }));
+          this.combobox.updateProps(__spreadValues(__spreadValues({}, comboboxMachineDomPropsForUpdate(
+            this.el,
+            pushEvent,
+            canPush,
+            this.liveSocket,
+            () => this.combobox
+          )), comboboxValueBindingForUpdate(this.el)));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
@@ -14337,13 +14358,13 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_RJABPW5C();
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_6QZYI6OY();
+      init_chunk_NMOLO6CB();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_YM6Q7RBK();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -16001,7 +16022,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-TDQG4Q55.mjs
+  // ../priv/static/chunks/chunk-5QA23UMN.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -16016,10 +16037,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_TDQG4Q55 = __esm({
-    "../priv/static/chunks/chunk-TDQG4Q55.mjs"() {
+  var init_chunk_5QA23UMN = __esm({
+    "../priv/static/chunks/chunk-5QA23UMN.mjs"() {
       "use strict";
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
     }
   });
 
@@ -18271,15 +18292,15 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_TDQG4Q55();
+      init_chunk_5QA23UMN();
       init_chunk_7BZGUIUZ();
-      init_chunk_RJABPW5C();
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_6QZYI6OY();
+      init_chunk_NMOLO6CB();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_YM6Q7RBK();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -20766,13 +20787,13 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_OPWAZ7L4();
-      init_chunk_CDKBKUQ4();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_WG2KNE4C();
+      init_chunk_FBXRLPHX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -22149,10 +22170,10 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_K2P3QAIZ();
+      init_chunk_B7AHHTCM();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -23046,7 +23067,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy13 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -24330,12 +24351,12 @@ ${err}`);
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_6QZYI6OY();
+      init_chunk_YM6Q7RBK();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy14 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -25736,7 +25757,7 @@ ${err}`);
     }
   }
   function buildCollection(items, hasGroups) {
-    return collection2(zagIdValueLabelCollectionConfig(items, hasGroups));
+    return collection2(zagListCollectionConfig(items, hasGroups));
   }
   function listboxZagPropsBase(el, liveSocket, pushEvent) {
     const redirectOn = getBoolean(el, "redirect");
@@ -25777,13 +25798,14 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_7NUJK5QP();
-      init_chunk_5M7MXCQU();
+      init_chunk_PWLG55J6();
+      init_chunk_P32UGRVU();
       init_chunk_FOQSALVP();
-      init_chunk_MG52DTQN();
+      init_chunk_CTFBPAMI();
+      init_chunk_FBXRLPHX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy15 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -26235,19 +26257,6 @@ ${err}`);
           super(el, props);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
-          __publicField(this, "lastItemsFingerprint", "");
-          __publicField(this, "init", () => {
-            try {
-              this.machine.start();
-              this.render();
-            } finally {
-              this.el.removeAttribute("data-loading");
-            }
-            this.machine.subscribe(() => {
-              this.api = this.initApi();
-              this.render();
-            });
-          });
           const collectionFromProps = props.collection;
           this._options = (_a4 = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a4 : [];
         }
@@ -26257,27 +26266,8 @@ ${err}`);
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
         }
-        itemsFingerprint() {
-          var _a4, _b;
-          const dir = (_a4 = this.el.dataset.dir) != null ? _a4 : "";
-          const orientation = (_b = this.el.dataset.orientation) != null ? _b : "";
-          return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
-        }
-        getOrderedGroupIds() {
-          var _a4;
-          const seen = /* @__PURE__ */ new Set();
-          const ids = [];
-          for (const item of this.options) {
-            const id = (_a4 = item.group) != null ? _a4 : "default";
-            if (!seen.has(id)) {
-              seen.add(id);
-              ids.push(id);
-            }
-          }
-          return ids;
-        }
         getCollection() {
-          return collection2(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+          return collection2(zagListCollectionConfig(this.options, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -26290,65 +26280,6 @@ ${err}`);
         }
         initApi() {
           return this.zagConnect(connect15);
-        }
-        renderItems() {
-          var _a4, _b;
-          const contentEl = this.el.querySelector(
-            '[data-scope="listbox"][data-part="content"]'
-          );
-          if (!contentEl) return;
-          const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
-          const templatesRoot = templatesContentRoot(this.el, "listbox");
-          if (!templatesRoot) return;
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="empty"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="item"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          const items = this.options;
-          if (items.length === 0) {
-            const emptyTemplate = templatesRoot.querySelector(
-              '[data-scope="listbox"][data-part="empty"][data-template]'
-            );
-            if (emptyTemplate) {
-              const emptyEl = emptyTemplate.cloneNode(true);
-              emptyEl.removeAttribute("data-template");
-              contentEl.appendChild(emptyEl);
-            }
-          } else if (this.hasGroups) {
-            const groupIds = this.getOrderedGroupIds();
-            for (const groupId of groupIds) {
-              const template = templatesRoot.querySelector(
-                `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
-              );
-              if (!template) continue;
-              const groupEl = template.cloneNode(true);
-              groupEl.removeAttribute("data-template");
-              groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
-              contentEl.appendChild(groupEl);
-            }
-          } else {
-            for (const item of items) {
-              const value = String((_b = (_a4 = item.id) != null ? _a4 : item.value) != null ? _b : "");
-              const template = templatesRoot.querySelector(
-                `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
-              );
-              if (!template) continue;
-              const itemEl = template.cloneNode(true);
-              itemEl.removeAttribute("data-template");
-              contentEl.appendChild(itemEl);
-            }
-          }
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -26372,10 +26303,7 @@ ${err}`);
             var _a4;
             if (!isOwnedByContent(itemEl)) return;
             const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
-            const item = this.options.find((i2) => {
-              var _a5, _b;
-              return String((_b = (_a5 = i2.id) != null ? _a5 : i2.value) != null ? _b : "") === String(value);
-            });
+            const item = this.options.find((i2) => String(itemValue(i2)) === String(value));
             if (!item) return;
             this.spreadProps(itemEl, this.api.getItemProps({ item }));
             const textEl = itemEl.querySelector(
@@ -26405,11 +26333,6 @@ ${err}`);
           );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
-            const fp = this.itemsFingerprint();
-            if (fp !== this.lastItemsFingerprint) {
-              this.lastItemsFingerprint = fp;
-              this.renderItems();
-            }
             this.applyItemProps();
           }
         }
@@ -26420,14 +26343,11 @@ ${err}`);
           const el = this.el;
           const allItems = JSON.parse((_a4 = el.dataset.items) != null ? _a4 : "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const valueList = getStringList(el, "value");
-          const defaultValueList = getStringList(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, this.liveSocket, pushEvent)), {
             collection: buildCollection(allItems, hasGroups)
-          }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
+          }), readStringListControlledZagProps(el, "value", "defaultValue")));
           zag.hasGroups = hasGroups;
           zag.setOptions(allItems);
           zag.init();
@@ -26466,18 +26386,14 @@ ${err}`);
         },
         updated() {
           var _a4;
+          if (!this.listbox) return;
           const newItems = JSON.parse((_a4 = this.el.dataset.items) != null ? _a4 : "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
-          const valueList = getStringList(this.el, "value");
-          const defaultValueList = getStringList(this.el, "defaultValue");
-          const controlled = getBoolean(this.el, "controlled");
-          if (this.listbox) {
-            this.listbox.hasGroups = hasGroups;
-            this.listbox.setOptions(newItems);
-            this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
-              collection: this.listbox.getCollection()
-            }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
-          }
+          this.listbox.hasGroups = hasGroups;
+          this.listbox.setOptions(newItems);
+          this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
+            collection: this.listbox.getCollection()
+          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -26669,7 +26585,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -27684,14 +27600,14 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_RJABPW5C();
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_6QZYI6OY();
+      init_chunk_NMOLO6CB();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_YM6Q7RBK();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
-      init_chunk_MG52DTQN();
-      init_chunk_LTYT3NRU();
+      init_chunk_CTFBPAMI();
+      init_chunk_EE44DOTL();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -29451,10 +29367,10 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_TDQG4Q55();
+      init_chunk_5QA23UMN();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -30480,7 +30396,7 @@ ${err}`);
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy19 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -31034,7 +30950,7 @@ ${err}`);
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy20 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts20 = anatomy20.build();
       getRootId15 = (ctx) => {
@@ -31707,11 +31623,11 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_MG52DTQN();
-      init_chunk_CDKBKUQ4();
+      init_chunk_CTFBPAMI();
+      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy21 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -32503,7 +32419,7 @@ ${err}`);
     return v2 == null || !!v2;
   }
   function buildCollection2(items, hasGroups) {
-    return collection3(zagIdValueLabelCollectionConfig(items, hasGroups));
+    return collection3(zagListCollectionConfig(items, hasGroups));
   }
   function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
     const redirectOn = getBoolean(el, "redirect");
@@ -32556,18 +32472,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_RJABPW5C();
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_6QZYI6OY();
-      init_chunk_7NUJK5QP();
-      init_chunk_5M7MXCQU();
+      init_chunk_NMOLO6CB();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_YM6Q7RBK();
+      init_chunk_PWLG55J6();
+      init_chunk_P32UGRVU();
       init_chunk_FOQSALVP();
-      init_chunk_MG52DTQN();
-      init_chunk_CDKBKUQ4();
+      init_chunk_CTFBPAMI();
+      init_chunk_FBXRLPHX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy22 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -33384,7 +33300,7 @@ ${err}`);
           this._options = Array.isArray(options) ? options : [];
         }
         getCollection() {
-          return collection3(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+          return collection3(zagListCollectionConfig(this.options, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -33421,10 +33337,7 @@ ${err}`);
             if (!isOwnedByContent(itemEl)) return;
             const value = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
             if (!value) return;
-            const item = this.options.find((i2) => {
-              var _a5, _b;
-              return String((_b = (_a5 = i2.id) != null ? _a5 : i2.value) != null ? _b : "") === String(value);
-            });
+            const item = this.options.find((i2) => String(itemValue(i2)) === String(value));
             if (!item) return;
             this.spreadProps(itemEl, this.api.getItemProps({ item }));
             const textEl = itemEl.querySelector(
@@ -33472,9 +33385,7 @@ ${err}`);
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
               const selectedItem = this.options.find((item) => {
-                var _a5, _b2;
-                const itemValue = (_b2 = (_a5 = item.id) != null ? _a5 : item.value) != null ? _b2 : "";
-                return String(itemValue) === String(selectedValue);
+                return String(itemValue(item)) === String(selectedValue);
               });
               valueText.textContent = (selectedItem == null ? void 0 : selectedItem.label) || this.placeholder;
             } else {
@@ -33918,7 +33829,7 @@ ${err}`);
     "../priv/static/signature-pad.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy23 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -34434,10 +34345,10 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_MG52DTQN();
+      init_chunk_CTFBPAMI();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy24 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -34942,11 +34853,11 @@ ${err}`);
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_CDKBKUQ4();
+      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy25 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -35663,10 +35574,10 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_TDQG4Q55();
-      init_chunk_JKQYJH2V();
+      init_chunk_5QA23UMN();
+      init_chunk_6Y5IFYJF();
       init_chunk_PE34YET2();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy26 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -36584,10 +36495,10 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_ZZR3S6PP();
-      init_chunk_K2P3QAIZ();
-      init_chunk_JKQYJH2V();
-      init_chunk_LTYT3NRU();
+      init_chunk_MLVURBKI();
+      init_chunk_B7AHHTCM();
+      init_chunk_6Y5IFYJF();
+      init_chunk_EE44DOTL();
       anatomy27 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -37688,11 +37599,11 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_RJABPW5C();
-      init_chunk_6QZYI6OY();
-      init_chunk_MG52DTQN();
+      init_chunk_NMOLO6CB();
+      init_chunk_YM6Q7RBK();
+      init_chunk_CTFBPAMI();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy28 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts28 = anatomy28.build();
       getTriggerId11 = (scope, value) => {
@@ -38399,7 +38310,7 @@ ${err}`);
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy29 = createAnatomy("toggle-group").parts("root", "item");
       parts29 = anatomy29.build();
       getRootId23 = (ctx) => {
@@ -39274,7 +39185,7 @@ ${err}`);
   }
   function createTreeCollection(rootNode) {
     return collection4({
-      nodeToValue: (node) => node.id,
+      nodeToValue: (node) => node.value,
       nodeToString: (node) => node.name,
       rootNode
     });
@@ -39298,13 +39209,13 @@ ${err}`);
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_5M7MXCQU();
+      init_chunk_P32UGRVU();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_OPWAZ7L4();
+      init_chunk_WG2KNE4C();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_LTYT3NRU();
+      init_chunk_EE44DOTL();
       anatomy30 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

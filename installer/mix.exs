@@ -6,7 +6,7 @@ end
 defmodule Corex.New.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.4"
+  @version "0.1.0-beta.5"
   @phoenix_version "1.8.4"
   @scm_url "https://github.com/corex-ui/corex"
 
@@ -26,7 +26,7 @@ defmodule Corex.New.MixProject do
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib templates mix.exs README.md)
+        files: ~w(lib priv templates mix.exs README.md)
       ],
       source_url: @scm_url,
       docs: docs(),

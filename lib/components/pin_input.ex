@@ -310,7 +310,7 @@ defmodule Corex.PinInput do
   @doc """
   Requests the current value from the browser. Returns `Phoenix.LiveView.JS`.
 
-  Options: `:respond_to` — `:server` (default, `pin_input_value_response` only), `:both`, or `:client` (DOM `pin-input-value` only).
+  Options: `:respond_to`  -  `:server` (default, `pin_input_value_response` only), `:both`, or `:client` (DOM `pin-input-value` only).
 
       <.action phx-click={Corex.PinInput.value("my-pin")} class="button button--sm">Value</.action>
 

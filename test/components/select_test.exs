@@ -103,7 +103,7 @@ defmodule Corex.SelectTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr"
@@ -116,7 +116,7 @@ defmodule Corex.SelectTest do
     test "returns props when controlled" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr"
@@ -129,7 +129,7 @@ defmodule Corex.SelectTest do
     test "returns props with redirect" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -143,7 +143,7 @@ defmodule Corex.SelectTest do
     test "returns props with positioning" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -157,7 +157,7 @@ defmodule Corex.SelectTest do
     test "returns props with on_value_change" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -171,7 +171,7 @@ defmodule Corex.SelectTest do
     test "returns props with on_value_change_client" do
       assigns = %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",

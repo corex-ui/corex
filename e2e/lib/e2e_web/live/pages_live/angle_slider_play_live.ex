@@ -186,8 +186,8 @@ defmodule E2eWeb.AngleSliderPlayLive do
             value={[@controls.value_text_as]}
             deselectable={false}
             items={[
-              %{id: "degree", label: "Degree"},
-              %{id: "raw", label: "Raw"}
+              %{value: "degree", label: "Degree"},
+              %{value: "raw", label: "Raw"}
             ]}
             positioning={%Corex.Positioning{same_width: true}}
             on_value_change="control_changed"

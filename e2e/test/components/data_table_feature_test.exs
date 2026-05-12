@@ -6,7 +6,7 @@ defmodule E2eWeb.DataTableFeatureTest do
 
   alias E2eWeb.DataTableModel, as: DataTable
 
-  feature "sorting — clicking headers sorts the table", %{session: session} do
+  feature "sorting  -  clicking headers sorts the table", %{session: session} do
     session =
       session
       |> DataTable.visit_path("/en/data-table/patterns#data-table-patterns-sort")
@@ -16,7 +16,7 @@ defmodule E2eWeb.DataTableFeatureTest do
     DataTable.assert_row_exists(session, "Alice")
   end
 
-  feature "selection — clicking select all", %{session: session} do
+  feature "selection  -  clicking select all", %{session: session} do
     session =
       session
       |> DataTable.visit_path("/en/data-table/patterns#data-table-patterns-select")

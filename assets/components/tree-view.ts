@@ -4,7 +4,7 @@ import { Component } from "../lib/core";
 import { stripHiddenFromProps } from "../lib/animation";
 
 export interface TreeNode {
-  id: string;
+  value: string;
   name: string;
   children?: TreeNode[];
   to?: string;
@@ -15,7 +15,7 @@ export interface TreeNode {
 
 function createTreeCollection(rootNode: TreeNode) {
   return collection<TreeNode>({
-    nodeToValue: (node) => node.id,
+    nodeToValue: (node) => node.value,
     nodeToString: (node) => node.name,
     rootNode,
   });

@@ -4,11 +4,11 @@ defmodule E2eWeb.TreeViewAnimationLive do
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, demo_section: 1]
 
   @easing_items [
-    %{label: "ease", id: "ease"},
-    %{label: "ease-in", id: "ease-in"},
-    %{label: "ease-out", id: "ease-out"},
-    %{label: "ease-in-out", id: "ease-in-out"},
-    %{label: "linear", id: "linear"}
+    %{label: "ease", value: "ease"},
+    %{label: "ease-in", value: "ease-in"},
+    %{label: "ease-out", value: "ease-out"},
+    %{label: "ease-in-out", value: "ease-in-out"},
+    %{label: "linear", value: "linear"}
   ]
 
   @impl true

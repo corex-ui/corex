@@ -3,7 +3,8 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { collection } from "@zag-js/listbox";
 import { Listbox } from "../components/listbox";
 import type { Props, ValueChangeDetails } from "@zag-js/listbox";
-import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readStringListControlledZagProps } from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import {
   parseRespondTo,
@@ -15,12 +16,12 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import { type IdValueLabelItem, zagIdValueLabelCollectionConfig } from "../lib/list-collection";
+import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
 
-type ListboxItem = IdValueLabelItem;
+type ListboxItem = ValueLabelItem;
 
 function buildCollection(items: ListboxItem[], hasGroups: boolean) {
-  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
+  return collection(zagListCollectionConfig(items, hasGroups));
 }
 
 function listboxZagPropsBase(
@@ -76,17 +77,12 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     const el = this.el;
     const allItems = JSON.parse(el.dataset.items ?? "[]") as ListboxItem[];
     const hasGroups = allItems.some((item) => Boolean(item.group));
-    const valueList = getStringList(el, "value");
-    const defaultValueList = getStringList(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     const zag = new Listbox(el, {
       ...listboxZagPropsBase(el, this.liveSocket, pushEvent),
       collection: buildCollection(allItems, hasGroups),
-      ...(controlled && valueList
-        ? { value: valueList }
-        : { defaultValue: defaultValueList ?? [] }),
+      ...readStringListControlledZagProps(el, "value", "defaultValue"),
     } as Props<ListboxItem>);
     zag.hasGroups = hasGroups;
     zag.setOptions(allItems);
@@ -134,24 +130,19 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & ListboxHookState) {
+    if (!this.listbox) return;
+
     const newItems = JSON.parse(this.el.dataset.items ?? "[]") as ListboxItem[];
     const hasGroups = newItems.some((item) => Boolean(item.group));
 
-    const valueList = getStringList(this.el, "value");
-    const defaultValueList = getStringList(this.el, "defaultValue");
-    const controlled = getBoolean(this.el, "controlled");
+    this.listbox.hasGroups = hasGroups;
+    this.listbox.setOptions(newItems);
 
-    if (this.listbox) {
-      this.listbox.hasGroups = hasGroups;
-      this.listbox.setOptions(newItems);
-      this.listbox.updateProps({
-        ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
-        collection: this.listbox.getCollection(),
-        ...(controlled && valueList
-          ? { value: valueList }
-          : { defaultValue: defaultValueList ?? [] }),
-      } as Partial<Props<ListboxItem>>);
-    }
+    this.listbox.updateProps({
+      ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
+      collection: this.listbox.getCollection(),
+      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
+    } as Partial<Props<ListboxItem>>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ListboxHookState) {

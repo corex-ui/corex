@@ -61,9 +61,9 @@ Follow the [manual installation guide](manual_installation.html)
   id="my-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 />
 ```
@@ -84,8 +84,10 @@ Every Corex component exposes JS commands for client-side control and matching `
 </.action>
 ```
 
-## Next steps
+See [API](api.html) and [Events](events.html) for how helpers, `on_*`, and browser events fit together.
 
+- [API](api.html) control components from LiveView, HEEx, or JavaScript.
+- [Events](events.html) `on_*`, client events, and hook responses.
 - [MCP](mcp.html) Corex MCP for AI tooling in development.
 - [Dark mode](dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](theming.html) theme picker after `--theme`.

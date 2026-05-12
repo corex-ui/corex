@@ -4,9 +4,9 @@ defmodule E2eWeb.ComboboxEventsLive do
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
   @items [
-    %{label: "France", id: "fra", disabled: true},
-    %{label: "Belgium", id: "bel"},
-    %{label: "Germany", id: "deu"}
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
   ]
 
   @server_heex E2eWeb.Demos.ComboboxDemo.events_server_heex()

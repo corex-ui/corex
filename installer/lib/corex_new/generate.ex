@@ -9,12 +9,12 @@ defmodule Corex.New.Generate do
   Runs all Corex post-generation work on a freshly-scaffolded Phoenix app at
   `install_dir`, driven by the normalized `opts` keyword list:
 
-    * `:otp_app` (atom, required) — e.g. `:my_app`
-    * `:web_module` (atom, required) — e.g. `MyAppWeb`
-    * `:app_module` (atom, required) — e.g. `MyApp`
+    * `:otp_app` (atom, required)  -  e.g. `:my_app`
+    * `:web_module` (atom, required)  -  e.g. `MyAppWeb`
+    * `:app_module` (atom, required)  -  e.g. `MyApp`
     * `:mode`, `:theme`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool, default true)
-    * `:themes` (list of strings) — only used when `:theme` is true
-    * `:dev` (string | nil) — path to local Corex checkout for `--dev PATH`
+    * `:themes` (list of strings)  -  only used when `:theme` is true
+    * `:dev` (string | nil)  -  path to local Corex checkout for `--dev PATH`
   """
   def run(install_dir, opts) do
     opts = normalize_opts(opts)
@@ -127,7 +127,6 @@ defmodule Corex.New.Generate do
         Templates.plug_theme(template_assigns(install_dir, opts))
       )
     end
-
   end
 
   defp write_locale_helpers(install_dir, opts) do
@@ -160,8 +159,32 @@ defmodule Corex.New.Generate do
   end
 
   def bundled_design_root do
-    Path.expand("../../templates/corex_design", __DIR__)
+    case archive_priv_design_root() do
+      nil -> Path.expand("../../priv/corex_design", __DIR__)
+      path -> path
+    end
   end
+
+  defp archive_priv_design_root do
+    case :code.which(Corex.New.Generate) do
+      :non_existing ->
+        nil
+
+      beam ->
+        beam = beam_path_to_string(beam)
+
+        root =
+          beam
+          |> Path.dirname()
+          |> Path.join("../priv/corex_design")
+          |> Path.expand()
+
+        if File.dir?(Path.join(root, "corex")), do: root, else: nil
+    end
+  end
+
+  defp beam_path_to_string(beam) when is_list(beam), do: List.to_string(beam)
+  defp beam_path_to_string(beam) when is_binary(beam), do: beam
 
   defp copy_design_tree(install_dir, opts) do
     case resolve_design_source(opts, install_dir) do
@@ -189,7 +212,7 @@ defmodule Corex.New.Generate do
 
             mix assets.build
 
-        That copies priv/design (sibling corex + design trees) into installer/templates/corex_design for the corex_new archive.
+        That copies priv/design into installer/priv/corex_design for the archive and local dev.
         Rebuild or reinstall the archive after that step.
         """)
     end

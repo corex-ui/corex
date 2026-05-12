@@ -22,7 +22,7 @@ defmodule Corex.NumberInput do
 
   ## Phoenix Form Integration
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Pass `invalid={...}` when you want Zag's invalid styling; the component does not infer it from field errors.
 
   ### Controller
 
@@ -216,7 +216,6 @@ defmodule Corex.NumberInput do
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
-    |> assign(:invalid, errors != [])
     |> assign(:controlled, false)
     |> number_input()
   end
@@ -285,7 +284,7 @@ defmodule Corex.NumberInput do
           {render_slot(@label)}
         </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input type="text" inputmode="decimal" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} />
+          <input type="text" inputmode="decimal" value={@value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} />
           <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
             <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}

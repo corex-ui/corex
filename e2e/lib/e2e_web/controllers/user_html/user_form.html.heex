@@ -17,12 +17,12 @@
     field={f[:country]}
     placeholder="Select a country"
     items={[
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ]}
   >
     <:label>
@@ -36,6 +36,26 @@
       {msg}
     </:error>
   </.select>
+  <.combobox
+    field={f[:currency]}
+    class="combobox  max-w-none"
+    placeholder="Search currency"
+    items={currency_items()}
+  >
+    <:label>Preferred currency</:label>
+    <:empty>No results</:empty>
+    <:item :let={item}>
+      <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
+      <span>{item.label}</span>
+    </:item>
+    <:trigger>
+      <.heroicon name="hero-chevron-down" />
+    </:trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.combobox>
   <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
     <:label>Select a date</:label>
     <:trigger>
@@ -62,6 +82,25 @@
       {msg}
     </:error>
   </.signature_pad>
+  <.number_input
+    field={f[:level]}
+    min={1.0}
+    max={10.0}
+    step={1.0}
+    class="number-input  max-w-none"
+  >
+    <:label>Level</:label>
+    <:decrement_trigger>
+      <.heroicon name="hero-chevron-down" class="icon" />
+    </:decrement_trigger>
+    <:increment_trigger>
+      <.heroicon name="hero-chevron-up" class="icon" />
+    </:increment_trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.number_input>
   <.checkbox field={f[:terms]} class="checkbox  max-w-none">
     <:label>
       Accept the terms

@@ -43,9 +43,9 @@ defmodule E2eWeb.AdminLive.Form do
           deselectable
           translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
           items={[
-            %{label: "France", id: "fra"},
-            %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"}
+            %{label: "France", value: "fra"},
+            %{label: "Belgium", value: "bel"},
+            %{label: "Germany", value: "deu"}
           ]}
         >
           <:label>
@@ -59,6 +59,27 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.select>
+
+        <.combobox
+          field={@form[:currency]}
+          class="combobox max-w-none"
+          placeholder={gettext("Search currency")}
+          items={currency_items()}
+        >
+          <:label>Preferred currency</:label>
+          <:empty>No results</:empty>
+          <:item :let={item}>
+            <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
+            <span>{item.label}</span>
+          </:item>
+          <:trigger>
+            <.heroicon name="hero-chevron-down" />
+          </:trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.combobox>
 
         <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
           <:label>Select a date</:label>
@@ -86,6 +107,25 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.signature_pad>
+        <.number_input
+          field={@form[:level]}
+          min={1.0}
+          max={10.0}
+          step={1.0}
+          class="number-input max-w-none"
+        >
+          <:label>Level</:label>
+          <:decrement_trigger>
+            <.heroicon name="hero-chevron-down" class="icon" />
+          </:decrement_trigger>
+          <:increment_trigger>
+            <.heroicon name="hero-chevron-up" class="icon" />
+          </:increment_trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.number_input>
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms
@@ -179,4 +219,19 @@ defmodule E2eWeb.AdminLive.Form do
 
   defp return_path("index", _admin), do: ~p"/admins"
   defp return_path("show", admin), do: ~p"/admins/#{admin}"
+
+  defp currency_items do
+    [
+      %{value: "eur", label: "Euro"},
+      %{value: "usd", label: "US Dollar"},
+      %{value: "gbp", label: "British Pound"},
+      %{value: "jpy", label: "Japanese Yen"},
+      %{value: "chf", label: "Swiss Franc"},
+      %{value: "cad", label: "Canadian Dollar"},
+      %{value: "aud", label: "Australian Dollar"},
+      %{value: "sek", label: "Swedish Krona"},
+      %{value: "nok", label: "Norwegian Krone"},
+      %{value: "sgd", label: "Singapore Dollar"}
+    ]
+  end
 end

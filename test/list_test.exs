@@ -12,16 +12,16 @@ defmodule Corex.ListTest do
     test "creates list of items from keyword lists" do
       items =
         List.new([
-          [label: "A", id: "a"],
+          [label: "A", value: "a"],
           [label: "B"]
         ])
 
       assert length(items) == 2
       assert Enum.all?(items, &is_struct(&1, Item))
       assert Enum.at(items, 0).label == "A"
-      assert Enum.at(items, 0).id == "a"
+      assert Enum.at(items, 0).value == "a"
       assert Enum.at(items, 1).label == "B"
-      assert is_binary(Enum.at(items, 1).id)
+      assert Enum.at(items, 1).value == "item-2"
     end
 
     test "creates list from maps" do
@@ -37,8 +37,8 @@ defmodule Corex.ListTest do
     end
 
     test "passes through existing Item structs" do
-      i1 = Item.new(label: "A", id: "a")
-      i2 = Item.new(label: "B", id: "b")
+      i1 = Item.new(label: "A", value: "a")
+      i2 = Item.new(label: "B", value: "b")
       assert List.new([i1, i2]) == [i1, i2]
     end
 
@@ -53,13 +53,13 @@ defmodule Corex.ListTest do
     test "creates item with required label" do
       item = Item.new(label: "Foo")
       assert item.label == "Foo"
-      assert is_binary(item.id)
-      assert String.starts_with?(item.id, "list-")
+      assert is_binary(item.value)
+      assert String.starts_with?(item.value, "list-")
     end
 
     test "raises when label missing" do
       assert_raise ArgumentError, ~r/Required fields/, fn ->
-        Item.new(id: "x")
+        Item.new(value: "x")
       end
     end
 

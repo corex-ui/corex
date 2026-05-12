@@ -8,7 +8,7 @@ defmodule E2eWeb.ComboboxFormTest do
 
   for {path, ready} <- [
         {"/en/combobox/form", "#combobox-form-submit"},
-        {"/en/combobox/live-form", "#airport-combobox"}
+        {"/en/combobox/live-form", "#country-combobox"}
       ] do
     @path path
     @ready ready

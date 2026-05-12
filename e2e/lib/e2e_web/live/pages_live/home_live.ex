@@ -5,12 +5,12 @@ defmodule E2eWeb.HomeLive do
     [
       %{
         value: "anatomy",
-        trigger: "Anatomy & slots",
+        label: "Anatomy & slots",
         content: "Structure, custom slots, compound mode."
       },
       %{
         value: "machine",
-        trigger: "State machines",
+        label: "State machines",
         content: "Zag.js powers accessibility, keyboard, and focus."
       }
     ]
@@ -86,8 +86,8 @@ defmodule E2eWeb.HomeLive do
     {:noreply, stream_insert(socket, :accordion_events, entry, at: 0, limit: 20)}
   end
 
-  defp format_open(nil), do: "—"
-  defp format_open([]), do: "—"
+  defp format_open(nil), do: " - "
+  defp format_open([]), do: " - "
   defp format_open(list) when is_list(list), do: Enum.join(list, ", ")
 
   @impl true

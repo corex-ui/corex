@@ -6,52 +6,82 @@ defmodule E2eWeb.AngleSliderFormTest do
 
   alias E2eWeb.AngleSliderModel, as: AngleSlider
 
-  feature "static form - submit default includes angle", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:static)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.submit_form()
-    |> AngleSlider.see_flash("Submitted: angle=")
+  describe "static" do
+    feature "submit default includes angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:static)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
+      |> AngleSlider.submit_form()
+      |> AngleSlider.see_flash("Submitted: angle=")
+    end
+
+    feature "set angle then submit includes angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:static)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
+      |> AngleSlider.set_angle_value(90)
+      |> AngleSlider.submit_form()
+      |> AngleSlider.see_flash("angle=90")
+    end
+
+    feature "changeset section submits default angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:static)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
+      |> AngleSlider.wait_static_changeset_angle_slider_ready()
+      |> AngleSlider.submit_static_changeset()
+      |> AngleSlider.see_flash("Submitted (changeset): angle=0")
+    end
+
+    feature "validate section submits default valid angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:static)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
+      |> AngleSlider.wait_static_validate_angle_slider_ready()
+      |> AngleSlider.submit_static_validate()
+      |> AngleSlider.see_flash("Submitted (validated): angle=0")
+    end
+
+    feature "has no A11y violations", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:static)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
+      |> AngleSlider.check_accessibility()
+    end
   end
 
-  @tag skip: "pending reliable toast assertion for programmatic angle change on static form"
-  feature "static form - set angle then submit includes angle", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:static)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.set_angle_value(90)
-    |> AngleSlider.submit_form()
-    |> AngleSlider.see_flash("angle=90")
-  end
+  describe "live" do
+    feature "submit default angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:live)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
+      |> AngleSlider.submit_form(:live)
+      |> AngleSlider.see_flash("Submitted: angle=")
+    end
 
-  feature "static form - has no A11y violations", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:static)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.check_accessibility()
-  end
+    feature "set angle then submit shows submitted angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:live)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
+      |> AngleSlider.set_angle_value(90, :live)
+      |> AngleSlider.submit_form(:live)
+      |> AngleSlider.see_flash("Submitted: angle=90")
+    end
 
-  feature "live form - submit default angle", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:live)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.submit_form(:live)
-    |> AngleSlider.see_flash("Submitted: angle=", timeout: 20_000, interval: 200)
-  end
+    feature "validate section submits default angle", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:live)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
+      |> AngleSlider.wait_live_validate_angle_section_ready()
+      |> AngleSlider.submit_live_validate()
+      |> AngleSlider.see_flash("Submitted: angle=0")
+    end
 
-  feature "live form - set angle then submit shows submitted angle", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:live)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.set_angle_value(90, :live)
-    |> AngleSlider.submit_form(:live)
-    |> AngleSlider.see_flash("Submitted: angle=90", timeout: 20_000, interval: 200)
-  end
-
-  feature "live form - has no A11y violations", %{session: session} do
-    session
-    |> AngleSlider.goto_form(:live)
-    |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.check_accessibility()
+    feature "has no A11y violations", %{session: session} do
+      session
+      |> AngleSlider.goto_form(:live)
+      |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
+      |> AngleSlider.check_accessibility()
+    end
   end
 end

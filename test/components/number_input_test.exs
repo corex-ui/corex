@@ -174,6 +174,44 @@ defmodule Corex.NumberInputTest do
       refute html =~ "data-controlled"
       assert html =~ ~s(data-default-value="99")
     end
+
+    test "visible input renders server-side value attribute to survive morphdom patches" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="n1" value="5000">
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~r/<input\b[^>]*\bvalue="5000"[^>]*\bdata-part="input"/
+    end
+
+    test "visible input renders empty value attribute when no value is provided" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="n1">
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~r/<input\b[^>]*\bvalue=""[^>]*\bdata-part="input"/
+    end
   end
 
   describe "Connect.root/1" do

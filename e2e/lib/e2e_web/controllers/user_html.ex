@@ -12,6 +12,21 @@ defmodule E2eWeb.UserHTML do
 
   def user_form(assigns)
 
+  def currency_items do
+    [
+      %{value: "eur", label: "Euro"},
+      %{value: "usd", label: "US Dollar"},
+      %{value: "gbp", label: "British Pound"},
+      %{value: "jpy", label: "Japanese Yen"},
+      %{value: "chf", label: "Swiss Franc"},
+      %{value: "cad", label: "Canadian Dollar"},
+      %{value: "aud", label: "Australian Dollar"},
+      %{value: "sek", label: "Swedish Krona"},
+      %{value: "nok", label: "Norwegian Krone"},
+      %{value: "sgd", label: "Singapore Dollar"}
+    ]
+  end
+
   attr :signature, :string, default: nil
 
   def signature_preview(assigns) do
@@ -19,7 +34,7 @@ defmodule E2eWeb.UserHTML do
     assigns = assign(assigns, :path_d_values, path_d_values)
 
     ~H"""
-    <span :if={@path_d_values == []} class="text-muted">—</span>
+    <span :if={@path_d_values == []} class="text-muted"> - </span>
     <svg
       :if={@path_d_values != []}
       viewBox="0 0 200 100"

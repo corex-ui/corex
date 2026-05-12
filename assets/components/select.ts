@@ -2,11 +2,10 @@ import { connect, machine, collection, type Props, type Api } from "@zag-js/sele
 import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { zagIdValueLabelCollectionConfig } from "../lib/list-collection";
+import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { getString } from "../lib/util";
 
 type Item = {
-  id?: string;
   value?: string;
   label: string;
   disabled?: boolean;
@@ -34,7 +33,7 @@ export class Select extends Component<Props, Api> {
   }
 
   getCollection(): ListCollection<Item> {
-    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+    return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,7 +81,7 @@ export class Select extends Component<Props, Api> {
         const value = itemEl.dataset.value ?? "";
         if (!value) return;
 
-        const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
+        const item = this.options.find((i) => String(itemValue(i)) === String(value));
         if (!item) return;
 
         this.spreadProps(itemEl, this.api.getItemProps({ item }));
@@ -148,8 +147,7 @@ export class Select extends Component<Props, Api> {
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];
         const selectedItem = this.options.find((item: Item) => {
-          const itemValue = item.id ?? item.value ?? "";
-          return String(itemValue) === String(selectedValue);
+          return String(itemValue(item)) === String(selectedValue);
         });
         valueText.textContent = selectedItem?.label || this.placeholder;
       } else {

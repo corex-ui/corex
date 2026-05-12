@@ -6,12 +6,9 @@ defmodule E2eWeb.ComboboxApiLive do
   alias E2eWeb.Demos.ComboboxDemo, as: Demo
   alias Phoenix.LiveView.JS
 
-  @id_overview "combobox-api-overview-field"
-
   def mount(_params, _session, socket) do
     socket =
       socket
-      |> assign(:id_overview, @id_overview)
       |> assign(:codes, demo_codes())
 
     {:ok, socket}
@@ -30,6 +27,10 @@ defmodule E2eWeb.ComboboxApiLive do
     {:noreply, Corex.Combobox.set_value(socket, "combobox-api-sv-server", ["bel"])}
   end
 
+  def handle_event("combobox_api_clear", _params, socket) do
+    {:noreply, Corex.Combobox.set_value(socket, "combobox-api-sv-server", [])}
+  end
+
   def render(assigns) do
     ~H"""
     <Layouts.app
@@ -41,21 +42,11 @@ defmodule E2eWeb.ComboboxApiLive do
       <.demo_page
         id="combobox-api-page"
         title="Combobox · API"
-        subtitle="Programmatic selection via JS or LiveView."
+        subtitle="Programmatic selection from LiveView or the client."
       >
         <.demo_section
-          id="combobox-api-overview-doc"
-          title="Overview"
-          code={Demo.api_overview_code()}
-        >
-          <:preview>
-            <Demo.api_overview_example id={@id_overview} />
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
           id="combobox-api-set-value-binding"
-          title="set_value (Phoenix binding)"
+          title="Set Value (Client Binding)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_binding}
           ]}
@@ -89,7 +80,7 @@ defmodule E2eWeb.ComboboxApiLive do
 
         <.demo_section
           id="combobox-api-set-value-server"
-          title="set_value (push_event from LiveView)"
+          title="Set Value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
             %{
@@ -103,6 +94,7 @@ defmodule E2eWeb.ComboboxApiLive do
           <:preview>
             <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action phx-click="combobox_api_set_value" class="button button--sm">Belgium</.action>
+              <.action phx-click="combobox_api_clear" class="button button--sm">Clear</.action>
             </div>
             <.combobox
               id="combobox-api-sv-server"
@@ -118,25 +110,40 @@ defmodule E2eWeb.ComboboxApiLive do
 
         <.demo_section
           id="combobox-api-set-value-js"
-          title="set_value (CustomEvent from JavaScript)"
+          title="Set Value (Client JS)"
           code_tabs={[
             %{value: "js", label: "JS", language: :js, code: @codes.set_value_js}
           ]}
         >
           <:preview>
-            <.action
-              type="button"
-              class="button button--sm"
-              phx-click={
-                JS.dispatch("corex:combobox:set-value",
-                  to: "#combobox-api-sv-js",
-                  detail: %{value: ["deu"]},
-                  bubbles: false
-                )
-              }
-            >
-              Germany (JS)
-            </.action>
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
+              <.action
+                type="button"
+                class="button button--sm"
+                phx-click={
+                  JS.dispatch("corex:combobox:set-value",
+                    to: "#combobox-api-sv-js",
+                    detail: %{value: ["deu"]},
+                    bubbles: false
+                  )
+                }
+              >
+                Germany (JS)
+              </.action>
+              <.action
+                type="button"
+                class="button button--sm"
+                phx-click={
+                  JS.dispatch("corex:combobox:set-value",
+                    to: "#combobox-api-sv-js",
+                    detail: %{value: []},
+                    bubbles: false
+                  )
+                }
+              >
+                Clear
+              </.action>
+            </div>
             <.combobox
               id="combobox-api-sv-js"
               class="combobox"

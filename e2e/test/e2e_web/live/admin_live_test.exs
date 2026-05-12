@@ -10,20 +10,34 @@ defmodule E2eWeb.AdminLiveTest do
     country: "fra",
     birth_date: "1990-01-15",
     signature: @valid_signature_path,
-    terms: true
+    terms: true,
+    level: 5,
+    currency: "eur"
   }
   @update_attrs %{
     name: "some updated name",
     country: "deu",
     birth_date: "1995-06-20",
-    terms: true
+    terms: true,
+    level: 3,
+    currency: "usd"
   }
-  @invalid_attrs %{name: "", country: "", birth_date: nil, signature: "", terms: false}
+  @invalid_attrs %{
+    name: "",
+    country: "",
+    birth_date: nil,
+    signature: "",
+    terms: false,
+    level: 1,
+    currency: ""
+  }
   @invalid_attrs_edit %{
     name: "",
     country: "fra",
     birth_date: "1990-01-15",
-    terms: false
+    terms: false,
+    level: 5,
+    currency: "eur"
   }
 
   defp create_admin(_) do
@@ -153,6 +167,26 @@ defmodule E2eWeb.AdminLiveTest do
       html = render(show_live)
       assert html =~ "Admin updated successfully"
       assert html =~ "some updated name"
+    end
+  end
+
+  describe "Number input morphdom regression" do
+    test "level value survives sibling field validation", %{conn: conn} do
+      {:ok, form_live, _} = live(conn, ~p"/admins/new")
+
+      attrs = %{
+        "name" => "",
+        "country" => "fra",
+        "birth_date" => "1990-01-15",
+        "signature" => @valid_signature_path,
+        "terms" => "false",
+        "level" => "42",
+        "currency" => "eur"
+      }
+
+      html = render_change(form_live, "validate", %{"admin" => attrs})
+
+      assert html =~ ~r/<input\b[^>]*\bvalue="42"[^>]*\bdata-part="input"/
     end
   end
 end

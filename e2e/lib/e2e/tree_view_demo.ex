@@ -11,27 +11,27 @@ defmodule E2e.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "lib",
-        id: "lib",
+        value: "lib",
         children: [
-          %{label: "tree_view.ex", id: "lib-tree-view-ex"},
-          %{label: "tree_view_demo.ex", id: "lib-tree-view-demo-ex"}
+          %{label: "tree_view.ex", value: "lib-tree-view-ex"},
+          %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
         ]
       },
       %{
         label: "test",
-        id: "test",
+        value: "test",
         children: [
-          %{label: "tree_view_test.exs", id: "test-tree-view-test-exs"}
+          %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
         ]
       },
       %{
         label: "assets",
-        id: "assets",
+        value: "assets",
         children: [
-          %{label: "tree-view.ts", id: "assets-tree-view-ts"}
+          %{label: "tree-view.ts", value: "assets-tree-view-ts"}
         ]
       },
-      %{label: "mix.exs", id: "mix-exs"}
+      %{label: "mix.exs", value: "mix-exs"}
     ])
   end
 end

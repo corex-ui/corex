@@ -7,43 +7,43 @@ defmodule CorexWeb.Menu do
   alias Corex.Heroicon
 
   @items_minimal [
-    %Item{id: "menu", label: "Menu"},
-    %Item{id: "combobox", label: "Combobox"},
-    %Item{id: "select", label: "Select"}
+    %Item{value: "menu", label: "Menu"},
+    %Item{value: "combobox", label: "Combobox"},
+    %Item{value: "select", label: "Select"}
   ]
 
   @items_grouped [
-    %Item{id: "combobox", label: "Combobox", group: "Pickers"},
-    %Item{id: "listbox", label: "Listbox", group: "Pickers"},
-    %Item{id: "menu", label: "Menu", group: "Overlays"},
-    %Item{id: "dialog", label: "Dialog", group: "Overlays"}
+    %Item{value: "combobox", label: "Combobox", group: "Pickers"},
+    %Item{value: "listbox", label: "Listbox", group: "Pickers"},
+    %Item{value: "menu", label: "Menu", group: "Overlays"},
+    %Item{value: "dialog", label: "Dialog", group: "Overlays"}
   ]
 
   @items_nested [
-    %Item{id: "listbox", label: "Listbox"},
+    %Item{value: "listbox", label: "Listbox"},
     %Item{
-      id: "corex",
+      value: "corex",
       label: "Corex",
       children: [
-        %Item{id: "combobox", label: "Combobox"},
-        %Item{id: "date-picker", label: "Date picker"},
-        %Item{id: "menu", label: "Menu"},
-        %Item{id: "dialog", label: "Dialog"}
+        %Item{value: "combobox", label: "Combobox"},
+        %Item{value: "date-picker", label: "Date picker"},
+        %Item{value: "menu", label: "Menu"},
+        %Item{value: "dialog", label: "Dialog"}
       ]
     },
-    %Item{id: "tabs", label: "Tabs"}
+    %Item{value: "tabs", label: "Tabs"}
   ]
 
   @items_nested_grouped [
-    %Item{id: "tabs", label: "Tabs"},
+    %Item{value: "tabs", label: "Tabs"},
     %Item{
-      id: "corex",
+      value: "corex",
       label: "Corex",
       children: [
-        %Item{id: "combobox", label: "Combobox", group: "Pickers"},
-        %Item{id: "date-picker", label: "Date picker", group: "Pickers"},
-        %Item{id: "menu", label: "Menu", group: "Overlays"},
-        %Item{id: "dialog", label: "Dialog", group: "Overlays"}
+        %Item{value: "combobox", label: "Combobox", group: "Pickers"},
+        %Item{value: "date-picker", label: "Date picker", group: "Pickers"},
+        %Item{value: "menu", label: "Menu", group: "Overlays"},
+        %Item{value: "dialog", label: "Dialog", group: "Overlays"}
       ]
     }
   ]
@@ -84,8 +84,8 @@ defmodule CorexWeb.Menu do
               class: "menu",
               redirect: true,
               items: [
-                %Item{id: "/en/menu/anatomy", label: "Anatomy"},
-                %Item{id: "/en/menu/api", label: "API"}
+                %Item{value: "/en/menu/anatomy", label: "Anatomy"},
+                %Item{value: "/en/menu/api", label: "API"}
               ],
               trigger: [%{inner_block: "Navigate"}],
               indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
@@ -96,12 +96,12 @@ defmodule CorexWeb.Menu do
               redirect: true,
               items: [
                 %Item{
-                  id: "https://zagjs.com/components/react/menu",
+                  value: "https://zagjs.com/components/react/menu",
                   label: "Zag menu",
                   new_tab: true
                 },
                 %Item{
-                  id: "https://hexdocs.pm/phoenix_live_view/",
+                  value: "https://hexdocs.pm/phoenix_live_view/",
                   label: "Phoenix LiveView",
                   new_tab: true
                 }
@@ -114,8 +114,8 @@ defmodule CorexWeb.Menu do
               class: "menu",
               redirect: true,
               items: [
-                %Item{id: "/en/menu/playground", label: "href (default)", redirect: :href},
-                %Item{id: "/en/menu/events", label: "LiveView navigate", redirect: :navigate}
+                %Item{value: "/en/menu/playground", label: "href (default)", redirect: :href},
+                %Item{value: "/en/menu/events", label: "LiveView navigate", redirect: :navigate}
               ],
               trigger: [%{inner_block: "Redirect kinds"}],
               indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]

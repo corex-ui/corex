@@ -84,7 +84,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     ~S"""
     <.avatar id="avatar-val" src="https://example.com/photo.jpg" class="avatar">
       <:value :let={src}>
-        {if src, do: "IMG", else: "—"}
+        {if src, do: "IMG", else: " - "}
       </:value>
     </.avatar>
     """
@@ -97,7 +97,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
     <div class="layout__row gap-4 items-center">
       <.avatar id="avatar-anatomy-value-empty" src="" class="avatar">
         <:value :let={src}>
-          {if src, do: "IMG", else: "—"}
+          {if src, do: "IMG", else: " - "}
         </:value>
       </.avatar>
       <.avatar
@@ -107,7 +107,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
         class="avatar"
       >
         <:value :let={src}>
-          {if src, do: "IMG", else: "—"}
+          {if src, do: "IMG", else: " - "}
         </:value>
       </.avatar>
     </div>

@@ -18,10 +18,10 @@ defmodule E2eWeb.ThemeToggle do
       id={@id}
       class="select select--sm w-4xs"
       items={[
-        %{id: "neo", label: "Neo"},
-        %{id: "uno", label: "Uno"},
-        %{id: "duo", label: "Duo"},
-        %{id: "leo", label: "Leo"}
+        %{value: "neo", label: "Neo"},
+        %{value: "uno", label: "Uno"},
+        %{value: "duo", label: "Duo"},
+        %{value: "leo", label: "Leo"}
       ]}
       value={[@theme]}
       on_value_change_client="phx:set-theme"

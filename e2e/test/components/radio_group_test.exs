@@ -6,13 +6,13 @@ defmodule E2eWeb.RadioGroupTest do
 
   alias E2eWeb.RadioGroupModel, as: RadioGroup
 
-  feature "anatomy — select option B in plain section", %{session: session} do
+  feature "anatomy  -  select option B in plain section", %{session: session} do
     session
     |> RadioGroup.visit_ready("/en/radio-group/anatomy", css("#radio-group-anatomy-page"))
     |> RadioGroup.click_item_in_section("radio-group-anatomy-minimal", "b")
   end
 
-  feature "events — server radio group produces log row", %{session: session} do
+  feature "events  -  server radio group produces log row", %{session: session} do
     session =
       session
       |> RadioGroup.visit_ready("/en/radio-group/events", css("#radio-group-events-page"))

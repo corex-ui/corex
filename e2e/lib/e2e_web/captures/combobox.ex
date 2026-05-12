@@ -6,11 +6,11 @@ defmodule CorexWeb.Combobox do
   alias Corex.Heroicon
 
   @items Corex.List.new([
-           %{label: "France", id: "fra"},
-           %{label: "Belgium", id: "bel"},
-           %{label: "Germany", id: "deu"},
-           %{label: "Netherlands", id: "nld"},
-           %{label: "Switzerland", id: "che"}
+           %{label: "France", value: "fra"},
+           %{label: "Belgium", value: "bel"},
+           %{label: "Germany", value: "deu"},
+           %{label: "Netherlands", value: "nld"},
+           %{label: "Switzerland", value: "che"}
          ])
 
   capture variants: [

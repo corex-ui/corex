@@ -8,7 +8,7 @@ defmodule Corex.AccordionTest do
 
   describe "accordion/1" do
     test "renders with items" do
-      items = Corex.Content.new([%{trigger: "T1", content: "C1"}])
+      items = Corex.Content.new([%{label: "T1", content: "C1"}])
       html = render_component(&Accordion.accordion/1, items: items)
       assert html =~ ~r/data-scope="accordion"/
       assert html =~ ~r/data-part="root"/
@@ -68,7 +68,7 @@ defmodule Corex.AccordionTest do
     end
 
     test "renders with all attributes and custom slots and indicator" do
-      items = Corex.Content.new([%{trigger: "T1", content: "C1"}])
+      items = Corex.Content.new([%{label: "T1", content: "C1"}])
 
       html =
         render_component(
@@ -90,7 +90,7 @@ defmodule Corex.AccordionTest do
               on_focus_change="fchange"
               on_focus_change_client="fcclient"
             >
-              <:trigger :let={item}>Custom Trigger {item.trigger}</:trigger>
+              <:trigger :let={item}>Custom Trigger {item.label}</:trigger>
               <:content :let={item}>Custom Content {item.content}</:content>
               <:indicator :let={_item}>Icon</:indicator>
             </Corex.Accordion.accordion>

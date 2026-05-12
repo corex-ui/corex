@@ -23,7 +23,7 @@ Add `corex` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.4"}
+    {:corex, "~> 0.1.0-beta.5"}
   ]
 end
 ```
@@ -149,7 +149,7 @@ The Corex Design system ships generated CSS under `assets/corex` (themes, typogr
 mix corex.design
 ```
 
-Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite — useful when refreshing design assets to a newer Corex version.
+Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite  -  useful when refreshing design assets to a newer Corex version.
 
 Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
@@ -165,12 +165,16 @@ Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
-Finally, give the `<body>` the `typo` and `layout` classes so the design system's base typography and layout container apply:
+Finally, set **`data-theme`** and **`data-mode`** on **`<html>`** so token files such as `theme/neo.css` and light/dark palettes apply. Use values that match your imports and toggles (for example `data-theme="neo"` when you import `../corex/theme/neo.css`, and `data-mode="light"` or `data-mode="dark"`). [Dark mode](dark_mode.html) and [Theming](theming.html) show how to wire these from plugs or client scripts after you add mode and theme pickers.
+
+Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and the layout shell apply:
 
 ```heex
-<body class="typo layout">
-  {@inner_content}
-</body>
+<html lang="en" data-theme="neo" data-mode="light">
+  <body class="typo layout">
+    {@inner_content}
+  </body>
+</html>
 ```
 
 ## 8. Optional: Phoenix flash with Toast
@@ -211,26 +215,22 @@ Make sure every LiveView and controller view that uses this layout passes `flash
 
 See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and the rest of the toast API.
 
-### MCP plug (development)
-
-By default, **`mix corex.new`** inserts **`plug Corex.MCP`** in **`lib/my_app_web/endpoint.ex`** inside **`if Mix.env() in [:dev, :test] do`**, immediately after the first **`plug Plug.Static`** block (pass **`--no-mcp`** to skip). For behavior, security notes, and manual wiring in an existing app, see [MCP](mcp.html).
-
 ## 9. Add your first component
 
 After the install, every Corex function component is available in your templates. The `id` attribute is required for any component you want to drive from the API.
 
 ### Basic
 
-`Corex.Content.new/1` builds a list of items. The `id` is auto-generated when missing; you can also flag an item as `disabled`.
+`Corex.Content.new/1` builds a list of items. Each item's `value` is auto-generated when missing; you can also flag an item as `disabled`.
 
 ```heex
 <.accordion
   id="welcome-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 />
 ```
@@ -244,9 +244,9 @@ The optional `:indicator` slot adds an icon after each trigger.
   id="indicator-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 >
   <:indicator>
@@ -266,19 +266,19 @@ Use `:trigger`, `:content`, and `:indicator` together with `:let={item}` for ful
   items={
     Corex.Content.new([
       [
-        id: "lorem",
-        trigger: "Lorem ipsum dolor sit amet",
+        value: "lorem",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
       ],
       [
-        trigger: "Duis dictum gravida?",
+        label: "Duis dictum gravida?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
       ],
       [
-        id: "donec",
-        trigger: "Donec condimentum ex mi",
+        value: "donec",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: true,
         meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
@@ -287,11 +287,11 @@ Use `:trigger`, `:content`, and `:indicator` together with `:let={item}` for ful
   }
 >
   <:trigger :let={item}>
-    <.heroicon name={item.data.meta.icon} />{item.data.trigger}
+    <.heroicon name={item.meta.icon} />{item.label}
   </:trigger>
-  <:content :let={item}>{item.data.content}</:content>
+  <:content :let={item}>{item.content}</:content>
   <:indicator :let={item}>
-    <.heroicon name={item.data.meta.indicator} />
+    <.heroicon name={item.meta.indicator} />
   </:indicator>
 </.accordion>
 ```
@@ -321,8 +321,8 @@ defmodule MyAppWeb.AccordionLive do
       on_value_change="on_value_change"
       class="accordion"
       items={Corex.Content.new([
-        [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-        [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."]
+        [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+        [value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."]
       ])}
     />
     """
@@ -343,9 +343,9 @@ defmodule MyAppWeb.AccordionAsyncLive do
       assign_async(socket, :accordion, fn ->
         items =
           Corex.Content.new([
-            [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
-            [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-            [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+            [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
+            [value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+            [value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
           ])
 
         {:ok, %{accordion: %{items: items, value: ["duis", "donec"]}}}
@@ -377,9 +377,11 @@ end
 
 ## 10. Driving components from the API
 
-Every Corex component exposes JS commands for client-side control and matching `socket` helpers for server-side control. You need an `id` on the component.
+See [API](api.html) for the shared pattern (`id`, `handle_event`, `phx-click`, DOM `CustomEvent`). See [Events](events.html) for `on_*`, client events, and responses.
 
-**Client-side**, push commands inline from any element:
+Every component documents its own helpers under **`Corex.<Name>`** in Hexdocs. You need a stable **`id`** on the root.
+
+**Client-side** (inline binding):
 
 ```heex
 <button type="button" phx-click={Corex.Accordion.set_value("welcome-accordion", ["1"])}>
@@ -387,7 +389,7 @@ Every Corex component exposes JS commands for client-side control and matching `
 </button>
 ```
 
-**Server-side**, return the modified socket from a `handle_event/3` (or call it anywhere a `socket` is in scope):
+**Server-side** (`handle_event/3`):
 
 ```elixir
 def handle_event("open_first", _params, socket) do
@@ -395,14 +397,13 @@ def handle_event("open_first", _params, socket) do
 end
 ```
 
-The same pattern applies to every component — see each component's module docs for the available commands.
-
 ## What's next
 
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:
 
-- [Dark mode](dark_mode.html) — `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
-- [Theming](theming.html) — `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
-- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
-- [MCP](mcp.html) — Corex MCP for AI tooling in development.
-- [Production](production.html) — prod build and run.
+- [API](api.html) and [Events](events.html)  -  control and listen to components from LiveView or JS.
+- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
+- [Theming](theming.html)  -  `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
+- [Localize](localize.html)  -  `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
+- [MCP](mcp.html)  -  Corex MCP for AI tooling in development.
+- [Production](production.html)  -  prod build and run.

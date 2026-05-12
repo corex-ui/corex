@@ -6,27 +6,27 @@ defmodule CorexWeb.Select do
   alias Corex.Heroicon
 
   @collection Corex.List.new([
-                %{label: "France", id: "fra", disabled: true},
-                %{label: "Belgium", id: "bel"},
-                %{label: "Germany", id: "deu"},
-                %{label: "Netherlands", id: "nld"},
-                %{label: "Switzerland", id: "che"},
-                %{label: "Austria", id: "aut"}
+                %{label: "France", value: "fra", disabled: true},
+                %{label: "Belgium", value: "bel"},
+                %{label: "Germany", value: "deu"},
+                %{label: "Netherlands", value: "nld"},
+                %{label: "Switzerland", value: "che"},
+                %{label: "Austria", value: "aut"}
               ])
 
   @grouped_collection Corex.List.new([
-                        %{label: "France", id: "fra", group: "Europe"},
-                        %{label: "Belgium", id: "bel", group: "Europe"},
-                        %{label: "Germany", id: "deu", group: "Europe"},
-                        %{label: "Netherlands", id: "nld", group: "Europe"},
-                        %{label: "Switzerland", id: "che", group: "Europe"},
-                        %{label: "Austria", id: "aut", group: "Europe"},
-                        %{label: "Japan", id: "jpn", group: "Asia"},
-                        %{label: "China", id: "chn", group: "Asia"},
-                        %{label: "South Korea", id: "kor", group: "Asia"},
-                        %{label: "USA", id: "usa", group: "North America"},
-                        %{label: "Canada", id: "can", group: "North America"},
-                        %{label: "Mexico", id: "mex", group: "North America"}
+                        %{label: "France", value: "fra", group: "Europe"},
+                        %{label: "Belgium", value: "bel", group: "Europe"},
+                        %{label: "Germany", value: "deu", group: "Europe"},
+                        %{label: "Netherlands", value: "nld", group: "Europe"},
+                        %{label: "Switzerland", value: "che", group: "Europe"},
+                        %{label: "Austria", value: "aut", group: "Europe"},
+                        %{label: "Japan", value: "jpn", group: "Asia"},
+                        %{label: "China", value: "chn", group: "Asia"},
+                        %{label: "South Korea", value: "kor", group: "Asia"},
+                        %{label: "USA", value: "usa", group: "North America"},
+                        %{label: "Canada", value: "can", group: "North America"},
+                        %{label: "Mexico", value: "mex", group: "North America"}
                       ])
 
   capture variants: [

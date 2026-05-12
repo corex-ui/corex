@@ -91,10 +91,13 @@ defmodule Corex.Listbox.Anatomy do
       "id",
       "data-layout",
       "aria-labelledby",
+      "aria-multiselectable",
       "tabindex",
       "data-disabled",
       "data-focus",
-      "data-focus-visible"
+      "data-focus-visible",
+      "role",
+      "data-empty"
     ]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -116,7 +119,9 @@ defmodule Corex.Listbox.Anatomy do
       "id",
       "data-id",
       "data-focus",
-      "data-focus-visible"
+      "data-focus-visible",
+      "role",
+      "data-disabled"
     ]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -132,7 +137,14 @@ defmodule Corex.Listbox.Anatomy do
             orientation: String.t()
           }
 
-    @ignored_attrs ["id", "data-orientation", "dir", "data-focus", "data-focus-visible"]
+    @ignored_attrs [
+      "id",
+      "data-orientation",
+      "dir",
+      "data-focus",
+      "data-focus-visible",
+      "role"
+    ]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -169,7 +181,9 @@ defmodule Corex.Listbox.Anatomy do
       "data-focus",
       "data-focus-visible",
       "data-active",
-      "data-hover"
+      "data-hover",
+      "data-selected",
+      "data-layout"
     ]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -180,7 +194,17 @@ defmodule Corex.Listbox.Anatomy do
 
     @type t :: %__MODULE__{id: String.t(), item: map(), orientation: String.t()}
 
-    @ignored_attrs ["id", "data-orientation", "data-focus", "data-focus-visible"]
+    @ignored_attrs [
+      "id",
+      "data-orientation",
+      "data-focus",
+      "data-focus-visible",
+      "data-state",
+      "data-selected",
+      "data-disabled",
+      "data-highlighted",
+      "dir"
+    ]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -195,7 +219,9 @@ defmodule Corex.Listbox.Anatomy do
       "hidden",
       "data-state",
       "data-focus",
-      "data-focus-visible"
+      "data-focus-visible",
+      "aria-hidden",
+      "dir"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

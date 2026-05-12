@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.4"
+  @version "0.1.0-beta.5"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -92,19 +92,19 @@ defmodule Corex.MixProject do
 
   defp copy_design_to_installer(_) do
     source = Path.join(__DIR__, "priv/design")
-    destination = Path.join(__DIR__, "installer/templates/corex_design")
+    priv_dest = Path.join(__DIR__, "installer/priv/corex_design")
 
     unless File.dir?(source) do
       Mix.raise("Expected Corex design tree at #{source}")
     end
 
-    File.mkdir_p!(Path.dirname(destination))
+    File.mkdir_p!(Path.dirname(priv_dest))
 
-    if File.exists?(destination) do
-      File.rm_rf!(destination)
+    if File.exists?(priv_dest) do
+      File.rm_rf!(priv_dest)
     end
 
-    File.cp_r!(source, destination)
+    File.cp_r!(source, priv_dest)
     :ok
   end
 
@@ -145,7 +145,12 @@ defmodule Corex.MixProject do
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
+        "guides/api.md",
+        "guides/events.md",
         "guides/tableau.md",
+        "guides/tableau_theming.md",
+        "guides/tableau_mode.md",
+        "guides/tableau_localize.md",
         "guides/dark_mode.md",
         "guides/theming.md",
         "guides/localize.md",
@@ -161,18 +166,28 @@ defmodule Corex.MixProject do
         Helpers: &(&1[:type] == :helpers)
       ],
       groups_for_extras: [
-        Introduction: [
-          "guides/installation.md",
-          "guides/manual_installation.md"
-        ],
-        Guides: [
-          "guides/tableau.md",
-          "guides/MCP.md",
-          "guides/dark_mode.md",
-          "guides/theming.md",
-          "guides/localize.md",
-          "guides/production.md"
-        ]
+        {:Introduction,
+         [
+           "guides/installation.md",
+           "guides/manual_installation.md"
+         ]},
+        {:Guides,
+         [
+           "guides/api.md",
+           "guides/events.md",
+           "guides/MCP.md",
+           "guides/dark_mode.md",
+           "guides/theming.md",
+           "guides/localize.md",
+           "guides/production.md"
+         ]},
+        {"Tableau Guides",
+         [
+           "guides/tableau.md",
+           "guides/tableau_theming.md",
+           "guides/tableau_mode.md",
+           "guides/tableau_localize.md"
+         ]}
       ]
     ]
   end
@@ -225,10 +240,12 @@ defmodule Corex.MixProject do
         Corex.Content,
         Corex.Content.Item
       ],
+      DataList: [
+        Corex.DataList.Item
+      ],
       List: [
         Corex.List,
-        Corex.List.Item,
-        Corex.Item
+        Corex.List.Item
       ],
       Tree: [
         Corex.Tree,

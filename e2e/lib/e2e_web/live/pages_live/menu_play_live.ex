@@ -85,13 +85,13 @@ defmodule E2eWeb.MenuPlayLive do
             close_on_select={@controls.close_on_select}
             loop_focus={@controls.loop_focus}
             items={[
-              %Corex.Tree.Item{id: "listbox", label: "Listbox"},
+              %Corex.Tree.Item{value: "listbox", label: "Listbox"},
               %Corex.Tree.Item{
-                id: "corex",
+                value: "corex",
                 label: "Corex",
                 children: E2eWeb.Demos.MenuDemo.demo_nested_flat_children()
               },
-              %Corex.Tree.Item{id: "tabs", label: "Tabs"}
+              %Corex.Tree.Item{value: "tabs", label: "Tabs"}
             ]}
           >
             <:trigger>Corex</:trigger>

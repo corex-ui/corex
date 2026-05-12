@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Corex.New do
   then writes Corex-owned files and patches into that app. **`--no-install`** is always passed to
   Phoenix so dependency fetching stays under Corex control.
 
-  LiveView, HTML, esbuild, and the default Phoenix asset setup are **always on** — Corex does not
+  LiveView, HTML, esbuild, and the default Phoenix asset setup are **always on**  -  Corex does not
   forward **`--no-live`**, **`--no-html`**, **`--no-esbuild`**, or **`--no-assets`**.
 
   **`mix phx.new --dev`** (Phoenix from a Git checkout) is **not** forwarded. **`--dev`** on this task
@@ -19,19 +19,19 @@ defmodule Mix.Tasks.Corex.New do
 
   ## Corex-only options
 
-  * **`--no-design`** — skip copying consumer design assets into `assets/corex/` and omit Corex design `@import` blocks in `app.css`. Default is **`--design`** (design on).
-  * **`--tailwind`** / **`--no-tailwind`** — Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
-  * **`--mode`** — plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
-  * **`--theme`** — themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
-  * **`--lang`** — Localize + Gettext, path plug, locale scope helpers, `language_switch`.
-  * **`--designex`** — copy token sources into `assets/corex/design/`, add `:designex`, asset aliases. Implies **`--design`**.
-  * **`--mcp`** / **`--no-mcp`** — when **`--mcp`** (default), `plug Corex.MCP` is added to the endpoint in `:dev` / `:test` after `Plug.Static`.
-  * **`--dev PATH`** — `{:corex, path: PATH}` and relative `corex.mjs` import when building JS; design copies from that checkout when **`--design`** is on.
-  * **`--install`** / **`--no-install`** — whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
+  * **`--no-design`**  -  skip copying consumer design assets into `assets/corex/` and omit Corex design `@import` blocks in `app.css`. Default is **`--design`** (design on).
+  * **`--tailwind`** / **`--no-tailwind`**  -  Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
+  * **`--mode`**  -  plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
+  * **`--theme`**  -  themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
+  * **`--lang`**  -  Localize + Gettext, path plug, locale scope helpers, `language_switch`.
+  * **`--designex`**  -  copy token sources into `assets/corex/design/`, add `:designex`, asset aliases. Implies **`--design`**.
+  * **`--mcp`** / **`--no-mcp`**  -  when **`--mcp`** (default), `plug Corex.MCP` is added to the endpoint in `:dev` / `:test` after `Plug.Static`.
+  * **`--dev PATH`**  -  `{:corex, path: PATH}` and relative `corex.mjs` import when building JS; design copies from that checkout when **`--design`** is on.
+  * **`--install`** / **`--no-install`**  -  whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 
   ## Options forwarded to **`mix phx.new`**
 
-  Same semantics as Phoenix’s installer — see **`mix help phx.new`** on [Hexdocs](https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html).
+  Same semantics as Phoenix’s installer  -  see **`mix help phx.new`** on [Hexdocs](https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html).
 
   Supported switches include for example:
 

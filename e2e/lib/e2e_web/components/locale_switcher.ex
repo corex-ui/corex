@@ -6,7 +6,7 @@ defmodule E2eWeb.LocaleSwitcher do
   def locale_switcher(assigns) do
     items =
       for loc <- E2eWeb.Locale.locales(), into: [] do
-        %{id: E2eWeb.Path.join_locale_path(loc, assigns.path), label: E2eWeb.Locale.label(loc)}
+        %{value: E2eWeb.Path.join_locale_path(loc, assigns.path), label: E2eWeb.Locale.label(loc)}
       end
 
     value = [E2eWeb.Path.with_current_locale(assigns.path)]

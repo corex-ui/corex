@@ -84,16 +84,16 @@ defmodule Corex.Avatar do
 
   | Dispatch (type) | `detail` |
   |-----------------|----------|
-  | `corex:avatar:set-src` | `src` — image URL string |
+  | `corex:avatar:set-src` | `src`  -  image URL string |
   | `corex:avatar:loaded` | optional `respond_to`: `"server"`, `"client"`, or `"both"` |
 
   **Responses to LiveView** (`push_event` from the hook; handle in `handle_event/3`):
 
-  - `avatar_loaded_response` — `%{"id" => ..., "loaded" => boolean}`
+  - `avatar_loaded_response`  -  `%{"id" => ..., "loaded" => boolean}`
 
   **Responses to the DOM** (listen on the hook root element):
 
-  - `avatar-loaded` — `detail` with `id` and `loaded`
+  - `avatar-loaded`  -  `detail` with `id` and `loaded`
 
   ## Styling
 
@@ -173,7 +173,7 @@ defmodule Corex.Avatar do
   slot :value,
     required: false,
     doc:
-      "Optional replacement for `:fallback` inner content. Use `:let={value}` — `value` is the image `src` (or `nil`)." do
+      "Optional replacement for `:fallback` inner content. Use `:let={value}`  -  `value` is the image `src` (or `nil`)." do
     attr(:class, :string, required: false)
   end
 
@@ -288,7 +288,7 @@ defmodule Corex.Avatar do
   @doc """
   Requests whether the avatar image is loaded from the browser. Returns a `Phoenix.LiveView.JS` command.
 
-  Options: `:respond_to` — `:server` (default, `avatar_loaded_response` only), `:both`, or `:client` (`avatar-loaded` DOM only).
+  Options: `:respond_to`  -  `:server` (default, `avatar_loaded_response` only), `:both`, or `:client` (`avatar-loaded` DOM only).
 
   ## Examples
 

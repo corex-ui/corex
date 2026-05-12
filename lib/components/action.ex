@@ -4,7 +4,7 @@ defmodule Corex.Action do
   Use the `type` attribute to set the button type.
   Icon-only buttons must pass `aria_label` to screen readers.
 
-  ## Examples
+  ## Anatomy
     ```elixir
     <.action>Send!</.action>
     <.action phx-click="go">Send!</.action>

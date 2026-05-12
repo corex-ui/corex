@@ -19,9 +19,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def custom_slots_example(assigns) do
     ~H"""
-    <.accordion class="accordion" value="lorem" items={items_with_meta()}>
+    <.accordion class="accordion" items={items_with_meta()}>
       <:trigger :let={item}>
-        <.heroicon name={item.meta.icon} />{item.trigger}
+        <.heroicon name={item.meta.icon} />{item.label}
       </:trigger>
       <:content :let={item}>
         <p>{item.content}</p>
@@ -98,23 +98,23 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def nested_items do
     Corex.Content.new([
-      %{value: "outer-1", trigger: "Outer 1", content: "Outer content"},
-      %{value: "outer-2", trigger: "Outer 2", content: "Outer content"}
+      %{value: "outer-1", label: "Outer 1", content: "Outer content"},
+      %{value: "outer-2", label: "Outer 2", content: "Outer content"}
     ])
   end
 
   def items_basic do
     Corex.Content.new([
       %{
-        trigger: "Lorem ipsum dolor sit amet",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
       %{
-        trigger: "Duis dictum gravida odio ac pharetra?",
+        label: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
       %{
-        trigger: "Donec condimentum ex mi",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
     ])
@@ -124,19 +124,19 @@ defmodule E2eWeb.Demos.AccordionDemo do
     Corex.Content.new([
       %{
         value: "lorem",
-        trigger: "Lorem ipsum dolor sit amet",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
       },
       %{
         value: "duis",
-        trigger: "Duis dictum gravida odio ac pharetra?",
+        label: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
       },
       %{
         value: "donec",
-        trigger: "Donec condimentum ex mi",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
       }
@@ -147,17 +147,17 @@ defmodule E2eWeb.Demos.AccordionDemo do
     Corex.Content.new([
       %{
         value: "lorem",
-        trigger: "Lorem ipsum dolor sit amet",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
       %{
         value: "duis",
-        trigger: "Duis dictum gravida odio ac pharetra?",
+        label: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
       %{
         value: "donec",
-        trigger: "Donec condimentum ex mi",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
     ])
@@ -169,9 +169,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <.action phx-click={Corex.Accordion.set_value("api-set-value-client", ["lorem", "donec"])}>Lorem and Donec</.action>
     <.action phx-click={Corex.Accordion.set_value("api-set-value-client", [])}>Close all</.action>
     <.accordion id="api-set-value-client" items={Corex.Content.new([
-      %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])} />
     """
   end
@@ -179,9 +179,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def code_items_basic do
     ~S"""
     Corex.Content.new([
-      %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])
     """
   end
@@ -190,17 +190,17 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ~S"""
     Corex.Content.new([
       %{
-        trigger: "Lorem ipsum dolor sit amet",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
       },
       %{
-        trigger: "Duis dictum gravida odio ac pharetra?",
+        label: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
       },
       %{
-        trigger: "Donec condimentum ex mi",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
       }
@@ -249,7 +249,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         }
       >
         <:trigger :let={item}>
-          <.heroicon name={item.meta.icon} />{item.trigger}
+          <.heroicon name={item.meta.icon} />{item.label}
         </:trigger>
         <:content :let={item}>
           <p>{item.content}</p>
@@ -640,9 +640,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={JS.dispatch("corex:accordion:set-value", to: "#api-set-value-client-js", detail: %{value: ["lorem", "donec"]}, bubbles: false)}>Lorem and Donec</.action>
         <.action phx-click={JS.dispatch("corex:accordion:set-value", to: "#api-set-value-client-js", detail: %{value: []}, bubbles: false)}>Close all</.action>
         <.accordion id="api-set-value-client-js" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -690,9 +690,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_set_value_server" value="lorem,donec">Lorem and Donec</.action>
         <.action phx-click="api_set_value_server" value="">Close all</.action>
         <.accordion id="api-set-value-server" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -708,9 +708,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={Corex.Accordion.value("api-value-client")}>Value</.action>
         <.action phx-click={Corex.Accordion.value("api-value-client", respond_to: :client)}>Value (client only)</.action>
         <.accordion id="api-value-client" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -719,9 +719,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={JS.dispatch("corex:accordion:value", to: "#api-value-client-js", detail: %{}, bubbles: false)}>Value</.action>
         <.action phx-click={JS.dispatch("corex:accordion:value", to: "#api-value-client-js", detail: %{respond_to: "client"}, bubbles: false)}>Value (client only)</.action>
         <.accordion id="api-value-client-js" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -772,9 +772,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_value_server">Value</.action>
         <.action phx-click="api_value_server_client_only">Value (client only)</.action>
         <.accordion id="api-value-server" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -801,9 +801,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_focused_client">Focused</.action>
         <.action phx-click="api_focused_client_client_only">Focused (client only)</.action>
         <.accordion id="api-focused-client" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -812,9 +812,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_focused_js">Focused</.action>
         <.action phx-click="api_focused_js_client_only">Focused (client only)</.action>
         <.accordion id="api-focused-client-js" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -849,9 +849,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_focused_server">Focused</.action>
         <.action phx-click="api_focused_server_client_only">Focused (client only)</.action>
         <.accordion id="api-focused-server" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -909,9 +909,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "duis")}>duis</.action>
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "donec")}>donec</.action>
         <.accordion id="api-item-client" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -921,9 +921,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={JS.dispatch("corex:accordion:item-state", to: "#api-item-client-js", detail: %{value: "duis"}, bubbles: false)}>duis</.action>
         <.action phx-click={JS.dispatch("corex:accordion:item-state", to: "#api-item-client-js", detail: %{value: "donec"}, bubbles: false)}>donec</.action>
         <.accordion id="api-item-client-js" items={Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])} />
         """
 
@@ -957,9 +957,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click=\"api_item_state_server_duis\">duis</.action>
         <.action phx-click=\"api_item_state_server_donec\">donec</.action>
         <.accordion id=\"api-item-server\" items={Corex.Content.new([
-          %{value: \"lorem\", trigger: \"Lorem ipsum dolor sit amet\", content: \"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.\"},
-          %{value: \"duis\", trigger: \"Duis dictum gravida odio ac pharetra?\", content: \"Nullam eget vestibulum ligula, at interdum tellus.\"},
-          %{value: \"donec\", trigger: \"Donec condimentum ex mi\", content: \"Congue molestie ipsum gravida a. Sed ac eros luctus.\", disabled: true}
+          %{value: \"lorem\", label: \"Lorem ipsum dolor sit amet\", content: \"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.\"},
+          %{value: \"duis\", label: \"Duis dictum gravida odio ac pharetra?\", content: \"Nullam eget vestibulum ligula, at interdum tellus.\"},
+          %{value: \"donec\", label: \"Donec condimentum ex mi\", content: \"Congue molestie ipsum gravida a. Sed ac eros luctus.\", disabled: true}
         ])} />
         """
 
@@ -984,17 +984,17 @@ defmodule E2eWeb.Demos.AccordionDemo do
     Corex.Content.new([
       %{
         value: "item-1",
-        trigger: "Lorem ipsum dolor sit amet",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
       %{
         value: "item-2",
-        trigger: "Duis dictum gravida odio ac pharetra?",
+        label: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
       %{
         value: "item-3",
-        trigger: "Donec condimentum ex mi",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
     ])
@@ -1122,43 +1122,43 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_color_code do
     ~S"""
     <.accordion class="accordion" items={Corex.Content.new([
-      %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
     </.accordion>
     <.accordion class="accordion accordion--accent" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--brand" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--info" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--alert" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--success" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1168,30 +1168,30 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_size_code do
     ~S"""
     <.accordion class="accordion accordion--sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--md" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1201,30 +1201,30 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_text_code do
     ~S"""
     <.accordion class="accordion accordion--text-sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--text-xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--text-2xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--text-4xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1234,44 +1234,44 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_radius_code do
     ~S"""
     <.accordion class="accordion accordion--rounded-none" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--rounded-sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--rounded-md" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--rounded-lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--rounded-xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--rounded-full" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1281,30 +1281,30 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_max_width_code do
     ~S"""
     <.accordion class="accordion max-w-xs" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion max-w-sm" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion max-w-lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion max-w-5xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1314,30 +1314,30 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def styling_mix_modifiers_code do
     ~S"""
     <.accordion class="accordion accordion--sm max-w-5xs" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--md max-w-xs" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--lg max-w-lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion accordion--xl max-w-2xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
     ])}>
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
@@ -1383,9 +1383,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
           items =
             Corex.Content.new([
-              %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-              %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-              %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+              %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+              %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+              %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
             ])
 
           {:ok, %{accordion: %{items: items, value: ["duis"]}}}
@@ -1402,9 +1402,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       id="patterns-controlled"
       class="accordion"
       items={Corex.Content.new([
-        %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
       multiple={false}
       controlled
@@ -1423,9 +1423,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
     def mount(_params, _session, socket) do
       items =
         Corex.Content.new([
-          %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-          %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-          %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+          %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
         ])
 
       socket =
@@ -1448,9 +1448,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       id="patterns-open-single"
       class="accordion"
       items={Corex.Content.new([
-        %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
       multiple={false}
       value="lorem"
@@ -1468,9 +1468,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       id="patterns-open-multiple"
       class="accordion"
       items={Corex.Content.new([
-        %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
       multiple
       value={["lorem", "donec"]}
@@ -1504,17 +1504,17 @@ defmodule E2eWeb.Demos.AccordionDemo do
         Corex.Content.new([
           %{
             value: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
+            label: "Lorem ipsum dolor sit amet",
             content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
           },
           %{
             value: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
+            label: "Duis dictum gravida odio ac pharetra?",
             content: "Nullam eget vestibulum ligula, at interdum tellus."
           },
           %{
             value: "donec",
-            trigger: "Donec condimentum ex mi",
+            label: "Donec condimentum ex mi",
             content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
           }
         ])
@@ -1533,9 +1533,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       class="accordion"
       animation="instant"
       items={Corex.Content.new([
-        %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
     />
     """
@@ -1548,9 +1548,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       animation="custom"
       on_value_change_client="my-accordion-changed"
       items={Corex.Content.new([
-        %{trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
     />
     """
@@ -1609,9 +1609,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       id="events-on-value-change-server"
       class="accordion"
       items={Corex.Content.new([
-        %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
       on_value_change="accordion_value_changed"
     >
@@ -1644,9 +1644,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
       id="events-on-value-change-client"
       class="accordion"
       items={Corex.Content.new([
-        %{value: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
       ])}
       on_value_change_client="accordion-value-changed"
     >

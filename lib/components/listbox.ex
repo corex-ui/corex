@@ -15,12 +15,12 @@ defmodule Corex.Listbox do
     id="my-listbox"
     class="listbox"
     items={Corex.List.new([
-      %{label: "France", id: "fra", disabled: true},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra", disabled: true},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])}
   >
     <:label>Choose a country</:label>
@@ -36,19 +36,19 @@ defmodule Corex.Listbox do
   <.listbox
     class="listbox"
     items={Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Netherlands", id: "nld", group: "Europe"},
-      %{label: "Switzerland", id: "che", group: "Europe"},
-      %{label: "Austria", id: "aut", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"},
-      %{label: "Thailand", id: "tha", group: "Asia"},
-      %{label: "USA", id: "usa", group: "North America"},
-      %{label: "Canada", id: "can", group: "North America"},
-      %{label: "Mexico", id: "mex", group: "North America"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Netherlands", value: "nld", group: "Europe"},
+      %{label: "Switzerland", value: "che", group: "Europe"},
+      %{label: "Austria", value: "aut", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"},
+      %{label: "Thailand", value: "tha", group: "Asia"},
+      %{label: "USA", value: "usa", group: "North America"},
+      %{label: "Canada", value: "can", group: "North America"},
+      %{label: "Mexico", value: "mex", group: "North America"}
     ])}
   >
     <:label>Choose a country</:label>
@@ -67,19 +67,19 @@ defmodule Corex.Listbox do
   <.listbox
     class="listbox"
     items={Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])}
   >
     <:label>
       Country of residence
     </:label>
     <:item :let={%{item: entry}}>
-      <Flagpack.flag name={String.to_atom(entry.id)} />
+      <Flagpack.flag name={String.to_atom(to_string(entry.value))} />
       {entry.label}
     </:item>
     <:item_indicator>
@@ -94,16 +94,16 @@ defmodule Corex.Listbox do
   <.listbox
     class="listbox"
     items={Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"}
     ])}
   >
     <:item :let={%{item: entry}}>
-      <Flagpack.flag name={String.to_atom(entry.id)} />
+      <Flagpack.flag name={String.to_atom(to_string(entry.value))} />
       {entry.label}
     </:item>
     <:item_indicator>
@@ -122,7 +122,7 @@ defmodule Corex.Listbox do
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"listbox:my-listbox:item:#{&1.id}")
+     |> stream_configure(:items, dom_id: &"listbox:my-listbox:item:#{&1.value}")
      |> stream(:items, @initial_items)
      |> assign(:items_list, @initial_items)}
   end
@@ -136,9 +136,9 @@ defmodule Corex.Listbox do
         <span class="flex items-center justify-between gap-2 w-full">
           <span class="flex items-center gap-2">
             <.action
-              phx-click={JS.push("remove_item", value: %{id: entry.id})}
+              phx-click={JS.push("remove_item", value: %{value: entry.value})}
               data-phx-push="remove_item"
-              data-phx-push-id={entry.id}
+              data-phx-push-id={entry.value}
               class="button button--sm"
             >
               <.heroicon name="hero-trash" />
@@ -154,8 +154,8 @@ defmodule Corex.Listbox do
     """
   end
 
-  def handle_event("remove_item", %{"id" => id}, socket) do
-    item = Enum.find(socket.assigns.items_list, &(&1.id == id))
+  def handle_event("remove_item", %{"value" => v}, socket) do
+    item = Enum.find(socket.assigns.items_list, &(to_string(&1.value) == v))
     if item do
       {:noreply,
        socket
@@ -236,7 +236,8 @@ defmodule Corex.Listbox do
 
   attr(:items, :list,
     required: true,
-    doc: "Items from `Corex.List.new/1` (or maps with id/value, label, disabled, group)"
+    doc:
+      "Items from `Corex.List.new/1` (or maps with :label and optional :value, disabled, group)"
   )
 
   attr(:value, :list, default: [], doc: "Selected value(s)")
@@ -377,46 +378,6 @@ defmodule Corex.Listbox do
           </div>
         </div>
       </div>
-      <div style="display: none;" data-templates="listbox">
-        <div :if={@empty != []} data-scope="listbox" data-part="empty" data-template="true">
-          {render_slot(@empty)}
-        </div>
-        <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_template(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} data-template="true">
-          <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label_template(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
-          <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
-            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, orientation: @orientation})}>
-              <%= if @item == [] do %>
-                {entry[:label]}
-              <% else %>
-                {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
-              <% end %>
-            </span>
-            <span
-              phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-              {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-              hidden={!entry_selected?(entry, @value)}
-            >
-              {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
-            </span>
-          </div>
-        </div>
-        <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
-          <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, orientation: @orientation})}>
-            <%= if @item == [] do %>
-              {entry[:label]}
-            <% else %>
-              {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
-            <% end %>
-          </span>
-          <span
-            phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-            {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
-            hidden={!entry_selected?(entry, @value)}
-          >
-            {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
-          </span>
-        </div>
-      </div>
     </div>
     """
   end
@@ -432,28 +393,6 @@ defmodule Corex.Listbox do
   defp item_attrs(id, entry, dir, orientation) do
     base =
       Connect.item(%Item{
-        id: id,
-        item: entry,
-        value: entry_value(entry),
-        dir: dir,
-        orientation: orientation,
-        to: Map.get(entry, :to),
-        redirect: Map.get(entry, :redirect),
-        new_tab: Map.get(entry, :new_tab, false)
-      })
-
-    if Map.get(entry, :disabled) do
-      base
-      |> Map.put("data-disabled", "")
-      |> Map.put("aria-disabled", "true")
-    else
-      base
-    end
-  end
-
-  defp item_attrs_template(id, entry, dir, orientation) do
-    base =
-      Connect.item_template(%Item{
         id: id,
         item: entry,
         value: entry_value(entry),

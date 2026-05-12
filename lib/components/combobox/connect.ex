@@ -28,7 +28,6 @@ defmodule Corex.Combobox.Connect do
   @spec props(Props.t()) :: map()
   def props(assigns) do
     base = %{
-      "id" => assigns.id,
       "data-items" => Corex.Json.encode!(assigns.items),
       "data-value" =>
         if assigns.controlled do
@@ -54,8 +53,6 @@ defmodule Corex.Combobox.Connect do
       "data-multiple" => get_boolean(assigns.multiple),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-name" => assigns.name,
-      "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-on-open-change" => assigns.on_open_change,
@@ -334,7 +331,7 @@ defmodule Corex.Combobox.Connect do
   defp item_value(item) when is_map(item) do
     item
     |> Map.new(fn {k, v} -> {to_string(k), v} end)
-    |> then(fn m -> Map.get(m, "value") || Map.get(m, "id") || "" end)
+    |> then(fn m -> Map.get(m, "value") || "" end)
   end
 
   @spec item_text(ItemText.t()) :: map()

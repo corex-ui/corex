@@ -11,12 +11,12 @@ import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import { type IdValueLabelItem, zagIdValueLabelCollectionConfig } from "../lib/list-collection";
+import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
 
-type SelectItem = IdValueLabelItem;
+type SelectItem = ValueLabelItem;
 
 function buildCollection(items: SelectItem[], hasGroups: boolean) {
-  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
+  return collection(zagListCollectionConfig(items, hasGroups));
 }
 
 function selectZagPropsBase(

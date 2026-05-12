@@ -31,17 +31,17 @@ defmodule E2eWeb.AccordionPatternsLive do
           Corex.Content.new([
             %{
               value: "lorem",
-              trigger: "Lorem ipsum dolor sit amet",
+              label: "Lorem ipsum dolor sit amet",
               content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
             },
             %{
               value: "duis",
-              trigger: "Duis dictum gravida odio ac pharetra?",
+              label: "Duis dictum gravida odio ac pharetra?",
               content: "Nullam eget vestibulum ligula, at interdum tellus."
             },
             %{
               value: "donec",
-              trigger: "Donec condimentum ex mi",
+              label: "Donec condimentum ex mi",
               content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
             }
           ])

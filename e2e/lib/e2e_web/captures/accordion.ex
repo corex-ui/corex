@@ -14,7 +14,7 @@ defmodule CorexWeb.Accordion do
                 Content.new([
                   %{
                     value: "lorem",
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
                     meta: %{
                       indicator: "hero-arrow-long-right",
@@ -22,13 +22,13 @@ defmodule CorexWeb.Accordion do
                     }
                   },
                   %{
-                    trigger: "Duis dictum gravida ?",
+                    label: "Duis dictum gravida ?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus.",
                     meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
                   },
                   %{
                     value: "donec",
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
                     meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
                   }
@@ -36,12 +36,12 @@ defmodule CorexWeb.Accordion do
               trigger: [
                 %{
                   let: :item,
-                  inner_block: ~s(<.heroicon name={item.data.meta.icon} />{item.data.trigger})
+                  inner_block: ~s(<.heroicon name={item.meta.icon} />{item.label})
                 }
               ],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: [
-                %{let: :item, inner_block: ~s(<.heroicon name={item.data.meta.indicator} />)}
+                %{let: :item, inner_block: ~s(<.heroicon name={item.meta.indicator} />)}
               ]
             },
             basic: %{
@@ -49,20 +49,20 @@ defmodule CorexWeb.Accordion do
               items:
                 Content.new([
                   %{
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
                   },
                   %{
-                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    label: "Duis dictum gravida odio ac pharetra?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
                   }
                 ]),
-              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              trigger: [%{let: :item, inner_block: "{item.label}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: []
             },
             with_indicator: %{
@@ -70,20 +70,20 @@ defmodule CorexWeb.Accordion do
               items:
                 Content.new([
                   %{
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
                   },
                   %{
-                    trigger: "Duis dictum gravida ?",
+                    label: "Duis dictum gravida ?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
                   }
                 ]),
-              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              trigger: [%{let: :item, inner_block: "{item.label}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
             },
             with_switching_indicator: %{
@@ -91,20 +91,20 @@ defmodule CorexWeb.Accordion do
               items:
                 Content.new([
                   %{
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
                   },
                   %{
-                    trigger: "Duis dictum gravida ?",
+                    label: "Duis dictum gravida ?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
                   }
                 ]),
-              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              trigger: [%{let: :item, inner_block: "{item.label}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: [
                 %{
                   inner_block:
@@ -119,22 +119,22 @@ defmodule CorexWeb.Accordion do
                 Content.new([
                   %{
                     value: "lorem",
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
                   },
                   %{
                     value: "duis",
-                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    label: "Duis dictum gravida odio ac pharetra?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
                     value: "donec",
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
                   }
                 ]),
-              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              trigger: [%{let: :item, inner_block: "{item.label}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: []
             },
             with_disabled: %{
@@ -144,23 +144,23 @@ defmodule CorexWeb.Accordion do
                 Content.new([
                   %{
                     value: "lorem",
-                    trigger: "Lorem ipsum dolor sit amet",
+                    label: "Lorem ipsum dolor sit amet",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
                     disabled: true
                   },
                   %{
                     value: "duis",
-                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    label: "Duis dictum gravida odio ac pharetra?",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
                     value: "donec",
-                    trigger: "Donec condimentum ex mi",
+                    label: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
                   }
                 ]),
-              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
-              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              trigger: [%{let: :item, inner_block: "{item.label}"}],
+              content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: []
             }
           ]

@@ -3,8 +3,8 @@
 Provides the `mix corex.new` installer as a Mix archive.
 
 It runs `mix phx.new` with forwarded Phoenix flags (always with `--no-install`),
-then renders Corex-owned files (layouts, root layout, home, plugs, app.js,
-app.css) directly from templates. LiveView, HTML, esbuild, and full Phoenix assets stay enabled — there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here. No Igniter, no nested generators.
+then writes Corex-owned layouts, HEEx, plugs, hooks, and asset stubs using EEx
+scaffolds, and copies the bundled design snapshot into `assets/corex/`. LiveView, HTML, esbuild, and full Phoenix assets stay enabled  -  there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here.
 
 To install from Hex, run:
 
@@ -13,8 +13,6 @@ To install from Hex, run:
 To build and install it locally, first remove any previous archive:
 
     $ mix archive.uninstall corex_new
-
-Then, from the **corex** repository root (not only `installer/`), run `mix assets.build` once so `priv/design` is synced into `installer/templates/corex_design/`. That snapshot is what `mix corex.new` copies into `assets/corex/`; skip this only if that directory is already committed or freshly built.
 
 Then:
 

@@ -6,15 +6,15 @@ defmodule E2eWeb.ListboxPatternsLive do
   alias E2eWeb.Demos.ListboxDemo, as: Demo
 
   @initial_items [
-    %{id: "1", label: "Apple"},
-    %{id: "2", label: "Banana"},
-    %{id: "3", label: "Cherry"}
+    %{value: "1", label: "Apple"},
+    %{value: "2", label: "Banana"},
+    %{value: "3", label: "Cherry"}
   ]
 
   @initial_grouped_items [
-    %{id: "g1", label: "France", group: "Europe"},
-    %{id: "g2", label: "Japan", group: "Asia"},
-    %{id: "g3", label: "Germany", group: "Europe"}
+    %{value: "g1", label: "France", group: "Europe"},
+    %{value: "g2", label: "Japan", group: "Asia"},
+    %{value: "g3", label: "Germany", group: "Europe"}
   ]
 
   def mount(_params, _session, socket) do
@@ -24,10 +24,12 @@ defmodule E2eWeb.ListboxPatternsLive do
 
     {:ok,
      socket
-     |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.id}")
+     |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.value}")
      |> stream(:items, @initial_items)
      |> assign(:items_list, @initial_items)
-     |> stream_configure(:grouped_items, dom_id: &"listbox:stream-grouped-listbox:item:#{&1.id}")
+     |> stream_configure(:grouped_items,
+       dom_id: &"listbox:stream-grouped-listbox:item:#{&1.value}"
+     )
      |> stream(:grouped_items, @initial_grouped_items)
      |> assign(:grouped_items_list, @initial_grouped_items)
      |> assign(:next_id, 4)
@@ -46,7 +48,7 @@ defmodule E2eWeb.ListboxPatternsLive do
       |> DateTime.to_time()
       |> Time.to_string()
 
-    item = %{id: id, label: "Item #{id} @ #{time}"}
+    item = %{value: id, label: "Item #{id} @ #{time}"}
 
     {:noreply,
      socket
@@ -57,7 +59,7 @@ defmodule E2eWeb.ListboxPatternsLive do
 
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
-    item = %{id: id, label: "Item #{id}"}
+    item = %{value: id, label: "Item #{id}"}
 
     {:noreply,
      socket
@@ -76,7 +78,7 @@ defmodule E2eWeb.ListboxPatternsLive do
 
   def handle_event("add_to_group", %{"group" => group}, socket) do
     id = "g#{socket.assigns.next_grouped_id}"
-    item = %{id: id, label: "Item #{socket.assigns.next_grouped_id}", group: group}
+    item = %{value: id, label: "Item #{socket.assigns.next_grouped_id}", group: group}
 
     {:noreply,
      socket

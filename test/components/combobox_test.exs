@@ -67,7 +67,7 @@ defmodule Corex.ComboboxTest do
       assigns =
         Map.merge(ConnectProps.default_combobox(), %{
           id: "test",
-          items: [%{id: "a", label: "A"}],
+          items: [%{value: "a", label: "A"}],
           value: [],
           dir: "ltr",
           filter: false
@@ -95,7 +95,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "fra", label: "France"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -104,6 +104,87 @@ defmodule Corex.ComboboxTest do
         )
 
       assert html =~ ~r/data-default-value="fra"/
+    end
+
+    test "visible input renders selected label as value attribute to survive morphdom patches" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "fra",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/<input\b[^>]*\bvalue="France"[^>]*\bdata-part="input"/
+    end
+
+    test "visible input renders empty value attribute when no selection" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox id="cb" items={[%{value: "a", label: "A"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~r/<input\b[^>]*\bvalue=""[^>]*\bdata-part="input"/
+    end
+
+    test "hidden form input ignores LiveView patches to value (hook owns submitted value)" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :currency,
+        id: "user_currency",
+        name: "user[currency]",
+        value: "eur",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} items={[%{value: "eur", label: "Euro"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="user\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bdata-part="hidden-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
+
+      refute html =~ "data-name=\"user[currency]\""
+      refute html =~ "data-form=\"user\""
     end
 
     test "renders with field as string value without matching collection" do
@@ -124,7 +205,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "fra", label: "France"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -153,7 +234,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{id: "fra", label: "France"}, %{id: "bel", label: "Belgium"}]}>
+            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{value: "fra", label: "France"}, %{value: "bel", label: "Belgium"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -235,20 +316,21 @@ defmodule Corex.ComboboxTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr"
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      assert result["id"] == "test-combobox"
+      refute Map.has_key?(result, "id")
+      assert result["data-items"]
     end
 
     test "returns props with data-default-value for selection" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: ["a"],
         dir: "ltr"
@@ -262,7 +344,7 @@ defmodule Corex.ComboboxTest do
     test "returns props with data-value when controlled" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr"

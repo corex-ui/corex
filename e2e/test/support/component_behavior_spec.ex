@@ -4,7 +4,7 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   use E2eWeb, :verified_routes
   import Wallaby.Query, only: [css: 1]
 
-  @type component :: :accordion | :angle_slider | :checkbox
+  @type component :: :accordion | :angle_slider | :checkbox | :listbox
   @type page_key ::
           :anatomy
           | :api
@@ -12,6 +12,7 @@ defmodule E2eWeb.ComponentBehaviorSpec do
           | :playground
           | :patterns
           | :animation
+          | :controlled
 
   @doc """
   `{path, ready_selector}` for a pilot Zag component doc page. Paths use the `~p` sigil
@@ -28,10 +29,21 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   def page(:angle_slider, :anatomy), do: {~p"/angle-slider/anatomy", "#angle-slider-anatomy-page"}
   def page(:angle_slider, :api), do: {~p"/angle-slider/api", "#angle-slider-api-page"}
   def page(:angle_slider, :events), do: {~p"/angle-slider/events", "#angle-slider-events-page"}
+  def page(:angle_slider, :playground), do: {~p"/angle-slider/playground", "#my-angle-slider"}
+  def page(:angle_slider, :patterns), do: {~p"/angle-slider/patterns", "#angle-slider-patterns-page"}
+  def page(:angle_slider, :controlled), do: {~p"/angle-slider/controlled", "#my-angle-slider"}
 
   def page(:checkbox, :anatomy), do: {~p"/checkbox/anatomy", "#checkbox-anatomy-page"}
   def page(:checkbox, :api), do: {~p"/checkbox/api", "#checkbox-api-page"}
   def page(:checkbox, :events), do: {~p"/checkbox/events", "#checkbox-events-page"}
+  def page(:checkbox, :playground), do: {~p"/checkbox/playground", "#checkbox-playground"}
+  def page(:checkbox, :patterns), do: {~p"/checkbox/patterns", "#checkbox-patterns-page"}
+
+  def page(:listbox, :anatomy), do: {~p"/listbox/anatomy", "#listbox-anatomy-page"}
+  def page(:listbox, :playground), do: {~p"/listbox/playground", "#listbox-playground-page"}
+  def page(:listbox, :api), do: {~p"/listbox/api", "#listbox-api-page"}
+  def page(:listbox, :events), do: {~p"/listbox/events", "#listbox-events-page"}
+  def page(:listbox, :patterns), do: {~p"/listbox/patterns", "#listbox-patterns-page"}
 
   @doc """
   `model.visit_ready/3` for the given component page (path + `css(ready)`).

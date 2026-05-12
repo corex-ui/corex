@@ -4,9 +4,9 @@ defmodule E2eWeb.SelectEventsLive do
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
   @items [
-    %{label: "France", id: "fra"},
-    %{label: "Belgium", id: "bel"},
-    %{label: "Germany", id: "deu"}
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
   ]
 
   @server_heex E2eWeb.Demos.SelectDemo.events_server_heex()

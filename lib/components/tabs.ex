@@ -10,7 +10,7 @@ defmodule Corex.Tabs do
 
   You can use `Corex.Content.new/1` to create a list of content items.
 
-  The `id` for each item is optional and will be auto-generated if not provided.
+  The `value` for each item is optional and will be auto-generated if not provided.
 
   You can specify `disabled` for each item.
 
@@ -18,9 +18,9 @@ defmodule Corex.Tabs do
   <.tabs
     class="tabs"
     items={Corex.Content.new([
-      [trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-      [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-      [trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+      [label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+      [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+      [label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
     ])}
   />
   ```
@@ -34,9 +34,9 @@ defmodule Corex.Tabs do
     class="tabs"
     indicator
     items={Corex.Content.new([
-      [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-      [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-      [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+      [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+      [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+      [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
     ])}
   >
   </.tabs>
@@ -51,16 +51,16 @@ defmodule Corex.Tabs do
     class="tabs"
     value="lorem"
     items={Corex.Content.new([
-      [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
-      [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus.", meta: %{indicator: "hero-chevron-right"}],
-      [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+      [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
+      [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus.", meta: %{indicator: "hero-chevron-right"}],
+      [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
     ])}
   >
     <:trigger :let={item}>
-      {item.data.trigger}
+      {item.label}
     </:trigger>
     <:content :let={item}>
-      {item.data.content}
+      {item.content}
     </:content>
   </.tabs>
   ```
@@ -93,8 +93,8 @@ defmodule Corex.Tabs do
       on_value_change="on_value_change"
       class="tabs"
       items={Corex.Content.new([
-        [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
-        [id: "duis", trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
+        [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
+        [value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
       ])}
     />
   """
@@ -120,9 +120,9 @@ defmodule Corex.Tabs do
         Process.sleep(1000)
 
         items = Corex.Content.new([
-          [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
-          [id: "duis", trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-          [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+          [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
+          [value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+          [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
         ])
 
         {:ok,
@@ -390,8 +390,8 @@ defmodule Corex.Tabs do
           >
             {cond do
               panel.source == :slots -> render_slot(panel.trigger_slot)
-              @trigger != [] -> render_slot(@trigger, %{trigger: panel.item_entry.trigger, meta: panel.item_entry.meta || %{}})
-              true -> panel.item_entry.trigger
+              @trigger != [] -> render_slot(@trigger, %{label: panel.item_entry.label, meta: panel.item_entry.meta || %{}})
+              true -> panel.item_entry.label
             end}
           </button>
         </div>

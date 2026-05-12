@@ -13,12 +13,12 @@ defmodule Corex.Combobox do
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra", disabled: true},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:trigger>
@@ -34,19 +34,19 @@ defmodule Corex.Combobox do
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra", group: "Europe"},
-          %{label: "Belgium", id: "bel", group: "Europe"},
-          %{label: "Germany", id: "deu", group: "Europe"},
-          %{label: "Netherlands", id: "nld", group: "Europe"},
-          %{label: "Switzerland", id: "che", group: "Europe"},
-          %{label: "Austria", id: "aut", group: "Europe"},
-          %{label: "Japan", id: "jpn", group: "Asia"},
-          %{label: "China", id: "chn", group: "Asia"},
-          %{label: "South Korea", id: "kor", group: "Asia"},
-          %{label: "Thailand", id: "tha", group: "Asia"},
-          %{label: "USA", id: "usa", group: "North America"},
-          %{label: "Canada", id: "can", group: "North America"},
-          %{label: "Mexico", id: "mex", group: "North America"}
+          %{label: "France", value: "fra", group: "Europe"},
+          %{label: "Belgium", value: "bel", group: "Europe"},
+          %{label: "Germany", value: "deu", group: "Europe"},
+          %{label: "Netherlands", value: "nld", group: "Europe"},
+          %{label: "Switzerland", value: "che", group: "Europe"},
+          %{label: "Austria", value: "aut", group: "Europe"},
+          %{label: "Japan", value: "jpn", group: "Asia"},
+          %{label: "China", value: "chn", group: "Asia"},
+          %{label: "South Korea", value: "kor", group: "Asia"},
+          %{label: "Thailand", value: "tha", group: "Asia"},
+          %{label: "USA", value: "usa", group: "North America"},
+          %{label: "Canada", value: "can", group: "North America"},
+          %{label: "Mexico", value: "mex", group: "North America"}
         ])}
       >
         <:trigger>
@@ -64,16 +64,16 @@ defmodule Corex.Combobox do
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:item :let={item}>
-          <Flagpack.flag name={String.to_atom(item.id)} />
+          <Flagpack.flag name={String.to_atom(to_string(item.value))} />
           {item.label}
         </:item>
         <:trigger>
@@ -97,16 +97,16 @@ defmodule Corex.Combobox do
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra", group: "Europe"},
-          %{label: "Belgium", id: "bel", group: "Europe"},
-          %{label: "Germany", id: "deu", group: "Europe"},
-          %{label: "Japan", id: "jpn", group: "Asia"},
-          %{label: "China", id: "chn", group: "Asia"},
-          %{label: "South Korea", id: "kor", group: "Asia"}
+          %{label: "France", value: "fra", group: "Europe"},
+          %{label: "Belgium", value: "bel", group: "Europe"},
+          %{label: "Germany", value: "deu", group: "Europe"},
+          %{label: "Japan", value: "jpn", group: "Asia"},
+          %{label: "China", value: "chn", group: "Asia"},
+          %{label: "South Korea", value: "kor", group: "Asia"}
         ])}
       >
         <:item :let={item}>
-          <Flagpack.flag name={String.to_atom(item.id)} />
+          <Flagpack.flag name={String.to_atom(to_string(item.value))} />
           {item.label}
         </:item>
         <:trigger>
@@ -134,11 +134,11 @@ defmodule Corex.Combobox do
     use MyAppWeb, :live_view
 
     @items [
-      %{id: "fra", label: "France"},
-      %{id: "bel", label: "Belgium"},
-      %{id: "deu", label: "Germany"},
-      %{id: "usa", label: "USA"},
-      %{id: "jpn", label: "Japan"}
+      %{value: "fra", label: "France"},
+      %{value: "bel", label: "Belgium"},
+      %{value: "deu", label: "Germany"},
+      %{value: "usa", label: "USA"},
+      %{value: "jpn", label: "Japan"}
     ]
 
     def mount(_params, _session, socket) do
@@ -275,6 +275,7 @@ defmodule Corex.Combobox do
   }
 
   alias Corex.Combobox.Connect
+  alias Corex.Selectors
 
   @doc """
   Renders a combobox component.
@@ -287,13 +288,13 @@ defmodule Corex.Combobox do
 
   attr(:items, :list,
     default: [],
-    doc: "Items from `Corex.List.new/1` (or maps with :id and :label)"
+    doc: "Items from `Corex.List.new/1` (or maps with :label and optional :value)"
   )
 
   attr(:value, :any,
     default: nil,
     doc:
-      "Initial selected item ids (list of strings or a single string); not updated by LiveView after mount"
+      "Initial selected item values (list of strings or a single string); not updated by LiveView after mount"
   )
 
   attr(:controlled, :boolean,
@@ -453,7 +454,6 @@ defmodule Corex.Combobox do
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
-    |> assign_new(:controlled, fn -> true end)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> combobox()
@@ -498,14 +498,14 @@ defmodule Corex.Combobox do
     <div id={@id} 
     phx-hook="Combobox" 
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])}
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, placeholder: @placeholder, value: @value, form: @form,
+      id: @id, items: @items, placeholder: @placeholder, value: @value,
       controlled: @controlled,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
-     name: @name, read_only: @read_only, required: @required,
+      read_only: @read_only, required: @required,
       on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client,
       positioning: @positioning,
@@ -517,10 +517,10 @@ defmodule Corex.Combobox do
         id={"#{@id}-hidden-value"}
         name={@name}
         form={@form}
-        phx-mounted={JS.ignore_attributes(["value"], to: "##{@id}-hidden-value")}
         data-scope="combobox"
         data-part="hidden-input"
         value={@value_for_hidden_input}
+        phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("#{@id}-hidden-value"))}
       />
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
@@ -528,7 +528,7 @@ defmodule Corex.Combobox do
           {render_slot(@label)}
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <input phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
+          <input value={@selected_label || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
           <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@translation.clear_selection}>
             {render_slot(@clear_trigger)}
           </button>
@@ -722,12 +722,12 @@ defmodule Corex.Combobox do
   end
 
   defp resolve_value_id(items, val) do
-    by_id = Enum.find(items, &(&1.id == val))
+    by_value = Enum.find(items, &(to_string(&1.value) == val))
     by_label = Enum.find(items, &(&1.label == val))
 
     cond do
-      by_id != nil -> val
-      by_label != nil -> by_label.id
+      by_value != nil -> val
+      by_label != nil -> to_string(by_label.value)
       true -> val
     end
   end
@@ -741,7 +741,7 @@ defmodule Corex.Combobox do
         value
         |> Enum.map(fn val ->
           items
-          |> Enum.find(&(&1.id == val))
+          |> Enum.find(&(to_string(&1.value) == val))
         end)
         |> Enum.filter(& &1)
         |> Enum.map(& &1.label)

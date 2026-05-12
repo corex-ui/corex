@@ -4,23 +4,24 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RJABPW5C.mjs";
+} from "./chunks/chunk-NMOLO6CB.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-ZZR3S6PP.mjs";
-import "./chunks/chunk-K2P3QAIZ.mjs";
+} from "./chunks/chunk-MLVURBKI.mjs";
+import "./chunks/chunk-B7AHHTCM.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-6QZYI6OY.mjs";
+} from "./chunks/chunk-YM6Q7RBK.mjs";
 import {
-  zagComboboxCollectionConfig
-} from "./chunks/chunk-7NUJK5QP.mjs";
+  itemValue,
+  zagListCollectionConfig
+} from "./chunks/chunk-PWLG55J6.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-5M7MXCQU.mjs";
+} from "./chunks/chunk-P32UGRVU.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -29,7 +30,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-MG52DTQN.mjs";
+} from "./chunks/chunk-CTFBPAMI.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -73,7 +74,7 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
@@ -1540,16 +1541,33 @@ function getOpenChangeReason(event) {
 
 // components/combobox.ts
 var Combobox = class extends Component {
-  options = [];
-  allOptions = [];
-  hasGroups = false;
+  options;
+  allOptions;
+  hasGroups;
+  constructor(el, props, allItems, hasGroups) {
+    super(el, props, (self) => {
+      const c = self;
+      c.allOptions = allItems;
+      c.options = allItems;
+      c.hasGroups = hasGroups;
+    });
+    this.allOptions = allItems;
+    this.options = allItems;
+    this.hasGroups = hasGroups;
+  }
   setAllOptions(options) {
     this.allOptions = options;
     this.options = options;
   }
+  restoreFilteredOptions() {
+    this.options = this.allOptions;
+  }
+  activeItems() {
+    return this.options.length > 0 ? this.options : this.allOptions;
+  }
   getCollection() {
-    const items = this.options || this.allOptions || [];
-    return collection(zagComboboxCollectionConfig(items, this.hasGroups));
+    const items = this.activeItems();
+    return collection(zagListCollectionConfig(items, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1560,7 +1578,7 @@ var Combobox = class extends Component {
         return getCollection();
       },
       onOpenChange: (details) => {
-        if (details.open) {
+        if (details.open && details.reason !== "input-change") {
           this.options = this.allOptions;
         }
         if (props.onOpenChange) {
@@ -1574,8 +1592,9 @@ var Combobox = class extends Component {
         if (this.el.hasAttribute("data-filter")) {
           const q = String(details.inputValue ?? "").toLowerCase();
           const filtered = this.allOptions.filter((item) => {
-            const label = String(item.label ?? "");
-            return label.toLowerCase().includes(q);
+            const label = String(item.label ?? "").toLowerCase();
+            const value = String(itemValue(item)).toLowerCase();
+            return label.includes(q) || value.includes(q);
           });
           this.options = filtered.length > 0 ? filtered : this.allOptions;
         } else {
@@ -1589,7 +1608,7 @@ var Combobox = class extends Component {
   }
   getItemValue(item) {
     const v = this.api.collection.getItemValue?.(item);
-    return v ?? item.id ?? "";
+    return v ?? itemValue(item);
   }
   buildOrderedBlocks(items) {
     const blocks = [];
@@ -1625,7 +1644,7 @@ var Combobox = class extends Component {
         )
       ).filter(isOwnedByList).forEach((el) => el.remove());
     });
-    const items = this.options?.length ? this.options : this.allOptions;
+    const items = this.activeItems();
     if (items.length === 0) {
       const emptyTemplate = templatesRoot.querySelector(
         '[data-scope="combobox"][data-part="empty"][data-template]'
@@ -1689,7 +1708,7 @@ var Combobox = class extends Component {
         this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
     });
-    const sourceItems = this.options?.length ? this.options : this.allOptions;
+    const sourceItems = this.activeItems();
     const byValue = /* @__PURE__ */ new Map();
     for (const item of sourceItems) {
       byValue.set(this.getItemValue(item), item);
@@ -1750,7 +1769,20 @@ function comboboxValueBinding(el) {
   }
   return { defaultValue: getStringList(el, "defaultValue") ?? [] };
 }
-function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+function comboboxValueBindingForUpdate(el) {
+  if (!getBoolean(el, "controlled")) return {};
+  return { value: getStringList(el, "value") ?? [] };
+}
+function selectedItemLabel(items) {
+  const first = items?.[0];
+  if (!first) return "";
+  return first.label != null ? String(first.label) : "";
+}
+function syncVisibleInputAttribute(el, value) {
+  const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
+  if (visible) visible.setAttribute("value", value);
+}
+function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -1766,8 +1798,6 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
     invalid: getBoolean(el, "invalid"),
     allowCustomValue: false,
     selectionBehavior: "replace",
-    name: getString(el, "name"),
-    form: getString(el, "form"),
     readOnly: getBoolean(el, "readOnly"),
     required: getBoolean(el, "required"),
     positioning: readPositioningOptions(el),
@@ -1787,6 +1817,7 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
       });
     },
     onInputValueChange: (details) => {
+      syncVisibleInputAttribute(el, details.inputValue ?? "");
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1819,6 +1850,8 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
           hidden.dispatchEvent(new Event("change", { bubbles: true }));
         }
       }
+      getCombobox()?.restoreFilteredOptions();
+      syncVisibleInputAttribute(el, selectedItemLabel(details.items));
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1834,22 +1867,31 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
     }
   };
 }
+function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
+  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) };
+  delete rest.onOpenChange;
+  delete rest.onInputValueChange;
+  delete rest.onValueChange;
+  return rest;
+}
 var ComboboxHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const allItems = JSON.parse(el.getAttribute("data-items") ?? "[]");
+    const itemsJson = el.getAttribute("data-items") ?? "[]";
+    const allItems = JSON.parse(itemsJson);
     const hasGroups = allItems.some((item) => Boolean(item.group));
+    let comboboxRef;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket),
+      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef),
       ...comboboxValueBinding(el)
     };
-    const combobox = new Combobox(el, props);
-    combobox.hasGroups = hasGroups;
-    combobox.setAllOptions(allItems);
+    const combobox = new Combobox(el, props, allItems, hasGroups);
+    comboboxRef = combobox;
     combobox.init();
     this.combobox = combobox;
+    this.lastItemsJson = itemsJson;
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:combobox:set-value", (event) => {
@@ -1864,16 +1906,25 @@ var ComboboxHook = {
   },
   updated() {
     if (!this.combobox) return;
-    const newCollection = JSON.parse(this.el.getAttribute("data-items") ?? "[]");
-    const hasGroups = newCollection.some((item) => Boolean(item.group));
-    this.combobox.hasGroups = hasGroups;
-    this.combobox.setAllOptions(newCollection);
+    const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
+    if (newItemsJson !== this.lastItemsJson) {
+      this.lastItemsJson = newItemsJson;
+      const newCollection = JSON.parse(newItemsJson);
+      const hasGroups = newCollection.some((item) => Boolean(item.group));
+      this.combobox.hasGroups = hasGroups;
+      this.combobox.setAllOptions(newCollection);
+    }
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     this.combobox.updateProps({
-      ...buildComboboxProps(this.el, pushEvent, canPush, this.liveSocket),
-      ...comboboxValueBinding(this.el),
-      collection: this.combobox.getCollection()
+      ...comboboxMachineDomPropsForUpdate(
+        this.el,
+        pushEvent,
+        canPush,
+        this.liveSocket,
+        () => this.combobox
+      ),
+      ...comboboxValueBindingForUpdate(this.el)
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();

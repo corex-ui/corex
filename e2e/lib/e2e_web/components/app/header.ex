@@ -170,42 +170,42 @@ defmodule E2eWeb.App.Header do
   defp documentation_menu_items do
     Corex.Tree.new([
       %{
-        id: "doc-installation",
+        value: "doc-installation",
         label: gettext("Installation"),
         to: "https://hexdocs.pm/corex/installation.html",
         redirect: :href,
         new_tab: true
       },
       %{
-        id: "doc-localize",
+        value: "doc-localize",
         label: gettext("Localize"),
         to: "https://hexdocs.pm/corex/localize.html",
         redirect: :href,
         new_tab: true
       },
       %{
-        id: "doc-theming",
+        value: "doc-theming",
         label: gettext("Theming"),
         to: "https://hexdocs.pm/corex/theming.html",
         redirect: :href,
         new_tab: true
       },
       %{
-        id: "doc-dark-mode",
+        value: "doc-dark-mode",
         label: gettext("Dark Mode"),
         to: "https://hexdocs.pm/corex/dark_mode.html",
         redirect: :href,
         new_tab: true
       },
       %{
-        id: "doc-mcp",
+        value: "doc-mcp",
         label: gettext("MCP"),
         to: "https://hexdocs.pm/corex/mcp.html",
         redirect: :href,
         new_tab: true
       },
       %{
-        id: "doc-templates",
+        value: "doc-templates",
         label: gettext("Templates"),
         to: "/templates",
         redirect: :href,

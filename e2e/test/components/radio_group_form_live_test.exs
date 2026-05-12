@@ -1,0 +1,58 @@
+defmodule E2eWeb.RadioGroupFormLiveTest do
+  use E2eWeb.ConnCase, async: false
+  import Phoenix.LiveViewTest
+
+  test "changeset validate shows required error for empty choice", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+
+    html =
+      view
+      |> form("#radio-group-live-form")
+      |> render_change(%{"radio_group_live" => %{"choice" => ""}})
+
+    assert html =~ "can&#39;t be blank"
+  end
+
+  test "changeset save with choice pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+
+    view
+    |> form("#radio-group-live-form")
+    |> render_submit(%{"radio_group_live" => %{"choice" => "a"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "Submitted: choice=a",
+      duration: 5000,
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+
+  test "validate_strict shows required error for empty choice", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+
+    html =
+      view
+      |> form("#radio-group-strict-form-live")
+      |> render_change(%{"radio_group_strict" => %{"choice" => ""}})
+
+    assert html =~ "can&#39;t be blank"
+  end
+
+  test "save_strict with choice pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+
+    view
+    |> form("#radio-group-strict-form-live")
+    |> render_submit(%{"radio_group_strict" => %{"choice" => "c"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "Submitted: choice=c",
+      duration: 5000,
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+end

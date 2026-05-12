@@ -1,6 +1,6 @@
 import {
   readPositioningOptions
-} from "./chunks/chunk-6QZYI6OY.mjs";
+} from "./chunks/chunk-YM6Q7RBK.mjs";
 import {
   __publicField,
   addPoints,
@@ -46,7 +46,7 @@ import {
   resizeObserverBorderBox,
   subscribe,
   trackPointerMove
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(

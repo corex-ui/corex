@@ -201,6 +201,15 @@ jobs:
         working-directory: installer
         run: mix test
 
+      - name: Verify corex_new archive embeds priv design snapshot
+        working-directory: installer
+        env:
+          MIX_ENV: prod
+        run: |
+          mix compile --no-deps-check
+          mix archive.build -o /tmp/corex_new_archive_check.ez
+          unzip -l /tmp/corex_new_archive_check.ez | grep -q 'priv/corex_design/corex/' || (echo 'missing priv/corex_design in archive'; exit 1)
+
   integration-tests:
     name: Integration tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04

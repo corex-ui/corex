@@ -4,9 +4,9 @@ defmodule E2eWeb.DatePickerPlayLive do
   import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
 
   @locales [
-    %{id: "en-US", label: "English (US)"},
-    %{id: "ar", label: "Arabic"},
-    %{id: "ja-JP", label: "Japanese"}
+    %{value: "en-US", label: "English (US)"},
+    %{value: "ar", label: "Arabic"},
+    %{value: "ja-JP", label: "Japanese"}
   ]
 
   @impl true
@@ -139,9 +139,9 @@ defmodule E2eWeb.DatePickerPlayLive do
             value={[@controls.selection_mode]}
             deselectable={false}
             items={[
-              %{id: "single", label: "Single"},
-              %{id: "multiple", label: "Multiple"},
-              %{id: "range", label: "Range"}
+              %{value: "single", label: "Single"},
+              %{value: "multiple", label: "Multiple"},
+              %{value: "range", label: "Range"}
             ]}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Selection"}}
@@ -163,11 +163,11 @@ defmodule E2eWeb.DatePickerPlayLive do
             ]}
             deselectable={false}
             items={[
-              %{id: "unlimited", label: "Unlimited days"},
-              %{id: "1", label: "Max 1 day"},
-              %{id: "2", label: "Max 2 days"},
-              %{id: "3", label: "Max 3 days"},
-              %{id: "5", label: "Max 5 days"}
+              %{value: "unlimited", label: "Unlimited days"},
+              %{value: "1", label: "Max 1 day"},
+              %{value: "2", label: "Max 2 days"},
+              %{value: "3", label: "Max 3 days"},
+              %{value: "5", label: "Max 5 days"}
             ]}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Max selected"}}
@@ -182,9 +182,9 @@ defmodule E2eWeb.DatePickerPlayLive do
             value={[@controls.view]}
             deselectable={false}
             items={[
-              %{id: "day", label: "Day view"},
-              %{id: "month", label: "Month view"},
-              %{id: "year", label: "Year view"}
+              %{value: "day", label: "Day view"},
+              %{value: "month", label: "Month view"},
+              %{value: "year", label: "Year view"}
             ]}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "View"}}

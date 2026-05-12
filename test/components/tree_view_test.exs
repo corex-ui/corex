@@ -6,7 +6,7 @@ defmodule Corex.TreeViewTest do
   alias Corex.TreeView
   alias Corex.TreeView.Connect
 
-  @zag_root %{"id" => "test-tree", "name" => "", "children" => []}
+  @zag_root %{"value" => "test-tree", "name" => "", "children" => []}
 
   describe "tree_view/1" do
     test "renders" do
@@ -49,7 +49,7 @@ defmodule Corex.TreeViewTest do
     end
 
     test "merges :label slot class onto data-part label host" do
-      items = Corex.Tree.new([%{label: "A", id: "a"}])
+      items = Corex.Tree.new([%{label: "A", value: "a"}])
 
       html =
         render_component(
@@ -72,7 +72,7 @@ defmodule Corex.TreeViewTest do
     test "renders expanded and selected values" do
       items =
         Corex.Tree.new([
-          %{label: "P1", id: "p1", children: [%{label: "C1", id: "c1"}]}
+          %{label: "P1", value: "p1", children: [%{label: "C1", value: "c1"}]}
         ])
 
       html =

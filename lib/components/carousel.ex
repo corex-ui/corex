@@ -23,8 +23,8 @@ defmodule Corex.Carousel do
 
   Imperative helpers target the carousel by DOM `id` on the hook root (the same `id` you pass to `carousel/1`).
 
-  - **Client** — `play/1`, `pause/1`, `scroll_next/1`, `scroll_prev/1`, and `scroll_next/2`, `scroll_prev/2` with optional `instant` (`JS.dispatch` to `corex:carousel:*`).
-  - **Server** — `play/2`, `pause/2`, `scroll_next/2`, `scroll_prev/2`, and `scroll_next/3`, `scroll_prev/3` with optional `instant` (`push_event` consumed by the hook).
+  - **Client**  -  `play/1`, `pause/1`, `scroll_next/1`, `scroll_prev/1`, and `scroll_next/2`, `scroll_prev/2` with optional `instant` (`JS.dispatch` to `corex:carousel:*`).
+  - **Server**  -  `play/2`, `pause/2`, `scroll_next/2`, `scroll_prev/2`, and `scroll_next/3`, `scroll_prev/3` with optional `instant` (`push_event` consumed by the hook).
 
   ## Events
 

@@ -6,6 +6,10 @@
     max-width: fit-content;
   }
 
+  .timer [data-scope="timer"][data-part="root"] {
+    @apply ui-root;
+  }
+
   .timer [data-scope="timer"][data-part="area"] {
     display: flex;
     width: 100%;

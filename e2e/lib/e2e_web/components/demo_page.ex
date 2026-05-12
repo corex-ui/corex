@@ -4,23 +4,23 @@ defmodule E2eWeb.DemoPage do
 
   ## Title and subtitle
 
-  - **Title** — `Component · Type` (middle dot, Unicode `·`), e.g. `Select · Playground`, `Tabs · API`.
-  - **Subtitle** — prefer **omit**; if present, a single short line only. No instructional paragraphs.
+  - **Title**  -  `Component · Type` (middle dot, Unicode `·`), e.g. `Select · Playground`, `Tabs · API`.
+  - **Subtitle**  -  prefer **omit**; if present, a single short line only. No instructional paragraphs.
 
   ## Title suffixes
 
   Use a consistent suffix on `demo_page` / layout headings so nav, breadcrumbs, and tests stay predictable:
 
-  - **Anatomy** — `… Anatomy` (or `… · Anatomy` where the product name already contains a dot phrase).
-  - **Style** — `… Style` for static styling guides.
-  - **Form** — `… Form` for controller-rendered form demos.
-  - **Playground** — `… Playground` for the interactive LiveView.
-  - **API** — `… API` for imperative `Corex.*` and binding demos.
-  - **Events** — `… Events` for server and client event logs.
-  - **Pattern** — `… Pattern` or plural `Patterns` for composed scenarios.
-  - **Live Form** — `… Live Form` for LiveView-backed forms.
-  - **Controlled** — `… Controlled` for assign-driven demos.
-  - **Animation** — `… Animation` when motion is the focus.
+  - **Anatomy**  -  `… Anatomy` (or `… · Anatomy` where the product name already contains a dot phrase).
+  - **Style**  -  `… Style` for static styling guides.
+  - **Form**  -  `… Form` for controller-rendered form demos.
+  - **Playground**  -  `… Playground` for the interactive LiveView.
+  - **API**  -  `… API` for imperative `Corex.*` and binding demos.
+  - **Events**  -  `… Events` for server and client event logs.
+  - **Pattern**  -  `… Pattern` or plural `Patterns` for composed scenarios.
+  - **Live Form**  -  `… Live Form` for LiveView-backed forms.
+  - **Controlled**  -  `… Controlled` for assign-driven demos.
+  - **Animation**  -  `… Animation` when motion is the focus.
 
   ## Section copy
 
@@ -30,26 +30,26 @@ defmodule E2eWeb.DemoPage do
   ## Playground pages
 
   - Use **`<.demo_playground>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component.
-  - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL — `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
+  - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
 
   ## Shell contract (page types)
 
-  - **Anatomy** — `<.demo_page>` + one `<.demo_section>` per variant; stable `id` on each section.
-  - **Style** — same structure as anatomy; focus on CSS modifier classes and layout.
-  - **Form** — static submit flow; real field names and assigns.
-  - **Playground** — `Layouts.app` + `<.demo_playground>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
-  - **API** — LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
-  - **Events** — LiveView; `<.demo_event_log>`. For collections, prefer streams and `<.data_table>` like `AccordionEventsLive`.
-  - **Patterns** — real async only (`<.async_result>`, `<.demo_pattern_async>`). No placeholder skeletons.
-  - **Controlled / Live Form** — only where the router exposes them; match real assigns from `lib/components`.
+  - **Anatomy**  -  `<.demo_page>` + one `<.demo_section>` per variant; stable `id` on each section.
+  - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout.
+  - **Form**  -  static submit flow; real field names and assigns.
+  - **Playground**  -  `Layouts.app` + `<.demo_playground>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
+  - **API**  -  LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
+  - **Events**  -  LiveView; `<.demo_event_log>`. For collections, prefer streams and `<.data_table>` like `AccordionEventsLive`.
+  - **Patterns**  -  real async only (`<.async_result>`, `<.demo_pattern_async>`). No placeholder skeletons.
+  - **Controlled / Live Form**  -  only where the router exposes them; match real assigns from `lib/components`.
 
   ## Which pages exist (component class)
 
   Routing follows `e2e/docs/beta-page-matrix.md`:
 
-  - **Zag-backed** — anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation, live form, controlled when routed.
-  - **Form + Zag** — static **Form** and live-form routes as listed.
-  - **Non-Zag** (layout, data table shell, etc.) — usually anatomy and style only; **data table** adds a **Pattern** page.
+  - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation, live form, controlled when routed.
+  - **Form + Zag**  -  static **Form** and live-form routes as listed.
+  - **Non-Zag** (layout, data table shell, etc.)  -  usually anatomy and style only; **data table** adds a **Pattern** page.
 
   Static pages use this module; live API/events/patterns use `demo_page` / `demo_section` / `code_tabs` where shown.
   """

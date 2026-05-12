@@ -12,15 +12,15 @@ See [Installation](installation.html) for Corex-only flags (including **`--mcp`*
 
 ### The problem
 
-Like dark mode, theme has to be known **at render time**. The server has to set the right `data-theme` on `<html>` so the first paint already uses the correct CSS tokens — switching client-side after paint causes a visible flash.
+Like dark mode, theme has to be known **at render time**. The server has to set the right `data-theme` on `<html>` so the first paint already uses the correct CSS tokens  -  switching client-side after paint causes a visible flash.
 
 ### The solution
 
 The same three-layer pattern as dark mode:
 
-1. **Cookie + Plug** — `Plugs.Theme` reads `phx_theme` and assigns `:theme`.
-2. **Inline `<script>` in `<head>`** — reconciles `localStorage["phx:theme"]`, `data-theme`, and the configured default; persists the cookie back.
-3. **`phx:set-theme` window event** — the Corex select dispatches it on change.
+1. **Cookie + Plug**  -  `Plugs.Theme` reads `phx_theme` and assigns `:theme`.
+2. **Inline `<script>` in `<head>`**  -  reconciles `localStorage["phx:theme"]`, `data-theme`, and the configured default; persists the cookie back.
+3. **`phx:set-theme` window event**  -  the Corex select dispatches it on change.
 
 ## 1. Configure the theme list
 
@@ -30,7 +30,7 @@ The Corex installer writes the available themes into your application config so 
 config :my_app, :themes, ~w(neo uno duo leo)
 ```
 
-The **first entry** is the default theme used when no cookie is set. Use the subset that matches the Corex Design themes you import in `app.css` — there is no point exposing `leo` in the picker if you never `@import "../corex/theme/leo.css"`.
+The **first entry** is the default theme used when no cookie is set. Use the subset that matches the Corex Design themes you import in `app.css`  -  there is no point exposing `leo` in the picker if you never `@import "../corex/theme/leo.css"`.
 
 ## 2. Create the Theme plug
 
@@ -104,13 +104,13 @@ In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-theme` on `<
 </html>
 ```
 
-`type="module"` on the `<script>` tag is required by the Corex JS bundle — see [Manual installation](manual_installation.html#4-root-layout-load-app-js-as-a-module) if you have not set it yet.
+`type="module"` on the `<script>` tag is required by the Corex JS bundle  -  see [Manual installation](manual_installation.html#4-root-layout-load-app-js-as-a-module) if you have not set it yet.
 
 ## 5. Add the bridge script
 
 Inside `<head>`, **before** the closing `</head>`, add the bridge script. It runs synchronously on first paint, reconciles `localStorage` ↔ `data-theme` ↔ default, persists the cookie back, and listens for `phx:set-theme` from the picker.
 
-If you already have the dark-mode bridge from [Dark mode](dark_mode.html#4-add-the-bridge-script), add this block right after it inside the same `<script>` IIFE — they share the same lifecycle.
+If you already have the dark-mode bridge from [Dark mode](dark_mode.html#4-add-the-bridge-script), add this block right after it inside the same `<script>` IIFE  -  they share the same lifecycle.
 
 ```heex
 <script>
@@ -148,7 +148,7 @@ Keep `validThemes` and the fallback string in sync with your `config :my_app, :t
 
 ## 6. Add a theme picker to the app layout
 
-Use `Corex.Select`. The `on_value_change_client="phx:set-theme"` attribute makes it dispatch the same window event the bridge script listens for — no `handle_event/3` needed.
+Use `Corex.Select`. The `on_value_change_client="phx:set-theme"` attribute makes it dispatch the same window event the bridge script listens for  -  no `handle_event/3` needed.
 
 In `lib/my_app_web/components/layouts.ex`, add a `:theme` attr to your `app/1` and render the picker in the header:
 
@@ -189,10 +189,10 @@ def theme_toggle(assigns) do
     id="theme-select"
     class="select select--sm"
     items={[
-      %{id: "neo", label: "Neo"},
-      %{id: "uno", label: "Uno"},
-      %{id: "duo", label: "Duo"},
-      %{id: "leo", label: "Leo"}
+      %{value: "neo", label: "Neo"},
+      %{value: "uno", label: "Uno"},
+      %{value: "duo", label: "Duo"},
+      %{value: "leo", label: "Leo"}
     ]}
     value={[@theme]}
     on_value_change_client="phx:set-theme"
@@ -220,7 +220,7 @@ Then make sure every page passes `theme={@theme}` (or `theme={assigns[:theme] ||
 </Layouts.app>
 ```
 
-For LiveViews, attach a small **`on_mount`** hook that pulls **`:theme`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`theme`** (and **`mode`**, **`current_path`**) from the session — you only need a dedicated **`ThemeLive`** below if you do not use that hook.
+For LiveViews, attach a small **`on_mount`** hook that pulls **`:theme`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`theme`** (and **`mode`**, **`current_path`**) from the session  -  you only need a dedicated **`ThemeLive`** below if you do not use that hook.
 
 ```elixir
 defmodule MyAppWeb.ThemeLive do
@@ -258,7 +258,7 @@ Import each theme you want available, plus the `select` component CSS that style
 @import "../corex/components/select.css";
 ```
 
-Each `theme/*.css` file scopes its tokens under `[data-theme="<name>"]`, so all four can coexist in the same bundle — the active one is whichever the `<html>` attribute names.
+Each `theme/*.css` file scopes its tokens under `[data-theme="<name>"]`, so all four can coexist in the same bundle  -  the active one is whichever the `<html>` attribute names.
 
 If you also use Corex Design with [Dark mode](dark_mode.html), each theme file already defines a `[data-theme="<name>"][data-mode="dark"]` variant. Theme and mode compose without extra setup.
 
@@ -280,15 +280,15 @@ If you change the default, also update:
 
 ## Summary
 
-1. **Config** — `config :my_app, :themes, ~w(neo uno duo leo)` is the single source of truth; first entry is the default.
-2. **Cookie** — `Plugs.Theme` reads `phx_theme`, validates against the config, assigns `:theme` and `:themes`.
-3. **Server-rendered `data-theme`** — `<html data-theme={assigns[:theme] || "neo"}>` carries the value into the first paint.
-4. **Inline `<script>` in `<head>`** — reconciles `localStorage` ↔ `data-theme` ↔ default, persists the cookie, and listens for `phx:set-theme`.
-5. **`Corex.Select`** — `on_value_change_client="phx:set-theme"` dispatches the event the bridge listens for; no server round-trip.
-6. **CSS** — every theme you list also has to be `@import`ed; `select.css` styles the picker.
+1. **Config**  -  `config :my_app, :themes, ~w(neo uno duo leo)` is the single source of truth; first entry is the default.
+2. **Cookie**  -  `Plugs.Theme` reads `phx_theme`, validates against the config, assigns `:theme` and `:themes`.
+3. **Server-rendered `data-theme`**  -  `<html data-theme={assigns[:theme] || "neo"}>` carries the value into the first paint.
+4. **Inline `<script>` in `<head>`**  -  reconciles `localStorage` ↔ `data-theme` ↔ default, persists the cookie, and listens for `phx:set-theme`.
+5. **`Corex.Select`**  -  `on_value_change_client="phx:set-theme"` dispatches the event the bridge listens for; no server round-trip.
+6. **CSS**  -  every theme you list also has to be `@import`ed; `select.css` styles the picker.
 
 ## Related
 
-- [Dark mode](dark_mode.html) — same pattern for `data-mode`; combine the two bridges in one `<script>` block.
-- [Localize](localize.html) — **`Hooks.Layout`** carries session **theme**/**mode** when **`--lang`** is enabled.
-- [Installation](installation.html) — the **`--theme`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
+- [Dark mode](dark_mode.html)  -  same pattern for `data-mode`; combine the two bridges in one `<script>` block.
+- [Localize](localize.html)  -  **`Hooks.Layout`** carries session **theme**/**mode** when **`--lang`** is enabled.
+- [Installation](installation.html)  -  the **`--theme`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.

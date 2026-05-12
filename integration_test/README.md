@@ -7,10 +7,10 @@ This project contains integration tests for Phoenix-generated projects and Corex
 CI (`.github/workflows/elixir.yml`) installs **`phx_new`** and locally built **`corex_new`**, then runs,
 in order:
 
-1. **`mix test`** — matches local default; `test_helper.exs` sets `exclude: [:database]`, so untagged work runs here.
-2. **`mix test --include database:postgresql`** — uses the job’s **Postgres 15** service on **localhost:5432**
+1. **`mix test`**  -  matches local default; `test_helper.exs` sets `exclude: [:database]`, so untagged work runs here.
+2. **`mix test --include database:postgresql`**  -  uses the job’s **Postgres 15** service on **localhost:5432**
    (`PGHOST`, `PGUSER`, `PGPASSWORD`, `PGPORT`, `DATABASE_URL` set in the workflow).
-3. **`mix test --include database:sqlite3`** — no extra service (file-based SQLite).
+3. **`mix test --include database:sqlite3`**  -  no extra service (file-based SQLite).
 
 The **`dev_corex_new_test.exs`** module focuses on **`mix corex.new ... --dev <repo>`** (esbuild ESM,
 hooks, `config :corex`, `use Corex`, `corex.mjs`). The filename keeps `dev_corex` for history; the

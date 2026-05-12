@@ -431,7 +431,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       id={@form.id}
       class="flex flex-col gap-4 w-full max-w-lg"
     >
-      <.number_input field={f[:value]} id="number-input-changeset-field" class="number-input">
+      <.number_input
+        field={f[:value]}
+        id="number-input-changeset-field"
+        class="number-input"
+      >
         <:label>Value</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -461,7 +465,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       id={@form.id}
       class="flex flex-col gap-4 w-full max-w-lg"
     >
-      <.number_input field={f[:value]} id="number-input-validate-field" class="number-input">
+      <.number_input
+        field={f[:value]}
+        id="number-input-validate-field"
+        class="number-input"
+      >
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -636,7 +644,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       phx-submit="save"
       class="flex flex-col gap-4 w-full max-w-lg"
     >
-      <.number_input field={@form[:value]} id="number-input-live-changeset-field" class="number-input">
+      <.number_input
+        field={@form[:value]}
+        id="number-input-live-changeset-field"
+        class="number-input"
+      >
         <:label>Value</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -669,7 +681,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       phx-submit="save_strict"
       class="flex flex-col gap-4 w-full max-w-lg"
     >
-      <.number_input field={@form[:value]} id="number-input-live-validate-field" class="number-input">
+      <.number_input
+        field={@form[:value]}
+        id="number-input-live-validate-field"
+        class="number-input"
+      >
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />

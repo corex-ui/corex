@@ -7,13 +7,13 @@ defmodule Mix.Tasks.Corex.Design do
   Copies the Corex design asset tree from the `corex` package `priv/` directory
   into your app's `assets/corex/`.
 
-  The copy is safe by default — it **skips any target that already exists**.
+  The copy is safe by default  -  it **skips any target that already exists**.
   Pass `--force` to overwrite.
 
   ## Options
 
-    * `--designex` — also copy the design token source tree into `assets/corex/design/`
-    * `--force` — overwrite the target(s) if they already exist
+    * `--designex`  -  also copy the design token source tree into `assets/corex/design/`
+    * `--force`  -  overwrite the target(s) if they already exist
 
   ## Examples
 
@@ -52,7 +52,9 @@ defmodule Mix.Tasks.Corex.Design do
   defp priv_dir! do
     case :code.priv_dir(:corex) do
       {:error, _} ->
-        Mix.raise("Could not resolve :corex priv directory — is the corex dependency available?")
+        Mix.raise(
+          "Could not resolve :corex priv directory  -  is the corex dependency available?"
+        )
 
       priv ->
         List.to_string(priv)

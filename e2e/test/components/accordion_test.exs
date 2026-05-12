@@ -24,7 +24,7 @@ defmodule E2eWeb.AccordionTest do
       end)
     end
 
-    feature "minimal — second panel opens when its trigger is activated", %{
+    feature "minimal  -  second panel opens when its trigger is activated", %{
       session: session
     } do
       section = "accordion-anatomy-minimal"
@@ -38,7 +38,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_aria_expanded_at(session, section, 2) == "true"
     end
 
-    feature "with indicator — first item has indicator in the dom when expanded", %{
+    feature "with indicator  -  first item has indicator in the dom when expanded", %{
       session: session
     } do
       section = "accordion-anatomy-with-indicator"
@@ -55,7 +55,7 @@ defmodule E2eWeb.AccordionTest do
              )
     end
 
-    feature "custom slots — first trigger opens content", %{session: session} do
+    feature "custom slots  -  first trigger opens content", %{session: session} do
       section = "accordion-anatomy-custom-slots"
 
       session =
@@ -64,13 +64,16 @@ defmodule E2eWeb.AccordionTest do
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_first_trigger_in_section(section)
 
-      assert Accordion.content_visible?(
+      assert has?(
                session,
-               "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+               css(
+                 ~s|##{section} [data-scope="accordion"][data-part="item-content"]|,
+                 text: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+               )
              )
     end
 
-    feature "manual slots — can open the second item", %{session: session} do
+    feature "manual slots  -  can open the second item", %{session: session} do
       section = "accordion-anatomy-manual-slots"
 
       session =
@@ -79,19 +82,25 @@ defmodule E2eWeb.AccordionTest do
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_trigger_in_section_at(section, 2)
 
-      assert Accordion.content_visible?(
+      assert has?(
                session,
-               "Nullam eget vestibulum ligula, at interdum tellus."
+               css(
+                 ~s|##{section} [data-scope="accordion"][data-part="item-content"]|,
+                 text: "Nullam eget vestibulum ligula, at interdum tellus."
+               )
              )
     end
 
-    @tag :skip
-    feature "compound — first item toggles", %{session: session} do
+    feature "compound  -  first item toggles", %{session: session} do
       section = "accordion-anatomy-compound"
-      _ = Accordion.assert_first_trigger_toggles(session, section)
+
+      _ =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
+        |> Accordion.assert_first_trigger_toggles(section)
     end
 
-    feature "keyboard — space toggles the focused trigger (minimal)", %{session: session} do
+    feature "keyboard  -  space toggles the focused trigger (minimal)", %{session: session} do
       section = "accordion-anatomy-minimal"
 
       session =
@@ -107,27 +116,10 @@ defmodule E2eWeb.AccordionTest do
 
       assert Accordion.first_trigger_aria_expanded(session, section) == "false"
     end
-
-    feature "keyboard — arrow and enter on the trigger list (minimal)", %{session: session} do
-      section = "accordion-anatomy-minimal"
-
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
-        |> Accordion.wait_section_accordion_ready(section)
-        |> Accordion.click_first_trigger_in_section(section)
-
-      session
-      |> Accordion.press_key(:down_arrow, 1)
-      |> Accordion.press_enter()
-
-      assert Accordion.first_trigger_aria_expanded(session, section) in ["true", "false"]
-      assert Accordion.trigger_aria_expanded_at(session, section, 2) in ["true", "false"]
-    end
   end
 
   describe "api" do
-    feature "set value (binding) — Open Lorem expands lorem", %{session: session} do
+    feature "set value (binding)  -  Open Lorem expands lorem", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -142,7 +134,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.lorem_trigger_expanded?(session)
     end
 
-    feature "set value (js) — Open Lorem", %{session: session} do
+    feature "set value (js)  -  Open Lorem", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -155,7 +147,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_expanded?(session, "api-set-value-client-js", "lorem", "true")
     end
 
-    feature "set value (server) — Open Lorem", %{session: session} do
+    feature "set value (server)  -  Open Lorem", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -168,7 +160,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_expanded?(session, "api-set-value-server", "lorem", "true")
     end
 
-    feature "value (binding) — Value surfaces current state", %{session: session} do
+    feature "value (binding)  -  Value surfaces current state", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -183,7 +175,7 @@ defmodule E2eWeb.AccordionTest do
              )
     end
 
-    feature "value (js) — Value dispatches a client read", %{session: session} do
+    feature "value (js)  -  Value dispatches a client read", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -196,7 +188,7 @@ defmodule E2eWeb.AccordionTest do
       assert is_binary(Wallaby.Browser.page_source(session))
     end
 
-    feature "value (server) — Value read runs without error", %{session: session} do
+    feature "value (server)  -  Value read runs without error", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
@@ -209,92 +201,93 @@ defmodule E2eWeb.AccordionTest do
       assert is_binary(Wallaby.Browser.page_source(session))
     end
 
-    @tag :skip
-    feature "focused (binding) — delayed read focuses a trigger", %{session: session} do
+    feature "focused (binding)  -  delayed read surfaces focused value", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-focused-client")
+        |> Accordion.prepare_live_form()
 
       session
       |> Accordion.click_in_section("accordion-api-focused-binding", "Focused")
 
-      Accordion.assert_active_element_inside_id(session, "api-focused-client")
+      Accordion.assert_toast(session, "api-focused-client")
     end
 
-    @tag :skip
-    feature "focused (js) — delayed read focuses a trigger", %{session: session} do
+    feature "focused (js)  -  delayed read surfaces focused value", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-focused-client-js")
+        |> Accordion.prepare_live_form()
 
       session
       |> Accordion.click_in_section("accordion-api-focused-js", "Focused")
 
-      Accordion.assert_active_element_inside_id(session, "api-focused-client-js")
+      Accordion.assert_toast(session, "api-focused-client-js")
     end
 
-    @tag :skip
-    feature "focused (server) — delayed read focuses a trigger", %{session: session} do
+    feature "focused (server)  -  delayed read surfaces focused value", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-focused-server")
+        |> Accordion.prepare_live_form()
 
       session
       |> Accordion.click_in_section("accordion-api-focused-server", "Focused")
 
-      Accordion.assert_active_element_inside_id(session, "api-focused-server")
+      Accordion.assert_toast(session, "api-focused-server")
     end
 
-    @tag :skip
-    feature "item state (binding) — donec can be set disabled", %{session: session} do
+    feature "item state (binding)  -  donec can be set disabled", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-item-client")
 
-      session =
+      _ =
         session
         |> Accordion.click_in_section("accordion-api-item-state-binding", "donec")
-
-      assert Accordion.item_data_disabled?(session, "api-item-client", "donec") or
-               Accordion.trigger_aria_disabled?(session, "api-item-client", "donec")
+        |> Accordion.wait_for_has(
+          xpath("//*[@id='accordion:api-item-client:trigger:donec'][@aria-disabled]"),
+          timeout: 8_000
+        )
     end
 
-    @tag :skip
-    feature "item state (js) — donec can be set disabled", %{session: session} do
+    feature "item state (js)  -  donec can be set disabled", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-item-client-js")
 
-      session =
+      _ =
         session
         |> Accordion.click_in_section("accordion-api-item-state-js", "donec")
-
-      assert Accordion.trigger_aria_disabled?(session, "api-item-client-js", "donec")
+        |> Accordion.wait_for_has(
+          xpath("//*[@id='accordion:api-item-client-js:trigger:donec'][@aria-disabled]"),
+          timeout: 8_000
+        )
     end
 
-    @tag :skip
-    feature "item state (server) — donec can be set disabled", %{session: session} do
+    feature "item state (server)  -  donec can be set disabled", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :api)
         |> Accordion.wait_root_no_loading("#api-item-server")
 
-      session =
+      _ =
         session
         |> Accordion.click_in_section("accordion-api-item-state-server", "donec")
-
-      assert Accordion.item_data_disabled?(session, "api-item-server", "donec") or
-               Accordion.trigger_aria_disabled?(session, "api-item-server", "donec")
+        |> Accordion.wait_for_has(
+          xpath("//*[@id='accordion:api-item-server:trigger:donec'][@aria-disabled]"),
+          timeout: 8_000
+        )
     end
   end
 
   describe "events" do
-    feature "server — interactions append log rows", %{session: session} do
+    feature "server  -  interactions append log rows", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :events)
@@ -318,7 +311,7 @@ defmodule E2eWeb.AccordionTest do
       )
     end
 
-    feature "client — duis logs a row", %{session: session} do
+    feature "client  -  duis logs a row", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :events)
@@ -353,7 +346,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.my_accordion_attribute(session, "data-dir") == "rtl"
     end
 
-    feature "orientation — horizontal sets data-orientation on the inner root", %{
+    feature "orientation  -  horizontal sets data-orientation on the inner root", %{
       session: session
     } do
       session =
@@ -373,7 +366,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.my_accordion_inner_orientation(session) == "horizontal"
     end
 
-    feature "multiple off — at most one section stays expanded", %{session: session} do
+    feature "multiple off  -  at most one section stays expanded", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
@@ -392,7 +385,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_aria_expanded_at(session, "my-accordion", 2) == "true"
     end
 
-    feature "playground — disabled lorem is not activatable", %{session: session} do
+    feature "playground  -  disabled lorem is not activatable", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
@@ -408,7 +401,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_aria_disabled?(session, "my-accordion", "lorem")
     end
 
-    feature "size — SM adds accordion--sm on the host", %{session: session} do
+    feature "size  -  SM adds accordion--sm on the host", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
@@ -427,7 +420,7 @@ defmodule E2eWeb.AccordionTest do
       assert String.contains?(classes, "accordion--sm")
     end
 
-    feature "color — accent adds accordion--accent on the host", %{session: session} do
+    feature "color  -  accent adds accordion--accent on the host", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
@@ -446,7 +439,7 @@ defmodule E2eWeb.AccordionTest do
   end
 
   describe "patterns" do
-    feature "open single — switching items keeps a single open selection", %{
+    feature "open single  -  switching items keeps a single open selection", %{
       session: session
     } do
       section = "accordion-patterns-open-single"
@@ -466,7 +459,7 @@ defmodule E2eWeb.AccordionTest do
       refute Accordion.trigger_expanded?(session, "patterns-open-single", "lorem", "true")
     end
 
-    feature "open multiple — two items are expanded initially", %{session: session} do
+    feature "open multiple  -  two items are expanded initially", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
@@ -477,7 +470,7 @@ defmodule E2eWeb.AccordionTest do
     end
 
     @tag :accordion_patterns_controlled
-    feature "controlled — clicking duis updates which item is open", %{session: session} do
+    feature "controlled  -  clicking duis updates which item is open", %{session: session} do
       section = "accordion-patterns-controlled"
 
       session =
@@ -496,7 +489,7 @@ defmodule E2eWeb.AccordionTest do
       assert Accordion.trigger_expanded?(session, "patterns-controlled", "lorem", "false")
     end
 
-    feature "async — accordion renders after data loads", %{session: session} do
+    feature "async  -  accordion renders after data loads", %{session: session} do
       session
       |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
       |> Accordion.wait_root_no_loading("#patterns-async", timeout: 20_000)
@@ -506,7 +499,7 @@ defmodule E2eWeb.AccordionTest do
   end
 
   describe "animation" do
-    feature "instant — first item can expand", %{session: session} do
+    feature "instant  -  first item can expand", %{session: session} do
       section = "accordion-animation-instant"
 
       _ =
@@ -517,7 +510,7 @@ defmodule E2eWeb.AccordionTest do
         )
     end
 
-    feature "playground — accordion with js animation can expand", %{session: session} do
+    feature "playground  -  accordion with js animation can expand", %{session: session} do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :animation)
@@ -534,49 +527,73 @@ defmodule E2eWeb.AccordionTest do
     @moduletag :slow
     @describetag :e2e
 
-    feature "playground — #my-accordion passes axe at baseline and after first expand", %{
-      session: session
-    } do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :playground)
-        |> Accordion.wait_root_no_loading("#my-accordion")
+    feature "playground  -  axe matrix theme and mode with interaction states", %{session: session} do
+      {play_path, ready_sel} = E2eWeb.ComponentBehaviorSpec.page(:accordion, :playground)
 
-      session =
-        Accordion.check_accessibility(session, css("#my-accordion"),
-          filter: E2eWeb.A11yDocPageFilter
-        )
+      for {theme, mode} <- E2eWeb.A11yThemeMode.combos(), reduce: session do
+        sess ->
+          sess =
+            sess
+            |> E2eWeb.A11yThemeMode.visit_ready_with_theme_mode(
+              play_path,
+              css(ready_sel),
+              theme,
+              mode
+            )
+            |> E2eWeb.A11yThemeMode.assert_document_theme_mode(theme, mode)
+            |> Accordion.wait_root_no_loading("#my-accordion")
 
-      session =
-        session
-        |> Accordion.click_first_trigger_in_section("my-accordion")
-        |> Accordion.wait_root_no_loading("#my-accordion")
-        |> Accordion.wait(400)
+          sess =
+            Accordion.check_accessibility(sess, css("#my-accordion"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
 
-      Accordion.check_accessibility(session, css("#my-accordion"),
-        filter: E2eWeb.A11yDocPageFilter
-      )
+          sess =
+            sess
+            |> Accordion.click_first_trigger_in_section("my-accordion")
+            |> Accordion.wait_root_no_loading("#my-accordion")
+            |> Accordion.wait(400)
+
+          sess =
+            Accordion.check_accessibility(sess, css("#my-accordion"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+
+          sess =
+            sess
+            |> Accordion.click_trigger_in_section_at("my-accordion", 2)
+            |> Accordion.wait_root_no_loading("#my-accordion")
+            |> Accordion.wait(400)
+
+          Accordion.check_accessibility(sess, css("#my-accordion"),
+            filter: E2eWeb.A11yDocPageFilter
+          )
+      end
     end
 
     @tag :accordion_patterns_controlled
-    feature "patterns — #accordion-patterns-controlled passes axe before and after open change",
-            %{
-              session: session
-            } do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
-        |> Accordion.wait_root_no_loading("#patterns-controlled")
+    feature "patterns controlled  -  axe matrix theme and mode", %{session: session} do
+      {path, ready_sel} = E2eWeb.ComponentBehaviorSpec.page(:accordion, :patterns)
 
-      session = Accordion.check_accessibility(session, css("#accordion-patterns-controlled"))
+      for {theme, mode} <- E2eWeb.A11yThemeMode.combos(), reduce: session do
+        sess ->
+          sess =
+            sess
+            |> E2eWeb.A11yThemeMode.visit_ready_with_theme_mode(path, css(ready_sel), theme, mode)
+            |> E2eWeb.A11yThemeMode.assert_document_theme_mode(theme, mode)
+            |> Accordion.wait_root_no_loading("#patterns-controlled")
 
-      session =
-        session
-        |> Accordion.click_trigger_in_section_at("accordion-patterns-controlled", 2)
-        |> Accordion.wait_root_no_loading("#patterns-controlled")
-        |> Accordion.wait(400)
+          sess =
+            Accordion.check_accessibility(sess, css("#accordion-patterns-controlled"))
 
-      Accordion.check_accessibility(session, css("#accordion-patterns-controlled"))
+          sess =
+            sess
+            |> Accordion.click_trigger_in_section_at("accordion-patterns-controlled", 2)
+            |> Accordion.wait_root_no_loading("#patterns-controlled")
+            |> Accordion.wait(400)
+
+          Accordion.check_accessibility(sess, css("#accordion-patterns-controlled"))
+      end
     end
   end
 end
