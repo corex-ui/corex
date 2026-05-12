@@ -27,7 +27,9 @@ defmodule E2eWeb.ListboxPatternsLive do
      |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.value}")
      |> stream(:items, @initial_items)
      |> assign(:items_list, @initial_items)
-     |> stream_configure(:grouped_items, dom_id: &"listbox:stream-grouped-listbox:item:#{&1.value}")
+     |> stream_configure(:grouped_items,
+       dom_id: &"listbox:stream-grouped-listbox:item:#{&1.value}"
+     )
      |> stream(:grouped_items, @initial_grouped_items)
      |> assign(:grouped_items_list, @initial_grouped_items)
      |> assign(:next_id, 4)

@@ -46,7 +46,12 @@ defmodule E2eWeb.Helpers do
         if id in @aside_no_zag, do: b, else: b ++ [:zagjs]
       end)
 
-    %{label: label, value: id, children: component_docs_children(cfg), meta: %{aside_badges: badges}}
+    %{
+      label: label,
+      value: id,
+      children: component_docs_children(cfg),
+      meta: %{aside_badges: badges}
+    }
   end
 
   defp component_docs_children(%{id: id} = cfg) do

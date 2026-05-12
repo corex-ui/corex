@@ -25802,6 +25802,7 @@ ${err}`);
       init_chunk_P32UGRVU();
       init_chunk_FOQSALVP();
       init_chunk_CTFBPAMI();
+      init_chunk_FBXRLPHX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
       init_chunk_EE44DOTL();
@@ -26256,19 +26257,6 @@ ${err}`);
           super(el, props);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
-          __publicField(this, "lastItemsFingerprint", "");
-          __publicField(this, "init", () => {
-            try {
-              this.machine.start();
-              this.render();
-            } finally {
-              this.el.removeAttribute("data-loading");
-            }
-            this.machine.subscribe(() => {
-              this.api = this.initApi();
-              this.render();
-            });
-          });
           const collectionFromProps = props.collection;
           this._options = (_a4 = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a4 : [];
         }
@@ -26277,25 +26265,6 @@ ${err}`);
         }
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
-        }
-        itemsFingerprint() {
-          var _a4, _b;
-          const dir = (_a4 = this.el.dataset.dir) != null ? _a4 : "";
-          const orientation = (_b = this.el.dataset.orientation) != null ? _b : "";
-          return `${this.hasGroups}:${dir}:${orientation}:${JSON.stringify(this.options)}`;
-        }
-        getOrderedGroupIds() {
-          var _a4;
-          const seen = /* @__PURE__ */ new Set();
-          const ids = [];
-          for (const item of this.options) {
-            const id = (_a4 = item.group) != null ? _a4 : "default";
-            if (!seen.has(id)) {
-              seen.add(id);
-              ids.push(id);
-            }
-          }
-          return ids;
         }
         getCollection() {
           return collection2(zagListCollectionConfig(this.options, this.hasGroups));
@@ -26311,64 +26280,6 @@ ${err}`);
         }
         initApi() {
           return this.zagConnect(connect15);
-        }
-        renderItems() {
-          const contentEl = this.el.querySelector(
-            '[data-scope="listbox"][data-part="content"]'
-          );
-          if (!contentEl) return;
-          const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
-          const templatesRoot = templatesContentRoot(this.el, "listbox");
-          if (!templatesRoot) return;
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="empty"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          Array.from(
-            contentEl.querySelectorAll(
-              '[data-scope="listbox"][data-part="item"]:not([data-template])'
-            )
-          ).filter(isOwnedByContent).forEach((el) => el.remove());
-          const items = this.options;
-          if (items.length === 0) {
-            const emptyTemplate = templatesRoot.querySelector(
-              '[data-scope="listbox"][data-part="empty"][data-template]'
-            );
-            if (emptyTemplate) {
-              const emptyEl = emptyTemplate.cloneNode(true);
-              emptyEl.removeAttribute("data-template");
-              contentEl.appendChild(emptyEl);
-            }
-          } else if (this.hasGroups) {
-            const groupIds = this.getOrderedGroupIds();
-            for (const groupId of groupIds) {
-              const template = templatesRoot.querySelector(
-                `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
-              );
-              if (!template) continue;
-              const groupEl = template.cloneNode(true);
-              groupEl.removeAttribute("data-template");
-              groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
-              contentEl.appendChild(groupEl);
-            }
-          } else {
-            for (const item of items) {
-              const value = String(itemValue(item));
-              const template = templatesRoot.querySelector(
-                `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
-              );
-              if (!template) continue;
-              const itemEl = template.cloneNode(true);
-              itemEl.removeAttribute("data-template");
-              contentEl.appendChild(itemEl);
-            }
-          }
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -26422,11 +26333,6 @@ ${err}`);
           );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
-            const fp = this.itemsFingerprint();
-            if (fp !== this.lastItemsFingerprint) {
-              this.lastItemsFingerprint = fp;
-              this.renderItems();
-            }
             this.applyItemProps();
           }
         }
@@ -26437,14 +26343,11 @@ ${err}`);
           const el = this.el;
           const allItems = JSON.parse((_a4 = el.dataset.items) != null ? _a4 : "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const valueList = getStringList(el, "value");
-          const defaultValueList = getStringList(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, this.liveSocket, pushEvent)), {
             collection: buildCollection(allItems, hasGroups)
-          }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
+          }), readStringListControlledZagProps(el, "value", "defaultValue")));
           zag.hasGroups = hasGroups;
           zag.setOptions(allItems);
           zag.init();
@@ -26483,18 +26386,14 @@ ${err}`);
         },
         updated() {
           var _a4;
+          if (!this.listbox) return;
           const newItems = JSON.parse((_a4 = this.el.dataset.items) != null ? _a4 : "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
-          const valueList = getStringList(this.el, "value");
-          const defaultValueList = getStringList(this.el, "defaultValue");
-          const controlled = getBoolean(this.el, "controlled");
-          if (this.listbox) {
-            this.listbox.hasGroups = hasGroups;
-            this.listbox.setOptions(newItems);
-            this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
-              collection: this.listbox.getCollection()
-            }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
-          }
+          this.listbox.hasGroups = hasGroups;
+          this.listbox.setOptions(newItems);
+          this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
+            collection: this.listbox.getCollection()
+          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
         },
         destroyed() {
           var _a4, _b, _c;

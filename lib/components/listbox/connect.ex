@@ -113,8 +113,6 @@ defmodule Corex.Listbox.Connect do
     }
   end
 
-  def item_group_template(assigns), do: Map.drop(item_group(assigns), ["id"])
-
   def ignore_item_group(assigns) do
     JS.ignore_attributes(ItemGroup.ignored_attrs(),
       to: Selectors.css_id("listbox:#{assigns.id}:item-group:#{assigns.group_id}")
@@ -131,8 +129,6 @@ defmodule Corex.Listbox.Connect do
       "id" => "listbox:#{assigns.id}:item-group-label:#{assigns.html_for}"
     }
   end
-
-  def item_group_label_template(assigns), do: Map.drop(item_group_label(assigns), ["id"])
 
   def ignore_item_group_label(assigns) do
     JS.ignore_attributes(ItemGroupLabel.ignored_attrs(),
@@ -168,8 +164,6 @@ defmodule Corex.Listbox.Connect do
     if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
   end
 
-  def item_template(assigns), do: Map.drop(item(assigns), ["id"])
-
   def ignore_item(assigns) do
     JS.ignore_attributes(Item.ignored_attrs(),
       to: Selectors.css_id("listbox:#{assigns.id}:item:#{assigns.value}")
@@ -194,8 +188,6 @@ defmodule Corex.Listbox.Connect do
     }
   end
 
-  def item_text_template(assigns), do: Map.drop(item_text(assigns), ["id"])
-
   def ignore_item_text(assigns) do
     val = item_value(assigns.item)
 
@@ -214,8 +206,6 @@ defmodule Corex.Listbox.Connect do
       "id" => "listbox:#{assigns.id}:item-indicator:#{val}"
     }
   end
-
-  def item_indicator_template(assigns), do: Map.drop(item_indicator(assigns), ["id"])
 
   def ignore_item_indicator(assigns) do
     val = item_value(assigns.item)
