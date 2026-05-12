@@ -560,7 +560,8 @@ defmodule Corex.Accordion do
 
   attr(:value, :any,
     default: [],
-    doc: "Initial or controlled open state: one string or a list of strings (`value` of each item)."
+    doc:
+      "Initial or controlled open state: one string or a list of strings (`value` of each item)."
   )
 
   attr(:compound, :boolean,
@@ -571,8 +572,7 @@ defmodule Corex.Accordion do
 
   attr(:controlled, :boolean,
     default: false,
-    doc:
-      "LiveView owns open state. Requires `on_value_change` in LiveView (see Events guide)."
+    doc: "LiveView owns open state. Requires `on_value_change` in LiveView (see Events guide)."
   )
 
   attr(:collapsible, :boolean, default: true, doc: "Whether the accordion is collapsible")

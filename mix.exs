@@ -92,19 +92,19 @@ defmodule Corex.MixProject do
 
   defp copy_design_to_installer(_) do
     source = Path.join(__DIR__, "priv/design")
-    destination = Path.join(__DIR__, "installer/templates/corex_design")
+    priv_dest = Path.join(__DIR__, "installer/priv/corex_design")
 
     unless File.dir?(source) do
       Mix.raise("Expected Corex design tree at #{source}")
     end
 
-    File.mkdir_p!(Path.dirname(destination))
+    File.mkdir_p!(Path.dirname(priv_dest))
 
-    if File.exists?(destination) do
-      File.rm_rf!(destination)
+    if File.exists?(priv_dest) do
+      File.rm_rf!(priv_dest)
     end
 
-    File.cp_r!(source, destination)
+    File.cp_r!(source, priv_dest)
     :ok
   end
 

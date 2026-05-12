@@ -236,7 +236,8 @@ defmodule Corex.Listbox do
 
   attr(:items, :list,
     required: true,
-    doc: "Items from `Corex.List.new/1` (or maps with :label and optional :value, disabled, group)"
+    doc:
+      "Items from `Corex.List.new/1` (or maps with :label and optional :value, disabled, group)"
   )
 
   attr(:value, :list, default: [], doc: "Selected value(s)")

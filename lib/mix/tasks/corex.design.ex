@@ -52,7 +52,9 @@ defmodule Mix.Tasks.Corex.Design do
   defp priv_dir! do
     case :code.priv_dir(:corex) do
       {:error, _} ->
-        Mix.raise("Could not resolve :corex priv directory  -  is the corex dependency available?")
+        Mix.raise(
+          "Could not resolve :corex priv directory  -  is the corex dependency available?"
+        )
 
       priv ->
         List.to_string(priv)

@@ -1275,7 +1275,8 @@ defmodule Corex.TreeView do
         index_path
 
       _ ->
-        raise ArgumentError, "tree_view compound item #{inspect(value)} is not present in ctx.items"
+        raise ArgumentError,
+              "tree_view compound item #{inspect(value)} is not present in ctx.items"
     end
   end
 

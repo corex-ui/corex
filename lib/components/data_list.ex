@@ -122,7 +122,11 @@ defmodule Corex.DataList do
   <!-- tabs-close -->
   """
 
-  attr(:items, :list, default: nil, doc: "List of %Corex.DataList.Item{} structs for the items API")
+  attr(:items, :list,
+    default: nil,
+    doc: "List of %Corex.DataList.Item{} structs for the items API"
+  )
+
   attr(:rest, :global)
 
   attr(:orientation, :string,
