@@ -13329,8 +13329,9 @@ var Corex = (() => {
                 const q = String((_a4 = details.inputValue) != null ? _a4 : "").toLowerCase();
                 const filtered = this.allOptions.filter((item) => {
                   var _a5;
-                  const label = String((_a5 = item.label) != null ? _a5 : "");
-                  return label.toLowerCase().includes(q);
+                  const label = String((_a5 = item.label) != null ? _a5 : "").toLowerCase();
+                  const value = String(itemValue(item)).toLowerCase();
+                  return label.includes(q) || value.includes(q);
                 });
                 this.options = filtered.length > 0 ? filtered : this.allOptions;
               } else {

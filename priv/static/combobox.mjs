@@ -1592,8 +1592,9 @@ var Combobox = class extends Component {
         if (this.el.hasAttribute("data-filter")) {
           const q = String(details.inputValue ?? "").toLowerCase();
           const filtered = this.allOptions.filter((item) => {
-            const label = String(item.label ?? "");
-            return label.toLowerCase().includes(q);
+            const label = String(item.label ?? "").toLowerCase();
+            const value = String(itemValue(item)).toLowerCase();
+            return label.includes(q) || value.includes(q);
           });
           this.options = filtered.length > 0 ? filtered : this.allOptions;
         } else {
