@@ -148,6 +148,9 @@ defmodule Corex.MixProject do
         "guides/api.md",
         "guides/events.md",
         "guides/tableau.md",
+        "guides/tableau_theming.md",
+        "guides/tableau_mode.md",
+        "guides/tableau_localize.md",
         "guides/dark_mode.md",
         "guides/theming.md",
         "guides/localize.md",
@@ -163,20 +166,28 @@ defmodule Corex.MixProject do
         Helpers: &(&1[:type] == :helpers)
       ],
       groups_for_extras: [
-        Introduction: [
-          "guides/installation.md",
-          "guides/manual_installation.md"
-        ],
-        Guides: [
-          "guides/api.md",
-          "guides/events.md",
-          "guides/tableau.md",
-          "guides/MCP.md",
-          "guides/dark_mode.md",
-          "guides/theming.md",
-          "guides/localize.md",
-          "guides/production.md"
-        ]
+        {:Introduction,
+         [
+           "guides/installation.md",
+           "guides/manual_installation.md"
+         ]},
+        {:Guides,
+         [
+           "guides/api.md",
+           "guides/events.md",
+           "guides/MCP.md",
+           "guides/dark_mode.md",
+           "guides/theming.md",
+           "guides/localize.md",
+           "guides/production.md"
+         ]},
+        {"Tableau Guides",
+         [
+           "guides/tableau.md",
+           "guides/tableau_theming.md",
+           "guides/tableau_mode.md",
+           "guides/tableau_localize.md"
+         ]}
       ]
     ]
   end

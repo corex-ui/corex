@@ -19,7 +19,7 @@ Full narrative (new app, first component, optional design, next steps) lives in 
 | Add to an existing Phoenix app | [Manual installation](https://hexdocs.pm/corex/manual_installation.html) |
 | Control components from LiveView or JS | [API](https://hexdocs.pm/corex/api.html) |
 | Events, `on_*`, and hook responses | [Events](https://hexdocs.pm/corex/events.html) |
-| Tableau static sites | [Tableau](https://hexdocs.pm/corex/tableau.html) |
+| Tableau static sites | [Tableau](https://hexdocs.pm/corex/tableau.html) · templates [Soonex](https://github.com/corex-ui/soonex), [Soonex i18n](https://github.com/corex-ui/soonex_i18n) · [Theming](https://hexdocs.pm/corex/tableau_theming.html), [Mode](https://hexdocs.pm/corex/tableau_mode.html), [Localize](https://hexdocs.pm/corex/tableau_localize.html) |
 | MCP for editors | [MCP](https://hexdocs.pm/corex/mcp.html) |
 
 Generated API reference: run `MIX_ENV=docs mix docs` locally or browse [hexdocs.pm/corex](https://hexdocs.pm/corex).
