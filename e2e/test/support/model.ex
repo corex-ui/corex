@@ -187,8 +187,29 @@ defmodule E2eWeb.Model do
         assert_toast(session, substring)
       end
 
-      def wait_for_has(session, %Wallaby.Query{} = query, _opts \\ []) do
-        assert_has(session, query)
+      def wait_for_has(session, %Wallaby.Query{} = query, opts \\ []) do
+        case Keyword.get(opts, :timeout) do
+          nil ->
+            assert_has(session, query)
+
+          max_ms when is_integer(max_ms) and max_ms > 0 ->
+            deadline = System.monotonic_time(:millisecond) + max_ms
+            busy_wait_query(session, query, deadline)
+            assert_has(session, query)
+        end
+      end
+
+      defp busy_wait_query(session, query, deadline) do
+        if Wallaby.Browser.has?(session, query) do
+          :ok
+        else
+          if System.monotonic_time(:millisecond) >= deadline do
+            :ok
+          else
+            Process.sleep(50)
+            busy_wait_query(session, query, deadline)
+          end
+        end
       end
 
       def wait_for_text(session, text, _opts \\ []) when is_binary(text) do

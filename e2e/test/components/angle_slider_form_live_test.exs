@@ -1,0 +1,69 @@
+defmodule E2eWeb.AngleSliderFormLiveTest do
+  use E2eWeb.ConnCase, async: false
+  import Phoenix.LiveViewTest
+
+  test "basic save with angle param pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+
+    view
+    |> form("#angle-slider-basic-form")
+    |> render_submit(%{"angle_slider_basic" => %{"angle" => "12.5"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "Submitted: angle=12.5",
+      duration: 5000,
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+
+  test "basic validate shows cast error for non-float angle", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+
+    html =
+      view
+      |> form("#angle-slider-basic-form")
+      |> render_change(%{"angle_slider_basic" => %{"angle" => "x"}})
+
+    assert html =~ "is invalid"
+  end
+
+  test "validate validate reflects out of range on change", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+
+    html =
+      view
+      |> form("#angle-slider-validate-form-live")
+      |> render_change(%{"angle_slider_validate" => %{"angle" => "120"}})
+
+    assert html =~ "must be between 0 and 90"
+  end
+
+  test "validate form save out of range shows number message", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+
+    html =
+      view
+      |> form("#angle-slider-validate-form-live")
+      |> render_submit(%{"angle_slider_validate" => %{"angle" => "100"}})
+
+    assert html =~ "must be between 0 and 90"
+  end
+
+  test "validate form save in range pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+
+    view
+    |> form("#angle-slider-validate-form-live")
+    |> render_submit(%{"angle_slider_validate" => %{"angle" => "45"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "Submitted: angle=45.0",
+      duration: 5000,
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+end

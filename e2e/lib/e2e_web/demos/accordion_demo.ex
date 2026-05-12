@@ -19,7 +19,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def custom_slots_example(assigns) do
     ~H"""
-    <.accordion class="accordion" value="lorem" items={items_with_meta()}>
+    <.accordion class="accordion" items={items_with_meta()}>
       <:trigger :let={item}>
         <.heroicon name={item.meta.icon} />{item.label}
       </:trigger>

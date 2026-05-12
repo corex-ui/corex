@@ -1,6 +1,7 @@
 defmodule E2eWeb.AccordionModel do
   import ExUnit.Assertions
   import Wallaby.Query
+  import Wallaby.Browser
 
   use E2eWeb.Model, component: "accordion"
 
@@ -14,8 +15,31 @@ defmodule E2eWeb.AccordionModel do
 
   def anatomy_section_ids, do: @anatomy_sections
 
-  def wait_root_no_loading(session, id_selector, _opts \\ []) do
-    assert_has(session, css(~s(#{id_selector}[data-loading]), count: 0, visible: :any))
+  def wait_root_no_loading(session, id_selector, opts \\ []) do
+    q = css(~s(#{id_selector}[data-loading]), count: 0, visible: :any)
+
+    case Keyword.get(opts, :timeout) do
+      nil ->
+        assert_has(session, q)
+
+      max_ms when is_integer(max_ms) and max_ms > 0 ->
+        deadline = System.monotonic_time(:millisecond) + max_ms
+        busy_wait_root(session, q, deadline)
+        assert_has(session, q)
+    end
+  end
+
+  defp busy_wait_root(session, q, deadline) do
+    if Wallaby.Browser.has?(session, q) do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        :ok
+      else
+        Process.sleep(50)
+        busy_wait_root(session, q, deadline)
+      end
+    end
   end
 
   def wait_section_accordion_ready(session, section_dom_id, _opts \\ []) do
