@@ -99,7 +99,7 @@ defmodule Corex.MCP.Tools.Installation do
   defp corex_hex_version do
     case Application.spec(:corex, :vsn) do
       nil ->
-        "0.1.0-beta.4"
+        "0.1.0-beta.5"
 
       v when is_list(v) ->
         List.to_string(v)
