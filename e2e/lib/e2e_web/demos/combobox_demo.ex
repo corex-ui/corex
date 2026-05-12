@@ -3,12 +3,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def items_minimal do
     [
-      %{label: "France", id: "fra", disabled: true},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ]
   end
 
@@ -19,12 +19,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
-        %{label: "France", id: "fra", disabled: true},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
     >
       <:empty>No results</:empty>
@@ -54,12 +54,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
-        %{label: "France", id: "fra", disabled: true},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
     >
       <:empty>No results</:empty>
@@ -93,11 +93,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"}
       ])}
     >
       <:empty>No results</:empty>
@@ -114,11 +114,11 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       placeholder="Select a country"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra", group: "Europe"},
-          %{label: "Belgium", id: "bel", group: "Europe"},
-          %{label: "Germany", id: "deu", group: "Europe"},
-          %{label: "Japan", id: "jpn", group: "Asia"},
-          %{label: "China", id: "chn", group: "Asia"}
+          %{label: "France", value: "fra", group: "Europe"},
+          %{label: "Belgium", value: "bel", group: "Europe"},
+          %{label: "Germany", value: "deu", group: "Europe"},
+          %{label: "Japan", value: "jpn", group: "Asia"},
+          %{label: "China", value: "chn", group: "Asia"}
         ])
       }
     >
@@ -132,7 +132,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <.combobox id="combobox-anatomy-extended" class="combobox" placeholder="Select" items={Corex.List.new(items_minimal())}>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       items={Corex.List.new(items_minimal())}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
@@ -170,13 +170,13 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       class="combobox"
       placeholder="Select"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"}
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
@@ -195,14 +195,14 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       placeholder="Select a country"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra", group: "Europe"},
-          %{label: "Belgium", id: "bel", group: "Europe"},
-          %{label: "Japan", id: "jpn", group: "Asia"}
+          %{label: "France", value: "fra", group: "Europe"},
+          %{label: "Belgium", value: "bel", group: "Europe"},
+          %{label: "Japan", value: "jpn", group: "Asia"}
         ])
       }
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:empty>No results</:empty>
@@ -248,11 +248,24 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   end
 
   def styling_size_code do
-    ~S"""
-    <.combobox id="combobox-style-sm" class="combobox combobox--sm" placeholder="SM" items={Corex.List.new(items_minimal())}>
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    """
+    <.combobox id="combobox-style-sm" class="combobox combobox--sm" placeholder="SM" #{items_attr}>
+      <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-lg" class="combobox combobox--lg" placeholder="LG" items={Corex.List.new(items_minimal())}>
+    <.combobox id="combobox-style-md" class="combobox combobox--md" placeholder="MD" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-lg" class="combobox combobox--lg" placeholder="LG" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-xl" class="combobox combobox--xl" placeholder="XL" #{items_attr}>
+      <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
     """
@@ -271,6 +284,15 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.combobox>
       <.combobox
+        id="combobox-style-md"
+        class="combobox combobox--md"
+        placeholder="MD"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
         id="combobox-style-lg"
         class="combobox combobox--lg"
         placeholder="LG"
@@ -279,29 +301,16 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.combobox>
+      <.combobox
+        id="combobox-style-xl"
+        class="combobox combobox--xl"
+        placeholder="XL"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
     </div>
-    """
-  end
-
-  def api_overview_code do
-    ~S"""
-    <.combobox id="combobox-api" class="combobox" placeholder="Select a country" items={Corex.List.new(items_minimal())}>
-      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-    </.combobox>
-    """
-  end
-
-  def api_overview_example(assigns) do
-    ~H"""
-    <.combobox
-      id={@id}
-      class="combobox"
-      placeholder="Select a country"
-      items={Corex.List.new(items_minimal())}
-    >
-      <:empty>No results</:empty>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.combobox>
     """
   end
 
@@ -374,12 +383,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         class="combobox"
         placeholder="Select a country"
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:label>Country</:label>
@@ -424,6 +433,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def api_set_value_server_heex do
     ~S"""
     <.action phx-click="combobox_api_set_value">Belgium</.action>
+    <.action phx-click="combobox_api_clear">Clear</.action>
     <.combobox
       id="combobox-api-sv-server"
       class="combobox"
@@ -441,16 +451,28 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     def handle_event("combobox_api_set_value", _params, socket) do
       {:noreply, Corex.Combobox.set_value(socket, "combobox-api-sv-server", ["bel"])}
     end
+
+    def handle_event("combobox_api_clear", _params, socket) do
+      {:noreply, Corex.Combobox.set_value(socket, "combobox-api-sv-server", [])}
+    end
     """
   end
 
   def api_set_value_client_js do
     ~S"""
     const el = document.getElementById("combobox-api-sv-js");
+
     el?.dispatchEvent(
       new CustomEvent("corex:combobox:set-value", {
         bubbles: false,
         detail: { value: ["deu"] },
+      })
+    );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:combobox:set-value", {
+        bubbles: false,
+        detail: { value: [] },
       })
     );
     """
@@ -860,8 +882,31 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   end
 
   def styling_color_code do
-    ~S"""
-    <.combobox id="combobox-style-accent" class="combobox combobox--accent" placeholder="Accent" items={Corex.List.new(items_minimal())}>
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    """
+    <.combobox id="combobox-style-color-default" class="combobox" placeholder="Default" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-color-accent" class="combobox combobox--accent" placeholder="Accent" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-color-brand" class="combobox combobox--brand" placeholder="Brand" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-color-alert" class="combobox combobox--alert" placeholder="Alert" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-color-info" class="combobox combobox--info" placeholder="Info" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-color-success" class="combobox combobox--success" placeholder="Success" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -870,21 +915,83 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_color_example(assigns) do
     ~H"""
-    <.combobox
-      id="combobox-style-accent"
-      class="combobox combobox--accent"
-      placeholder="Accent"
-      items={Corex.List.new(items_minimal())}
-    >
-      <:empty>No results</:empty>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.combobox>
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.combobox
+        id="combobox-style-color-default"
+        class="combobox"
+        placeholder="Default"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-color-accent"
+        class="combobox combobox--accent"
+        placeholder="Accent"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-color-brand"
+        class="combobox combobox--brand"
+        placeholder="Brand"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-color-alert"
+        class="combobox combobox--alert"
+        placeholder="Alert"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-color-info"
+        class="combobox combobox--info"
+        placeholder="Info"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-color-success"
+        class="combobox combobox--success"
+        placeholder="Success"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+    </div>
     """
   end
 
   def styling_max_width_code do
-    ~S"""
-    <.combobox id="combobox-style-wide" class="combobox" placeholder="Wide" items={Corex.List.new(items_minimal())}>
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+
+    """
+    <.combobox id="combobox-style-max-2xs" class="combobox max-w-2xs" placeholder="2xs" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-max-md" class="combobox max-w-md" placeholder="MD" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-max-xl" class="combobox max-w-xl" placeholder="XL" #{items_attr}>
+      <:empty>No results</:empty>
+      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    </.combobox>
+    <.combobox id="combobox-style-max-2xl" class="combobox max-w-2xl" placeholder="2XL" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -893,15 +1000,44 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_max_width_example(assigns) do
     ~H"""
-    <.combobox
-      id="combobox-style-wide"
-      class="combobox"
-      placeholder="Wide"
-      items={Corex.List.new(items_minimal())}
-    >
-      <:empty>No results</:empty>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.combobox>
+    <div class="flex flex-col gap-4 w-full items-start">
+      <.combobox
+        id="combobox-style-max-2xs"
+        class="combobox max-w-2xs"
+        placeholder="2xs"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-max-md"
+        class="combobox max-w-md"
+        placeholder="MD"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-max-xl"
+        class="combobox max-w-xl"
+        placeholder="XL"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.combobox
+        id="combobox-style-max-2xl"
+        class="combobox max-w-2xl"
+        placeholder="2XL"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+    </div>
     """
   end
 end

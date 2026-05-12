@@ -9,15 +9,32 @@ import {
 } from "@zag-js/combobox";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { zagComboboxCollectionConfig } from "../lib/list-collection";
+import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
-export type ComboboxItem = { id?: string; label: string; disabled?: boolean; group?: string };
+export type ComboboxItem = {
+  value?: string;
+  label: string;
+  disabled?: boolean;
+  group?: string;
+};
 
 export class Combobox extends Component<Props, Api> {
-  options: ComboboxItem[] = [];
-  allOptions: ComboboxItem[] = [];
-  hasGroups: boolean = false;
+  options!: ComboboxItem[];
+  allOptions!: ComboboxItem[];
+  hasGroups!: boolean;
+
+  constructor(el: HTMLElement | null, props: Props, allItems: ComboboxItem[], hasGroups: boolean) {
+    super(el, props, (self) => {
+      const c = self as Combobox;
+      c.allOptions = allItems;
+      c.options = allItems;
+      c.hasGroups = hasGroups;
+    });
+    this.allOptions = allItems;
+    this.options = allItems;
+    this.hasGroups = hasGroups;
+  }
 
   setAllOptions(options: ComboboxItem[]) {
     this.allOptions = options;
@@ -28,9 +45,13 @@ export class Combobox extends Component<Props, Api> {
     this.options = this.allOptions;
   }
 
+  private activeItems(): ComboboxItem[] {
+    return this.options.length > 0 ? this.options : this.allOptions;
+  }
+
   getCollection() {
-    const items = this.options || this.allOptions || [];
-    return collection(zagComboboxCollectionConfig(items, this.hasGroups));
+    const items = this.activeItems();
+    return collection(zagListCollectionConfig(items, this.hasGroups));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,7 +95,7 @@ export class Combobox extends Component<Props, Api> {
 
   private getItemValue(item: ComboboxItem): string {
     const v = this.api.collection.getItemValue?.(item) as string | undefined;
-    return v ?? item.id ?? "";
+    return v ?? itemValue(item);
   }
 
   private buildOrderedBlocks(
@@ -131,7 +152,7 @@ export class Combobox extends Component<Props, Api> {
         .forEach((el) => el.remove());
     });
 
-    const items = this.options?.length ? this.options : this.allOptions;
+    const items = this.activeItems();
 
     if (items.length === 0) {
       const emptyTemplate = templatesRoot.querySelector<HTMLElement>(
@@ -223,7 +244,7 @@ export class Combobox extends Component<Props, Api> {
         }
       });
 
-    const sourceItems = this.options?.length ? this.options : this.allOptions;
+    const sourceItems = this.activeItems();
     const byValue = new Map<string, ComboboxItem>();
     for (const item of sourceItems) {
       byValue.set(this.getItemValue(item), item);

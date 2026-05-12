@@ -19,10 +19,15 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   machine: VanillaMachine<any>;
   api: Api;
 
-  constructor(el: HTMLElement | null, props: Props) {
+  constructor(
+    el: HTMLElement | null,
+    props: Props,
+    beforeInitMachine?: (instance: Component<Props, Api>) => void
+  ) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
     this.doc = document;
+    beforeInitMachine?.(this);
     this.machine = this.initMachine(props);
     this.api = this.initApi();
   }

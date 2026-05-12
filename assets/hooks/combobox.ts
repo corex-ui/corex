@@ -171,10 +171,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       ...comboboxValueBinding(el),
     } as Props;
 
-    const combobox = new Combobox(el, props);
+    const combobox = new Combobox(el, props, allItems, hasGroups);
     comboboxRef = combobox;
-    combobox.hasGroups = hasGroups;
-    combobox.setAllOptions(allItems);
     combobox.init();
 
     this.combobox = combobox;

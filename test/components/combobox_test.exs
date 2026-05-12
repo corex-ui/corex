@@ -67,7 +67,7 @@ defmodule Corex.ComboboxTest do
       assigns =
         Map.merge(ConnectProps.default_combobox(), %{
           id: "test",
-          items: [%{id: "a", label: "A"}],
+          items: [%{value: "a", label: "A"}],
           value: [],
           dir: "ltr",
           filter: false
@@ -95,7 +95,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "fra", label: "France"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -124,7 +124,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "fra", label: "France"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -140,7 +140,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Corex.Combobox.combobox id="cb" items={[%{id: "a", label: "A"}]}>
+            <Corex.Combobox.combobox id="cb" items={[%{value: "a", label: "A"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -169,7 +169,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "eur", label: "Euro"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "eur", label: "Euro"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -205,7 +205,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox field={@field} items={[%{id: "fra", label: "France"}]}>
+            <Corex.Combobox.combobox field={@field} items={[%{value: "fra", label: "France"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -234,7 +234,7 @@ defmodule Corex.ComboboxTest do
         render_component(
           fn _assigns ->
             ~H"""
-            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{id: "fra", label: "France"}, %{id: "bel", label: "Belgium"}]}>
+            <Corex.Combobox.combobox multiple={true} field={@field} items={[%{value: "fra", label: "France"}, %{value: "bel", label: "Belgium"}]}>
               <:trigger>v</:trigger>
             </Corex.Combobox.combobox>
             """
@@ -316,7 +316,7 @@ defmodule Corex.ComboboxTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr"
@@ -330,7 +330,7 @@ defmodule Corex.ComboboxTest do
     test "returns props with data-default-value for selection" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: ["a"],
         dir: "ltr"
@@ -344,7 +344,7 @@ defmodule Corex.ComboboxTest do
     test "returns props with data-value when controlled" do
       assigns = %{
         id: "test-combobox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr"
