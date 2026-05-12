@@ -448,7 +448,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       class="select"
       items={
         Enum.map(Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)}), fn v ->
-          %{id: v, label: Phoenix.Naming.humanize(to_string(v))}
+          %{value: v, label: Phoenix.Naming.humanize(to_string(v))}
         end)
       }
       translation={%Corex.Select.Translation{placeholder: "Choose a value"}}
