@@ -179,7 +179,7 @@ defmodule Corex.Listbox.Connect do
   defp item_value(item) when is_map(item) do
     item
     |> Map.new(fn {k, v} -> {to_string(k), v} end)
-    |> then(fn m -> Map.get(m, "value") || Map.get(m, "id") || "" end)
+    |> then(fn m -> Map.get(m, "value") || "" end)
   end
 
   @spec item_text(ItemText.t()) :: map()

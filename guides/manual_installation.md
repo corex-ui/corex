@@ -221,16 +221,16 @@ After the install, every Corex function component is available in your templates
 
 ### Basic
 
-`Corex.Content.new/1` builds a list of items. The `id` is auto-generated when missing; you can also flag an item as `disabled`.
+`Corex.Content.new/1` builds a list of items. Each item's `value` is auto-generated when missing; you can also flag an item as `disabled`.
 
 ```heex
 <.accordion
   id="welcome-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 />
 ```
@@ -244,9 +244,9 @@ The optional `:indicator` slot adds an icon after each trigger.
   id="indicator-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-    [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-    [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+    [label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+    [value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
   ])}
 >
   <:indicator>
@@ -266,19 +266,19 @@ Use `:trigger`, `:content`, and `:indicator` together with `:let={item}` for ful
   items={
     Corex.Content.new([
       [
-        id: "lorem",
-        trigger: "Lorem ipsum dolor sit amet",
+        value: "lorem",
+        label: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
       ],
       [
-        trigger: "Duis dictum gravida?",
+        label: "Duis dictum gravida?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
       ],
       [
-        id: "donec",
-        trigger: "Donec condimentum ex mi",
+        value: "donec",
+        label: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: true,
         meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
@@ -287,11 +287,11 @@ Use `:trigger`, `:content`, and `:indicator` together with `:let={item}` for ful
   }
 >
   <:trigger :let={item}>
-    <.heroicon name={item.data.meta.icon} />{item.data.trigger}
+    <.heroicon name={item.meta.icon} />{item.label}
   </:trigger>
-  <:content :let={item}>{item.data.content}</:content>
+  <:content :let={item}>{item.content}</:content>
   <:indicator :let={item}>
-    <.heroicon name={item.data.meta.indicator} />
+    <.heroicon name={item.meta.indicator} />
   </:indicator>
 </.accordion>
 ```
@@ -321,8 +321,8 @@ defmodule MyAppWeb.AccordionLive do
       on_value_change="on_value_change"
       class="accordion"
       items={Corex.Content.new([
-        [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-        [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."]
+        [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+        [value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."]
       ])}
     />
     """
@@ -343,9 +343,9 @@ defmodule MyAppWeb.AccordionAsyncLive do
       assign_async(socket, :accordion, fn ->
         items =
           Corex.Content.new([
-            [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
-            [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-            [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+            [value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
+            [value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+            [value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
           ])
 
         {:ok, %{accordion: %{items: items, value: ["duis", "donec"]}}}

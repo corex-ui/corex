@@ -20,10 +20,10 @@ defmodule E2eWeb.Demos.CookiePreferencesDemo do
         field={@cookie_form[:frequency]}
         class="select"
         items={[
-          %{label: "Daily",   id: "daily"},
-          %{label: "Weekly",  id: "weekly"},
-          %{label: "Monthly", id: "monthly"},
-          %{label: "Never",   id: "never"}
+          %{label: "Daily",   value: "daily"},
+          %{label: "Weekly",  value: "weekly"},
+          %{label: "Monthly", value: "monthly"},
+          %{label: "Never",   value: "never"}
         ]}
       >
         <:label>Update frequency</:label>

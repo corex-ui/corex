@@ -8,17 +8,17 @@ defmodule CorexWeb.Tabs do
   @items Content.new([
            %{
              value: "lorem",
-             trigger: "Lorem",
+             label: "Lorem",
              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
            },
            %{
              value: "duis",
-             trigger: "Duis",
+             label: "Duis",
              content: "Nullam eget vestibulum ligula, at interdum tellus."
            },
            %{
              value: "donec",
-             trigger: "Donec",
+             label: "Donec",
              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
            }
          ])
@@ -55,17 +55,17 @@ defmodule CorexWeb.Tabs do
                 Content.new([
                   %{
                     value: "lorem",
-                    trigger: "Lorem",
+                    label: "Lorem",
                     content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
                   },
                   %{
                     value: "duis",
-                    trigger: "Duis",
+                    label: "Duis",
                     content: "Nullam eget vestibulum ligula, at interdum tellus."
                   },
                   %{
                     value: "donec",
-                    trigger: "Donec",
+                    label: "Donec",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
                     disabled: true
                   }

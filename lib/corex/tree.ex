@@ -18,7 +18,7 @@ defmodule Corex.Tree do
 
     ## Fields
 
-    * `:id` - (optional) Unique identifier, auto-generated if not provided
+    * `:value` - (optional) Unique node value, auto-generated if not provided
     * `:label` - (required) Display text
     * `:to` - (optional) Destination (path or URL) used by navigation components
     * `:children` - (optional) Nested items (list of maps)
@@ -39,7 +39,7 @@ defmodule Corex.Tree do
 
     @enforce_keys [:label]
     defstruct [
-      :id,
+      :value,
       :label,
       :to,
       children: [],
@@ -51,7 +51,7 @@ defmodule Corex.Tree do
     ]
 
     @type t :: %__MODULE__{
-            id: String.t(),
+            value: String.t(),
             label: String.t(),
             to: String.t() | nil,
             children: list(t()),
@@ -63,8 +63,10 @@ defmodule Corex.Tree do
           }
 
     @doc """
-    Creates a single `Tree.Item` from a map, auto-generating an `:id` if not provided
+    Creates a single `Tree.Item` from a map, auto-generating a `:value` if not provided
     and recursively processing `:children`.
+
+    Map keys must not include `:id`; use `:value` for node identity.
 
     Raises `ArgumentError` if `attrs` is not a map or is missing required fields,
     or if a child is neither a map nor a `Tree.Item` struct.
@@ -75,7 +77,7 @@ defmodule Corex.Tree do
     def new(attrs) when is_map(attrs) do
       attrs =
         attrs
-        |> Map.put_new(:id, Corex.Tree.generate_id())
+        |> normalize_attrs()
         |> maybe_process_children()
 
       struct!(__MODULE__, attrs)
@@ -86,7 +88,7 @@ defmodule Corex.Tree do
                 Failed to create Tree.Item: #{Exception.message(e)}
 
                 Required fields: [:label]
-                Optional fields: [:id, :to, :children, :disabled, :group, :meta, :redirect, :new_tab]
+                Optional fields: [:value, :to, :children, :disabled, :group, :meta, :redirect, :new_tab]
 
                 Example:
                   Corex.Tree.Item.new(%{label: "File", to: "/file", children: [
@@ -123,6 +125,15 @@ defmodule Corex.Tree do
       Children must be maps or Tree.Item structs.
       """
     end
+
+    defp normalize_attrs(attrs) when is_map(attrs) do
+      if Map.has_key?(attrs, :id) do
+        raise ArgumentError,
+              "Tree.Item maps must not use :id. Use :value for node identity."
+      end
+
+      Map.put_new(attrs, :value, Corex.Tree.generate_id())
+    end
   end
 
   @doc """
@@ -132,7 +143,7 @@ defmodule Corex.Tree do
   ## Fields
 
   * `:label` - (required) Display text
-  * `:id` - (optional) Unique identifier, auto-generated if not provided
+  * `:value` - (optional) Unique node value, auto-generated if not provided
   * `:to` - (optional) Destination (path or URL)
   * `:children` - (optional) Nested items (list of maps)
   * `:disabled` - (optional) Whether the item is disabled

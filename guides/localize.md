@@ -285,18 +285,22 @@ def language_switch(assigns) do
   current = MyAppWeb.Locale.current()
 
   items =
-    for locale <- MyAppWeb.Locale.locales(), into: Corex.List.new([]) do
+    for locale <- MyAppWeb.Locale.locales(), into: [] do
+      dest = MyAppWeb.Locale.swap_path(current_path, locale)
+
       Corex.List.Item.new(%{
-        id: locale,
+        value: dest,
         label: MyAppWeb.Locale.label(locale),
-        to: MyAppWeb.Locale.swap_path(current_path, locale)
+        to: dest
       })
     end
+
+  selected = [MyAppWeb.Locale.swap_path(current_path, current)]
 
   assigns =
     assigns
     |> assign(:items, items)
-    |> assign(:value, [current])
+    |> assign(:value, selected)
 
   ~H"""
   <.select

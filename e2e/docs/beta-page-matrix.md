@@ -49,7 +49,7 @@ Events LiveViews document server `handle_event` flows and client-side listeners.
 
 ## Combobox async search
 
-Server-driven search for **airports** and **cities** lives on **`/combobox/patterns`** (`#combobox-patterns-airports-doc`, `#combobox-patterns-cities-doc`).
+Server-driven filtering on **`/combobox/patterns`** lives in **`#combobox-patterns-server-filter-doc`** (flat list) and **`#combobox-patterns-server-filter-grouped-doc`** (grouped). The live previews use E2e.Place; the Heex/Elixir tabs show self-contained copy-paste samples.
 
 ## Router reconciliation notes
 

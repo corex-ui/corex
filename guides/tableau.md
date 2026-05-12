@@ -264,7 +264,7 @@ defmodule MyApp.Theme do
 
   def select_items do
     themes()
-    |> Enum.map(fn t -> %{id: t, label: String.capitalize(t)} end)
+    |> Enum.map(fn t -> %{value: t, label: String.capitalize(t)} end)
     |> Corex.List.new()
   end
 end
@@ -611,7 +611,7 @@ defmodule MyApp.Locale do
       dest = swap_path(current_path, loc)
 
       Corex.List.Item.new(%{
-        id: dest,
+        value: dest,
         to: dest,
         label: label(loc)
       })
@@ -785,8 +785,8 @@ After **`mix compile`** and your usual Tableau asset build (for example **`mix t
   id="welcome-accordion"
   class="accordion"
   items={Corex.Content.new([
-    [trigger: "First", content: "Panel one."],
-    [trigger: "Second", content: "Panel two."]
+    [label: "First", content: "Panel one."],
+    [label: "Second", content: "Panel two."]
   ])}
 />
 ```

@@ -2,7 +2,7 @@ defmodule E2eWeb.Helpers do
   use E2eWeb, :html
 
   defp menu_item(label, id, to, opts \\ []) do
-    base = %{label: label, id: id, to: to}
+    base = %{label: label, value: id, to: to}
 
     base =
       case Keyword.get(opts, :meta) do
@@ -46,7 +46,7 @@ defmodule E2eWeb.Helpers do
         if id in @aside_no_zag, do: b, else: b ++ [:zagjs]
       end)
 
-    %{label: label, id: id, children: component_docs_children(cfg), meta: %{aside_badges: badges}}
+    %{label: label, value: id, children: component_docs_children(cfg), meta: %{aside_badges: badges}}
   end
 
   defp component_docs_children(%{id: id} = cfg) do
@@ -88,10 +88,10 @@ defmodule E2eWeb.Helpers do
 
   def flat_navigation_items(items) when is_list(items) do
     Enum.flat_map(items, fn
-      %{id: id, to: to, children: c} = item
+      %{value: id, to: to, children: c} = item
       when is_binary(id) and is_binary(to) and c in [[], nil] ->
         label = Map.get(item, :label) || id
-        [%{id: id, to: to, label: label}]
+        [%{value: id, to: to, label: label}]
 
       %{children: children} when is_list(children) and children != [] ->
         flat_navigation_items(children)
@@ -103,8 +103,8 @@ defmodule E2eWeb.Helpers do
 
   def ancestor_ids_for_path(items, full_path) when is_list(items) do
     Enum.flat_map(items, fn
-      %{id: id, children: children} when is_list(children) and children != [] ->
-        leaf_ids = Enum.map(flat_navigation_items(children), & &1.id)
+      %{value: id, children: children} when is_list(children) and children != [] ->
+        leaf_ids = Enum.map(flat_navigation_items(children), & &1.value)
 
         if full_path in leaf_ids do
           [id | ancestor_ids_for_path(children, full_path)]
@@ -131,7 +131,7 @@ defmodule E2eWeb.Helpers do
     index =
       Enum.find_index(list, fn item ->
         item_after =
-          case item.id do
+          case item.value do
             id when is_binary(id) -> E2eWeb.Path.strip_after_locale(id)
             _ -> ""
           end

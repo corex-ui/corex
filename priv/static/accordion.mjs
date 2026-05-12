@@ -6,11 +6,11 @@ import {
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
   stripHiddenFromProps
-} from "./chunks/chunk-OPWAZ7L4.mjs";
+} from "./chunks/chunk-WG2KNE4C.mjs";
 import {
   readControlledOrDefaultStringList,
   readStringListControlledZagProps
-} from "./chunks/chunk-CDKBKUQ4.mjs";
+} from "./chunks/chunk-FBXRLPHX.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -44,7 +44,7 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");

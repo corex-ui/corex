@@ -86,8 +86,8 @@ defmodule Corex.Helpers do
     Example:
 
         items = Corex.Content.new([
-          [trigger: "Trigger text", content: "Content text"],
-          [trigger: "Another trigger", content: "More content", disabled: true]
+          [label: "Trigger text", content: "Content text"],
+          [label: "Another trigger", content: "More content", disabled: true]
         ])
         <.#{String.downcase(component)} items={items} />
     """
@@ -103,8 +103,8 @@ defmodule Corex.Helpers do
         Please use Corex.Content.new/1:
 
         items = Corex.Content.new([
-          [trigger: "Trigger text", content: "Content text"],
-          [trigger: "Another trigger", content: "More content", disabled: true]
+          [label: "Trigger text", content: "Content text"],
+          [label: "Another trigger", content: "More content", disabled: true]
         ])
         """
       end
@@ -149,7 +149,7 @@ defmodule Corex.Helpers do
   def entry_value(entry) when is_map(entry) do
     entry
     |> Map.new(fn {k, v} -> {to_string(k), v} end)
-    |> then(fn m -> Map.get(m, "value") || Map.get(m, "id") end)
+    |> Map.get("value")
     |> case do
       nil -> ""
       v -> to_string(v)
@@ -206,8 +206,7 @@ defmodule Corex.Helpers do
     Enum.map(items, fn
       %Corex.List.Item{} = item ->
         %{
-          id: item.id,
-          value: item.id,
+          value: item.value,
           label: item.label,
           disabled: item.disabled,
           group: item.group,
@@ -217,10 +216,15 @@ defmodule Corex.Helpers do
           meta: item.meta || %{}
         }
 
-      %{id: _, label: _} = map ->
+      %{label: _} = map ->
+        assert_list_item_no_legacy_id!(map)
+
+        map =
+          map
+          |> Map.put_new(:value, Corex.List.generate_id())
+
         %{
-          id: Map.get(map, :id),
-          value: Map.get(map, :value) || Map.get(map, :id),
+          value: Map.fetch!(map, :value),
           label: Map.get(map, :label),
           disabled: !!Map.get(map, :disabled, false),
           group: Map.get(map, :group),
@@ -232,12 +236,24 @@ defmodule Corex.Helpers do
 
       other ->
         raise ArgumentError, """
-        Items must be Corex.List.Item or maps with :id and :label.
+        Items must be Corex.List.Item or maps with :label (and optional :value).
 
         Got:
         #{inspect(other)}
         """
     end)
+  end
+
+  defp assert_list_item_no_legacy_id!(map) when is_map(map) do
+    sm = Map.new(map, fn {k, v} -> {to_string(k), v} end)
+
+    if Map.has_key?(sm, "id") do
+      raise ArgumentError, """
+      List item maps must not use :id. Use :value for the option value (see Corex.List).
+
+      Got keys: #{inspect(Map.keys(map))}
+      """
+    end
   end
 
   defp normalize_list_item_redirect(nil), do: nil

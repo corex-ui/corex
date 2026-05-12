@@ -19,7 +19,7 @@ defmodule Corex.ListboxTest do
 
             ~H"""
             <Corex.Listbox.listbox 
-              items={[%{id: "1", label: "One", disabled: true, group: "G"}, %{id: "2", label: "Two", group: "G"}]}
+              items={[%{value: "1", label: "One", disabled: true, group: "G"}, %{value: "2", label: "Two", group: "G"}]}
               controlled={true}
               disabled={true}
               dir="rtl"
@@ -144,7 +144,7 @@ defmodule Corex.ListboxTest do
 
   describe "Connect.item_text/1" do
     test "returns item text attributes" do
-      assigns = %{id: "test-listbox", item: %{id: "x", label: "X"}}
+      assigns = %{id: "test-listbox", item: %{value: "x", label: "X"}}
       result = Connect.item_text(assigns)
       assert result["id"] == "listbox:test-listbox:item-text:x"
       assert result["data-part"] == "item-text"
@@ -159,7 +159,7 @@ defmodule Corex.ListboxTest do
 
   describe "Connect.item_indicator/1" do
     test "returns item indicator attributes" do
-      assigns = %{id: "test-listbox", item: %{id: "y", label: "Y"}}
+      assigns = %{id: "test-listbox", item: %{value: "y", label: "Y"}}
       result = Connect.item_indicator(assigns)
       assert result["id"] == "listbox:test-listbox:item-indicator:y"
       assert result["data-part"] == "item-indicator"
@@ -170,7 +170,7 @@ defmodule Corex.ListboxTest do
     test "returns props when controlled" do
       assigns = %{
         id: "test-listbox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr",
@@ -194,7 +194,7 @@ defmodule Corex.ListboxTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-listbox",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         controlled: false,
         value: ["a"],
         dir: "ltr",

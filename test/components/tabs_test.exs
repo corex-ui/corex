@@ -36,7 +36,7 @@ defmodule Corex.TabsTest do
     test "raises when items is not a list of Corex.Content.Item" do
       assert_raise ArgumentError, fn ->
         render_component(&Tabs.tabs/1,
-          items: [[trigger: "T1", content: "C1"]]
+          items: [[label: "T1", content: "C1"]]
         )
       end
     end

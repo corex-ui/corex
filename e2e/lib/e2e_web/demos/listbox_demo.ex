@@ -3,23 +3,23 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def items_minimal do
     Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])
   end
 
   def items_grouped do
     Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "USA", id: "usa", group: "North America"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "USA", value: "usa", group: "North America"}
     ])
   end
 
@@ -29,12 +29,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def items_extended_grouped do
     Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"}
     ])
   end
 
@@ -42,12 +42,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.listbox id="listbox-anatomy-minimal" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -69,12 +69,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.listbox id="listbox-anatomy-indicator" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -98,12 +98,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.listbox id="listbox-anatomy-grouped" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"},
-        %{label: "USA", id: "usa", group: "North America"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"},
+        %{label: "USA", value: "usa", group: "North America"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -127,17 +127,17 @@ defmodule E2eWeb.Demos.ListboxDemo do
     ~S"""
     <.listbox id="listbox-anatomy-extended" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.id)} />
+        <Flagpack.flag name={String.to_atom(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.listbox id="listbox-anatomy-extended" class="listbox" items={@items}>
       <:label>Country of residence</:label>
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.id)} />
+        <Flagpack.flag name={String.to_atom(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -168,17 +168,17 @@ defmodule E2eWeb.Demos.ListboxDemo do
       aria_label="Extended grouped countries"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra", group: "Europe"},
-          %{label: "Belgium", id: "bel", group: "Europe"},
-          %{label: "Germany", id: "deu", group: "Europe"},
-          %{label: "Japan", id: "jpn", group: "Asia"},
-          %{label: "China", id: "chn", group: "Asia"},
-          %{label: "South Korea", id: "kor", group: "Asia"}
+          %{label: "France", value: "fra", group: "Europe"},
+          %{label: "Belgium", value: "bel", group: "Europe"},
+          %{label: "Germany", value: "deu", group: "Europe"},
+          %{label: "Japan", value: "jpn", group: "Asia"},
+          %{label: "China", value: "chn", group: "Asia"},
+          %{label: "South Korea", value: "kor", group: "Asia"}
         ])
       }
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.id)} />
+        <Flagpack.flag name={String.to_atom(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -197,7 +197,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       items={@items}
     >
       <:item :let={%{item: entry}}>
-        <Flagpack.flag name={String.to_atom(entry.id)} />
+        <Flagpack.flag name={String.to_atom(entry.value)} />
         {entry.label}
       </:item>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -233,14 +233,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def mount(_params, _session, socket) do
         initial = [
-          %{id: "1", label: "Apple"},
-          %{id: "2", label: "Banana"},
-          %{id: "3", label: "Cherry"}
+          %{value: "1", label: "Apple"},
+          %{value: "2", label: "Banana"},
+          %{value: "3", label: "Cherry"}
         ]
 
         socket =
           socket
-          |> stream_configure(:items, dom_id: &("listbox:stream-listbox:item:" <> to_string(&1.id)))
+          |> stream_configure(:items, dom_id: &("listbox:stream-listbox:item:" <> to_string(&1.value)))
           |> stream(:items, initial)
           |> assign(:items_list, initial)
           |> assign(:next_id, 4)
@@ -263,7 +263,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
           |> DateTime.to_time()
           |> Time.to_string()
 
-        item = %{id: id, label: "Item " <> id <> " @ " <> time}
+        item = %{value: id, label: "Item " <> id <> " @ " <> time}
 
         {:noreply,
          socket
@@ -275,7 +275,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def handle_event("add_item", _params, socket) do
         id = to_string(socket.assigns.next_id)
-        item = %{id: id, label: "Item " <> id}
+        item = %{value: id, label: "Item " <> id}
 
         {:noreply,
          socket
@@ -287,9 +287,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def handle_event("reset", _params, socket) do
         initial = [
-          %{id: "1", label: "Apple"},
-          %{id: "2", label: "Banana"},
-          %{id: "3", label: "Cherry"}
+          %{value: "1", label: "Apple"},
+          %{value: "2", label: "Banana"},
+          %{value: "3", label: "Cherry"}
         ]
 
         {:noreply,
@@ -374,14 +374,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def mount(_params, _session, socket) do
         initial = [
-          %{id: "g1", label: "France", group: "Europe"},
-          %{id: "g2", label: "Japan", group: "Asia"},
-          %{id: "g3", label: "Germany", group: "Europe"}
+          %{value: "g1", label: "France", group: "Europe"},
+          %{value: "g2", label: "Japan", group: "Asia"},
+          %{value: "g3", label: "Germany", group: "Europe"}
         ]
 
         socket =
           socket
-          |> stream_configure(:grouped_items, dom_id: &("listbox:stream-grouped-listbox:item:" <> to_string(&1.id)))
+          |> stream_configure(:grouped_items, dom_id: &("listbox:stream-grouped-listbox:item:" <> to_string(&1.value)))
           |> stream(:grouped_items, initial)
           |> assign(:grouped_items_list, initial)
           |> assign(:next_grouped_id, 4)
@@ -393,7 +393,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       def handle_event("add_to_group", %{"group" => group}, socket) do
         n = socket.assigns.next_grouped_id
         id = "g" <> Integer.to_string(n)
-        item = %{id: id, label: "Item " <> Integer.to_string(n), group: group}
+        item = %{value: id, label: "Item " <> Integer.to_string(n), group: group}
 
         {:noreply,
          socket
@@ -405,9 +405,9 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def handle_event("reset_grouped", _params, socket) do
         initial = [
-          %{id: "g1", label: "France", group: "Europe"},
-          %{id: "g2", label: "Japan", group: "Asia"},
-          %{id: "g3", label: "Germany", group: "Europe"}
+          %{value: "g1", label: "France", group: "Europe"},
+          %{value: "g2", label: "Japan", group: "Asia"},
+          %{value: "g3", label: "Germany", group: "Europe"}
         ]
 
         {:noreply,
@@ -471,12 +471,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
       class="listbox"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])
       }
       selection_mode="multiple"
@@ -525,12 +525,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
               class="listbox"
               items={
                 Corex.List.new([
-                  %{label: "France", id: "fra"},
-                  %{label: "Belgium", id: "bel"},
-                  %{label: "Germany", id: "deu"},
-                  %{label: "Netherlands", id: "nld"},
-                  %{label: "Switzerland", id: "che"},
-                  %{label: "Austria", id: "aut"}
+                  %{label: "France", value: "fra"},
+                  %{label: "Belgium", value: "bel"},
+                  %{label: "Germany", value: "deu"},
+                  %{label: "Netherlands", value: "nld"},
+                  %{label: "Switzerland", value: "che"},
+                  %{label: "Austria", value: "aut"}
                 ])
               }
               selection_mode="multiple"
@@ -558,12 +558,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", [])}>Clear</.action>
     <.listbox id="listbox-api-sv-client" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -577,12 +577,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.action phx-click="listbox_api_set_value">Belgium</.action>
     <.listbox id="listbox-api-sv-server" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -616,12 +616,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.action phx-click={Corex.Listbox.value("listbox-api-val-client")}>Read selection</.action>
     <.listbox id="listbox-api-val-client" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -635,12 +635,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
     <.action phx-click="listbox_api_value_server">Read selection</.action>
     <.listbox id="listbox-api-val-server" class="listbox" items={
       Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])
     }>
       <:label>Choose a country</:label>
@@ -668,12 +668,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
       class="listbox"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])
       }
       on_value_change="listbox_value_changed"
@@ -700,12 +700,12 @@ defmodule E2eWeb.Demos.ListboxDemo do
       class="listbox"
       items={
         Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])
       }
       on_value_change_client="listbox-value-changed"

@@ -3,9 +3,9 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def demo_leaf_items do
     [
-      %Corex.Tree.Item{id: "menu", label: "Menu"},
-      %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-      %Corex.Tree.Item{id: "select", label: "Select"}
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
     ]
   end
 
@@ -17,9 +17,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-minimal"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -46,10 +46,10 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def demo_grouped_items do
     [
-      %Corex.Tree.Item{id: "combobox", label: "Combobox", group: "Pickers"},
-      %Corex.Tree.Item{id: "listbox", label: "Listbox", group: "Pickers"},
-      %Corex.Tree.Item{id: "menu", label: "Menu", group: "Overlays"},
-      %Corex.Tree.Item{id: "dialog", label: "Dialog", group: "Overlays"}
+      %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
+      %Corex.Tree.Item{value: "listbox", label: "Listbox", group: "Pickers"},
+      %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
+      %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
     ]
   end
 
@@ -59,10 +59,10 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-grouped"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "combobox", label: "Combobox", group: "Pickers"},
-        %Corex.Tree.Item{id: "listbox", label: "Listbox", group: "Pickers"},
-        %Corex.Tree.Item{id: "menu", label: "Menu", group: "Overlays"},
-        %Corex.Tree.Item{id: "dialog", label: "Dialog", group: "Overlays"}
+        %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
+        %Corex.Tree.Item{value: "listbox", label: "Listbox", group: "Pickers"},
+        %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
+        %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -93,18 +93,18 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-nested"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "listbox", label: "Listbox"},
+        %Corex.Tree.Item{value: "listbox", label: "Listbox"},
         %Corex.Tree.Item{
-          id: "corex",
+          value: "corex",
           label: "Corex",
           children: [
-            %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-            %Corex.Tree.Item{id: "date-picker", label: "Date picker"},
-            %Corex.Tree.Item{id: "menu", label: "Menu"},
-            %Corex.Tree.Item{id: "dialog", label: "Dialog"}
+            %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+            %Corex.Tree.Item{value: "date-picker", label: "Date picker"},
+            %Corex.Tree.Item{value: "menu", label: "Menu"},
+            %Corex.Tree.Item{value: "dialog", label: "Dialog"}
           ]
         },
-        %Corex.Tree.Item{id: "tabs", label: "Tabs"}
+        %Corex.Tree.Item{value: "tabs", label: "Tabs"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -120,13 +120,13 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-nested"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "listbox", label: "Listbox"},
+        %Corex.Tree.Item{value: "listbox", label: "Listbox"},
         %Corex.Tree.Item{
-          id: "corex",
+          value: "corex",
           label: "Corex",
           children: demo_nested_flat_children()
         },
-        %Corex.Tree.Item{id: "tabs", label: "Tabs"}
+        %Corex.Tree.Item{value: "tabs", label: "Tabs"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -141,19 +141,19 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def demo_nested_grouped_children do
     [
-      %Corex.Tree.Item{id: "combobox", label: "Combobox", group: "Pickers"},
-      %Corex.Tree.Item{id: "date-picker", label: "Date picker", group: "Pickers"},
-      %Corex.Tree.Item{id: "menu", label: "Menu", group: "Overlays"},
-      %Corex.Tree.Item{id: "dialog", label: "Dialog", group: "Overlays"}
+      %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
+      %Corex.Tree.Item{value: "date-picker", label: "Date picker", group: "Pickers"},
+      %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
+      %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
     ]
   end
 
   def demo_nested_flat_children do
     [
-      %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-      %Corex.Tree.Item{id: "date-picker", label: "Date picker"},
-      %Corex.Tree.Item{id: "menu", label: "Menu"},
-      %Corex.Tree.Item{id: "dialog", label: "Dialog"}
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "date-picker", label: "Date picker"},
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "dialog", label: "Dialog"}
     ]
   end
 
@@ -163,15 +163,15 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-nested-grouped"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "tabs", label: "Tabs"},
+        %Corex.Tree.Item{value: "tabs", label: "Tabs"},
         %Corex.Tree.Item{
-          id: "corex",
+          value: "corex",
           label: "Corex",
           children: [
-            %Corex.Tree.Item{id: "combobox", label: "Combobox", group: "Pickers"},
-            %Corex.Tree.Item{id: "date-picker", label: "Date picker", group: "Pickers"},
-            %Corex.Tree.Item{id: "menu", label: "Menu", group: "Overlays"},
-            %Corex.Tree.Item{id: "dialog", label: "Dialog", group: "Overlays"}
+            %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
+            %Corex.Tree.Item{value: "date-picker", label: "Date picker", group: "Pickers"},
+            %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
+            %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
           ]
         }
       ]}
@@ -189,9 +189,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-anatomy-nested-grouped"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "tabs", label: "Tabs"},
+        %Corex.Tree.Item{value: "tabs", label: "Tabs"},
         %Corex.Tree.Item{
-          id: "corex",
+          value: "corex",
           label: "Corex",
           children: demo_nested_grouped_children()
         }
@@ -215,9 +215,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-api"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -259,9 +259,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-api-js"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -346,9 +346,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       id="menu-api-server"
       class="menu"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -395,9 +395,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       on_select="menu_bind_selected"
       on_open_change="menu_bind_open"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -443,9 +443,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       on_select="menu_selected"
       on_open_change="menu_open_changed"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -476,9 +476,9 @@ defmodule E2eWeb.Demos.MenuDemo do
       on_select_client="menu-item-selected"
       on_open_change_client="menu-open-changed"
       items={[
-        %Corex.Tree.Item{id: "menu", label: "Menu"},
-        %Corex.Tree.Item{id: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{id: "select", label: "Select"}
+        %Corex.Tree.Item{value: "menu", label: "Menu"},
+        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+        %Corex.Tree.Item{value: "select", label: "Select"}
       ]}
     >
       <:trigger>Corex</:trigger>
@@ -510,8 +510,8 @@ defmodule E2eWeb.Demos.MenuDemo do
   def patterns_redirect_code do
     """
     <.menu id="menu-pattern-redirect" class="menu" redirect items={[
-      %Corex.Tree.Item{id: ~p"/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{id: ~p"/menu/api", label: "API"}
+      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
+      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
     ]}>
       <:trigger>Navigate</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -521,8 +521,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_items do
     [
-      %Corex.Tree.Item{id: ~p"/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{id: ~p"/menu/api", label: "API"}
+      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
+      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
     ]
   end
 
@@ -542,8 +542,8 @@ defmodule E2eWeb.Demos.MenuDemo do
       class="menu"
       redirect
       items={[
-        %Corex.Tree.Item{id: "https://zagjs.com/components/react/menu", label: "Zag menu", new_tab: true},
-        %Corex.Tree.Item{id: "https://hexdocs.pm/phoenix_live_view/", label: "Phoenix LiveView", new_tab: true}
+        %Corex.Tree.Item{value: "https://zagjs.com/components/react/menu", label: "Zag menu", new_tab: true},
+        %Corex.Tree.Item{value: "https://hexdocs.pm/phoenix_live_view/", label: "Phoenix LiveView", new_tab: true}
       ]}
     >
       <:trigger>External</:trigger>
@@ -560,12 +560,12 @@ defmodule E2eWeb.Demos.MenuDemo do
       redirect
       items={[
         %Corex.Tree.Item{
-          id: "https://zagjs.com/components/react/menu",
+          value: "https://zagjs.com/components/react/menu",
           label: "Zag menu",
           new_tab: true
         },
         %Corex.Tree.Item{
-          id: "https://hexdocs.pm/phoenix_live_view/",
+          value: "https://hexdocs.pm/phoenix_live_view/",
           label: "Phoenix LiveView",
           new_tab: true
         }
@@ -584,8 +584,8 @@ defmodule E2eWeb.Demos.MenuDemo do
       class="menu"
       redirect
       items={[
-        %Corex.Tree.Item{id: ~p"/menu/playground", label: "href (default)", redirect: :href},
-        %Corex.Tree.Item{id: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
+        %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
+        %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
       ]}
     >
       <:trigger>Redirect kinds</:trigger>
@@ -596,8 +596,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_types_items do
     [
-      %Corex.Tree.Item{id: ~p"/menu/playground", label: "href (default)", redirect: :href},
-      %Corex.Tree.Item{id: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
+      %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
+      %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
     ]
   end
 

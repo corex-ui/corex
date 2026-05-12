@@ -5,7 +5,7 @@ defmodule Test.Support.ConnectProps do
     Map.merge(
       %{
         id: "test-select",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         invalid: false,
         read_only: false,
         disabled: false,
@@ -33,7 +33,7 @@ defmodule Test.Support.ConnectProps do
     Map.merge(
       %{
         id: "test",
-        items: [%{id: "a", label: "A"}],
+        items: [%{value: "a", label: "A"}],
         value: [],
         dir: "ltr",
         controlled: false,

@@ -225,10 +225,12 @@ defmodule Corex.MixProject do
         Corex.Content,
         Corex.Content.Item
       ],
+      DataList: [
+        Corex.DataList.Item
+      ],
       List: [
         Corex.List,
-        Corex.List.Item,
-        Corex.Item
+        Corex.List.Item
       ],
       Tree: [
         Corex.Tree,

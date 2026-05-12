@@ -1,23 +1,24 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RJABPW5C.mjs";
+} from "./chunks/chunk-NMOLO6CB.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-ZZR3S6PP.mjs";
-import "./chunks/chunk-K2P3QAIZ.mjs";
+} from "./chunks/chunk-MLVURBKI.mjs";
+import "./chunks/chunk-B7AHHTCM.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-6QZYI6OY.mjs";
+} from "./chunks/chunk-YM6Q7RBK.mjs";
 import {
-  zagIdValueLabelCollectionConfig
-} from "./chunks/chunk-7NUJK5QP.mjs";
+  itemValue,
+  zagListCollectionConfig
+} from "./chunks/chunk-PWLG55J6.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-5M7MXCQU.mjs";
+} from "./chunks/chunk-P32UGRVU.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -26,10 +27,10 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-MG52DTQN.mjs";
+} from "./chunks/chunk-CTFBPAMI.mjs";
 import {
   readStringListControlledZagProps
-} from "./chunks/chunk-CDKBKUQ4.mjs";
+} from "./chunks/chunk-FBXRLPHX.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -69,7 +70,7 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1265,7 +1266,7 @@ var Select = class extends Component {
     this._options = Array.isArray(options) ? options : [];
   }
   getCollection() {
-    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+    return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1301,7 +1302,7 @@ var Select = class extends Component {
       if (!isOwnedByContent(itemEl)) return;
       const value = itemEl.dataset.value ?? "";
       if (!value) return;
-      const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
+      const item = this.options.find((i) => String(itemValue(i)) === String(value));
       if (!item) return;
       this.spreadProps(itemEl, this.api.getItemProps({ item }));
       const textEl = itemEl.querySelector(
@@ -1348,8 +1349,7 @@ var Select = class extends Component {
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];
         const selectedItem = this.options.find((item) => {
-          const itemValue = item.id ?? item.value ?? "";
-          return String(itemValue) === String(selectedValue);
+          return String(itemValue(item)) === String(selectedValue);
         });
         valueText.textContent = selectedItem?.label || this.placeholder;
       } else {
@@ -1368,7 +1368,7 @@ var Select = class extends Component {
 
 // hooks/select.ts
 function buildCollection(items, hasGroups) {
-  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
+  return collection(zagListCollectionConfig(items, hasGroups));
 }
 function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
   const redirectOn = getBoolean(el, "redirect");

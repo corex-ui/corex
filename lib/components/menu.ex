@@ -10,7 +10,7 @@ defmodule Corex.Menu do
 
   You must use `Corex.Tree.Item` struct for items.
 
-  The value for each item is optional, useful for the API to identify the item.
+  The value for each item is optional in maps passed to `Corex.Tree.new/1` (auto-generated when omitted).
 
   You can specify disabled for each item and nested children.
 
@@ -19,15 +19,15 @@ defmodule Corex.Menu do
     class="menu"
     items={[
       %Corex.Tree.Item{
-        id: "edit",
+        value: "edit",
         label: "Edit"
       },
       %Corex.Tree.Item{
-        id: "duplicate",
+        value: "duplicate",
         label: "Duplicate"
       },
       %Corex.Tree.Item{
-        id: "delete",
+        value: "delete",
         label: "Delete"
       }
     ]}
@@ -48,29 +48,29 @@ defmodule Corex.Menu do
     class="menu"
     items={[
       %Corex.Tree.Item{
-        id: "new-tab",
+        value: "new-tab",
         label: "New tab"
       },
       %Corex.Tree.Item{
-        id: "share",
+        value: "share",
         label: "Share",
         children: [
           %Corex.Tree.Item{
-            id: "messages",
+            value: "messages",
             label: "Messages"
           },
           %Corex.Tree.Item{
-            id: "airdrop",
+            value: "airdrop",
             label: "Airdrop"
           },
           %Corex.Tree.Item{
-            id: "whatsapp",
+            value: "whatsapp",
             label: "WhatsApp"
           }
         ]
       },
       %Corex.Tree.Item{
-        id: "print",
+        value: "print",
         label: "Print..."
       }
     ]}
@@ -88,10 +88,10 @@ defmodule Corex.Menu do
     class="menu"
     items={[
       %Corex.Tree.Item{
-        id: "share",
+        value: "share",
         label: "Share",
         children: [
-          %Corex.Tree.Item{id: "messages", label: "Messages"}
+          %Corex.Tree.Item{value: "messages", label: "Messages"}
         ]
       }
     ]}
@@ -112,22 +112,22 @@ defmodule Corex.Menu do
     class="menu"
     items={[
       %Corex.Tree.Item{
-        id: "edit",
+        value: "edit",
         label: "Edit",
         group: "Actions"
       },
       %Corex.Tree.Item{
-        id: "duplicate",
+        value: "duplicate",
         label: "Duplicate",
         group: "Actions"
       },
       %Corex.Tree.Item{
-        id: "account-1",
+        value: "account-1",
         label: "Account 1",
         group: "Accounts"
       },
       %Corex.Tree.Item{
-        id: "account-2",
+        value: "account-2",
         label: "Account 2",
         group: "Accounts"
       }
@@ -144,7 +144,7 @@ defmodule Corex.Menu do
 
   ## Use as Navigation
 
-  Set `redirect` on the component so selecting an item navigates to the item's id (e.g. path).
+  Set `redirect` on the component so selecting an item navigates to the item's value (e.g. path).
   Per item, choose the navigation kind explicitly via the item's `:redirect` field:
 
     * `:href` (default) - full page redirect via `window.location` (safe everywhere)
@@ -171,9 +171,9 @@ defmodule Corex.Menu do
     class="menu"
     redirect
     items={[
-      %Corex.Tree.Item{id: "/", label: "Home"},
-      %Corex.Tree.Item{id: "/docs", label: "Docs"},
-      %Corex.Tree.Item{id: "https://example.com", label: "External", new_tab: true}
+      %Corex.Tree.Item{value: "/", label: "Home"},
+      %Corex.Tree.Item{value: "/docs", label: "Docs"},
+      %Corex.Tree.Item{value: "https://example.com", label: "External", new_tab: true}
     ]}
   >
     <:trigger>Navigate</:trigger>
@@ -185,7 +185,7 @@ defmodule Corex.Menu do
 
   ### LiveView
 
-  When connected to LiveView, use `on_select` and redirect in the callback. The payload includes `value` (the item id).
+  When connected to LiveView, use `on_select` and redirect in the callback. The payload includes `value` (the item value).
 
   ```elixir
   defmodule MyAppWeb.NavMenuLive do
@@ -202,8 +202,8 @@ defmodule Corex.Menu do
         redirect
         on_select="handle_select"
         items={[
-          %Corex.Tree.Item{id: "/", label: "Home"},
-          %Corex.Tree.Item{id: "/docs", label: "Docs"}
+          %Corex.Tree.Item{value: "/", label: "Home"},
+          %Corex.Tree.Item{value: "/docs", label: "Docs"}
         ]}
       >
         <:trigger>Navigate</:trigger>
@@ -297,7 +297,7 @@ defmodule Corex.Menu do
   - Manual item definition with full control using slots
 
   When using `:items`, each item MUST be a `%Corex.Tree.Item{}` struct with:
-  - `:id` (required) - unique identifier for the item
+  - `:value` - Unique value for the item (used by the client and for `value` / selection APIs)
   - `:label` (required) - label text for the item
   - `:children` (optional) - list of nested `%Corex.Tree.Item{}` structs for nested menus
   - `:disabled` (optional, default: false) - whether the item is disabled
@@ -381,7 +381,7 @@ defmodule Corex.Menu do
   attr(:redirect, :boolean,
     default: false,
     doc: """
-    When true, selecting an item triggers redirect-on-select using the item's id (or `:to`)
+    When true, selecting an item triggers redirect-on-select using the item's value (or `:to`)
     as the destination. Each item picks the navigation kind via its `:redirect` field
     (`:href` (default) | `:patch` | `:navigate` | `false`); set `:new_tab` to open in a new tab.
     """
@@ -598,7 +598,7 @@ defmodule Corex.Menu do
 
   defp menu_nested_items(assigns) do
     base_id = String.replace_prefix(assigns.menu_id, "menu:", "")
-    nested_id = "#{base_id}:#{assigns.item.id}"
+    nested_id = "#{base_id}:#{assigns.item.value}"
     children = List.wrap(assigns.item.children)
     entries = build_menu_entries(children)
     group_entries = Enum.filter(entries, &match?({:group, _, _, _}, &1))
@@ -740,14 +740,14 @@ defmodule Corex.Menu do
   defp menu_item_struct(menu_id, dir, orientation, item) do
     %Item{
       id: menu_id,
-      value: item.id,
+      value: item.value,
       disabled: item.disabled,
       dir: dir,
       orientation: orientation,
       has_nested: item.children != [] && item.children != nil,
       nested_menu_id:
         if(item.children != [] && item.children != nil,
-          do: "#{String.replace_prefix(menu_id, "menu:", "")}:#{item.id}",
+          do: "#{String.replace_prefix(menu_id, "menu:", "")}:#{item.value}",
           else: nil
         ),
       redirect: Map.get(item, :redirect),
@@ -766,7 +766,7 @@ defmodule Corex.Menu do
         Please use the Corex.Tree.Item struct:
 
         %Corex.Tree.Item{
-          id: "unique-id",
+          value: "unique-id",
           label: "Label text",
           children: [],
           disabled: false,

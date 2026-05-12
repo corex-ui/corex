@@ -12,22 +12,22 @@ defmodule Corex.ContentTest do
     test "creates list of items from maps" do
       items =
         Content.new([
-          %{trigger: "T1", content: "C1"},
-          %{trigger: "T2", content: "C2"}
+          %{label: "T1", content: "C1"},
+          %{label: "T2", content: "C2"}
         ])
 
       assert length(items) == 2
       assert Enum.all?(items, &is_struct(&1, Item))
-      assert Enum.at(items, 0).trigger == "T1"
+      assert Enum.at(items, 0).label == "T1"
       assert Enum.at(items, 0).content == "C1"
-      assert Enum.at(items, 1).trigger == "T2"
+      assert Enum.at(items, 1).label == "T2"
       assert Enum.at(items, 1).content == "C2"
     end
 
-    test "accepts id, disabled, meta on items" do
+    test "accepts value, disabled, meta on items" do
       items =
         Content.new([
-          %{value: "custom-id", trigger: "T1", content: "C1", disabled: true, meta: %{x: 1}}
+          %{value: "custom-id", label: "T1", content: "C1", disabled: true, meta: %{x: 1}}
         ])
 
       assert length(items) == 1
@@ -36,8 +36,14 @@ defmodule Corex.ContentTest do
       assert Enum.at(items, 0).meta == %{x: 1}
     end
 
+    test "raises when row contains unknown :id" do
+      assert_raise ArgumentError, fn ->
+        Content.new([%{id: "x", label: "T1", content: "C1"}])
+      end
+    end
+
     test "raises for invalid list format" do
-      assert_raise ArgumentError, ~r/Expected a list of maps/, fn ->
+      assert_raise ArgumentError, ~r/invalid items/, fn ->
         Content.new(["not", "keyword"])
       end
     end
@@ -55,24 +61,30 @@ defmodule Corex.ContentTest do
 
   describe "Content.Item.new/1" do
     test "creates item with required fields" do
-      item = Item.new(%{value: "item-1", trigger: "Lorem", content: "Consectetur"})
-      assert item.trigger == "Lorem"
+      item = Item.new(%{value: "item-1", label: "Lorem", content: "Consectetur"})
+      assert item.label == "Lorem"
       assert item.content == "Consectetur"
       assert item.disabled == false
     end
 
     test "creates item from map" do
-      item = Item.new(%{value: "item-1", trigger: "T", content: "C"})
-      assert item.trigger == "T"
+      item = Item.new(%{value: "item-1", label: "T", content: "C"})
+      assert item.label == "T"
       assert item.content == "C"
     end
 
-    test "accepts explicit id" do
-      item = Item.new(%{value: "my-id", trigger: "T", content: "C"})
+    test "auto-generates value when omitted" do
+      item = Item.new(%{label: "Lorem", content: "C"})
+      assert item.label == "Lorem"
+      assert String.starts_with?(item.value, "content-")
+    end
+
+    test "accepts explicit value" do
+      item = Item.new(%{value: "my-id", label: "T", content: "C"})
       assert item.value == "my-id"
     end
 
-    test "raises when trigger missing" do
+    test "raises when label missing" do
       assert_raise ArgumentError, ~r/Failed to create Content\.Item/, fn ->
         Item.new(%{value: "item-1", content: "C only"})
       end
@@ -80,7 +92,7 @@ defmodule Corex.ContentTest do
 
     test "raises when content missing" do
       assert_raise ArgumentError, ~r/Failed to create Content\.Item/, fn ->
-        Item.new(%{value: "item-1", trigger: "T only"})
+        Item.new(%{value: "item-1", label: "T only"})
       end
     end
 

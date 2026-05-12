@@ -17,12 +17,12 @@
     field={f[:country]}
     placeholder="Select a country"
     items={[
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ]}
   >
     <:label>
@@ -45,7 +45,7 @@
     <:label>Preferred currency</:label>
     <:empty>No results</:empty>
     <:item :let={item}>
-      <span class="font-mono text-xs uppercase place-self-end">{item.id}</span>
+      <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
       <span>{item.label}</span>
     </:item>
     <:trigger>

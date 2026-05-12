@@ -68,7 +68,7 @@ defmodule E2eWeb.Demos.DataListDemo do
     <.data_list
       class="data-list"
       items={
-        Corex.Item.new([
+        Corex.DataList.Item.new([
           %{title: "Repository", value: "corex-ui/corex"},
           %{title: "Visibility", value: "Public"},
           %{title: "Default branch", value: "main"},
@@ -84,7 +84,7 @@ defmodule E2eWeb.Demos.DataListDemo do
     <.data_list
       class="data-list"
       items={
-        Corex.Item.new([
+        Corex.DataList.Item.new([
           %{title: "Repository", value: "corex-ui/corex"},
           %{title: "Visibility", value: "Public"},
           %{title: "Default branch", value: "main"},

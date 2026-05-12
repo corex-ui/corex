@@ -1,7 +1,7 @@
-defmodule Corex.ItemTest do
+defmodule Corex.DataList.ItemTest do
   use ExUnit.Case, async: true
 
-  alias Corex.Item
+  alias Corex.DataList.Item
 
   describe "build/1" do
     test "builds from map with title and value" do

@@ -92,7 +92,7 @@ defmodule Corex.HelpersTest do
       item =
         Item.new(
           label: "A",
-          id: "a",
+          value: "a",
           to: "/x",
           redirect: :patch,
           new_tab: true,
@@ -100,7 +100,7 @@ defmodule Corex.HelpersTest do
         )
 
       [row] = Helpers.normalize_items([item])
-      assert row.id == "a"
+      assert row.value == "a"
       assert row.to == "/x"
       assert row.redirect == :patch
       assert row.new_tab == true
@@ -110,7 +110,7 @@ defmodule Corex.HelpersTest do
     test "preserves redirect fields from maps" do
       [row] =
         Helpers.normalize_items([
-          %{id: "b", label: "B", to: "/y", redirect: :navigate, new_tab: false, meta: %{}}
+          %{value: "b", label: "B", to: "/y", redirect: :navigate, new_tab: false, meta: %{}}
         ])
 
       assert row.to == "/y"
@@ -120,7 +120,7 @@ defmodule Corex.HelpersTest do
 
     test "raises on invalid redirect atom" do
       assert_raise ArgumentError, ~r/invalid item :redirect/, fn ->
-        Helpers.normalize_items([%{id: "c", label: "C", redirect: :oops}])
+        Helpers.normalize_items([%{value: "c", label: "C", redirect: :oops}])
       end
     end
   end

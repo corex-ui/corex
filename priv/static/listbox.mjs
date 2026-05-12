@@ -1,6 +1,7 @@
 import {
-  zagIdValueLabelCollectionConfig
-} from "./chunks/chunk-7NUJK5QP.mjs";
+  itemValue,
+  zagListCollectionConfig
+} from "./chunks/chunk-PWLG55J6.mjs";
 import {
   GridCollection,
   ListCollection,
@@ -9,7 +10,7 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunks/chunk-5M7MXCQU.mjs";
+} from "./chunks/chunk-P32UGRVU.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -18,7 +19,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-MG52DTQN.mjs";
+} from "./chunks/chunk-CTFBPAMI.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -59,7 +60,7 @@ import {
   scrollIntoView,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
@@ -916,7 +917,7 @@ var Listbox = class extends Component {
     return ids;
   }
   getCollection() {
-    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+    return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -990,7 +991,7 @@ var Listbox = class extends Component {
       }
     } else {
       for (const item of items) {
-        const value = String(item.id ?? item.value ?? "");
+        const value = String(itemValue(item));
         const template = templatesRoot.querySelector(
           `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
         );
@@ -1021,7 +1022,7 @@ var Listbox = class extends Component {
     contentEl.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach((itemEl) => {
       if (!isOwnedByContent(itemEl)) return;
       const value = itemEl.dataset.value ?? "";
-      const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
+      const item = this.options.find((i) => String(itemValue(i)) === String(value));
       if (!item) return;
       this.spreadProps(itemEl, this.api.getItemProps({ item }));
       const textEl = itemEl.querySelector(
@@ -1062,7 +1063,7 @@ var Listbox = class extends Component {
 
 // hooks/listbox.ts
 function buildCollection(items, hasGroups) {
-  return collection(zagIdValueLabelCollectionConfig(items, hasGroups));
+  return collection(zagListCollectionConfig(items, hasGroups));
 }
 function listboxZagPropsBase(el, liveSocket, pushEvent) {
   const redirectOn = getBoolean(el, "redirect");

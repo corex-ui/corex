@@ -1,6 +1,6 @@
 import {
   TreeCollection
-} from "./chunks/chunk-5M7MXCQU.mjs";
+} from "./chunks/chunk-P32UGRVU.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -13,7 +13,7 @@ import {
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
   stripHiddenFromProps
-} from "./chunks/chunk-OPWAZ7L4.mjs";
+} from "./chunks/chunk-WG2KNE4C.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -60,7 +60,7 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tree-view@1.40.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(
@@ -1319,7 +1319,7 @@ function scrollToNode(params, value) {
 // components/tree-view.ts
 function createTreeCollection(rootNode) {
   return collection({
-    nodeToValue: (node) => node.id,
+    nodeToValue: (node) => node.value,
     nodeToString: (node) => node.name,
     rootNode
   });

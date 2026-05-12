@@ -36,7 +36,7 @@ defmodule CorexTest.ComponentHelpers do
   def render_accordion(assigns) do
     assigns =
       assigns
-      |> assign_new(:items, fn -> Corex.Content.new([%{trigger: "T1", content: "C1"}]) end)
+      |> assign_new(:items, fn -> Corex.Content.new([%{label: "T1", content: "C1"}]) end)
       |> assign_new(:orientation, fn -> "vertical" end)
       |> assign_new(:collapsible, fn -> true end)
       |> assign_new(:multiple, fn -> true end)
@@ -49,7 +49,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_accordion_with_indicator(assigns) do
     assigns =
-      assign_new(assigns, :items, fn -> Corex.Content.new([%{trigger: "T1", content: "C1"}]) end)
+      assign_new(assigns, :items, fn -> Corex.Content.new([%{label: "T1", content: "C1"}]) end)
 
     ~H"""
     <.accordion items={@items}>
@@ -60,7 +60,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_accordion_with_custom_slots(assigns) do
     assigns =
-      assign_new(assigns, :items, fn -> Corex.Content.new([%{trigger: "T1", content: "C1"}]) end)
+      assign_new(assigns, :items, fn -> Corex.Content.new([%{label: "T1", content: "C1"}]) end)
 
     ~H"""
     <.accordion items={@items}>
@@ -152,7 +152,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_with_items(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "a", label: "A"}])}>
+    <.combobox items={Corex.List.new([%{value: "a", label: "A"}])}>
       <:empty>No results</:empty>
       <:trigger>Select</:trigger>
     </.combobox>
@@ -161,7 +161,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_with_item_slot(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "x", label: "X"}])}>
+    <.combobox items={Corex.List.new([%{value: "x", label: "X"}])}>
       <:empty>None</:empty>
       <:item :let={item}>{item.label}!</:item>
       <:trigger>Open</:trigger>
@@ -171,7 +171,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_with_clear_and_indicator(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "b", label: "B"}])}>
+    <.combobox items={Corex.List.new([%{value: "b", label: "B"}])}>
       <:empty>None</:empty>
       <:trigger>Open</:trigger>
       <:clear_trigger>Clear</:clear_trigger>
@@ -182,7 +182,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_grouped(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "e1", label: "E1", group: "Europe"}, %{id: "a1", label: "A1", group: "Asia"}])}>
+    <.combobox items={Corex.List.new([%{value: "e1", label: "E1", group: "Europe"}, %{value: "a1", label: "A1", group: "Asia"}])}>
       <:empty>None</:empty>
       <:trigger>Open</:trigger>
     </.combobox>
@@ -191,7 +191,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_filter_false(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "c", label: "C"}])} filter={false}>
+    <.combobox items={Corex.List.new([%{value: "c", label: "C"}])} filter={false}>
       <:empty>None</:empty>
       <:trigger>Open</:trigger>
     </.combobox>
@@ -200,7 +200,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_combobox_default_multiple(assigns) do
     ~H"""
-    <.combobox items={Corex.List.new([%{id: "m1", label: "M1"}, %{id: "m2", label: "M2"}])} value={["m1"]} multiple>
+    <.combobox items={Corex.List.new([%{value: "m1", label: "M1"}, %{value: "m2", label: "M2"}])} value={["m1"]} multiple>
       <:empty>None</:empty>
       <:trigger>Open</:trigger>
     </.combobox>
@@ -324,25 +324,25 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_listbox(assigns) do
     ~H"""
-    <.listbox items={Corex.List.new([%{label: "A", id: "a"}])} />
+    <.listbox items={Corex.List.new([%{label: "A", value: "a"}])} />
     """
   end
 
   def render_listbox_grouped(assigns) do
     ~H"""
-    <.listbox items={Corex.List.new([%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}])} />
+    <.listbox items={Corex.List.new([%{label: "E1", value: "e1", group: "Europe"}, %{label: "A1", value: "a1", group: "Asia"}])} />
     """
   end
 
   def render_listbox_list_items(assigns) do
     ~H"""
-    <.listbox items={Corex.List.new([%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}])} />
+    <.listbox items={Corex.List.new([%Corex.List.Item{value: "li-1", label: "Item 1"}, %Corex.List.Item{value: "li-2", label: "Item 2"}])} />
     """
   end
 
   def render_listbox_controlled(assigns) do
     ~H"""
-    <.listbox items={Corex.List.new([%{label: "A", id: "a"}])} controlled value={["a"]} />
+    <.listbox items={Corex.List.new([%{label: "A", value: "a"}])} controlled value={["a"]} />
     """
   end
 
@@ -356,7 +356,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_menu(assigns) do
     ~H"""
-    <.menu items={Corex.Tree.new([%{label: "Item", id: "1"}])}>
+    <.menu items={Corex.Tree.new([%{label: "Item", value: "1"}])}>
       <:trigger>Menu</:trigger>
     </.menu>
     """
@@ -366,9 +366,9 @@ defmodule CorexTest.ComponentHelpers do
     ~H"""
     <.menu items={
       Corex.Tree.new([
-        %{label: "A1", id: "a1", group: "Group A"},
-        %{label: "A2", id: "a2", group: "Group A"},
-        %{label: "B1", id: "b1", group: "Group B"}
+        %{label: "A1", value: "a1", group: "Group A"},
+        %{label: "A2", value: "a2", group: "Group A"},
+        %{label: "B1", value: "b1", group: "Group B"}
       ])
     }>
       <:trigger>Menu</:trigger>
@@ -380,7 +380,7 @@ defmodule CorexTest.ComponentHelpers do
     ~H"""
     <.menu items={
       Corex.Tree.new([
-        %{label: "Share", id: "share", children: [%{label: "Messages", id: "messages"}]}
+        %{label: "Share", value: "share", children: [%{label: "Messages", value: "messages"}]}
       ])
     }>
       <:trigger>Menu</:trigger>
@@ -391,7 +391,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_menu_with_loading(assigns) do
     ~H"""
-    <.menu items={Corex.Tree.new([%{label: "Item", id: "1"}])}>
+    <.menu items={Corex.Tree.new([%{label: "Item", value: "1"}])}>
       <:trigger>Menu</:trigger>
     </.menu>
     """
@@ -399,7 +399,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select(assigns) do
     ~H"""
-    <.select items={Corex.List.new([%{label: "A", id: "a"}])}>
+    <.select items={Corex.List.new([%{label: "A", value: "a"}])}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -408,7 +408,7 @@ defmodule CorexTest.ComponentHelpers do
   def render_select_with_opts(assigns) do
     ~H"""
     <.select
-      items={Corex.List.new([%{label: "A", id: "a"}])}
+      items={Corex.List.new([%{label: "A", value: "a"}])}
       translation={%Corex.Select.Translation{placeholder: @placeholder}}
     >
       <:trigger>Select</:trigger>
@@ -418,7 +418,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_controlled_multiple(assigns) do
     ~H"""
-    <.select items={Corex.List.new([%{label: "A", id: "a"}, %{label: "B", id: "b"}])} controlled value={["a"]} multiple>
+    <.select items={Corex.List.new([%{label: "A", value: "a"}, %{label: "B", value: "b"}])} controlled value={["a"]} multiple>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -426,7 +426,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_grouped(assigns) do
     ~H"""
-    <.select items={Corex.List.new([%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}])}>
+    <.select items={Corex.List.new([%{label: "E1", value: "e1", group: "Europe"}, %{label: "A1", value: "a1", group: "Asia"}])}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -434,7 +434,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_uncontrolled_value(assigns) do
     ~H"""
-    <.select items={Corex.List.new([%{label: "A", id: "a"}])} value={["a"]}>
+    <.select items={Corex.List.new([%{label: "A", value: "a"}])} value={["a"]}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -447,7 +447,7 @@ defmodule CorexTest.ComponentHelpers do
     assigns = assign(assigns, :field, field)
 
     ~H"""
-    <.select field={@field} items={Corex.List.new([%{id: "fra", label: "France"}, %{id: "deu", label: "Germany"}])}>
+    <.select field={@field} items={Corex.List.new([%{value: "fra", label: "France"}, %{value: "deu", label: "Germany"}])}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -458,7 +458,7 @@ defmodule CorexTest.ComponentHelpers do
 
     ~H"""
     <.tabs
-      items={Corex.Content.new([%{value: "tab-1", trigger: "Tab1", content: "C1"}])}
+      items={Corex.Content.new([%{value: "tab-1", label: "Tab1", content: "C1"}])}
       orientation={@orientation}
     />
     """
@@ -467,7 +467,7 @@ defmodule CorexTest.ComponentHelpers do
   def render_tabs_with_indicator(assigns) do
     assigns =
       assign_new(assigns, :items, fn ->
-        Corex.Content.new([%{value: "tab-1", trigger: "T1", content: "C1"}])
+        Corex.Content.new([%{value: "tab-1", label: "T1", content: "C1"}])
       end)
 
     ~H"""
@@ -479,14 +479,14 @@ defmodule CorexTest.ComponentHelpers do
     assigns =
       assign_new(assigns, :items, fn ->
         Corex.Content.new([
-          %{value: "a", trigger: "A", content: "A content"},
-          %{value: "b", trigger: "B", content: "B content"}
+          %{value: "a", label: "A", content: "A content"},
+          %{value: "b", label: "B", content: "B content"}
         ])
       end)
 
     ~H"""
     <.tabs id="items-custom-tabs" items={@items} value="item-0">
-      <:trigger :let={item}>{item.trigger}</:trigger>
+      <:trigger :let={item}>{item.label}</:trigger>
       <:content :let={item}>{item.content}</:content>
     </.tabs>
     """
@@ -608,7 +608,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_tree_view(assigns) do
     ~H"""
-    <.tree_view id="tree-test" items={Corex.Tree.new([%{label: "Item", id: "1"}])} />
+    <.tree_view id="tree-test" items={Corex.Tree.new([%{label: "Item", value: "1"}])} />
     """
   end
 
@@ -616,7 +616,7 @@ defmodule CorexTest.ComponentHelpers do
     ~H"""
     <.tree_view id="tree-branch" items={
       Corex.Tree.new([
-        %{label: "Parent", id: "p", children: [%{label: "Child", id: "c"}]}
+        %{label: "Parent", value: "p", children: [%{label: "Child", value: "c"}]}
       ])
     } />
     """
@@ -626,7 +626,7 @@ defmodule CorexTest.ComponentHelpers do
     ~H"""
     <.tree_view
       id="tree-ctrl"
-      items={Corex.Tree.new([%{label: "Item", id: "1"}])}
+      items={Corex.Tree.new([%{label: "Item", value: "1"}])}
       controlled
       expanded_value={[]}
       value={[]}

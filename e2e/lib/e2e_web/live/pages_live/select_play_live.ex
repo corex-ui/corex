@@ -4,22 +4,22 @@ defmodule E2eWeb.SelectPlayLive do
   import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
 
   @playground_countries [
-    %{label: "France", id: "fra"},
-    %{label: "Belgium", id: "bel"},
-    %{label: "Germany", id: "deu"},
-    %{label: "Netherlands", id: "nld"},
-    %{label: "Switzerland", id: "che"},
-    %{label: "Austria", id: "aut"}
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"},
+    %{label: "Netherlands", value: "nld"},
+    %{label: "Switzerland", value: "che"},
+    %{label: "Austria", value: "aut"}
   ]
 
-  @disabled_select_items Enum.map(@playground_countries, &%{label: &1.label, id: &1.id})
+  @disabled_select_items Enum.map(@playground_countries, &%{label: &1.label, value: &1.value})
 
   defp playground_items(controls) do
     disabled = Map.get(controls, :disabled_item_ids, [])
 
     Corex.List.new(
       Enum.map(@playground_countries, fn c ->
-        if c.id in disabled, do: Map.put(c, :disabled, true), else: c
+        if c.value in disabled, do: Map.put(c, :disabled, true), else: c
       end)
     )
   end

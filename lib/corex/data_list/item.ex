@@ -1,10 +1,10 @@
-defmodule Corex.Item do
+defmodule Corex.DataList.Item do
   @moduledoc ~S'''
   Struct for data items used in:
 
   - [DataList](Corex.DataList.html)
 
-  Use `Corex.Item.new/1` to build a list of items from a list of maps.
+  Use `Corex.DataList.Item.new/1` to build a list of items from a list of maps.
 
   ## Fields
 
@@ -14,7 +14,7 @@ defmodule Corex.Item do
 
   ## Examples
 
-      Corex.Item.new([
+      Corex.DataList.Item.new([
         %{title: "Name", value: "Marie Curie"},
         %{title: "Status", value: "Active", meta: %{color: "green"}}
       ])
@@ -30,7 +30,7 @@ defmodule Corex.Item do
         }
 
   @doc """
-  Creates a single `Corex.Item` from a map, auto-generating `:value` as `"item-N"` when not provided.
+  Creates a single `DataList.Item` from a map, auto-generating `:value` as `"item-N"` when not provided.
 
   Raises `ArgumentError` if `attrs` is not a map or is missing required fields.
   """
@@ -42,13 +42,13 @@ defmodule Corex.Item do
     e in [KeyError, ArgumentError] ->
       reraise ArgumentError,
               """
-              Failed to create Corex.Item: #{Exception.message(e)}
+              Failed to create Corex.DataList.Item: #{Exception.message(e)}
 
               Required fields: [:title]
               Optional fields: [:value, :meta]
 
               Example:
-                Corex.Item.build(%{title: "Name", value: "Ada"})
+                Corex.DataList.Item.build(%{title: "Name", value: "Ada"})
               """,
               __STACKTRACE__
   end
@@ -58,27 +58,27 @@ defmodule Corex.Item do
     Expected a map, got: #{inspect(attrs)}
 
     Example:
-      Corex.Item.build(%{title: "Name", value: "Ada"})
+      Corex.DataList.Item.build(%{title: "Name", value: "Ada"})
     """
   end
 
   @doc """
-  Creates a list of `%Corex.Item{}` structs from a list of maps.
+  Creates a list of `%Corex.DataList.Item{}` structs from a list of maps.
 
   Auto-generates `:value` as `"item-N"` (1-based index) when not provided.
 
   ## Examples
 
-      iex> Corex.Item.new([%{title: "Name", value: "Ada"}])
-      [%Corex.Item{title: "Name", value: "Ada", meta: %{}}]
+      iex> Corex.DataList.Item.new([%{title: "Name", value: "Ada"}])
+      [%Corex.DataList.Item{title: "Name", value: "Ada", meta: %{}}]
 
-      iex> Corex.Item.new([%{title: "Status", value: "Active", meta: %{color: "green"}}])
-      [%Corex.Item{title: "Status", value: "Active", meta: %{color: "green"}}]
+      iex> Corex.DataList.Item.new([%{title: "Status", value: "Active", meta: %{color: "green"}}])
+      [%Corex.DataList.Item{title: "Status", value: "Active", meta: %{color: "green"}}]
 
-      iex> Corex.Item.new([%{title: "Name"}, %{title: "Status"}])
+      iex> Corex.DataList.Item.new([%{title: "Name"}, %{title: "Status"}])
       [
-        %Corex.Item{title: "Name", value: "item-1", meta: %{}},
-        %Corex.Item{title: "Status", value: "item-2", meta: %{}}
+        %Corex.DataList.Item{title: "Name", value: "item-1", meta: %{}},
+        %Corex.DataList.Item{title: "Status", value: "item-2", meta: %{}}
       ]
 
   Raises `ArgumentError` if `items` is not a list of maps.
@@ -98,13 +98,13 @@ defmodule Corex.Item do
     e in [KeyError, ArgumentError] ->
       reraise ArgumentError,
               """
-              Failed to create Corex.Item list: #{Exception.message(e)}
+              Failed to create Corex.DataList.Item list: #{Exception.message(e)}
 
               Required fields: [:title]
               Optional fields: [:value, :meta]
 
               Example:
-                Corex.Item.new([
+                Corex.DataList.Item.new([
                   %{title: "Name", value: "Ada"},
                   %{title: "Status", value: "Active", meta: %{color: "green"}}
                 ])
@@ -117,7 +117,7 @@ defmodule Corex.Item do
     Expected a list of maps, but the list contains non-map items.
 
     Example:
-      Corex.Item.new([
+      Corex.DataList.Item.new([
         %{title: "Name", value: "Ada"},
         %{title: "Status", value: "Active"}
       ])
@@ -129,7 +129,7 @@ defmodule Corex.Item do
     Expected a list of maps, got: #{inspect(items)}
 
     Example:
-      Corex.Item.new([
+      Corex.DataList.Item.new([
         %{title: "Name", value: "Ada"}
       ])
     """

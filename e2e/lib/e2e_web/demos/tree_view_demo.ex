@@ -12,27 +12,27 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "lib",
-        id: "lib",
+        value: "lib",
         children: [
-          %{label: "tree_view.ex", id: "lib-tree-view-ex"},
-          %{label: "tree_view_demo.ex", id: "lib-tree-view-demo-ex"}
+          %{label: "tree_view.ex", value: "lib-tree-view-ex"},
+          %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
         ]
       },
       %{
         label: "test",
-        id: "test",
+        value: "test",
         children: [
-          %{label: "tree_view_test.exs", id: "test-tree-view-test-exs"}
+          %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
         ]
       },
       %{
         label: "assets",
-        id: "assets",
+        value: "assets",
         children: [
-          %{label: "tree-view.ts", id: "assets-tree-view-ts"}
+          %{label: "tree-view.ts", value: "assets-tree-view-ts"}
         ]
       },
-      %{label: "mix.exs", id: "mix-exs"}
+      %{label: "mix.exs", value: "mix-exs"}
     ])
   end
 
@@ -44,17 +44,17 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "corex",
-        id: "repo-corex",
+        value: "repo-corex",
         children: [
           %{
             label: "lib",
-            id: "repo-lib",
+            value: "repo-lib",
             children: [
-              %{label: "tree_view.ex", id: "repo-lib-tree-view-ex"},
-              %{label: "tree_view_demo.ex", id: "repo-lib-tree-view-demo-ex"}
+              %{label: "tree_view.ex", value: "repo-lib-tree-view-ex"},
+              %{label: "tree_view_demo.ex", value: "repo-lib-tree-view-demo-ex"}
             ]
           },
-          %{label: "mix.exs", id: "repo-mix-exs"}
+          %{label: "mix.exs", value: "repo-mix-exs"}
         ]
       }
     ])
@@ -68,20 +68,20 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "lib",
-        id: "styling-lib",
+        value: "styling-lib",
         children: [
-          %{label: "tree_view.ex", id: "styling-lib-tree-view-ex"},
-          %{label: "tree_view_demo.ex", id: "styling-lib-tree-view-demo-ex"}
+          %{label: "tree_view.ex", value: "styling-lib-tree-view-ex"},
+          %{label: "tree_view_demo.ex", value: "styling-lib-tree-view-demo-ex"}
         ]
       },
       %{
         label: "test",
-        id: "styling-test",
+        value: "styling-test",
         children: [
-          %{label: "tree_view_test.exs", id: "styling-test-tree-view-test-exs"}
+          %{label: "tree_view_test.exs", value: "styling-test-tree-view-test-exs"}
         ]
       },
-      %{label: "mix.exs", id: "styling-mix-exs"}
+      %{label: "mix.exs", value: "styling-mix-exs"}
     ])
   end
 
@@ -97,17 +97,17 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   defp code_anatomy_items do
     ~S"""
     Corex.Tree.new([
-          %{label: "lib", id: "lib", children: [
-            %{label: "tree_view.ex", id: "lib-tree-view-ex"},
-            %{label: "tree_view_demo.ex", id: "lib-tree-view-demo-ex"}
+          %{label: "lib", value: "lib", children: [
+            %{label: "tree_view.ex", value: "lib-tree-view-ex"},
+            %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
           ]},
-          %{label: "test", id: "test", children: [
-            %{label: "tree_view_test.exs", id: "test-tree-view-test-exs"}
+          %{label: "test", value: "test", children: [
+            %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
           ]},
-          %{label: "assets", id: "assets", children: [
-            %{label: "tree-view.ts", id: "assets-tree-view-ts"}
+          %{label: "assets", value: "assets", children: [
+            %{label: "tree-view.ts", value: "assets-tree-view-ts"}
           ]},
-          %{label: "mix.exs", id: "mix-exs"}
+          %{label: "mix.exs", value: "mix-exs"}
         ])
     """
     |> String.trim_trailing("\n")
@@ -116,12 +116,12 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   defp code_api_items do
     ~S"""
     Corex.Tree.new([
-          %{label: "corex", id: "repo-corex", children: [
-            %{label: "lib", id: "repo-lib", children: [
-              %{label: "tree_view.ex", id: "repo-lib-tree-view-ex"},
-              %{label: "tree_view_demo.ex", id: "repo-lib-tree-view-demo-ex"}
+          %{label: "corex", value: "repo-corex", children: [
+            %{label: "lib", value: "repo-lib", children: [
+              %{label: "tree_view.ex", value: "repo-lib-tree-view-ex"},
+              %{label: "tree_view_demo.ex", value: "repo-lib-tree-view-demo-ex"}
             ]},
-            %{label: "mix.exs", id: "repo-mix-exs"}
+            %{label: "mix.exs", value: "repo-mix-exs"}
           ]}
         ])
     """
@@ -131,14 +131,14 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   defp code_styling_items do
     ~S"""
     Corex.Tree.new([
-          %{label: "lib", id: "lib", children: [
-            %{label: "tree_view.ex", id: "lib-tree-view-ex"},
-            %{label: "tree_view_demo.ex", id: "lib-tree-view-demo-ex"}
+          %{label: "lib", value: "lib", children: [
+            %{label: "tree_view.ex", value: "lib-tree-view-ex"},
+            %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
           ]},
-          %{label: "test", id: "test", children: [
-            %{label: "tree_view_test.exs", id: "test-tree-view-test-exs"}
+          %{label: "test", value: "test", children: [
+            %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
           ]},
-          %{label: "mix.exs", id: "mix-exs"}
+          %{label: "mix.exs", value: "mix-exs"}
         ])
     """
     |> String.trim_trailing("\n")
@@ -1311,7 +1311,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   # --------------------------------------------------------------------------
 
   @doc """
-  Navigation tree used by the redirect pattern. Node ids are built with
+  Navigation tree used by the redirect pattern. Node values are built with
   verified routes (`~p"..."`) which automatically include the current locale
   prefix via `path_prefixes` on `Phoenix.VerifiedRoutes` (Gettext locale).
   """
@@ -1319,18 +1319,18 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "Accordion",
-        id: ~p"/accordion/anatomy",
+        value: ~p"/accordion/anatomy",
         children: [
-          %{label: "Structure", id: ~p"/accordion/anatomy"},
-          %{label: "Playground", id: ~p"/accordion/playground"}
+          %{label: "Structure", value: ~p"/accordion/anatomy"},
+          %{label: "Playground", value: ~p"/accordion/playground"}
         ]
       },
       %{
         label: "Tree view",
-        id: ~p"/tree-view/anatomy",
+        value: ~p"/tree-view/anatomy",
         children: [
-          %{label: "Structure", id: ~p"/tree-view/anatomy"},
-          %{label: "Playground", id: ~p"/tree-view/playground"}
+          %{label: "Structure", value: ~p"/tree-view/anatomy"},
+          %{label: "Playground", value: ~p"/tree-view/playground"}
         ]
       }
     ])
@@ -1352,18 +1352,18 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         Corex.Tree.new([
           %{
             label: "Accordion",
-            id: ~p"/accordion/anatomy",
+            value: ~p"/accordion/anatomy",
             children: [
-              %{label: "Structure", id: ~p"/accordion/anatomy"},
-              %{label: "Playground", id: ~p"/accordion/playground"}
+              %{label: "Structure", value: ~p"/accordion/anatomy"},
+              %{label: "Playground", value: ~p"/accordion/playground"}
             ]
           },
           %{
             label: "Tree view",
-            id: ~p"/tree-view/anatomy",
+            value: ~p"/tree-view/anatomy",
             children: [
-              %{label: "Structure", id: ~p"/tree-view/anatomy"},
-              %{label: "Playground", id: ~p"/tree-view/playground"}
+              %{label: "Structure", value: ~p"/tree-view/anatomy"},
+              %{label: "Playground", value: ~p"/tree-view/playground"}
             ]
           }
         ])

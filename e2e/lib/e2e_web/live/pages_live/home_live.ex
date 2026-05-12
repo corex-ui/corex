@@ -5,12 +5,12 @@ defmodule E2eWeb.HomeLive do
     [
       %{
         value: "anatomy",
-        trigger: "Anatomy & slots",
+        label: "Anatomy & slots",
         content: "Structure, custom slots, compound mode."
       },
       %{
         value: "machine",
-        trigger: "State machines",
+        label: "State machines",
         content: "Zag.js powers accessibility, keyboard, and focus."
       }
     ]

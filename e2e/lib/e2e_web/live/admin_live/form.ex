@@ -43,9 +43,9 @@ defmodule E2eWeb.AdminLive.Form do
           deselectable
           translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
           items={[
-            %{label: "France", id: "fra"},
-            %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"}
+            %{label: "France", value: "fra"},
+            %{label: "Belgium", value: "bel"},
+            %{label: "Germany", value: "deu"}
           ]}
         >
           <:label>
@@ -69,7 +69,7 @@ defmodule E2eWeb.AdminLive.Form do
           <:label>Preferred currency</:label>
           <:empty>No results</:empty>
           <:item :let={item}>
-            <span class="font-mono text-xs uppercase place-self-end">{item.id}</span>
+            <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
             <span>{item.label}</span>
           </:item>
           <:trigger>
@@ -222,16 +222,16 @@ defmodule E2eWeb.AdminLive.Form do
 
   defp currency_items do
     [
-      %{id: "eur", label: "Euro"},
-      %{id: "usd", label: "US Dollar"},
-      %{id: "gbp", label: "British Pound"},
-      %{id: "jpy", label: "Japanese Yen"},
-      %{id: "chf", label: "Swiss Franc"},
-      %{id: "cad", label: "Canadian Dollar"},
-      %{id: "aud", label: "Australian Dollar"},
-      %{id: "sek", label: "Swedish Krona"},
-      %{id: "nok", label: "Norwegian Krone"},
-      %{id: "sgd", label: "Singapore Dollar"}
+      %{value: "eur", label: "Euro"},
+      %{value: "usd", label: "US Dollar"},
+      %{value: "gbp", label: "British Pound"},
+      %{value: "jpy", label: "Japanese Yen"},
+      %{value: "chf", label: "Swiss Franc"},
+      %{value: "cad", label: "Canadian Dollar"},
+      %{value: "aud", label: "Australian Dollar"},
+      %{value: "sek", label: "Swedish Krona"},
+      %{value: "nok", label: "Norwegian Krone"},
+      %{value: "sgd", label: "Singapore Dollar"}
     ]
   end
 end

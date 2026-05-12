@@ -2,11 +2,10 @@ import { connect, machine, collection, type Props, type Api } from "@zag-js/list
 import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { zagIdValueLabelCollectionConfig } from "../lib/list-collection";
+import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
 type Item = {
-  id?: string;
   value?: string;
   label: string;
   disabled?: boolean;
@@ -53,7 +52,7 @@ export class Listbox extends Component<Props<Item>, Api> {
   }
 
   getCollection(): ListCollection<Item> {
-    return collection(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
+    return collection(zagListCollectionConfig(this.options, this.hasGroups));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,7 +144,7 @@ export class Listbox extends Component<Props<Item>, Api> {
       }
     } else {
       for (const item of items) {
-        const value = String(item.id ?? item.value ?? "");
+        const value = String(itemValue(item));
         const template = templatesRoot.querySelector<HTMLElement>(
           `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
         );
@@ -185,7 +184,7 @@ export class Listbox extends Component<Props<Item>, Api> {
       .forEach((itemEl) => {
         if (!isOwnedByContent(itemEl)) return;
         const value = itemEl.dataset.value ?? "";
-        const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
+        const item = this.options.find((i) => String(itemValue(i)) === String(value));
         if (!item) return;
         this.spreadProps(itemEl, this.api.getItemProps({ item }));
         const textEl = itemEl.querySelector<HTMLElement>(

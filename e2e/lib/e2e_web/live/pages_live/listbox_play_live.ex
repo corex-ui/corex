@@ -27,13 +27,13 @@ defmodule E2eWeb.ListboxPlayLive do
 
     Corex.List.new(
       for {id, label} <- rows_for_controls() do
-        %{id: id, label: label, disabled: id in disabled}
+        %{value: id, label: label, disabled: id in disabled}
       end
     )
   end
 
   defp disabled_select_items do
-    for {id, label} <- rows_for_controls(), do: %{label: label, id: id}
+    for {id, label} <- rows_for_controls(), do: %{label: label, value: id}
   end
 
   defp playground_listbox_reset_value(controls) do

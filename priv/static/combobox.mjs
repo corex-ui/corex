@@ -4,23 +4,24 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-RJABPW5C.mjs";
+} from "./chunks/chunk-NMOLO6CB.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-ZZR3S6PP.mjs";
-import "./chunks/chunk-K2P3QAIZ.mjs";
+} from "./chunks/chunk-MLVURBKI.mjs";
+import "./chunks/chunk-B7AHHTCM.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-6QZYI6OY.mjs";
+} from "./chunks/chunk-YM6Q7RBK.mjs";
 import {
-  zagComboboxCollectionConfig
-} from "./chunks/chunk-7NUJK5QP.mjs";
+  itemValue,
+  zagListCollectionConfig
+} from "./chunks/chunk-PWLG55J6.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-5M7MXCQU.mjs";
+} from "./chunks/chunk-P32UGRVU.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -29,7 +30,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-MG52DTQN.mjs";
+} from "./chunks/chunk-CTFBPAMI.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -73,7 +74,7 @@ import {
   setCaretToEnd,
   setup,
   templatesContentRoot
-} from "./chunks/chunk-LTYT3NRU.mjs";
+} from "./chunks/chunk-EE44DOTL.mjs";
 
 // ../node_modules/.pnpm/@zag-js+combobox@1.40.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
@@ -1540,9 +1541,20 @@ function getOpenChangeReason(event) {
 
 // components/combobox.ts
 var Combobox = class extends Component {
-  options = [];
-  allOptions = [];
-  hasGroups = false;
+  options;
+  allOptions;
+  hasGroups;
+  constructor(el, props, allItems, hasGroups) {
+    super(el, props, (self) => {
+      const c = self;
+      c.allOptions = allItems;
+      c.options = allItems;
+      c.hasGroups = hasGroups;
+    });
+    this.allOptions = allItems;
+    this.options = allItems;
+    this.hasGroups = hasGroups;
+  }
   setAllOptions(options) {
     this.allOptions = options;
     this.options = options;
@@ -1550,9 +1562,12 @@ var Combobox = class extends Component {
   restoreFilteredOptions() {
     this.options = this.allOptions;
   }
+  activeItems() {
+    return this.options.length > 0 ? this.options : this.allOptions;
+  }
   getCollection() {
-    const items = this.options || this.allOptions || [];
-    return collection(zagComboboxCollectionConfig(items, this.hasGroups));
+    const items = this.activeItems();
+    return collection(zagListCollectionConfig(items, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1592,7 +1607,7 @@ var Combobox = class extends Component {
   }
   getItemValue(item) {
     const v = this.api.collection.getItemValue?.(item);
-    return v ?? item.id ?? "";
+    return v ?? itemValue(item);
   }
   buildOrderedBlocks(items) {
     const blocks = [];
@@ -1628,7 +1643,7 @@ var Combobox = class extends Component {
         )
       ).filter(isOwnedByList).forEach((el) => el.remove());
     });
-    const items = this.options?.length ? this.options : this.allOptions;
+    const items = this.activeItems();
     if (items.length === 0) {
       const emptyTemplate = templatesRoot.querySelector(
         '[data-scope="combobox"][data-part="empty"][data-template]'
@@ -1692,7 +1707,7 @@ var Combobox = class extends Component {
         this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
     });
-    const sourceItems = this.options?.length ? this.options : this.allOptions;
+    const sourceItems = this.activeItems();
     const byValue = /* @__PURE__ */ new Map();
     for (const item of sourceItems) {
       byValue.set(this.getItemValue(item), item);
@@ -1763,9 +1778,7 @@ function selectedItemLabel(items) {
   return first.label != null ? String(first.label) : "";
 }
 function syncVisibleInputAttribute(el, value) {
-  const visible = el.querySelector(
-    '[data-scope="combobox"][data-part="input"]'
-  );
+  const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
   if (visible) visible.setAttribute("value", value);
 }
 function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
@@ -1873,10 +1886,8 @@ var ComboboxHook = {
       ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef),
       ...comboboxValueBinding(el)
     };
-    const combobox = new Combobox(el, props);
+    const combobox = new Combobox(el, props, allItems, hasGroups);
     comboboxRef = combobox;
-    combobox.hasGroups = hasGroups;
-    combobox.setAllOptions(allItems);
     combobox.init();
     this.combobox = combobox;
     this.lastItemsJson = itemsJson;

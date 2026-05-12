@@ -68,7 +68,7 @@ defmodule E2eWeb.App.Aside do
           end
       end
 
-    id = Map.fetch!(assigns.node, :id)
+    id = Map.fetch!(assigns.node, :value)
     id_base = String.replace(id, ~r/[^a-zA-Z0-9_-]+/u, "-")
     assigns = assign(assigns, :badges, badges) |> assign(:id_base, id_base)
 

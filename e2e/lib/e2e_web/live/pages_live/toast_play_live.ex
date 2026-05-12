@@ -6,9 +6,9 @@ defmodule E2eWeb.ToastPlayLive do
   @toast_form_id "toast-playground-form"
 
   @type_items [
-    %{label: "Info", id: "info"},
-    %{label: "Success", id: "success"},
-    %{label: "Error", id: "error"}
+    %{label: "Info", value: "info"},
+    %{label: "Success", value: "success"},
+    %{label: "Error", value: "error"}
   ]
 
   @toast_types ~w(info success error)

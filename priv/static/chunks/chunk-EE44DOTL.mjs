@@ -2591,10 +2591,11 @@ var Component = class {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
-  constructor(el, props) {
+  constructor(el, props, beforeInitMachine) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
     this.doc = document;
+    beforeInitMachine?.(this);
     this.machine = this.initMachine(props);
     this.api = this.initApi();
   }

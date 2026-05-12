@@ -21,11 +21,11 @@ defmodule Corex.DataList do
 
   ### Items List
 
-  Pass a list of `%Corex.Item{}` structs. The component renders title and value
+  Pass a list of `%Corex.DataList.Item{}` structs. The component renders title and value
   using the default `dt`/`dd` structure.
 
   ```heex
-  <.data_list items={Corex.Item.new([
+  <.data_list items={Corex.DataList.Item.new([
     %{title: "Name", value: "Marie Curie"},
     %{title: "Field", value: "Physics"},
     %{title: "Born", value: "1867"}
@@ -38,7 +38,7 @@ defmodule Corex.DataList do
   still owns the `dt`/`dd` structure and `data-scope` attributes.
 
   ```heex
-  <.data_list items={Corex.Item.new([
+  <.data_list items={Corex.DataList.Item.new([
     %{title: "Status", value: "Active", meta: %{color: "green", icon: "hero-check"}},
     %{title: "Role", value: "Admin", meta: %{color: "blue", icon: "hero-shield-check"}}
   ])}>
@@ -89,11 +89,11 @@ defmodule Corex.DataList do
 
   ### Items List
 
-  Pass a list of `%Corex.Item{}` structs. The component renders title and value
+  Pass a list of `%Corex.DataList.Item{}` structs. The component renders title and value
   using the default `dt`/`dd` structure.
 
   ```heex
-  <.data_list items={Corex.Item.new([
+  <.data_list items={Corex.DataList.Item.new([
     %{title: "Name", value: "Marie Curie"},
     %{title: "Field", value: "Physics"},
     %{title: "Born", value: "1867"}
@@ -106,7 +106,7 @@ defmodule Corex.DataList do
   still owns the `dt`/`dd` structure and `data-scope` attributes.
 
   ```heex
-  <.data_list items={Corex.Item.new([
+  <.data_list items={Corex.DataList.Item.new([
     %{title: "Status", value: "Active", meta: %{color: "green", icon: "hero-check"}},
     %{title: "Role", value: "Admin", meta: %{color: "blue", icon: "hero-shield-check"}}
   ])}>
@@ -122,7 +122,7 @@ defmodule Corex.DataList do
   <!-- tabs-close -->
   """
 
-  attr(:items, :list, default: nil, doc: "List of %Corex.Item{} structs for the items API")
+  attr(:items, :list, default: nil, doc: "List of %Corex.DataList.Item{} structs for the items API")
   attr(:rest, :global, doc: "Additional HTML attributes for the root element")
 
   attr(:orientation, :string,
@@ -147,13 +147,13 @@ defmodule Corex.DataList do
   slot(:title,
     required: false,
     doc:
-      "Items API: customize the title content. Use :let={item} to access the %Corex.Item{} struct."
+      "Items API: customize the title content. Use :let={item} to access the %Corex.DataList.Item{} struct."
   )
 
   slot(:value,
     required: false,
     doc:
-      "Items API: customize the value content. Use :let={item} to access the %Corex.Item{} struct."
+      "Items API: customize the value content. Use :let={item} to access the %Corex.DataList.Item{} struct."
   )
 
   def data_list(assigns) do

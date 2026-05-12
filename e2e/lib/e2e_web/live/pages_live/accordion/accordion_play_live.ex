@@ -27,19 +27,19 @@ defmodule E2eWeb.AccordionPlayLive do
     Corex.Content.new([
       %{
         value: "lorem",
-        trigger: t1,
+        label: t1,
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         disabled: "lorem" in disabled
       },
       %{
         value: "duis",
-        trigger: t2,
+        label: t2,
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         disabled: "duis" in disabled
       },
       %{
         value: "donec",
-        trigger: t3,
+        label: t3,
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: "donec" in disabled
       }
@@ -177,29 +177,29 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp disabled_select_items do
     [
-      %{label: "Lorem", id: "lorem"},
-      %{label: "Duis", id: "duis"},
-      %{label: "Donec", id: "donec"}
+      %{label: "Lorem", value: "lorem"},
+      %{label: "Duis", value: "duis"},
+      %{label: "Donec", value: "donec"}
     ]
   end
 
   defp accordion_color_items do
     [
-      %{label: "Default", id: "default"},
-      %{label: "Accent", id: "accent"},
-      %{label: "Brand", id: "brand"},
-      %{label: "Alert", id: "alert"},
-      %{label: "Info", id: "info"},
-      %{label: "Success", id: "success"}
+      %{label: "Default", value: "default"},
+      %{label: "Accent", value: "accent"},
+      %{label: "Brand", value: "brand"},
+      %{label: "Alert", value: "alert"},
+      %{label: "Info", value: "info"},
+      %{label: "Success", value: "success"}
     ]
   end
 
   defp accordion_size_items do
     [
-      %{label: "SM", id: "sm"},
-      %{label: "MD", id: "md"},
-      %{label: "LG", id: "lg"},
-      %{label: "XL", id: "xl"}
+      %{label: "SM", value: "sm"},
+      %{label: "MD", value: "md"},
+      %{label: "LG", value: "lg"},
+      %{label: "XL", value: "xl"}
     ]
   end
 

@@ -3,31 +3,31 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   defp items do
     Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
     ])
   end
 
   defp grouped_items do
     Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"}
     ])
   end
 
   defp items_extended do
     Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])
   end
 
@@ -37,9 +37,9 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-minimal"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
       ])}
     >
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -65,9 +65,9 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-translation"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
@@ -95,9 +95,9 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-item-indicator"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
       ])}
     >
       <:label>Country</:label>
@@ -127,12 +127,12 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-grouped"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"},
-        %{label: "South Korea", id: "kor", group: "Asia"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"},
+        %{label: "South Korea", value: "kor", group: "Asia"}
       ])}
     >
       <:label>Country</:label>
@@ -160,17 +160,17 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-extended"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -188,7 +188,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -203,17 +203,17 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-anatomy-extended-grouped"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"},
-        %{label: "South Korea", id: "kor", group: "Asia"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"},
+        %{label: "South Korea", value: "kor", group: "Asia"}
       ])}
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -231,7 +231,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -242,7 +242,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_color_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select class="select" #{items_attr}>
@@ -329,7 +329,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_size_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select id="select-style-sm" class="select select--sm" #{items_attr}>
@@ -368,7 +368,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_text_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select id="select-style-text-sm" class="select select--text-sm" #{items_attr}>
@@ -407,7 +407,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_radius_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select id="select-style-rounded-none" class="select select--rounded-none" #{items_attr}>
@@ -452,7 +452,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_max_width_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select id="select-style-max-2xs" class="select max-w-2xs" #{items_attr}>
@@ -491,7 +491,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def styling_mix_modifiers_code do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select id="select-style-mix-1" class="select select--sm select--brand max-w-2xs" #{items_attr}>
@@ -535,7 +535,7 @@ defmodule E2eWeb.Demos.SelectDemo do
   end
 
   defp select_items_attr do
-    ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
   end
 
   def api_on_value_server_heex do
@@ -827,7 +827,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def events_server_heex do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select
@@ -852,7 +852,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def events_client_heex do
     items_attr =
-      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
     <.select
@@ -886,12 +886,12 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_country_items do
     Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])
   end
 
@@ -934,12 +934,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:label>Country</:label>
@@ -985,12 +985,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:label>Country (stricter messages)</:label>
@@ -1038,12 +1038,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
       >
         <:label>Country</:label>
@@ -1072,12 +1072,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         field={@form[:country]}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed"
@@ -1112,12 +1112,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         field={@form[:country]}
         items={Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed_strict"
@@ -1461,27 +1461,27 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def patterns_items_flat do
     Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])
   end
 
   def patterns_items_grouped do
     Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"},
-      %{label: "Thailand", id: "tha", group: "Asia"},
-      %{label: "USA", id: "usa", group: "North America"},
-      %{label: "Canada", id: "can", group: "North America"},
-      %{label: "Mexico", id: "mex", group: "North America"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"},
+      %{label: "Thailand", value: "tha", group: "Asia"},
+      %{label: "USA", value: "usa", group: "North America"},
+      %{label: "Canada", value: "can", group: "North America"},
+      %{label: "Mexico", value: "mex", group: "North America"}
     ])
   end
 
@@ -1508,12 +1508,12 @@ defmodule E2eWeb.Demos.SelectDemo do
     def mount(_params, _session, socket) do
       items =
         Corex.List.new([
-          %{label: "France", id: "fra"},
-          %{label: "Belgium", id: "bel"},
-          %{label: "Germany", id: "deu"},
-          %{label: "Netherlands", id: "nld"},
-          %{label: "Switzerland", id: "che"},
-          %{label: "Austria", id: "aut"}
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
         ])
 
       {:ok, assign(socket, value: [], items: items)}
@@ -1565,7 +1565,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger>
@@ -1588,7 +1588,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger>
@@ -1607,12 +1607,12 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-patterns-flat"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
@@ -1629,16 +1629,16 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-patterns-grouped"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"},
-        %{label: "South Korea", id: "kor", group: "Asia"},
-        %{label: "Thailand", id: "tha", group: "Asia"},
-        %{label: "USA", id: "usa", group: "North America"},
-        %{label: "Canada", id: "can", group: "North America"},
-        %{label: "Mexico", id: "mex", group: "North America"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"},
+        %{label: "South Korea", value: "kor", group: "Asia"},
+        %{label: "Thailand", value: "tha", group: "Asia"},
+        %{label: "USA", value: "usa", group: "North America"},
+        %{label: "Canada", value: "can", group: "North America"},
+        %{label: "Mexico", value: "mex", group: "North America"}
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
@@ -1655,18 +1655,18 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-patterns-extended"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra"},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger>
@@ -1685,18 +1685,18 @@ defmodule E2eWeb.Demos.SelectDemo do
       id="select-patterns-extended-grouped"
       class="select"
       items={Corex.List.new([
-        %{label: "France", id: "fra", group: "Europe"},
-        %{label: "Belgium", id: "bel", group: "Europe"},
-        %{label: "Germany", id: "deu", group: "Europe"},
-        %{label: "Japan", id: "jpn", group: "Asia"},
-        %{label: "China", id: "chn", group: "Asia"},
-        %{label: "South Korea", id: "kor", group: "Asia"}
+        %{label: "France", value: "fra", group: "Europe"},
+        %{label: "Belgium", value: "bel", group: "Europe"},
+        %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Japan", value: "jpn", group: "Asia"},
+        %{label: "China", value: "chn", group: "Asia"},
+        %{label: "South Korea", value: "kor", group: "Asia"}
       ])}
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
     >
       <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.id)} />
+        <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
       </:item>
       <:trigger>

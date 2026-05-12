@@ -12,14 +12,14 @@ defmodule Corex.TreeTest do
     test "creates list of items from maps" do
       items =
         Tree.new([
-          %{label: "File", id: "file"},
+          %{label: "File", value: "file"},
           %{label: "Edit"}
         ])
 
       assert length(items) == 2
       assert Enum.all?(items, &is_struct(&1, Item))
       assert Enum.at(items, 0).label == "File"
-      assert Enum.at(items, 0).id == "file"
+      assert Enum.at(items, 0).value == "file"
       assert Enum.at(items, 1).label == "Edit"
     end
 
@@ -39,8 +39,8 @@ defmodule Corex.TreeTest do
     test "creates items with group and meta" do
       items =
         Tree.new([
-          %{label: "A1", id: "a1", group: "Group A"},
-          %{label: "B1", id: "b1", group: "Group B", meta: %{key: "val"}}
+          %{label: "A1", value: "a1", group: "Group A"},
+          %{label: "B1", value: "b1", group: "Group B", meta: %{key: "val"}}
         ])
 
       assert length(items) == 2
@@ -61,6 +61,12 @@ defmodule Corex.TreeTest do
       end
     end
 
+    test "raises when nested child map uses :id" do
+      assert_raise ArgumentError, ~r/must not use :id/, fn ->
+        Tree.new([%{label: "P", children: [%{label: "C", id: "bad"}]}])
+      end
+    end
+
     test "raises for non-list input" do
       assert_raise ArgumentError, ~r/Expected a list of maps/, fn ->
         Tree.new("not a list")
@@ -72,14 +78,26 @@ defmodule Corex.TreeTest do
     test "creates item from map" do
       item = Item.new(%{label: "From map"})
       assert item.label == "From map"
-      assert is_binary(item.id)
-      assert String.starts_with?(item.id, "tree-")
+      assert is_binary(item.value)
+      assert String.starts_with?(item.value, "tree-")
       assert item.children == []
     end
 
-    test "preserves explicit id" do
-      item = Item.new(%{label: "Foo", id: "custom"})
-      assert item.id == "custom"
+    test "preserves explicit value" do
+      item = Item.new(%{label: "Foo", value: "custom"})
+      assert item.value == "custom"
+    end
+
+    test "raises when map uses :id instead of :value" do
+      assert_raise ArgumentError, ~r/must not use :id.*:value/, fn ->
+        Item.new(%{label: "X", id: "only-id"})
+      end
+    end
+
+    test "raises when map has both :id and :value" do
+      assert_raise ArgumentError, ~r/must not use :id.*:value/, fn ->
+        Item.new(%{label: "X", id: "a", value: "a"})
+      end
     end
 
     test "creates item with children" do
@@ -90,7 +108,7 @@ defmodule Corex.TreeTest do
     end
 
     test "passes through existing Tree.Item children without re-wrapping" do
-      child = Item.new(%{label: "Prebuilt", id: "prebuilt"})
+      child = Item.new(%{label: "Prebuilt", value: "prebuilt"})
       parent = Item.new(%{label: "Parent", children: [child]})
 
       assert length(parent.children) == 1
@@ -105,7 +123,7 @@ defmodule Corex.TreeTest do
 
     test "raises when label missing" do
       assert_raise ArgumentError, ~r/Required fields/, fn ->
-        Item.new(%{id: "x"})
+        Item.new(%{value: "x"})
       end
     end
 

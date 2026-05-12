@@ -14,12 +14,12 @@ defmodule Corex.Select do
     id="my-select"
     class="select"
     items={Corex.List.new([
-      %{label: "France", id: "fra", disabled: true},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra", disabled: true},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])}
   >
     <:trigger>
@@ -34,19 +34,19 @@ defmodule Corex.Select do
   <.select
     class="select"
     items={Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Netherlands", id: "nld", group: "Europe"},
-      %{label: "Switzerland", id: "che", group: "Europe"},
-      %{label: "Austria", id: "aut", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"},
-      %{label: "Thailand", id: "tha", group: "Asia"},
-      %{label: "USA", id: "usa", group: "North America"},
-      %{label: "Canada", id: "can", group: "North America"},
-      %{label: "Mexico", id: "mex", group: "North America"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Netherlands", value: "nld", group: "Europe"},
+      %{label: "Switzerland", value: "che", group: "Europe"},
+      %{label: "Austria", value: "aut", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"},
+      %{label: "Thailand", value: "tha", group: "Asia"},
+      %{label: "USA", value: "usa", group: "North America"},
+      %{label: "Canada", value: "can", group: "North America"},
+      %{label: "Mexico", value: "mex", group: "North America"}
     ])}
   >
     <:trigger>
@@ -62,19 +62,19 @@ defmodule Corex.Select do
   <.select
     class="select"
     items={Corex.List.new([
-      %{label: "France", id: "fra"},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
     ])}
   >
     <:label>
       Country of residence
     </:label>
     <:item :let={item}>
-      <Flagpack.flag name={String.to_atom(item.id)} />
+      <Flagpack.flag name={String.to_atom(to_string(item.value))} />
       {item.label}
     </:item>
     <:trigger>
@@ -93,16 +93,16 @@ defmodule Corex.Select do
   <.select
     class="select"
     items={Corex.List.new([
-      %{label: "France", id: "fra", group: "Europe"},
-      %{label: "Belgium", id: "bel", group: "Europe"},
-      %{label: "Germany", id: "deu", group: "Europe"},
-      %{label: "Japan", id: "jpn", group: "Asia"},
-      %{label: "China", id: "chn", group: "Asia"},
-      %{label: "South Korea", id: "kor", group: "Asia"}
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"}
     ])}
   >
     <:item :let={item}>
-      <Flagpack.flag name={String.to_atom(item.id)} />
+      <Flagpack.flag name={String.to_atom(to_string(item.value))} />
       {item.label}
     </:item>
     <:trigger>
@@ -212,12 +212,12 @@ defmodule Corex.Select do
       class="select"
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
       items={Corex.List.new([
-        %{label: "France", id: "fra", disabled: true},
-        %{label: "Belgium", id: "bel"},
-        %{label: "Germany", id: "deu"},
-        %{label: "Netherlands", id: "nld"},
-        %{label: "Switzerland", id: "che"},
-        %{label: "Austria", id: "aut"}
+        %{label: "France", value: "fra", disabled: true},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
     >
       <:label>Your country of residence</:label>
@@ -287,9 +287,9 @@ defmodule Corex.Select do
           controlled
           translation={%Corex.Select.Translation{placeholder: "Select a country"}}
           items={Corex.List.new([
-            %{label: "France", id: "fra"},
-            %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"}
+            %{label: "France", value: "fra"},
+            %{label: "Belgium", value: "bel"},
+            %{label: "Germany", value: "deu"}
           ])}
         >
           <:label>Your country of residence</:label>
@@ -386,7 +386,7 @@ defmodule Corex.Select do
 
   attr(:items, :list,
     default: [],
-    doc: "List of items from `Corex.List.new/1` (or maps with :id and :label)"
+    doc: "List of items from `Corex.List.new/1` (or maps with :label and optional :value)"
   )
 
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
@@ -609,27 +609,27 @@ defmodule Corex.Select do
                 {group}
               </div>
               <ul>
-                <li :for={item <- group_items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
+                <li :for={item <- group_items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
+                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {render_slot(@item, item)}
                   </span>
-                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
+                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {item.label}
                   </span>
-                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})}>
+                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                     {render_slot(@item_indicator)}
                   </span>
                 </li>
               </ul>
             </li>
-            <li :if={!@has_groups} :for={item <- @items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
-              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
+            <li :if={!@has_groups} :for={item <- @items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(Map.fetch!(item, :value)), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
+              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {render_slot(@item, item)}
               </span>
-              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), orientation: @orientation})}>
+              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {item.label}
               </span>
-              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), orientation: @orientation})}>
+              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(Map.fetch!(item, :value)), orientation: @orientation})}>
                 {render_slot(@item_indicator)}
               </span>
             </li>
@@ -692,7 +692,7 @@ defmodule Corex.Select do
   defp get_disabled_values(collection) do
     collection
     |> Enum.filter(&Map.get(&1, :disabled, false))
-    |> Enum.map(& &1.id)
+    |> Enum.map(& &1.value)
   end
 
   defp value_for_hidden_input(value_list, _multiple) when value_list == [], do: ""
@@ -703,13 +703,13 @@ defmodule Corex.Select do
     grouped = group_by_group(items)
 
     case grouped do
-      [{nil, all_items}] -> Enum.map(all_items, &{&1.label, &1.id})
+      [{nil, all_items}] -> Enum.map(all_items, &{&1.label, &1.value})
       _ -> Enum.flat_map(grouped, &group_to_options/1)
     end
   end
 
-  defp group_to_options({nil, items}), do: Enum.map(items, &{&1.label, &1.id})
-  defp group_to_options({group, items}), do: [{group, Enum.map(items, &{&1.label, &1.id})}]
+  defp group_to_options({nil, items}), do: Enum.map(items, &{&1.label, &1.value})
+  defp group_to_options({group, items}), do: [{group, Enum.map(items, &{&1.label, &1.value})}]
 
   defp get_value(field_value) do
     case field_value do
@@ -729,7 +729,7 @@ defmodule Corex.Select do
         value
         |> Enum.map(fn val ->
           collection
-          |> Enum.find(&(&1.id == val))
+          |> Enum.find(&(to_string(&1.value) == val))
         end)
         |> Enum.filter(& &1)
         |> Enum.map(& &1.label)
