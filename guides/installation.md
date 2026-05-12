@@ -84,8 +84,10 @@ Every Corex component exposes JS commands for client-side control and matching `
 </.action>
 ```
 
-## Next steps
+See [API](api.html) and [Events](events.html) for how helpers, `on_*`, and browser events fit together.
 
+- [API](api.html) control components from LiveView, HEEx, or JavaScript.
+- [Events](events.html) `on_*`, client events, and hook responses.
 - [MCP](mcp.html) Corex MCP for AI tooling in development.
 - [Dark mode](dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](theming.html) theme picker after `--theme`.

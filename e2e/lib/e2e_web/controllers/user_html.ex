@@ -34,7 +34,7 @@ defmodule E2eWeb.UserHTML do
     assigns = assign(assigns, :path_d_values, path_d_values)
 
     ~H"""
-    <span :if={@path_d_values == []} class="text-muted">—</span>
+    <span :if={@path_d_values == []} class="text-muted"> - </span>
     <svg
       :if={@path_d_values != []}
       viewBox="0 0 200 100"

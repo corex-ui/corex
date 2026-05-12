@@ -1,10 +1,10 @@
 # Tableau
 
-This guide adds [Corex](installation.html) to a **[Tableau](https://hex.pm/packages/tableau)** static site generated with HEEx, Esbuild, and Tailwind. It also covers the static-site equivalents of the Phoenix flow for **light/dark mode**, **theme**, **localization**, and the **MCP** plug — none of which can rely on a request-time plug pipeline in a Tableau site.
+This guide adds [Corex](installation.html) to a **[Tableau](https://hex.pm/packages/tableau)** static site generated with HEEx, Esbuild, and Tailwind. It also covers the static-site equivalents of the Phoenix flow for **light/dark mode**, **theme**, **localization**, and the **MCP** plug  -  none of which can rely on a request-time plug pipeline in a Tableau site.
 
-If you only need the minimum Corex install, stop after **§6 (Corex hooks)**. Sections **§7–§9** are independent: pull in any combination of mode/theme, localization, and MCP that your site needs.
+If you only need the minimum Corex install, stop after **6. Corex hooks**. **7** through **9** are optional: add mode/theme, localization, and/or MCP as needed.
 
-For the underlying ideas behind the Phoenix flow (cookies + plugs + verified routes) see [Dark mode](dark_mode.html), [Theming](theming.html), and [Localize](localize.html) — this guide owns the Tableau equivalents.
+For the underlying ideas behind the Phoenix flow (cookies + plugs + verified routes) see [Dark mode](dark_mode.html), [Theming](theming.html), and [Localize](localize.html)  -  this guide owns the Tableau equivalents.
 
 ## Create the site
 
@@ -36,7 +36,7 @@ mix deps.get
 
 ## 2. Esbuild: ESM, splitting, and `_site/js`
 
-Corex’s client uses **dynamic `import()`** for hook chunks. Follow [Manual installation §2](manual_installation.html#2-esbuild): enable **`--format=esm`**, **`--splitting`**, and a modern **`--target`** (for example **`es2022`**). Keep Tableau’s output directory so URLs stay **`/js/site.js`** and chunks live next to that file under **`_site/js`**.
+Corex’s client uses **dynamic `import()`** for hook chunks. Follow **[Manual installation  -  Esbuild](manual_installation.html#2-esbuild)** (`--format=esm`, `--splitting`, a modern `--target` such as **`es2022`**). Keep Tableau’s output directory so URLs stay **`/js/site.js`** and chunks stay next to that file under **`_site/js`**.
 
 Replace the stock **`config :esbuild, ... default:`** args with something like:
 
@@ -63,7 +63,7 @@ That creates **`assets/corex/`** from the **`corex`** package (see **`Mix.Tasks.
 
 ## 4. Tailwind entry: import Corex CSS
 
-After **`@import "tailwindcss"`** (or your Tailwind v4 entry), import design layers. At minimum: **`main.css`**, a **theme** (here **`neo`**), **typography** and **layout**, plus **one stylesheet per component family** you render. The example below already imports **`select.css`** and **`toggle-group.css`** because they style the theme picker and mode toggle introduced in §7 — drop them if you skip that section.
+After **`@import "tailwindcss"`** (or your Tailwind v4 entry), import design layers. At minimum: **`main.css`**, a **theme** (here **`neo`**), **typography** and **layout**, plus **one stylesheet per component family** you render. The example below already imports **`select.css`** and **`toggle-group.css`** for the theme picker and mode toggle in **7. Mode and theme**  -  drop them if you skip that part.
 
 ```css
 @import "tailwindcss";
@@ -78,13 +78,13 @@ After **`@import "tailwindcss"`** (or your Tailwind v4 entry), import design lay
 @import "../corex/components/accordion.css";
 ```
 
-To support all four soonex-style themes at once, also import **`theme/uno.css`**, **`theme/duo.css`**, and **`theme/leo.css`**. Each `theme/*.css` file scopes its tokens under `[data-theme="<name>"]`, so they coexist in one bundle — the active one is whichever the `<html>` attribute names.
+To support all four soonex-style themes at once, also import **`theme/uno.css`**, **`theme/duo.css`**, and **`theme/leo.css`**. Each `theme/*.css` file scopes its tokens under `[data-theme="<name>"]`, so they coexist in one bundle  -  the active one is whichever the `<html>` attribute names.
 
 Add **`typo`** and **`layout`** classes on **`<body>`**
 
 ## 5. Root layout
 
-Corex’s JS is **ESM** and Phoenix **`LiveSocket`** expects a **CSRF** token in the page. The full root layout below already includes the `data-*` attributes consumed in §7 (mode + theme), the `<html lang dir>` attributes consumed in §8 (localization), and the inline reconciliation script defined in §7.5 — drop the pieces you don't need.
+Corex’s JS is **ESM** and Phoenix **`LiveSocket`** expects a **CSRF** token in the page. The layout below includes `data-*` attributes for mode and theme (**7**), `lang` / `dir` for localization (**8**), and the inline script from **7.5**  -  remove what you do not use.
 
 In your **`Tableau.Layout`** module (typically **`lib/layouts/root_layout.ex`**):
 
@@ -146,15 +146,15 @@ end
 
 Three pieces stay invariant:
 
-1. **`<meta name="csrf-token" content={get_csrf_token()} />`** — required by `Phoenix.LiveSocket`.
-2. **`<script type="module" src="/js/site.js" />`** — Corex’s JS bundle is ESM.
-3. **`use Corex`** — exposes Corex function components inside the layout template.
+1. **`<meta name="csrf-token" content={get_csrf_token()} />`**  -  required by `Phoenix.LiveSocket`.
+2. **`<script type="module" src="/js/site.js" />`**  -  Corex’s JS bundle is ESM.
+3. **`use Corex`**  -  exposes Corex function components inside the layout template.
 
-If you skip §7, drop **`data-theme`** / **`data-mode`** / **`data-themes`** / **`data-default-theme`** and the **`MyApp.Appearance.head_script()`** call. If you skip §8, drop **`use Gettext`**, the **`Gettext.put_locale/2`** call, and the **`lang`** / **`dir`** / **`data-locale*`** attributes. **`MyApp.Theme`**, **`MyApp.Mode`**, **`MyApp.Locale`**, **`MyApp.Config`**, and **`MyApp.Appearance`** are introduced below in their respective sections.
+If you skip **7**, drop **`data-theme`** / **`data-mode`** / **`data-themes`** / **`data-default-theme`** and **`MyApp.Appearance.head_script()`**. If you skip **8**, drop **`use Gettext`**, **`Gettext.put_locale/2`**, and **`lang`** / **`dir`** / **`data-locale*`**. **`MyApp.Theme`**, **`MyApp.Mode`**, **`MyApp.Locale`**, **`MyApp.Config`**, and **`MyApp.Appearance`** appear in the sections below.
 
 ## 6. Corex hooks
 
-Import the **lazy `hooks`** helper from **`corex/hooks`** and pass one zero-argument factory per hook you actually use. Object keys must match the **`phx-hook`** names. With **`--format=esm --splitting`** (§2), Esbuild emits chunks **only** for the modules you list, so a component that never appears on a page is never fetched.
+Import the **lazy `hooks`** helper from **`corex/hooks`** and pass one zero-argument factory per hook you actually use. Object keys must match the **`phx-hook`** names. With **`--format=esm --splitting`** from **2. Esbuild**, Esbuild emits chunks **only** for the modules you list, so a component that never appears on a page is never fetched.
 
 In **`assets/js/site.js`**:
 
@@ -184,7 +184,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 liveSocket.connect()
 ```
 
-Drop **`Select`** / **`ToggleGroup`** / **`Tooltip`** when you skip §7, and drop the **`import "./appearance.js"`** line when you don't wire mode/theme/lang at all — that file is the bridge introduced in §7.5.
+Drop **`Select`** / **`ToggleGroup`** / **`Tooltip`** when you skip **7**, and drop **`import "./appearance.js"`** when you skip mode/theme/lang entirely  -  that file is the bridge from **7.5**.
 
 If you'd rather pull in **every** Corex hook at once and let your bundler keep the full lazy registry in your graph, replace the `hooks({...})` block with:
 
@@ -198,7 +198,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-Each lazy factory in the **`hooks({...})`** form is a **zero-argument function** returning the same dynamic `import()` your bundler would emit. If you already eager-import hook implementations from **`corex/<component>`**, you can still merge them with **`hooks`** by passing hook objects (not functions) as values — useful with `colocatedHooks`.
+Each lazy factory in the **`hooks({...})`** form is a **zero-argument function** returning the same dynamic `import()` your bundler would emit. If you already eager-import hook implementations from **`corex/<component>`**, you can still merge them with **`hooks`** by passing hook objects (not functions) as values  -  useful with `colocatedHooks`.
 
 ## 7. Mode and theme
 
@@ -207,8 +207,8 @@ The Phoenix flow in [Dark mode](dark_mode.html) and [Theming](theming.html) uses
 1. **App config** lists the available themes and the default theme.
 2. **`MyApp.Config`** / **`MyApp.Theme`** / **`MyApp.Mode`** read those values and resolve the active mode/theme from the layout assigns (defaulting when nothing is set).
 3. **`MyApp.Appearance.head_script/0`** emits an inline `<script>` that runs **before paint** and reconciles `localStorage` ↔ `data-theme` / `data-mode` on `<html>`, with `prefers-color-scheme` as the mode fallback and `data-default-theme` as the theme fallback.
-4. **`assets/js/appearance.js`** is the bridge: it listens for **`corex:set-theme`**, **`corex:set-mode`** (and **`corex:set-locale`** — see §8) window events from the Corex controls, persists the choice to `localStorage`, syncs `<html>` data attributes, and pushes the value back into the Select / ToggleGroup once each control mounts.
-5. The **`<.select>`** theme picker and **`<.toggle_group>`** mode toggle dispatch those events via **`on_value_change_client="corex:set-theme"`** / **`"corex:set-mode"`** — no server round-trip.
+4. **`assets/js/appearance.js`** is the bridge: it listens for **`corex:set-theme`**, **`corex:set-mode`** (and **`corex:set-locale`**  -  see **8**) window events from the Corex controls, persists the choice to `localStorage`, syncs `<html>` data attributes, and pushes the value back into the Select / ToggleGroup once each control mounts.
+5. The **`<.select>`** theme picker and **`<.toggle_group>`** mode toggle dispatch those events via **`on_value_change_client="corex:set-theme"`** / **`"corex:set-mode"`**  -  no server round-trip.
 
 ### 7.1. App config
 
@@ -221,7 +221,7 @@ config :my_app,
   default_theme: "neo"
 ```
 
-Match the list to the theme files you `@import` in `app.css` — exposing `leo` is pointless if you never `@import "../corex/theme/leo.css"`. The first theme in the list is also the safe fallback when no choice is stored.
+Match the list to the theme files you `@import` in `app.css`  -  exposing `leo` is pointless if you never `@import "../corex/theme/leo.css"`. The first theme in the list is also the safe fallback when no choice is stored.
 
 ### 7.2. `MyApp.Config`
 
@@ -241,7 +241,7 @@ defmodule MyApp.Config do
 end
 ```
 
-You'll extend this module with **`default_locale`** / **`locales`** in §8.
+You'll extend this module with **`default_locale`** / **`locales`** in **8. Localization**.
 
 ### 7.3. `MyApp.Theme` and `MyApp.Mode`
 
@@ -284,7 +284,7 @@ defmodule MyApp.Mode do
 end
 ```
 
-`current/1` always returns `"light"` or `"dark"` — `prefers-color-scheme` only kicks in **client-side** through the inline script in §7.4. The first paint reflects whatever the layout assigns (typically the default), and the inline script flips it before the body paints.
+`current/1` always returns `"light"` or `"dark"`  -  `prefers-color-scheme` only applies **client-side** via the inline script in **7.4**. The first paint follows the layout assigns (usually the default); the script corrects before the body paints.
 
 ### 7.4. Inline reconciliation script
 
@@ -316,11 +316,11 @@ defmodule MyApp.Appearance do
 end
 ```
 
-The root layout (§5) already calls `{MyApp.Appearance.head_script()}` inside `<head>`. Because the script runs synchronously before the body paints, the page never flashes the wrong theme/mode.
+The root layout (**5. Root layout**) already calls `{MyApp.Appearance.head_script()}` inside `<head>`. Because the script runs synchronously before the body paints, the page avoids a wrong theme/mode flash.
 
 ### 7.5. The bridge: `assets/js/appearance.js`
 
-Imported as the **first** statement of `assets/js/site.js` (§6). It reads **`data-themes`** / **`data-default-theme`** / **`data-locales`** from `<html>` so the JS doesn't duplicate the config:
+Imported as the **first** statement of `assets/js/site.js` (**6. Corex hooks**). It reads **`data-themes`** / **`data-default-theme`** / **`data-locales`** from `<html>` so the JS doesn't duplicate the config:
 
 ```javascript
 (() => {
@@ -433,7 +433,7 @@ The **`storage`** listener gives you cross-tab sync for free: change theme in on
 
 ### 7.6. Theme picker and mode toggle
 
-Render both inside the root layout (§5), typically in a header or a floating `<.tooltip>`. The DOM ids **`theme-switcher`** and **`mode-switcher`** must match the values the bridge looks for.
+Render both inside the root layout (**5**), typically in a header or a floating `<.tooltip>`. The DOM ids **`theme-switcher`** and **`mode-switcher`** must match the values the bridge looks for.
 
 ```heex
 <.select
@@ -473,14 +473,14 @@ Render both inside the root layout (§5), typically in a header or a floating `<
 </.toggle_group>
 ```
 
-Drop **`dir={…}`** when you skip §8 and replace **`gettext(...)`** with plain strings if you don't want Gettext. The Corex Design **`state-on`** / **`state-off`** classes flip which icon is visible based on the toggle's selected value.
+Drop **`dir={…}`** when you skip **8** and replace **`gettext(...)`** with plain strings if you don't want Gettext. The Corex Design **`state-on`** / **`state-off`** classes flip which icon is visible based on the toggle's selected value.
 
 ## 8. Localization
 
 The Phoenix flow in [Localize](localize.html) plugs locale resolution into the router and wraps localized routes in **`localize do … end`**. Tableau has no router, so locales are **baked in at build time**:
 
-1. **App config** — supported locales + default locale.
-2. **`MyApp.Gettext`** + **`MyApp.Locale`** — the Gettext backend and a small helper that drives `<html lang dir>`, **`swap_path/2`**, and the language switcher items.
+1. **App config**  -  supported locales + default locale.
+2. **`MyApp.Gettext`** + **`MyApp.Locale`**  -  the Gettext backend and a small helper that drives `<html lang dir>`, **`swap_path/2`**, and the language switcher items.
 3. **Per-locale page modules** generated with **`Module.create/3`**, with permalink **`"/"`** for the default locale and **`"/<locale>/..."`** for the rest.
 4. **`<.select redirect>`** language switcher in the layout that navigates to the swapped path; the bridge persists the choice to `localStorage` so the next visit lands on the right locale.
 
@@ -502,7 +502,7 @@ mix localize.download_locales en ar
 
 **`mix localize.download_locales`** populates the on-disk CLDR cache that **`Localize.Locale.get/3`** (used by **`MyApp.Locale.dir/1`**) and **`Localize.Locale.display_name/2`** (used by **`MyApp.Locale.label/1`**) read from. Run it once after adding the dep, and again whenever the supported list changes; consider hooking it into **`mix setup`** so fresh clones don't have to remember.
 
-> **`localize_web` is not required** in a Tableau site — its plugs and **`Localize.Routes`** are Phoenix-router only. Add it only if you want its HTML helpers in templates.
+> **`localize_web` is not required** in a Tableau site  -  its plugs and **`Localize.Routes`** are Phoenix-router only. Add it only if you want its HTML helpers in templates.
 
 ### 8.2. Configure Gettext + supported locales
 
@@ -533,7 +533,7 @@ config :localize,
 
 **`config :phoenix, :gettext_backend`** is what makes Corex components (Select, Editable, Dialog, …) pull their default labels from your catalog. Override a single label with a **`Translation`** struct on the component.
 
-Point **`MyApp.Config`** (§7.2) at Gettext for the same list the rest of the app uses:
+Point **`MyApp.Config`** (**7.2**) at Gettext for the same list the rest of the app uses:
 
 ```elixir
 def default_locale, do: MyApp.Gettext.default_locale()
@@ -623,7 +623,7 @@ defmodule MyApp.Locale do
 end
 ```
 
-**`current/1`** reads the page's permalink — the first path segment is the locale when supported, otherwise the default. **`swap_path/2`** is the workhorse for the language switcher: it strips the existing locale segment, prepends the target, and serves the default locale at **`/`** (instead of **`/en/`**) so canonical URLs stay clean. **`dir/1`** falls back through CLDR character order, then a hard-coded `ar → rtl` for safety.
+**`current/1`** reads the page's permalink  -  the first path segment is the locale when supported, otherwise the default. **`swap_path/2`** is the workhorse for the language switcher: it strips the existing locale segment, prepends the target, and serves the default locale at **`/`** (instead of **`/en/`**) so canonical URLs stay clean. **`dir/1`** falls back through CLDR character order, then a hard-coded `ar → rtl` for safety.
 
 ### 8.4. Per-locale page modules
 
@@ -667,11 +667,11 @@ for locale <- MyApp.Config.locales() do
 end
 ```
 
-Repeat the **`for`** block for every other page (about, posts index, …) you want under every locale. Markdown posts can keep a single layout (e.g. **`MyApp.PostLayout`**) and use **`permalink: /:title/`** in the front matter — the locale prefix only applies to the page modules you generate yourself.
+Repeat the **`for`** block for every other page (about, posts index, …) you want under every locale. Markdown posts can keep a single layout (e.g. **`MyApp.PostLayout`**) and use **`permalink: /:title/`** in the front matter  -  the locale prefix only applies to the page modules you generate yourself.
 
 ### 8.5. Language switcher
 
-The root layout in §5 already sets **`<html lang dir>`** and the **`data-locale*`** attributes, and it calls **`Gettext.put_locale/2`**. Render the language switcher anywhere in the body — typically in a footer:
+The root layout in **5. Root layout** already sets **`<html lang dir>`** and the **`data-locale*`** attributes, and it calls **`Gettext.put_locale/2`**. Render the language switcher anywhere in the body  -  typically in a footer:
 
 ```heex
 <.select
@@ -696,7 +696,7 @@ The root layout in §5 already sets **`<html lang dir>`** and the **`data-locale
 </.select>
 ```
 
-**`redirect`** makes the **`<.select>`** navigate to **`item.to`** on selection (the **`swap_path/2`** result), and **`on_value_change_client="corex:set-locale"`** lets the bridge persist the choice in **`localStorage["data-locale"]`** so other open tabs (and the language picker after hydration) stay in sync. The active locale on each page is still driven by the URL — `/` for the default locale, `/<locale>/...` for the others — so canonical links survive sharing.
+**`redirect`** makes the **`<.select>`** navigate to **`item.to`** on selection (the **`swap_path/2`** result), and **`on_value_change_client="corex:set-locale"`** lets the bridge persist the choice in **`localStorage["data-locale"]`** so other open tabs (and the language picker after hydration) stay in sync. The active locale on each page is still driven by the URL  -  `/` for the default locale, `/<locale>/...` for the others  -  so canonical links survive sharing.
 
 ### 8.6. Translate strings
 
@@ -793,8 +793,8 @@ After **`mix compile`** and your usual Tableau asset build (for example **`mix t
 
 ## Related
 
-- [Installation](installation.html) — **`mix corex.new`**, first components, next steps.
-- [Manual installation](manual_installation.html) — Esbuild details, **`mix corex.design`**, **`type="module"`**, **`use Corex`**, toasts, MCP, and Phoenix-only layout notes.
-- [Dark mode](dark_mode.html) and [Theming](theming.html) — Phoenix-flow equivalents of §7 with cookies + plugs.
-- [Localize](localize.html) — Phoenix-flow equivalent of §8 with **`localize_web`** plugs and **`localize do … end`**.
-- [MCP](mcp.html) — what the **MCP plug** does and the standard Phoenix-pipeline integration.
+- [Installation](installation.html)  -  **`mix corex.new`**, first components, next steps.
+- [Manual installation](manual_installation.html)  -  Esbuild details, **`mix corex.design`**, **`type="module"`**, **`use Corex`**, toasts, MCP, and Phoenix-only layout notes.
+- [Dark mode](dark_mode.html) and [Theming](theming.html)  -  Phoenix-style cookies and plugs for what **7** does in this guide.
+- [Localize](localize.html)  -  Phoenix-style **`localize_web`** and **`localize do … end`** for what **8** does here.
+- [MCP](mcp.html)  -  what the **MCP plug** does and the standard Phoenix-pipeline integration.

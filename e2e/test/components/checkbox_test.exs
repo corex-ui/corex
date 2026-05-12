@@ -11,7 +11,7 @@ defmodule E2eWeb.CheckboxTest do
     :ok
   end
 
-  feature "anatomy — click control in each section", %{session: session} do
+  feature "anatomy  -  click control in each section", %{session: session} do
     session =
       session
       |> E2eWeb.ComponentBehaviorSpec.visit_ready(Checkbox, :checkbox, :anatomy)
@@ -22,7 +22,7 @@ defmodule E2eWeb.CheckboxTest do
     end)
   end
 
-  feature "api — Set unchecked via binding", %{session: session} do
+  feature "api  -  Set unchecked via binding", %{session: session} do
     session
     |> E2eWeb.ComponentBehaviorSpec.visit_ready(Checkbox, :checkbox, :api)
 
@@ -30,7 +30,7 @@ defmodule E2eWeb.CheckboxTest do
     |> Checkbox.click_api_set_unchecked()
   end
 
-  feature "events — server checkbox produces log row", %{session: session} do
+  feature "events  -  server checkbox produces log row", %{session: session} do
     session =
       session
       |> E2eWeb.ComponentBehaviorSpec.visit_ready(Checkbox, :checkbox, :events)

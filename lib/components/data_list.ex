@@ -123,7 +123,7 @@ defmodule Corex.DataList do
   """
 
   attr(:items, :list, default: nil, doc: "List of %Corex.DataList.Item{} structs for the items API")
-  attr(:rest, :global, doc: "Additional HTML attributes for the root element")
+  attr(:rest, :global)
 
   attr(:orientation, :string,
     default: "vertical",

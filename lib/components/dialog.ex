@@ -74,9 +74,9 @@ defmodule Corex.Dialog do
 
   Set `animation` on `dialog` (`instant`, `js`, or `custom`).
 
-  - `instant` — Zag toggles the native `hidden` attribute, no animation.
-  - `js` — Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
-  - `custom` — the hook never re-applies `hidden`; the consumer drives the animation by listening to the `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
+  - `instant`  -  Zag toggles the native `hidden` attribute, no animation.
+  - `js`  -  Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
+  - `custom`  -  the hook never re-applies `hidden`; the consumer drives the animation by listening to the `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
 
         // event.detail (DialogOpenChangedDetail)
         { id, open, previousOpen }

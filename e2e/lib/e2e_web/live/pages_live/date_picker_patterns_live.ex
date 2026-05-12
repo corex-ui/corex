@@ -55,7 +55,7 @@ defmodule E2eWeb.DatePickerPatternsLive do
           <:preview>
             <div class="flex flex-col gap-3 items-start w-full max-w-md">
               <p class="text-sm text-fg-subtle" id="date-picker-patterns-status">
-                Selected: <span class="font-medium text-fg">{@selected || "—"}</span>
+                Selected: <span class="font-medium text-fg">{@selected || " - "}</span>
               </p>
               <.date_picker
                 id="date-picker-patterns-controlled"

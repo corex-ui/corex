@@ -4,7 +4,7 @@ Provides the `mix corex.new` installer as a Mix archive.
 
 It runs `mix phx.new` with forwarded Phoenix flags (always with `--no-install`),
 then renders Corex-owned files (layouts, root layout, home, plugs, app.js,
-app.css) directly from templates. LiveView, HTML, esbuild, and full Phoenix assets stay enabled — there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here. No Igniter, no nested generators.
+app.css) directly from templates. LiveView, HTML, esbuild, and full Phoenix assets stay enabled  -  there are no `--no-live` / `--no-html` / `--no-esbuild` / `--no-assets` switches here. No Igniter, no nested generators.
 
 To install from Hex, run:
 

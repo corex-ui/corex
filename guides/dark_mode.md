@@ -21,9 +21,9 @@ If the server renders one mode and the client immediately switches to another, y
 
 Use **three** layers in concert:
 
-1. **Cookie + Plug** — the server reads a `phx_mode` cookie and assigns `:mode` so the initial HTML carries the right `data-mode`.
-2. **Inline `<script>` in `<head>`** — runs before `<body>` paints; reconciles `localStorage` ↔ `data-mode` ↔ `prefers-color-scheme`, then writes the cookie back so the next request matches.
-3. **`phx:set-mode` window event** — the Corex toggle dispatches it on change; the bridge script listens and updates everything.
+1. **Cookie + Plug**  -  the server reads a `phx_mode` cookie and assigns `:mode` so the initial HTML carries the right `data-mode`.
+2. **Inline `<script>` in `<head>`**  -  runs before `<body>` paints; reconciles `localStorage` ↔ `data-mode` ↔ `prefers-color-scheme`, then writes the cookie back so the next request matches.
+3. **`phx:set-mode` window event**  -  the Corex toggle dispatches it on change; the bridge script listens and updates everything.
 
 ## 1. Create the Mode plug
 
@@ -136,9 +136,9 @@ Inside `<head>`, **before** the closing `</head>`, add the bridge script. It run
 
 The resolution order is deliberate:
 
-1. `localStorage["phx:mode"]` — what the user explicitly chose last time
-2. `document.documentElement.getAttribute("data-mode")` — what the server rendered (from the cookie via `Plugs.Mode`)
-3. `prefers-color-scheme` — fallback when neither exists
+1. `localStorage["phx:mode"]`  -  what the user explicitly chose last time
+2. `document.documentElement.getAttribute("data-mode")`  -  what the server rendered (from the cookie via `Plugs.Mode`)
+3. `prefers-color-scheme`  -  fallback when neither exists
 
 Because the script runs in `<head>` synchronously, the page never paints with the wrong mode.
 
@@ -200,7 +200,7 @@ Then make sure every page that renders the layout passes `mode={@mode}` (or `mod
 </Layouts.app>
 ```
 
-For LiveViews, attach a small **`on_mount`** hook that pulls **`:mode`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`mode`** (and **`theme`**, **`current_path`**) from the session — you do not need a separate **`ModeLive`** in that setup unless you remove that hook.
+For LiveViews, attach a small **`on_mount`** hook that pulls **`:mode`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`mode`** (and **`theme`**, **`current_path`**) from the session  -  you do not need a separate **`ModeLive`** in that setup unless you remove that hook.
 
 ```elixir
 defmodule MyAppWeb.ModeLive do
@@ -224,7 +224,7 @@ end
 
 ## 6. Styling
 
-If you are using **Corex Design**, make sure `assets/css/app.css` includes the `toggle-group` component CSS — that's what styles the toggle you just added — alongside any theme/dark CSS you depend on:
+If you are using **Corex Design**, make sure `assets/css/app.css` includes the `toggle-group` component CSS  -  that's what styles the toggle you just added  -  alongside any theme/dark CSS you depend on:
 
 ```css
 @import "../corex/main.css";
@@ -247,22 +247,22 @@ The Corex Design themes already define `[data-mode=dark]` overrides, so once `<h
 
 **Wrong mode on first paint.** Confirm the bridge `<script>` is in `<head>` (not `<body>`), `MyAppWeb.Plugs.Mode` runs in the browser pipeline, and the `phx_mode` cookie value matches what the script computes. FOUC almost always traces back to one of those three.
 
-**Mode changes don't persist across tabs.** The bridge script listens for `storage` events. Make sure you have not stripped that listener — without it, two open tabs can drift.
+**Mode changes don't persist across tabs.** The bridge script listens for `storage` events. Make sure you have not stripped that listener  -  without it, two open tabs can drift.
 
 **Mode resets on every navigation.** The cookie's `path` is `/`. If you scoped it differently or your reverse proxy rewrites cookies, the server-side `Plugs.Mode` reads `nil` and falls back to `"light"`.
 
 ## Summary
 
-1. **Cookie** — `Plugs.Mode` reads `phx_mode` and assigns `:mode` for the initial render and the session.
-2. **Server-rendered `data-mode`** — `<html data-mode={assigns[:mode] || "light"}>` carries the value into the first paint.
-3. **Inline `<script>` in `<head>`** — reconciles `localStorage` ↔ `data-mode` ↔ system preference, persists the cookie, and listens for `phx:set-mode`.
-4. **`Corex.ToggleGroup`** — `on_value_change_client="phx:set-mode"` dispatches the event the bridge listens for, so the toggle works without a server round-trip.
-5. **LiveView `on_mount`** — pulls `:mode` from the session so LiveViews see the same value as the initial render.
+1. **Cookie**  -  `Plugs.Mode` reads `phx_mode` and assigns `:mode` for the initial render and the session.
+2. **Server-rendered `data-mode`**  -  `<html data-mode={assigns[:mode] || "light"}>` carries the value into the first paint.
+3. **Inline `<script>` in `<head>`**  -  reconciles `localStorage` ↔ `data-mode` ↔ system preference, persists the cookie, and listens for `phx:set-mode`.
+4. **`Corex.ToggleGroup`**  -  `on_value_change_client="phx:set-mode"` dispatches the event the bridge listens for, so the toggle works without a server round-trip.
+5. **LiveView `on_mount`**  -  pulls `:mode` from the session so LiveViews see the same value as the initial render.
 
 Together these layers give you no-flicker dark mode that survives reloads, navigation, and multiple tabs.
 
 ## Related
 
-- [Theming](theming.html) — orthogonal `data-theme` switcher; the bridge script extends to handle both.
-- [Installation](installation.html) — the **`--mode`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
-- [Localize](localize.html) — **`Hooks.Layout`** combines locale routing with session **mode**/**theme** when **`--lang`** is enabled.
+- [Theming](theming.html)  -  orthogonal `data-theme` switcher; the bridge script extends to handle both.
+- [Installation](installation.html)  -  the **`--mode`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
+- [Localize](localize.html)  -  **`Hooks.Layout`** combines locale routing with session **mode**/**theme** when **`--lang`** is enabled.

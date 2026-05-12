@@ -6,15 +6,15 @@ defmodule Corex.PasswordInput do
 
   Client DOM dispatches:
 
-  - `corex:password-input:set-visible` — `detail.visible` boolean
+  - `corex:password-input:set-visible`  -  `detail.visible` boolean
   - `corex:password-input:toggle-visible`
   - `corex:password-input:focus`
 
   Server pushes (from `set_visible/3`, `toggle_visible/2`, `focus/2`):
 
-  - `password_input_set_visible` — `%{"id" => id, "visible" => boolean}`
-  - `password_input_toggle_visible` — `%{"id" => id}`
-  - `password_input_focus` — `%{"id" => id}`
+  - `password_input_set_visible`  -  `%{"id" => id, "visible" => boolean}`
+  - `password_input_toggle_visible`  -  `%{"id" => id}`
+  - `password_input_focus`  -  `%{"id" => id}`
 
   ## Examples
   <!-- tabs-open -->

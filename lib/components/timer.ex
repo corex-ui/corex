@@ -4,7 +4,7 @@ defmodule Corex.Timer do
 
   Countdown-only leading-zero collapse (hide unused day/hour columns) is **on by default** when `countdown` is true. Override with `collapse_leading_zeros={false}` or with fixed `segments`.
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
@@ -108,16 +108,55 @@ defmodule Corex.Timer do
 
   @parts [:days, :hours, :minutes, :seconds]
 
-  attr(:id, :string, required: false)
-  attr(:countdown, :boolean, default: false)
-  attr(:start_ms, :integer, default: 0)
-  attr(:target_ms, :integer, default: nil)
-  attr(:auto_start, :boolean, default: true)
-  attr(:interval, :integer, default: 1000)
-  attr(:on_tick, :string, default: nil)
-  attr(:on_tick_client, :string, default: nil)
-  attr(:on_complete, :string, default: nil)
-  attr(:on_complete_client, :string, default: nil)
+  attr(:id, :string,
+    required: false,
+    doc: "DOM id for the timer root; required for imperative timer API helpers."
+  )
+
+  attr(:countdown, :boolean,
+    default: false,
+    doc: "Count toward zero using target_ms when set."
+  )
+
+  attr(:start_ms, :integer,
+    default: 0,
+    doc: "Initial elapsed or remaining milliseconds depending on mode."
+  )
+
+  attr(:target_ms, :integer,
+    default: nil,
+    doc: "Countdown stops at this millisecond value (often 0)."
+  )
+
+  attr(:auto_start, :boolean,
+    default: true,
+    doc: "Start the timer automatically on mount."
+  )
+
+  attr(:interval, :integer,
+    default: 1000,
+    doc: "Tick interval in milliseconds."
+  )
+
+  attr(:on_tick, :string,
+    default: nil,
+    doc: "LiveView event for each tick; see module Events section."
+  )
+
+  attr(:on_tick_client, :string,
+    default: nil,
+    doc: "Browser CustomEvent name for each tick."
+  )
+
+  attr(:on_complete, :string,
+    default: nil,
+    doc: "LiveView event when countdown or count-up reaches target."
+  )
+
+  attr(:on_complete_client, :string,
+    default: nil,
+    doc: "Browser CustomEvent name when the run completes."
+  )
 
   attr(:collapse_leading_zeros, :boolean,
     default: nil,

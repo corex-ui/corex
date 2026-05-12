@@ -62,6 +62,8 @@ defmodule Corex.AngleSlider do
 
   ## API
 
+  See [API](api.html).
+
   ### LiveView
 
   The API targets one angle slider via its DOM `id` (the same `id` you pass to `angle_slider/1`).
@@ -89,7 +91,7 @@ defmodule Corex.AngleSlider do
 
   **Responses to LiveView** (`push_event` from the hook; handle in `handle_event/3`):
 
-  - `angle_slider_value_response` — `%{"id" => ..., "value" => number, "valueAsDegree" => number, "dragging" => boolean}`
+  - `angle_slider_value_response`  -  `%{"id" => ..., "value" => number, "valueAsDegree" => number, "dragging" => boolean}`
 
   ### Client (DOM)
 
@@ -97,26 +99,28 @@ defmodule Corex.AngleSlider do
 
   | Dispatch (type) | `detail` |
   |-----------------|----------|
-  | `corex:angle-slider:set-value` | `value` — number in degrees |
+  | `corex:angle-slider:set-value` | `value`  -  number in degrees |
   | `corex:angle-slider:value` | optional `respond_to`: `"server"`, `"client"`, or `"both"` |
 
   **Responses to the DOM** (listen on the hook root element):
 
-  - `angle-slider-value` — `detail` with `id`, `value`, `valueAsDegree`, and `dragging`
+  - `angle-slider-value`  -  `detail` with `id`, `value`, `valueAsDegree`, and `dragging`
 
   ## Events
+
+  See [Events](events.html).
 
   ### Server (LiveView)
 
   When `phx-hook="AngleSlider"` is active, Zag maps drag and value updates to your LiveView:
 
-  - **`on_value_change`** — `pushEvent/3` with the name you set. Params include `%{"id" => dom_id, "value" => number, "valueAsDegree" => number}`.
-  - **`on_value_change_end`** — same for the release event when you only care about the final value.
+  - **`on_value_change`**  -  `pushEvent/3` with the name you set. Params include `%{"id" => dom_id, "value" => number, "valueAsDegree" => number}`.
+  - **`on_value_change_end`**  -  same for the release event when you only care about the final value.
 
   ### Client (CustomEvent / DOM)
 
-  - **`on_value_change_client`** — browser `CustomEvent` **type** is the string you set. `event.detail` matches the same shape (camelCase in JS; bubbles).
-  - **`on_value_change_end_client`** — same pattern for the release event.
+  - **`on_value_change_client`**  -  browser `CustomEvent` **type** is the string you set. `event.detail` matches the same shape (camelCase in JS; bubbles).
+  - **`on_value_change_end_client`**  -  same pattern for the release event.
 
   ## Style
 
@@ -725,7 +729,7 @@ defmodule Corex.AngleSlider do
 
   Options:
 
-  - `:respond_to` — `:server` (default, LiveView `angle_slider_value_response` only), `:both` (also dispatches
+  - `:respond_to`  -  `:server` (default, LiveView `angle_slider_value_response` only), `:both` (also dispatches
     `angle-slider-value`), or `:client` (DOM `angle-slider-value` only). When `:server` and the LiveView is not connected, nothing is pushed.
 
   The hook pushes `angle_slider_value_response` when `:respond_to` is `:both` or `:server`, and dispatches

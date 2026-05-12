@@ -725,7 +725,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   # --------------------------------------------------------------------------
-  # API — Set Expanded
+  # API  -  Set Expanded
   # --------------------------------------------------------------------------
 
   def api_set_expanded_client_example(assigns) do
@@ -872,7 +872,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   # --------------------------------------------------------------------------
-  # API — Set Selected
+  # API  -  Set Selected
   # --------------------------------------------------------------------------
 
   def api_set_selected_client_example(assigns) do
@@ -1021,7 +1021,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   # --------------------------------------------------------------------------
-  # API — Get Expanded / Selected (server)
+  # API  -  Get Expanded / Selected (server)
   # --------------------------------------------------------------------------
 
   def api_get_expanded_server_example(assigns) do
@@ -1307,7 +1307,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   # --------------------------------------------------------------------------
-  # Patterns — Redirect (Navigate)
+  # Patterns  -  Redirect (Navigate)
   # --------------------------------------------------------------------------
 
   @doc """

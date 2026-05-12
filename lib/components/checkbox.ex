@@ -2,21 +2,7 @@ defmodule Corex.Checkbox do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
-  ## API and events
-
-  Client DOM dispatches (handled by the `Checkbox` hook on the component root):
-
-  - `corex:checkbox:set-checked` — `detail.checked` must be a boolean; clears indeterminate.
-  - `corex:checkbox:toggle-checked` — toggles checked.
-
-  Server pushes (from `set_checked/3`, `toggle_checked/2`):
-
-  - `checkbox_set_checked` — `%{"id" => id, "checked" => boolean}`
-  - `checkbox_toggle_checked` — `%{"id" => id}`
-
-  Declarative `checked` may be `true`, `false`, or `:indeterminate` (Zag `CheckedState`). Imperative `set_checked/2` remains boolean-only.
-
-  ## Examples
+  ## Anatomy
   <!-- tabs-open -->
 
   ### Minimal
@@ -59,7 +45,65 @@ defmodule Corex.Checkbox do
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ## API
+
+  See [API](api.html). Use a stable **`id`** on the checkbox with **`Corex.Checkbox.set_checked/2`**, **`set_checked/3`**, **`toggle_checked/1`**, and **`toggle_checked/2`**.
+
+  | DOM `CustomEvent` | `detail` |
+  | ----------------- | -------- |
+  | `corex:checkbox:set-checked` | `checked`  -  boolean; clears indeterminate |
+  | `corex:checkbox:toggle-checked` | (empty)  -  toggles checked |
+
+  ```heex
+  <.action phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>Check</.action>
+  <.action phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>Toggle</.action>
+  ```
+
+  ```elixir
+  def handle_event("check", _, socket),
+    do: {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
+
+  def handle_event("toggle", _, socket),
+    do: {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
+  ```
+
+  ## Events
+
+  See [Events](events.html).
+
+  From imperative helpers the hook receives **`checkbox_set_checked`** (`%{"id" => ..., "checked" => boolean}`) and **`checkbox_toggle_checked`** (`%{"id" => ...}`).
+
+  Declarative **`checked`** may be `true`, `false`, or `:indeterminate` (Zag `CheckedState`). Imperative **`set_checked`** remains boolean-only.
+
+  ## Styling
+
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="checkbox"][data-part="root"] {}
+  [data-scope="checkbox"][data-part="control"] {}
+  [data-scope="checkbox"][data-part="label"] {}
+  [data-scope="checkbox"][data-part="hidden-input"] {}
+  [data-scope="checkbox"][data-part="error"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/checkbox.css";
+  ```
+
+  You can then use modifiers:
+
+  ```heex
+  <.checkbox class="checkbox checkbox--accent checkbox--lg" />
+  ```
+
+  
+  ## Form
 
   When using with Phoenix forms, set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
 
@@ -162,57 +206,7 @@ defmodule Corex.Checkbox do
   end
   ```
 
-  ## API Control
-
-  ```heex
-  # Client-side
-  <button phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>
-    Check
-  </button>
-
-  <button phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>
-    Toggle
-  </button>
-
-  # Server-side
-  def handle_event("check", _, socket) do
-    {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
-  end
-
-  def handle_event("toggle", _, socket) do
-    {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
-  end
-  ```
-
-  ## Styling
-
-  Use data attributes to target elements:
-
-  ```css
-  [data-scope="checkbox"][data-part="root"] {}
-  [data-scope="checkbox"][data-part="control"] {}
-  [data-scope="checkbox"][data-part="label"] {}
-  [data-scope="checkbox"][data-part="hidden-input"] {}
-  [data-scope="checkbox"][data-part="error"] {}
-  ```
-
-  If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/checkbox.css";
-  ```
-
-  You can then use modifiers
-
-  ```heex
-  <.checkbox class="checkbox checkbox--accent checkbox--lg">
-  ```
-
-  components/checkbox#modifiers)
-  '''
+'''
 
   @doc type: :component
   use Phoenix.Component

@@ -30,7 +30,7 @@ defmodule E2eWeb.TimerApiLive do
       <.demo_page
         id="timer-api-page"
         title="Timer · API"
-        subtitle="No Corex.Timer module—the client runs Zag. Remount to reset; template attributes and events below."
+        subtitle="No Corex.Timer module - the client runs Zag. Remount to reset; template attributes and events below."
       >
         <.demo_section
           id="timer-api-remount"

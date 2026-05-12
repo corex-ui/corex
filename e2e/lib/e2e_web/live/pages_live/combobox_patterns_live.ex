@@ -96,7 +96,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     )
     |> Repo.all()
     |> Enum.map(fn a ->
-      city = a.city_name || "—"
+      city = a.city_name || " - "
       %{value: a.iata_code, label: "#{a.name} (#{a.iata_code})", group: city}
     end)
   end

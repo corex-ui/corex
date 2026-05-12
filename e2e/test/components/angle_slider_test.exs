@@ -9,7 +9,7 @@ defmodule E2eWeb.AngleSliderTest do
     :ok
   end
 
-  feature "anatomy — each section root style updates via set-value", %{session: session} do
+  feature "anatomy  -  each section root style updates via set-value", %{session: session} do
     session =
       session
       |> E2eWeb.ComponentBehaviorSpec.visit_ready(AngleSlider, :angle_slider, :anatomy)
@@ -23,7 +23,7 @@ defmodule E2eWeb.AngleSliderTest do
     end)
   end
 
-  feature "api — Set to 0° updates root style", %{session: session} do
+  feature "api  -  Set to 0° updates root style", %{session: session} do
     session
     |> E2eWeb.ComponentBehaviorSpec.visit_ready(AngleSlider, :angle_slider, :api)
 
@@ -35,7 +35,7 @@ defmodule E2eWeb.AngleSliderTest do
     assert String.contains?(AngleSlider.angle_api_root_style(session), "0deg")
   end
 
-  feature "events — server slider logs a row", %{session: session} do
+  feature "events  -  server slider logs a row", %{session: session} do
     session =
       session
       |> E2eWeb.ComponentBehaviorSpec.visit_ready(AngleSlider, :angle_slider, :events)

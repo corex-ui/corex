@@ -16,9 +16,9 @@ defmodule Corex.FileUpload do
 
   Server pushes (from `clear_files/2`, `clear_rejected_files/2`, `open_file_picker/2`):
 
-  - `file_upload_clear_files` — `%{"id" => id}`
-  - `file_upload_clear_rejected` — `%{"id" => id}`
-  - `file_upload_open` — `%{"id" => id}`
+  - `file_upload_clear_files`  -  `%{"id" => id}`
+  - `file_upload_clear_rejected`  -  `%{"id" => id}`
+  - `file_upload_open`  -  `%{"id" => id}`
 
   The template renders a single list of **accepted** files (Zag’s default). Rejected
   files are not listed in the DOM; use `on_file_change` (e.g. `rejectedCount`) and

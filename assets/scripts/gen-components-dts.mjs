@@ -50,7 +50,7 @@ function main() {
     try {
       current = readFileSync(OUTPUT, "utf8");
     } catch {
-      // missing file — fall through to mismatch
+      // missing file  -  fall through to mismatch
     }
     if (current !== next) {
       console.error(

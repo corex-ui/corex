@@ -4,44 +4,44 @@ This file classifies each Corex demo component and lists which **page types** ex
 
 | Component | Class | Anatomy | Style | Form | Playground | API | Events | Patterns | Animation | Deep / extra |
 |-----------|--------|---------|-------|------|------------|-----|--------|----------|-----------|--------------|
-| accordion | Zag | yes | yes | — | yes | yes | yes | yes | yes | — |
-| action | non-Zag | yes | yes | — | — | — | — | — | — | — |
-| angle-slider | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form, controlled |
-| avatar | Zag | yes | yes | — | yes | yes | yes | — | — | — |
-| carousel | Zag | yes | yes | — | yes | yes | yes | — | — | — |
-| checkbox | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form, controlled |
-| clipboard | Zag | yes | yes | — | yes | yes | yes | — | — | — |
-| collapsible | Zag | yes | yes | — | yes | yes | yes | yes | — | — |
-| code | non-Zag | yes | yes | — | — | — | — | — | — | — |
-| color-picker | Zag + form | yes | — | yes | yes | yes | yes | — | — | live-form |
-| combobox | Zag + form | yes | yes | yes | yes | yes | yes | yes (incl. server filter) | — | live-form |
-| data-list | non-Zag | yes | — | — | — | — | — | — | — | — |
-| data-table | non-Zag | yes | — | — | — | — | — | yes (unified) | — | `/data-table/patterns` only (anatomy is static) |
-| date-picker | Zag + form | yes | — | yes | yes | yes | yes | yes | — | live-form, controlled |
-| dialog | Zag | yes | — | — | yes | yes | yes | yes | yes | — |
-| editable | Zag + form | yes | yes | yes | yes | yes | yes | — | — | live-form |
-| file-upload | Zag + form | yes | — | yes | yes | yes | yes | — | — | controller form |
-| file-upload-live | LV uploads | yes | — | yes | yes | — | — | — | — | live-form |
-| floating-panel | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| layout-heading | non-Zag | yes | yes | — | — | — | — | — | — | — |
-| listbox | Zag | yes | — | — | yes | yes | yes | yes | — | stream |
-| marquee | Zag | yes | — | — | — | yes | yes | — | — | — |
-| menu | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| native-input | non-Zag + form | yes | — | yes | — | — | — | — | — | live-form |
-| navigate | non-Zag | yes | yes | — | — | — | — | — | — | — |
-| number-input | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form |
-| password-input | Zag + form | yes | — | yes | yes | yes | yes | — | — | live-form |
-| pin-input | Zag + form | yes | — | yes | yes | yes | yes | — | — | live-form |
-| radio-group | Zag + form | yes | — | yes | yes | yes | yes | yes | — | live-form |
-| select | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form, controlled |
-| signature | Zag + form | yes | — | yes | yes | yes | yes | yes | — | live-form |
-| switch | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form, controlled |
-| tabs | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| timer | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| toast | Zag | — | — | — | yes | yes | — | yes | — | — |
-| toggle-group | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| tooltip | Zag | yes | — | — | yes | yes | yes | — | — | — |
-| tree-view | Zag | yes | yes | — | yes | yes | yes | yes | yes | — |
+| accordion | Zag | yes | yes |  -  | yes | yes | yes | yes | yes |  -  |
+| action | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| angle-slider | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
+| avatar | Zag | yes | yes |  -  | yes | yes | yes |  -  |  -  |  -  |
+| carousel | Zag | yes | yes |  -  | yes | yes | yes |  -  |  -  |  -  |
+| checkbox | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
+| clipboard | Zag | yes | yes |  -  | yes | yes | yes |  -  |  -  |  -  |
+| collapsible | Zag | yes | yes |  -  | yes | yes | yes | yes |  -  |  -  |
+| code | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| color-picker | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
+| combobox | Zag + form | yes | yes | yes | yes | yes | yes | yes (incl. server filter) |  -  | live-form |
+| data-list | non-Zag | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| data-table | non-Zag | yes |  -  |  -  |  -  |  -  |  -  | yes (unified) |  -  | `/data-table/patterns` only (anatomy is static) |
+| date-picker | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form, controlled |
+| dialog | Zag | yes |  -  |  -  | yes | yes | yes | yes | yes |  -  |
+| editable | Zag + form | yes | yes | yes | yes | yes | yes |  -  |  -  | live-form |
+| file-upload | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | controller form |
+| file-upload-live | LV uploads | yes |  -  | yes | yes |  -  |  -  |  -  |  -  | live-form |
+| floating-panel | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| layout-heading | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| listbox | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  | stream |
+| marquee | Zag | yes |  -  |  -  |  -  | yes | yes |  -  |  -  |  -  |
+| menu | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| native-input | non-Zag + form | yes |  -  | yes |  -  |  -  |  -  |  -  |  -  | live-form |
+| navigate | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| number-input | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form |
+| password-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
+| pin-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
+| radio-group | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
+| select | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
+| signature | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
+| switch | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
+| tabs | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| timer | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| toast | Zag |  -  |  -  |  -  | yes | yes |  -  | yes |  -  |  -  |
+| toggle-group | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| tooltip | Zag | yes |  -  |  -  | yes | yes | yes |  -  |  -  |  -  |
+| tree-view | Zag | yes | yes |  -  | yes | yes | yes | yes | yes |  -  |
 
 ## Events pages (Zag)
 
@@ -53,6 +53,6 @@ Server-driven filtering on **`/combobox/patterns`** lives in **`#combobox-patter
 
 ## Router reconciliation notes
 
-- **Number input · Events** — `/:locale/number-input/events` is registered as `NumberInputEventsLive`; the matrix marks **Events** as **yes** (not “—”).
-- **Navigate** — anatomy and style only; there is no `/navigate/playground` route (playground column stays **—**).
-- **Data list** — static anatomy at `/:locale/data-list/anatomy` only; no playground/API/events (unchanged).
+- **Number input · Events**  -  `/:locale/number-input/events` is registered as `NumberInputEventsLive`; the matrix marks **Events** as **yes** (not “ - ”).
+- **Navigate**  -  anatomy and style only; there is no `/navigate/playground` route (playground column stays ** - **).
+- **Data list**  -  static anatomy at `/:locale/data-list/anatomy` only; no playground/API/events (unchanged).

@@ -9,12 +9,12 @@ defmodule Corex.New.Generate do
   Runs all Corex post-generation work on a freshly-scaffolded Phoenix app at
   `install_dir`, driven by the normalized `opts` keyword list:
 
-    * `:otp_app` (atom, required) — e.g. `:my_app`
-    * `:web_module` (atom, required) — e.g. `MyAppWeb`
-    * `:app_module` (atom, required) — e.g. `MyApp`
+    * `:otp_app` (atom, required)  -  e.g. `:my_app`
+    * `:web_module` (atom, required)  -  e.g. `MyAppWeb`
+    * `:app_module` (atom, required)  -  e.g. `MyApp`
     * `:mode`, `:theme`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool, default true)
-    * `:themes` (list of strings) — only used when `:theme` is true
-    * `:dev` (string | nil) — path to local Corex checkout for `--dev PATH`
+    * `:themes` (list of strings)  -  only used when `:theme` is true
+    * `:dev` (string | nil)  -  path to local Corex checkout for `--dev PATH`
   """
   def run(install_dir, opts) do
     opts = normalize_opts(opts)

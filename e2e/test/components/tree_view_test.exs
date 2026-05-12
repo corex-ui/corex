@@ -7,7 +7,7 @@ defmodule E2eWeb.TreeViewTest do
   alias E2eWeb.TreeViewModel, as: TreeView
 
   @tag :skip
-  feature "anatomy — each section toggles first branch", %{session: session} do
+  feature "anatomy  -  each section toggles first branch", %{session: session} do
     session =
       session
       |> TreeView.visit_ready("/en/tree-view/anatomy", css("#tree-view-anatomy-page"))
@@ -20,7 +20,7 @@ defmodule E2eWeb.TreeViewTest do
   end
 
   @tag :skip
-  feature "api — Expand lib expands lib branch", %{session: session} do
+  feature "api  -  Expand lib expands lib branch", %{session: session} do
     session =
       session
       |> TreeView.visit_ready("/en/tree-view/api", css("#tree-view-api-page"))
@@ -39,7 +39,7 @@ defmodule E2eWeb.TreeViewTest do
   end
 
   @tag :skip
-  feature "events — server tree view logs a row", %{session: session} do
+  feature "events  -  server tree view logs a row", %{session: session} do
     session =
       session
       |> TreeView.visit_ready("/en/tree-view/events", css("#tree-view-events-page"))

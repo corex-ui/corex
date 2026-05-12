@@ -21,7 +21,7 @@ defmodule E2eWeb.ComboboxPlayLive do
 
     Corex.List.new(
       Enum.map(@countries, fn c ->
-        if c.id in disabled, do: Map.put(c, :disabled, true), else: c
+        if c.value in disabled, do: Map.put(c, :disabled, true), else: c
       end)
     )
   end
@@ -74,7 +74,7 @@ defmodule E2eWeb.ComboboxPlayLive do
 
   defp sync_items(socket) do
     controls = socket.assigns.controls
-    available_ids = Enum.map(@countries, & &1.id)
+    available_ids = Enum.map(@countries, & &1.value)
     filtered = Enum.filter(controls.disabled_item_ids, &(&1 in available_ids))
     controls = %{controls | disabled_item_ids: filtered}
     old_play = socket.assigns.play_value

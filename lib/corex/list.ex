@@ -13,14 +13,14 @@ defmodule Corex.List do
 
     ## Fields
 
-    * `:label` (required) — visible text
-    * `:value` (optional) — submitted option value; defaults when built through `Corex.List.new/1` (`item-1`, …) or `Item.new/1` alone (`list-<integer>`)
-    * `:to` (optional) — URL or path used for redirect-on-select when the parent has `redirect`
+    * `:label` (required)  -  visible text
+    * `:value` (optional)  -  submitted option value; defaults when built through `Corex.List.new/1` (`item-1`, …) or `Item.new/1` alone (`list-<integer>`)
+    * `:to` (optional)  -  URL or path used for redirect-on-select when the parent has `redirect`
     * `:disabled` (optional)
-    * `:group` (optional) — group id for grouped lists
-    * `:meta` (optional) — arbitrary map
-    * `:redirect` (optional) — `:href` | `:patch` | `:navigate` | `false`; controls navigation kind for this item when the parent has `redirect`
-    * `:new_tab` (optional) — open redirect target in a new tab
+    * `:group` (optional)  -  group id for grouped lists
+    * `:meta` (optional)  -  arbitrary map
+    * `:redirect` (optional)  -  `:href` | `:patch` | `:navigate` | `false`; controls navigation kind for this item when the parent has `redirect`
+    * `:new_tab` (optional)  -  open redirect target in a new tab
     """
 
     @enforce_keys [:label]

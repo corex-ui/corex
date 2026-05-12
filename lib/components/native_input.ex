@@ -9,7 +9,7 @@ defmodule Corex.NativeInput do
 
   For text, email, url, tel, search, and password the icon slot is shown when provided.
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 

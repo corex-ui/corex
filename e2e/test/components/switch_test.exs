@@ -6,7 +6,7 @@ defmodule E2eWeb.SwitchTest do
 
   alias E2eWeb.SwitchModel, as: Switch
 
-  feature "anatomy — click control in each section", %{session: session} do
+  feature "anatomy  -  click control in each section", %{session: session} do
     session =
       session
       |> Switch.visit_ready("/en/switch/anatomy", css("#switch-anatomy-page"))
@@ -17,7 +17,7 @@ defmodule E2eWeb.SwitchTest do
     end)
   end
 
-  feature "api — Off via binding", %{session: session} do
+  feature "api  -  Off via binding", %{session: session} do
     session
     |> Switch.visit_ready("/en/switch/api", css("#switch-api-page"))
 
@@ -25,7 +25,7 @@ defmodule E2eWeb.SwitchTest do
     |> Switch.click_api_off()
   end
 
-  feature "events — server switch produces log row", %{session: session} do
+  feature "events  -  server switch produces log row", %{session: session} do
     session =
       session
       |> Switch.visit_ready("/en/switch/events", css("#switch-events-page"))

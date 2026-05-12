@@ -27,7 +27,7 @@ defmodule E2eWeb.RecordFields do
     assigns = assign(assigns, :path_d_values, path_d_values)
 
     ~H"""
-    <span :if={@path_d_values == []} class="text-muted">—</span>
+    <span :if={@path_d_values == []} class="text-muted"> - </span>
     <svg
       :if={@path_d_values != []}
       viewBox="0 0 200 100"
@@ -79,7 +79,7 @@ defmodule E2eWeb.RecordFields do
   defp get_value(record, field) when is_map(record), do: Map.get(record, field)
   defp get_value(_record, _field), do: nil
 
-  defp format_value(nil), do: "—"
+  defp format_value(nil), do: " - "
   defp format_value(true), do: "Yes"
   defp format_value(false), do: "No"
   defp format_value(%Date{} = date), do: Calendar.strftime(date, "%d %b %Y")
@@ -92,7 +92,7 @@ defmodule E2eWeb.RecordFields do
 
   defp format_value(value) when is_binary(value) do
     if value == "" do
-      "—"
+      " - "
     else
       value
     end

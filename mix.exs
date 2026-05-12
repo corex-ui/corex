@@ -145,6 +145,8 @@ defmodule Corex.MixProject do
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
+        "guides/api.md",
+        "guides/events.md",
         "guides/tableau.md",
         "guides/dark_mode.md",
         "guides/theming.md",
@@ -166,6 +168,8 @@ defmodule Corex.MixProject do
           "guides/manual_installation.md"
         ],
         Guides: [
+          "guides/api.md",
+          "guides/events.md",
           "guides/tableau.md",
           "guides/MCP.md",
           "guides/dark_mode.md",

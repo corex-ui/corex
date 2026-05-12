@@ -149,7 +149,7 @@ The Corex Design system ships generated CSS under `assets/corex` (themes, typogr
 mix corex.design
 ```
 
-Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite — useful when refreshing design assets to a newer Corex version.
+Pass `--designex` to also copy the design token sources (`assets/corex/design/`). By default `mix corex.design` **skips** any tree that already exists. Pass `--force` to overwrite  -  useful when refreshing design assets to a newer Corex version.
 
 Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
@@ -165,12 +165,16 @@ Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
-Finally, give the `<body>` the `typo` and `layout` classes so the design system's base typography and layout container apply:
+Finally, set **`data-theme`** and **`data-mode`** on **`<html>`** so token files such as `theme/neo.css` and light/dark palettes apply. Use values that match your imports and toggles (for example `data-theme="neo"` when you import `../corex/theme/neo.css`, and `data-mode="light"` or `data-mode="dark"`). [Dark mode](dark_mode.html) and [Theming](theming.html) show how to wire these from plugs or client scripts after you add mode and theme pickers.
+
+Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and the layout shell apply:
 
 ```heex
-<body class="typo layout">
-  {@inner_content}
-</body>
+<html lang="en" data-theme="neo" data-mode="light">
+  <body class="typo layout">
+    {@inner_content}
+  </body>
+</html>
 ```
 
 ## 8. Optional: Phoenix flash with Toast
@@ -210,10 +214,6 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
 See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and the rest of the toast API.
-
-### MCP plug (development)
-
-By default, **`mix corex.new`** inserts **`plug Corex.MCP`** in **`lib/my_app_web/endpoint.ex`** inside **`if Mix.env() in [:dev, :test] do`**, immediately after the first **`plug Plug.Static`** block (pass **`--no-mcp`** to skip). For behavior, security notes, and manual wiring in an existing app, see [MCP](mcp.html).
 
 ## 9. Add your first component
 
@@ -377,9 +377,11 @@ end
 
 ## 10. Driving components from the API
 
-Every Corex component exposes JS commands for client-side control and matching `socket` helpers for server-side control. You need an `id` on the component.
+See [API](api.html) for the shared pattern (`id`, `handle_event`, `phx-click`, DOM `CustomEvent`). See [Events](events.html) for `on_*`, client events, and responses.
 
-**Client-side**, push commands inline from any element:
+Every component documents its own helpers under **`Corex.<Name>`** in Hexdocs. You need a stable **`id`** on the root.
+
+**Client-side** (inline binding):
 
 ```heex
 <button type="button" phx-click={Corex.Accordion.set_value("welcome-accordion", ["1"])}>
@@ -387,7 +389,7 @@ Every Corex component exposes JS commands for client-side control and matching `
 </button>
 ```
 
-**Server-side**, return the modified socket from a `handle_event/3` (or call it anywhere a `socket` is in scope):
+**Server-side** (`handle_event/3`):
 
 ```elixir
 def handle_event("open_first", _params, socket) do
@@ -395,14 +397,13 @@ def handle_event("open_first", _params, socket) do
 end
 ```
 
-The same pattern applies to every component — see each component's module docs for the available commands.
-
 ## What's next
 
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:
 
-- [Dark mode](dark_mode.html) — `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
-- [Theming](theming.html) — `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
-- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
-- [MCP](mcp.html) — Corex MCP for AI tooling in development.
-- [Production](production.html) — prod build and run.
+- [API](api.html) and [Events](events.html)  -  control and listen to components from LiveView or JS.
+- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
+- [Theming](theming.html)  -  `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
+- [Localize](localize.html)  -  `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
+- [MCP](mcp.html)  -  Corex MCP for AI tooling in development.
+- [Production](production.html)  -  prod build and run.

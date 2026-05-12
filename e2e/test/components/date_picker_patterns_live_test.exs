@@ -23,7 +23,7 @@ defmodule E2eWeb.DatePickerPatternsLiveTest do
         })
 
       assert html =~ "2026-04-10"
-      refute html =~ "Selected: —"
+      refute html =~ "Selected:  - "
 
       html =
         live
