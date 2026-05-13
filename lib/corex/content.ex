@@ -46,9 +46,7 @@ defmodule Corex.Content do
     """
     @spec new(map()) :: t()
     def new(attrs) when is_map(attrs) do
-      attrs =
-        attrs
-        |> Map.put_new_lazy(:value, fn -> Corex.Content.generate_id() end)
+      attrs = Map.put_new_lazy(attrs, :value, fn -> Corex.Content.generate_id() end)
 
       struct!(__MODULE__, attrs)
     rescue

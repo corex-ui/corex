@@ -9,6 +9,18 @@ defmodule Corex.ContentTest do
       assert Content.new([]) == []
     end
 
+    test "raises when row uses :trigger instead of :label" do
+      assert_raise ArgumentError, fn ->
+        Content.new([%{trigger: "Q1", content: "A1"}])
+      end
+    end
+
+    test "raises when row has unknown :trigger alongside :label" do
+      assert_raise ArgumentError, fn ->
+        Content.new([%{label: "L", trigger: "ignored", content: "C"}])
+      end
+    end
+
     test "creates list of items from maps" do
       items =
         Content.new([
@@ -71,6 +83,12 @@ defmodule Corex.ContentTest do
       item = Item.new(%{value: "item-1", label: "T", content: "C"})
       assert item.label == "T"
       assert item.content == "C"
+    end
+
+    test "raises when map has :trigger instead of :label" do
+      assert_raise ArgumentError, fn ->
+        Item.new(%{value: "v", trigger: "Question", content: "Answer"})
+      end
     end
 
     test "auto-generates value when omitted" do
