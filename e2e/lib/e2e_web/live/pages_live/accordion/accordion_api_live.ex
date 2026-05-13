@@ -161,32 +161,35 @@ defmodule E2eWeb.AccordionApiLive do
 
   defp toast_accordion_value(socket, id, value) do
     desc = "#{id}\n#{inspect(value)}"
-    Corex.Toast.push_toast(socket, "layout-toast", "accordion_value_response", desc, :info, 5000)
+
+    Corex.Toast.create(socket, "layout-toast", "accordion_value_response", desc, :info,
+      duration: 5000
+    )
   end
 
   defp toast_accordion_focused(socket, id, value) do
     desc = "#{id}\n#{inspect(value)}"
 
-    Corex.Toast.push_toast(
+    Corex.Toast.create(
       socket,
       "layout-toast",
       "accordion_focused_response",
       desc,
       :info,
-      5000
+      duration: 5000
     )
   end
 
   defp toast_accordion_item_state(socket, id, v, state) do
     desc = "#{id} · #{inspect(v)}\n#{inspect(state)}"
 
-    Corex.Toast.push_toast(
+    Corex.Toast.create(
       socket,
       "layout-toast",
       "accordion_item_state_response",
       desc,
       :info,
-      5000
+      duration: 5000
     )
   end
 

@@ -18,7 +18,7 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-XP2X5SPI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(

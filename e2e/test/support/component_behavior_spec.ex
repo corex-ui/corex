@@ -31,7 +31,10 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   def page(:angle_slider, :api), do: {~p"/angle-slider/api", "#angle-slider-api-page"}
   def page(:angle_slider, :events), do: {~p"/angle-slider/events", "#angle-slider-events-page"}
   def page(:angle_slider, :playground), do: {~p"/angle-slider/playground", "#my-angle-slider"}
-  def page(:angle_slider, :patterns), do: {~p"/angle-slider/patterns", "#angle-slider-patterns-page"}
+
+  def page(:angle_slider, :patterns),
+    do: {~p"/angle-slider/patterns", "#angle-slider-patterns-page"}
+
   def page(:angle_slider, :controlled), do: {~p"/angle-slider/controlled", "#my-angle-slider"}
 
   def page(:checkbox, :anatomy), do: {~p"/checkbox/anatomy", "#checkbox-anatomy-page"}

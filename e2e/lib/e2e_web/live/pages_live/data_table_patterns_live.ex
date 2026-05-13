@@ -105,13 +105,13 @@ defmodule E2eWeb.DataTablePatternsLive do
       end
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "Selection",
        message,
        :info,
-       5000
+       duration: 5000
      )}
   end
 
@@ -152,13 +152,13 @@ defmodule E2eWeb.DataTablePatternsLive do
       end
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "Selection",
        message,
        :info,
-       5000
+       duration: 5000
      )}
   end
 

@@ -48,7 +48,8 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def focus_checkbox_control(session, checkbox_dom_id) when is_binary(checkbox_dom_id) do
-    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(checkbox_dom_id) > 0) do
+    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(checkbox_dom_id) > 0) do
       raise ArgumentError, "invalid checkbox dom id"
     end
 
@@ -80,7 +81,9 @@ defmodule E2eWeb.CheckboxModel do
 
     click(
       session,
-      xpath("//*[@id='checkbox-api-js-dispatch']//button[contains(normalize-space(), 'Dispatch checked')]")
+      xpath(
+        "//*[@id='checkbox-api-js-dispatch']//button[contains(normalize-space(), 'Dispatch checked')]"
+      )
     )
 
     session

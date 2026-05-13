@@ -33,7 +33,11 @@ var getNumber = (element, attrName, validValues) => {
 };
 var getBoolean = (element, attrName) => {
   const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-  return element.hasAttribute(`data-${dashName}`);
+  const key = `data-${dashName}`;
+  if (!element.hasAttribute(key)) return false;
+  const raw = element.getAttribute(key);
+  if (raw === "false" || raw === "0") return false;
+  return true;
 };
 var getBooleanValue = (element, attrName) => {
   const raw = element.dataset[attrName];
@@ -2618,9 +2622,9 @@ var Component = class {
   spreadProps = (el, props) => {
     spreadProps(el, props, this.machine.scope.id);
   };
-  updateProps = (props) => {
+  updateProps(props) {
     this.machine.updateProps(props);
-  };
+  }
   zagConnect(connectFn) {
     return connectFn(this.machine.service, normalizeProps);
   }

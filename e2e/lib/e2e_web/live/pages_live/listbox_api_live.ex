@@ -38,7 +38,9 @@ defmodule E2eWeb.ListboxApiLive do
     desc = "#{id}\n#{inspect(value)}"
 
     {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "listbox_value_response", desc, :info, 5000)}
+     Corex.Toast.create(socket, "layout-toast", "listbox_value_response", desc, :info,
+       duration: 5000
+     )}
   end
 
   def render(assigns) do

@@ -88,7 +88,7 @@ defmodule E2eWeb.DatePickerFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :basic_form,
            Phoenix.Component.to_form(DatePickerForm.changeset(%DatePickerForm{}, params),
@@ -160,7 +160,7 @@ defmodule E2eWeb.DatePickerFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :validate_form,
            Phoenix.Component.to_form(

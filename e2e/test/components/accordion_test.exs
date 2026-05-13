@@ -527,7 +527,9 @@ defmodule E2eWeb.AccordionTest do
     @moduletag :slow
     @describetag :e2e
 
-    feature "playground  -  axe matrix theme and mode with interaction states", %{session: session} do
+    feature "playground  -  axe matrix theme and mode with interaction states", %{
+      session: session
+    } do
       {play_path, ready_sel} = E2eWeb.ComponentBehaviorSpec.page(:accordion, :playground)
 
       for {theme, mode} <- E2eWeb.A11yThemeMode.combos(), reduce: session do

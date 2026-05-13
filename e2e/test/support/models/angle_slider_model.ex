@@ -13,7 +13,8 @@ defmodule E2eWeb.AngleSliderModel do
   def anatomy_section_ids, do: @anatomy_sections
 
   def wait_section_angle_slider_ready(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -26,7 +27,8 @@ defmodule E2eWeb.AngleSliderModel do
   end
 
   def focus_thumb_in_section(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -185,7 +187,9 @@ defmodule E2eWeb.AngleSliderModel do
   def wait_static_changeset_angle_slider_ready(session) do
     assert_has(
       session,
-      css("#angle-slider-form-changeset [phx-hook='AngleSlider']:not([data-loading])", visible: :any)
+      css("#angle-slider-form-changeset [phx-hook='AngleSlider']:not([data-loading])",
+        visible: :any
+      )
     )
 
     session
@@ -194,7 +198,9 @@ defmodule E2eWeb.AngleSliderModel do
   def wait_static_validate_angle_slider_ready(session) do
     assert_has(
       session,
-      css("#angle-slider-form-validate [phx-hook='AngleSlider']:not([data-loading])", visible: :any)
+      css("#angle-slider-form-validate [phx-hook='AngleSlider']:not([data-loading])",
+        visible: :any
+      )
     )
 
     session
@@ -332,7 +338,9 @@ defmodule E2eWeb.AngleSliderModel do
     el =
       find(
         session,
-        css("#angle-slider-api-set-value-js [data-scope='angle-slider'][data-part='root']", visible: :any)
+        css("#angle-slider-api-set-value-js [data-scope='angle-slider'][data-part='root']",
+          visible: :any
+        )
       )
 
     Wallaby.Element.attr(el, "style")

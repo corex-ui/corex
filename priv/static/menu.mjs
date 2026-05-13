@@ -2,14 +2,14 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
+} from "./chunks/chunk-IW7ATDRS.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
+} from "./chunks/chunk-2FOKGN7H.mjs";
+import "./chunks/chunk-YSIT45Z3.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+} from "./chunks/chunk-DCODD6KZ.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -22,7 +22,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-AJIR2V2O.mjs";
 import {
   Component,
   VanillaMachine,
@@ -67,7 +67,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-XP2X5SPI.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(

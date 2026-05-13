@@ -93,7 +93,7 @@ defmodule E2eWeb.AngleSliderFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :basic_form,
            Phoenix.Component.to_form(AngleSliderForm.changeset(%AngleSliderForm{}, rparams),
@@ -170,7 +170,7 @@ defmodule E2eWeb.AngleSliderFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :validate_form,
            Phoenix.Component.to_form(

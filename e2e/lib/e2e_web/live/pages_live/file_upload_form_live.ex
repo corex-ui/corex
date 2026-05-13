@@ -40,7 +40,7 @@ defmodule E2eWeb.FileUploadFormLive do
 
     {:noreply,
      socket
-     |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)}
+     |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)}
   end
 
   def handle_event("file_upload_live_cancel", params, socket) do

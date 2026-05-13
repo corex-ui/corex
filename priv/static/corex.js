@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-EE44DOTL.mjs
+  // ../priv/static/chunks/chunk-XP2X5SPI.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -1781,8 +1781,8 @@ var Corex = (() => {
     };
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_EE44DOTL = __esm({
-    "../priv/static/chunks/chunk-EE44DOTL.mjs"() {
+  var init_chunk_XP2X5SPI = __esm({
+    "../priv/static/chunks/chunk-XP2X5SPI.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1809,7 +1809,11 @@ var Corex = (() => {
       };
       getBoolean = (element, attrName) => {
         const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return element.hasAttribute(`data-${dashName}`);
+        const key = `data-${dashName}`;
+        if (!element.hasAttribute(key)) return false;
+        const raw = element.getAttribute(key);
+        if (raw === "false" || raw === "0") return false;
+        return true;
       };
       getBooleanValue = (element, attrName) => {
         const raw = element.dataset[attrName];
@@ -2682,15 +2686,15 @@ var Corex = (() => {
           __publicField(this, "spreadProps", (el, props) => {
             spreadProps(el, props, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props) => {
-            this.machine.updateProps(props);
-          });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
           beforeInitMachine == null ? void 0 : beforeInitMachine(this);
           this.machine = this.initMachine(props);
           this.api = this.initApi();
+        }
+        updateProps(props) {
+          this.machine.updateProps(props);
         }
         zagConnect(connectFn) {
           return connectFn(this.machine.service, normalizeProps);
@@ -2725,7 +2729,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-WG2KNE4C.mjs
+  // ../priv/static/chunks/chunk-ZPB3DDMZ.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2961,15 +2965,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_WG2KNE4C = __esm({
-    "../priv/static/chunks/chunk-WG2KNE4C.mjs"() {
+  var init_chunk_ZPB3DDMZ = __esm({
+    "../priv/static/chunks/chunk-ZPB3DDMZ.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-FBXRLPHX.mjs
+  // ../priv/static/chunks/chunk-KOWHCKG4.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
   }
@@ -2994,10 +2998,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var z;
-  var init_chunk_FBXRLPHX = __esm({
-    "../priv/static/chunks/chunk-FBXRLPHX.mjs"() {
+  var init_chunk_KOWHCKG4 = __esm({
+    "../priv/static/chunks/chunk-KOWHCKG4.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -3287,11 +3291,11 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_WG2KNE4C();
-      init_chunk_FBXRLPHX();
+      init_chunk_ZPB3DDMZ();
+      init_chunk_KOWHCKG4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4104,11 +4108,11 @@ var Corex = (() => {
     "../priv/static/angle-slider.mjs"() {
       "use strict";
       init_chunk_QB2YSZP6();
-      init_chunk_FBXRLPHX();
+      init_chunk_KOWHCKG4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4526,7 +4530,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5194,7 +5198,7 @@ var Corex = (() => {
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5941,7 +5945,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-CTFBPAMI.mjs
+  // ../priv/static/chunks/chunk-AJIR2V2O.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6060,10 +6064,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_CTFBPAMI = __esm({
-    "../priv/static/chunks/chunk-CTFBPAMI.mjs"() {
+  var init_chunk_AJIR2V2O = __esm({
+    "../priv/static/chunks/chunk-AJIR2V2O.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6238,10 +6242,10 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
+      init_chunk_AJIR2V2O();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6535,7 +6539,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6Y5IFYJF.mjs
+  // ../priv/static/chunks/chunk-OUOXE4EX.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6558,10 +6562,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_6Y5IFYJF = __esm({
-    "../priv/static/chunks/chunk-6Y5IFYJF.mjs"() {
+  var init_chunk_OUOXE4EX = __esm({
+    "../priv/static/chunks/chunk-OUOXE4EX.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6735,10 +6739,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_6Y5IFYJF();
+      init_chunk_OUOXE4EX();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7097,11 +7101,11 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_FBXRLPHX();
+      init_chunk_KOWHCKG4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7531,7 +7535,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-NMOLO6CB.mjs
+  // ../priv/static/chunks/chunk-IW7ATDRS.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8895,10 +8899,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_NMOLO6CB = __esm({
-    "../priv/static/chunks/chunk-NMOLO6CB.mjs"() {
+  var init_chunk_IW7ATDRS = __esm({
+    "../priv/static/chunks/chunk-IW7ATDRS.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -9608,7 +9612,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-B7AHHTCM.mjs
+  // ../priv/static/chunks/chunk-YSIT45Z3.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -9833,17 +9837,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_B7AHHTCM = __esm({
-    "../priv/static/chunks/chunk-B7AHHTCM.mjs"() {
+  var init_chunk_YSIT45Z3 = __esm({
+    "../priv/static/chunks/chunk-YSIT45Z3.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-MLVURBKI.mjs
+  // ../priv/static/chunks/chunk-2FOKGN7H.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10002,11 +10006,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_MLVURBKI = __esm({
-    "../priv/static/chunks/chunk-MLVURBKI.mjs"() {
+  var init_chunk_2FOKGN7H = __esm({
+    "../priv/static/chunks/chunk-2FOKGN7H.mjs"() {
       "use strict";
-      init_chunk_B7AHHTCM();
-      init_chunk_EE44DOTL();
+      init_chunk_YSIT45Z3();
+      init_chunk_XP2X5SPI();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10130,7 +10134,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YM6Q7RBK.mjs
+  // ../priv/static/chunks/chunk-DCODD6KZ.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10174,10 +10178,10 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_YM6Q7RBK = __esm({
-    "../priv/static/chunks/chunk-YM6Q7RBK.mjs"() {
+  var init_chunk_DCODD6KZ = __esm({
+    "../priv/static/chunks/chunk-DCODD6KZ.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
     }
   });
 
@@ -10212,7 +10216,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-P32UGRVU.mjs
+  // ../priv/static/chunks/chunk-UBAV4DFF.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -10612,10 +10616,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_P32UGRVU = __esm({
-    "../priv/static/chunks/chunk-P32UGRVU.mjs"() {
+  var init_chunk_UBAV4DFF = __esm({
+    "../priv/static/chunks/chunk-UBAV4DFF.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12183,17 +12187,17 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_IW7ATDRS();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_DCODD6KZ();
       init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_UBAV4DFF();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
+      init_chunk_AJIR2V2O();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -14358,13 +14362,13 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_IW7ATDRS();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_DCODD6KZ();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -16022,7 +16026,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5QA23UMN.mjs
+  // ../priv/static/chunks/chunk-KYOKM7OP.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -16037,10 +16041,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_5QA23UMN = __esm({
-    "../priv/static/chunks/chunk-5QA23UMN.mjs"() {
+  var init_chunk_KYOKM7OP = __esm({
+    "../priv/static/chunks/chunk-KYOKM7OP.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
     }
   });
 
@@ -18292,15 +18296,15 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
+      init_chunk_KYOKM7OP();
       init_chunk_7BZGUIUZ();
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_IW7ATDRS();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_DCODD6KZ();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -20787,13 +20791,13 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_WG2KNE4C();
-      init_chunk_FBXRLPHX();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_ZPB3DDMZ();
+      init_chunk_KOWHCKG4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -22170,10 +22174,10 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_B7AHHTCM();
+      init_chunk_YSIT45Z3();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -23067,7 +23071,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy13 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -24351,12 +24355,12 @@ ${err}`);
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_YM6Q7RBK();
+      init_chunk_DCODD6KZ();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy14 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -25799,13 +25803,13 @@ ${err}`);
     "../priv/static/listbox.mjs"() {
       "use strict";
       init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_UBAV4DFF();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_AJIR2V2O();
+      init_chunk_KOWHCKG4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy15 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -26585,7 +26589,7 @@ ${err}`);
     "../priv/static/marquee.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -27600,14 +27604,14 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_IW7ATDRS();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_DCODD6KZ();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
-      init_chunk_CTFBPAMI();
-      init_chunk_EE44DOTL();
+      init_chunk_AJIR2V2O();
+      init_chunk_XP2X5SPI();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -29367,10 +29371,10 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
+      init_chunk_KYOKM7OP();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -30217,9 +30221,15 @@ ${err}`);
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const controlled = getBoolean(el, "controlled");
+          const uncontrolledDefault = () => {
+            var _a5, _b;
+            const fromAttr = getString(el, "defaultValue");
+            if (fromAttr !== void 0) return fromAttr;
+            return (_b = (_a5 = el.querySelector('[data-scope="number-input"][data-part="input"]')) == null ? void 0 : _a5.value) != null ? _b : "";
+          };
           const zag = new NumberInput(el, __spreadProps(__spreadValues({
             id: el.id
-          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: getString(el, "defaultValue") }), {
+          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: uncontrolledDefault() }), {
             min: getNumber(el, "min"),
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
@@ -30228,8 +30238,6 @@ ${err}`);
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
             dir: getDir(el),
             onValueChange: (details) => {
               var _a5;
@@ -30272,14 +30280,36 @@ ${err}`);
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
             allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
             dir: getDir(this.el)
           };
           if (getBoolean(this.el, "controlled")) {
             next2.value = (_a4 = getString(this.el, "value")) != null ? _a4 : "";
           }
           (_b = this.numberInput) == null ? void 0 : _b.updateProps(next2);
+          const root = this.el;
+          queueMicrotask(() => {
+            const visible = root.querySelector(
+              '[data-scope="number-input"][data-part="input"]'
+            );
+            if (visible) {
+              if (!getBoolean(root, "readOnly")) {
+                visible.readOnly = false;
+                visible.removeAttribute("readonly");
+              }
+              if (!getBoolean(root, "disabled")) {
+                visible.disabled = false;
+                visible.removeAttribute("disabled");
+              }
+            }
+            const triggers = root.querySelectorAll(
+              '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
+            );
+            triggers.forEach((trigger) => {
+              if (trigger.hasAttribute("data-disabled")) return;
+              trigger.disabled = false;
+              trigger.removeAttribute("disabled");
+            });
+          });
         },
         destroyed() {
           var _a4;
@@ -30396,7 +30426,7 @@ ${err}`);
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy19 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -30950,7 +30980,7 @@ ${err}`);
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy20 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts20 = anatomy20.build();
       getRootId15 = (ctx) => {
@@ -31623,11 +31653,11 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_AJIR2V2O();
+      init_chunk_KOWHCKG4();
       init_chunk_PE34YET2();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy21 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -32472,18 +32502,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_IW7ATDRS();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_DCODD6KZ();
       init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_UBAV4DFF();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_AJIR2V2O();
+      init_chunk_KOWHCKG4();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy22 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -33829,7 +33859,7 @@ ${err}`);
     "../priv/static/signature-pad.mjs"() {
       "use strict";
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy23 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -34345,10 +34375,10 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
+      init_chunk_AJIR2V2O();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy24 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -34853,11 +34883,11 @@ ${err}`);
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_FBXRLPHX();
+      init_chunk_KOWHCKG4();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy25 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts25 = anatomy25.build();
       getRootId20 = (ctx) => {
@@ -35574,10 +35604,10 @@ ${err}`);
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
-      init_chunk_6Y5IFYJF();
+      init_chunk_KYOKM7OP();
+      init_chunk_OUOXE4EX();
       init_chunk_PE34YET2();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy26 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -36491,14 +36521,87 @@ ${err}`);
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
+  function asRecord(v2) {
+    return v2 != null && typeof v2 === "object" && !Array.isArray(v2) ? v2 : {};
+  }
+  function parseEffect(raw) {
+    const o2 = asRecord(raw);
+    const kind = o2.kind;
+    if (kind !== "push" && kind !== "redirect" && kind !== "exec_js") return null;
+    if (kind === "push") {
+      const event = o2.event;
+      if (typeof event !== "string") return null;
+      const value = asRecord(o2.value);
+      return { kind: "push", event, value };
+    }
+    if (kind === "redirect") {
+      const to = o2.to;
+      if (typeof to !== "string") return null;
+      const redirect = o2.redirect;
+      const r2 = redirect === "patch" || redirect === "navigate" || redirect === "href" ? redirect : "href";
+      return { kind: "redirect", to, redirect: r2, newTab: Boolean(o2.newTab) };
+    }
+    const encoded = o2.encoded;
+    if (typeof encoded !== "string") return null;
+    return { kind: "exec_js", encoded };
+  }
+  function parseActionSpec(raw) {
+    const o2 = asRecord(raw);
+    const label = o2.label;
+    if (typeof label !== "string" || label.length === 0) return null;
+    const effectsRaw = o2.effects;
+    if (!Array.isArray(effectsRaw)) return null;
+    const effects = effectsRaw.map(parseEffect).filter((e2) => e2 != null);
+    if (effects.length === 0) return null;
+    return { label, effects };
+  }
+  function runEffects(effects, rt) {
+    var _a4, _b;
+    for (const eff of effects) {
+      if (eff.kind === "push") {
+        rt.pushEvent(eff.event, (_a4 = eff.value) != null ? _a4 : {});
+      } else if (eff.kind === "redirect") {
+        performRedirect(
+          {
+            destination: eff.to,
+            mode: (_b = eff.redirect) != null ? _b : "href",
+            newTab: eff.newTab
+          },
+          rt.redirectCtx
+        );
+      } else {
+        rt.execJs(eff.encoded);
+      }
+    }
+  }
+  function buildZagAction(spec, rt) {
+    return {
+      label: spec.label,
+      onClick: () => {
+        runEffects(spec.effects, rt);
+      }
+    };
+  }
+  function buildRuntime(self2) {
+    return {
+      pushEvent: (event, payload) => {
+        self2.pushEvent(event, payload != null ? payload : {});
+      },
+      execJs: (encoded) => {
+        self2.js().exec(encoded);
+      },
+      redirectCtx: { liveSocket: self2.liveSocket }
+    };
+  }
   var anatomy27, parts27, getRegionId, getRegionEl, getRootId22, getRootEl8, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine27, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_6Y5IFYJF();
-      init_chunk_EE44DOTL();
+      init_chunk_2FOKGN7H();
+      init_chunk_YSIT45Z3();
+      init_chunk_FOQSALVP();
+      init_chunk_OUOXE4EX();
+      init_chunk_XP2X5SPI();
       anatomy27 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -37055,17 +37158,27 @@ ${err}`);
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
         constructor(el, props) {
-          var _a4;
+          var _a4, _b;
           super(el, props);
           __publicField(this, "parts");
+          __publicField(this, "latestProps");
+          __publicField(this, "hadAction", false);
           __publicField(this, "duration");
           __publicField(this, "showLoading");
+          __publicField(this, "updateProps", (props) => {
+            Object.assign(this.latestProps, props);
+            super.updateProps(
+              props
+            );
+          });
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
+          this.latestProps = props;
           this.duration = props.duration;
           this.showLoading = ((_a4 = props.meta) == null ? void 0 : _a4.loading) === true;
+          this.hadAction = Boolean((_b = props.action) == null ? void 0 : _b.label);
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.classList.add("toast-item");
@@ -37077,9 +37190,12 @@ ${err}`);
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
-          <button data-scope="toast" data-part="close-trigger"></button>
+          <button type="button" data-scope="toast" data-part="close-trigger"></button>
         </div>
         <div data-scope="toast" data-part="description"></div>
+        <div data-scope="toast" data-part="actions">
+          <button type="button" data-scope="toast" data-part="action-trigger" hidden></button>
+        </div>
       </div>
 
       <span data-scope="toast" data-part="ghost-after"></span>
@@ -37088,6 +37204,7 @@ ${err}`);
             title: this.el.querySelector('[data-part="title"]'),
             description: this.el.querySelector('[data-part="description"]'),
             close: this.el.querySelector('[data-part="close-trigger"]'),
+            action: this.el.querySelector('[data-part="action-trigger"]'),
             ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
             ghostAfter: this.el.querySelector('[data-part="ghost-after"]'),
             progressbar: this.el.querySelector('[data-part="progressbar"]'),
@@ -37102,7 +37219,7 @@ ${err}`);
           return this.zagConnect(connect27);
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c;
           this.spreadProps(this.el, this.api.getRootProps());
           this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
           this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
@@ -37133,6 +37250,23 @@ ${err}`);
           }
           this.spreadProps(this.parts.title, this.api.getTitleProps());
           this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+          const hasAction = Boolean((_c = this.latestProps.action) == null ? void 0 : _c.label);
+          if (this.hadAction && !hasAction) {
+            const next2 = document.createElement("button");
+            next2.type = "button";
+            next2.setAttribute("data-scope", "toast");
+            next2.setAttribute("data-part", "action-trigger");
+            next2.hidden = true;
+            this.parts.action.replaceWith(next2);
+            this.parts.action = next2;
+          }
+          this.hadAction = hasAction;
+          if (hasAction) {
+            this.parts.action.hidden = false;
+            this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+          } else {
+            this.parts.action.hidden = true;
+          }
           const duration = this.duration;
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
           if (isInfinity) {
@@ -37244,6 +37378,12 @@ ${err}`);
             }
             return duration;
           };
+          const parsePriority = (raw) => {
+            if (raw === void 0 || raw === null) return void 0;
+            const n2 = typeof raw === "string" ? parseInt(raw, 10) : raw;
+            if (!Number.isFinite(n2) || n2 < 1 || n2 > 8) return void 0;
+            return n2;
+          };
           const placement = (_a4 = getString(el, "placement", [
             "top-start",
             "top",
@@ -37295,19 +37435,70 @@ ${err}`);
               console.error("Failed to create flash error toast:", error);
             }
           }
+          const rt = buildRuntime(this);
+          const buildCreateOptions = (payload) => {
+            var _a5;
+            const spec = parseActionSpec(payload.action);
+            const base = __spreadValues({
+              title: (_a5 = payload.title) != null ? _a5 : "",
+              description: payload.description,
+              type: payload.type || "info",
+              id: payload.id || generateId(void 0, "toast"),
+              duration: parseDuration(payload.duration)
+            }, loadingMeta(payload.loading));
+            if (spec) {
+              base.action = buildZagAction(spec, rt);
+            }
+            const pr = parsePriority(payload.priority);
+            if (pr !== void 0) base.priority = pr;
+            return base;
+          };
+          const buildUpdatePatch = (payload) => {
+            const patch = {};
+            if (payload.title !== void 0) patch.title = payload.title;
+            if (payload.description !== void 0) patch.description = payload.description;
+            if (payload.type !== void 0) patch.type = payload.type;
+            if (payload.duration !== void 0) patch.duration = parseDuration(payload.duration);
+            if (payload.loading === true || payload.loading === "true") {
+              patch.meta = { loading: true };
+            } else if (payload.loading === false || payload.loading === "false") {
+              patch.meta = { loading: false };
+            }
+            const spec = parseActionSpec(payload.action);
+            if (spec) {
+              patch.action = buildZagAction(spec, rt);
+            } else if (payload.action === null) {
+              patch.action = void 0;
+            }
+            const pr = parsePriority(payload.priority);
+            if (pr !== void 0) patch.priority = pr;
+            return patch;
+          };
+          const handleDismissPayload = (payload) => {
+            const st = getToastStore(payload.groupId || this.groupId);
+            if (!st) return;
+            try {
+              st.dismiss(payload.id);
+            } catch (error) {
+              console.error("Failed to dismiss toast:", error);
+            }
+          };
+          const handleRemovePayload = (payload) => {
+            const st = getToastStore(payload.groupId || this.groupId);
+            if (!st) return;
+            try {
+              st.remove(payload.id);
+            } catch (error) {
+              console.error("Failed to remove toast:", error);
+            }
+          };
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("toast-create", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
+              const st = getToastStore(payload.groupId || this.groupId);
+              if (!st) return;
               try {
-                store22.create(__spreadValues({
-                  title: payload.title,
-                  description: payload.description,
-                  type: payload.type || "info",
-                  id: payload.id || generateId(void 0, "toast"),
-                  duration: parseDuration(payload.duration)
-                }, loadingMeta(payload.loading)));
+                st.create(buildCreateOptions(payload));
               } catch (error) {
                 console.error("Failed to create toast:", error);
               }
@@ -37315,48 +37506,59 @@ ${err}`);
           );
           this.handlers.push(
             this.handleEvent("toast-update", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
+              const st = getToastStore(payload.groupId || this.groupId);
+              if (!st || !payload.id) return;
               try {
-                store22.update(payload.id, {
-                  title: payload.title,
-                  description: payload.description,
-                  type: payload.type
-                });
+                st.update(payload.id, buildUpdatePatch(payload));
               } catch (error) {
                 console.error("Failed to update toast:", error);
               }
             })
           );
-          this.handlers.push(
-            this.handleEvent("toast-dismiss", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
-              try {
-                store22.dismiss(payload.id);
-              } catch (error) {
-                console.error("Failed to dismiss toast:", error);
-              }
-            })
-          );
-          el.addEventListener("toast:create", (event) => {
+          this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
+          this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
+          const onToastCreate = (event) => {
             const { detail } = event;
-            const store22 = getToastStore(detail.groupId || this.groupId);
-            if (!store22) return;
+            const st = getToastStore(detail.groupId || this.groupId);
+            if (!st) return;
             try {
-              store22.create(__spreadValues({
-                title: detail.title,
-                description: detail.description,
-                type: detail.type || "info",
-                id: detail.id || generateId(void 0, "toast"),
-                duration: parseDuration(detail.duration)
-              }, loadingMeta(detail.loading)));
+              st.create(buildCreateOptions(detail));
             } catch (error) {
               console.error("Failed to create toast:", error);
             }
-          });
+          };
+          const onToastUpdate = (event) => {
+            const { detail } = event;
+            const st = getToastStore(detail.groupId || this.groupId);
+            if (!st || !detail.id) return;
+            try {
+              st.update(detail.id, buildUpdatePatch(detail));
+            } catch (error) {
+              console.error("Failed to update toast:", error);
+            }
+          };
+          const onToastDismiss = (event) => {
+            handleDismissPayload(event.detail);
+          };
+          const onToastRemove = (event) => {
+            handleRemovePayload(event.detail);
+          };
+          const domListeners = [];
+          const addDom = (name, fn) => {
+            el.addEventListener(name, fn);
+            domListeners.push({ el, name, fn });
+          };
+          this.domListeners = domListeners;
+          addDom("toast:create", onToastCreate);
+          addDom("toast:update", onToastUpdate);
+          addDom("toast:dismiss", onToastDismiss);
+          addDom("toast:remove", onToastRemove);
         },
         destroyed() {
+          var _a4;
+          for (const { el, name, fn } of (_a4 = this.domListeners) != null ? _a4 : []) {
+            el.removeEventListener(name, fn);
+          }
           if (this.handlers) {
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
@@ -37599,11 +37801,11 @@ ${err}`);
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_YM6Q7RBK();
-      init_chunk_CTFBPAMI();
+      init_chunk_IW7ATDRS();
+      init_chunk_DCODD6KZ();
+      init_chunk_AJIR2V2O();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy28 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts28 = anatomy28.build();
       getTriggerId11 = (scope, value) => {
@@ -38310,7 +38512,7 @@ ${err}`);
       "use strict";
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy29 = createAnatomy("toggle-group").parts("root", "item");
       parts29 = anatomy29.build();
       getRootId23 = (ctx) => {
@@ -39209,13 +39411,13 @@ ${err}`);
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_P32UGRVU();
+      init_chunk_UBAV4DFF();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_WG2KNE4C();
+      init_chunk_ZPB3DDMZ();
       init_chunk_77HPO22C();
       init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_XP2X5SPI();
       anatomy30 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

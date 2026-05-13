@@ -35,7 +35,7 @@ defmodule CorexWeb.Toast do
     <div class="layout__row gap-2">
       <.action
         phx-click={
-          Toast.create_toast(
+          Toast.create(
             @toast_group_id,
             "This is an info toast",
             "This is an info toast description",
@@ -49,7 +49,7 @@ defmodule CorexWeb.Toast do
       </.action>
       <.action
         phx-click={
-          Toast.create_toast(
+          Toast.create(
             @toast_group_id,
             "This is a success toast",
             "This is a success toast description",
@@ -63,7 +63,7 @@ defmodule CorexWeb.Toast do
       </.action>
       <.action
         phx-click={
-          Toast.create_toast(
+          Toast.create(
             @toast_group_id,
             "This is an error toast",
             "This is an error toast description",
@@ -77,7 +77,7 @@ defmodule CorexWeb.Toast do
       </.action>
       <.action
         phx-click={
-          Toast.create_toast(
+          Toast.create(
             @toast_group_id,
             "This is a loading toast",
             "This is a loading toast description",

@@ -24,12 +24,8 @@ defmodule E2eWeb.SwitchModel do
 
   def click_playground_switch_control(session) do
     session
-    |> assert_has(
-      css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any)
-    )
-    |> click(
-      css("#switch-playground [data-scope='switch'][data-part='control']", visible: :any)
-    )
+    |> assert_has(css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any))
+    |> click(css("#switch-playground [data-scope='switch'][data-part='control']", visible: :any))
   end
 
   def click_control_in_section(session, section_dom_id) do

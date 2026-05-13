@@ -57,14 +57,16 @@ defmodule E2eWeb.AvatarApiLive do
     desc = "#{id}\n#{inspect(loaded)}"
 
     {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "avatar_loaded_response", desc, :info, 5000)}
+     Corex.Toast.create(socket, "layout-toast", "avatar_loaded_response", desc, :info,
+       duration: 5000
+     )}
   end
 
   def handle_event("avatar_loaded_dom", %{"id" => id, "loaded" => loaded}, socket) do
     desc = "avatar-loaded (client)\n#{id}\n#{inspect(loaded)}"
 
     {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "avatar_loaded_dom", desc, :info, 5000)}
+     Corex.Toast.create(socket, "layout-toast", "avatar_loaded_dom", desc, :info, duration: 5000)}
   end
 
   def render(assigns) do

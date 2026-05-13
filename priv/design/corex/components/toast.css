@@ -84,6 +84,24 @@
     white-space: pre-line;
   }
 
+  .toast [data-scope="toast"][data-part="actions"] {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    padding-inline: --spacing(6);
+    padding-block-end: --spacing(4);
+  }
+
+  .toast [data-scope="toast"][data-part="action-trigger"] {
+    @apply ui-trigger ui-trigger--sm ui-trigger--ghost;
+  }
+
+  .toast [data-scope="toast"][data-part="action-trigger"][hidden] {
+    display: none;
+  }
+
   .toast [data-scope="toast"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--sm ui-trigger--square ui-trigger--ghost;
 

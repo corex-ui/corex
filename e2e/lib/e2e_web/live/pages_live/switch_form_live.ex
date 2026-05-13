@@ -64,7 +64,7 @@ defmodule E2eWeb.SwitchFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :form,
            Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, %{}),
@@ -115,7 +115,7 @@ defmodule E2eWeb.SwitchFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :strict_form,
            Phoenix.Component.to_form(

@@ -96,7 +96,7 @@ defmodule E2eWeb.ColorPickerFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :basic_form,
            Phoenix.Component.to_form(ColorPickerForm.changeset(%ColorPickerForm{}, params),
@@ -180,7 +180,7 @@ defmodule E2eWeb.ColorPickerFormLive do
 
           {:noreply,
            socket
-           |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+           |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
            |> assign(
              :validate_form,
              Phoenix.Component.to_form(

@@ -166,9 +166,11 @@ defmodule E2eWeb.CheckboxTest do
           sess
           |> Checkbox.click_playground_checkbox_control()
           |> Checkbox.wait(200)
-          |> then(&Checkbox.check_accessibility(&1, css("#checkbox-playground"),
-                    filter: E2eWeb.A11yDocPageFilter
-                  ))
+          |> then(
+            &Checkbox.check_accessibility(&1, css("#checkbox-playground"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+          )
       end
     end
   end

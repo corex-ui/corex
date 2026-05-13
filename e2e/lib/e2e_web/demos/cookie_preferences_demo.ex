@@ -85,8 +85,8 @@ defmodule E2eWeb.Demos.CookiePreferencesDemo do
 
           {:noreply,
            socket
-           |> Corex.Toast.push_toast("layout-toast", "Preferences saved", msg, :success, 5000)
-           |> assign(:cookie_form, fresh_form())}
+           |> Corex.Toast.create("layout-toast", "Preferences saved", msg, :success, duration: 5000)
+           |> assign(:cookie_form, %E2e.Form.CookiePreferences{} |> E2e.Form.CookiePreferences.changeset(%{}) |> to_form(as: :cookie_preferences, id: "cookie-preferences-form"))}
 
         %Ecto.Changeset{} = cs ->
           {:noreply, assign(socket, :cookie_form, to_form(cs, action: :insert, as: :cookie_preferences))}

@@ -48,6 +48,7 @@ export default [
         HTMLLIElement: "readonly",
         HTMLSelectElement: "readonly",
         HTMLFormElement: "readonly",
+        HTMLButtonElement: "readonly",
         SVGSVGElement: "readonly",
         SVGRectElement: "readonly",
         DOMRect: "readonly",

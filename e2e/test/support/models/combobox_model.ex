@@ -13,7 +13,8 @@ defmodule E2eWeb.ComboboxModel do
   def anatomy_section_ids, do: @anatomy_sections
 
   def wait_section_combobox_ready(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -51,7 +52,8 @@ defmodule E2eWeb.ComboboxModel do
   end
 
   def open_combobox_in_anatomy_section(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -79,7 +81,8 @@ defmodule E2eWeb.ComboboxModel do
   end
 
   def click_item_in_anatomy_section(session, section_dom_id, value) when is_binary(value) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -211,9 +214,7 @@ defmodule E2eWeb.ComboboxModel do
 
     wait_for_has(
       session,
-      xpath(
-        "//*[@id='combobox-patterns-controlled-state' and contains(., '#{substring}')]"
-      ),
+      xpath("//*[@id='combobox-patterns-controlled-state' and contains(., '#{substring}')]"),
       opts
     )
 

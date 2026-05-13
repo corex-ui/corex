@@ -1054,7 +1054,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
     def handle_event("tree_view_expanded_value_response", %{"id" => id, "value" => value}, socket) do
       desc = "#{id}\n#{inspect(value)}"
-      {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "tree_expanded", desc, :info, 5000)}
+      {:noreply, Corex.Toast.create(socket, "layout-toast", "tree_expanded", desc, :info, duration: 5000)}
     end
     """
   end
@@ -1095,7 +1095,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
     def handle_event("tree_view_selected_value_response", %{"id" => id, "value" => value}, socket) do
       desc = "#{id}\n#{inspect(value)}"
-      {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "tree_selected", desc, :info, 5000)}
+      {:noreply, Corex.Toast.create(socket, "layout-toast", "tree_selected", desc, :info, duration: 5000)}
     end
     """
   end

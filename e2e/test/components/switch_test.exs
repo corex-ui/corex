@@ -102,9 +102,11 @@ defmodule E2eWeb.SwitchTest do
           sess
           |> Switch.click_playground_switch_control()
           |> Switch.wait(200)
-          |> then(&Switch.check_accessibility(&1, css("#switch-playground"),
-                    filter: E2eWeb.A11yDocPageFilter
-                  ))
+          |> then(
+            &Switch.check_accessibility(&1, css("#switch-playground"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+          )
       end
     end
   end

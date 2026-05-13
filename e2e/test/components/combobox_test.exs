@@ -42,7 +42,9 @@ defmodule E2eWeb.ComboboxTest do
       session
       |> Combobox.click_button_in_section("combobox-api-set-value-binding", "Belgium")
 
-      Combobox.wait_hidden_value_by_host_id(session, "combobox-api-sv-client", "bel", timeout: 8_000)
+      Combobox.wait_hidden_value_by_host_id(session, "combobox-api-sv-client", "bel",
+        timeout: 8_000
+      )
     end
 
     feature "set value (server)  -  Belgium via LiveView", %{session: session} do
@@ -56,7 +58,9 @@ defmodule E2eWeb.ComboboxTest do
       session
       |> Combobox.click_button_in_section("combobox-api-set-value-server", "Belgium")
 
-      Combobox.wait_hidden_value_by_host_id(session, "combobox-api-sv-server", "bel", timeout: 8_000)
+      Combobox.wait_hidden_value_by_host_id(session, "combobox-api-sv-server", "bel",
+        timeout: 8_000
+      )
     end
 
     feature "set value (js)  -  Germany via dispatch", %{session: session} do
@@ -132,9 +136,11 @@ defmodule E2eWeb.ComboboxTest do
           |> Combobox.open_combobox_by_host_id("combobox-playground")
           |> Combobox.click_item_by_host_id("combobox-playground", "bel")
           |> Combobox.wait(200)
-          |> then(&Combobox.check_accessibility(&1, css("#combobox-playground"),
-                    filter: E2eWeb.A11yDocPageFilter
-                  ))
+          |> then(
+            &Combobox.check_accessibility(&1, css("#combobox-playground"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+          )
       end
     end
   end

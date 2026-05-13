@@ -53,13 +53,13 @@ defmodule E2eWeb.TreeViewApiLive do
     desc = "#{@id_get_exp_server}\n#{inspect(value)}"
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "tree_view_expanded_value_response",
        desc,
        :info,
-       5000
+       duration: 5000
      )}
   end
 
@@ -67,13 +67,13 @@ defmodule E2eWeb.TreeViewApiLive do
     desc = "#{@id_get_sel_server}\n#{inspect(value)}"
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "tree_view_selected_value_response",
        desc,
        :info,
-       5000
+       duration: 5000
      )}
   end
 

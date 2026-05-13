@@ -18,10 +18,13 @@ defmodule E2eWeb.ToastPlayLive do
     message: :string,
     type: :string,
     duration: :string,
-    loading: :boolean
+    loading: :boolean,
+    priority: :string
   }
 
   @toast_fields Map.keys(@toast_field_types)
+
+  @toast_required_fields ~w(title message type duration loading)a
 
   @impl true
   def mount(_params, _session, socket) do
@@ -32,7 +35,8 @@ defmodule E2eWeb.ToastPlayLive do
         message: "From the playground form.",
         type: "info",
         duration: "5000",
-        loading: false
+        loading: false,
+        priority: ""
       })
 
     {:ok,
@@ -60,9 +64,10 @@ defmodule E2eWeb.ToastPlayLive do
     changeset =
       socket.assigns.form.source
       |> Ecto.Changeset.cast(params, @toast_fields)
-      |> Ecto.Changeset.validate_required(@toast_fields)
+      |> Ecto.Changeset.validate_required(@toast_required_fields)
       |> Ecto.Changeset.validate_inclusion(:type, @toast_types)
       |> validate_toast_duration()
+      |> validate_toast_priority()
 
     if changeset.valid? do
       socket = push_layout_toast(socket, changeset)
@@ -84,7 +89,13 @@ defmodule E2eWeb.ToastPlayLive do
   end
 
   defp normalize_toast_params(params) do
-    case Map.get(params, "duration") do
+    params
+    |> normalize_field_param("duration")
+    |> normalize_priority_param()
+  end
+
+  defp normalize_field_param(params, key) do
+    case Map.get(params, key) do
       nil ->
         params
 
@@ -92,8 +103,19 @@ defmodule E2eWeb.ToastPlayLive do
         s = v |> to_string() |> String.trim()
 
         if s == "",
-          do: Map.delete(params, "duration"),
-          else: Map.put(params, "duration", s)
+          do: Map.delete(params, key),
+          else: Map.put(params, key, s)
+    end
+  end
+
+  defp normalize_priority_param(params) do
+    case Map.get(params, "priority") do
+      nil ->
+        Map.put(params, "priority", "")
+
+      v ->
+        s = v |> to_string() |> String.trim()
+        Map.put(params, "priority", s)
     end
   end
 
@@ -106,7 +128,8 @@ defmodule E2eWeb.ToastPlayLive do
       message: Map.fetch!(applied, :message),
       type: Map.fetch!(applied, :type),
       duration: applied |> Map.fetch!(:duration) |> to_string(),
-      loading: Map.fetch!(applied, :loading)
+      loading: Map.fetch!(applied, :loading),
+      priority: applied |> Map.get(:priority, "") |> to_string()
     })
   end
 
@@ -115,6 +138,23 @@ defmodule E2eWeb.ToastPlayLive do
       case Integer.parse(to_string(raw)) do
         {n, _} when n >= 0 -> []
         _ -> [duration: "use a non-negative integer, or 0 for infinite"]
+      end
+    end)
+  end
+
+  defp validate_toast_priority(changeset) do
+    Ecto.Changeset.validate_change(changeset, :priority, fn :priority, raw ->
+      s = raw |> to_string() |> String.trim()
+
+      cond do
+        s == "" ->
+          []
+
+        match?({n, _} when n in 1..8, Integer.parse(s)) ->
+          []
+
+        true ->
+          [priority: "leave blank or use an integer from 1 to 8"]
       end
     end)
   end
@@ -130,7 +170,33 @@ defmodule E2eWeb.ToastPlayLive do
     type_atom = toast_type_atom(ty)
     opts = if loading?, do: [loading: true], else: []
 
-    Corex.Toast.push_toast(socket, "layout-toast", title, message, type_atom, duration, opts)
+    opts =
+      case toast_priority_opt(changeset) do
+        nil -> opts
+        p -> Keyword.put(opts, :priority, p)
+      end
+
+    Corex.Toast.create(
+      socket,
+      "layout-toast",
+      title,
+      message,
+      type_atom,
+      Keyword.merge([duration: duration], opts)
+    )
+  end
+
+  defp toast_priority_opt(changeset) do
+    s = changeset |> Ecto.Changeset.get_field(:priority) |> to_string() |> String.trim()
+
+    case s do
+      "" ->
+        nil
+
+      _ ->
+        {n, _} = Integer.parse(s)
+        n
+    end
   end
 
   defp toast_type_atom("success"), do: :success
@@ -191,6 +257,20 @@ defmodule E2eWeb.ToastPlayLive do
                 </:decrement_trigger>
                 <:increment_trigger>
                   <.heroicon name="hero-chevron-up" class="icon" />
+                </:increment_trigger>
+              </.number_input>
+              <.number_input
+                id="toast-playground-priority"
+                field={@form[:priority]}
+                class="number-input w-full"
+                step={1.0}
+              >
+                <:label>Priority (optional)</:label>
+                <:decrement_trigger>
+                  <.heroicon name="hero-chevron-down" />
+                </:decrement_trigger>
+                <:increment_trigger>
+                  <.heroicon name="hero-chevron-up" />
                 </:increment_trigger>
               </.number_input>
               <.switch field={@form[:loading]} class="switch">

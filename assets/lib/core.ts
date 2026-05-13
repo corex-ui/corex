@@ -59,9 +59,9 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
     spreadProps(el, props, this.machine.scope.id);
   };
 
-  updateProps = (props: Attrs) => {
+  updateProps(props: Attrs) {
     this.machine.updateProps(props);
-  };
+  }
 
   protected zagConnect<A>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

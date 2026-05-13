@@ -75,7 +75,11 @@ export const getNumber = (
 
 export const getBoolean = (element: HTMLElement, attrName: string): boolean => {
   const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-  return element.hasAttribute(`data-${dashName}`);
+  const key = `data-${dashName}`;
+  if (!element.hasAttribute(key)) return false;
+  const raw = element.getAttribute(key);
+  if (raw === "false" || raw === "0") return false;
+  return true;
 };
 
 export const getBooleanValue = (element: HTMLElement, attrName: string): boolean | undefined => {
