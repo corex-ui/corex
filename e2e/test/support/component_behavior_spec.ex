@@ -4,7 +4,8 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   use E2eWeb, :verified_routes
   import Wallaby.Query, only: [css: 1]
 
-  @type component :: :accordion | :angle_slider | :checkbox | :listbox
+  @type component ::
+          :accordion | :angle_slider | :checkbox | :combobox | :listbox | :switch
   @type page_key ::
           :anatomy
           | :api
@@ -44,6 +45,18 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   def page(:listbox, :api), do: {~p"/listbox/api", "#listbox-api-page"}
   def page(:listbox, :events), do: {~p"/listbox/events", "#listbox-events-page"}
   def page(:listbox, :patterns), do: {~p"/listbox/patterns", "#listbox-patterns-page"}
+
+  def page(:switch, :anatomy), do: {~p"/switch/anatomy", "#switch-anatomy-page"}
+  def page(:switch, :api), do: {~p"/switch/api", "#switch-api-page"}
+  def page(:switch, :events), do: {~p"/switch/events", "#switch-events-page"}
+  def page(:switch, :playground), do: {~p"/switch/playground", "#switch-playground"}
+  def page(:switch, :patterns), do: {~p"/switch/patterns", "#switch-patterns-page"}
+
+  def page(:combobox, :anatomy), do: {~p"/combobox/anatomy", "#combobox-anatomy-page"}
+  def page(:combobox, :api), do: {~p"/combobox/api", "#combobox-api-page"}
+  def page(:combobox, :events), do: {~p"/combobox/events", "#combobox-events-page"}
+  def page(:combobox, :playground), do: {~p"/combobox/playground", "#combobox-playground"}
+  def page(:combobox, :patterns), do: {~p"/combobox/patterns", "#combobox-patterns-page"}
 
   @doc """
   `model.visit_ready/3` for the given component page (path + `css(ready)`).

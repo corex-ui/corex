@@ -24,9 +24,27 @@ defmodule E2eWeb.DocA11yRoutesTest do
 
     for {slug, comp} <- [
           {"angle-slider", :angle_slider},
-          {"checkbox", :checkbox}
+          {"checkbox", :checkbox},
+          {"listbox", :listbox},
+          {"switch", :switch},
+          {"combobox", :combobox}
         ],
         key <- [:anatomy, :api, :events] do
+      {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
+
+      assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->
+               p == path and r == ready
+             end),
+             "missing DocA11yRoutes entry for #{slug} #{key}: #{path} #{ready}"
+    end
+
+    for {slug, comp} <- [
+          {"angle-slider", :angle_slider},
+          {"checkbox", :checkbox},
+          {"switch", :switch},
+          {"combobox", :combobox}
+        ],
+        key <- [:playground, :patterns] do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->

@@ -8,6 +8,30 @@ defmodule E2eWeb.SwitchModel do
 
   def anatomy_section_ids, do: @anatomy_sections
 
+  def wait_playground_switch_ready(session) do
+    assert_has(
+      session,
+      css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any)
+    )
+
+    session
+  end
+
+  def wait_patterns_page(session) do
+    assert_has(session, css("#switch-patterns-page", visible: :any))
+    session
+  end
+
+  def click_playground_switch_control(session) do
+    session
+    |> assert_has(
+      css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any)
+    )
+    |> click(
+      css("#switch-playground [data-scope='switch'][data-part='control']", visible: :any)
+    )
+  end
+
   def click_control_in_section(session, section_dom_id) do
     session
     |> assert_has(css("##{section_dom_id} [phx-hook='Switch']:not([data-loading])"))
