@@ -34,7 +34,7 @@ defmodule Corex.NumberInput.Connect do
   defp controlled_value_str(_), do: nil
 
   defp uncontrolled_default_str(%{controlled: false} = assigns) do
-    value_attr(assigns.default_value || assigns.value)
+    value_attr(assigns.default_value)
   end
 
   defp uncontrolled_default_str(_), do: nil
@@ -54,8 +54,6 @@ defmodule Corex.NumberInput.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-allow-mouse-wheel" => get_boolean(assigns.allow_mouse_wheel),
-      "data-name" => assigns.name,
-      "data-form" => assigns.form,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-dir" => Map.get(assigns, :dir),
@@ -129,7 +127,8 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "control",
       "id" => "number-input:#{assigns.id}:control",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "role" => "group"
     }
   end
 
@@ -151,7 +150,15 @@ defmodule Corex.NumberInput.Connect do
       "disabled" => get_boolean(assigns.disabled),
       "id" => "number-input:#{assigns.id}:input",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "type" => "text",
+      "inputmode" => "decimal",
+      "role" => "spinbutton",
+      "autocomplete" => "off",
+      "autocorrect" => "off",
+      "spellcheck" => "false",
+      "pattern" => "-?[0-9]*(.[0-9]+)?",
+      "required" => get_boolean(assigns.required)
     }
   end
 

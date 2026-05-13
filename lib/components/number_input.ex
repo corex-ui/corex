@@ -57,7 +57,7 @@ defmodule Corex.NumberInput do
 
   With `field={@form[:key]}`, the input stays **uncontrolled** in the Zag sense so increment and decrement work locally; the hidden field still updates for `phx-change` and submit. The `controlled` attribute is ignored when `field` is set.
 
-  For a **standalone** server-owned value (no `field`), use `controlled`, `value`, and `on_value_change` so each change is applied on the server (see Number input · Patterns in the demo app).
+  For standalone **controlled** mode (no `field`), use `controlled`, `value`, and `on_value_change` (see Number input · Patterns). For uncontrolled standalone markup, `value` sets the visible input; `default_value` also emits `data-default-value` for the hook. A form `field` never emits `data-default-value` from the changeset value (only an explicit `default_value` assign does), so LiveView re-renders after submit do not resync Zag from the server.
 
   Use a changeset and standard form events; the field value is submitted with the form.
 
@@ -284,7 +284,7 @@ defmodule Corex.NumberInput do
           {render_slot(@label)}
         </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input type="text" inputmode="decimal" value={@value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} />
+          <input value={@value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
           <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
             <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}

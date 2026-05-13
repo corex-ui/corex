@@ -15,11 +15,19 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     const controlled = getBoolean(el, "controlled");
+    const uncontrolledDefault = () => {
+      const fromAttr = getString(el, "defaultValue");
+      if (fromAttr !== undefined) return fromAttr;
+      return (
+        el.querySelector<HTMLInputElement>('[data-scope="number-input"][data-part="input"]')
+          ?.value ?? ""
+      );
+    };
     const zag = new NumberInput(el, {
       id: el.id,
       ...(controlled
         ? { value: getString(el, "value") ?? "" }
-        : { defaultValue: getString(el, "defaultValue") }),
+        : { defaultValue: uncontrolledDefault() }),
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
@@ -28,8 +36,6 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
       dir: getDir(el),
       onValueChange: (details: ValueChangeDetails) => {
         if (details.value !== undefined) {
@@ -71,14 +77,38 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
       dir: getDir(this.el),
     };
     if (getBoolean(this.el, "controlled")) {
       next.value = getString(this.el, "value") ?? "";
     }
     this.numberInput?.updateProps(next);
+
+    const root = this.el;
+    queueMicrotask(() => {
+      const visible = root.querySelector<HTMLInputElement>(
+        '[data-scope="number-input"][data-part="input"]'
+      );
+      if (visible) {
+        if (!getBoolean(root, "readOnly")) {
+          visible.readOnly = false;
+          visible.removeAttribute("readonly");
+        }
+        if (!getBoolean(root, "disabled")) {
+          visible.disabled = false;
+          visible.removeAttribute("disabled");
+        }
+      }
+
+      const triggers = root.querySelectorAll<HTMLButtonElement>(
+        '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
+      );
+      triggers.forEach((trigger) => {
+        if (trigger.hasAttribute("data-disabled")) return;
+        trigger.disabled = false;
+        trigger.removeAttribute("disabled");
+      });
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & NumberInputHookState) {

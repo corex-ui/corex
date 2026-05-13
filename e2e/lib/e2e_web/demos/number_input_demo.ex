@@ -185,8 +185,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_server_note_elixir do
     ~S"""
-    # Initial value: pass default_value (or value) on the component.
-    # The hook reads data-default-value on the root element (the same id as id="qty").
+    # Initial value: default_value sets data-default-value; value alone uses the visible input (hook reads it on mount).
     """
   end
 
