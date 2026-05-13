@@ -155,10 +155,6 @@ defmodule E2eWeb.Model do
         end
       end
 
-      def prepare_live_form_for_push_toast(session) do
-        prepare_live_form(session)
-      end
-
       def assert_toast(session, substring) when is_binary(substring) do
         case Wallaby.Browser.retry(fn ->
                if E2eWeb.Model.layout_toast_contains?(session, substring) do

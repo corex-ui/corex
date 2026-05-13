@@ -81,7 +81,7 @@ defmodule E2eWeb.ToastApiLive do
         <.demo_section
           id="toast-api-create-client-binding"
           title="Create toast (Client binding)"
-          code={@codes.create_toast_client_binding}
+          code={@codes.create_client_binding}
         >
           <:preview><Demo.api_client_binding_example /></:preview>
         </.demo_section>
@@ -94,13 +94,13 @@ defmodule E2eWeb.ToastApiLive do
               value: "heex",
               label: "Heex",
               language: :heex,
-              code: @codes.create_toast_client_js_heex
+              code: @codes.create_client_js_heex
             },
-            %{value: "js", label: "JS", language: :js, code: @codes.create_toast_client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @codes.create_toast_client_ts}
+            %{value: "js", label: "JS", language: :js, code: @codes.create_client_js},
+            %{value: "ts", label: "TS", language: :javascript, code: @codes.create_client_ts}
           ]}
         >
-          <:preview><Demo.api_create_toast_client_js_example /></:preview>
+          <:preview><Demo.api_create_client_js_example /></:preview>
         </.demo_section>
 
         <.demo_section
@@ -129,19 +129,19 @@ defmodule E2eWeb.ToastApiLive do
         </.demo_section>
 
         <.demo_section
-          id="toast-api-push-server"
-          title="Push toast (Server)"
+          id="toast-api-create-server"
+          title="Create toast (Server)"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.push_toast_server_heex},
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.create_server_heex},
             %{
               value: "elixir",
               label: "Elixir",
               language: :elixir,
-              code: @codes.push_toast_server_elixir
+              code: @codes.create_server_elixir
             }
           ]}
         >
-          <:preview><Demo.api_push_toast_server_example /></:preview>
+          <:preview><Demo.api_create_server_example /></:preview>
         </.demo_section>
 
         <.demo_section

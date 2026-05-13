@@ -15,6 +15,13 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getDir } from "../lib/util";
 
+function extraActionClassTokens(action: unknown): string[] {
+  if (action == null || typeof action !== "object") return [];
+  const cn = (action as { className?: unknown }).className;
+  if (typeof cn !== "string") return [];
+  return cn.trim().split(/\s+/).filter(Boolean);
+}
+
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
@@ -160,8 +167,17 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
     if (hasAction) {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+      const label = this.latestProps.action?.label ?? "";
+      if (this.parts.action.innerHTML !== label) {
+        this.parts.action.innerHTML = label;
+      }
+      const extraClasses = extraActionClassTokens(this.latestProps.action);
+      if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
     } else {
       this.parts.action.hidden = true;
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
+      }
     }
 
     const duration = this.duration;

@@ -306,6 +306,7 @@ defmodule E2eWeb.Router do
     post("/radio-group/form", PageController, :radio_group_form_submit)
     get("/timer/anatomy", PageController, :timer_page)
     get("/timer/style", PageController, :timer_styling_page)
+    get("/toast/anatomy", PageController, :toast_anatomy_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
 

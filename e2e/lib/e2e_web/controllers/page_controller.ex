@@ -1793,6 +1793,10 @@ defmodule E2eWeb.PageController do
     render(conn, :timer_styling_page)
   end
 
+  def toast_anatomy_page(conn, _params) do
+    render(conn, :toast_anatomy_page)
+  end
+
   def tooltip_page(conn, _params) do
     render(conn, :tooltip_page)
   end

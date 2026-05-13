@@ -3,6 +3,7 @@ defmodule Corex.ToastTest do
 
   alias Corex.Toast.Anatomy.Group
   alias Corex.Toast.Connect
+  alias Phoenix.LiveView.JS
 
   describe "create/5" do
     test "returns JS command for info type" do
@@ -36,7 +37,16 @@ defmodule Corex.ToastTest do
       js =
         Corex.Toast.create("layout-toast", "T", "D", :info,
           id: "t1",
-          action: %{label: "Go", effects: [%{kind: :push, event: "e", value: %{}}]}
+          action: %{label: "Go", js: JS.push("e", value: %{})}
+        )
+
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS with Corex.Toast.Action struct" do
+      js =
+        Corex.Toast.create("layout-toast", "T", "D", :info,
+          action: %Corex.Toast.Action{label: "Run", js: JS.push("e", value: %{}), class: "button"}
         )
 
       assert %Phoenix.LiveView.JS{} = js
@@ -130,22 +140,6 @@ defmodule Corex.ToastTest do
     test "server returns socket" do
       socket = %Phoenix.LiveView.Socket{}
       assert %Phoenix.LiveView.Socket{} = Corex.Toast.dismiss(socket, "layout-toast", "x")
-    end
-  end
-
-  describe "create_toast/5 delegates to create/5" do
-    test "returns JS" do
-      assert %Phoenix.LiveView.JS{} =
-               Corex.Toast.create_toast("layout-toast", "A", "B", :info, [])
-    end
-  end
-
-  describe "push_toast/6 delegates to create/6" do
-    test "returns socket" do
-      socket = %Phoenix.LiveView.Socket{}
-
-      assert %Phoenix.LiveView.Socket{} =
-               Corex.Toast.push_toast(socket, "layout-toast", "A", "B", :info, 4000, [])
     end
   end
 

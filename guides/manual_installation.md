@@ -213,7 +213,7 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
-See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `Phoenix.LiveView.JS` commands inside `action` effects as `%{kind: :exec_js, js: your_js}`.
+See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` with `JS.push`, `JS.patch`, or `JS.navigate` composed in `js`.
 
 ## 9. Add your first component
 

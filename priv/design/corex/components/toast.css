@@ -95,7 +95,7 @@
   }
 
   .toast [data-scope="toast"][data-part="action-trigger"] {
-    @apply ui-trigger ui-trigger--sm ui-trigger--ghost;
+    @apply ui-trigger ui-trigger--sm;
   }
 
   .toast [data-scope="toast"][data-part="action-trigger"][hidden] {

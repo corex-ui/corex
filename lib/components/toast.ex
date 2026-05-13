@@ -79,20 +79,20 @@ defmodule Corex.Toast do
 
   Common opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` integer `1` (highest) through `8` (lowest), optional (Zag defaults by type and action when omitted), `action:`.
 
-  Action shape: `%{label: "…", effects: [effect, …]}` where each `effect` is one of:
+  Action map: `%{label:, js: %Phoenix.LiveView.JS{}, class: optional}` or `%Corex.Toast.Action{label:, js:, class:}` (same fields; struct is optional sugar).
 
-  - `%{kind: :push, event: "event_name", value: %{}}` (optional `value`, defaults to `%{}`)
-  - `%{kind: :redirect, to: "/path", redirect: :patch | :navigate | :href, new_tab: false}`
-  - `%{kind: :exec_js, js: %Phoenix.LiveView.JS{}}` (built with `JS.push`, `JS.patch`, pipe, etc.)
-  - `%{kind: :exec_js, encoded: "…"}` if you already have an encoded ops string
+  - `label` is trusted HTML for the action button: a plain binary, `Phoenix.HTML.raw/1`, or HEEx (for example `~H{...}` with `<.heroicon />`). HEEx and `{:safe, _}` become HTML through `Phoenix.HTML.Safe` (plain binaries are not escaped).
+  - `js` is a non-empty `Phoenix.LiveView.JS` struct (use `JS.push`, `JS.patch`, `JS.navigate`, and `|>` to compose).
+  - `class` is optional: a binary string of CSS classes for the action button (leading and trailing whitespace stripped; empty means omit).
 
   ```elixir
   action: %{
-    label: "Undo",
-    effects: [
-      %{kind: :push, event: "toast_undo", value: %{id: 1}},
-      %{kind: :exec_js, js: JS.push("dismiss_item", value: %{id: 1}) |> JS.patch(~p"/items")}
-    ]
+    label: ~H{
+      <.heroicon name="hero-arrow-uturn-left" />
+      Undo
+    },
+    class: "button button--accent button--sm",
+    js: JS.push("toast_undo", value: %{id: 1}) |> JS.patch(~p"/items")
   }
   ```
   """
@@ -514,7 +514,7 @@ defmodule Corex.Toast do
   @doc """
   Creates a toast from the client. Returns `Phoenix.LiveView.JS` that dispatches `toast:create` on the group.
 
-  Options: `duration` (default `5000`, or `:infinity`), `loading: true`, `id:`, `priority:` (`1`..`8`, optional; otherwise Zag derives priority from type and whether an action is present), `action:` (see module docs on action maps).
+  Options: `duration` (default `5000`, or `:infinity`), `loading: true`, `id:`, `priority:` (`1`..`8`, optional; otherwise Zag derives priority from type and whether an action is present), `action:` (see module docs: `%{label:, js: %JS{}, class?:}`).
   """
   def create(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) and is_list(opts) do
@@ -580,25 +580,5 @@ defmodule Corex.Toast do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do
     Phoenix.LiveView.push_event(socket, "toast-dismiss", %{groupId: toast_group_id, id: toast_id})
-  end
-
-  @doc false
-  def create_toast(toast_group_id, title, description, type, opts)
-      when is_binary(toast_group_id) do
-    create(toast_group_id, title, description, type, opts)
-  end
-
-  @doc false
-  def push_toast(socket, toast_group_id, title, description, type, duration, opts \\ [])
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
-             is_list(opts) do
-    create(
-      socket,
-      toast_group_id,
-      title,
-      description,
-      type,
-      Keyword.put(opts, :duration, duration)
-    )
   end
 end

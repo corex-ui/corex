@@ -1,0 +1,60 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="toast-anatomy-page"
+    title="Toast Anatomy"
+    subtitle="Toast type, duration, loading, and three trigger styles (redirect, Phoenix.LiveView.JS, custom label)."
+  >
+    <.demo_section
+      id="toast-anatomy-type"
+      title="Type"
+      code={E2eWeb.Demos.ToastDemo.anatomy_type_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_type_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toast-anatomy-duration"
+      title="Duration"
+      code={E2eWeb.Demos.ToastDemo.anatomy_duration_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_duration_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toast-anatomy-loading"
+      title="Loading"
+      code={E2eWeb.Demos.ToastDemo.anatomy_loading_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_loading_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toast-anatomy-trigger-redirect"
+      title="Trigger · Redirect"
+      code={E2eWeb.Demos.ToastDemo.anatomy_trigger_redirect_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_trigger_redirect_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toast-anatomy-trigger-live-view-js"
+      title="Trigger · Live View JS"
+      code={E2eWeb.Demos.ToastDemo.anatomy_trigger_live_view_js_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_trigger_live_view_js_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toast-anatomy-trigger-custom-label"
+      title="Trigger · Custom label"
+      code={E2eWeb.Demos.ToastDemo.anatomy_trigger_custom_label_code()}
+    >
+      <:preview><E2eWeb.Demos.ToastDemo.anatomy_trigger_custom_label_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

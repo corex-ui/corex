@@ -36495,6 +36495,12 @@ ${err}`);
       collapse
     };
   }
+  function extraActionClassTokens(action) {
+    if (action == null || typeof action !== "object") return [];
+    const cn = action.className;
+    if (typeof cn !== "string") return [];
+    return cn.trim().split(/\s+/).filter(Boolean);
+  }
   function createToastGroup(container, options) {
     var _a4, _b, _c;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
@@ -36524,63 +36530,37 @@ ${err}`);
   function asRecord(v2) {
     return v2 != null && typeof v2 === "object" && !Array.isArray(v2) ? v2 : {};
   }
-  function parseEffect(raw) {
+  function parseSingleExecJsEffect(raw) {
     const o2 = asRecord(raw);
-    const kind = o2.kind;
-    if (kind !== "push" && kind !== "redirect" && kind !== "exec_js") return null;
-    if (kind === "push") {
-      const event = o2.event;
-      if (typeof event !== "string") return null;
-      const value = asRecord(o2.value);
-      return { kind: "push", event, value };
-    }
-    if (kind === "redirect") {
-      const to = o2.to;
-      if (typeof to !== "string") return null;
-      const redirect = o2.redirect;
-      const r2 = redirect === "patch" || redirect === "navigate" || redirect === "href" ? redirect : "href";
-      return { kind: "redirect", to, redirect: r2, newTab: Boolean(o2.newTab) };
-    }
+    if (o2.kind !== "exec_js") return null;
     const encoded = o2.encoded;
-    if (typeof encoded !== "string") return null;
-    return { kind: "exec_js", encoded };
+    if (typeof encoded !== "string" || encoded.length === 0) return null;
+    return encoded;
   }
   function parseActionSpec(raw) {
     const o2 = asRecord(raw);
     const label = o2.label;
     if (typeof label !== "string" || label.length === 0) return null;
     const effectsRaw = o2.effects;
-    if (!Array.isArray(effectsRaw)) return null;
-    const effects = effectsRaw.map(parseEffect).filter((e2) => e2 != null);
-    if (effects.length === 0) return null;
-    return { label, effects };
-  }
-  function runEffects(effects, rt) {
-    var _a4, _b;
-    for (const eff of effects) {
-      if (eff.kind === "push") {
-        rt.pushEvent(eff.event, (_a4 = eff.value) != null ? _a4 : {});
-      } else if (eff.kind === "redirect") {
-        performRedirect(
-          {
-            destination: eff.to,
-            mode: (_b = eff.redirect) != null ? _b : "href",
-            newTab: eff.newTab
-          },
-          rt.redirectCtx
-        );
-      } else {
-        rt.execJs(eff.encoded);
-      }
+    if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+    const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+    if (encoded == null) return null;
+    const spec = { label, encoded };
+    const className = o2.class;
+    if (typeof className === "string" && className.trim()) {
+      spec.className = className.trim();
     }
+    return spec;
   }
   function buildZagAction(spec, rt) {
-    return {
+    const action = {
       label: spec.label,
       onClick: () => {
-        runEffects(spec.effects, rt);
+        rt.execJs(spec.encoded);
       }
     };
+    if (spec.className) action.className = spec.className;
+    return action;
   }
   function buildRuntime(self2) {
     return {
@@ -36599,7 +36579,6 @@ ${err}`);
       "use strict";
       init_chunk_2FOKGN7H();
       init_chunk_YSIT45Z3();
-      init_chunk_FOQSALVP();
       init_chunk_OUOXE4EX();
       init_chunk_XP2X5SPI();
       anatomy27 = createAnatomy("toast").parts(
@@ -37219,7 +37198,7 @@ ${err}`);
           return this.zagConnect(connect27);
         }
         render() {
-          var _a4, _b, _c;
+          var _a4, _b, _c, _d, _e;
           this.spreadProps(this.el, this.api.getRootProps());
           this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
           this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
@@ -37264,8 +37243,17 @@ ${err}`);
           if (hasAction) {
             this.parts.action.hidden = false;
             this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+            const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
+            if (this.parts.action.innerHTML !== label) {
+              this.parts.action.innerHTML = label;
+            }
+            const extraClasses = extraActionClassTokens(this.latestProps.action);
+            if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
           } else {
             this.parts.action.hidden = true;
+            if (this.parts.action.innerHTML) {
+              this.parts.action.innerHTML = "";
+            }
           }
           const duration = this.duration;
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;

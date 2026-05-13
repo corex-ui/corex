@@ -3,9 +3,6 @@ import {
 } from "./chunks/chunk-2FOKGN7H.mjs";
 import "./chunks/chunk-YSIT45Z3.mjs";
 import {
-  performRedirect
-} from "./chunks/chunk-FOQSALVP.mjs";
-import {
   setRafTimeout
 } from "./chunks/chunk-OUOXE4EX.mjs";
 import {
@@ -1152,6 +1149,12 @@ var group = {
 };
 
 // components/toast.ts
+function extraActionClassTokens(action) {
+  if (action == null || typeof action !== "object") return [];
+  const cn = action.className;
+  if (typeof cn !== "string") return [];
+  return cn.trim().split(/\s+/).filter(Boolean);
+}
 var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
@@ -1256,8 +1259,17 @@ var ToastItem = class extends Component {
     if (hasAction) {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+      const label = this.latestProps.action?.label ?? "";
+      if (this.parts.action.innerHTML !== label) {
+        this.parts.action.innerHTML = label;
+      }
+      const extraClasses = extraActionClassTokens(this.latestProps.action);
+      if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
     } else {
       this.parts.action.hidden = true;
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
+      }
     }
     const duration = this.duration;
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
@@ -1378,62 +1390,37 @@ function getToastStore(groupId) {
 function asRecord(v) {
   return v != null && typeof v === "object" && !Array.isArray(v) ? v : {};
 }
-function parseEffect(raw) {
+function parseSingleExecJsEffect(raw) {
   const o = asRecord(raw);
-  const kind = o.kind;
-  if (kind !== "push" && kind !== "redirect" && kind !== "exec_js") return null;
-  if (kind === "push") {
-    const event = o.event;
-    if (typeof event !== "string") return null;
-    const value = asRecord(o.value);
-    return { kind: "push", event, value };
-  }
-  if (kind === "redirect") {
-    const to = o.to;
-    if (typeof to !== "string") return null;
-    const redirect = o.redirect;
-    const r = redirect === "patch" || redirect === "navigate" || redirect === "href" ? redirect : "href";
-    return { kind: "redirect", to, redirect: r, newTab: Boolean(o.newTab) };
-  }
+  if (o.kind !== "exec_js") return null;
   const encoded = o.encoded;
-  if (typeof encoded !== "string") return null;
-  return { kind: "exec_js", encoded };
+  if (typeof encoded !== "string" || encoded.length === 0) return null;
+  return encoded;
 }
 function parseActionSpec(raw) {
   const o = asRecord(raw);
   const label = o.label;
   if (typeof label !== "string" || label.length === 0) return null;
   const effectsRaw = o.effects;
-  if (!Array.isArray(effectsRaw)) return null;
-  const effects = effectsRaw.map(parseEffect).filter((e) => e != null);
-  if (effects.length === 0) return null;
-  return { label, effects };
-}
-function runEffects(effects, rt) {
-  for (const eff of effects) {
-    if (eff.kind === "push") {
-      rt.pushEvent(eff.event, eff.value ?? {});
-    } else if (eff.kind === "redirect") {
-      performRedirect(
-        {
-          destination: eff.to,
-          mode: eff.redirect ?? "href",
-          newTab: eff.newTab
-        },
-        rt.redirectCtx
-      );
-    } else {
-      rt.execJs(eff.encoded);
-    }
+  if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+  const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+  if (encoded == null) return null;
+  const spec = { label, encoded };
+  const className = o.class;
+  if (typeof className === "string" && className.trim()) {
+    spec.className = className.trim();
   }
+  return spec;
 }
 function buildZagAction(spec, rt) {
-  return {
+  const action = {
     label: spec.label,
     onClick: () => {
-      runEffects(spec.effects, rt);
+      rt.execJs(spec.encoded);
     }
   };
+  if (spec.className) action.className = spec.className;
+  return action;
 }
 
 // hooks/toast.ts
