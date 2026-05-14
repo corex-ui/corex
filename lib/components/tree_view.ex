@@ -908,11 +908,11 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :component
-  @doc "Renders a tree item (leaf). For custom server-rendered items or testing."
+  @doc "Renders a tree leaf row for custom server markup or tests. Prefer compound `tree_view_item` when possible."
   attr(:item, :map, required: true)
   slot(:inner_block, required: true)
 
-  def tree_item(assigns) do
+  def tree_view_markup_item(assigns) do
     ~H"""
     <div phx-mounted={Connect.ignore_item(@item)} {Connect.item(@item)}>
       <span phx-mounted={Connect.ignore_item_text(@item)} {Connect.item_text(@item)}>
@@ -923,7 +923,7 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :component
-  @doc "Renders a tree branch (node with children). For custom server-rendered branches or testing."
+  @doc "Renders a tree branch row for custom server markup or tests. Prefer compound `tree_view_branch` when possible."
   attr(:row, :map, required: true)
   attr(:animation, :string, default: "js")
 
@@ -937,7 +937,7 @@ defmodule Corex.TreeView do
     attr(:class, :string, required: false)
   end
 
-  def tree_branch(assigns) do
+  def tree_view_markup_branch(assigns) do
     branch = Branch.with_animation(assigns.row, assigns.animation)
 
     assigns = assign(assigns, :branch_connect, branch)

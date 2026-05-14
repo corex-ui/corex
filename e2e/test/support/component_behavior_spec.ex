@@ -16,8 +16,10 @@ defmodule E2eWeb.ComponentBehaviorSpec do
           | :controlled
 
   @doc """
-  `{path, ready_selector}` for a pilot Zag component doc page. Paths use the `~p` sigil
-  (locale prefix from `E2eWeb.Locale.current/0`); in tests set `Localize.put_locale/1` when needed.
+  `{path, ready_selector}` for pilot Zag doc pages used by Wallaby models.
+
+  Full doc route coverage (HTTP 200, router resolution, LiveView mounts) lives in
+  `E2eWeb.DocA11yRoutesCoverageTest`. Tier 3 Wallaby depth exceptions: `E2eWeb.E2eBehaviorExceptions`.
   """
   @spec page(component, page_key) :: {String.t(), String.t()}
   def page(:accordion, :anatomy), do: {~p"/accordion/anatomy", "#accordion-anatomy-page"}

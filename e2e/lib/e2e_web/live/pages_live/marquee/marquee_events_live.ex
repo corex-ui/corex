@@ -85,7 +85,7 @@ defmodule E2eWeb.MarqueeEventsLive do
         subtitle="Pause, loop, and completion from LiveView or DOM events."
       >
         <.demo_section
-          id="marquee-events-server"
+          id="marquee-events-server-section"
           title="On Pause Change / On Loop Complete / On Complete (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -135,7 +135,7 @@ defmodule E2eWeb.MarqueeEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="marquee-events-client"
+          id="marquee-events-client-section"
           title="On Pause Change / On Loop Complete / On Complete (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

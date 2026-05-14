@@ -86,7 +86,7 @@ defmodule E2eWeb.PasswordInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="password-input-api-server"
+          id="password-input-api-server-section"
           title="Set visibility (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},

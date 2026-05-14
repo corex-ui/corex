@@ -15,7 +15,7 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getDir } from "../lib/util";
 
-function extraActionClassTokens(action: unknown): string[] {
+function actionClassTokens(action: unknown): string[] {
   if (action == null || typeof action !== "object") return [];
   const cn = (action as { className?: unknown }).className;
   if (typeof cn !== "string") return [];
@@ -171,7 +171,7 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       if (this.parts.action.innerHTML !== label) {
         this.parts.action.innerHTML = label;
       }
-      const extraClasses = extraActionClassTokens(this.latestProps.action);
+      const extraClasses = actionClassTokens(this.latestProps.action);
       if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
     } else {
       this.parts.action.hidden = true;

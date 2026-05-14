@@ -93,12 +93,17 @@ defmodule E2eWeb.CheckboxModel do
     session =
       assert_has(
         session,
-        css("#checkbox-api-server [phx-hook='Checkbox']:not([data-loading])", visible: :any)
+        css(
+          "#checkbox-api-server-section [phx-hook='Checkbox']:not([data-loading])",
+          visible: :any
+        )
       )
 
     click(
       session,
-      xpath("//*[@id='checkbox-api-server']//button[contains(normalize-space(), 'Set checked')]")
+      xpath(
+        "//*[@id='checkbox-api-server-section']//button[contains(normalize-space(), 'Set checked')]"
+      )
     )
 
     session

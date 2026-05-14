@@ -52,7 +52,7 @@ defmodule E2eWeb.ClipboardEventsLive do
         subtitle="Copy events (server + client)."
       >
         <.demo_section
-          id="clipboard-events"
+          id="clipboard-events-section"
           title="Copy"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.heex},

@@ -50,7 +50,7 @@ Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for eve
 
 ## Existing Phoenix application
 
-Follow the [manual installation guide](manual_installation.html)
+Add Corex to a Phoenix app you already, follow the [manual installation guide](manual_installation.html).
 
 ## Try your first component
 

@@ -115,6 +115,27 @@ defmodule Corex.Toast do
   alias Corex.Toast.Payload, as: ToastPayload
   alias Phoenix.LiveView.JS
 
+  defp toast_duration_dispatch_string(:infinity), do: "Infinity"
+  defp toast_duration_dispatch_string(v), do: v
+
+  defp toast_dispatch_type_string(:info), do: "info"
+  defp toast_dispatch_type_string(:success), do: "success"
+  defp toast_dispatch_type_string(:error), do: "error"
+  defp toast_dispatch_type_string(_), do: nil
+
+  defp toast_dispatch_type_str(type, fallback) do
+    case toast_dispatch_type_string(type) do
+      nil -> fallback
+      s -> s
+    end
+  end
+
+  defp assign_toast_dispatch_strings(assigns, type_fallback) do
+    assigns
+    |> assign(:type_str, toast_dispatch_type_str(assigns.type, type_fallback))
+    |> assign(:duration_str, toast_duration_dispatch_string(assigns.duration))
+  end
+
   @doc """
   Renders a toast group (toaster) that manages multiple toast notifications.
 
@@ -280,20 +301,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_client_error(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "info")
 
     ~H"""
     <div
@@ -343,20 +351,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_server_error(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "error"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "error")
 
     ~H"""
     <div
@@ -405,20 +400,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: 5000)
 
   def toast_connected(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "success"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "success")
 
     ~H"""
     <div
@@ -465,20 +447,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_disconnected(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "info")
 
     ~H"""
     <div

@@ -59,7 +59,7 @@ defmodule E2eWeb.ClipboardApiLive do
         </.demo_section>
 
         <.demo_section
-          id="clipboard-api-server"
+          id="clipboard-api-server-section"
           title="Copy and set value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.server_preview_heex},

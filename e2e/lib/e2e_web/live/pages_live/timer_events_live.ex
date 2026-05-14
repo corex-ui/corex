@@ -74,7 +74,7 @@ defmodule E2eWeb.TimerEventsLive do
         subtitle="Subscribe to tick and complete from LiveView or the client."
       >
         <.demo_section
-          id="timer-events-server"
+          id="timer-events-server-section"
           title="On tick and on complete (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -116,7 +116,7 @@ defmodule E2eWeb.TimerEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="timer-events-client"
+          id="timer-events-client-section"
           title="On tick and on complete (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

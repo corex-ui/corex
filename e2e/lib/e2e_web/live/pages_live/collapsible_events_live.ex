@@ -65,7 +65,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
         subtitle="Subscribe to open changes from LiveView or the client."
       >
         <.demo_section
-          id="collapsible-events-server"
+          id="collapsible-events-server-section"
           title="On Open Change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -103,7 +103,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="collapsible-events-client"
+          id="collapsible-events-client-section"
           title="On Open Change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

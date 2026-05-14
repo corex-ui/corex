@@ -92,15 +92,15 @@ defmodule Corex.TreeViewTest do
     end
   end
 
-  describe "tree_item/1 and tree_branch/1" do
-    test "renders tree_item" do
+  describe "tree_view_markup_item/1 and tree_view_markup_branch/1" do
+    test "renders tree_view_markup_item" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.TreeView.tree_item item={%{id: "i1", value: "v1", index_path: [0], dir: "ltr", redirect: true, new_tab: false, selected: false, focused: false, name: "I1", disabled: false}}>Leaf</Corex.TreeView.tree_item>
+            <Corex.TreeView.tree_view_markup_item item={%{id: "i1", value: "v1", index_path: [0], dir: "ltr", redirect: true, new_tab: false, selected: false, focused: false, name: "I1", disabled: false}}>Leaf</Corex.TreeView.tree_view_markup_item>
             """
           end,
           %{}
@@ -111,18 +111,18 @@ defmodule Corex.TreeViewTest do
       assert html =~ "data-part=\"item-text\""
     end
 
-    test "renders tree_branch" do
+    test "renders tree_view_markup_branch" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.TreeView.tree_branch row={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
+            <Corex.TreeView.tree_view_markup_branch row={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
               <:branch>Trigger</:branch>
               <:branch_indicator>Icon</:branch_indicator>
               Content
-            </Corex.TreeView.tree_branch>
+            </Corex.TreeView.tree_view_markup_branch>
             """
           end,
           %{}

@@ -66,7 +66,7 @@ defmodule E2eWeb.TabsEventsLive do
         subtitle="Subscribe to value changes from LiveView or the client."
       >
         <.demo_section
-          id="tabs-events-server"
+          id="tabs-events-server-section"
           title="On value change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -100,7 +100,7 @@ defmodule E2eWeb.TabsEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="tabs-events-client"
+          id="tabs-events-client-section"
           title="On value change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

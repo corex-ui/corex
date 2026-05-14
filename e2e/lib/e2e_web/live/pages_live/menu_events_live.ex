@@ -120,7 +120,7 @@ defmodule E2eWeb.MenuEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="menu-events-server"
+          id="menu-events-server-section"
           title="Server (Heex + Elixir)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -157,7 +157,7 @@ defmodule E2eWeb.MenuEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="menu-events-client"
+          id="menu-events-client-section"
           title="Client (Heex + JS + TS)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

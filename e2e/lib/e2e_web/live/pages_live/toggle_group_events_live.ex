@@ -65,7 +65,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
         subtitle="Subscribe to value changes from LiveView or the client."
       >
         <.demo_section
-          id="toggle-group-events-server"
+          id="toggle-group-events-server-section"
           title="On value change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -102,7 +102,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="toggle-group-events-client"
+          id="toggle-group-events-client-section"
           title="On value change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

@@ -67,7 +67,7 @@ defmodule E2eWeb.SelectEventsLive do
         subtitle="Subscribe to value changes from LiveView (on_value_change) or the client (CustomEvent and hook)."
       >
         <.demo_section
-          id="select-events-server"
+          id="select-events-server-section"
           title="On Value Change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -103,7 +103,7 @@ defmodule E2eWeb.SelectEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="select-events-client"
+          id="select-events-client-section"
           title="On Value Change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

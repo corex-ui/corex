@@ -93,7 +93,7 @@ defmodule E2eWeb.CheckboxApiLive do
         </.demo_section>
 
         <.demo_section
-          id="checkbox-api-server"
+          id="checkbox-api-server-section"
           title="Set checked (Server)"
           code_tabs={[
             %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}

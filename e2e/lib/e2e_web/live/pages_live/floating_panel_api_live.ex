@@ -49,7 +49,7 @@ defmodule E2eWeb.FloatingPanelApiLive do
           </:preview>
         </.demo_section>
         <.demo_section
-          id="floating-panel-api-server"
+          id="floating-panel-api-server-section"
           title="Server"
           code_tabs={[
             %{

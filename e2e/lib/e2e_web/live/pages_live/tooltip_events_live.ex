@@ -47,7 +47,7 @@ defmodule E2eWeb.TooltipEventsLive do
         subtitle="Open change events (server + client)."
       >
         <.demo_section
-          id="tooltip-events"
+          id="tooltip-events-section"
           title="On open change (Server and client)"
           code_tabs={[
             %{

@@ -65,7 +65,7 @@ defmodule E2eWeb.SignatureEventsLive do
         subtitle="Subscribe to draw end from LiveView or the client."
       >
         <.demo_section
-          id="signature-events-server"
+          id="signature-events-server-section"
           title="On Draw End (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -100,7 +100,7 @@ defmodule E2eWeb.SignatureEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="signature-events-client"
+          id="signature-events-client-section"
           title="On Draw End (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

@@ -77,7 +77,7 @@ defmodule E2eWeb.CarouselEventsLive do
         subtitle="Subscribe to page changes from LiveView or the client."
       >
         <.demo_section
-          id="carousel-events-server"
+          id="carousel-events-server-section"
           title="On Page Change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -121,7 +121,7 @@ defmodule E2eWeb.CarouselEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="carousel-events-client"
+          id="carousel-events-client-section"
           title="On Page Change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

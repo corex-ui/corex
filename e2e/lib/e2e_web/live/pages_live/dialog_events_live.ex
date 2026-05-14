@@ -47,7 +47,7 @@ defmodule E2eWeb.DialogEventsLive do
         subtitle="Open change events (server + client)."
       >
         <.demo_section
-          id="dialog-events"
+          id="dialog-events-section"
           title="Open change"
           code={E2eWeb.Demos.DialogDemo.events_server_heex()}
         >

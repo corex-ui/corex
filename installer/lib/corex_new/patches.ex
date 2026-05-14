@@ -356,11 +356,11 @@ defmodule Corex.New.Patches do
         if trimmed != "" do
           ~s([path: "#{trimmed}", override: true])
         else
-          "\"~> 0.1.0-beta.5\""
+          "\"~> 0.1.0\""
         end
 
       _ ->
-        "\"~> 0.1.0-beta.5\""
+        "\"~> 0.1.0\""
     end
   end
 

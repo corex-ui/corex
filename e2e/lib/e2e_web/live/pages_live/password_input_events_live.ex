@@ -64,7 +64,7 @@ defmodule E2eWeb.PasswordInputEventsLive do
         subtitle="Subscribe to visibility changes from LiveView or the client."
       >
         <.demo_section
-          id="password-input-events-server"
+          id="password-input-events-server-section"
           title="On Visibility Change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -103,7 +103,7 @@ defmodule E2eWeb.PasswordInputEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="password-input-events-client"
+          id="password-input-events-client-section"
           title="On Visibility Change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

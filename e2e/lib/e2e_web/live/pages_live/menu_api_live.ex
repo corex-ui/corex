@@ -52,7 +52,7 @@ defmodule E2eWeb.MenuApiLive do
         </.demo_section>
 
         <.demo_section
-          id="menu-api-server"
+          id="menu-api-server-section"
           title="Open / close (server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},

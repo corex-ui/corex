@@ -38,7 +38,7 @@ defmodule E2eWeb.SelectPatternsLive do
         subtitle="Controlled selection synced with a LiveView assign."
       >
         <.demo_section
-          id="select-patterns-controlled"
+          id="select-patterns-controlled-section"
           title="Controlled"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},

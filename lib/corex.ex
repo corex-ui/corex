@@ -93,8 +93,8 @@ defmodule Corex do
          tree_view_branch_content: 1,
          tree_view_item: 1,
          tree_view_item_indicator: 1,
-         tree_item: 1,
-         tree_branch: 1,
+         tree_view_markup_item: 1,
+         tree_view_markup_branch: 1,
          tree_view_skeleton: 1
        ]}
   }

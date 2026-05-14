@@ -60,7 +60,7 @@ defmodule E2eWeb.EditableEventsLive do
         subtitle="Value change events (server + client)."
       >
         <.demo_section
-          id="editable-events-server"
+          id="editable-events-server-section"
           title="On Value Change (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -98,7 +98,7 @@ defmodule E2eWeb.EditableEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="editable-events-client"
+          id="editable-events-client-section"
           title="On Value Change (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
