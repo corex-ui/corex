@@ -9,7 +9,7 @@ The server builds on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.5"}
+    {:corex, "~> 0.1.0"}
   ]
 end
 ```

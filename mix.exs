@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.5"
+  @version "0.1.0"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -126,7 +126,7 @@ defmodule Corex.MixProject do
   end
 
   defp package do
-    files = ~w(lib priv mix.exs package.json README.md .formatter.exs)
+    files = ~w(lib priv mix.exs package.json README.md CHANGELOG.md .formatter.exs)
 
     [
       maintainers: ["Karim Semmoud"],

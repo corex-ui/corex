@@ -1,6 +1,6 @@
 {
   "name": "corex",
-  "version": "0.1.0-beta.5",
+  "version": "0.1.0",
   "description": "The official JavaScript client for the Corex Phoenix Hooks.",
   "license": "MIT",
   "module": "./priv/static/corex.mjs",
@@ -50,6 +50,7 @@
     "url": "git://github.com/corex-ui/corex.git"
   },
   "files": [
+    "CHANGELOG.md",
     "README.md",
     "package.json",
     "priv/static/**",

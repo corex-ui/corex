@@ -43,7 +43,7 @@ Add `localize_web` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.5"},
+    {:corex, "~> 0.1.0"},
     {:localize_web, "~> 0.5"}
   ]
 end
