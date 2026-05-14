@@ -107,7 +107,26 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def mix_run(args, app_path, opts \\ [])
       when is_list(args) and is_binary(app_path) and is_list(opts) do
-    System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path)] ++ opts)
+    env = integration_mix_env(Keyword.get(opts, :env, []))
+
+    System.cmd(
+      "mix",
+      args,
+      [stderr_to_stdout: true, cd: Path.expand(app_path), env: env] ++
+        Keyword.drop(opts, [:env])
+    )
+  end
+
+  defp integration_mix_env(extra) when is_list(extra) do
+    root = Path.expand("../../../installer/tmp/.integration_tool_home", __DIR__)
+    hex_home = Path.join(root, "hex")
+    mix_home = Path.join(root, "mix")
+    File.mkdir_p!(hex_home)
+    File.mkdir_p!(mix_home)
+
+    defaults = %{"HEX_HOME" => hex_home, "MIX_HOME" => mix_home}
+    extra_map = Map.new(extra, fn {k, v} -> {to_string(k), to_string(v)} end)
+    Map.merge(defaults, extra_map) |> Map.to_list()
   end
 
   def assert_dir(path) do
@@ -349,7 +368,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
         end
 
     port_str = to_string(port)
-    dev_env = [{"MIX_ENV", "dev"} | dev_database_env_from_system()]
+    dev_env = integration_mix_env([{"MIX_ENV", "dev"}] ++ dev_database_env_from_system())
 
     mix_run!(["ecto.create"], app_root_path, env: dev_env)
     mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
