@@ -10,9 +10,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def generate_corex_app(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     app_path = Path.expand(app_name, tmp_dir)
-    integration_test_root_path = Path.expand("../../", __DIR__)
+    integration_root = Corex.Integration.Paths.integration_root()
     app_root_path = get_app_root_path(tmp_dir, app_name, opts)
-    local_corex = Path.expand("../../..", __DIR__)
+    local_corex = Corex.Integration.Paths.corex_repo_root()
 
     dev_argv =
       if "--dev_corex" in opts or "--dev-corex" in opts do
@@ -25,14 +25,11 @@ defmodule Corex.Integration.CodeGeneratorCase do
       mix_run!(
         ["corex.new", app_path, "--no-install", "--no-version-check"] ++
           dev_argv ++ opts,
-        integration_test_root_path
+        integration_root
       )
 
-    mix_lock_src = Path.join(integration_test_root_path, "mix.lock")
-    mix_lock_dst = Path.join(app_root_path, "mix.lock")
-    File.cp!(mix_lock_src, mix_lock_dst)
-
-    inject_corex_path_dep(app_root_path, opts)
+    Corex.Integration.CorexPathDep.inject(app_root_path, opts)
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(integration_root, app_root_path)
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
     mix_run!(["format"], app_root_path)
@@ -43,9 +40,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def generate_corex_app_dev_corex(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     app_path = Path.expand(app_name, tmp_dir)
-    integration_test_root_path = Path.expand("../../", __DIR__)
+    integration_root = Corex.Integration.Paths.integration_root()
     app_root_path = get_app_root_path(tmp_dir, app_name, opts)
-    corex_root = Path.expand("../../..", __DIR__)
+    corex_root = Corex.Integration.Paths.corex_repo_root()
 
     mix_exs = Path.join(corex_root, "mix.exs")
 
@@ -64,14 +61,15 @@ defmodule Corex.Integration.CodeGeneratorCase do
           "--dev",
           corex_root
         ] ++ opts,
-        integration_test_root_path
+        integration_root
       )
 
     unless output =~ "mix phx.new" and output =~ "installing Corex" do
       raise "expected corex.new to run phx.new and install Corex, but output did not include it"
     end
 
-    inject_corex_path_dep(app_root_path, opts)
+    Corex.Integration.CorexPathDep.inject(app_root_path, opts)
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(integration_root, app_root_path)
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
     mix_run!(["format"], app_root_path)
@@ -107,26 +105,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def mix_run(args, app_path, opts \\ [])
       when is_list(args) and is_binary(app_path) and is_list(opts) do
-    env = integration_mix_env(Keyword.get(opts, :env, []))
-
-    System.cmd(
-      "mix",
-      args,
-      [stderr_to_stdout: true, cd: Path.expand(app_path), env: env] ++
-        Keyword.drop(opts, [:env])
-    )
-  end
-
-  defp integration_mix_env(extra) when is_list(extra) do
-    root = Path.expand("../../../installer/tmp/.integration_tool_home", __DIR__)
-    hex_home = Path.join(root, "hex")
-    mix_home = Path.join(root, "mix")
-    File.mkdir_p!(hex_home)
-    File.mkdir_p!(mix_home)
-
-    defaults = %{"HEX_HOME" => hex_home, "MIX_HOME" => mix_home}
-    extra_map = Map.new(extra, fn {k, v} -> {to_string(k), to_string(v)} end)
-    Map.merge(defaults, extra_map) |> Map.to_list()
+    System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path)] ++ opts)
   end
 
   def assert_dir(path) do
@@ -142,7 +121,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def refute_file(file) do
-    refute File.regular?(file), "Expected #{file} to not exist, but it does"
+    refute File.regular?(file), "Expected #{file} to not exist, but it exists"
   end
 
   def assert_file(file, match) do
@@ -191,7 +170,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def with_installer_tmp(name, opts \\ [], function)
       when is_list(opts) and is_function(function, 1) do
     autoremove? = Keyword.get(opts, :autoremove?, true)
-    path = Path.join([installer_tmp_path(), random_string(10), to_string(name)])
+    path = Path.join([Corex.Integration.Paths.installer_tmp_root(), random_string(10), to_string(name)])
 
     try do
       File.rm_rf!(path)
@@ -202,83 +181,16 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
   end
 
-  defp installer_tmp_path do
-    Path.expand("../../../installer/tmp", __DIR__)
+  def inject_before_final_end(code, code_to_inject) do
+    Corex.Integration.RouterPatch.inject_before_final_end(code, code_to_inject)
   end
-
-  def inject_before_final_end(code, code_to_inject)
-      when is_binary(code) and is_binary(code_to_inject) do
-    code
-    |> String.trim_trailing()
-    |> String.trim_trailing("end")
-    |> Kernel.<>(code_to_inject)
-    |> Kernel.<>("end\n")
-  end
-
-  @home_route_anchor "get \"/\", PageController, :home\n"
-  @example_live_line "live \"/live\", ExampleLive\n"
 
   def inject_live_routes(router_path, live_routes, opts \\ []) do
-    content = File.read!(router_path)
-
-    if Keyword.get(opts, :locale_scope) do
-      new_content =
-        cond do
-          String.contains?(content, @home_route_anchor) ->
-            String.replace(content, @home_route_anchor, @home_route_anchor <> live_routes,
-              global: true
-            )
-
-          String.contains?(content, @example_live_line) ->
-            String.replace(content, @example_live_line, @example_live_line <> live_routes,
-              global: false
-            )
-
-          true ->
-            inject_before_final_end(content, live_routes)
-        end
-
-      File.write!(router_path, new_content)
-    else
-      new_content = inject_before_final_end(content, live_routes)
-      File.write!(router_path, new_content)
-    end
+    Corex.Integration.RouterPatch.inject_live_routes(router_path, live_routes, opts)
   end
 
   def inject_resources(router_path, resources_routes, opts \\ []) do
-    content = File.read!(router_path)
-
-    if Keyword.get(opts, :locale_scope) do
-      new_content =
-        if String.contains?(content, @home_route_anchor) do
-          String.replace(content, @home_route_anchor, @home_route_anchor <> resources_routes,
-            global: true
-          )
-        else
-          parts = String.split(content, ~r/scope "\/:locale"/, parts: 2)
-
-          if length(parts) == 2 do
-            [head, locale_block] = parts
-            get_pattern = @home_route_anchor
-            locale_parts = String.split(locale_block, get_pattern, parts: 2)
-
-            if length(locale_parts) == 2 do
-              [before_get, after_get] = locale_parts
-              new_locale_block = before_get <> get_pattern <> resources_routes <> after_get
-              head <> "scope \"/:locale\"" <> new_locale_block
-            else
-              inject_before_final_end(content, resources_routes)
-            end
-          else
-            inject_before_final_end(content, resources_routes)
-          end
-        end
-
-      File.write!(router_path, new_content)
-    else
-      new_content = inject_before_final_end(content, resources_routes)
-      File.write!(router_path, new_content)
-    end
+    Corex.Integration.RouterPatch.inject_resources(router_path, resources_routes, opts)
   end
 
   def modify_file(path, function) when is_binary(path) and is_function(function, 1) do
@@ -290,53 +202,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   defp write_file!(content, path) do
     File.write!(path, content)
-  end
-
-  defp inject_corex_path_dep(app_root_path, opts) do
-    corex_hex_re = ~r/\{:corex,\s*"~>[^"]+"\}/
-    rel_path_root = "../../../../../"
-
-    mix_files =
-      if "--umbrella" in opts do
-        umbrella_root = Path.join(app_root_path, "apps")
-
-        for app <- File.ls!(umbrella_root),
-            mix_exs = Path.join([umbrella_root, app, "mix.exs"]),
-            File.exists?(mix_exs),
-            do: mix_exs
-      else
-        [Path.join(app_root_path, "mix.exs")]
-      end
-
-    rel_path_child = "../../../../../../../"
-
-    for mix_exs <- mix_files do
-      content = File.read!(mix_exs)
-
-      if content =~ corex_hex_re do
-        rel_path = if "--umbrella" in opts, do: rel_path_child, else: rel_path_root
-        corex_path_dep = ~s[{:corex, path: #{inspect(rel_path)}, override: true}]
-        new_content = String.replace(content, corex_hex_re, corex_path_dep)
-        File.write!(mix_exs, new_content)
-      end
-    end
-
-    umbrella_mix =
-      if "--umbrella" in opts do
-        Path.join(app_root_path, "mix.exs")
-      else
-        nil
-      end
-
-    if umbrella_mix && File.exists?(umbrella_mix) do
-      content = File.read!(umbrella_mix)
-
-      if content =~ corex_hex_re do
-        corex_path_dep = ~s[{:corex, path: #{inspect(rel_path_root)}, override: true}]
-        new_content = String.replace(content, corex_hex_re, corex_path_dep)
-        File.write!(umbrella_mix, new_content)
-      end
-    end
   end
 
   defp get_app_root_path(tmp_dir, app_name, opts) do
@@ -368,7 +233,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
         end
 
     port_str = to_string(port)
-    dev_env = integration_mix_env([{"MIX_ENV", "dev"}] ++ dev_database_env_from_system())
+    dev_env = [{"MIX_ENV", "dev"} | Corex.Integration.HttpSmoke.dev_database_env_from_system()]
 
     mix_run!(["ecto.create"], app_root_path, env: dev_env)
     mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
@@ -397,61 +262,10 @@ defmodule Corex.Integration.CodeGeneratorCase do
     port
   end
 
-  defp dev_database_env_from_system do
-    Enum.flat_map(
-      ~w(DATABASE_URL PGHOST PGUSER PGPASSWORD PGPORT PGDATABASE),
-      fn key ->
-        case System.get_env(key) do
-          nil -> []
-          val -> [{key, val}]
-        end
-      end
-    )
-  end
-
-  def request_with_retries(_url, 0), do: {:error, :out_of_retries}
-
   def request_with_retries(url, retries) do
-    url = String.replace(url, "://localhost", "://127.0.0.1")
-
-    case url |> to_charlist() |> :httpc.request() do
-      {:ok, {{_, status_code, _}, raw_headers, body}} when status_code >= 500 ->
-        if retries > 1 do
-          Process.sleep(2_000)
-          request_with_retries(url, retries - 1)
-        else
-          {:ok,
-           %{
-             status_code: status_code,
-             headers: for({k, v} <- raw_headers, do: {to_string(k), to_string(v)}),
-             body: to_string(body)
-           }}
-        end
-
-      {:ok, httpc_response} ->
-        {{_, status_code, _}, raw_headers, body} = httpc_response
-
-        {:ok,
-         %{
-           status_code: status_code,
-           headers: for({k, v} <- raw_headers, do: {to_string(k), to_string(v)}),
-           body: to_string(body)
-         }}
-
-      {:error, {:failed_connect, _}} ->
-        Process.sleep(2_000)
-        request_with_retries(url, retries - 1)
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    Corex.Integration.HttpSmoke.request_with_retries(url, retries)
   end
 
-  @doc """
-  `mix corex.new` default (replace on, design on): JS hooks, design assets, home wrapped in
-  `Layouts.app`, generator-related Corex component imports (including `select.css`), no mode
-  toggle import, and Phoenix daisyUI plugins stripped from `app.css`.
-  """
   def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
@@ -508,9 +322,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(Path.join([base, "lib", web, "hooks", "layout.ex"]))
   end
 
-  @doc """
-  `mix corex.new …` with design off (`--no-design`, i.e. `design: false`): no copied design tree from `mix corex.design`.
-  """
   def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
@@ -518,10 +329,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     refute_dir(design_dir)
   end
 
-  @doc """
-  Replace mode with design off (`--no-design`): ESM hooks + wrapped home, no
-  `assets/corex` and no Corex design `@import` block in `app.css`.
-  """
   def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     assert_corex_no_design_skipped!(app_root, app_name, opts)
@@ -557,10 +364,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
   end
 
-  @doc """
-  Asserts that when design is enabled, the generated `Layouts` module includes the design
-  layout primitives (`layout__header`, `layout__header__content`, `layout__footer`) in `Layouts.app/1`.
-  """
   def assert_corex_design_layout_classes_present!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
