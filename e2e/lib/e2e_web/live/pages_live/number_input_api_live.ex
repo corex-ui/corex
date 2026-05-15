@@ -30,7 +30,7 @@ defmodule E2eWeb.NumberInputApiLive do
         subtitle="LiveView push, client DOM events, and initial value from attributes."
       >
         <.demo_section
-          id="number-input-api-binding"
+          id="number-input-api-binding-section"
           title="LiveView binding"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
@@ -41,7 +41,7 @@ defmodule E2eWeb.NumberInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="number-input-api-client"
+          id="number-input-api-client-section"
           title="Client JS"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_heex()},

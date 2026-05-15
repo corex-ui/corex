@@ -159,7 +159,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
         subtitle="Async loading, controlled state, and redirect navigation."
       >
         <.demo_section
-          id="patterns-tree-async"
+          id="patterns-tree-async-section"
           tabs_id="tabs-tree-view-patterns-async"
           title="Async"
           trigger_class="button--sm"

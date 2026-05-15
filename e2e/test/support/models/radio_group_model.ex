@@ -2,8 +2,23 @@ defmodule E2eWeb.RadioGroupModel do
   use E2eWeb.Model, component: "radio-group"
 
   def click_item_in_section(session, section_dom_id, value) do
+    if String.contains?(value, "'") or String.contains?(value, "\"") do
+      raise ArgumentError, "click_item_in_section: value must not contain quotes"
+    end
+
+    _ =
+      execute_script(
+        session,
+        "document.getElementById(#{Jason.encode!(section_dom_id)})?.scrollIntoView({block: 'center'})"
+      )
+
     session
-    |> assert_has(css("##{section_dom_id} [phx-hook='RadioGroup']:not([data-loading])"))
+    |> assert_has(
+      css(
+        "##{section_dom_id} [phx-hook='RadioGroup']:not([data-loading]), ##{section_dom_id}[phx-hook='RadioGroup']:not([data-loading])",
+        visible: :any
+      )
+    )
     |> click(
       css(
         "##{section_dom_id} [data-scope='radio-group'][data-part='item'][data-value='#{value}']"

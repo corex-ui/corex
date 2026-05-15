@@ -30,7 +30,7 @@ defmodule E2eWeb.ToggleGroupPatternsLive do
         subtitle="Controlled value synced with a LiveView assign."
       >
         <.demo_section
-          id="toggle-group-patterns-controlled"
+          id="toggle-group-patterns-controlled-section"
           title="Controlled"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_controlled_heex()},

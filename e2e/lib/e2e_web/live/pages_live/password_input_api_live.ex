@@ -51,7 +51,7 @@ defmodule E2eWeb.PasswordInputApiLive do
         subtitle="LiveView push, client DOM events, programmatic visibility, and a native radio form."
       >
         <.demo_section
-          id="password-input-api-binding"
+          id="password-input-api-binding-section"
           title="LiveView binding"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
@@ -74,7 +74,7 @@ defmodule E2eWeb.PasswordInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="password-input-api-client"
+          id="password-input-api-client-section"
           title="Client JS"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_heex()},

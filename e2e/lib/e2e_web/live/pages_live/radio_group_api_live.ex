@@ -34,7 +34,7 @@ defmodule E2eWeb.RadioGroupApiLive do
         subtitle="LiveView push, client DOM events, and controlled value from the server."
       >
         <.demo_section
-          id="radio-group-api-binding"
+          id="radio-group-api-binding-section"
           title="LiveView binding"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
@@ -45,7 +45,7 @@ defmodule E2eWeb.RadioGroupApiLive do
         </.demo_section>
 
         <.demo_section
-          id="radio-group-api-client"
+          id="radio-group-api-client-section"
           title="Client JS"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_heex()},
@@ -57,7 +57,7 @@ defmodule E2eWeb.RadioGroupApiLive do
         </.demo_section>
 
         <.demo_section
-          id="radio-group-api-controlled"
+          id="radio-group-api-controlled-section"
           title="Controlled value"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_controlled_heex()},

@@ -1319,7 +1319,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "Accordion",
-        value: ~p"/accordion/anatomy",
+        value: "nav-branch-accordion",
         children: [
           %{label: "Structure", value: ~p"/accordion/anatomy"},
           %{label: "Playground", value: ~p"/accordion/playground"}
@@ -1327,7 +1327,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       },
       %{
         label: "Tree view",
-        value: ~p"/tree-view/anatomy",
+        value: "nav-branch-tree-view",
         children: [
           %{label: "Structure", value: ~p"/tree-view/anatomy"},
           %{label: "Playground", value: ~p"/tree-view/playground"}
@@ -1336,7 +1336,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ])
   end
 
-  def patterns_redirect_expanded, do: [~p"/accordion/anatomy"]
+  def patterns_redirect_expanded, do: ["nav-branch-accordion", "nav-branch-tree-view"]
   def patterns_redirect_value, do: [~p"/tree-view/anatomy"]
 
   def patterns_redirect_heex do
@@ -1346,13 +1346,13 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       class="tree-view"
       redirect
       on_selection_change="patterns_tree_redirect_nav"
-      expanded_value={[~p"/accordion/anatomy"]}
+      expanded_value={["nav-branch-accordion", "nav-branch-tree-view"]}
       value={[~p"/tree-view/anatomy"]}
       items={
         Corex.Tree.new([
           %{
             label: "Accordion",
-            value: ~p"/accordion/anatomy",
+            value: "nav-branch-accordion",
             children: [
               %{label: "Structure", value: ~p"/accordion/anatomy"},
               %{label: "Playground", value: ~p"/accordion/playground"}
@@ -1360,7 +1360,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
           },
           %{
             label: "Tree view",
-            value: ~p"/tree-view/anatomy",
+            value: "nav-branch-tree-view",
             children: [
               %{label: "Structure", value: ~p"/tree-view/anatomy"},
               %{label: "Playground", value: ~p"/tree-view/playground"}

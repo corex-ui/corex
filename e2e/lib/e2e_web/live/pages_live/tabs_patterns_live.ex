@@ -37,7 +37,7 @@ defmodule E2eWeb.TabsPatternsLive do
         subtitle="Controlled value synced with a LiveView assign."
       >
         <.demo_section
-          id="tabs-patterns-controlled"
+          id="tabs-patterns-controlled-section"
           title="Controlled"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_controlled_heex()},
