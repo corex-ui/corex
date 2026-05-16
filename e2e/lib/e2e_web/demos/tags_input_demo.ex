@@ -59,11 +59,13 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       id="tags-anatomy-translation"
       class="tags-input"
       value={["lorem", "duis"]}
-      translation={%Corex.TagsInput.Translation{
-        placeholder: "Add lorem or duis…",
-        delete_tag_trigger_label: "Remove %{tag}",
-        tag_edited: "Edit %{tag}. Press enter to save or escape to cancel."
-      }}
+      translation={
+        %Corex.TagsInput.Translation{
+          placeholder: "Add lorem or duis…",
+          delete_tag_trigger_label: "Remove %{tag}",
+          tag_edited: "Edit %{tag}. Press enter to save or escape to cancel."
+        }
+      }
     >
       <:label>Keywords</:label>
       <:close><.heroicon name="hero-x-mark" /></:close>

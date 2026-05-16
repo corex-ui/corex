@@ -122,7 +122,7 @@
   &[data-disabled],
   &[disabled] {
     background-color: --value(--color-*-muted, [color]);
-    color: var(--color-ink-muted);
+    cursor: not-allowed;
   }
 
   &[data-state="open"],
@@ -148,7 +148,6 @@
     &[data-disabled],
     &[disabled] {
       background-color: --value(--color-*-muted, [color]);
-      color: var(--color-ink-muted);
       cursor: not-allowed;
     }
   }
@@ -488,7 +487,6 @@
     &[data-disabled],
     &[disabled] {
       background-color: --value(--color-*-muted, [color]);
-      color: var(--color-ink-muted);
       cursor: not-allowed;
     }
   }

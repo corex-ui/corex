@@ -13,6 +13,7 @@ defmodule Corex.ToggleGroup.Connect do
       "data-deselectable" => get_boolean(assigns.deselectable),
       "data-loop-focus" => get_boolean(assigns.loopFocus),
       "data-roving-focus" => get_boolean(assigns.rovingFocus),
+      "data-controlled" => get_boolean(assigns.controlled),
       "data-default-value" =>
         if !assigns.controlled and assigns.value != [] do
           Enum.join(assigns.value, ",")

@@ -95,10 +95,13 @@ defmodule Corex.ToggleGroupTest do
       }
 
       props_ctrl = Connect.props(assigns_ctrl)
+      assert props_ctrl["data-controlled"] == ""
       assert props_ctrl["data-default-value"] == nil
       assert props_ctrl["data-value"] == "c"
       assert props_ctrl["data-disabled"] == ""
       assert props_ctrl["data-multiple"] == nil
+
+      assert props_unc["data-controlled"] == nil
     end
   end
 

@@ -37,27 +37,18 @@
     padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
-    background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
+    color: --value(--color-*, [color]);
 
-    &:hover {
-      background-color: --value(--color-*-hover, [color]);
-    }
-
-    &:active {
-      background-color: --value(--color-*-active, [color]);
-    }
-
-    &:focus-visible {
+    &:focus-visible:not([data-state="on"]) {
       outline: none;
-      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
     }
 
     &:disabled,
     &[data-disabled],
     &[disabled] {
       background-color: --value(--color-*-muted, [color]);
-      color: var(--color-ink-muted);
+      color: --value(--color-*-ink, [color]);
       cursor: not-allowed;
     }
 
@@ -74,15 +65,15 @@
       }
 
       &:focus-visible {
-        box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
         outline: none;
+        box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
       }
 
       &:disabled,
       &[data-disabled],
       &[disabled] {
         background-color: --value(--color-*-muted, [color]);
-        color: var(--color-ink-muted);
+        color: --value(--color-*-ink, [color]);
         cursor: not-allowed;
       }
     }

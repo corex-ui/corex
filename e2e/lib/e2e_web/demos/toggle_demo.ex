@@ -114,12 +114,12 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   def styling_color_code do
     ~S"""
-    <.toggle id="toggle-style-c-default" class="toggle" pressed>Default</.toggle>
-    <.toggle id="toggle-style-c-accent" class="toggle toggle--accent" pressed>Accent</.toggle>
-    <.toggle id="toggle-style-c-brand" class="toggle toggle--brand" pressed>Brand</.toggle>
-    <.toggle id="toggle-style-c-alert" class="toggle toggle--alert" pressed>Alert</.toggle>
-    <.toggle id="toggle-style-c-info" class="toggle toggle--info" pressed>Info</.toggle>
-    <.toggle id="toggle-style-c-success" class="toggle toggle--success" pressed>Success</.toggle>
+    <.toggle id="toggle-style-c-default" class="toggle">Default</.toggle>
+    <.toggle id="toggle-style-c-accent" class="toggle toggle--accent">Accent</.toggle>
+    <.toggle id="toggle-style-c-brand" class="toggle toggle--brand">Brand</.toggle>
+    <.toggle id="toggle-style-c-alert" class="toggle toggle--alert">Alert</.toggle>
+    <.toggle id="toggle-style-c-info" class="toggle toggle--info">Info</.toggle>
+    <.toggle id="toggle-style-c-success" class="toggle toggle--success">Success</.toggle>
     """
   end
 
@@ -128,12 +128,12 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
-      <.toggle id="toggle-style-c-default" class="toggle" pressed>Default</.toggle>
-      <.toggle id="toggle-style-c-accent" class="toggle toggle--accent" pressed>Accent</.toggle>
-      <.toggle id="toggle-style-c-brand" class="toggle toggle--brand" pressed>Brand</.toggle>
-      <.toggle id="toggle-style-c-alert" class="toggle toggle--alert" pressed>Alert</.toggle>
-      <.toggle id="toggle-style-c-info" class="toggle toggle--info" pressed>Info</.toggle>
-      <.toggle id="toggle-style-c-success" class="toggle toggle--success" pressed>Success</.toggle>
+      <.toggle id="toggle-style-c-default" class="toggle">Default</.toggle>
+      <.toggle id="toggle-style-c-accent" class="toggle toggle--accent">Accent</.toggle>
+      <.toggle id="toggle-style-c-brand" class="toggle toggle--brand">Brand</.toggle>
+      <.toggle id="toggle-style-c-alert" class="toggle toggle--alert">Alert</.toggle>
+      <.toggle id="toggle-style-c-info" class="toggle toggle--info">Info</.toggle>
+      <.toggle id="toggle-style-c-success" class="toggle toggle--success">Success</.toggle>
     </div>
     """
   end

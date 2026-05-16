@@ -16,6 +16,16 @@ defmodule E2eWeb.ToggleGroupApiLive do
   end
 
   @impl true
+  def handle_event("tg_api_duis", _params, socket) do
+    {:noreply, Corex.ToggleGroup.set_value(socket, "toggle-group-api-srv", ["duis"])}
+  end
+
+  @impl true
+  def handle_event("tg_api_donec", _params, socket) do
+    {:noreply, Corex.ToggleGroup.set_value(socket, "toggle-group-api-srv", ["donec"])}
+  end
+
+  @impl true
   def handle_event("tg_api_clear", _params, socket) do
     {:noreply, Corex.ToggleGroup.set_value(socket, "toggle-group-api-srv", [])}
   end
@@ -32,11 +42,11 @@ defmodule E2eWeb.ToggleGroupApiLive do
       <.demo_page
         id="toggle-group-api-page"
         title="Toggle group · API"
-        subtitle="Set the value from client bindings, client JS, or a server event."
+        subtitle="set_value via LiveView JS, DOM events on the hook root, or server push."
       >
         <.demo_section
           id="toggle-group-api-set-value-client-binding"
-          title="Set value (Client binding)"
+          title="LiveView binding"
           code={@codes.set_value_client_binding}
         >
           <:preview><Demo.api_set_value_client_binding_example /></:preview>
@@ -44,7 +54,7 @@ defmodule E2eWeb.ToggleGroupApiLive do
 
         <.demo_section
           id="toggle-group-api-set-value-client-js"
-          title="Set value (Client JS)"
+          title="Client JS"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_client_js_heex},
             %{value: "js", label: "JS", language: :js, code: @codes.set_value_client_js},
@@ -56,7 +66,7 @@ defmodule E2eWeb.ToggleGroupApiLive do
 
         <.demo_section
           id="toggle-group-api-set-value-server"
-          title="Set value (Server)"
+          title="Server push"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
             %{

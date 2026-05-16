@@ -15,7 +15,7 @@
 
     justify-content: center;
     flex-direction: row;
-    width: auto;
+    width: fit-content;
     gap: 1px;
     background-color: var(--color-border);
     border: 1px solid var(--color-border);
@@ -25,35 +25,13 @@
 
   .toggle-group [data-scope="toggle-group"][data-part="item"] {
     @apply ui-item;
+
     flex: 1 1 0;
     min-width: 0;
     justify-content: center;
+    padding-inline: var(--spacing-space);
+    gap: var(--spacing-space-sm);
   }
-  .toggle-group.toggle-group--duo {
-    width: fit-content;
-  }
-  .toggle-group.toggle-group--duo [data-scope="toggle-group"][data-part="root"] {
-    width: fit-content;
-    border: none;
-    background-color: transparent;
-    gap: 0;
-    overflow: visible;
-  }
-
-  .toggle-group.toggle-group--duo [data-scope="toggle-group"][data-part="item"] {
-    @apply ui-item;
-    aspect-ratio: 1 / 1;
-    padding: 0 !important;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    min-height: var(--spacing-size);
-  }
-
-  .toggle-group.toggle-group--circle [data-scope="toggle-group"][data-part="root"],
-  .toggle-group.toggle-group--circle [data-scope="toggle-group"][data-part="item"] {
-    border-radius: var(--radius-full);
-  }
-
 
   .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-on {
     display: block !important;
@@ -62,6 +40,7 @@
   .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="off"] .icon.state-on {
     display: none !important;
   }
+
   .toggle-group [data-scope="toggle-group"][data-part="item"][data-state="on"] .icon.state-off {
     display: none !important;
   }
@@ -72,16 +51,9 @@
 }
 
 @utility toggle-group--* {
-
   [data-scope="toggle-group"][data-part="label"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-  }
-
-  [data-scope="toggle-group"][data-part="trigger"] {
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    
   }
 
   [data-scope="toggle-group"][data-part="control"] {
@@ -93,38 +65,81 @@
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+
+    &:not([data-state="on"]):not([data-toggle-grouped]):not([data-state="checked"]):not(
+        [data-disabled]
+      ):not(:disabled):not([disabled]) {
+      color: --value(--color-*, [color]);
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
+      }
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+      color: --value(--color-*-ink, [color]);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"],
+    &[data-toggle-grouped],
+    &[data-state="checked"] {
+      background-color: --value(--color-*, [color]);
+      color: --value(--color-*-ink, [color]);
+
+      &:hover {
+        background-color: --value(--color-*-hover, [color]);
+      }
+
+      &:active {
+        background-color: --value(--color-*-active, [color]);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      }
+
+      &:disabled,
+      &[data-disabled],
+      &[disabled] {
+        background-color: --value(--color-*-muted, [color]);
+        color: --value(--color-*-ink, [color]);
+        cursor: not-allowed;
+      }
+    }
+
+    &[data-highlighted]:not([data-state="on"]):not([data-toggle-grouped]):not(
+        [data-state="checked"]
+      ) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px --value(--color-*, [color]);
+      background-color: var(--color-ui-hover);
+    }
+
+    &[data-state="on"][data-highlighted],
+    &[data-toggle-grouped][data-highlighted],
+    &[data-state="checked"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      background-color: --value(--color-*-hover, [color]);
+      color: --value(--color-*-ink, [color]);
+    }
+  }
+}
+
+@utility toggle-group--rounded-* {
+  [data-scope="toggle-group"][data-part="root"] {
+    border-radius: --value(--radius-*, [length]);
   }
 
-  [data-scope="toggle-group"][data-part="item"][data-toggle-grouped],
-  [data-scope="toggle-group"][data-part="item"][data-state="checked"] {
-    background-color: --value(--color-*, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="toggle-group"][data-part="item"][data-toggle-grouped]:hover,
-  [data-scope="toggle-group"][data-part="item"][data-state="checked"]:hover {
-    background-color: --value(--color-*-hover, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="toggle-group"][data-part="item"][data-toggle-grouped]:active,
-  [data-scope="toggle-group"][data-part="item"][data-state="checked"]:active {
-    background-color: --value(--color-*-active, [color]);
-    color: --value(--color-*-ink, [color]);
-  }
-
-  [data-scope="toggle-group"][data-part="item"][data-highlighted] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ink, [color]);
-    background-color: --value(--color-ui-hover, [color]);
-    color: --value(--color-ink, [color]);
-  }
-
-  [data-scope="toggle-group"][data-part="item"][data-toggle-grouped][data-highlighted],
-  [data-scope="toggle-group"][data-part="item"][data-state="checked"][data-highlighted] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
-    background-color: --value(--color-*-hover, [color]);
-    color: --value(--color-*-ink, [color]);
+  [data-scope="toggle-group"][data-part="item"] {
+    border-radius: 0;
   }
 }
