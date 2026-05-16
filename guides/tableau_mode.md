@@ -180,9 +180,11 @@ Merge with **`Select`** and **`theme.js`** from the theming guide if you use bot
 >
   <span>
     <.heroicon name="hero-moon" />
+    <span class="sr-only">Dark mode</span>
   </span>
   <span data-pressed>
     <.heroicon name="hero-sun" />
+    <span class="sr-only">Light mode</span>
   </span>
 </.toggle>
 ```

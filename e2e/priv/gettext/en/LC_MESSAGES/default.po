@@ -101,8 +101,8 @@ msgstr ""
 msgid "Corex by the numbers"
 msgstr ""
 
-#: lib/e2e_web/components/layouts/captures.html.heex:97
-#: lib/e2e_web/components/layouts/root.html.heex:97
+#: lib/e2e_web/components/layouts/captures.html.heex:102
+#: lib/e2e_web/components/layouts/root.html.heex:102
 #, elixir-autogen, elixir-format
 msgid "Skip to content"
 msgstr "Skip to content"
@@ -209,4 +209,14 @@ msgstr ""
 #: lib/e2e_web/live/admin_live/form.ex:66
 #, elixir-autogen, elixir-format
 msgid "Search currency"
+msgstr ""
+
+#: lib/e2e_web/components/mode_toggle.ex:26
+#, elixir-autogen, elixir-format, fuzzy
+msgid "Dark mode"
+msgstr ""
+
+#: lib/e2e_web/components/mode_toggle.ex:30
+#, elixir-autogen, elixir-format
+msgid "Light mode"
 msgstr ""
