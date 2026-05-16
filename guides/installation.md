@@ -2,7 +2,7 @@
 
 ![Hex.pm License](https://img.shields.io/hexpm/l/corex)
 ![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
-[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
+[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=main)](https://coveralls.io/github/corex-ui/corex?branch=main)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
 
@@ -14,12 +14,6 @@
 - **LiveView-native.** Update props at runtime without resetting component state.
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
-
-> #### Beta Stage {: .neutral}
->
-> Corex is under active development
-> The public API is stabilizing for most of the components
-> Please report any issues on [GitHub](https://github.com/corex-ui/corex).
 
 ## New Corex application
 
@@ -50,7 +44,7 @@ Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for eve
 
 ## Existing Phoenix application
 
-Add Corex to a Phoenix app you already, follow the [manual installation guide](manual_installation.html).
+Add Corex to a Phoenix app you already have in the [manual installation guide](manual_installation.html).
 
 ## Try your first component
 

@@ -1,4 +1,3 @@
 defmodule E2eWeb.ClipboardTest do
-  use ExUnit.Case, async: true
-  use Wallaby.Feature
+  use E2eWeb.DocComponentWallaby, component: :clipboard
 end

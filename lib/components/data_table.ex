@@ -1,6 +1,6 @@
 defmodule Corex.DataTable do
   @moduledoc ~S'''
-  Renders a table with data based on Phoenix Core Components.
+  Renders a data table with sorting, selection, and optional actions.
   '''
 
   defmodule Translation do

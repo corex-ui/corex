@@ -24,4 +24,16 @@ defmodule E2eWeb.RadioGroupTest do
 
     assert RadioGroup.radio_group_events_server_log_has_row?(session)
   end
+
+  describe "api" do
+    feature "primary doc interaction", %{session: session} do
+      E2eWeb.DocComponentWallaby.assert_page_behavior(session, :radio_group, :api)
+    end
+  end
+
+  describe "patterns" do
+    feature "primary doc interaction", %{session: session} do
+      E2eWeb.DocComponentWallaby.assert_page_behavior(session, :radio_group, :patterns)
+    end
+  end
 end

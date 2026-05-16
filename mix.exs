@@ -233,6 +233,8 @@ defmodule Corex.MixProject do
         Corex.Tabs,
         Corex.Timer,
         Corex.Toast,
+        Corex.Toggle,
+        Corex.TagsInput,
         Corex.ToggleGroup,
         Corex.Tooltip,
         Corex.TreeView

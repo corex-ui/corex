@@ -1,4 +1,4 @@
-# E2E Beta page matrix (routing contract)
+# E2E doc page matrix (routing contract)
 
 This file classifies each Corex demo component and lists which **page types** exist in the e2e app. **Non-Zag** components usually expose only **Anatomy** (and **Style** or **Form** where applicable); they typically do **not** ship Playground, API, Events, or Pattern routes (**data table** is an exception with a unified Pattern page). **Zag** components follow the Accordion shell for those live pages where the primitive supports them. **Deep** routes are extra LiveViews kept for real scenarios (streams, sorting, combobox async, and so on).
 
@@ -22,7 +22,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | editable | Zag + form | yes | yes | yes | yes | yes | yes |  -  |  -  | live-form |
 | file-upload | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | controller form |
 | file-upload-live | LV uploads | yes |  -  | yes | yes |  -  |  -  |  -  |  -  | live-form |
-| floating-panel | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
+| floating-panel | Zag | yes |  -  |  -  | yes | yes | yes |  -  |  -  |  -  |
 | layout-heading | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
 | listbox | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  | stream |
 | marquee | Zag | yes |  -  |  -  |  -  | yes | yes |  -  |  -  |  -  |
@@ -30,6 +30,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | native-input | non-Zag + form | yes |  -  | yes |  -  |  -  |  -  |  -  |  -  | live-form |
 | navigate | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
 | number-input | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form |
+| pagination | Zag | yes | yes |  -  | yes | yes | yes | yes |  -  |  -  |
 | password-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
 | pin-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
 | radio-group | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
@@ -37,10 +38,12 @@ This file classifies each Corex demo component and lists which **page types** ex
 | signature | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
 | switch | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
 | tabs | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
-| timer | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
-| toast | Zag |  -  |  -  |  -  | yes | yes |  -  | yes |  -  |  -  |
+| tags-input | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form |
+| timer | Zag | yes |  -  |  -  | yes | yes | yes |  -  |  -  |  -  |
+| toast | Zag | yes |  -  |  -  | yes | yes |  -  |  -  |  -  |  -  |
+| toggle | Zag | yes | yes |  -  | yes | yes | yes | yes |  -  |  -  |
 | toggle-group | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
-| tooltip | Zag | yes |  -  |  -  | yes | yes | yes |  -  |  -  |  -  |
+| tooltip | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
 | tree-view | Zag | yes | yes |  -  | yes | yes | yes | yes | yes |  -  |
 
 ## Events pages (Zag)
@@ -59,10 +62,12 @@ Server-driven filtering on **`/combobox/patterns`** lives in **`#combobox-patter
 
 ## Wallaby component behavior checklist (Zag)
 
-When adding end-to-end coverage for a new Zag primitive (pattern follows Accordion and Listbox):
+**Default for new slugs:** register routes in `DocA11yRoutes`, add `DocPageMatrix` entries, and use `use E2eWeb.DocComponentWallaby` (thin coverage).
+
+**Pilot promotion** (Accordion / Checkbox pattern—optional, higher maintenance):
 
 1. Register each doc route in [`e2e/lib/e2e_web/router.ex`](e2e/lib/e2e_web/router.ex) and keep demo section `id` values stable.
-2. Add `E2eWeb.ComponentBehaviorSpec.page/2` tuples for `{path, ready_css}` per page type (anatomy, playground, api, events, patterns, `:controlled` for angle slider only, animation when applicable). Pilots today: accordion, angle slider, checkbox, combobox, listbox, switch.
+2. Add `E2eWeb.ComponentBehaviorSpec.page/2` via [`doc_a11y_routes.ex`](../lib/e2e_web/doc_a11y_routes.ex) (built automatically). Pilots today: accordion, angle slider, checkbox, combobox, listbox, switch, tags-input, toggle.
 3. Add `e2e/test/support/models/<component>_model.ex` with `wait_root_no_loading/2` on the hook host, section-level hook readiness, and click helpers scoped by `data-scope` / `data-part` or stable `id` prefixes from `Corex.<Component>.Connect`.
 4. Add `e2e/test/components/<component>_test.exs` with `use Wallaby.Feature`, `Localize.put_locale(:en)` in `setup`, and describes mirroring the doc surface (anatomy, api, events, patterns).
 5. For delayed LiveView or client APIs (focus, item state), poll with `wait_for_has/3` or a small model helper instead of a single fixed `Process.sleep`.

@@ -1,4 +1,3 @@
 defmodule E2eWeb.TooltipTest do
-  use ExUnit.Case, async: true
-  use Wallaby.Feature
+  use E2eWeb.DocComponentWallaby, component: :tooltip
 end
