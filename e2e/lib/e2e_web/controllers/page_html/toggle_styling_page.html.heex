@@ -1,0 +1,13 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    id="toggle-styling-page"
+    title="Toggle · Style"
+    subtitle="lorem, duis, donec across density steps on the toggle root."
+  >
+    <.demo_section id="toggle-styling-size" title="Size" code={E2eWeb.Demos.ToggleDemo.styling_size_code()}>
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

@@ -88,6 +88,7 @@ var last = (v) => v[v.length - 1];
 var has = (v, t) => v.indexOf(t) !== -1;
 var add = (v, ...items) => v.concat(items);
 var remove = (v, ...items) => v.filter((t) => !items.includes(t));
+var removeAt = (v, i) => v.filter((_, idx) => idx !== i);
 var uniq = (v) => Array.from(new Set(v));
 var diff = (a, b) => {
   const set = new Set(b);
@@ -546,6 +547,14 @@ var __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { 
 var __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // ../node_modules/.pnpm/@zag-js+dom-query@1.40.0/node_modules/@zag-js/dom-query/dist/caret.mjs
+function isCaretAtStart(input) {
+  if (!input) return false;
+  try {
+    return input.selectionStart === 0 && input.selectionEnd === 0;
+  } catch {
+    return input.value === "";
+  }
+}
 function setCaretToEnd(input) {
   if (!input) return;
   try {
@@ -2660,6 +2669,7 @@ var isEmpty = (v) => v.length === 0;
 
 export {
   createAnatomy,
+  isCaretAtStart,
   setCaretToEnd,
   MAX_Z_INDEX,
   dataAttr,
@@ -2733,6 +2743,7 @@ export {
   queryAll,
   query,
   itemById,
+  indexOfId,
   nextById,
   prevById,
   resizeObserverBorderBox,
@@ -2751,6 +2762,7 @@ export {
   last,
   add,
   remove,
+  removeAt,
   uniq,
   diff,
   addOrRemove,

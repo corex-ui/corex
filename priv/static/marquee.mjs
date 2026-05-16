@@ -1,7 +1,7 @@
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-YECC7BC7.mjs";
 import {
   Component,
   VanillaMachine,
@@ -12,7 +12,7 @@ import {
   getDir,
   getNumber,
   getString
-} from "./chunks/chunk-XP2X5SPI.mjs";
+} from "./chunks/chunk-C6EFS75P.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.40.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");

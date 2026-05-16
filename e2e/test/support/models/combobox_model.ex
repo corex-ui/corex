@@ -80,7 +80,8 @@ defmodule E2eWeb.ComboboxModel do
     )
   end
 
-  def click_item_in_anatomy_section(session, section_dom_id, value) when is_binary(value) do
+  def click_item_in_anatomy_section(session, section_dom_id, value, opts \\ [])
+      when is_binary(value) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
               String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
@@ -90,35 +91,42 @@ defmodule E2eWeb.ComboboxModel do
       raise ArgumentError, "value must not contain quotes"
     end
 
-    root_sel = "section##{section_dom_id} [phx-hook=\"Combobox\"]"
+    timeout = Keyword.get(opts, :timeout, 8_000)
 
-    _ =
-      execute_script(
-        session,
-        """
-        const r = document.querySelector(#{Jason.encode!(root_sel)});
-        if (r) r.scrollIntoView({block: 'center'});
-        """,
-        []
-      )
-
-    text_sel =
-      css(
-        ~s|section##{section_dom_id} [phx-hook="Combobox"] [data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template]) [data-part="item-text"]|,
-        visible: :any
-      )
-
-    item_sel =
+    item_query =
       css(
         ~s|section##{section_dom_id} [phx-hook="Combobox"] [data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template])|,
         visible: :any
       )
 
-    q = if has?(session, text_sel), do: text_sel, else: item_sel
-    click(session, q)
+    session = wait_for_has(session, item_query, timeout: timeout)
+
+    item_sel =
+      ~s|[data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template])|
+
+    _ =
+      execute_script(
+        session,
+        """
+        (function () {
+          const section = document.querySelector(#{Jason.encode!("section#" <> section_dom_id)});
+          if (!section) return;
+          const root = section.querySelector('[phx-hook="Combobox"]');
+          if (!root) return;
+          const item = root.querySelector(#{Jason.encode!(item_sel)});
+          if (!item) return;
+          item.scrollIntoView({block: 'center'});
+          const text = item.querySelector('[data-part="item-text"]');
+          (text || item).click();
+        })();
+        """,
+        []
+      )
+
+    session
   end
 
-  def click_item_by_host_id(session, host_dom_id, value) when is_binary(value) do
+  def click_item_by_host_id(session, host_dom_id, value, opts \\ []) when is_binary(value) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid combobox host dom id"
     end
@@ -127,30 +135,38 @@ defmodule E2eWeb.ComboboxModel do
       raise ArgumentError, "value must not contain quotes"
     end
 
-    _ =
-      execute_script(
-        session,
-        """
-        const r = document.getElementById(#{Jason.encode!(host_dom_id)});
-        if (r) r.scrollIntoView({block: 'center'});
-        """,
-        []
-      )
+    timeout = Keyword.get(opts, :timeout, 8_000)
 
-    text_sel =
-      css(
-        ~s|##{host_dom_id} [data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template]) [data-part="item-text"]|,
-        visible: :any
-      )
-
-    item_sel =
+    item_query =
       css(
         ~s|##{host_dom_id} [data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template])|,
         visible: :any
       )
 
-    q = if has?(session, text_sel), do: text_sel, else: item_sel
-    click(session, q)
+    session = wait_for_has(session, item_query, timeout: timeout)
+
+    item_sel =
+      ~s|[data-scope="combobox"][data-part="item"][data-value="#{value}"]:not([data-template])|
+
+    _ =
+      execute_script(
+        session,
+        """
+        (function () {
+          const root = document.getElementById(#{Jason.encode!(host_dom_id)});
+          if (!root) return;
+          root.scrollIntoView({block: 'center'});
+          const item = root.querySelector(#{Jason.encode!(item_sel)});
+          if (!item) return;
+          item.scrollIntoView({block: 'center'});
+          const text = item.querySelector('[data-part="item-text"]');
+          (text || item).click();
+        })();
+        """,
+        []
+      )
+
+    session
   end
 
   def hidden_input_value_in_anatomy_section(session, section_dom_id) do

@@ -550,6 +550,22 @@ defmodule E2eWeb.PageController do
     render(conn, :tabs_styling_page)
   end
 
+  def tags_input_page(conn, _params) do
+    render(conn, :tags_input_page)
+  end
+
+  def tags_input_styling_page(conn, _params) do
+    render(conn, :tags_input_styling_page)
+  end
+
+  def toggle_page(conn, _params) do
+    render(conn, :toggle_page)
+  end
+
+  def toggle_styling_page(conn, _params) do
+    render(conn, :toggle_styling_page)
+  end
+
   def collapsible_page(conn, _params) do
     render(conn, :collapsible_page)
   end
@@ -1632,6 +1648,68 @@ defmodule E2eWeb.PageController do
     conn
     |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
     |> redirect(to: ~p"/pin-input/form")
+  end
+
+  defp assign_tags_input_form_docs(conn, scroll_to) do
+    conn
+    |> assign(:scroll_to, scroll_to)
+    |> assign(:form_ecto, E2eWeb.Demos.TagsInputDemo.form_ecto())
+    |> assign(:changeset_heex, E2eWeb.Demos.TagsInputDemo.form_changeset_heex())
+    |> assign(:changeset_elixir, E2eWeb.Demos.TagsInputDemo.form_changeset_elixir())
+    |> assign(:native_heex, E2eWeb.Demos.TagsInputDemo.form_native_heex())
+  end
+
+  def tags_input_form_page(conn, _params) do
+    form =
+      %E2e.Form.TagsInputForm{}
+      |> E2e.Form.TagsInputForm.changeset_validate(%{"tags" => "alpha,beta"})
+      |> Phoenix.Component.to_form(as: :tags_input_changeset, id: "tags-input-changeset-form")
+
+    conn
+    |> assign_tags_input_form_docs(nil)
+    |> render(:tags_input_form_page, form: form)
+  end
+
+  def tags_input_form_submit(conn, params) do
+    cond do
+      is_map(params["tags_input_changeset"]) ->
+        case E2e.Form.TagsInputForm.changeset_validate(
+               %E2e.Form.TagsInputForm{},
+               params["tags_input_changeset"] || %{}
+             ) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted (changeset): tags=#{inspect(data.tags)}")
+            |> redirect(to: ~p"/tags-input/form#tags-input-form-changeset")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+
+            form =
+              Phoenix.Component.to_form(changeset,
+                as: :tags_input_changeset,
+                id: "tags-input-changeset-form"
+              )
+
+            conn
+            |> assign_tags_input_form_docs("tags-input-form-changeset")
+            |> render(:tags_input_form_page, form: form)
+        end
+
+      is_map(params["tags_native"]) ->
+        tags = get_in(params, ["tags_native", "tags"]) || ""
+
+        conn
+        |> put_flash(:info, "Submitted (native): tags=#{inspect(tags)}")
+        |> redirect(to: ~p"/tags-input/form#tags-input-form-native")
+
+      true ->
+        conn
+        |> put_flash(:error, "Unknown form submission")
+        |> redirect(to: ~p"/tags-input/form")
+    end
   end
 
   def radio_group_page(conn, _params) do

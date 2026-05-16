@@ -196,10 +196,12 @@ var Hooks = {
   Select: createLazyHook(() => import("corex/select"), "Select"),
   SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
   Switch: createLazyHook(() => import("corex/switch"), "Switch"),
+  TagsInput: createLazyHook(() => import("corex/tags-input"), "TagsInput"),
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
   Timer: createLazyHook(() => import("corex/timer"), "Timer"),
   Toast: createLazyHook(() => import("corex/toast"), "Toast"),
   Tooltip: createLazyHook(() => import("corex/tooltip"), "Tooltip"),
+  Toggle: createLazyHook(() => import("corex/toggle"), "Toggle"),
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };

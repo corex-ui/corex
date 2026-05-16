@@ -122,7 +122,6 @@
   &[data-disabled],
   &[disabled] {
     background-color: --value(--color-*-muted, [color]);
-    color: var(--color-ink-muted);
   }
 
   &[data-state="open"],
@@ -170,16 +169,8 @@
 }
 
 @utility ui-trigger--ghost {
-  border-color: transparent !important;
-  background-color: transparent !important;
-
-  &:hover {
-    background-color: var(--color-ui-hover) !important;
-  }
-
-  &:active {
-    background-color: var(--color-ui-active) !important;
-  }
+  border-color: transparent;
+  background-color: transparent;
 }
 
 

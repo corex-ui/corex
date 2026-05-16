@@ -5,7 +5,14 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   import Wallaby.Query, only: [css: 1]
 
   @type component ::
-          :accordion | :angle_slider | :checkbox | :combobox | :listbox | :switch
+          :accordion
+          | :angle_slider
+          | :checkbox
+          | :combobox
+          | :listbox
+          | :switch
+          | :tags_input
+          | :toggle
   @type page_key ::
           :anatomy
           | :api
@@ -62,6 +69,18 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   def page(:combobox, :events), do: {~p"/combobox/events", "#combobox-events-page"}
   def page(:combobox, :playground), do: {~p"/combobox/playground", "#combobox-playground"}
   def page(:combobox, :patterns), do: {~p"/combobox/patterns", "#combobox-patterns-page"}
+
+  def page(:tags_input, :anatomy), do: {~p"/tags-input/anatomy", "#tags-input-anatomy-page"}
+  def page(:tags_input, :api), do: {~p"/tags-input/api", "#tags-input-api-page"}
+  def page(:tags_input, :events), do: {~p"/tags-input/events", "#tags-input-events-page"}
+  def page(:tags_input, :playground), do: {~p"/tags-input/playground", "#tags-input-playground"}
+  def page(:tags_input, :patterns), do: {~p"/tags-input/patterns", "#tags-input-patterns-page"}
+
+  def page(:toggle, :anatomy), do: {~p"/toggle/anatomy", "#toggle-anatomy-page"}
+  def page(:toggle, :api), do: {~p"/toggle/api", "#toggle-api-page"}
+  def page(:toggle, :events), do: {~p"/toggle/events", "#toggle-events-page"}
+  def page(:toggle, :playground), do: {~p"/toggle/playground", "#toggle-playground"}
+  def page(:toggle, :style), do: {~p"/toggle/style", "#toggle-styling-page"}
 
   @doc """
   `model.visit_ready/3` for the given component page (path + `css(ready)`).

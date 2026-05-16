@@ -1,0 +1,160 @@
+import {
+  connect,
+  machine,
+  type Props,
+  type Api,
+} from "@zag-js/tags-input";
+import { VanillaMachine } from "@zag-js/vanilla";
+import { Component } from "../lib/core";
+import { templatesContentRoot } from "../lib/util";
+
+function directItemElements(controlEl: HTMLElement): HTMLElement[] {
+  return Array.from(
+    controlEl.querySelectorAll<HTMLElement>(
+      ':scope > [data-scope="tags-input"][data-part="item"]'
+    )
+  );
+}
+
+function itemInputIsEditing(input: HTMLElement | null): boolean {
+  if (!input) return false;
+  return !input.hidden;
+}
+
+export class TagsInput extends Component<Props, Api> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props: Props): VanillaMachine<any> {
+    return new VanillaMachine(machine, props);
+  }
+
+  initApi(): Api {
+    return this.zagConnect(connect);
+  }
+
+  private spreadItemParts(itemEl: HTMLElement, index: number, value: string): void {
+    this.spreadProps(itemEl, this.api.getItemProps({ index, value }));
+    const previewEl = itemEl.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="item-preview"]'
+    );
+    if (previewEl) this.spreadProps(previewEl, this.api.getItemPreviewProps({ index, value }));
+    const textEl = itemEl.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="item-text"]'
+    );
+    if (textEl) this.spreadProps(textEl, this.api.getItemTextProps({ index, value }));
+    const delEl = itemEl.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="item-delete-trigger"]'
+    );
+    if (delEl) {
+      while (delEl.childElementCount > 1) {
+        delEl.removeChild(delEl.lastElementChild!);
+      }
+      this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+    }
+    const itemInputEl = itemEl.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="item-input"]'
+    );
+    if (itemInputEl) this.spreadProps(itemInputEl, this.api.getItemInputProps({ index, value }));
+    if (textEl && !itemInputIsEditing(itemInputEl)) {
+      textEl.textContent = value;
+    }
+  }
+
+  private renderItems(): void {
+    const controlEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="control"]'
+    );
+    if (!controlEl) return;
+
+    const mainInputEl = controlEl.querySelector<HTMLElement>(
+      ':scope > [data-scope="tags-input"][data-part="input"]'
+    );
+    if (!mainInputEl) return;
+
+    const templatesRoot = templatesContentRoot(this.el, "tags-input");
+    if (!templatesRoot) return;
+
+    const template = templatesRoot.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="item"][data-template]'
+    );
+    if (!template) return;
+
+    const values = this.api.value ?? [];
+
+    let items = directItemElements(controlEl);
+    while (items.length > values.length) {
+      items[items.length - 1]!.remove();
+      items = directItemElements(controlEl);
+    }
+
+    for (let index = 0; index < values.length; index++) {
+      const value = values[index]!;
+      items = directItemElements(controlEl);
+      let itemEl = items[index];
+      const isItem =
+        itemEl?.getAttribute("data-scope") === "tags-input" &&
+        itemEl?.getAttribute("data-part") === "item";
+
+      if (!itemEl || !isItem) {
+        const fresh = template.cloneNode(true) as HTMLElement;
+        fresh.removeAttribute("data-template");
+        const ref = items[index] ?? mainInputEl;
+        controlEl.insertBefore(fresh, ref);
+        items = directItemElements(controlEl);
+        itemEl = items[index]!;
+      }
+
+      const itemInputEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="tags-input"][data-part="item-input"]'
+      );
+      const editing = itemInputIsEditing(itemInputEl);
+
+      if (!editing && itemEl.dataset.value !== value) {
+        itemEl.dataset.value = value;
+      }
+
+      this.spreadItemParts(itemEl, index, value);
+    }
+  }
+
+  render(): void {
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="root"]');
+    if (!rootEl) return;
+    this.spreadProps(rootEl, this.api.getRootProps());
+
+    const labelEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="label"]');
+    if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+
+    const controlEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="control"]'
+    );
+    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+
+    this.renderItems();
+
+    const inputEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="input"]');
+    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+
+    const valueInput = this.el.querySelector<HTMLInputElement>(
+      '[data-scope="tags-input"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      const rawDelim = this.el.dataset.delimiter;
+      const delim = rawDelim !== undefined && rawDelim !== "" ? rawDelim : ",";
+      const v = (this.api.value ?? []).join(delim);
+      if (valueInput.value !== v) {
+        valueInput.value = v;
+        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+
+    const hiddenEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="hidden-input"]'
+    );
+    if (hiddenEl) {
+      this.spreadProps(hiddenEl, this.api.getHiddenInputProps());
+      hiddenEl.removeAttribute("name");
+      hiddenEl.removeAttribute("form");
+    }
+  }
+}

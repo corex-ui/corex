@@ -70,6 +70,7 @@ defmodule Corex do
          tabs_content: 1,
          tabs_skeleton: 1
        ]},
+    tags_input: {Corex.TagsInput, [tags_input: 1]},
     timer: {Corex.Timer, [timer: 1]},
     tooltip: {Corex.Tooltip, [tooltip: 1]},
     toast:
@@ -81,6 +82,7 @@ defmodule Corex do
          toast_connected: 1,
          toast_disconnected: 1
        ]},
+    toggle: {Corex.Toggle, [toggle: 1]},
     toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
     tree_view:
       {Corex.TreeView,

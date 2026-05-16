@@ -38,6 +38,23 @@ export function readPayloadChecked(payload: unknown): boolean | undefined {
   return undefined;
 }
 
+export function readPayloadPressed(payload: unknown): boolean | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const o = payload as Record<string, unknown>;
+  const p = o.pressed ?? o["pressed"];
+  if (p === true || p === "true" || p === 1) return true;
+  if (p === false || p === "false" || p === 0) return false;
+  return undefined;
+}
+
+export function readPayloadStringArray(payload: unknown): string[] | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const o = payload as Record<string, unknown>;
+  const v = o.value ?? o["value"];
+  if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v as string[];
+  return undefined;
+}
+
 export function readPayloadVisible(payload: unknown): boolean | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const o = payload as Record<string, unknown>;

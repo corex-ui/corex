@@ -98,10 +98,16 @@ importers:
       '@zag-js/tabs':
         specifier: ^1.39.1
         version: 1.40.0
+      '@zag-js/tags-input':
+        specifier: ^1.39.1
+        version: 1.40.0
       '@zag-js/timer':
         specifier: ^1.39.1
         version: 1.40.0
       '@zag-js/toast':
+        specifier: ^1.39.1
+        version: 1.40.0
+      '@zag-js/toggle':
         specifier: ^1.39.1
         version: 1.40.0
       '@zag-js/toggle-group':
@@ -301,6 +307,9 @@ packages:
   '@zag-js/aria-hidden@1.40.0':
     resolution: {integrity: sha512-lNWujEIlfGKwMQIcgfXuOZSsJD2avrgPsQHrXNVF9mkXygjLFcIRKz2pEexTSCqFh/HuUZJ6rG4pM/hJ/BiVCw==}
 
+  '@zag-js/auto-resize@1.40.0':
+    resolution: {integrity: sha512-eZC+AGKUip7UMu41/ApeT1wCIgn2fmo63FJeGAdMMD8E9M8M7QLsfISMIoieNNGBAYWhSyqELQ3jPgkUf6xReA==}
+
   '@zag-js/avatar@1.40.0':
     resolution: {integrity: sha512-DayZDsNXbipT+1GUkX29tVhO4hZonDnidwE3SjEQv9Ic9vCdnwP95+B0FPEuaca03F5ZXFqVXjnPmRVbRMyDYQ==}
 
@@ -425,6 +434,9 @@ packages:
   '@zag-js/tabs@1.40.0':
     resolution: {integrity: sha512-xqfPC2nQ6Bn4nqy1L+1CVcQcg/Z7K2q753OvsX2C8Wtu+7tF//HyMbOpF6fGikqlLkUzCkvjkqDjdOXcfWN9ZQ==}
 
+  '@zag-js/tags-input@1.40.0':
+    resolution: {integrity: sha512-3cB7nPlUvzZNZwQw5AaTuxwcRn1n2qkDCjLEb2NEwtmI+YxHbK3k1MtXjTccjcYjU8cAkv+jaeyZPs6KFKQcHA==}
+
   '@zag-js/timer@1.40.0':
     resolution: {integrity: sha512-Rvet226fhUtZnItjHpUYV7MH0uEFZfXT9PSRrX5jdiU4/P0eWKbirwi//AVeqcWFexXvw6ajYSfQN7EVyr2x4w==}
 
@@ -433,6 +445,9 @@ packages:
 
   '@zag-js/toggle-group@1.40.0':
     resolution: {integrity: sha512-+JKcnfEbdQnr5p7uRvYLdivhUsM6iio71UC10tK74nXYRnYm0/Uvxg3oQzvbNTq9WdcU/DIh3gZVZ2Vex9nBnQ==}
+
+  '@zag-js/toggle@1.40.0':
+    resolution: {integrity: sha512-DW7682lzTP2eDlMvrS7tUX3zAm7ufrrKr7VDiX8BB6oXBRETXrVIxCYNuoIdqjwXebdjAoxaCiUZEreRVucYQg==}
 
   '@zag-js/tooltip@1.40.0':
     resolution: {integrity: sha512-pyrvit+nB8dIwVNTGBRlHPsh7yMJGAxxM1zfY7HOTJqF+n6+6xYTQ4gQ/Ocy1Q7I5kO88+m16naEh0qLFiTZww==}
@@ -1044,6 +1059,10 @@ snapshots:
     dependencies:
       '@zag-js/dom-query': 1.40.0
 
+  '@zag-js/auto-resize@1.40.0':
+    dependencies:
+      '@zag-js/dom-query': 1.40.0
+
   '@zag-js/avatar@1.40.0':
     dependencies:
       '@zag-js/anatomy': 1.40.0
@@ -1337,6 +1356,17 @@ snapshots:
       '@zag-js/types': 1.40.0
       '@zag-js/utils': 1.40.0
 
+  '@zag-js/tags-input@1.40.0':
+    dependencies:
+      '@zag-js/anatomy': 1.40.0
+      '@zag-js/auto-resize': 1.40.0
+      '@zag-js/core': 1.40.0
+      '@zag-js/dom-query': 1.40.0
+      '@zag-js/interact-outside': 1.40.0
+      '@zag-js/live-region': 1.40.0
+      '@zag-js/types': 1.40.0
+      '@zag-js/utils': 1.40.0
+
   '@zag-js/timer@1.40.0':
     dependencies:
       '@zag-js/anatomy': 1.40.0
@@ -1355,6 +1385,14 @@ snapshots:
       '@zag-js/utils': 1.40.0
 
   '@zag-js/toggle-group@1.40.0':
+    dependencies:
+      '@zag-js/anatomy': 1.40.0
+      '@zag-js/core': 1.40.0
+      '@zag-js/dom-query': 1.40.0
+      '@zag-js/types': 1.40.0
+      '@zag-js/utils': 1.40.0
+
+  '@zag-js/toggle@1.40.0':
     dependencies:
       '@zag-js/anatomy': 1.40.0
       '@zag-js/core': 1.40.0

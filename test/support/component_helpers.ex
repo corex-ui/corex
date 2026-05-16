@@ -29,7 +29,9 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.SignaturePad
   import Corex.Switch
   import Corex.Tabs
+  import Corex.TagsInput
   import Corex.Timer
+  import Corex.Toggle
   import Corex.ToggleGroup
   import Corex.TreeView
 
@@ -594,6 +596,31 @@ defmodule CorexTest.ComponentHelpers do
       <:clear_trigger>Clear</:clear_trigger>
       <:error :let={msg}>{msg}</:error>
     </.signature_pad>
+    """
+  end
+
+  def render_toggle(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> "toggle-test" end)
+      |> assign_new(:controlled, fn -> false end)
+      |> assign_new(:pressed, fn -> false end)
+
+    ~H"""
+    <.toggle id={@id} controlled={@controlled} pressed={@pressed}>
+      Label
+    </.toggle>
+    """
+  end
+
+  def render_tags_input(assigns) do
+    assigns = assign_new(assigns, :value, fn -> ["alpha", "beta"] end)
+
+    ~H"""
+    <.tags_input id="tags-test" value={@value} name="keywords">
+      <:label>Keywords</:label>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+    </.tags_input>
     """
   end
 

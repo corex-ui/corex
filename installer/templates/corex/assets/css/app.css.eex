@@ -30,6 +30,8 @@
 @import "../corex/components/native-input.css";
 @import "../corex/components/number-input.css";
 @import "../corex/components/select.css";
+@import "../corex/components/tags-input.css";
+@import "../corex/components/toggle.css";
 <% end %>
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);

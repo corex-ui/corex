@@ -1,0 +1,23 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    id="tags-input-anatomy-page"
+    title="Tags input · Anatomy"
+    subtitle="Tags are JSON-encoded for safe commas in values."
+  >
+    <.demo_section id="tags-input-anatomy-minimal" title="Minimal" code={E2eWeb.Demos.TagsInputDemo.minimal_code()}>
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-anatomy-label"
+      title="With label"
+      code={E2eWeb.Demos.TagsInputDemo.with_label_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.with_label_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

@@ -146,6 +146,8 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "@import \"../corex/theme/neo.css\""
       refute out =~ "toggle-group.css"
       assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/tags-input.css\""
+      assert out =~ "@import \"../corex/components/toggle.css\""
       assert out =~ "@import \"../corex/components/data-table.css\""
       assert out =~ "@import \"../corex/components/native-input.css\""
     end
@@ -160,6 +162,8 @@ defmodule Corex.New.TemplatesTest do
 
       assert out =~ "@import \"../corex/components/toggle-group.css\""
       assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/tags-input.css\""
+      assert out =~ "@import \"../corex/components/toggle.css\""
     end
 
     test "includes select import when theme without mode" do
@@ -174,6 +178,8 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "@import \"../corex/theme/leo.css\""
       refute out =~ "toggle-group.css"
       assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/tags-input.css\""
+      assert out =~ "@import \"../corex/components/toggle.css\""
     end
 
     test "includes select import when lang without theme" do
@@ -186,6 +192,8 @@ defmodule Corex.New.TemplatesTest do
 
       refute out =~ "toggle-group.css"
       assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/tags-input.css\""
+      assert out =~ "@import \"../corex/components/toggle.css\""
     end
 
     test "omits design imports when design: false but keeps Tailwind" do

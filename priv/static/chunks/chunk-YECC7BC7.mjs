@@ -19,6 +19,21 @@ function readPayloadChecked(payload) {
   if (c === false || c === "false" || c === 0) return false;
   return void 0;
 }
+function readPayloadPressed(payload) {
+  if (!payload || typeof payload !== "object") return void 0;
+  const o = payload;
+  const p = o.pressed ?? o["pressed"];
+  if (p === true || p === "true" || p === 1) return true;
+  if (p === false || p === "false" || p === 0) return false;
+  return void 0;
+}
+function readPayloadStringArray(payload) {
+  if (!payload || typeof payload !== "object") return void 0;
+  const o = payload;
+  const v = o.value ?? o["value"];
+  if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v;
+  return void 0;
+}
 function readPayloadVisible(payload) {
   if (!payload || typeof payload !== "object") return void 0;
   const o = payload;
@@ -91,6 +106,8 @@ export {
   parseRespondTo,
   idMatches,
   readPayloadChecked,
+  readPayloadPressed,
+  readPayloadStringArray,
   readPayloadVisible,
   readPayloadId,
   readPayloadValue,

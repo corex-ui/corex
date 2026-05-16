@@ -81,11 +81,17 @@ declare module "corex/switch" {
 declare module "corex/tabs" {
   export const Tabs: CorexHook;
 }
+declare module "corex/tags-input" {
+  export const TagsInput: CorexHook;
+}
 declare module "corex/timer" {
   export const Timer: CorexHook;
 }
 declare module "corex/toast" {
   export const Toast: CorexHook;
+}
+declare module "corex/toggle" {
+  export const Toggle: CorexHook;
 }
 declare module "corex/toggle-group" {
   export const ToggleGroup: CorexHook;

@@ -190,12 +190,22 @@ defmodule E2eWeb.Router do
       live("/tabs/events", TabsEventsLive)
       live("/tabs/patterns", TabsPatternsLive)
 
+      live("/tags-input/playground", TagsInputPlayLive)
+      live("/tags-input/api", TagsInputApiLive)
+      live("/tags-input/events", TagsInputEventsLive)
+      live("/tags-input/patterns", TagsInputPatternsLive)
+      live("/tags-input/live-form", TagsInputFormLive)
+
       live("/timer/playground", TimerPlayLive)
       live("/timer/api", TimerApiLive)
       live("/timer/events", TimerEventsLive)
 
       live("/toast/playground", ToastPlayLive)
       live("/toast/api", ToastApiLive)
+
+      live("/toggle/playground", TogglePlayLive)
+      live("/toggle/api", ToggleApiLive)
+      live("/toggle/events", ToggleEventsLive)
 
       live("/toggle-group/playground", ToggleGroupPlayLive)
       live("/toggle-group/api", ToggleGroupApiLive)
@@ -263,6 +273,14 @@ defmodule E2eWeb.Router do
 
     get("/tabs/anatomy", PageController, :tabs_page)
     get("/tabs/style", PageController, :tabs_styling_page)
+
+    get("/tags-input/anatomy", PageController, :tags_input_page)
+    get("/tags-input/style", PageController, :tags_input_styling_page)
+    get("/tags-input/form", PageController, :tags_input_form_page)
+    post("/tags-input/form", PageController, :tags_input_form_submit)
+
+    get("/toggle/anatomy", PageController, :toggle_page)
+    get("/toggle/style", PageController, :toggle_styling_page)
 
     get("/toggle-group/anatomy", PageController, :toggle_group_page)
     get("/toggle-group/style", PageController, :toggle_group_styling_page)

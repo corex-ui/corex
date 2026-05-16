@@ -570,6 +570,21 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/tabs/style"
         },
         %{
+          label: "Tags input",
+          id: "tags-input",
+          anatomy_to: ~p"/tags-input/anatomy",
+          playground_to: ~p"/tags-input/playground",
+          api_to: ~p"/tags-input/api",
+          events_to: ~p"/tags-input/events",
+          patterns_to: ~p"/tags-input/patterns",
+          style: true,
+          style_to: ~p"/tags-input/style",
+          forms: [
+            doc_form_menu_item("Controller Form", ~p"/tags-input/form"),
+            doc_form_menu_item("Live Form", ~p"/tags-input/live-form")
+          ]
+        },
+        %{
           label: "Timer",
           id: "timer",
           style: true,
@@ -588,6 +603,17 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/toast/anatomy",
           playground_to: ~p"/toast/playground",
           api_to: ~p"/toast/api"
+        },
+        %{
+          label: "Toggle",
+          id: "toggle",
+          anatomy_to: ~p"/toggle/anatomy",
+          playground_to: ~p"/toggle/playground",
+          api_to: ~p"/toggle/api",
+          events_to: ~p"/toggle/events",
+          pattern: false,
+          style: true,
+          style_to: ~p"/toggle/style"
         },
         %{
           label: "Toggle group",

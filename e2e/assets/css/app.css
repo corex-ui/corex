@@ -33,8 +33,11 @@
 @import "../corex/components/scrollbar.css";
 @import "../corex/components/signature-pad.css";
 @import "../corex/components/switch.css";
-@import "../corex/components/toggle-group.css";
+@import "../corex/components/tags-input.css";
 @import "../corex/components/tabs.css";
+@import "../corex/components/timer.css";
+@import "../corex/components/toggle.css";
+@import "../corex/components/toggle-group.css";
 @import "../corex/components/tree-view.css";
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";
@@ -52,7 +55,6 @@
 @import "../corex/components/pin-input.css";
 @import "../corex/components/native-input.css";
 @import "../corex/components/radio-group.css";
-@import "../corex/components/timer.css";
 @import "../corex/components/tooltip.css";
 @import "../corex/components/code.css";
 @import "../corex/components/data-table.css";

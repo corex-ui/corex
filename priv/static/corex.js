@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-XP2X5SPI.mjs
+  // ../priv/static/chunks/chunk-C6EFS75P.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -284,8 +284,8 @@ var Corex = (() => {
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
-  function joinStatePath(parts31) {
-    return parts31.join(STATE_DELIMITER);
+  function joinStatePath(parts33) {
+    return parts33.join(STATE_DELIMITER);
   }
   function isAbsoluteStatePath(value) {
     return value.includes(STATE_DELIMITER);
@@ -302,7 +302,7 @@ var Corex = (() => {
   function appendStatePath(base, segment) {
     return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
   }
-  function buildStateIndex(machine31) {
+  function buildStateIndex(machine33) {
     const index = /* @__PURE__ */ new Map();
     const idIndex = /* @__PURE__ */ new Map();
     const visit2 = (basePath, state2) => {
@@ -328,32 +328,32 @@ var Corex = (() => {
         visit2(childPath, childState);
       }
     };
-    for (const [topKey, topState] of Object.entries(machine31.states)) {
+    for (const [topKey, topState] of Object.entries(machine33.states)) {
       if (!topState) continue;
       visit2(topKey, topState);
     }
     return { index, idIndex };
   }
-  function ensureStateIndex(machine31) {
-    const cached = stateIndexCache.get(machine31);
+  function ensureStateIndex(machine33) {
+    const cached = stateIndexCache.get(machine33);
     if (cached) return cached;
-    const { index, idIndex } = buildStateIndex(machine31);
-    stateIndexCache.set(machine31, index);
-    stateIdIndexCache.set(machine31, idIndex);
+    const { index, idIndex } = buildStateIndex(machine33);
+    stateIndexCache.set(machine33, index);
+    stateIdIndexCache.set(machine33, idIndex);
     return index;
   }
-  function getStatePathById(machine31, stateId) {
+  function getStatePathById(machine33, stateId) {
     var _a4;
-    ensureStateIndex(machine31);
-    return (_a4 = stateIdIndexCache.get(machine31)) == null ? void 0 : _a4.get(stateId);
+    ensureStateIndex(machine33);
+    return (_a4 = stateIdIndexCache.get(machine33)) == null ? void 0 : _a4.get(stateId);
   }
   function toSegments(value) {
     if (!value) return [];
     return String(value).split(STATE_DELIMITER).filter(Boolean);
   }
-  function getStateChain(machine31, state2) {
+  function getStateChain(machine33, state2) {
     if (!state2) return [];
-    const stateIndex = ensureStateIndex(machine31);
+    const stateIndex = ensureStateIndex(machine33);
     const segments = toSegments(state2);
     const chain = [];
     const statePath = [];
@@ -366,8 +366,8 @@ var Corex = (() => {
     }
     return chain;
   }
-  function resolveAbsoluteStateValue(machine31, value) {
-    const stateIndex = ensureStateIndex(machine31);
+  function resolveAbsoluteStateValue(machine33, value) {
+    const stateIndex = ensureStateIndex(machine33);
     const segments = toSegments(value);
     if (!segments.length) return value;
     const resolved = [];
@@ -387,48 +387,48 @@ var Corex = (() => {
     }
     return resolvedPath;
   }
-  function hasStatePath(machine31, value) {
-    const stateIndex = ensureStateIndex(machine31);
+  function hasStatePath(machine33, value) {
+    const stateIndex = ensureStateIndex(machine33);
     return stateIndex.has(value);
   }
-  function resolveStateValue(machine31, value, source) {
+  function resolveStateValue(machine33, value, source) {
     const stateValue = String(value);
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
-      const statePath = getStatePathById(machine31, stateId);
+      const statePath = getStatePathById(machine33, stateId);
       ensure(statePath, () => `[zag-js] Unknown state id: "${stateId}"`);
-      return resolveAbsoluteStateValue(machine31, statePath);
+      return resolveAbsoluteStateValue(machine33, statePath);
     }
     if (isChildTarget(stateValue) && source) {
       const childPath = appendStatePath(source, stateValue.slice(1));
-      return resolveAbsoluteStateValue(machine31, childPath);
+      return resolveAbsoluteStateValue(machine33, childPath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
       for (let index = sourceSegments.length - 1; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
-        if (hasStatePath(machine31, candidate)) return resolveAbsoluteStateValue(machine31, candidate);
+        if (hasStatePath(machine33, candidate)) return resolveAbsoluteStateValue(machine33, candidate);
       }
-      if (hasStatePath(machine31, stateValue)) return resolveAbsoluteStateValue(machine31, stateValue);
+      if (hasStatePath(machine33, stateValue)) return resolveAbsoluteStateValue(machine33, stateValue);
     }
-    return resolveAbsoluteStateValue(machine31, stateValue);
+    return resolveAbsoluteStateValue(machine33, stateValue);
   }
-  function findTransition(machine31, state2, eventType) {
+  function findTransition(machine33, state2, eventType) {
     var _a4, _b;
-    const chain = getStateChain(machine31, state2);
+    const chain = getStateChain(machine33, state2);
     for (let index = chain.length - 1; index >= 0; index--) {
       const transitionMap = (_a4 = chain[index]) == null ? void 0 : _a4.state.on;
       const transition = transitionMap == null ? void 0 : transitionMap[eventType];
       if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
     }
-    const rootTransitionMap = machine31.on;
+    const rootTransitionMap = machine33.on;
     return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
   }
-  function getExitEnterStates(machine31, prevState, nextState, reenter) {
+  function getExitEnterStates(machine33, prevState, nextState, reenter) {
     var _a4, _b, _c, _d;
-    const prevChain = prevState ? getStateChain(machine31, prevState) : [];
-    const nextChain = getStateChain(machine31, nextState);
+    const prevChain = prevState ? getStateChain(machine33, prevState) : [];
+    const nextChain = getStateChain(machine33, nextState);
     let commonIndex = 0;
     while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a4 = prevChain[commonIndex]) == null ? void 0 : _a4.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
       commonIndex += 1;
@@ -446,8 +446,8 @@ var Corex = (() => {
     if (!current) return false;
     return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
   }
-  function hasTag(machine31, state2, tag) {
-    return getStateChain(machine31, state2).some((item) => {
+  function hasTag(machine33, state2, tag) {
+    return getStateChain(machine33, state2).some((item) => {
       var _a4;
       return (_a4 = item.state.tags) == null ? void 0 : _a4.includes(tag);
     });
@@ -488,6 +488,14 @@ var Corex = (() => {
         };
       }
     };
+  }
+  function isCaretAtStart(input) {
+    if (!input) return false;
+    try {
+      return input.selectionStart === 0 && input.selectionEnd === 0;
+    } catch (e2) {
+      return input.value === "";
+    }
   }
   function setCaretToEnd(input) {
     if (!input) return;
@@ -1780,9 +1788,9 @@ var Corex = (() => {
       }
     };
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_XP2X5SPI = __esm({
-    "../priv/static/chunks/chunk-XP2X5SPI.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_C6EFS75P = __esm({
+    "../priv/static/chunks/chunk-C6EFS75P.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1840,6 +1848,7 @@ var Corex = (() => {
       has = (v2, t2) => v2.indexOf(t2) !== -1;
       add = (v2, ...items) => v2.concat(items);
       remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
+      removeAt = (v2, i2) => v2.filter((_2, idx) => idx !== i2);
       uniq = (v2) => Array.from(new Set(v2));
       diff = (a2, b2) => {
         const set = new Set(b2);
@@ -2322,9 +2331,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine31, userProps = {}) {
+        constructor(machine33, userProps = {}) {
           var _a4, _b, _c;
-          __publicField2(this, "machine", machine31);
+          __publicField2(this, "machine", machine33);
           __publicField2(this, "scope");
           __publicField2(this, "context");
           __publicField2(this, "prop");
@@ -2470,11 +2479,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a5, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props = (_b2 = (_a5 = machine31.props) == null ? void 0 : _a5.call(machine31, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            const props = (_b2 = (_a5 = machine33.props) == null ? void 0 : _a5.call(machine33, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
             return props[key];
           };
           this.prop = prop;
-          const context = (_a4 = machine31.context) == null ? void 0 : _a4.call(machine31, {
+          const context = (_a4 = machine33.context) == null ? void 0 : _a4.call(machine33, {
             prop,
             bindable,
             scope: this.scope,
@@ -2515,8 +2524,8 @@ var Corex = (() => {
           };
           this.context = ctx;
           const computed = (key) => {
-            ensure(machine31.computed, () => `[zag-js] No computed object found on machine`);
-            return machine31.computed[key]({
+            ensure(machine33.computed, () => `[zag-js] No computed object found on machine`);
+            return machine33.computed[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2526,10 +2535,10 @@ var Corex = (() => {
             });
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine31.refs) == null ? void 0 : _b.call(machine31, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine33.refs) == null ? void 0 : _b.call(machine33, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: resolveStateValue(machine31, machine31.initialState({ prop })),
+            defaultValue: resolveStateValue(machine33, machine33.initialState({ prop })),
             onChange: (nextState, prevState) => {
               var _a5, _b2;
               const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a5 = this.transition) == null ? void 0 : _a5.reenter);
@@ -2549,8 +2558,8 @@ var Corex = (() => {
                 if (cleanup) this.effects.set(item.path, cleanup);
               });
               if (prevState === INIT_STATE) {
-                this.action(machine31.entry);
-                const cleanup = this.effect(machine31.effects);
+                this.action(machine33.entry);
+                const cleanup = this.effect(machine33.effects);
                 if (cleanup) this.effects.set(INIT_STATE, cleanup);
               }
               entering.forEach((item) => {
@@ -2700,18 +2709,18 @@ var Corex = (() => {
           return connectFn(this.machine.service, normalizeProps);
         }
       };
-      createAnatomy = (name, parts31 = []) => ({
+      createAnatomy = (name, parts33 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts31)) {
+          if (isEmpty(parts33)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts31, ...values]),
-        omit: (...values) => createAnatomy(name, parts31.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts31),
-        keys: () => parts31,
-        build: () => [...new Set(parts31)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts33, ...values]),
+        omit: (...values) => createAnatomy(name, parts33.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts33),
+        keys: () => parts33,
+        build: () => [...new Set(parts33)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -2729,7 +2738,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-ZPB3DDMZ.mjs
+  // ../priv/static/chunks/chunk-OXVCDUSK.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2965,15 +2974,15 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_ZPB3DDMZ = __esm({
-    "../priv/static/chunks/chunk-ZPB3DDMZ.mjs"() {
+  var init_chunk_OXVCDUSK = __esm({
+    "../priv/static/chunks/chunk-OXVCDUSK.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-KOWHCKG4.mjs
+  // ../priv/static/chunks/chunk-ZVNYTDIO.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
   }
@@ -2998,10 +3007,10 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var z;
-  var init_chunk_KOWHCKG4 = __esm({
-    "../priv/static/chunks/chunk-KOWHCKG4.mjs"() {
+  var init_chunk_ZVNYTDIO = __esm({
+    "../priv/static/chunks/chunk-ZVNYTDIO.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -3043,7 +3052,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-LIWT33BG.mjs
+  // ../priv/static/chunks/chunk-YECC7BC7.mjs
   function parseRespondTo(source) {
     var _a4, _b, _c;
     if (source && typeof source === "object") {
@@ -3064,6 +3073,23 @@ var Corex = (() => {
     const c2 = (_a4 = o2.checked) != null ? _a4 : o2["checked"];
     if (c2 === true || c2 === "true" || c2 === 1) return true;
     if (c2 === false || c2 === "false" || c2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadPressed(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const p2 = (_a4 = o2.pressed) != null ? _a4 : o2["pressed"];
+    if (p2 === true || p2 === "true" || p2 === 1) return true;
+    if (p2 === false || p2 === "false" || p2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadStringArray(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const v2 = (_a4 = o2.value) != null ? _a4 : o2["value"];
+    if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
   function readPayloadVisible(payload) {
@@ -3135,8 +3161,8 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_LIWT33BG = __esm({
-    "../priv/static/chunks/chunk-LIWT33BG.mjs"() {
+  var init_chunk_YECC7BC7 = __esm({
+    "../priv/static/chunks/chunk-YECC7BC7.mjs"() {
       "use strict";
     }
   });
@@ -3291,11 +3317,11 @@ var Corex = (() => {
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_ZPB3DDMZ();
-      init_chunk_KOWHCKG4();
+      init_chunk_OXVCDUSK();
+      init_chunk_ZVNYTDIO();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -4108,11 +4134,11 @@ var Corex = (() => {
     "../priv/static/angle-slider.mjs"() {
       "use strict";
       init_chunk_QB2YSZP6();
-      init_chunk_KOWHCKG4();
+      init_chunk_ZVNYTDIO();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4529,8 +4555,8 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -5197,8 +5223,8 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5945,7 +5971,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-AJIR2V2O.mjs
+  // ../priv/static/chunks/chunk-UMEIQPNC.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6064,10 +6090,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_AJIR2V2O = __esm({
-    "../priv/static/chunks/chunk-AJIR2V2O.mjs"() {
+  var init_chunk_UMEIQPNC = __esm({
+    "../priv/static/chunks/chunk-UMEIQPNC.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6242,10 +6268,10 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_AJIR2V2O();
+      init_chunk_UMEIQPNC();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6539,7 +6565,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-OUOXE4EX.mjs
+  // ../priv/static/chunks/chunk-AQVFJVVA.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6562,10 +6588,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_OUOXE4EX = __esm({
-    "../priv/static/chunks/chunk-OUOXE4EX.mjs"() {
+  var init_chunk_AQVFJVVA = __esm({
+    "../priv/static/chunks/chunk-AQVFJVVA.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6739,10 +6765,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_OUOXE4EX();
+      init_chunk_AQVFJVVA();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -7101,11 +7127,11 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_KOWHCKG4();
+      init_chunk_ZVNYTDIO();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7535,7 +7561,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-IW7ATDRS.mjs
+  // ../priv/static/chunks/chunk-7VWCZ4HT.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8899,10 +8925,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_IW7ATDRS = __esm({
-    "../priv/static/chunks/chunk-IW7ATDRS.mjs"() {
+  var init_chunk_7VWCZ4HT = __esm({
+    "../priv/static/chunks/chunk-7VWCZ4HT.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -9037,7 +9063,7 @@ var Corex = (() => {
             const arrowDimensions = yield platform2.getDimensions(element);
             const isYAxis = axis === "y";
             const minProp = isYAxis ? "top" : "left";
-            const maxProp = isYAxis ? "bottom" : "right";
+            const maxProp2 = isYAxis ? "bottom" : "right";
             const clientProp = isYAxis ? "clientHeight" : "clientWidth";
             const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
             const startDiff = coords[axis] - rects.reference[axis];
@@ -9049,7 +9075,7 @@ var Corex = (() => {
             const centerToReference = endDiff / 2 - startDiff / 2;
             const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
             const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
-            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
+            const maxPadding = min2(paddingObject[maxProp2], largestPossiblePadding);
             const min$1 = minPadding;
             const max22 = clientSize - arrowDimensions[length] - maxPadding;
             const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
@@ -9612,7 +9638,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YSIT45Z3.mjs
+  // ../priv/static/chunks/chunk-2MHUIH3F.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -9837,17 +9863,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_YSIT45Z3 = __esm({
-    "../priv/static/chunks/chunk-YSIT45Z3.mjs"() {
+  var init_chunk_2MHUIH3F = __esm({
+    "../priv/static/chunks/chunk-2MHUIH3F.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-2FOKGN7H.mjs
+  // ../priv/static/chunks/chunk-Z2Y5B5TR.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10006,11 +10032,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_2FOKGN7H = __esm({
-    "../priv/static/chunks/chunk-2FOKGN7H.mjs"() {
+  var init_chunk_Z2Y5B5TR = __esm({
+    "../priv/static/chunks/chunk-Z2Y5B5TR.mjs"() {
       "use strict";
-      init_chunk_YSIT45Z3();
-      init_chunk_XP2X5SPI();
+      init_chunk_2MHUIH3F();
+      init_chunk_C6EFS75P();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10134,7 +10160,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-DCODD6KZ.mjs
+  // ../priv/static/chunks/chunk-Z7DAQYHU.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10178,10 +10204,10 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_DCODD6KZ = __esm({
-    "../priv/static/chunks/chunk-DCODD6KZ.mjs"() {
+  var init_chunk_Z7DAQYHU = __esm({
+    "../priv/static/chunks/chunk-Z7DAQYHU.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
     }
   });
 
@@ -10216,7 +10242,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-UBAV4DFF.mjs
+  // ../priv/static/chunks/chunk-WA6OCBS4.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -10616,10 +10642,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_UBAV4DFF = __esm({
-    "../priv/static/chunks/chunk-UBAV4DFF.mjs"() {
+  var init_chunk_WA6OCBS4 = __esm({
+    "../priv/static/chunks/chunk-WA6OCBS4.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -12187,17 +12213,17 @@ var Corex = (() => {
     "../priv/static/combobox.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
-      init_chunk_IW7ATDRS();
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_DCODD6KZ();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_Z7DAQYHU();
       init_chunk_PWLG55J6();
-      init_chunk_UBAV4DFF();
+      init_chunk_WA6OCBS4();
       init_chunk_FOQSALVP();
-      init_chunk_AJIR2V2O();
+      init_chunk_UMEIQPNC();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -14362,13 +14388,13 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_IW7ATDRS();
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_DCODD6KZ();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_Z7DAQYHU();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -16026,7 +16052,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-KYOKM7OP.mjs
+  // ../priv/static/chunks/chunk-LZDVQIIR.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -16041,10 +16067,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_KYOKM7OP = __esm({
-    "../priv/static/chunks/chunk-KYOKM7OP.mjs"() {
+  var init_chunk_LZDVQIIR = __esm({
+    "../priv/static/chunks/chunk-LZDVQIIR.mjs"() {
       "use strict";
-      init_chunk_XP2X5SPI();
+      init_chunk_C6EFS75P();
     }
   });
 
@@ -18296,15 +18322,15 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_KYOKM7OP();
+      init_chunk_LZDVQIIR();
       init_chunk_7BZGUIUZ();
-      init_chunk_IW7ATDRS();
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_DCODD6KZ();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_Z7DAQYHU();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -20791,13 +20817,13 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_ZPB3DDMZ();
-      init_chunk_KOWHCKG4();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_OXVCDUSK();
+      init_chunk_ZVNYTDIO();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -22174,10 +22200,10 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_YSIT45Z3();
+      init_chunk_2MHUIH3F();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -23070,8 +23096,8 @@ var Corex = (() => {
     "../priv/static/file-upload.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy13 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
@@ -24355,12 +24381,12 @@ ${err}`);
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_DCODD6KZ();
+      init_chunk_Z7DAQYHU();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy14 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -25803,13 +25829,13 @@ ${err}`);
     "../priv/static/listbox.mjs"() {
       "use strict";
       init_chunk_PWLG55J6();
-      init_chunk_UBAV4DFF();
+      init_chunk_WA6OCBS4();
       init_chunk_FOQSALVP();
-      init_chunk_AJIR2V2O();
-      init_chunk_KOWHCKG4();
+      init_chunk_UMEIQPNC();
+      init_chunk_ZVNYTDIO();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy15 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -26588,8 +26614,8 @@ ${err}`);
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -27604,14 +27630,14 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_IW7ATDRS();
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_DCODD6KZ();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_Z7DAQYHU();
       init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
-      init_chunk_AJIR2V2O();
-      init_chunk_XP2X5SPI();
+      init_chunk_UMEIQPNC();
+      init_chunk_C6EFS75P();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -29371,10 +29397,10 @@ ${err}`);
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_KYOKM7OP();
+      init_chunk_LZDVQIIR();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -30425,8 +30451,8 @@ ${err}`);
     "../priv/static/password-input.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy19 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -30979,8 +31005,8 @@ ${err}`);
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy20 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts20 = anatomy20.build();
       getRootId15 = (ctx) => {
@@ -31653,11 +31679,11 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_AJIR2V2O();
-      init_chunk_KOWHCKG4();
+      init_chunk_UMEIQPNC();
+      init_chunk_ZVNYTDIO();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy21 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -32502,18 +32528,18 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_IW7ATDRS();
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_DCODD6KZ();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_Z7DAQYHU();
       init_chunk_PWLG55J6();
-      init_chunk_UBAV4DFF();
+      init_chunk_WA6OCBS4();
       init_chunk_FOQSALVP();
-      init_chunk_AJIR2V2O();
-      init_chunk_KOWHCKG4();
+      init_chunk_UMEIQPNC();
+      init_chunk_ZVNYTDIO();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy22 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -33858,8 +33884,8 @@ ${err}`);
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy23 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -34375,10 +34401,10 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_AJIR2V2O();
+      init_chunk_UMEIQPNC();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
       anatomy24 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -34677,12 +34703,1430 @@ ${err}`);
     }
   });
 
+  // ../priv/static/tags-input.mjs
+  var tags_input_exports = {};
+  __export(tags_input_exports, {
+    TagsInput: () => TagsInputHook
+  });
+  function connect25(service, normalize) {
+    const { state: state2, send, computed, prop, scope, context } = service;
+    const interactive = computed("isInteractive");
+    const disabled = !!prop("disabled");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const invalid = prop("invalid") || computed("isOverflowing");
+    const translations = prop("translations");
+    const focused = state2.hasTag("focused");
+    const editingTag = state2.matches("editing:tag");
+    const empty = computed("count") === 0;
+    function getItemState(options) {
+      const id = getItemId9(scope, options);
+      const editedTagId = context.get("editedTagId");
+      const highlightedTagId = context.get("highlightedTagId");
+      return {
+        id,
+        editing: editingTag && editedTagId === id,
+        highlighted: id === highlightedTagId,
+        disabled: Boolean(options.disabled || disabled)
+      };
+    }
+    return {
+      empty,
+      inputValue: context.get("inputValue"),
+      value: context.get("value"),
+      valueAsString: computed("valueAsString"),
+      count: computed("count"),
+      atMax: computed("isAtMax"),
+      setValue(value) {
+        send({ type: "SET_VALUE", value });
+      },
+      clearValue(id) {
+        if (id) {
+          send({ type: "CLEAR_TAG", id });
+        } else {
+          send({ type: "CLEAR_VALUE" });
+        }
+      },
+      addValue(value) {
+        send({ type: "ADD_TAG", value });
+      },
+      setValueAtIndex(index, value) {
+        send({ type: "SET_VALUE_AT_INDEX", index, value });
+      },
+      setInputValue(value) {
+        send({ type: "SET_INPUT_VALUE", value });
+      },
+      clearInputValue() {
+        send({ type: "SET_INPUT_VALUE", value: "" });
+      },
+      focus() {
+        var _a4;
+        (_a4 = getInputEl6(scope)) == null ? void 0 : _a4.focus();
+      },
+      getItemState,
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir")
+        }, parts25.root.attrs), {
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-disabled": dataAttr(disabled),
+          "data-focus": dataAttr(focused),
+          "data-empty": dataAttr(empty),
+          id: getRootId20(scope),
+          onPointerDown() {
+            if (!interactive) return;
+            send({ type: "POINTER_DOWN" });
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts25.label.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-required": dataAttr(required),
+          id: getLabelId16(scope),
+          dir: prop("dir"),
+          htmlFor: getInputId8(scope)
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getControlId11(scope)
+        }, parts25.control.attrs), {
+          dir: prop("dir"),
+          tabIndex: readOnly ? 0 : void 0,
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-invalid": dataAttr(invalid),
+          "data-focus": dataAttr(focused)
+        }));
+      },
+      getInputProps() {
+        return normalize.input(__spreadProps(__spreadValues({}, parts25.input.attrs), {
+          dir: prop("dir"),
+          "data-invalid": dataAttr(invalid),
+          "aria-invalid": ariaAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-empty": dataAttr(empty),
+          maxLength: prop("maxLength"),
+          id: getInputId8(scope),
+          defaultValue: context.get("inputValue"),
+          autoComplete: "off",
+          autoCorrect: "off",
+          autoCapitalize: "none",
+          enterKeyHint: "done",
+          disabled: disabled || readOnly,
+          placeholder: empty ? prop("placeholder") : void 0,
+          onInput(event) {
+            const evt = getNativeEvent(event);
+            const value = event.currentTarget.value;
+            if (evt.inputType === "insertFromPaste") {
+              send({ type: "PASTE", value });
+              return;
+            }
+            if (endsWith(value, prop("delimiter"))) {
+              send({ type: "DELIMITER_KEY" });
+              return;
+            }
+            send({ type: "TYPE", value, key: evt.inputType });
+          },
+          onFocus() {
+            queueMicrotask(() => {
+              send({ type: "FOCUS" });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const target = event.currentTarget;
+            const isCombobox = target.getAttribute("role") === "combobox";
+            const isExpanded = target.ariaExpanded === "true";
+            const keyMap2 = {
+              ArrowDown() {
+                send({ type: "ARROW_DOWN" });
+              },
+              ArrowLeft() {
+                if (isCombobox && isExpanded) return;
+                send({ type: "ARROW_LEFT" });
+              },
+              ArrowRight(event2) {
+                if (context.get("highlightedTagId")) {
+                  event2.preventDefault();
+                }
+                if (isCombobox && isExpanded) return;
+                send({ type: "ARROW_RIGHT" });
+              },
+              Escape(event2) {
+                event2.preventDefault();
+                send({ type: "ESCAPE" });
+              },
+              Backspace() {
+                send({ type: "BACKSPACE" });
+              },
+              Delete() {
+                send({ type: "DELETE" });
+              },
+              Enter(event2) {
+                const hasHighlightedItem = target.getAttribute("aria-activedescendant");
+                if (isCombobox && isExpanded && hasHighlightedItem) return;
+                send({ type: "ENTER" });
+                event2.preventDefault();
+              }
+            };
+            const key = getEventKey(event, { dir: prop("dir") });
+            const exec = keyMap2[key];
+            if (exec) {
+              exec(event);
+              return;
+            }
+          }
+        }));
+      },
+      getHiddenInputProps() {
+        return normalize.input({
+          type: "text",
+          hidden: true,
+          name: prop("name"),
+          form: prop("form"),
+          disabled,
+          readOnly,
+          required: prop("required"),
+          id: getHiddenInputId8(scope),
+          defaultValue: computed("valueAsString")
+        });
+      },
+      getItemProps(props) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.item.attrs), {
+          dir: prop("dir"),
+          "data-value": props.value,
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getItemPreviewProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.itemPreview.attrs), {
+          id: itemState.id,
+          dir: prop("dir"),
+          hidden: itemState.editing,
+          "data-value": props.value,
+          "data-disabled": dataAttr(disabled),
+          "data-highlighted": dataAttr(itemState.highlighted),
+          onPointerDown(event) {
+            if (!interactive || itemState.disabled) return;
+            if (!isLeftClick(event)) return;
+            event.preventDefault();
+            send({ type: "POINTER_DOWN_TAG", id: itemState.id });
+          },
+          onDoubleClick() {
+            if (!interactive || itemState.disabled) return;
+            send({ type: "DOUBLE_CLICK_TAG", id: itemState.id });
+          }
+        }));
+      },
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.itemText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-highlighted": dataAttr(itemState.highlighted)
+        }));
+      },
+      getItemInputProps(props) {
+        var _a4;
+        const itemState = getItemState(props);
+        return normalize.input(__spreadProps(__spreadValues({}, parts25.itemInput.attrs), {
+          dir: prop("dir"),
+          "aria-label": (_a4 = translations == null ? void 0 : translations.tagEdited) == null ? void 0 : _a4.call(translations, props.value),
+          disabled,
+          id: getItemInputId(scope, props),
+          tabIndex: -1,
+          hidden: !itemState.editing,
+          maxLength: prop("maxLength"),
+          defaultValue: itemState.editing ? context.get("editedTagValue") : "",
+          onInput(event) {
+            send({ type: "TAG_INPUT_TYPE", value: event.currentTarget.value });
+          },
+          onBlur(event) {
+            queueMicrotask(() => {
+              send({ type: "TAG_INPUT_BLUR", target: event.relatedTarget, id: itemState.id });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const keyMap2 = {
+              Enter() {
+                send({ type: "TAG_INPUT_ENTER" });
+              },
+              Escape() {
+                send({ type: "TAG_INPUT_ESCAPE" });
+              }
+            };
+            const exec = keyMap2[event.key];
+            if (exec) {
+              event.preventDefault();
+              exec(event);
+            }
+          }
+        }));
+      },
+      getItemDeleteTriggerProps(props) {
+        var _a4;
+        const itemState = getItemState(props);
+        return normalize.button(__spreadProps(__spreadValues({}, parts25.itemDeleteTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(itemState.disabled),
+          "aria-disabled": itemState.disabled,
+          "data-highlighted": dataAttr(itemState.highlighted),
+          id: getItemDeleteTriggerId2(scope, props),
+          type: "button",
+          disabled: itemState.disabled,
+          "aria-label": (_a4 = translations == null ? void 0 : translations.deleteTagTriggerLabel) == null ? void 0 : _a4.call(translations, props.value),
+          tabIndex: -1,
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (!interactive) {
+              event.preventDefault();
+            }
+          },
+          onPointerMove(event) {
+            if (!interactive) return;
+            setHoverIntent(event.currentTarget);
+          },
+          onPointerLeave(event) {
+            if (!interactive) return;
+            clearHoverIntent(event.currentTarget);
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            send({ type: "CLICK_DELETE_TAG", id: itemState.id });
+          }
+        }));
+      },
+      getClearTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts25.clearTrigger.attrs), {
+          dir: prop("dir"),
+          id: getClearTriggerId4(scope),
+          type: "button",
+          "data-readonly": dataAttr(readOnly),
+          disabled,
+          "aria-label": translations == null ? void 0 : translations.clearTriggerLabel,
+          hidden: empty,
+          onClick() {
+            if (!interactive) return;
+            send({ type: "CLEAR_VALUE" });
+          }
+        }));
+      }
+    };
+  }
+  function endsWith(str, del) {
+    if (!del) return false;
+    if (typeof del === "string") return str.endsWith(del);
+    return new RegExp(`${del.source}$`).test(str);
+  }
+  function getVisualStyles(node) {
+    if (!node) return;
+    const style = getComputedStyle2(node);
+    return "box-sizing:" + style.boxSizing + ";border-left:" + style.borderLeftWidth + " solid red;border-right:" + style.borderRightWidth + " solid red;font-family:" + style.fontFamily + ";font-feature-settings:" + style.fontFeatureSettings + ";font-kerning:" + style.fontKerning + ";font-size:" + style.fontSize + ";font-stretch:" + style.fontStretch + ";font-style:" + style.fontStyle + ";font-variant:" + style.fontVariant + ";font-variant-caps:" + style.fontVariantCaps + ";font-variant-ligatures:" + style.fontVariantLigatures + ";font-variant-numeric:" + style.fontVariantNumeric + ";font-weight:" + style.fontWeight + ";letter-spacing:" + style.letterSpacing + ";margin-left:" + style.marginLeft + ";margin-right:" + style.marginRight + ";padding-left:" + style.paddingLeft + ";padding-right:" + style.paddingRight + ";text-indent:" + style.textIndent + ";text-transform:" + style.textTransform;
+  }
+  function createGhostElement(doc) {
+    const el = doc.createElement("div");
+    el.id = "ghost";
+    el.style.cssText = "display:inline-block;height:0;overflow:hidden;position:absolute;top:0;visibility:hidden;white-space:nowrap;";
+    doc.body.appendChild(el);
+    return el;
+  }
+  function autoResizeInput(input) {
+    if (!input) return;
+    const doc = getDocument(input);
+    const win = getWindow(input);
+    const ghost = createGhostElement(doc);
+    const cssText = getVisualStyles(input);
+    if (cssText) ghost.style.cssText += cssText;
+    function resize() {
+      win.requestAnimationFrame(() => {
+        ghost.innerHTML = input.value;
+        const rect = win.getComputedStyle(ghost);
+        input == null ? void 0 : input.style.setProperty("width", rect.width);
+      });
+    }
+    resize();
+    input == null ? void 0 : input.addEventListener("input", resize);
+    input == null ? void 0 : input.addEventListener("change", resize);
+    return () => {
+      doc.body.removeChild(ghost);
+      input == null ? void 0 : input.removeEventListener("input", resize);
+      input == null ? void 0 : input.removeEventListener("change", resize);
+    };
+  }
+  function directItemElements(controlEl) {
+    return Array.from(
+      controlEl.querySelectorAll(
+        ':scope > [data-scope="tags-input"][data-part="item"]'
+      )
+    );
+  }
+  function itemInputIsEditing(input) {
+    if (!input) return false;
+    return !input.hidden;
+  }
+  function parseJsonTags(el, key) {
+    const raw = el.dataset[key];
+    if (!raw || raw.trim() === "") return [];
+    try {
+      const v2 = JSON.parse(raw);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function blurBehavior(el) {
+    return getString(el, "blurBehavior", ["add", "clear"]);
+  }
+  function maxProp(el) {
+    const n2 = getNumber(el, "max");
+    if (n2 === void 0) return void 0;
+    if (!Number.isFinite(n2) || n2 <= 0) return void 0;
+    return n2;
+  }
+  function readPlaceholderFromMainInput(hookEl) {
+    const input = hookEl.querySelector(
+      '[data-scope="tags-input"][data-part="input"]'
+    );
+    const v2 = input == null ? void 0 : input.getAttribute("placeholder");
+    return typeof v2 === "string" && v2 !== "" ? v2 : void 0;
+  }
+  var anatomy25, parts25, getRootId20, getInputId8, getClearTriggerId4, getHiddenInputId8, getLabelId16, getControlId11, getItemId9, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl8, getInputEl6, getHiddenInputEl7, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, and9, not10, or4, machine25, TagsInput, TagsInputHook;
+  var init_tags_input = __esm({
+    "../priv/static/tags-input.mjs"() {
+      "use strict";
+      init_chunk_7BZGUIUZ();
+      init_chunk_2MHUIH3F();
+      init_chunk_77HPO22C();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy25 = createAnatomy("tagsInput").parts(
+        "root",
+        "label",
+        "control",
+        "input",
+        "clearTrigger",
+        "item",
+        "itemPreview",
+        "itemInput",
+        "itemText",
+        "itemDeleteTrigger"
+      );
+      parts25 = anatomy25.build();
+      getRootId20 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tags-input:${ctx.id}`;
+      };
+      getInputId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `tags-input:${ctx.id}:input`;
+      };
+      getClearTriggerId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.clearBtn) != null ? _b : `tags-input:${ctx.id}:clear-btn`;
+      };
+      getHiddenInputId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `tags-input:${ctx.id}:hidden-input`;
+      };
+      getLabelId16 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `tags-input:${ctx.id}:label`;
+      };
+      getControlId11 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `tags-input:${ctx.id}:control`;
+      };
+      getItemId9 = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `tags-input:${ctx.id}:tag:${opt.value}:${opt.index}`;
+      };
+      getItemDeleteTriggerId2 = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemDeleteTrigger) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `${getItemId9(ctx, opt)}:delete-btn`;
+      };
+      getItemInputId = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemInput) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `${getItemId9(ctx, opt)}:input`;
+      };
+      getEditInputId = (id) => `${id}:input`;
+      getEditInputEl = (ctx, id) => ctx.getById(getEditInputId(id));
+      getItemEls2 = (ctx) => queryAll(getRootEl8(ctx), `[data-part=item]`);
+      getTagInputEl = (ctx, opt) => ctx.getById(getItemInputId(ctx, opt));
+      getRootEl8 = (ctx) => ctx.getById(getRootId20(ctx));
+      getInputEl6 = (ctx) => ctx.getById(getInputId8(ctx));
+      getHiddenInputEl7 = (ctx) => ctx.getById(getHiddenInputId8(ctx));
+      getTagElements = (ctx) => queryAll(getRootEl8(ctx), `[data-part=item-preview]:not([data-disabled])`);
+      getFirstEl2 = (ctx) => getTagElements(ctx)[0];
+      getLastEl2 = (ctx) => getTagElements(ctx)[getTagElements(ctx).length - 1];
+      getPrevEl2 = (ctx, id) => prevById(getTagElements(ctx), id, false);
+      getNextEl2 = (ctx, id) => nextById(getTagElements(ctx), id, false);
+      getTagElAtIndex = (ctx, index) => getTagElements(ctx)[index];
+      getIndexOfId = (ctx, id) => indexOfId(getTagElements(ctx), id);
+      setHoverIntent = (el) => {
+        const tagEl = el.closest("[data-part=item-preview]");
+        if (!tagEl) return;
+        tagEl.dataset.deleteIntent = "";
+      };
+      clearHoverIntent = (el) => {
+        const tagEl = el.closest("[data-part=item-preview]");
+        if (!tagEl) return;
+        delete tagEl.dataset.deleteIntent;
+      };
+      dispatchInputEvent = (ctx, value) => {
+        const inputEl = getHiddenInputEl7(ctx);
+        if (!inputEl) return;
+        dispatchInputValueEvent(inputEl, { value });
+      };
+      ({ and: and9, not: not10, or: or4 } = createGuards());
+      machine25 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            dir: "ltr",
+            addOnPaste: false,
+            editable: true,
+            validate: () => true,
+            allowDuplicates: false,
+            delimiter: ",",
+            defaultValue: [],
+            defaultInputValue: "",
+            max: Infinity,
+            sanitizeValue: (value) => value.trim()
+          }, props), {
+            translations: __spreadValues({
+              clearTriggerLabel: "Clear all tags",
+              deleteTagTriggerLabel: (value) => `Delete tag ${value}`,
+              tagAdded: (value) => `Added tag ${value}`,
+              tagsPasted: (values) => `Pasted ${values.length} tags`,
+              tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,
+              tagUpdated: (value) => `Tag update to ${value}`,
+              tagDeleted: (value) => `Tag ${value} deleted`,
+              tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`
+            }, props.translations)
+          });
+        },
+        initialState({ prop }) {
+          return prop("autoFocus") ? "focused:input" : "idle";
+        },
+        refs() {
+          return {
+            liveRegion: null,
+            log: { current: null, prev: null }
+          };
+        },
+        context({ bindable: bindable2, prop }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              isEqual,
+              hash(value) {
+                return value.join(", ");
+              },
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onValueChange")) == null ? void 0 : _a4({ value });
+              }
+            })),
+            inputValue: bindable2(() => ({
+              sync: true,
+              defaultValue: prop("defaultInputValue"),
+              value: prop("inputValue"),
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onInputValueChange")) == null ? void 0 : _a4({ inputValue: value });
+              }
+            })),
+            fieldsetDisabled: bindable2(() => ({ defaultValue: false })),
+            editedTagValue: bindable2(() => ({ defaultValue: "" })),
+            editedTagId: bindable2(() => ({ defaultValue: null })),
+            editedTagIndex: bindable2(() => ({
+              defaultValue: null,
+              sync: true
+            })),
+            highlightedTagId: bindable2(() => ({
+              defaultValue: null,
+              sync: true,
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onHighlightChange")) == null ? void 0 : _a4({ highlightedValue: value });
+              }
+            }))
+          };
+        },
+        computed: {
+          count: ({ context }) => context.get("value").length,
+          valueAsString: ({ context }) => context.hash("value"),
+          sanitizedInputValue: ({ context, prop }) => prop("sanitizeValue")(context.get("inputValue")),
+          isDisabled: ({ prop }) => !!prop("disabled"),
+          isInteractive: ({ prop }) => !(prop("readOnly") || !!prop("disabled")),
+          isAtMax: ({ context, prop }) => context.get("value").length === prop("max"),
+          isOverflowing: ({ context, prop }) => context.get("value").length > prop("max")
+        },
+        watch({ track, context, action, computed, refs }) {
+          track([() => context.get("editedTagValue")], () => {
+            action(["syncEditedTagInputValue"]);
+          });
+          track([() => context.get("inputValue")], () => {
+            action(["syncInputValue"]);
+          });
+          track([() => context.get("highlightedTagId")], () => {
+            action(["logHighlightedTag"]);
+          });
+          track([() => computed("isOverflowing")], () => {
+            action(["invokeOnInvalid"]);
+          });
+          track([() => JSON.stringify(refs.get("log"))], () => {
+            action(["announceLog"]);
+          });
+        },
+        effects: ["trackLiveRegion", "trackFormControlState"],
+        exit: ["clearLog"],
+        on: {
+          DOUBLE_CLICK_TAG: {
+            // internal: true,
+            guard: "isTagEditable",
+            target: "editing:tag",
+            actions: ["setEditedId"]
+          },
+          POINTER_DOWN_TAG: {
+            // internal: true,
+            target: "navigating:tag",
+            actions: ["highlightTag", "focusInput"]
+          },
+          CLICK_DELETE_TAG: {
+            target: "focused:input",
+            actions: ["deleteTag"]
+          },
+          SET_INPUT_VALUE: {
+            actions: ["setInputValue"]
+          },
+          SET_VALUE: {
+            actions: ["setValue"]
+          },
+          CLEAR_TAG: {
+            actions: ["deleteTag"]
+          },
+          SET_VALUE_AT_INDEX: {
+            actions: ["setValueAtIndex"]
+          },
+          CLEAR_VALUE: {
+            actions: ["clearTags", "clearInputValue", "focusInput"]
+          },
+          ADD_TAG: {
+            actions: ["addTag"]
+          },
+          INSERT_TAG: {
+            // (!isAtMax || allowOverflow) && !inputValueIsEmpty
+            guard: and9(or4(not10("isAtMax"), "allowOverflow"), not10("isInputValueEmpty")),
+            actions: ["addTag", "clearInputValue"]
+          },
+          EXTERNAL_BLUR: [
+            { guard: "addOnBlur", actions: ["raiseInsertTagEvent"] },
+            { guard: "clearOnBlur", actions: ["clearInputValue"] }
+          ]
+        },
+        states: {
+          idle: {
+            on: {
+              FOCUS: {
+                target: "focused:input"
+              },
+              POINTER_DOWN: {
+                guard: not10("hasHighlightedTag"),
+                target: "focused:input"
+              }
+            }
+          },
+          "focused:input": {
+            tags: ["focused"],
+            entry: ["focusInput", "clearHighlightedId"],
+            effects: ["trackInteractOutside"],
+            on: {
+              TYPE: {
+                actions: ["setInputValue"]
+              },
+              BLUR: [
+                {
+                  guard: "addOnBlur",
+                  target: "idle",
+                  actions: ["raiseInsertTagEvent"]
+                },
+                {
+                  guard: "clearOnBlur",
+                  target: "idle",
+                  actions: ["clearInputValue"]
+                },
+                { target: "idle" }
+              ],
+              ENTER: {
+                actions: ["raiseInsertTagEvent"]
+              },
+              DELIMITER_KEY: {
+                actions: ["raiseInsertTagEvent"]
+              },
+              ARROW_LEFT: {
+                guard: and9("hasTags", "isCaretAtStart"),
+                target: "navigating:tag",
+                actions: ["highlightLastTag"]
+              },
+              BACKSPACE: {
+                target: "navigating:tag",
+                guard: and9("hasTags", "isCaretAtStart"),
+                actions: ["highlightLastTag"]
+              },
+              DELETE: {
+                guard: "hasHighlightedTag",
+                actions: ["deleteHighlightedTag", "highlightTagAtIndex"]
+              },
+              PASTE: [
+                {
+                  guard: "addOnPaste",
+                  actions: ["setInputValue", "addTagFromPaste"]
+                },
+                {
+                  actions: ["setInputValue"]
+                }
+              ]
+            }
+          },
+          "navigating:tag": {
+            tags: ["focused"],
+            effects: ["trackInteractOutside"],
+            on: {
+              ARROW_RIGHT: [
+                {
+                  guard: and9("hasTags", "isCaretAtStart", not10("isLastTagHighlighted")),
+                  actions: ["highlightNextTag"]
+                },
+                { target: "focused:input" }
+              ],
+              ARROW_LEFT: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  actions: ["highlightPrevTag"]
+                }
+              ],
+              BLUR: {
+                target: "idle",
+                actions: ["clearHighlightedId"]
+              },
+              ENTER: {
+                guard: and9("isTagEditable", "hasHighlightedTag"),
+                target: "editing:tag",
+                actions: ["setEditedId", "focusEditedTagInput"]
+              },
+              ARROW_DOWN: {
+                target: "focused:input"
+              },
+              ESCAPE: {
+                target: "focused:input"
+              },
+              TYPE: {
+                target: "focused:input",
+                actions: ["setInputValue"]
+              },
+              BACKSPACE: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  guard: "isFirstTagHighlighted",
+                  actions: ["deleteHighlightedTag", "highlightFirstTag"]
+                },
+                {
+                  guard: "hasHighlightedTag",
+                  actions: ["deleteHighlightedTag", "highlightPrevTag"]
+                },
+                {
+                  actions: ["highlightLastTag"]
+                }
+              ],
+              DELETE: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  target: "focused:input",
+                  actions: ["deleteHighlightedTag", "highlightTagAtIndex"]
+                }
+              ],
+              PASTE: [
+                {
+                  guard: "addOnPaste",
+                  target: "focused:input",
+                  actions: ["setInputValue", "addTagFromPaste"]
+                },
+                {
+                  target: "focused:input",
+                  actions: ["setInputValue"]
+                }
+              ]
+            }
+          },
+          "editing:tag": {
+            tags: ["editing", "focused"],
+            entry: ["focusEditedTagInput"],
+            effects: ["autoResize"],
+            on: {
+              TAG_INPUT_TYPE: {
+                actions: ["setEditedTagValue"]
+              },
+              TAG_INPUT_ESCAPE: {
+                target: "navigating:tag",
+                actions: ["clearEditedTagValue", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+              },
+              TAG_INPUT_BLUR: [
+                {
+                  guard: "isInputRelatedTarget",
+                  target: "navigating:tag",
+                  actions: ["clearEditedTagValue", "clearHighlightedId", "clearEditedId"]
+                },
+                {
+                  target: "idle",
+                  actions: ["clearEditedTagValue", "clearHighlightedId", "clearEditedId", "raiseExternalBlurEvent"]
+                }
+              ],
+              TAG_INPUT_ENTER: [
+                {
+                  guard: "isEditedTagEmpty",
+                  target: "navigating:tag",
+                  actions: ["deleteHighlightedTag", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+                },
+                {
+                  target: "navigating:tag",
+                  actions: ["submitEditedTagValue", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+                }
+              ]
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isInputRelatedTarget: ({ scope, event }) => event.relatedTarget === getInputEl6(scope),
+            isAtMax: ({ computed }) => computed("isAtMax"),
+            hasHighlightedTag: ({ context }) => context.get("highlightedTagId") != null,
+            isFirstTagHighlighted: ({ context, scope }) => {
+              const value = context.get("value");
+              const firstItemId = getItemId9(scope, { value: value[0], index: 0 });
+              return firstItemId === context.get("highlightedTagId");
+            },
+            isEditedTagEmpty: ({ context, prop }) => prop("sanitizeValue")(context.get("editedTagValue")) === "",
+            isLastTagHighlighted: ({ context, scope }) => {
+              const value = context.get("value");
+              const lastIndex = value.length - 1;
+              const lastItemId = getItemId9(scope, { value: value[lastIndex], index: lastIndex });
+              return lastItemId === context.get("highlightedTagId");
+            },
+            isInputValueEmpty: ({ context, prop }) => prop("sanitizeValue")(context.get("inputValue")).length === 0,
+            hasTags: ({ context }) => context.get("value").length > 0,
+            allowOverflow: ({ prop }) => !!prop("allowOverflow"),
+            autoFocus: ({ prop }) => !!prop("autoFocus"),
+            addOnBlur: ({ prop }) => prop("blurBehavior") === "add",
+            clearOnBlur: ({ prop }) => prop("blurBehavior") === "clear",
+            addOnPaste: ({ prop }) => !!prop("addOnPaste"),
+            isTagEditable: ({ prop }) => !!prop("editable"),
+            isCaretAtStart: ({ scope }) => isCaretAtStart(getInputEl6(scope))
+          },
+          effects: {
+            trackInteractOutside({ scope, prop, send }) {
+              return trackInteractOutside(getInputEl6(scope), {
+                exclude(target) {
+                  const itemEls = getItemEls2(scope);
+                  return itemEls.some((el) => contains(el, target));
+                },
+                onFocusOutside: prop("onFocusOutside"),
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onInteractOutside(event) {
+                  var _a4;
+                  (_a4 = prop("onInteractOutside")) == null ? void 0 : _a4(event);
+                  if (event.defaultPrevented) return;
+                  send({ type: "BLUR", src: "interact-outside" });
+                }
+              });
+            },
+            trackFormControlState({ context, send, scope }) {
+              return trackFormControl(getHiddenInputEl7(scope), {
+                onFieldsetDisabledChange(disabled) {
+                  context.set("fieldsetDisabled", disabled);
+                },
+                onFormReset() {
+                  const value = context.initial("value");
+                  send({ type: "SET_VALUE", value, src: "form-reset" });
+                }
+              });
+            },
+            autoResize({ context, prop, scope }) {
+              let fn_cleanup;
+              queueMicrotask(() => {
+                const editedTagValue = context.get("editedTagValue");
+                const editedTagIndex = context.get("editedTagIndex");
+                if (!editedTagValue || editedTagIndex == null || !prop("editable")) return;
+                const inputEl = getTagInputEl(scope, {
+                  value: editedTagValue,
+                  index: editedTagIndex
+                });
+                fn_cleanup = autoResizeInput(inputEl);
+              });
+              return () => {
+                fn_cleanup == null ? void 0 : fn_cleanup();
+              };
+            },
+            trackLiveRegion({ scope, refs }) {
+              const liveRegion = createLiveRegion({
+                level: "assertive",
+                document: scope.getDoc()
+              });
+              refs.set("liveRegion", liveRegion);
+              return () => liveRegion.destroy();
+            }
+          },
+          actions: {
+            raiseInsertTagEvent({ send }) {
+              send({ type: "INSERT_TAG" });
+            },
+            raiseExternalBlurEvent({ send, event }) {
+              send({ type: "EXTERNAL_BLUR", id: event.id });
+            },
+            dispatchChangeEvent({ scope, computed }) {
+              dispatchInputEvent(scope, computed("valueAsString"));
+            },
+            highlightNextTag({ context, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const next2 = getNextEl2(scope, highlightedTagId);
+              context.set("highlightedTagId", (_a4 = next2 == null ? void 0 : next2.id) != null ? _a4 : null);
+            },
+            highlightFirstTag({ context, scope }) {
+              raf(() => {
+                var _a4;
+                const first2 = getFirstEl2(scope);
+                context.set("highlightedTagId", (_a4 = first2 == null ? void 0 : first2.id) != null ? _a4 : null);
+              });
+            },
+            highlightLastTag({ context, scope }) {
+              var _a4;
+              const last2 = getLastEl2(scope);
+              context.set("highlightedTagId", (_a4 = last2 == null ? void 0 : last2.id) != null ? _a4 : null);
+            },
+            highlightPrevTag({ context, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const prev2 = getPrevEl2(scope, highlightedTagId);
+              context.set("highlightedTagId", (_a4 = prev2 == null ? void 0 : prev2.id) != null ? _a4 : null);
+            },
+            highlightTag({ context, event }) {
+              context.set("highlightedTagId", event.id);
+            },
+            highlightTagAtIndex({ context, scope }) {
+              raf(() => {
+                const idx = context.get("editedTagIndex");
+                if (idx == null) return;
+                const tagEl = getTagElAtIndex(scope, idx);
+                if (tagEl == null) return;
+                context.set("highlightedTagId", tagEl.id);
+                context.set("editedTagIndex", null);
+              });
+            },
+            deleteTag({ context, scope, event, refs }) {
+              const index = getIndexOfId(scope, event.id);
+              const value = context.get("value")[index];
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "delete", value }
+              });
+              context.set("value", (prev2) => removeAt(prev2, index));
+            },
+            deleteHighlightedTag({ context, scope, refs }) {
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const index = getIndexOfId(scope, highlightedTagId);
+              context.set("editedTagIndex", index);
+              const value = context.get("value");
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "delete", value: value[index] }
+              });
+              context.set("value", (prev2) => removeAt(prev2, index));
+            },
+            setEditedId({ context, event, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              const editedTagId = (_a4 = event.id) != null ? _a4 : highlightedTagId;
+              context.set("editedTagId", editedTagId);
+              const index = getIndexOfId(scope, editedTagId);
+              const valueAtIndex = context.get("value")[index];
+              context.set("editedTagIndex", index);
+              context.set("editedTagValue", valueAtIndex);
+            },
+            clearEditedId({ context }) {
+              context.set("editedTagId", null);
+            },
+            clearEditedTagValue({ context }) {
+              context.set("editedTagValue", "");
+            },
+            setEditedTagValue({ context, event }) {
+              context.set("editedTagValue", event.value);
+            },
+            submitEditedTagValue({ context, scope, refs, prop }) {
+              const editedTagId = context.get("editedTagId");
+              if (!editedTagId) return;
+              const index = getIndexOfId(scope, editedTagId);
+              const editedTagValue = context.get("editedTagValue");
+              const value = context.get("value");
+              const hasDuplicate = value.some((item, idx) => idx !== index && item === editedTagValue);
+              if (!prop("allowDuplicates") && hasDuplicate) return;
+              if (value[index] === editedTagValue) return;
+              context.set("value", (prev2) => {
+                const nextValue = prev2.slice();
+                nextValue[index] = editedTagValue;
+                return nextValue;
+              });
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "update", value: editedTagValue }
+              });
+            },
+            setValueAtIndex({ context, event, refs, prop }) {
+              if (event.value) {
+                const value = context.get("value");
+                const hasDuplicate = value.some((item, idx) => idx !== event.index && item === event.value);
+                if (!prop("allowDuplicates") && hasDuplicate) return;
+                if (value[event.index] === event.value) return;
+                context.set("value", (prev2) => {
+                  const nextValue = prev2.slice();
+                  nextValue[event.index] = event.value;
+                  return nextValue;
+                });
+                const prevLog = refs.get("log");
+                refs.set("log", {
+                  prev: prevLog.current,
+                  current: { type: "update", value: event.value }
+                });
+              } else {
+                warn("You need to provide a value for the tag");
+              }
+            },
+            focusEditedTagInput({ context, scope }) {
+              raf(() => {
+                const editedTagId = context.get("editedTagId");
+                if (!editedTagId) return;
+                const editTagInputEl = getEditInputEl(scope, editedTagId);
+                editTagInputEl == null ? void 0 : editTagInputEl.select();
+              });
+            },
+            setInputValue({ context, event }) {
+              context.set("inputValue", event.value);
+            },
+            clearHighlightedId({ context }) {
+              context.set("highlightedTagId", null);
+            },
+            focusInput({ scope }) {
+              raf(() => {
+                var _a4;
+                (_a4 = getInputEl6(scope)) == null ? void 0 : _a4.focus();
+              });
+            },
+            clearInputValue({ context }) {
+              raf(() => {
+                context.set("inputValue", "");
+              });
+            },
+            syncInputValue({ context, scope }) {
+              const inputEl = getInputEl6(scope);
+              if (!inputEl) return;
+              setElementValue(inputEl, context.get("inputValue"));
+            },
+            syncEditedTagInputValue({ context, event, scope }) {
+              const id = context.get("editedTagId") || context.get("highlightedTagId") || event.id;
+              if (id == null) return;
+              const editTagInputEl = getEditInputEl(scope, id);
+              if (!editTagInputEl) return;
+              setElementValue(editTagInputEl, context.get("editedTagValue"));
+            },
+            addTag({ context, event, computed, prop, refs }) {
+              var _a4, _b, _c;
+              const inputValue = (_a4 = event.value) != null ? _a4 : computed("sanitizedInputValue");
+              const value = context.get("value");
+              const guard = (_b = prop("validate")) == null ? void 0 : _b({ inputValue, value: Array.from(value) });
+              if (guard) {
+                const nextValue = prop("allowDuplicates") ? value.concat(inputValue) : uniq(value.concat(inputValue));
+                context.set("value", nextValue);
+                const prevLog = refs.get("log");
+                refs.set("log", {
+                  prev: prevLog.current,
+                  current: { type: "add", value: inputValue }
+                });
+              } else {
+                (_c = prop("onValueInvalid")) == null ? void 0 : _c({ reason: "invalidTag" });
+              }
+            },
+            addTagFromPaste({ context, computed, prop, refs }) {
+              raf(() => {
+                var _a4, _b;
+                const inputValue = computed("sanitizedInputValue");
+                const value = context.get("value");
+                const sanitize2 = prop("sanitizeValue");
+                const guard = (_a4 = prop("validate")) == null ? void 0 : _a4({
+                  inputValue,
+                  value: Array.from(value)
+                });
+                if (guard) {
+                  const delimiter = prop("delimiter");
+                  const sanitizedValues = delimiter ? inputValue.split(delimiter).map(sanitize2) : [inputValue];
+                  const nextValue = prop("allowDuplicates") ? value.concat(...sanitizedValues) : uniq(value.concat(...sanitizedValues));
+                  context.set("value", nextValue);
+                  const prevLog = refs.get("log");
+                  refs.set("log", {
+                    prev: prevLog.current,
+                    current: { type: "paste", values: sanitizedValues }
+                  });
+                } else {
+                  (_b = prop("onValueInvalid")) == null ? void 0 : _b({ reason: "invalidTag" });
+                }
+                context.set("inputValue", "");
+              });
+            },
+            clearTags({ context, refs }) {
+              context.set("value", []);
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "clear" }
+              });
+            },
+            setValue({ context, event }) {
+              context.set("value", event.value);
+            },
+            invokeOnInvalid({ prop, computed }) {
+              var _a4;
+              if (computed("isOverflowing")) {
+                (_a4 = prop("onValueInvalid")) == null ? void 0 : _a4({ reason: "rangeOverflow" });
+              }
+            },
+            clearLog({ refs }) {
+              const log = refs.get("log");
+              log.prev = log.current = null;
+            },
+            logHighlightedTag({ refs, context, scope }) {
+              const highlightedTagId = context.get("highlightedTagId");
+              const log = refs.get("log");
+              if (highlightedTagId == null || !log.current) return;
+              const index = getIndexOfId(scope, highlightedTagId);
+              const value = context.get("value")[index];
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "select", value }
+              });
+            },
+            // queue logs with screen reader and get it announced
+            announceLog({ refs, prop }) {
+              const liveRegion = refs.get("liveRegion");
+              const translations = prop("translations");
+              const log = refs.get("log");
+              if (!log.current || liveRegion == null) return;
+              const region = liveRegion;
+              const { current, prev: prev2 } = log;
+              let msg;
+              switch (current.type) {
+                case "add":
+                  msg = translations.tagAdded(current.value);
+                  break;
+                case "delete":
+                  msg = translations.tagDeleted(current.value);
+                  break;
+                case "update":
+                  msg = translations.tagUpdated(current.value);
+                  break;
+                case "paste":
+                  msg = translations.tagsPasted(current.values);
+                  break;
+                case "select":
+                  msg = translations.tagSelected(current.value);
+                  if ((prev2 == null ? void 0 : prev2.type) === "delete") {
+                    msg = `${translations.tagDeleted(prev2.value)}. ${msg}`;
+                  } else if ((prev2 == null ? void 0 : prev2.type) === "update") {
+                    msg = `${translations.tagUpdated(prev2.value)}. ${msg}`;
+                  }
+                  break;
+                default:
+                  break;
+              }
+              if (msg) region.announce(msg);
+            }
+          }
+        }
+      });
+      TagsInput = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine25, props);
+        }
+        initApi() {
+          return this.zagConnect(connect25);
+        }
+        spreadItemParts(itemEl, index, value) {
+          this.spreadProps(itemEl, this.api.getItemProps({ index, value }));
+          const previewEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-preview"]'
+          );
+          if (previewEl) this.spreadProps(previewEl, this.api.getItemPreviewProps({ index, value }));
+          const textEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-text"]'
+          );
+          if (textEl) this.spreadProps(textEl, this.api.getItemTextProps({ index, value }));
+          const delEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-delete-trigger"]'
+          );
+          if (delEl) {
+            while (delEl.childElementCount > 1) {
+              delEl.removeChild(delEl.lastElementChild);
+            }
+            this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+          }
+          const itemInputEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-input"]'
+          );
+          if (itemInputEl) this.spreadProps(itemInputEl, this.api.getItemInputProps({ index, value }));
+          if (textEl && !itemInputIsEditing(itemInputEl)) {
+            textEl.textContent = value;
+          }
+        }
+        renderItems() {
+          var _a4, _b;
+          const controlEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="control"]'
+          );
+          if (!controlEl) return;
+          const mainInputEl = controlEl.querySelector(
+            ':scope > [data-scope="tags-input"][data-part="input"]'
+          );
+          if (!mainInputEl) return;
+          const templatesRoot = templatesContentRoot(this.el, "tags-input");
+          if (!templatesRoot) return;
+          const template = templatesRoot.querySelector(
+            '[data-scope="tags-input"][data-part="item"][data-template]'
+          );
+          if (!template) return;
+          const values = (_a4 = this.api.value) != null ? _a4 : [];
+          let items = directItemElements(controlEl);
+          while (items.length > values.length) {
+            items[items.length - 1].remove();
+            items = directItemElements(controlEl);
+          }
+          for (let index = 0; index < values.length; index++) {
+            const value = values[index];
+            items = directItemElements(controlEl);
+            let itemEl = items[index];
+            const isItem = (itemEl == null ? void 0 : itemEl.getAttribute("data-scope")) === "tags-input" && (itemEl == null ? void 0 : itemEl.getAttribute("data-part")) === "item";
+            if (!itemEl || !isItem) {
+              const fresh = template.cloneNode(true);
+              fresh.removeAttribute("data-template");
+              const ref = (_b = items[index]) != null ? _b : mainInputEl;
+              controlEl.insertBefore(fresh, ref);
+              items = directItemElements(controlEl);
+              itemEl = items[index];
+            }
+            const itemInputEl = itemEl.querySelector(
+              '[data-scope="tags-input"][data-part="item-input"]'
+            );
+            const editing = itemInputIsEditing(itemInputEl);
+            if (!editing && itemEl.dataset.value !== value) {
+              itemEl.dataset.value = value;
+            }
+            this.spreadItemParts(itemEl, index, value);
+          }
+        }
+        render() {
+          var _a4;
+          const rootEl = this.el.querySelector('[data-scope="tags-input"][data-part="root"]');
+          if (!rootEl) return;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector('[data-scope="tags-input"][data-part="label"]');
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          this.renderItems();
+          const inputEl = this.el.querySelector('[data-scope="tags-input"][data-part="input"]');
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const valueInput = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            const rawDelim = this.el.dataset.delimiter;
+            const delim = rawDelim !== void 0 && rawDelim !== "" ? rawDelim : ",";
+            const v2 = ((_a4 = this.api.value) != null ? _a4 : []).join(delim);
+            if (valueInput.value !== v2) {
+              valueInput.value = v2;
+              valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+              valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          }
+          const hiddenEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="hidden-input"]'
+          );
+          if (hiddenEl) {
+            this.spreadProps(hiddenEl, this.api.getHiddenInputProps());
+            hiddenEl.removeAttribute("name");
+            hiddenEl.removeAttribute("form");
+          }
+        }
+      };
+      TagsInputHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const controlled = getBoolean(el, "controlled");
+          const blur = blurBehavior(el);
+          const max3 = maxProp(el);
+          const delimiter = getString(el, "delimiter");
+          const placeholder = readPlaceholderFromMainInput(el);
+          const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") }), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            dir: getDir(el),
+            addOnPaste: getBoolean(el, "addOnPaste"),
+            allowDuplicates: getBoolean(el, "allowDuplicates"),
+            allowOverflow: getBoolean(el, "allowOverflow")
+          }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
+            autoFocus: getBoolean(el, "autoFocus")
+          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), {
+            onValueChange: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: details.value },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
+            },
+            onInputValueChange: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, inputValue: details.inputValue },
+                serverEventName: getString(el, "onInputValueChange"),
+                clientEventName: getString(el, "onInputValueChangeClient")
+              });
+            },
+            onHighlightChange: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, highlightedValue: details.highlightedValue },
+                serverEventName: getString(el, "onHighlightChange"),
+                clientEventName: getString(el, "onHighlightChangeClient")
+              });
+            },
+            onValueInvalid: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, reason: details.reason },
+                serverEventName: getString(el, "onValueInvalid"),
+                clientEventName: getString(el, "onValueInvalidClient")
+              });
+            }
+          }));
+          zag.init();
+          this.tagsInput = zag;
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:tags-input:set-value", (event) => {
+            var _a4;
+            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) zag.api.setValue(v2);
+          });
+          domRegistry.add("corex:tags-input:clear-value", () => {
+            zag.api.clearValue();
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("tags_input_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const v2 = readPayloadStringArray(payload);
+            if (v2) zag.api.setValue(v2);
+          });
+          registry.add("tags_input_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+        },
+        updated() {
+          var _a4, _b;
+          const el = this.el;
+          const controlled = getBoolean(el, "controlled");
+          const blur = blurBehavior(el);
+          const max3 = maxProp(el);
+          const delimiter = getString(el, "delimiter");
+          const placeholder = readPlaceholderFromMainInput(el);
+          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { value: parseJsonTags(el, "tags") } : {}), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            dir: getDir(el),
+            addOnPaste: getBoolean(el, "addOnPaste"),
+            allowDuplicates: getBoolean(el, "allowDuplicates"),
+            allowOverflow: getBoolean(el, "allowOverflow")
+          }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
+            autoFocus: getBoolean(el, "autoFocus")
+          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
+          (_b = this.tagsInput) == null ? void 0 : _b.render();
+        },
+        destroyed() {
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.tagsInput) == null ? void 0 : _c.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/tabs.mjs
   var tabs_exports = {};
   __export(tabs_exports, {
     Tabs: () => TabsHook
   });
-  function connect25(service, normalize) {
+  function connect26(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
@@ -34727,15 +36171,15 @@ ${err}`);
         (_a4 = getTriggerEl7(scope, value)) == null ? void 0 : _a4.focus();
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
-          id: getRootId20(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
+          id: getRootId21(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
           dir: prop("dir")
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -34788,7 +36232,7 @@ ${err}`);
       getTriggerProps(props) {
         const { value, disabled } = props;
         const triggerState = getTriggerState(props);
-        return normalize.button(__spreadProps(__spreadValues({}, parts25.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts26.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -34828,7 +36272,7 @@ ${err}`);
       getContentProps(props) {
         const { value } = props;
         const selected = context.get("value") === value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.content.attrs), {
           dir: prop("dir"),
           id: getContentId10(scope, value),
           tabIndex: composite ? 0 : -1,
@@ -34845,7 +36289,7 @@ ${err}`);
         const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
-        }, parts25.indicator.attrs), {
+        }, parts26.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: isRectEmpty2(rect),
@@ -34879,18 +36323,18 @@ ${err}`);
       trigger: (value) => `tabs-${rootId}-trigger-${value}`
     };
   }
-  var anatomy25, parts25, getRootId20, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine25, Tabs, TabsHook;
+  var anatomy26, parts26, getRootId21, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine26, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_KOWHCKG4();
+      init_chunk_ZVNYTDIO();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
-      anatomy25 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts25 = anatomy25.build();
-      getRootId20 = (ctx) => {
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy26 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts26 = anatomy26.build();
+      getRootId21 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tabs:${ctx.id}`;
       };
@@ -34938,7 +36382,7 @@ ${err}`);
       };
       isRectEmpty2 = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ createMachine: createMachine6 } = setup());
-      machine25 = createMachine6({
+      machine26 = createMachine6({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -35239,10 +36683,10 @@ ${err}`);
         initMachine(props) {
           var _a4;
           const id = (_a4 = props.id) != null ? _a4 : this.el.id;
-          return new VanillaMachine(machine25, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          return new VanillaMachine(machine26, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
         }
         initApi() {
-          return this.zagConnect(connect25);
+          return this.zagConnect(connect26);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -35359,7 +36803,7 @@ ${err}`);
   __export(timer_exports, {
     Timer: () => TimerHook
   });
-  function connect26(service, normalize) {
+  function connect27(service, normalize) {
     const { state: state2, send, computed, scope, prop } = service;
     const translations = prop("translations");
     const running = state2.matches("running");
@@ -35390,8 +36834,8 @@ ${err}`);
       },
       getRootProps() {
         return normalize.element(__spreadValues({
-          id: getRootId21(scope)
-        }, parts26.root.attrs));
+          id: getRootId22(scope)
+        }, parts27.root.attrs));
       },
       getAreaProps() {
         var _a4;
@@ -35400,14 +36844,14 @@ ${err}`);
           id: getAreaId3(scope),
           "aria-label": (_a4 = translations.areaLabel) == null ? void 0 : _a4.call(translations, time, formattedTime),
           "aria-atomic": true
-        }, parts26.area.attrs));
+        }, parts27.area.attrs));
       },
       getControlProps() {
-        return normalize.element(__spreadValues({}, parts26.control.attrs));
+        return normalize.element(__spreadValues({}, parts27.control.attrs));
       },
       getItemProps(props) {
         const value = time[props.type];
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.item.attrs), {
           "data-type": props.type,
           style: {
             "--value": value
@@ -35415,19 +36859,19 @@ ${err}`);
         }));
       },
       getItemLabelProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.itemLabel.attrs), {
           "data-type": props.type
         }));
       },
       getItemValueProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemValue.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.itemValue.attrs), {
           "data-type": props.type
         }));
       },
       getSeparatorProps() {
         return normalize.element(__spreadValues({
           "aria-hidden": true
-        }, parts26.separator.attrs));
+        }, parts27.separator.attrs));
       },
       getActionTriggerProps(props) {
         if (!validActions.has(props.action)) {
@@ -35435,7 +36879,7 @@ ${err}`);
             `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
-        return normalize.button(__spreadProps(__spreadValues({}, parts26.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts27.actionTrigger.attrs), {
           hidden: match(props.action, {
             start: () => running || paused,
             pause: () => !running,
@@ -35600,15 +37044,15 @@ ${err}`);
     }
     return void 0;
   }
-  var anatomy26, parts26, getRootId21, getAreaId3, validActions, machine26, Timer2, TimerHook;
+  var anatomy27, parts27, getRootId22, getAreaId3, validActions, machine27, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_KYOKM7OP();
-      init_chunk_OUOXE4EX();
+      init_chunk_LZDVQIIR();
+      init_chunk_AQVFJVVA();
       init_chunk_PE34YET2();
-      init_chunk_XP2X5SPI();
-      anatomy26 = createAnatomy("timer").parts(
+      init_chunk_C6EFS75P();
+      anatomy27 = createAnatomy("timer").parts(
         "root",
         "area",
         "control",
@@ -35618,8 +37062,8 @@ ${err}`);
         "actionTrigger",
         "separator"
       );
-      parts26 = anatomy26.build();
-      getRootId21 = (ctx) => {
+      parts27 = anatomy27.build();
+      getRootId22 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `timer:${ctx.id}:root`;
       };
@@ -35628,7 +37072,7 @@ ${err}`);
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.area) != null ? _b : `timer:${ctx.id}:area`;
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
-      machine26 = createMachine({
+      machine27 = createMachine({
         props({ props }) {
           validateProps(props);
           return __spreadProps(__spreadValues({
@@ -35802,10 +37246,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine26, props);
+          return new VanillaMachine(machine27, props);
         }
         initApi() {
-          return this.zagConnect(connect26);
+          return this.zagConnect(connect27);
         }
         render() {
           var _a4;
@@ -36116,7 +37560,7 @@ ${err}`);
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.group.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           role: "region",
@@ -36157,7 +37601,7 @@ ${err}`);
       }
     };
   }
-  function connect27(service, normalize) {
+  function connect28(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
     const translations = prop("translations");
     const visible = state2.hasTag("visible");
@@ -36189,9 +37633,9 @@ ${err}`);
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
           dir: prop("dir"),
-          id: getRootId22(scope),
+          id: getRootId23(scope),
           "data-state": visible ? "open" : "closed",
           "data-type": type,
           "data-placement": placement,
@@ -36233,17 +37677,17 @@ ${err}`);
         });
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.title.attrs), {
           id: getTitleId3(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.description.attrs), {
           id: getDescriptionId2(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts27.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts28.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a4;
@@ -36256,7 +37700,7 @@ ${err}`);
       getCloseTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
           id: getCloseTriggerId2(scope)
-        }, parts27.closeTrigger.attrs), {
+        }, parts28.closeTrigger.attrs), {
           type: "button",
           "aria-label": translations == null ? void 0 : translations.closeTriggerLabel,
           onClick(event) {
@@ -36495,7 +37939,7 @@ ${err}`);
       collapse
     };
   }
-  function extraActionClassTokens(action) {
+  function actionClassTokens(action) {
     if (action == null || typeof action !== "object") return [];
     const cn = action.className;
     if (typeof cn !== "string") return [];
@@ -36573,15 +38017,15 @@ ${err}`);
       redirectCtx: { liveSocket: self2.liveSocket }
     };
   }
-  var anatomy27, parts27, getRegionId, getRegionEl, getRootId22, getRootEl8, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine27, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
+  var anatomy28, parts28, getRegionId, getRegionEl, getRootId23, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine28, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_2FOKGN7H();
-      init_chunk_YSIT45Z3();
-      init_chunk_OUOXE4EX();
-      init_chunk_XP2X5SPI();
-      anatomy27 = createAnatomy("toast").parts(
+      init_chunk_Z2Y5B5TR();
+      init_chunk_2MHUIH3F();
+      init_chunk_AQVFJVVA();
+      init_chunk_C6EFS75P();
+      anatomy28 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -36589,11 +38033,11 @@ ${err}`);
         "actionTrigger",
         "closeTrigger"
       );
-      parts27 = anatomy27.build();
+      parts28 = anatomy28.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
-      getRootId22 = (ctx) => `toast:${ctx.id}`;
-      getRootEl8 = (ctx) => ctx.getById(getRootId22(ctx));
+      getRootId23 = (ctx) => `toast:${ctx.id}`;
+      getRootEl9 = (ctx) => ctx.getById(getRootId23(ctx));
       getTitleId3 = (ctx) => `toast:${ctx.id}:title`;
       getDescriptionId2 = (ctx) => `toast:${ctx.id}:description`;
       getCloseTriggerId2 = (ctx) => `toast${ctx.id}:close`;
@@ -36607,7 +38051,7 @@ ${err}`);
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
       ({ guards: guards4, createMachine: createMachine22 } = setup());
-      ({ and: and9 } = guards4);
+      ({ and: and10 } = guards4);
       groupMachine = createMachine22({
         props({ props }) {
           return __spreadProps(__spreadValues({
@@ -36662,7 +38106,7 @@ ${err}`);
           },
           "REGION.BLUR": [
             {
-              guard: and9("isOverlapping", "isPointerOut"),
+              guard: and10("isOverlapping", "isPointerOut"),
               target: "overlap",
               actions: ["collapseToasts", "resumeToasts", "restoreFocusIfPointerOut"]
             },
@@ -36860,8 +38304,8 @@ ${err}`);
           }
         }
       });
-      ({ not: not10 } = createGuards());
-      machine27 = createMachine({
+      ({ not: not11 } = createGuards());
+      machine28 = createMachine({
         props({ props }) {
           ensureProps(props, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
@@ -36967,7 +38411,7 @@ ${err}`);
             tags: ["visible", "paused"],
             on: {
               RESUME: {
-                guard: not10("isLoadingType"),
+                guard: not11("isLoadingType"),
                 target: "visible",
                 actions: ["setCloseTimer"]
               },
@@ -37024,7 +38468,7 @@ ${err}`);
             trackHeight({ scope, prop }) {
               let cleanup;
               raf(() => {
-                const rootEl = getRootEl8(scope);
+                const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
                 const syncHeight = () => {
                   const originalHeight = rootEl.style.height;
@@ -37058,7 +38502,7 @@ ${err}`);
             },
             measureHeight({ scope, prop, context }) {
               queueMicrotask(() => {
-                const rootEl = getRootEl8(scope);
+                const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
                 const originalHeight = rootEl.style.height;
                 rootEl.style.height = "auto";
@@ -37192,10 +38636,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine27, props);
+          return new VanillaMachine(machine28, props);
         }
         initApi() {
-          return this.zagConnect(connect27);
+          return this.zagConnect(connect28);
         }
         render() {
           var _a4, _b, _c, _d, _e;
@@ -37247,7 +38691,7 @@ ${err}`);
             if (this.parts.action.innerHTML !== label) {
               this.parts.action.innerHTML = label;
             }
-            const extraClasses = extraActionClassTokens(this.latestProps.action);
+            const extraClasses = actionClassTokens(this.latestProps.action);
             if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
           } else {
             this.parts.action.hidden = true;
@@ -37603,7 +39047,7 @@ ${err}`);
       snapshot: snapshot2
     };
   }
-  function connect28(service, normalize) {
+  function connect29(service, normalize) {
     const { state: state2, context, send, scope, prop, event: _event } = service;
     const id = prop("id");
     const hasAriaLabel = !!prop("aria-label");
@@ -37632,7 +39076,7 @@ ${err}`);
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
         const triggerId = getTriggerId11(scope, value);
-        return normalize.button(__spreadProps(__spreadValues({}, parts28.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts29.trigger.attrs), {
           id: triggerId,
           "data-ownedby": scope.id,
           "data-value": value,
@@ -37701,13 +39145,13 @@ ${err}`);
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId2(scope)
-        }, parts28.arrow.attrs), {
+        }, parts29.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
@@ -37715,7 +39159,7 @@ ${err}`);
       getPositionerProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPositionerId8(scope)
-        }, parts28.positioner.attrs), {
+        }, parts29.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
@@ -37724,7 +39168,7 @@ ${err}`);
         const isCurrentTooltip = store.get("id") === id;
         const isPrevTooltip = store.get("prevId") === id;
         const instant = store.get("instant") && (open && isCurrentTooltip || isPrevTooltip);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.content.attrs), {
           dir: prop("dir"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -37785,17 +39229,17 @@ ${err}`);
     if (interactive && (raw === void 0 || raw === 0)) return 400;
     return raw;
   }
-  var anatomy28, parts28, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and10, not11, machine28, Tooltip, TooltipHook;
+  var anatomy29, parts29, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and11, not12, machine29, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_IW7ATDRS();
-      init_chunk_DCODD6KZ();
-      init_chunk_AJIR2V2O();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
-      anatomy28 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
-      parts28 = anatomy28.build();
+      init_chunk_7VWCZ4HT();
+      init_chunk_Z7DAQYHU();
+      init_chunk_UMEIQPNC();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy29 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
+      parts29 = anatomy29.build();
       getTriggerId11 = (scope, value) => {
         var _a4;
         const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
@@ -37824,8 +39268,8 @@ ${err}`);
         prevId: null,
         instant: false
       });
-      ({ and: and10, not: not11 } = createGuards());
-      machine28 = createMachine({
+      ({ and: and11, not: not12 } = createGuards());
+      machine29 = createMachine({
         initialState: ({ prop }) => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
@@ -37906,12 +39350,12 @@ ${err}`);
               },
               "pointer.move": [
                 {
-                  guard: and10("noVisibleTooltip", not11("hasPointerMoveOpened")),
+                  guard: and11("noVisibleTooltip", not12("hasPointerMoveOpened")),
                   target: "opening",
                   actions: ["setTriggerValue"]
                 },
                 {
-                  guard: not11("hasPointerMoveOpened"),
+                  guard: not12("hasPointerMoveOpened"),
                   target: "open",
                   actions: ["setPointerMoveOpened", "invokeOnOpen", "setTriggerValue"]
                 }
@@ -38236,10 +39680,10 @@ ${err}`);
       Tooltip = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine28, props);
+          return new VanillaMachine(machine29, props);
         }
         initApi() {
-          return this.zagConnect(connect28);
+          return this.zagConnect(connect29);
         }
         syncDom() {
           this.api = this.initApi();
@@ -38350,12 +39794,207 @@ ${err}`);
     }
   });
 
+  // ../priv/static/toggle.mjs
+  var toggle_exports = {};
+  __export(toggle_exports, {
+    Toggle: () => ToggleHook
+  });
+  function connect30(service, normalize) {
+    const { context, prop, send } = service;
+    const pressed = context.get("pressed");
+    return {
+      pressed,
+      disabled: !!prop("disabled"),
+      setPressed(value) {
+        send({ type: "PRESS.SET", value });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          type: "button"
+        }, parts30.root.attrs), {
+          disabled: prop("disabled"),
+          "aria-pressed": pressed,
+          "data-state": pressed ? "on" : "off",
+          "data-pressed": dataAttr(pressed),
+          "data-disabled": dataAttr(prop("disabled")),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (prop("disabled")) return;
+            send({ type: "PRESS.TOGGLE" });
+          }
+        }));
+      },
+      getIndicatorProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.indicator.attrs), {
+          "data-disabled": dataAttr(prop("disabled")),
+          "data-pressed": dataAttr(pressed),
+          "data-state": pressed ? "on" : "off"
+        }));
+      }
+    };
+  }
+  function pressedChangePayload(el, pressed) {
+    return {
+      id: el.id,
+      pressed
+    };
+  }
+  var anatomy30, parts30, machine30, Toggle, ToggleHook;
+  var init_toggle = __esm({
+    "../priv/static/toggle.mjs"() {
+      "use strict";
+      init_chunk_77HPO22C();
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy30 = createAnatomy("toggle", ["root", "indicator"]);
+      parts30 = anatomy30.build();
+      machine30 = createMachine({
+        props({ props }) {
+          return __spreadValues({
+            defaultPressed: false
+          }, props);
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            pressed: bindable2(() => ({
+              value: prop("pressed"),
+              defaultValue: prop("defaultPressed"),
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onPressedChange")) == null ? void 0 : _a4(value);
+              }
+            }))
+          };
+        },
+        initialState() {
+          return "idle";
+        },
+        on: {
+          "PRESS.TOGGLE": {
+            actions: ["togglePressed"]
+          },
+          "PRESS.SET": {
+            actions: ["setPressed"]
+          }
+        },
+        states: {
+          idle: {}
+        },
+        implementations: {
+          actions: {
+            togglePressed({ context }) {
+              context.set("pressed", !context.get("pressed"));
+            },
+            setPressed({ context, event }) {
+              context.set("pressed", event.value);
+            }
+          }
+        }
+      });
+      Toggle = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine30, props);
+        }
+        initApi() {
+          return this.zagConnect(connect30);
+        }
+        render() {
+          const rootEl = this.el.querySelector('[data-scope="toggle"][data-part="root"]');
+          if (!rootEl) return;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const indicatorEl = rootEl.querySelector(
+            ':scope > [data-scope="toggle"][data-part="indicator"]'
+          );
+          if (indicatorEl) {
+            this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+          }
+        }
+      };
+      ToggleHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const controlled = getBoolean(el, "controlled");
+          const pressedFromDataset = getBooleanValue(el, "pressed");
+          const defaultPressedFromDataset = getBooleanValue(el, "defaultPressed");
+          const zagToggle = new Toggle(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true }), {
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            onPressedChange: (pressed) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: pressedChangePayload(el, pressed),
+                serverEventName: getString(el, "onPressedChange"),
+                clientEventName: getString(el, "onPressedChangeClient")
+              });
+            }
+          }));
+          zagToggle.init();
+          this.zagToggle = zagToggle;
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:toggle:set-pressed", (event) => {
+            var _a4;
+            const p2 = (_a4 = event.detail) == null ? void 0 : _a4.pressed;
+            if (typeof p2 === "boolean") zagToggle.api.setPressed(p2);
+          });
+          domRegistry.add("corex:toggle:toggle-pressed", () => {
+            zagToggle.api.setPressed(!zagToggle.api.pressed);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("toggle_set_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const pressed = readPayloadPressed(payload);
+            if (typeof pressed === "boolean") zagToggle.api.setPressed(pressed);
+          });
+          registry.add("toggle_toggle_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zagToggle.api.setPressed(!zagToggle.api.pressed);
+          });
+          registry.add("toggle_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("toggle_pressed_response", {
+              id: el.id,
+              value: zagToggle.api.pressed
+            });
+          });
+        },
+        updated() {
+          var _a4;
+          const controlled = getBoolean(this.el, "controlled");
+          const pressedFromDataset = getBooleanValue(this.el, "pressed");
+          const defaultPressedFromDataset = getBooleanValue(this.el, "defaultPressed");
+          (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true }), {
+            disabled: getBoolean(this.el, "disabled"),
+            dir: getDir(this.el)
+          }));
+        },
+        destroyed() {
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.zagToggle) == null ? void 0 : _c.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/toggle-group.mjs
   var toggle_group_exports = {};
   __export(toggle_group_exports, {
     ToggleGroup: () => ToggleGroupHook
   });
-  function connect29(service, normalize) {
+  function connect31(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
@@ -38363,7 +40002,7 @@ ${err}`);
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
     function getItemState(props) {
-      const id = getItemId9(scope, props.value);
+      const id = getItemId10(scope, props.value);
       return {
         id,
         disabled: Boolean(props.disabled || disabled),
@@ -38377,8 +40016,8 @@ ${err}`);
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
-          id: getRootId23(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts31.root.attrs), {
+          id: getRootId24(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
           tabIndex: context.get("isTabbingBackward") ? -1 : 0,
@@ -38409,10 +40048,10 @@ ${err}`);
       getItemProps(props) {
         const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts29.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts31.item.attrs), {
           id: itemState.id,
           type: "button",
-          "data-ownedby": getRootId23(scope),
+          "data-ownedby": getRootId24(scope),
           "data-focus": dataAttr(itemState.focused),
           disabled: itemState.disabled,
           tabIndex: rovingFocus ? rovingTabIndex : void 0,
@@ -38494,35 +40133,35 @@ ${err}`);
     if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
-  var anatomy29, parts29, getRootId23, getItemId9, getRootEl9, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine29, ToggleGroup, ToggleGroupHook;
+  var anatomy31, parts31, getRootId24, getItemId10, getRootEl10, getElements3, getFirstEl3, getLastEl3, getNextEl3, getPrevEl3, not13, and12, machine31, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
-      anatomy29 = createAnatomy("toggle-group").parts("root", "item");
-      parts29 = anatomy29.build();
-      getRootId23 = (ctx) => {
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy31 = createAnatomy("toggle-group").parts("root", "item");
+      parts31 = anatomy31.build();
+      getRootId24 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `toggle-group:${ctx.id}`;
       };
-      getItemId9 = (ctx, value) => {
+      getItemId10 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `toggle-group:${ctx.id}:${value}`;
       };
-      getRootEl9 = (ctx) => ctx.getById(getRootId23(ctx));
+      getRootEl10 = (ctx) => ctx.getById(getRootId24(ctx));
       getElements3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId23(ctx));
+        const ownerId = CSS.escape(getRootId24(ctx));
         const selector = `[data-ownedby='${ownerId}']:not([data-disabled])`;
-        return queryAll(getRootEl9(ctx), selector);
+        return queryAll(getRootEl10(ctx), selector);
       };
-      getFirstEl2 = (ctx) => first(getElements3(ctx));
-      getLastEl2 = (ctx) => last(getElements3(ctx));
-      getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
-      getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
-      ({ not: not12, and: and11 } = createGuards());
-      machine29 = createMachine({
+      getFirstEl3 = (ctx) => first(getElements3(ctx));
+      getLastEl3 = (ctx) => last(getElements3(ctx));
+      getNextEl3 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
+      getPrevEl3 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
+      ({ not: not13, and: and12 } = createGuards());
+      machine31 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultValue: [],
@@ -38579,7 +40218,7 @@ ${err}`);
             on: {
               "ROOT.FOCUS": {
                 target: "focused",
-                guard: not12(and11("isClickFocus", "isTabbingBackward")),
+                guard: not13(and12("isClickFocus", "isTabbingBackward")),
                 actions: ["focusFirstToggle", "clearClickFocus"]
               },
               "TOGGLE.FOCUS": {
@@ -38611,7 +40250,7 @@ ${err}`);
               },
               "TOGGLE.SHIFT_TAB": [
                 {
-                  guard: not12("isFirstToggleFocused"),
+                  guard: not13("isFirstToggleFocused"),
                   target: "idle",
                   actions: ["setIsTabbingBackward"]
                 },
@@ -38628,7 +40267,7 @@ ${err}`);
             isTabbingBackward: ({ context }) => context.get("isTabbingBackward"),
             isFirstToggleFocused: ({ context, scope }) => {
               var _a4;
-              return context.get("focusedId") === ((_a4 = getFirstEl2(scope)) == null ? void 0 : _a4.id);
+              return context.get("focusedId") === ((_a4 = getFirstEl3(scope)) == null ? void 0 : _a4.id);
             }
           },
           actions: {
@@ -38646,7 +40285,7 @@ ${err}`);
             },
             checkIfWithinToolbar({ context, scope }) {
               var _a4;
-              const closestToolbar = (_a4 = getRootEl9(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
+              const closestToolbar = (_a4 = getRootEl10(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
               context.set("isWithinToolbar", !!closestToolbar);
             },
             setFocusedId({ context, event }) {
@@ -38673,7 +40312,7 @@ ${err}`);
                 var _a4;
                 const focusedId = context.get("focusedId");
                 if (!focusedId) return;
-                (_a4 = getNextEl2(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getNextEl3(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusPrevToggle({ context, scope, prop }) {
@@ -38681,19 +40320,19 @@ ${err}`);
                 var _a4;
                 const focusedId = context.get("focusedId");
                 if (!focusedId) return;
-                (_a4 = getPrevEl2(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getPrevEl3(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusFirstToggle({ scope }) {
               raf(() => {
                 var _a4;
-                (_a4 = getFirstEl2(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getFirstEl3(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusLastToggle({ scope }) {
               raf(() => {
                 var _a4;
-                (_a4 = getLastEl2(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getLastEl3(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             }
           }
@@ -38702,10 +40341,10 @@ ${err}`);
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine29, props);
+          return new VanillaMachine(machine31, props);
         }
         initApi() {
-          return this.zagConnect(connect29);
+          return this.zagConnect(connect31);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -38833,7 +40472,7 @@ ${err}`);
     });
     return map2;
   }
-  function connect30(service, normalize) {
+  function connect32(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const translations = prop("translations");
@@ -38936,24 +40575,24 @@ ${err}`);
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.root.attrs), {
-          id: getRootId24(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.root.attrs), {
+          id: getRootId25(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.label.attrs), {
-          id: getLabelId16(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.label.attrs), {
+          id: getLabelId17(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
           "aria-label": translations.treeLabel,
-          "aria-labelledby": getLabelId16(scope),
+          "aria-labelledby": getLabelId17(scope),
           "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
           tabIndex: -1,
           onKeyDown(event) {
@@ -39057,7 +40696,7 @@ ${err}`);
       getNodeState,
       getItemProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
@@ -39098,7 +40737,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
@@ -39106,7 +40745,7 @@ ${err}`);
       },
       getItemIndicatorProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -39116,7 +40755,7 @@ ${err}`);
       },
       getBranchProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branch.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -39140,7 +40779,7 @@ ${err}`);
       },
       getBranchIndicatorProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -39151,7 +40790,7 @@ ${err}`);
       },
       getBranchTriggerProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -39168,7 +40807,7 @@ ${err}`);
       },
       getBranchControlProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchControl.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
@@ -39202,7 +40841,7 @@ ${err}`);
       },
       getBranchTextProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -39211,7 +40850,7 @@ ${err}`);
       },
       getBranchContentProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchContent.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -39223,14 +40862,14 @@ ${err}`);
       },
       getBranchIndentGuideProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndentGuide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
       getNodeCheckboxProps(props) {
         const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -39249,7 +40888,7 @@ ${err}`);
       },
       getNodeRenameInputProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.input(__spreadProps(__spreadValues({}, parts30.nodeRenameInput.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts32.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": translations.renameInputLabel,
@@ -39395,18 +41034,18 @@ ${err}`);
     }
     return JSON.parse(raw);
   }
-  var anatomy30, parts30, collection4, getRootId24, getLabelId16, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine30, TreeView, TreeViewHook;
+  var anatomy32, parts32, collection4, getRootId25, getLabelId17, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and13, machine32, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_UBAV4DFF();
+      init_chunk_WA6OCBS4();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_ZPB3DDMZ();
+      init_chunk_OXVCDUSK();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_XP2X5SPI();
-      anatomy30 = createAnatomy("tree-view").parts(
+      init_chunk_YECC7BC7();
+      init_chunk_C6EFS75P();
+      anatomy32 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -39423,18 +41062,18 @@ ${err}`);
         "root",
         "tree"
       );
-      parts30 = anatomy30.build();
+      parts32 = anatomy32.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
       collection4.empty = () => {
         return new TreeCollection({ rootNode: { children: [] } });
       };
-      getRootId24 = (ctx) => {
+      getRootId25 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tree:${ctx.id}:root`;
       };
-      getLabelId16 = (ctx) => {
+      getLabelId17 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `tree:${ctx.id}:label`;
       };
@@ -39455,8 +41094,8 @@ ${err}`);
       getRenameInputEl = (ctx, value) => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
-      ({ and: and12 } = createGuards());
-      machine30 = createMachine({
+      ({ and: and13 } = createGuards());
+      machine32 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             selectionMode: "single",
@@ -39583,7 +41222,7 @@ ${err}`);
           },
           "SELECTED.ALL": [
             {
-              guard: and12("isMultipleSelection", "moveFocus"),
+              guard: and13("isMultipleSelection", "moveFocus"),
               actions: ["selectAllNodes", "focusTreeLastNode"]
             },
             {
@@ -39614,7 +41253,7 @@ ${err}`);
           },
           "NODE.ARROW_DOWN": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
             },
             {
@@ -39623,7 +41262,7 @@ ${err}`);
           ],
           "NODE.ARROW_UP": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
             },
             {
@@ -39644,7 +41283,7 @@ ${err}`);
           ],
           "BRANCH_NODE.ARROW_RIGHT": [
             {
-              guard: and12("isBranchFocused", "isBranchExpanded"),
+              guard: and13("isBranchFocused", "isBranchExpanded"),
               actions: ["focusBranchFirstNode"]
             },
             {
@@ -39656,7 +41295,7 @@ ${err}`);
           },
           "NODE.HOME": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
             },
             {
@@ -39665,7 +41304,7 @@ ${err}`);
           ],
           "NODE.END": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
             },
             {
@@ -39674,11 +41313,11 @@ ${err}`);
           ],
           "NODE.CLICK": [
             {
-              guard: and12("isCtrlKey", "isMultipleSelection"),
+              guard: and13("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -39687,11 +41326,11 @@ ${err}`);
           ],
           "BRANCH_NODE.CLICK": [
             {
-              guard: and12("isCtrlKey", "isMultipleSelection"),
+              guard: and13("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -40096,10 +41735,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine30, __spreadValues({}, props));
+          return new VanillaMachine(machine32, __spreadValues({}, props));
         }
         initApi() {
-          return this.zagConnect(connect30);
+          return this.zagConnect(connect32);
         }
         getNodeAt(indexPath) {
           var _a4;
@@ -40669,10 +42308,12 @@ ${err}`);
     Select: createLazyHook(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
     SignaturePad: createLazyHook(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
     Switch: createLazyHook(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
+    TagsInput: createLazyHook(() => Promise.resolve().then(() => (init_tags_input(), tags_input_exports)), "TagsInput"),
     Tabs: createLazyHook(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
     Timer: createLazyHook(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
     Toast: createLazyHook(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
     Tooltip: createLazyHook(() => Promise.resolve().then(() => (init_tooltip(), tooltip_exports)), "Tooltip"),
+    Toggle: createLazyHook(() => Promise.resolve().then(() => (init_toggle(), toggle_exports)), "Toggle"),
     ToggleGroup: createLazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
     TreeView: createLazyHook(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };
