@@ -3,6 +3,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   @count 95
   @page_size 10
+  @style_count 50
+  @style_page_size 10
+  @style_page 3
 
   def anatomy_minimal_code do
     ~S"""
@@ -26,9 +29,34 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def styling_color_code do
+  def styling_color_heex do
     ~S"""
-    <.pagination id="pagination-style-accent" class="pagination pagination--accent" count={95} page_size={10}>
+    <.pagination id="pagination-style-color-default" class="pagination" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-color-accent" class="pagination pagination--accent" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-color-brand" class="pagination pagination--brand" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-color-alert" class="pagination pagination--alert" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-color-success" class="pagination pagination--success" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-color-info" class="pagination pagination--info" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -37,25 +65,38 @@ defmodule E2eWeb.Demos.PaginationDemo do
   end
 
   def styling_color_example(assigns) do
-    assigns = Map.merge(mount_assigns(), assigns)
+    assigns = styling_assigns(assigns)
 
     ~H"""
-    <.pagination
-      id="pagination-style-accent"
-      class="pagination pagination--accent"
-      count={@count}
-      page_size={@page_size}
-    >
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination id="pagination-style-color-default" class="pagination" />
+      <.style_pagination id="pagination-style-color-accent" class="pagination pagination--accent" />
+      <.style_pagination id="pagination-style-color-brand" class="pagination pagination--brand" />
+      <.style_pagination id="pagination-style-color-alert" class="pagination pagination--alert" />
+      <.style_pagination id="pagination-style-color-success" class="pagination pagination--success" />
+      <.style_pagination id="pagination-style-color-info" class="pagination pagination--info" />
+    </div>
+    """
+  end
+
+  def styling_size_heex do
+    ~S"""
+    <.pagination id="pagination-style-size-sm" class="pagination pagination--sm" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
-    """
-  end
-
-  def styling_size_code do
-    ~S"""
-    <.pagination id="pagination-style-lg" class="pagination pagination--lg" count={95} page_size={10}>
+    <.pagination id="pagination-style-size-md" class="pagination pagination--md" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-size-lg" class="pagination pagination--lg" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-size-xl" class="pagination pagination--xl" count={50} page={3} page_size={10}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -64,13 +105,210 @@ defmodule E2eWeb.Demos.PaginationDemo do
   end
 
   def styling_size_example(assigns) do
-    assigns = Map.merge(mount_assigns(), assigns)
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination id="pagination-style-size-sm" class="pagination pagination--sm" />
+      <.style_pagination id="pagination-style-size-md" class="pagination pagination--md" />
+      <.style_pagination id="pagination-style-size-lg" class="pagination pagination--lg" />
+      <.style_pagination id="pagination-style-size-xl" class="pagination pagination--xl" />
+    </div>
+    """
+  end
+
+  def styling_text_heex do
+    ~S"""
+    <.pagination id="pagination-style-text-sm" class="pagination pagination--text-sm" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-text-xl" class="pagination pagination--text-xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-text-2xl" class="pagination pagination--text-2xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-text-4xl" class="pagination pagination--text-4xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def styling_text_example(assigns) do
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination id="pagination-style-text-sm" class="pagination pagination--text-sm" />
+      <.style_pagination id="pagination-style-text-xl" class="pagination pagination--text-xl" />
+      <.style_pagination id="pagination-style-text-2xl" class="pagination pagination--text-2xl" />
+      <.style_pagination id="pagination-style-text-4xl" class="pagination pagination--text-4xl" />
+    </div>
+    """
+  end
+
+  def styling_radius_heex do
+    ~S"""
+    <.pagination id="pagination-style-radius-none" class="pagination pagination--rounded-none" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-radius-sm" class="pagination pagination--rounded-sm" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-radius-md" class="pagination pagination--rounded-md" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-radius-lg" class="pagination pagination--rounded-lg" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-radius-xl" class="pagination pagination--rounded-xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-radius-full" class="pagination pagination--rounded-full" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination
+        id="pagination-style-radius-none"
+        class="pagination pagination--rounded-none"
+      />
+      <.style_pagination id="pagination-style-radius-sm" class="pagination pagination--rounded-sm" />
+      <.style_pagination id="pagination-style-radius-md" class="pagination pagination--rounded-md" />
+      <.style_pagination id="pagination-style-radius-lg" class="pagination pagination--rounded-lg" />
+      <.style_pagination id="pagination-style-radius-xl" class="pagination pagination--rounded-xl" />
+      <.style_pagination
+        id="pagination-style-radius-full"
+        class="pagination pagination--rounded-full"
+      />
+    </div>
+    """
+  end
+
+  def styling_max_width_heex do
+    ~S"""
+    <.pagination id="pagination-style-max-2xs" class="pagination max-w-2xs" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-max-md" class="pagination max-w-md" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-max-xl" class="pagination max-w-xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-max-2xl" class="pagination max-w-2xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination id="pagination-style-max-2xs" class="pagination max-w-2xs" />
+      <.style_pagination id="pagination-style-max-md" class="pagination max-w-md" />
+      <.style_pagination id="pagination-style-max-xl" class="pagination max-w-xl" />
+      <.style_pagination id="pagination-style-max-2xl" class="pagination max-w-2xl" />
+    </div>
+    """
+  end
+
+  def styling_mix_modifiers_heex do
+    ~S"""
+    <.pagination id="pagination-style-mix-1" class="pagination pagination--sm pagination--brand max-w-2xs" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-mix-2" class="pagination pagination--accent pagination--rounded-xl max-w-md" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    <.pagination id="pagination-style-mix-3" class="pagination pagination--alert pagination--lg pagination--text-xl max-w-xl" count={50} page={3} page_size={10}>
+      <:prev><.heroicon name="hero-chevron-left" /></:prev>
+      <:next><.heroicon name="hero-chevron-right" /></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def styling_mix_modifiers_example(assigns) do
+    assigns = styling_assigns(assigns)
+
+    ~H"""
+    <div class="flex flex-col gap-space-lg w-full">
+      <.style_pagination
+        id="pagination-style-mix-1"
+        class="pagination pagination--sm pagination--brand max-w-2xs"
+      />
+      <.style_pagination
+        id="pagination-style-mix-2"
+        class="pagination pagination--accent pagination--rounded-xl max-w-md"
+      />
+      <.style_pagination
+        id="pagination-style-mix-3"
+        class="pagination pagination--alert pagination--lg pagination--text-xl max-w-xl"
+      />
+    </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :class, :string, required: true
+  attr :page, :integer, default: nil
+  attr :count, :integer, default: nil
+  attr :page_size, :integer, default: nil
+
+  def style_pagination(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:page, fn -> @style_page end)
+      |> assign_new(:count, fn -> @style_count end)
+      |> assign_new(:page_size, fn -> @style_page_size end)
 
     ~H"""
     <.pagination
-      id="pagination-style-lg"
-      class="pagination pagination--lg"
+      id={@id}
+      class={@class}
       count={@count}
+      page={@page}
       page_size={@page_size}
     >
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
@@ -78,6 +316,14 @@ defmodule E2eWeb.Demos.PaginationDemo do
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
     </.pagination>
     """
+  end
+
+  defp styling_assigns(assigns) do
+    assigns
+    |> Map.merge(mount_assigns())
+    |> Map.put(:count, @style_count)
+    |> Map.put(:page_size, @style_page_size)
+    |> Map.put(:page, @style_page)
   end
 
   def api_set_page_client_binding_heex do
@@ -346,6 +592,36 @@ defmodule E2eWeb.Demos.PaginationDemo do
       case Integer.parse(raw) do
         {n, _} when n > 0 -> n
         _ -> 1
+      end
+    end
+    """
+  end
+
+  def patterns_patch_data do
+    posts_lines =
+      E2e.PaginationPlayBlog.posts()
+      |> Enum.map(fn %{title: title, excerpt: excerpt} ->
+        "    %{title: #{inspect(title)}, excerpt: #{inspect(excerpt)}}"
+      end)
+      |> Enum.join(",\n")
+
+    """
+    http://localhost:4000/en/pagination/patterns?page=1&page_size=4
+
+    live "/pagination/patterns", MyAppWeb.PaginationPatternsLive
+
+    defmodule MyApp.Blog do
+      @posts [
+    #{posts_lines}
+      ]
+
+      def posts, do: @posts
+
+      def count, do: length(@posts)
+
+      def slice(page, page_size) do
+        offset = max(page - 1, 0) * page_size
+        Enum.slice(@posts, offset, page_size)
       end
     end
     """

@@ -176,6 +176,7 @@ defmodule E2eWeb.PaginationPlayLive do
           <div
             id="pagination-playground-canvas"
             class="flex flex-col items-center gap-space-lg w-full max-w-md"
+            dir={@controls.dir}
           >
             <div class="w-full flex flex-col gap-space-xs">
               <h2 class="text-lg font-medium">Blog posts</h2>

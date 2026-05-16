@@ -25,6 +25,7 @@ defmodule E2eWeb.PaginationPatternsLive do
      |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())
      |> assign(:patch_heex, Demo.patterns_patch_heex())
      |> assign(:patch_elixir, Demo.patterns_patch_elixir())
+     |> assign(:patch_data, Demo.patterns_patch_data())
      |> assign(:server_heex, Demo.patterns_server_heex())
      |> assign(:server_elixir, Demo.patterns_server_elixir())
      |> assign(:client_heex, Demo.patterns_client_heex())
@@ -123,7 +124,8 @@ defmodule E2eWeb.PaginationPatternsLive do
           title="Link patch"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @patch_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @patch_elixir}
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @patch_elixir},
+            %{value: "data", label: "Data", language: :elixir, code: @patch_data}
           ]}
         >
           <:preview>

@@ -63,4 +63,11 @@ defmodule E2eWeb.PaginationTest do
 
     assert html =~ "Zag.js under the hood"
   end
+
+  test "patterns link patch data tab includes blog module and demo url", %{conn: conn} do
+    {:ok, _view, html} = live(conn, ~p"/pagination/patterns", on_error: :warn)
+
+    assert html =~ "MyApp.Blog"
+    assert html =~ "pagination/patterns?page=1&amp;page_size=4"
+  end
 end

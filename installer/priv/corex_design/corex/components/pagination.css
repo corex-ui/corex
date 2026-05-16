@@ -1,6 +1,12 @@
 @import "../main.css";
 
 @layer components {
+
+  .pagination {
+    width: fit-content;
+    max-width: var(--container-md);
+  }
+
   .pagination[data-loading] [data-scope="pagination"][data-part="root"] {
     @apply ui-loading;
   }
@@ -9,16 +15,23 @@
     @apply ui-root;
 
     width: fit-content;
+    max-width: 100%;
   }
 
   .pagination [data-scope="pagination"][data-part="root"] ul {
+    @apply scrollbar scrollbar--sm;
+
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--spacing-space-xs);
+    gap: var(--spacing-space);
     list-style: none;
     margin: 0;
     padding: 0;
+    padding-inline: var(--spacing-space);
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
   }
 
   .pagination [data-scope="pagination"][data-part="prev-trigger"],
@@ -59,6 +72,10 @@
 }
 
 @utility pagination--* {
+  [data-scope="pagination"][data-part="root"] ul {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
   [data-scope="pagination"][data-part="prev-trigger"],
   [data-scope="pagination"][data-part="next-trigger"],
   [data-scope="pagination"][data-part="item"] {
