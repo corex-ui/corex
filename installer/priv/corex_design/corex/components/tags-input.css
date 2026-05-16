@@ -301,7 +301,15 @@
     border-radius: --value(--radius-*, [length]);
   }
 
+  [data-scope="tags-input"][data-part="input"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
   [data-scope="tags-input"][data-part="item-preview"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
+  [data-scope="tags-input"][data-part="item-input"] {
     border-radius: --value(--radius-*, [length]);
   }
 

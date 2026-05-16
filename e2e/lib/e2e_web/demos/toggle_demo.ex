@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.ToggleDemo do
   use E2eWeb, :html
 
+  import E2eWeb.ModeToggle
+
   def minimal_code do
     ~S"""
     <.toggle id="toggle-anatomy-minimal" class="toggle">
@@ -19,45 +21,129 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   def with_indicator_code do
     ~S"""
-    <.toggle id="toggle-anatomy-indicator" class="toggle">
-      <:indicator>duis</:indicator>
-      lorem
+    <.toggle id="toggle-anatomy-indicator-label" class="toggle">
+      <:indicator><.heroicon name="hero-bold" /></:indicator>
+      Bold
+    </.toggle>
+
+    <.toggle id="toggle-anatomy-indicator-sr" class="toggle">
+      <:indicator><.heroicon name="hero-bold" /></:indicator>
+      <span class="sr-only">Bold</span>
     </.toggle>
     """
   end
 
   def with_indicator_example(assigns) do
     ~H"""
-    <.toggle id="toggle-anatomy-indicator" class="toggle">
-      <:indicator>duis</:indicator>
-      lorem
-    </.toggle>
+    <div class="flex flex-wrap gap-4 items-center justify-center">
+      <.toggle id="toggle-anatomy-indicator-label" class="toggle">
+        <:indicator><.heroicon name="hero-bold" /></:indicator>
+        Bold
+      </.toggle>
+      <.toggle id="toggle-anatomy-indicator-sr" class="toggle">
+        <:indicator><.heroicon name="hero-bold" /></:indicator>
+        <span class="sr-only">Bold</span>
+      </.toggle>
+    </div>
     """
   end
 
   def dual_label_code do
     ~S"""
-    <.toggle id="toggle-anatomy-dual-label" class="toggle" data-toggle-dual-label>
+    <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
       <span>lorem</span>
       <span data-pressed>donec</span>
+    </.toggle>
+
+    <.toggle
+      id="mode-switcher"
+      class="toggle toggle--sm"
+      data-toggle-dual-label
+      pressed={@mode == "dark"}
+      on_pressed_change_client="phx:set-mode"
+    >
+      <span>
+        <.heroicon name="hero-moon" />
+      </span>
+      <span data-pressed>
+        <.heroicon name="hero-sun" />
+      </span>
     </.toggle>
     """
   end
 
   def dual_label_example(assigns) do
+    assigns = assign_new(assigns, :mode, fn -> "light" end)
+
     ~H"""
-    <.toggle id="toggle-anatomy-dual-label" class="toggle" data-toggle-dual-label>
-      <span>lorem</span>
-      <span data-pressed>donec</span>
+    <div class="flex flex-wrap gap-6 items-center justify-center">
+      <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
+        <span>lorem</span>
+        <span data-pressed>donec</span>
+      </.toggle>
+      <.mode_toggle id="toggle-anatomy-mode" mode={@mode} />
+    </div>
+    """
+  end
+
+  def patterns_controlled_heex do
+    ~S"""
+    <.toggle
+      id="toggle-patterns-controlled"
+      class="toggle"
+      controlled
+      pressed={@pressed}
+      on_pressed_change="toggle_patterns_pressed"
+    >
+      lorem
     </.toggle>
+    """
+  end
+
+  def patterns_controlled_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :pressed, false)}
+    end
+
+    def handle_event("toggle_patterns_pressed", %{"pressed" => pressed}, socket) do
+      {:noreply, assign(socket, :pressed, pressed == true or pressed == "true")}
+    end
+    """
+  end
+
+  def styling_color_code do
+    ~S"""
+    <.toggle id="toggle-style-c-default" class="toggle" pressed>Default</.toggle>
+    <.toggle id="toggle-style-c-accent" class="toggle toggle--accent" pressed>Accent</.toggle>
+    <.toggle id="toggle-style-c-brand" class="toggle toggle--brand" pressed>Brand</.toggle>
+    <.toggle id="toggle-style-c-alert" class="toggle toggle--alert" pressed>Alert</.toggle>
+    <.toggle id="toggle-style-c-info" class="toggle toggle--info" pressed>Info</.toggle>
+    <.toggle id="toggle-style-c-success" class="toggle toggle--success" pressed>Success</.toggle>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+      <.toggle id="toggle-style-c-default" class="toggle" pressed>Default</.toggle>
+      <.toggle id="toggle-style-c-accent" class="toggle toggle--accent" pressed>Accent</.toggle>
+      <.toggle id="toggle-style-c-brand" class="toggle toggle--brand" pressed>Brand</.toggle>
+      <.toggle id="toggle-style-c-alert" class="toggle toggle--alert" pressed>Alert</.toggle>
+      <.toggle id="toggle-style-c-info" class="toggle toggle--info" pressed>Info</.toggle>
+      <.toggle id="toggle-style-c-success" class="toggle toggle--success" pressed>Success</.toggle>
+    </div>
     """
   end
 
   def styling_size_code do
     ~S"""
-    <.toggle id="toggle-style-sm" class="toggle toggle--sm" pressed>lorem</.toggle>
-    <.toggle id="toggle-style-md" class="toggle toggle--md" pressed>duis</.toggle>
-    <.toggle id="toggle-style-lg" class="toggle toggle--lg" pressed>donec</.toggle>
+    <.toggle id="toggle-style-sm" class="toggle toggle--sm" pressed>SM</.toggle>
+    <.toggle id="toggle-style-md" class="toggle toggle--md" pressed>MD</.toggle>
+    <.toggle id="toggle-style-lg" class="toggle toggle--lg" pressed>LG</.toggle>
+    <.toggle id="toggle-style-xl" class="toggle toggle--xl" pressed>XL</.toggle>
     """
   end
 
@@ -66,17 +152,70 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
     ~H"""
     <div class="flex flex-wrap gap-6 items-center w-full max-w-4xl">
-      <.toggle id="toggle-style-sm" class="toggle toggle--sm" pressed>lorem</.toggle>
-      <.toggle id="toggle-style-md" class="toggle toggle--md" pressed>duis</.toggle>
-      <.toggle id="toggle-style-lg" class="toggle toggle--lg" pressed>donec</.toggle>
+      <.toggle id="toggle-style-sm" class="toggle toggle--sm" pressed>SM</.toggle>
+      <.toggle id="toggle-style-md" class="toggle toggle--md" pressed>MD</.toggle>
+      <.toggle id="toggle-style-lg" class="toggle toggle--lg" pressed>LG</.toggle>
+      <.toggle id="toggle-style-xl" class="toggle toggle--xl" pressed>XL</.toggle>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    ~S"""
+    <.toggle id="toggle-style-radius-none" class="toggle toggle--rounded-none" pressed>None</.toggle>
+    <.toggle id="toggle-style-radius-sm" class="toggle toggle--rounded-sm" pressed>SM</.toggle>
+    <.toggle id="toggle-style-radius-md" class="toggle toggle--rounded-md" pressed>MD</.toggle>
+    <.toggle id="toggle-style-radius-lg" class="toggle toggle--rounded-lg" pressed>LG</.toggle>
+    <.toggle id="toggle-style-radius-xl" class="toggle toggle--rounded-xl" pressed>XL</.toggle>
+    <.toggle id="toggle-style-radius-full" class="toggle toggle--rounded-full" pressed>Full</.toggle>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+      <.toggle id="toggle-style-radius-none" class="toggle toggle--rounded-none" pressed>
+        None
+      </.toggle>
+      <.toggle id="toggle-style-radius-sm" class="toggle toggle--rounded-sm" pressed>SM</.toggle>
+      <.toggle id="toggle-style-radius-md" class="toggle toggle--rounded-md" pressed>MD</.toggle>
+      <.toggle id="toggle-style-radius-lg" class="toggle toggle--rounded-lg" pressed>LG</.toggle>
+      <.toggle id="toggle-style-radius-xl" class="toggle toggle--rounded-xl" pressed>XL</.toggle>
+      <.toggle id="toggle-style-radius-full" class="toggle toggle--rounded-full" pressed>
+        Full
+      </.toggle>
+    </div>
+    """
+  end
+
+  def styling_disabled_code do
+    ~S"""
+    <.toggle id="toggle-style-disabled-off" class="toggle" disabled>Disabled</.toggle>
+    <.toggle id="toggle-style-disabled-on" class="toggle toggle--accent" pressed disabled>
+      Disabled
+    </.toggle>
+    """
+  end
+
+  def styling_disabled_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-center w-full max-w-4xl">
+      <.toggle id="toggle-style-disabled-off" class="toggle" disabled>Disabled</.toggle>
+      <.toggle id="toggle-style-disabled-on" class="toggle toggle--accent" pressed disabled>
+        Disabled
+      </.toggle>
     </div>
     """
   end
 
   def api_server_heex do
     ~S"""
-    <.action class="button button--sm" phx-click="toggle_api_on">donec</.action>
-    <.action class="button button--sm" phx-click="toggle_api_off">lorem</.action>
+    <.action class="button button--sm" phx-click="toggle_api_on">Pressed</.action>
+    <.action class="button button--sm" phx-click="toggle_api_off">Not pressed</.action>
     <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
       duis
     </.toggle>
@@ -98,10 +237,10 @@ defmodule E2eWeb.Demos.ToggleDemo do
   def api_client_binding_heex do
     ~S"""
     <.action class="button button--sm" phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}>
-      donec
+      Pressed
     </.action>
     <.action class="button button--sm" phx-click={Corex.Toggle.set_pressed("toggle-api-bind", false)}>
-      lorem
+      Not pressed
     </.action>
     <.toggle id="toggle-api-bind" class="toggle" controlled pressed={false}>
       duis
@@ -116,12 +255,24 @@ defmodule E2eWeb.Demos.ToggleDemo do
       phx-click={
         Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
           to: "#toggle-api-cjs",
+          detail: %{pressed: true},
+          bubbles: false
+        )
+      }
+    >
+      Pressed
+    </.action>
+    <.action
+      class="button button--sm"
+      phx-click={
+        Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
+          to: "#toggle-api-cjs",
           detail: %{pressed: false},
           bubbles: false
         )
       }
     >
-      lorem
+      Not pressed
     </.action>
     <.toggle id="toggle-api-cjs" class="toggle" pressed>
       duis

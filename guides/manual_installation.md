@@ -161,7 +161,7 @@ Then import the design layers from `assets/css/app.css`. The minimum is `main.cs
 @import "../corex/components/accordion.css";
 ```
 
-Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`, and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
+Add `@import "../corex/components/toggle.css"` when you use `toggle` (for example a mode switcher), and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
@@ -402,7 +402,7 @@ end
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:
 
 - [API](api.html) and [Events](events.html)  -  control and listen to components from LiveView or JS.
-- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
+- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle>` mode switcher.
 - [Theming](theming.html)  -  `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
 - [Localize](localize.html)  -  `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
 - [MCP](mcp.html)  -  Corex MCP for AI tooling in development.

@@ -68,7 +68,12 @@
         window.addEventListener("storage", (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue));
 
         window.addEventListener("phx:set-mode", (e) => {
-          const value = e.detail?.value;
+          const detail = e.detail;
+          if (typeof detail?.pressed === "boolean") {
+            setMode(detail.pressed ? "dark" : "light");
+            return;
+          }
+          const value = detail?.value;
           const mode = Array.isArray(value) && value[0] ? value[0] : "light";
           setMode(mode);
         });

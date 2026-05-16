@@ -38,31 +38,11 @@ defmodule E2eWeb.ToggleApiLive do
       <.demo_page
         id="toggle-api-page"
         title="Toggle · API"
-        subtitle="lorem, duis, and donec: server push, client binding, and DOM dispatch."
+        subtitle="set_pressed via LiveView JS, DOM events on the hook root, or server push."
       >
         <.demo_section
-          id="toggle-api-server"
-          title="Server push"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
-          ]}
-        >
-          <:preview>
-            <div class="flex flex-col gap-4 items-center w-full">
-              <div class="flex flex-wrap gap-4 items-center">
-                <.action class="button button--sm" phx-click="toggle_api_on">donec</.action>
-                <.action class="button button--sm" phx-click="toggle_api_off">lorem</.action>
-              </div>
-              <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
-                duis
-              </.toggle>
-            </div>
-          </:preview>
-        </.demo_section>
-        <.demo_section
           id="toggle-api-client-binding"
-          title="Client binding"
+          title="LiveView binding"
           code={@codes.client_binding}
         >
           <:preview>
@@ -72,13 +52,13 @@ defmodule E2eWeb.ToggleApiLive do
                   class="button button--sm"
                   phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}
                 >
-                  donec
+                  Pressed
                 </.action>
                 <.action
                   class="button button--sm"
                   phx-click={Corex.Toggle.set_pressed("toggle-api-bind", false)}
                 >
-                  lorem
+                  Not pressed
                 </.action>
               </div>
               <.toggle id="toggle-api-bind" class="toggle" pressed={false}>
@@ -104,15 +84,47 @@ defmodule E2eWeb.ToggleApiLive do
                   phx-click={
                     Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
                       to: "#toggle-api-cjs",
+                      detail: %{pressed: true},
+                      bubbles: false
+                    )
+                  }
+                >
+                  Pressed
+                </.action>
+                <.action
+                  class="button button--sm"
+                  phx-click={
+                    Phoenix.LiveView.JS.dispatch("corex:toggle:set-pressed",
+                      to: "#toggle-api-cjs",
                       detail: %{pressed: false},
                       bubbles: false
                     )
                   }
                 >
-                  lorem
+                  Not pressed
                 </.action>
               </div>
               <.toggle id="toggle-api-cjs" class="toggle" pressed>
+                duis
+              </.toggle>
+            </div>
+          </:preview>
+        </.demo_section>
+        <.demo_section
+          id="toggle-api-server"
+          title="Server push"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
+          ]}
+        >
+          <:preview>
+            <div class="flex flex-col gap-4 items-center w-full">
+              <div class="flex flex-wrap gap-4 items-center">
+                <.action class="button button--sm" phx-click="toggle_api_on">Pressed</.action>
+                <.action class="button button--sm" phx-click="toggle_api_off">Not pressed</.action>
+              </div>
+              <.toggle id="toggle-api-srv" class="toggle" controlled pressed={@api_srv_pressed}>
                 duis
               </.toggle>
             </div>

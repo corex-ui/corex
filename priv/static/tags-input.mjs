@@ -12,7 +12,8 @@ import {
   idMatches,
   notifyChange,
   readPayloadId,
-  readPayloadStringArray
+  readPayloadStringArray,
+  readPayloadValue
 } from "./chunks/chunk-YECC7BC7.mjs";
 import {
   Component,
@@ -1421,6 +1422,15 @@ var TagsInputHook = {
     domRegistry.add("corex:tags-input:clear-value", () => {
       zag.api.clearValue();
     });
+    domRegistry.add("corex:tags-input:add-value", (event) => {
+      const tag = event.detail?.value;
+      if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
+    });
+    domRegistry.add("corex:tags-input:remove-value", (event) => {
+      const tag = event.detail?.value;
+      if (typeof tag !== "string" || tag === "") return;
+      zag.api.setValue(zag.api.value.filter((t) => t !== tag));
+    });
     const registry = createHookHandleEventRegistry(this);
     this.handleRegistry = registry;
     registry.add("tags_input_set_value", (payload) => {
@@ -1431,6 +1441,17 @@ var TagsInputHook = {
     registry.add("tags_input_clear_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
+    });
+    registry.add("tags_input_add_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const tag = readPayloadValue(payload);
+      if (tag !== "") zag.api.addValue(tag);
+    });
+    registry.add("tags_input_remove_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const tag = readPayloadValue(payload);
+      if (tag === "") return;
+      zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
   },
   updated() {

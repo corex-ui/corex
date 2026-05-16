@@ -41,8 +41,6 @@ defmodule E2eWeb.TagsInputEventsLive do
       |> assign(:invalid_client_heex, @invalid_client_heex)
       |> assign(:invalid_client_js, @invalid_client_js)
       |> assign(:invalid_client_ts, @invalid_client_ts)
-      |> assign(:tags, ["lorem", "duis", "donec"])
-      |> assign(:tags_invalid_server, ["lorem", "duis"])
       |> stream(:server_logs, [])
       |> stream(:client_logs, [])
       |> stream(:server_invalid_logs, [])
@@ -55,7 +53,7 @@ defmodule E2eWeb.TagsInputEventsLive do
   def handle_event("tags_value_changed", %{"id" => id, "value" => value}, socket)
       when is_list(value) do
     log = new_log("server", id, inspect(value))
-    {:noreply, socket |> assign(:tags, value) |> stream_insert(:server_logs, log, at: 0)}
+    {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
 
   @impl true
@@ -63,12 +61,6 @@ defmodule E2eWeb.TagsInputEventsLive do
       when is_list(value) do
     log = new_log("client", id, inspect(value))
     {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
-  end
-
-  @impl true
-  def handle_event("tags_invalid_server_changed", %{"value" => value}, socket)
-      when is_list(value) do
-    {:noreply, assign(socket, :tags_invalid_server, value)}
   end
 
   @impl true
@@ -131,8 +123,7 @@ defmodule E2eWeb.TagsInputEventsLive do
               <.tags_input
                 id={@id_server}
                 class="tags-input"
-                controlled
-                value={@tags}
+                value={["lorem", "duis", "donec"]}
                 on_value_change="tags_value_changed"
               >
                 <:label>Tags</:label>
@@ -227,11 +218,9 @@ defmodule E2eWeb.TagsInputEventsLive do
               <.tags_input
                 id={@id_invalid_server}
                 class="tags-input"
-                controlled
-                value={@tags_invalid_server}
+                value={["lorem", "duis"]}
                 max={2}
                 allow_overflow={true}
-                on_value_change="tags_invalid_server_changed"
                 on_value_invalid="tags_value_invalid"
               >
                 <:label>Tags</:label>

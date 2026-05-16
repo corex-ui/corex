@@ -1,5 +1,9 @@
 defmodule Corex.TagsInput.Anatomy do
+  @moduledoc false
+
   defmodule Props do
+    @moduledoc false
+
     @enforce_keys [:id]
 
     defstruct [
@@ -64,6 +68,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule Root do
+    @moduledoc false
+
     defstruct [:id, dir: "ltr"]
 
     @ignored_attrs [
@@ -81,6 +87,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule Label do
+    @moduledoc false
+
     defstruct [:id, dir: "ltr"]
 
     @ignored_attrs [
@@ -99,6 +107,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule Control do
+    @moduledoc false
+
     defstruct [:id, dir: "ltr"]
 
     @ignored_attrs [
@@ -116,6 +126,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule MainInput do
+    @moduledoc false
+
     defstruct [:id, dir: "ltr", placeholder: nil]
 
     @ignored_attrs [
@@ -145,6 +157,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule HiddenInput do
+    @moduledoc false
+
     defstruct [:id]
 
     @ignored_attrs [
@@ -165,6 +179,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule ValueInput do
+    @moduledoc false
+
     defstruct [:id, dir: "ltr"]
 
     @ignored_attrs [
@@ -182,6 +198,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItem do
+    @moduledoc false
+
     defstruct [:root_id, :dir, :value, :index, :disabled]
 
     @type t :: %__MODULE__{
@@ -203,6 +221,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemPreview do
+    @moduledoc false
+
     defstruct [:root_id, :dir, :value, :index, :disabled]
 
     @type t :: %__MODULE__{
@@ -227,6 +247,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemText do
+    @moduledoc false
+
     defstruct [:root_id, :index]
 
     @type t :: %__MODULE__{root_id: String.t(), index: non_neg_integer()}
@@ -242,6 +264,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemDeleteTrigger do
+    @moduledoc false
+
     defstruct [:root_id, :dir, :value, :index, :disabled, :aria_label]
 
     @type t :: %__MODULE__{
@@ -269,6 +293,8 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemInput do
+    @moduledoc false
+
     defstruct [:root_id, :dir, :value, :index, :disabled, :aria_label]
 
     @type t :: %__MODULE__{

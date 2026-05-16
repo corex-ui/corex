@@ -195,4 +195,30 @@ defmodule Corex.TagsInputTest do
       assert %Phoenix.LiveView.Socket{} = TagsInput.clear_value(socket, "tid")
     end
   end
+
+  describe "add_value/2" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = TagsInput.add_value("tid", "lorem")
+    end
+  end
+
+  describe "add_value/3" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = TagsInput.add_value(socket, "tid", "lorem")
+    end
+  end
+
+  describe "remove_value/2" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = TagsInput.remove_value("tid", "lorem")
+    end
+  end
+
+  describe "remove_value/3" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = TagsInput.remove_value(socket, "tid", "lorem")
+    end
+  end
 end

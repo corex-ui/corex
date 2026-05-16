@@ -206,6 +206,7 @@ defmodule E2eWeb.Router do
       live("/toggle/playground", TogglePlayLive)
       live("/toggle/api", ToggleApiLive)
       live("/toggle/events", ToggleEventsLive)
+      live("/toggle/patterns", TogglePatternsLive)
 
       live("/toggle-group/playground", ToggleGroupPlayLive)
       live("/toggle-group/api", ToggleGroupApiLive)

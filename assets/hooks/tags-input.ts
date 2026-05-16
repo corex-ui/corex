@@ -16,7 +16,13 @@ import {
   getNumber,
   canPushEvent,
 } from "../lib/util";
-import { idMatches, notifyChange, readPayloadId, readPayloadStringArray } from "../lib/respond-to";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadStringArray,
+  readPayloadValue,
+} from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
@@ -152,6 +158,17 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       zag.api.clearValue();
     });
 
+    domRegistry.add<CustomEvent<{ value?: string }>>("corex:tags-input:add-value", (event) => {
+      const tag = event.detail?.value;
+      if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
+    });
+
+    domRegistry.add<CustomEvent<{ value?: string }>>("corex:tags-input:remove-value", (event) => {
+      const tag = event.detail?.value;
+      if (typeof tag !== "string" || tag === "") return;
+      zag.api.setValue(zag.api.value.filter((t) => t !== tag));
+    });
+
     const registry = createHookHandleEventRegistry(this);
     this.handleRegistry = registry;
 
@@ -164,6 +181,19 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     registry.add("tags_input_clear_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zag.api.clearValue();
+    });
+
+    registry.add("tags_input_add_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const tag = readPayloadValue(payload);
+      if (tag !== "") zag.api.addValue(tag);
+    });
+
+    registry.add("tags_input_remove_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const tag = readPayloadValue(payload);
+      if (tag === "") return;
+      zag.api.setValue(zag.api.value.filter((t) => t !== tag));
     });
   },
 

@@ -171,7 +171,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 liveSocket.connect()
 ```
 
-Add **`Select`**, **`ToggleGroup`**, and separate **`theme.js`** / **`mode.js`** / **`locale.js`** imports when you follow the Tableau extras linked below.
+Add **`Select`**, **`Toggle`**, and separate **`theme.js`** / **`mode.js`** / **`locale.js`** imports when you follow the Tableau extras linked below.
 
 If you'd rather pull in **every** Corex hook at once:
 

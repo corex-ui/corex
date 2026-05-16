@@ -286,8 +286,13 @@ defmodule Corex.Integration.CodeGeneratorCase do
       assert c =~ ~s(@import "../corex/main.css";)
       assert c =~ ~s(@import "../corex/theme/neo.css";)
       refute c =~ "toggle-group.css"
-      assert c =~ ~s(@import "../corex/components/select.css";)
+      refute c =~ "tags-input.css"
+      assert c =~ ~s(@import "../corex/components/scrollbar.css";)
+      assert c =~ ~s(@import "../corex/components/data-list.css";)
       assert c =~ ~s(@import "../corex/components/data-table.css";)
+      assert c =~ ~s(@import "../corex/components/select.css";)
+      assert c =~ ~s(@import "../corex/components/native-input.css";)
+      assert c =~ ~s(@import "../corex/components/checkbox.css";)
     end)
 
     assert_file(app_css, fn c ->

@@ -39,21 +39,31 @@ defmodule E2eWeb.ToggleTest do
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :anatomy)
-      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
+      |> Toggle.wait_section_toggle_ready(section, hook_count: 2, timeout: 15_000)
 
-      assert Toggle.toggle_root_data_state_in_section(session, section) == "off"
+      assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-anatomy-switching-label") ==
+               "off"
+
+      session =
+        click(
+          session,
+          css(
+            ~s|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"]|,
+            visible: :any
+          )
+        )
 
       session
-      |> Toggle.click_toggle_root_in_section(section)
       |> Toggle.wait_for_has(
         css(
-          ~s|section##{section} [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          ~s|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
         ),
         timeout: 8_000
       )
 
-      assert Toggle.toggle_root_data_state_in_section(session, section) == "on"
+      assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-anatomy-switching-label") ==
+               "on"
     end
 
     feature "indicator  -  click toggles data-state", %{session: session} do
@@ -61,16 +71,26 @@ defmodule E2eWeb.ToggleTest do
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :anatomy)
-      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
+      |> Toggle.wait_section_toggle_ready(section, hook_count: 2, timeout: 15_000)
 
-      before = Toggle.toggle_root_data_state_in_section(session, section)
-      session = Toggle.click_toggle_root_in_section(session, section)
-      assert Toggle.toggle_root_data_state_in_section(session, section) != before
+      before = Toggle.toggle_root_data_state_by_host_id(session, "toggle-anatomy-indicator-label")
+
+      session =
+        click(
+          session,
+          css(
+            ~s|#toggle-anatomy-indicator-label [data-scope="toggle"][data-part="root"]|,
+            visible: :any
+          )
+        )
+
+      assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-anatomy-indicator-label") !=
+               before
     end
   end
 
   describe "api" do
-    feature "server  -  donec and lorem drive controlled toggle", %{session: session} do
+    feature "server  -  Pressed and Not pressed drive controlled toggle", %{session: session} do
       section = "toggle-api-server"
 
       session
@@ -79,7 +99,7 @@ defmodule E2eWeb.ToggleTest do
       |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
 
       session
-      |> Toggle.click_in_section(section, "donec")
+      |> Toggle.click_in_section(section, "Pressed")
       |> Toggle.wait_for_has(
         css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
@@ -90,7 +110,7 @@ defmodule E2eWeb.ToggleTest do
       assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-api-srv") == "on"
 
       session
-      |> Toggle.click_in_section(section, "lorem")
+      |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
         css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
@@ -101,7 +121,7 @@ defmodule E2eWeb.ToggleTest do
       assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-api-srv") == "off"
     end
 
-    feature "client binding  -  donec and lorem set pressed", %{session: session} do
+    feature "client binding  -  Pressed and Not pressed set pressed", %{session: session} do
       section = "toggle-api-client-binding"
 
       session
@@ -109,7 +129,7 @@ defmodule E2eWeb.ToggleTest do
       |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
 
       session
-      |> Toggle.click_in_section(section, "donec")
+      |> Toggle.click_in_section(section, "Pressed")
       |> Toggle.wait_for_has(
         css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
@@ -118,7 +138,7 @@ defmodule E2eWeb.ToggleTest do
       )
 
       session
-      |> Toggle.click_in_section(section, "lorem")
+      |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
         css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
@@ -127,7 +147,7 @@ defmodule E2eWeb.ToggleTest do
       )
     end
 
-    feature "client js  -  lorem dispatches set pressed off", %{session: session} do
+    feature "client js  -  Pressed and Not pressed dispatch set pressed", %{session: session} do
       section = "toggle-api-client-js"
 
       session
@@ -137,7 +157,7 @@ defmodule E2eWeb.ToggleTest do
       assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-api-cjs") == "on"
 
       session
-      |> Toggle.click_in_section(section, "lorem")
+      |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
         css(~s|#toggle-api-cjs [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
@@ -189,6 +209,34 @@ defmodule E2eWeb.ToggleTest do
     end
   end
 
+  describe "patterns" do
+    feature "controlled  -  click toggles pressed root state", %{session: session} do
+      section = "toggle-patterns-controlled-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :patterns)
+        |> Toggle.wait_patterns_page()
+        |> Toggle.wait_section_toggle_ready(section, timeout: 15_000)
+
+      assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-patterns-controlled") ==
+               "off"
+
+      session
+      |> Toggle.click_toggle_root_in_section(section)
+      |> Toggle.wait_for_has(
+        css(
+          ~s|#toggle-patterns-controlled [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          visible: :any
+        ),
+        timeout: 8_000
+      )
+
+      assert Toggle.toggle_root_data_state_by_host_id(session, "toggle-patterns-controlled") ==
+               "on"
+    end
+  end
+
   describe "playground" do
     feature "disabled switch sets data-disabled on toggle root", %{session: session} do
       session
@@ -207,13 +255,30 @@ defmodule E2eWeb.ToggleTest do
   end
 
   describe "style" do
-    feature "size section mounts", %{session: session} do
-      section = "toggle-styling-size"
+    feature "color section mounts", %{session: session} do
+      section = "toggle-styling-color"
 
       session
       |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :style)
       |> Toggle.wait_styling_page()
-      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000, hook_count: 3)
+      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000, hook_count: 6)
+    end
+
+    feature "disabled section shows data-disabled", %{session: session} do
+      section = "toggle-styling-disabled"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(Toggle, :toggle, :style)
+      |> Toggle.wait_styling_page()
+      |> Toggle.wait_section_toggle_ready(section, timeout: 15_000, hook_count: 2)
+      |> Toggle.wait_for_has(
+        css(
+          ~s|section##{section} [data-scope="toggle"][data-part="root"][data-disabled]|,
+          count: 2,
+          visible: :any
+        ),
+        timeout: 8_000
+      )
     end
   end
 end

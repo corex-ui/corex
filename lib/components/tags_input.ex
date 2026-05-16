@@ -54,12 +54,14 @@ defmodule Corex.TagsInput do
   ## Programmatic control
 
   ```heex
-  <button phx-click={Corex.TagsInput.set_value("tags-1", ["x"])}>Set</button>
+  <button phx-click={Corex.TagsInput.set_value("tags-1", ["lorem", "duis"])}>Set</button>
+  <button phx-click={Corex.TagsInput.add_value("tags-1", "donec")}>Add</button>
+  <button phx-click={Corex.TagsInput.remove_value("tags-1", "lorem")}>Remove</button>
   <button phx-click={Corex.TagsInput.clear_value("tags-1")}>Clear</button>
   ```
 
   ```elixir
-  socket = Corex.TagsInput.set_value(socket, "tags-1", ["x"])
+  socket = Corex.TagsInput.set_value(socket, "tags-1", ["lorem", "duis"])
   ```
 
   The tag list `value` is JSON-encoded on `data-tags` / `data-default-tags` so strings may contain commas.
@@ -90,6 +92,8 @@ defmodule Corex.TagsInput do
   use Phoenix.Component
 
   import Corex.Helpers, only: [validate_value!: 1]
+
+  alias Corex.Gettext
 
   alias Corex.TagsInput.Anatomy.{
     Control,
@@ -447,6 +451,38 @@ defmodule Corex.TagsInput do
     LiveView.push_event(socket, "tags_input_clear_value", %{id: tags_input_id})
   end
 
+  @doc type: :api
+  def add_value(tags_input_id, value)
+      when is_binary(tags_input_id) and is_binary(value) and value != "" do
+    JS.dispatch("corex:tags-input:add-value",
+      to: "##{tags_input_id}",
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  def add_value(socket, tags_input_id, value)
+      when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
+             value != "" do
+    LiveView.push_event(socket, "tags_input_add_value", %{id: tags_input_id, value: value})
+  end
+
+  @doc type: :api
+  def remove_value(tags_input_id, value)
+      when is_binary(tags_input_id) and is_binary(value) and value != "" do
+    JS.dispatch("corex:tags-input:remove-value",
+      to: "##{tags_input_id}",
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  def remove_value(socket, tags_input_id, value)
+      when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
+             value != "" do
+    LiveView.push_event(socket, "tags_input_remove_value", %{id: tags_input_id, value: value})
+  end
+
   defp tags_from_field_string(v) when is_binary(v), do: String.split(v, ",", trim: true)
   defp tags_from_field_string(_), do: []
 
@@ -457,10 +493,13 @@ defmodule Corex.TagsInput do
 
   defp normalize_tags_input_translation(assigns) do
     gettext_default = %TagsInputTranslation{
-      placeholder: Corex.Gettext.gettext("Add a tag…"),
-      delete_tag_trigger_label: Corex.Gettext.gettext("Delete tag %{tag}"),
+      placeholder: Gettext.gettext("Add a tag…"),
+      delete_tag_trigger_label: Gettext.gettext("Delete tag %{tag}", tag: "%{tag}"),
       tag_edited:
-        Corex.Gettext.gettext("Editing tag %{tag}. Press enter to save or escape to cancel.")
+        Gettext.gettext(
+          "Editing tag %{tag}. Press enter to save or escape to cancel.",
+          tag: "%{tag}"
+        )
     }
 
     merged = TagsInputTranslation.merge(assigns.translation, gettext_default)

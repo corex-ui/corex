@@ -119,7 +119,7 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1815
+#: lib/e2e_web/controllers/page_controller.ex:1897
 #, elixir-autogen, elixir-format
 msgid "Templates · Corex"
 msgstr ""
@@ -129,14 +129,14 @@ msgstr ""
 msgid "Corex Links"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:66
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:118
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:67
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:120
 #, elixir-autogen, elixir-format
 msgid "GitHub"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:58
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:110
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:59
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:112
 #, elixir-autogen, elixir-format
 msgid "Live demo"
 msgstr ""
@@ -146,17 +146,17 @@ msgstr ""
 msgid "Soonex preview slides"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1806
+#: lib/e2e_web/controllers/page_controller.ex:1888
 #, elixir-autogen, elixir-format
 msgid "Hero section"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1809
+#: lib/e2e_web/controllers/page_controller.ex:1891
 #, elixir-autogen, elixir-format
 msgid "Highlights section"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:75
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:76
 #, elixir-autogen, elixir-format
 msgid "Locales & RTL"
 msgstr ""
@@ -166,27 +166,27 @@ msgstr ""
 msgid "Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components. Choose English-first Soonex or Soonex i18n with locales and RTL."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:99
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:101
 #, elixir-autogen, elixir-format
 msgid "Same Soonex surface with Gettext and Localize: Arabic, English, and French out of the box, RTL-aware controls, and the same static build pipeline."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:47
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:44
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:45
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Soonex"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:96
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:98
 #, elixir-autogen, elixir-format
 msgid "Soonex i18n"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_html/templates_page.html.heex:81
+#: lib/e2e_web/controllers/page_html/templates_page.html.heex:82
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Soonex i18n preview slides"
 msgstr ""
@@ -201,7 +201,12 @@ msgstr ""
 msgid "Static Tableau starters with Corex"
 msgstr ""
 
-#: lib/e2e_web/controllers/page_controller.ex:1811
+#: lib/e2e_web/controllers/page_controller.ex:1893
 #, elixir-autogen, elixir-format
 msgid "Waitlist section"
+msgstr ""
+
+#: lib/e2e_web/live/admin_live/form.ex:66
+#, elixir-autogen, elixir-format
+msgid "Search currency"
 msgstr ""

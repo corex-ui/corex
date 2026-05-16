@@ -6,35 +6,9 @@
   }
 
   .toggle [data-scope="toggle"][data-part="root"] {
-    @apply ui-item;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-space-sm);
-    min-height: var(--spacing-size);
-    padding-inline: var(--spacing-space);
-    padding-block: var(--spacing-space-sm);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
-    background: var(--color-layer);
-    color: var(--color-ink);
-    cursor: pointer;
-    transition:
-      background-color 150ms ease,
-      border-color 150ms ease,
-      color 150ms ease;
-  }
+    @apply ui-trigger;
 
-  .toggle [data-scope="toggle"][data-part="root"][data-state="on"] {
-    background: var(--color-selected);
-    border-color: var(--color-selected);
-    color: var(--color-selected-ink);
-  }
-
-  .toggle [data-scope="toggle"][data-part="root"][data-disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+    width: fit-content;
   }
 
   .toggle [data-scope="toggle"][data-part="indicator"] {
@@ -57,11 +31,66 @@
 }
 
 @utility toggle--* {
-  .toggle [data-scope="toggle"][data-part="root"] {
+  [data-scope="toggle"][data-part="root"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    min-height: --value(--spacing-size-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    padding-block: --value(--spacing-space-*-sm, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+
+    &:hover {
+      background-color: --value(--color-*-hover, [color]);
+    }
+
+    &:active {
+      background-color: --value(--color-*-active, [color]);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+      color: var(--color-ink-muted);
+      cursor: not-allowed;
+    }
+
+    &[data-state="on"] {
+      background-color: --value(--color-*, [color]);
+      color: --value(--color-*-ink, [color]);
+
+      &:hover {
+        background-color: --value(--color-*-hover, [color]);
+      }
+
+      &:active {
+        background-color: --value(--color-*-active, [color]);
+      }
+
+      &:focus-visible {
+        box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+        outline: none;
+      }
+
+      &:disabled,
+      &[data-disabled],
+      &[disabled] {
+        background-color: --value(--color-*-muted, [color]);
+        color: var(--color-ink-muted);
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+@utility toggle--rounded-* {
+  [data-scope="toggle"][data-part="root"] {
+    border-radius: --value(--radius-*, [length]);
   }
 }

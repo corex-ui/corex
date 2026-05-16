@@ -80,6 +80,7 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   def page(:toggle, :api), do: {~p"/toggle/api", "#toggle-api-page"}
   def page(:toggle, :events), do: {~p"/toggle/events", "#toggle-events-page"}
   def page(:toggle, :playground), do: {~p"/toggle/playground", "#toggle-playground"}
+  def page(:toggle, :patterns), do: {~p"/toggle/patterns", "#toggle-patterns-page"}
   def page(:toggle, :style), do: {~p"/toggle/style", "#toggle-styling-page"}
 
   @doc """

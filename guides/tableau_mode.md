@@ -1,6 +1,6 @@
 # Tableau static + Corex: mode
 
-This guide is for a **[Tableau](https://hex.pm/packages/tableau)** site that already follows **[Tableau](tableau.html)** through design assets, ESM Esbuild, root layout, and `LiveSocket` hooks. It adds **light/dark** switching: `data-mode`, a before-paint inline script, **`<.toggle_group>`**, and **`mode.js`** for `localStorage` and `corex:set-mode`.
+This guide is for a **[Tableau](https://hex.pm/packages/tableau)** site that already follows **[Tableau](tableau.html)** through design assets, ESM Esbuild, root layout, and `LiveSocket` hooks. It adds **light/dark** switching: `data-mode`, a before-paint inline script, **`<.toggle>`**, and **`mode.js`** for `localStorage` and `corex:set-mode`.
 
 Phoenix’s pipeline in **[Dark mode](dark_mode.html)** sets **`data-mode`** per request from a cookie. Here, static HTML uses **build defaults + client reconciliation** and `prefers-color-scheme` inside the head script when nothing is stored.
 
@@ -32,8 +32,6 @@ defmodule MyApp.Mode do
     end
   end
 
-  def toggle_value("dark"), do: ["dark"]
-  def toggle_value(_), do: []
 end
 ```
 
@@ -41,10 +39,10 @@ end
 
 ### 2. CSS imports
 
-Add **`toggle-group.css`** (see **[Tableau](tableau.html) §4** for the baseline stack):
+Ensure **`toggle.css`** is imported (see **[Tableau](tableau.html) §4** for the baseline stack):
 
 ```css
-@import "../corex/components/toggle-group.css";
+@import "../corex/components/toggle.css";
 ```
 
 ---
@@ -98,9 +96,11 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
   const syncModeToggle = (mode) => {
     const root = document.getElementById("mode-switcher")
     if (!root) return
-    const value = mode === "dark" ? ["dark"] : []
     root.dispatchEvent(
-      new CustomEvent("corex:toggle-group:set-value", { detail: { value } }),
+      new CustomEvent("corex:toggle:set-pressed", {
+        bubbles: false,
+        detail: { pressed: mode === "dark" },
+      }),
     )
   }
 
@@ -131,7 +131,13 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
   })
 
   window.addEventListener("corex:set-mode", (e) => {
-    const raw = e.detail?.value
+    const detail = e.detail
+    if (typeof detail?.pressed === "boolean") {
+      applyMode(detail.pressed ? "dark" : "light")
+      whenControlReady("mode-switcher", syncModeFromDocument)
+      return
+    }
+    const raw = detail?.value
     const isDark = Array.isArray(raw) && raw.includes("dark")
     applyMode(isDark ? "dark" : "light")
     whenControlReady("mode-switcher", syncModeFromDocument)
@@ -147,11 +153,11 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
 import "./mode.js"
 ```
 
-Register **ToggleGroup**:
+Register **Toggle**:
 
 ```javascript
     ...hooks({
-      ToggleGroup: () => import("corex/toggle-group"),
+      Toggle: () => import("corex/toggle"),
       Accordion: () => import("corex/accordion"),
     }),
 ```
@@ -162,23 +168,23 @@ Merge with **`Select`** and **`theme.js`** from the theming guide if you use bot
 
 ### 6. Mode toggle HEEx
 
-**`id="mode-switcher"`** matches **`mode.js`**. **`state-on`** / **`state-off`** swap icons with the toggle value.
+**`id="mode-switcher"`** matches **`mode.js`**. **`data-toggle-dual-label`** swaps the moon and sun icons with pressed state.
 
 ```heex
-<.toggle_group
+<.toggle
   id="mode-switcher"
-  class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
-  multiple={false}
-  deselectable={true}
-  value={MyApp.Mode.toggle_value(@mode)}
-  dir="ltr"
-  on_value_change_client="corex:set-mode"
+  class="toggle toggle--sm"
+  data-toggle-dual-label
+  pressed={@mode == "dark"}
+  on_pressed_change_client="corex:set-mode"
 >
-  <:item value="dark" aria_label="Toggle color mode">
-    <.heroicon name="hero-sun" class="icon state-on" />
-    <.heroicon name="hero-moon" class="icon state-off" />
-  </:item>
-</.toggle_group>
+  <span>
+    <.heroicon name="hero-moon" />
+  </span>
+  <span data-pressed>
+    <.heroicon name="hero-sun" />
+  </span>
+</.toggle>
 ```
 
 ## Related

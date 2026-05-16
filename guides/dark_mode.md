@@ -126,7 +126,12 @@ Inside `<head>`, **before** the closing `</head>`, add the bridge script. It run
     );
 
     window.addEventListener("phx:set-mode", (e) => {
-      const value = e.detail?.value;
+      const detail = e.detail;
+      if (typeof detail?.pressed === "boolean") {
+        setMode(detail.pressed ? "dark" : "light");
+        return;
+      }
+      const value = detail?.value;
       const mode = Array.isArray(value) && value[0] ? value[0] : "light";
       setMode(mode);
     });
@@ -144,7 +149,7 @@ Because the script runs in `<head>` synchronously, the page never paints with th
 
 ## 5. Add a mode toggle to the app layout
 
-Use `Corex.ToggleGroup`. The `on_value_change_client="phx:set-mode"` attribute makes it dispatch the same window event the bridge script listens for, no `handle_event/3` round-trip.
+Use `Corex.Toggle`. The `on_pressed_change_client="phx:set-mode"` attribute makes it dispatch the same window event the bridge script listens for, no `handle_event/3` round-trip.
 
 In `lib/my_app_web/components/layouts.ex`, add a `:mode` attr to your `app/1` and render the toggle inside the header:
 
@@ -175,22 +180,25 @@ attr :mode, :string,
 
 def mode_toggle(assigns) do
   ~H"""
-  <.toggle_group
+  <.toggle
     id="mode-switcher"
-    class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
-    value={if @mode == "dark", do: ["dark"], else: []}
-    on_value_change_client="phx:set-mode"
+    class="toggle toggle--sm"
+    data-toggle-dual-label
+    pressed={@mode == "dark"}
+    on_pressed_change_client="phx:set-mode"
   >
-    <:item value="dark">
-      <.heroicon name="hero-sun" class="icon state-on" />
-      <.heroicon name="hero-moon" class="icon state-off" />
-    </:item>
-  </.toggle_group>
+    <span>
+      <.heroicon name="hero-moon" />
+    </span>
+    <span data-pressed>
+      <.heroicon name="hero-sun" />
+    </span>
+  </.toggle>
   """
 end
 ```
 
-The **`toggle-group--duo`** class matches **`mix corex.new --mode`**. You can use **`toggle-group--inverted`** or other modifiers instead if you prefer a different Corex Design variant.
+Use **`data-toggle-dual-label`** so the moon icon shows in light mode and the sun icon when pressed (dark). Adjust **`toggle--sm`** or other **`toggle--*`** modifiers to match your layout.
 
 Then make sure every page that renders the layout passes `mode={@mode}` (or `mode={assigns[:mode] || "light"}`) into it:
 
@@ -224,14 +232,14 @@ end
 
 ## 6. Styling
 
-If you are using **Corex Design**, make sure `assets/css/app.css` includes the `toggle-group` component CSS  -  that's what styles the toggle you just added  -  alongside any theme/dark CSS you depend on:
+If you are using **Corex Design**, make sure `assets/css/app.css` includes the `toggle` component CSS  -  that's what styles the mode switcher you just added  -  alongside any theme/dark CSS you depend on:
 
 ```css
 @import "../corex/main.css";
 @import "../corex/theme/neo.css";
 @import "../corex/components/typo.css";
 @import "../corex/components/layout.css";
-@import "../corex/components/toggle-group.css";
+@import "../corex/components/toggle.css";
 ```
 
 The Corex Design themes already define `[data-mode=dark]` overrides, so once `<html>` flips to `data-mode="dark"`, your tokens cascade automatically. If you write your own CSS, target the same selector:
@@ -256,7 +264,7 @@ The Corex Design themes already define `[data-mode=dark]` overrides, so once `<h
 1. **Cookie**  -  `Plugs.Mode` reads `phx_mode` and assigns `:mode` for the initial render and the session.
 2. **Server-rendered `data-mode`**  -  `<html data-mode={assigns[:mode] || "light"}>` carries the value into the first paint.
 3. **Inline `<script>` in `<head>`**  -  reconciles `localStorage` ↔ `data-mode` ↔ system preference, persists the cookie, and listens for `phx:set-mode`.
-4. **`Corex.ToggleGroup`**  -  `on_value_change_client="phx:set-mode"` dispatches the event the bridge listens for, so the toggle works without a server round-trip.
+4. **`Corex.Toggle`**  -  `on_pressed_change_client="phx:set-mode"` dispatches the event the bridge listens for, so the toggle works without a server round-trip.
 5. **LiveView `on_mount`**  -  pulls `:mode` from the session so LiveViews see the same value as the initial render.
 
 Together these layers give you no-flicker dark mode that survives reloads, navigation, and multiple tabs.

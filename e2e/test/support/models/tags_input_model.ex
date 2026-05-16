@@ -6,6 +6,7 @@ defmodule E2eWeb.TagsInputModel do
   @anatomy_sections ~w(
     tags-input-anatomy-minimal
     tags-input-anatomy-label
+    tags-input-anatomy-translation
   )
 
   def anatomy_section_ids, do: @anatomy_sections

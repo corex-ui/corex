@@ -14,7 +14,7 @@
 @import "../corex/main.css";
 <%= for theme <- @themes do %>@import "../corex/theme/<%= theme %>.css";
 <% end %><%= if @mode do %>
-@import "../corex/components/toggle-group.css";
+@import "../corex/components/toggle.css";
 <% end %>@import "../corex/components/toast.css";
 @import "../corex/components/layout-heading.css";
 @import "../corex/components/layout.css";
@@ -30,8 +30,6 @@
 @import "../corex/components/native-input.css";
 @import "../corex/components/number-input.css";
 @import "../corex/components/select.css";
-@import "../corex/components/tags-input.css";
-@import "../corex/components/toggle.css";
 <% end %>
 /* Add variants based on LiveView classes */
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);

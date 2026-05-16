@@ -18,7 +18,6 @@ defmodule Corex.TagsInput.Translation do
           tag_edited: String.t() | nil
         }
 
-  @doc false
   def merge(%__MODULE__{} = user, %__MODULE__{} = default) do
     %__MODULE__{
       placeholder: take_override(user.placeholder, default.placeholder),
@@ -28,7 +27,6 @@ defmodule Corex.TagsInput.Translation do
     }
   end
 
-  @doc false
   def to_camel_map(%__MODULE__{} = t) do
     %{
       "deleteTagTriggerLabel" => t.delete_tag_trigger_label,
@@ -36,7 +34,6 @@ defmodule Corex.TagsInput.Translation do
     }
   end
 
-  @doc false
   def format_tag(template, tag) when is_binary(template) and is_binary(tag) do
     String.replace(template, "%{tag}", tag)
   end

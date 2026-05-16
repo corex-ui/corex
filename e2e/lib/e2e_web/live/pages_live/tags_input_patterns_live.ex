@@ -14,9 +14,9 @@ defmodule E2eWeb.TagsInputPatternsLive do
         :patterns_validation_elixir,
         E2eWeb.Demos.TagsInputDemo.patterns_validation_elixir()
       )
-      |> assign(:allowed_tags, ~w(lorem duis donec))
-      |> assign(:tags, ~w(lorem duis donec))
-      |> assign(:tags_validated, ~w(lorem duis))
+      |> assign(:allowed_tags, ["lorem", "duis", "donec"])
+      |> assign(:tags, ["lorem", "duis", "donec"])
+      |> assign(:tags_validated, ["lorem", "duis"])
 
     {:ok, socket}
   end
@@ -42,7 +42,7 @@ defmodule E2eWeb.TagsInputPatternsLive do
       <.demo_page
         id="tags-input-patterns-page"
         title="Tags Input · Patterns"
-        subtitle="Server-owned tag list with controlled mode and optional allow-list filtering."
+        subtitle="Controlled tag list and allow-list validation (both use controlled mode)."
       >
         <.demo_section
           id="tags-input-patterns-controlled-section"

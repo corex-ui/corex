@@ -1,5 +1,9 @@
 defmodule Corex.Toggle.Anatomy do
+  @moduledoc false
+
   defmodule Props do
+    @moduledoc false
+
     @enforce_keys [:id]
 
     defstruct [
@@ -24,6 +28,8 @@ defmodule Corex.Toggle.Anatomy do
   end
 
   defmodule Root do
+    @moduledoc false
+
     defstruct [:id, :dir, pressed: false, disabled: false]
 
     @ignored_attrs [
@@ -44,6 +50,8 @@ defmodule Corex.Toggle.Anatomy do
   end
 
   defmodule Indicator do
+    @moduledoc false
+
     defstruct [:id, :dir, pressed: false, disabled: false]
 
     @ignored_attrs [

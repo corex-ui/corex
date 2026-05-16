@@ -151,7 +151,18 @@ defmodule Corex.TagsInput.Connect do
   def props(assigns) do
     value = validate_value!(assigns.value)
 
-    base = %{
+    assigns
+    |> base_hook_props(value)
+    |> put_data_max(assigns.max)
+    |> put_data_delimiter(assigns.delimiter)
+    |> put_data_blur_behavior(assigns.blur_behavior)
+    |> put_data_editable(assigns.editable)
+    |> maybe_put_data_dir_from(assigns)
+    |> Map.put("data-translation", translation_json(assigns))
+  end
+
+  defp base_hook_props(assigns, value) do
+    %{
       "data-controlled" => get_boolean(assigns.controlled),
       "data-tags" => if(assigns.controlled, do: tags_json(value)),
       "data-default-tags" => if(!assigns.controlled, do: tags_json(value)),
@@ -174,38 +185,26 @@ defmodule Corex.TagsInput.Connect do
       "data-on-value-invalid" => assigns.on_value_invalid,
       "data-on-value-invalid-client" => assigns.on_value_invalid_client
     }
-
-    base =
-      case assigns.max do
-        n when is_integer(n) and n > 0 -> Map.put(base, "data-max", to_string(n))
-        _ -> base
-      end
-
-    base =
-      case assigns.delimiter do
-        nil -> base
-        "" -> base
-        s when is_binary(s) -> Map.put(base, "data-delimiter", s)
-        _ -> base
-      end
-
-    base =
-      case assigns.blur_behavior do
-        b when b in ["add", "clear"] -> Map.put(base, "data-blur-behavior", b)
-        _ -> base
-      end
-
-    base =
-      case assigns.editable do
-        nil -> base
-        true -> Map.put(base, "data-editable", "true")
-        false -> Map.put(base, "data-editable", "false")
-      end
-
-    base
-    |> maybe_put_data_dir_from(assigns)
-    |> Map.put("data-translation", translation_json(assigns))
   end
+
+  defp put_data_max(attrs, n) when is_integer(n) and n > 0,
+    do: Map.put(attrs, "data-max", to_string(n))
+
+  defp put_data_max(attrs, _), do: attrs
+
+  defp put_data_delimiter(attrs, s) when is_binary(s) and s != "",
+    do: Map.put(attrs, "data-delimiter", s)
+
+  defp put_data_delimiter(attrs, _), do: attrs
+
+  defp put_data_blur_behavior(attrs, b) when b in ["add", "clear"],
+    do: Map.put(attrs, "data-blur-behavior", b)
+
+  defp put_data_blur_behavior(attrs, _), do: attrs
+
+  defp put_data_editable(attrs, true), do: Map.put(attrs, "data-editable", "true")
+  defp put_data_editable(attrs, false), do: Map.put(attrs, "data-editable", "false")
+  defp put_data_editable(attrs, _), do: attrs
 
   defp translation_json(assigns) do
     case Map.get(assigns, :translation) do

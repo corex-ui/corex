@@ -117,7 +117,6 @@ defmodule E2eWeb.ToggleEventsLive do
             <div class="flex flex-col gap-4 items-center w-full">
               <div
                 id="toggle-events-client-wrap"
-                class="w-full"
                 phx-hook=".ToggleEventsClient"
                 phx-update="ignore"
                 data-toggle-client-id={@id_client}

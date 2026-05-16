@@ -2,8 +2,18 @@
   <.demo_page
     id="toggle-styling-page"
     title="Toggle · Style"
-    subtitle="lorem, duis, donec across density steps on the toggle root."
+    subtitle="Semantic colors, density, corner radius, and disabled states via modifier classes on the root."
   >
+    <.demo_section
+      id="toggle-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.ToggleDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
     <.demo_section
       id="toggle-styling-size"
       title="Size"
@@ -11,6 +21,26 @@
     >
       <:preview>
         <E2eWeb.Demos.ToggleDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.ToggleDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-styling-disabled"
+      title="Disabled"
+      code={E2eWeb.Demos.ToggleDemo.styling_disabled_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.styling_disabled_example />
       </:preview>
     </.demo_section>
   </.demo_page>

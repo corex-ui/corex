@@ -89,6 +89,11 @@ defmodule E2eWeb.ToggleModel do
     session
   end
 
+  def wait_patterns_page(session) do
+    assert_has(session, css("#toggle-patterns-page", visible: :any))
+    session
+  end
+
   def wait_styling_page(session) do
     assert_has(session, css("#toggle-styling-page", visible: :any))
     session

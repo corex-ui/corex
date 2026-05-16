@@ -199,6 +199,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/toggle/anatomy", "#toggle-anatomy-page"},
     {"/en/toggle/api", "#toggle-api-page"},
     {"/en/toggle/events", "#toggle-events-page"},
+    {"/en/toggle/patterns", "#toggle-patterns-page"},
     {"/en/toggle/style", "#toggle-styling-page"},
     {"/en/toggle-group/playground", "#toggle-group-playground-page"},
     {"/en/toggle-group/anatomy", "#toggle-group-anatomy-page"},

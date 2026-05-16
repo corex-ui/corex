@@ -2,7 +2,7 @@
   <.demo_page
     id="tags-input-anatomy-page"
     title="Tags input · Anatomy"
-    subtitle="Tags are JSON-encoded for safe commas in values."
+    subtitle="Tags are JSON-encoded for safe commas in values. Pass Corex.TagsInput.Translation to customize placeholder and per-tag aria-labels."
   >
     <.demo_section
       id="tags-input-anatomy-minimal"
@@ -21,6 +21,16 @@
     >
       <:preview>
         <E2eWeb.Demos.TagsInputDemo.with_label_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-anatomy-translation"
+      title="Translation"
+      code={E2eWeb.Demos.TagsInputDemo.with_translation_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.with_translation_example />
       </:preview>
     </.demo_section>
   </.demo_page>

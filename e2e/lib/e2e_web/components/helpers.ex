@@ -611,7 +611,7 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/toggle/playground",
           api_to: ~p"/toggle/api",
           events_to: ~p"/toggle/events",
-          pattern: false,
+          patterns_to: ~p"/toggle/patterns",
           style: true,
           style_to: ~p"/toggle/style"
         },

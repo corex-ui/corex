@@ -43,76 +43,142 @@ defmodule E2eWeb.TagsInputTest do
   end
 
   describe "api" do
-    feature "client binding  -  Fill sets tags", %{session: session} do
+    feature "client binding  -  Set lorem and duis sets tags", %{session: session} do
       section = "tags-input-api-set-value-binding"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.click_in_section(section, "Fill")
+      |> TagsInput.click_in_section(section, "Set lorem and duis")
       |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
-      |> TagsInput.assert_item_text_in_section(section, "ipsum", timeout: 8_000)
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
     end
 
-    feature "server  -  Fill from server sets tags", %{session: session} do
+    feature "server  -  Set lorem and duis from server sets tags", %{session: session} do
       section = "tags-input-api-set-value-server"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.prepare_live_form()
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.click_in_section(section, "Fill from server")
+      |> TagsInput.click_in_section(section, "Set lorem and duis")
       |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
-      |> TagsInput.assert_item_text_in_section(section, "ipsum", timeout: 8_000)
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
     end
 
-    feature "js dispatch  -  Fill via dispatch sets tags", %{session: session} do
+    feature "js dispatch  -  Set lorem and duis via dispatch sets tags", %{session: session} do
       section = "tags-input-api-set-value-js"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.click_in_section(section, "Fill via dispatch")
+      |> TagsInput.click_in_section(section, "Set lorem and duis")
       |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
-      |> TagsInput.assert_item_text_in_section(section, "ipsum", timeout: 8_000)
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
     end
 
-    feature "clear binding  -  Clear removes tags", %{session: session} do
+    feature "add binding  -  Add duis appends tag", %{session: session} do
+      section = "tags-input-api-add-value-binding"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Add duis")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
+    end
+
+    feature "add server  -  Add duis from server appends tag", %{session: session} do
+      section = "tags-input-api-add-value-server"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.prepare_live_form()
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Add duis")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
+    end
+
+    feature "add js  -  Add duis via dispatch appends tag", %{session: session} do
+      section = "tags-input-api-add-value-js"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Add duis")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
+    end
+
+    feature "clear binding  -  Clear all removes tags", %{session: session} do
       section = "tags-input-api-clear-binding"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.assert_item_text_in_section(section, "a", timeout: 8_000)
-      |> TagsInput.click_in_section(section, "Clear")
-      |> TagsInput.refute_item_text_in_section(section, "a")
-      |> TagsInput.refute_item_text_in_section(section, "b")
-      |> TagsInput.refute_item_text_in_section(section, "c")
+      |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
+      |> TagsInput.click_in_section(section, "Clear all")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.refute_item_text_in_section(section, "duis")
+      |> TagsInput.refute_item_text_in_section(section, "donec")
     end
 
-    feature "clear server  -  Clear from server removes tags", %{session: session} do
+    feature "clear binding  -  Clear lorem removes one tag", %{session: session} do
+      section = "tags-input-api-clear-binding"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Clear lorem")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
+    end
+
+    feature "clear server  -  Clear all removes tags", %{session: session} do
       section = "tags-input-api-clear-server"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.prepare_live_form()
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.assert_item_text_in_section(section, "x", timeout: 8_000)
-      |> TagsInput.click_in_section(section, "Clear from server")
-      |> TagsInput.refute_item_text_in_section(section, "x")
-      |> TagsInput.refute_item_text_in_section(section, "y")
+      |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
+      |> TagsInput.click_in_section(section, "Clear all")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.refute_item_text_in_section(section, "duis")
+      |> TagsInput.refute_item_text_in_section(section, "donec")
     end
 
-    feature "clear js  -  Clear via dispatch removes tags", %{session: session} do
+    feature "clear server  -  Clear lorem removes one tag", %{session: session} do
+      section = "tags-input-api-clear-server"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.prepare_live_form()
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Clear lorem")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
+    end
+
+    feature "clear js  -  Clear all removes tags", %{session: session} do
       section = "tags-input-api-clear-js"
 
       session
       |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
       |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
-      |> TagsInput.assert_item_text_in_section(section, "a", timeout: 8_000)
-      |> TagsInput.click_in_section(section, "Clear via dispatch")
-      |> TagsInput.refute_item_text_in_section(section, "a")
-      |> TagsInput.refute_item_text_in_section(section, "b")
+      |> TagsInput.assert_item_text_in_section(section, "lorem", timeout: 8_000)
+      |> TagsInput.click_in_section(section, "Clear all")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.refute_item_text_in_section(section, "duis")
+    end
+
+    feature "clear js  -  Clear lorem removes one tag", %{session: session} do
+      section = "tags-input-api-clear-js"
+
+      session
+      |> ComponentBehaviorSpec.visit_ready(TagsInput, :tags_input, :api)
+      |> TagsInput.wait_section_tags_input_ready(section, timeout: 15_000)
+      |> TagsInput.click_in_section(section, "Clear lorem")
+      |> TagsInput.refute_item_text_in_section(section, "lorem")
+      |> TagsInput.assert_item_text_in_section(section, "duis", timeout: 8_000)
     end
   end
 
