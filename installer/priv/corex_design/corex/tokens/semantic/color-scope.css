@@ -18,6 +18,7 @@
   --color-accent-active: var(--theme-color-accent-active);
   --color-alert-ink: var(--theme-color-alert-ink);
   --color-alert: var(--theme-color-alert);
+  --color-link: var(--theme-color-link);
   --color-brand-active: var(--theme-color-brand-active);
   --color-selected-active: var(--theme-color-selected-active);
   --color-ink-alert: var(--theme-color-ink-alert);

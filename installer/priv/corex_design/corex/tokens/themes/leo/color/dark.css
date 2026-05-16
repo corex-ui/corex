@@ -18,6 +18,7 @@
   --theme-color-accent-active: #424249; /** Semantic accent active fill at 45% lightness (chroma #3F3F46). */
   --theme-color-alert-ink: #d1d1d2; /** 7.0:1 contrast against alert (#830005) */
   --theme-color-alert: #830005; /** Semantic alert default fill at 38% lightness (chroma #991B1B). */
+  --theme-color-link: #6592ff; /** 7.0:1 contrast against root (#020203) */
   --theme-color-brand-active: #640000; /** Semantic brand active fill at 38% lightness (chroma #B45309). */
   --theme-color-selected-active: #1d1d1d; /** Semantic selected active fill at 30% lightness (chroma #F4F4F5). */
   --theme-color-ink-alert: #ef6e63; /** 7.0:1 contrast against root (#020203) */

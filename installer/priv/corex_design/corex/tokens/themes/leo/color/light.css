@@ -18,6 +18,7 @@
   --theme-color-accent-active: #35353b; /** Semantic accent active fill at 40% lightness (chroma #3F3F46). */
   --theme-color-alert-ink: #d8d8d9; /** 7.0:1 contrast against alert (#8a030c) */
   --theme-color-alert: #8a030c; /** Semantic alert default fill at 40% lightness (chroma #991B1B). */
+  --theme-color-link: #2c52c2; /** 6.0:1 contrast against ui (#f0f0f1) */
   --theme-color-brand-active: #6a0600; /** Semantic brand active fill at 40% lightness (chroma #B45309). */
   --theme-color-selected-active: #b7b7b8; /** Semantic selected active fill at 85% lightness (chroma #F4F4F5). */
   --theme-color-ink-alert: #a82c29; /** 6.0:1 contrast against ui (#f0f0f1) */
@@ -41,7 +42,7 @@
   --theme-color-success-hover: #004c1c; /** Semantic success hover fill at 40% lightness (chroma #166534). */
   --theme-color-info-ink: #dbdbdc; /** 7.0:1 contrast against info (#1838a7) */
   --theme-color-brand-hover: #741400; /** Semantic brand hover fill at 40% lightness (chroma #B45309). */
-  --theme-color-ink-muted: #666667; /** 5.0:1 contrast against ui (#f0f0f1) */
+  --theme-color-ink-muted: #656565; /** 5.15:1 contrast against ui (#f0f0f1) */
   --theme-color-info-hover: #102b9a; /** Semantic info hover fill at 40% lightness (chroma #1E40AF). */
   --theme-color-ink-info: #2c52c2; /** 6.0:1 contrast against ui (#f0f0f1) */
   --theme-color-info-muted: #2143b3; /** Semantic info muted fill at 40% lightness (chroma #1E40AF). */
