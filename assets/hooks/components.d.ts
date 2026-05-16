@@ -60,6 +60,9 @@ declare module "corex/menu" {
 declare module "corex/number-input" {
   export const NumberInput: CorexHook;
 }
+declare module "corex/pagination" {
+  export const Pagination: CorexHook;
+}
 declare module "corex/password-input" {
   export const PasswordInput: CorexHook;
 }

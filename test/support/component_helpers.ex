@@ -23,6 +23,7 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.Marquee
   import Corex.Menu
   import Corex.Navigate
+  import Corex.Pagination
   import Corex.PasswordInput
   import Corex.RadioGroup
   import Corex.Select
@@ -621,6 +622,47 @@ defmodule CorexTest.ComponentHelpers do
       <:label>Keywords</:label>
       <:close><.heroicon name="hero-x-mark" /></:close>
     </.tags_input>
+    """
+  end
+
+  def render_pagination(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:count, fn -> 50 end)
+      |> assign_new(:page_size, fn -> 10 end)
+      |> assign_new(:page, fn -> 1 end)
+
+    ~H"""
+    <.pagination id="pagination-test" count={@count} page={@page} page_size={@page_size} class="pagination">
+      <:prev><span>Prev</span></:prev>
+      <:next><span>Next</span></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
+    """
+  end
+
+  def render_pagination_link_patch(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:count, fn -> 50 end)
+      |> assign_new(:page_size, fn -> 10 end)
+      |> assign_new(:page, fn -> 1 end)
+
+    ~H"""
+    <.pagination
+      id="pagination-link-patch"
+      count={@count}
+      page={@page}
+      page_size={@page_size}
+      class="pagination"
+      type={:link}
+      to="/items"
+      redirect={:patch}
+    >
+      <:prev><span>Prev</span></:prev>
+      <:next><span>Next</span></:next>
+      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+    </.pagination>
     """
   end
 

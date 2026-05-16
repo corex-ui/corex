@@ -208,6 +208,11 @@ defmodule E2eWeb.Router do
       live("/toggle/events", ToggleEventsLive)
       live("/toggle/patterns", TogglePatternsLive)
 
+      live("/pagination/playground", PaginationPlayLive)
+      live("/pagination/api", PaginationApiLive)
+      live("/pagination/events", PaginationEventsLive)
+      live("/pagination/patterns", PaginationPatternsLive)
+
       live("/toggle-group/playground", ToggleGroupPlayLive)
       live("/toggle-group/api", ToggleGroupApiLive)
       live("/toggle-group/events", ToggleGroupEventsLive)
@@ -282,6 +287,9 @@ defmodule E2eWeb.Router do
 
     get("/toggle/anatomy", PageController, :toggle_page)
     get("/toggle/style", PageController, :toggle_styling_page)
+
+    get("/pagination/anatomy", PageController, :pagination_page)
+    get("/pagination/style", PageController, :pagination_styling_page)
 
     get("/toggle-group/anatomy", PageController, :toggle_group_page)
     get("/toggle-group/style", PageController, :toggle_group_styling_page)

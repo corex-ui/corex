@@ -74,6 +74,9 @@ importers:
       '@zag-js/number-input':
         specifier: ^1.39.1
         version: 1.40.0
+      '@zag-js/pagination':
+        specifier: ^1.39.1
+        version: 1.40.0
       '@zag-js/password-input':
         specifier: ^1.39.1
         version: 1.40.0
@@ -397,6 +400,9 @@ packages:
 
   '@zag-js/number-input@1.40.0':
     resolution: {integrity: sha512-WffdeqSOpsKmgPzBkNZl9nAolQPlyl9dIabaPguGgXdYtZW/OGCGj8jCYqyEu4VL3kDPPVVQRWEqC/XzwzVCRg==}
+
+  '@zag-js/pagination@1.40.0':
+    resolution: {integrity: sha512-Ykotky0A/7rswb6BfOD9aXL1EssKwUYfBRbdWGe52uhVc7dGagMSTUDRVeNhVsP/MEdtwqys7urvDbAlEqq+GA==}
 
   '@zag-js/password-input@1.40.0':
     resolution: {integrity: sha512-mD4tbA4m82oV+0NbJ+P00Q4Gwz+zf1kZEZ3Z48ohICfK/WO1KhCgviY7vu/7bCMnRiD3dbi+nEeym8Kb29wRHw==}
@@ -1267,6 +1273,14 @@ snapshots:
   '@zag-js/number-input@1.40.0':
     dependencies:
       '@internationalized/number': 3.6.5
+      '@zag-js/anatomy': 1.40.0
+      '@zag-js/core': 1.40.0
+      '@zag-js/dom-query': 1.40.0
+      '@zag-js/types': 1.40.0
+      '@zag-js/utils': 1.40.0
+
+  '@zag-js/pagination@1.40.0':
+    dependencies:
       '@zag-js/anatomy': 1.40.0
       '@zag-js/core': 1.40.0
       '@zag-js/dom-query': 1.40.0

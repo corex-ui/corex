@@ -181,6 +181,7 @@ var isArray = (v) => Array.isArray(v);
 var isBoolean = (v) => v === true || v === false;
 var isObjectLike = (v) => v != null && typeof v === "object";
 var isObject = (v) => isObjectLike(v) && !isArray(v);
+var isNumber = (v) => typeof v === "number" && !Number.isNaN(v);
 var isString = (v) => typeof v === "string";
 var isFunction = (v) => typeof v === "function";
 var isNull = (v) => v == null;
@@ -2777,6 +2778,7 @@ export {
   isArray,
   isBoolean,
   isObject,
+  isNumber,
   isString,
   isFunction,
   isNull,

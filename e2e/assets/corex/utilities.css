@@ -499,21 +499,21 @@
   align-items: center;
   cursor: pointer;
   position: relative;
-  color: var(--color-ink-brand);
+  color: var(--color-link);
   height: auto;
   font-size: inherit;
   line-height: inherit;
   gap: var(--spacing-space);
   padding-inline: var(--spacing-space);
   border-radius: var(--radius-md);
-  text-decoration: none;
+  text-decoration-line: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: from-font;
   max-width: fit-content;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration-thickness: 2px;
   }
 
   &:focus-visible {

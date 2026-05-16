@@ -190,6 +190,7 @@ var Hooks = {
   Marquee: createLazyHook(() => import("corex/marquee"), "Marquee"),
   Menu: createLazyHook(() => import("corex/menu"), "Menu"),
   NumberInput: createLazyHook(() => import("corex/number-input"), "NumberInput"),
+  Pagination: createLazyHook(() => import("corex/pagination"), "Pagination"),
   PasswordInput: createLazyHook(() => import("corex/password-input"), "PasswordInput"),
   PinInput: createLazyHook(() => import("corex/pin-input"), "PinInput"),
   RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),

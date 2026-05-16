@@ -53,6 +53,7 @@ defmodule Corex do
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},
     number_input: {Corex.NumberInput, [number_input: 1]},
+    pagination: {Corex.Pagination, [pagination: 1]},
     password_input: {Corex.PasswordInput, [password_input: 1]},
     pin_input: {Corex.PinInput, [pin_input: 1]},
     radio_group: {Corex.RadioGroup, [radio_group: 1]},

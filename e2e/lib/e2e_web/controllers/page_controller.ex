@@ -33,6 +33,14 @@ defmodule E2eWeb.PageController do
     render(conn, :switch_styling_page)
   end
 
+  def pagination_page(conn, _params) do
+    render(conn, :pagination_page)
+  end
+
+  def pagination_styling_page(conn, _params) do
+    render(conn, :pagination_styling_page)
+  end
+
   def toggle_group_page(conn, _params) do
     render(conn, :toggle_group_page)
   end

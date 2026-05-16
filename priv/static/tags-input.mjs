@@ -3,7 +3,7 @@ import {
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   trackInteractOutside
-} from "./chunks/chunk-2MHUIH3F.mjs";
+} from "./chunks/chunk-QS5WHZEI.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -51,7 +51,7 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-C6EFS75P.mjs";
+} from "./chunks/chunk-XGGASIX4.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(

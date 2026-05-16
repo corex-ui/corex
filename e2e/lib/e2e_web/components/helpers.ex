@@ -605,6 +605,17 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/toast/api"
         },
         %{
+          label: "Pagination",
+          id: "pagination",
+          style: true,
+          anatomy_to: ~p"/pagination/anatomy",
+          playground_to: ~p"/pagination/playground",
+          api_to: ~p"/pagination/api",
+          events_to: ~p"/pagination/events",
+          patterns_to: ~p"/pagination/patterns",
+          style_to: ~p"/pagination/style"
+        },
+        %{
           label: "Toggle",
           id: "toggle",
           anatomy_to: ~p"/toggle/anatomy",

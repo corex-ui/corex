@@ -41,13 +41,13 @@ defmodule E2eWeb.Layouts do
     <div class="layout__wrapper">
       <.aside path={@path} />
       <main id="main-content" class="layout__main">
-        <.pagination path={@path} />
+        <.docs_pagination path={@path} />
         <div class="layout__content">
           <div class="layout__article">
             {render_slot(@inner_block)}
           </div>
         </div>
-        <.pagination_bottom path={@path} />
+        <.docs_pagination_bottom path={@path} />
 
         <.toast_group
           id="layout-toast"

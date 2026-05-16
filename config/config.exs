@@ -13,7 +13,7 @@ config :phoenix,
 
 if Mix.env() == :dev do
   corex_externals =
-    ~w(accordion angle-slider avatar carousel checkbox clipboard code collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input password-input pin-input radio-group select signature-pad switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
+    ~w(accordion angle-slider avatar carousel checkbox clipboard code collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input pagination password-input pin-input radio-group select signature-pad switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
 
   esbuild = fn args ->
@@ -53,6 +53,7 @@ if Mix.env() == :dev do
       ./hooks/marquee.ts
       ./hooks/menu.ts
       ./hooks/number-input.ts
+      ./hooks/pagination.ts
       ./hooks/password-input.ts
       ./hooks/pin-input.ts
       ./hooks/radio-group.ts

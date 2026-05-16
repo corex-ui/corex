@@ -5,7 +5,7 @@ defmodule E2eWeb.App.Pagination do
 
   attr :path, :string, required: true
 
-  def pagination(assigns) do
+  def docs_pagination(assigns) do
     assigns =
       assigns
       |> assign(:prev, prev_next_page(assigns.path, :prev))
@@ -36,7 +36,7 @@ defmodule E2eWeb.App.Pagination do
     """
   end
 
-  def pagination_bottom(assigns) do
+  def docs_pagination_bottom(assigns) do
     assigns =
       assigns
       |> assign(:prev, prev_next_page(assigns.path, :prev))
