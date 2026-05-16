@@ -1,6 +1,7 @@
 defmodule Corex.TagsInput.Connect do
   @moduledoc false
   alias Corex.Selectors
+
   alias Corex.TagsInput.Anatomy.{
     Control,
     HiddenInput,
@@ -16,7 +17,8 @@ defmodule Corex.TagsInput.Connect do
     ValueInput
   }
 
-  import Corex.Helpers, only: [get_boolean: 1, validate_value!: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
+  import Corex.Helpers,
+    only: [get_boolean: 1, validate_value!: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
 
   alias Phoenix.LiveView.JS
 
@@ -25,8 +27,12 @@ defmodule Corex.TagsInput.Connect do
     "tags-input:#{root_id}:tag:#{value}:#{index}"
   end
 
-  defp tag_delete_dom_id(root_id, value, index), do: tag_item_dom_id(root_id, value, index) <> ":delete-btn"
-  defp tag_input_dom_id(root_id, value, index), do: tag_item_dom_id(root_id, value, index) <> ":input"
+  defp tag_delete_dom_id(root_id, value, index),
+    do: tag_item_dom_id(root_id, value, index) <> ":delete-btn"
+
+  defp tag_input_dom_id(root_id, value, index),
+    do: tag_item_dom_id(root_id, value, index) <> ":input"
+
   defp tag_text_dom_id(root_id, index), do: "tags-input:#{root_id}:tag-text:#{index}"
 
   defp ssr_item_row_id(root_id, index), do: "tags-input:#{root_id}:ssr-item:#{index}"

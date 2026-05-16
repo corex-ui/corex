@@ -31,7 +31,9 @@ defmodule Corex.TagsInputTest do
 
     test "translation attr merges placeholder" do
       assigns =
-        assign(%{__changed__: %{}}, id: "ti", value: [],
+        assign(%{__changed__: %{}},
+          id: "ti",
+          value: [],
           translation: %Corex.TagsInput.Translation{placeholder: "Pick tags"}
         )
 
@@ -47,7 +49,9 @@ defmodule Corex.TagsInputTest do
 
     test "scalar placeholder overrides merged translation" do
       assigns =
-        assign(%{__changed__: %{}}, id: "ti", value: [],
+        assign(%{__changed__: %{}},
+          id: "ti",
+          value: [],
           translation: %Corex.TagsInput.Translation{placeholder: "From translation"},
           placeholder: "From attr"
         )
@@ -102,6 +106,7 @@ defmodule Corex.TagsInputTest do
           <:close><.heroicon name="hero-x-mark" /></:close>
         </.tags_input>
         """)
+
       assert html =~ ~r/name="kw"/
       assert html =~ ~r/data-part="value-input"/
       assert html =~ ~r/type="hidden"/

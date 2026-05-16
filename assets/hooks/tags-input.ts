@@ -8,13 +8,15 @@ import type {
   HighlightChangeDetails,
   ValidityChangeDetails,
 } from "@zag-js/tags-input";
-import { getString, getBoolean, getBooleanValue, getDir, getNumber, canPushEvent } from "../lib/util";
 import {
-  idMatches,
-  notifyChange,
-  readPayloadId,
-  readPayloadStringArray,
-} from "../lib/respond-to";
+  getString,
+  getBoolean,
+  getBooleanValue,
+  getDir,
+  getNumber,
+  canPushEvent,
+} from "../lib/util";
+import { idMatches, notifyChange, readPayloadId, readPayloadStringArray } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
@@ -113,7 +115,10 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, highlightedValue: details.highlightedValue } as Record<string, unknown>,
+          payload: { id: el.id, highlightedValue: details.highlightedValue } as Record<
+            string,
+            unknown
+          >,
           serverEventName: getString(el, "onHighlightChange"),
           clientEventName: getString(el, "onHighlightChangeClient"),
         });
@@ -138,7 +143,8 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
     domRegistry.add<CustomEvent<{ value?: string[] }>>("corex:tags-input:set-value", (event) => {
       const v = event.detail?.value;
-      if (Array.isArray(v) && v.every((x) => typeof x === "string")) zag.api.setValue(v as string[]);
+      if (Array.isArray(v) && v.every((x) => typeof x === "string"))
+        zag.api.setValue(v as string[]);
     });
 
     domRegistry.add("corex:tags-input:clear-value", () => {

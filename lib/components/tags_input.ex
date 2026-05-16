@@ -131,7 +131,8 @@ defmodule Corex.TagsInput do
 
   attr(:field, Phoenix.HTML.FormField,
     default: nil,
-    doc: "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
+    doc:
+      "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
   )
 
   attr(:dir, :string,
@@ -171,6 +172,7 @@ defmodule Corex.TagsInput do
   attr(:on_input_value_change_client, :string, default: nil)
   attr(:on_highlight_change, :string, default: nil)
   attr(:on_highlight_change_client, :string, default: nil)
+
   attr(:on_value_invalid, :string,
     default: nil,
     doc:
@@ -452,7 +454,8 @@ defmodule Corex.TagsInput do
   def default_translation, do: TagsInputTranslation.default()
 
   defp assign_tags_input_i18n(assigns) do
-    merged = TagsInputTranslation.merge(Map.get(assigns, :translation), TagsInputTranslation.default())
+    merged =
+      TagsInputTranslation.merge(Map.get(assigns, :translation), TagsInputTranslation.default())
 
     resolved =
       case Map.get(assigns, :placeholder) do

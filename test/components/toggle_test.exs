@@ -12,13 +12,23 @@ defmodule Corex.ToggleTest do
     end
 
     test "controlled pressed true sets data-pressed" do
-      html = render_component(&CorexTest.ComponentHelpers.render_toggle/1, controlled: true, pressed: true)
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_toggle/1,
+          controlled: true,
+          pressed: true
+        )
+
       assert html =~ ~r/data-controlled/
       assert html =~ ~r/data-pressed="true"/
     end
 
     test "uncontrolled pressed default uses data-default-pressed" do
-      html = render_component(&CorexTest.ComponentHelpers.render_toggle/1, controlled: false, pressed: true)
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_toggle/1,
+          controlled: false,
+          pressed: true
+        )
+
       assert html =~ ~r/data-default-pressed="true"/
     end
   end

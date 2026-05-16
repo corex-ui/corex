@@ -1,18 +1,11 @@
-import {
-  connect,
-  machine,
-  type Props,
-  type Api,
-} from "@zag-js/tags-input";
+import { connect, machine, type Props, type Api } from "@zag-js/tags-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { templatesContentRoot } from "../lib/util";
 
 function directItemElements(controlEl: HTMLElement): HTMLElement[] {
   return Array.from(
-    controlEl.querySelectorAll<HTMLElement>(
-      ':scope > [data-scope="tags-input"][data-part="item"]'
-    )
+    controlEl.querySelectorAll<HTMLElement>(':scope > [data-scope="tags-input"][data-part="item"]')
   );
 }
 
@@ -117,11 +110,15 @@ export class TagsInput extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="root"]');
+    const rootEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="root"]'
+    );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const labelEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="label"]');
+    const labelEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="label"]'
+    );
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
 
     const controlEl = this.el.querySelector<HTMLElement>(
@@ -131,7 +128,9 @@ export class TagsInput extends Component<Props, Api> {
 
     this.renderItems();
 
-    const inputEl = this.el.querySelector<HTMLElement>('[data-scope="tags-input"][data-part="input"]');
+    const inputEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="tags-input"][data-part="input"]'
+    );
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
 
     const valueInput = this.el.querySelector<HTMLInputElement>(

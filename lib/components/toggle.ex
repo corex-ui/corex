@@ -97,7 +97,7 @@ defmodule Corex.Toggle do
 
   attr(:rest, :global)
 
-  slot :inner_block, required: false
+  slot(:inner_block, required: false)
 
   slot :indicator, required: false do
     attr(:class, :string, required: false)
@@ -154,7 +154,8 @@ defmodule Corex.Toggle do
   end
 
   def set_pressed(socket, toggle_id, pressed)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) and is_boolean(pressed) do
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) and
+             is_boolean(pressed) do
     LiveView.push_event(socket, "toggle_set_pressed", %{
       id: toggle_id,
       pressed: pressed
