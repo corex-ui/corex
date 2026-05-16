@@ -17,6 +17,18 @@ defmodule E2eWeb.ErrorHTMLTest do
     assert html_response(conn, 404) =~ "does not exist"
   end
 
+  test "404 page uses Corex button styling", %{conn: conn} do
+    conn = get(conn, "/en/nonexistent")
+    html = html_response(conn, 404)
+    assert html =~ "button button--accent"
+    assert html =~ "Page Not Found"
+  end
+
+  test "serves templates page under locale prefix", %{conn: conn} do
+    conn = get(conn, "/en/templates")
+    assert html_response(conn, 200) =~ "Templates"
+  end
+
   test "renders 500.html" do
     assert render_to_string(E2eWeb.ErrorHTML, "500", "html", []) ==
              "Internal Server Error"

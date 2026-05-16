@@ -134,7 +134,7 @@ defmodule E2eWeb.App.Header do
               {gettext("Components")}
             </.navigate>
             <.navigate
-              to="/templates"
+              to={~p"/templates"}
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               aria-current={header_nav_templates_aria_current(@path)}
             >
@@ -168,6 +168,8 @@ defmodule E2eWeb.App.Header do
   end
 
   defp documentation_menu_items do
+    templates_path = E2eWeb.Path.with_current_locale("/templates")
+
     Corex.Tree.new([
       %{
         value: "doc-installation",
@@ -207,7 +209,7 @@ defmodule E2eWeb.App.Header do
       %{
         value: "doc-templates",
         label: gettext("Templates"),
-        to: "/templates",
+        to: templates_path,
         redirect: :href,
         new_tab: false
       }

@@ -34,8 +34,6 @@ defmodule E2eWeb.Router do
       on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive] do
       live("/", HomeLive, :index)
     end
-
-    get("/templates", PageController, :templates_page)
   end
 
   scope "/:locale", E2eWeb do
@@ -336,6 +334,7 @@ defmodule E2eWeb.Router do
     get("/toast/anatomy", PageController, :toast_anatomy_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
+    get("/templates", PageController, :templates_page)
 
     resources("/users", UserController)
   end
