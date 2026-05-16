@@ -68,7 +68,7 @@ defmodule Corex.TagsInput do
 
   ## Localization and `translation`
 
-  Pass `translation={%Corex.TagsInput.Translation{placeholder: "…"}}` to override the main input placeholder. The component merges with `Corex.TagsInput.default_translation/0` (gettext when a backend is configured) and sets the HTML `placeholder` on `[data-part="input"]` only. The scalar `placeholder` attribute still overrides the merged string when set to a non-empty string. The hook reads that attribute to keep Zag’s placeholder in sync when the field is empty.
+  Pass `translation={%Corex.TagsInput.Translation{}}` to override strings. Defaults use gettext when configured. The struct covers the main input `placeholder`, per-tag delete `aria-label` (`delete_tag_trigger_label` with `%{tag}`), and inline edit `aria-label` (`tag_edited` with `%{tag}`). The scalar `placeholder` attribute still overrides the merged placeholder when set to a non-empty string.
 
   ## Styling
 
@@ -157,13 +157,13 @@ defmodule Corex.TagsInput do
   attr(:add_on_paste, :boolean, default: false)
   attr(:allow_duplicates, :boolean, default: false)
   attr(:allow_overflow, :boolean, default: false)
-  attr(:editable, :boolean, default: nil, doc: "When nil, Zag default applies")
+  attr(:editable, :boolean, default: nil)
   attr(:auto_focus, :boolean, default: false)
   attr(:placeholder, :string, default: nil)
 
   attr(:translation, TagsInputTranslation,
-    default: nil,
-    doc: "Merges with `default_translation/0` for the main input HTML `placeholder` (SSR)."
+    default: %TagsInputTranslation{},
+    doc: "Translatable strings for placeholder and Zag delete/edit labels."
   )
 
   attr(:on_value_change, :string, default: nil)
@@ -191,7 +191,7 @@ defmodule Corex.TagsInput do
     attr(:class, :string, required: false)
   end
 
-  slot(:close, required: true, doc: "Content for each tag remove control (cloned per tag)")
+  slot(:close, required: true, doc: "Content for each delete trigger")
 
   slot :error, required: false do
     attr(:class, :string, required: false)
@@ -224,7 +224,7 @@ defmodule Corex.TagsInput do
       |> assign_new(:id, fn -> "tags-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value_list, validate_value!(assigns.value))
-      |> assign_tags_input_i18n()
+      |> normalize_tags_input_translation()
 
     ~H"""
     <div
@@ -259,7 +259,8 @@ defmodule Corex.TagsInput do
         on_highlight_change: @on_highlight_change,
         on_highlight_change_client: @on_highlight_change_client,
         on_value_invalid: @on_value_invalid,
-        on_value_invalid_client: @on_value_invalid_client
+        on_value_invalid_client: @on_value_invalid_client,
+        translation: @translation
       })}
     >
       <div
@@ -341,7 +342,12 @@ defmodule Corex.TagsInput do
                     dir: @dir,
                     value: tag,
                     index: index,
-                    disabled: @disabled
+                    disabled: @disabled,
+                    aria_label:
+                      TagsInputTranslation.format_tag(
+                        @translation.delete_tag_trigger_label,
+                        tag
+                      )
                   })}
                 >
                   {render_slot(@close)}
@@ -362,7 +368,9 @@ defmodule Corex.TagsInput do
                   dir: @dir,
                   value: tag,
                   index: index,
-                  disabled: @disabled
+                  disabled: @disabled,
+                  aria_label:
+                    TagsInputTranslation.format_tag(@translation.tag_edited, tag)
                 })}
               />
             </span>
@@ -447,17 +455,17 @@ defmodule Corex.TagsInput do
 
   defp tags_to_form_string(tags_list, _), do: Enum.join(tags_list, ",")
 
-  @doc """
-  Default translatable strings for the tags input. Uses gettext when configured; override with the `translation` attribute.
-  """
-  @spec default_translation() :: TagsInputTranslation.t()
-  def default_translation, do: TagsInputTranslation.default()
+  defp normalize_tags_input_translation(assigns) do
+    gettext_default = %TagsInputTranslation{
+      placeholder: Corex.Gettext.gettext("Add a tag…"),
+      delete_tag_trigger_label: Corex.Gettext.gettext("Delete tag %{tag}"),
+      tag_edited:
+        Corex.Gettext.gettext("Editing tag %{tag}. Press enter to save or escape to cancel.")
+    }
 
-  defp assign_tags_input_i18n(assigns) do
-    merged =
-      TagsInputTranslation.merge(Map.get(assigns, :translation), TagsInputTranslation.default())
+    merged = TagsInputTranslation.merge(assigns.translation, gettext_default)
 
-    resolved =
+    placeholder_resolved =
       case Map.get(assigns, :placeholder) do
         nil -> merged.placeholder
         "" -> merged.placeholder
@@ -465,6 +473,7 @@ defmodule Corex.TagsInput do
       end
 
     assigns
-    |> assign(:placeholder_resolved, resolved)
+    |> assign(:translation, merged)
+    |> assign(:placeholder_resolved, placeholder_resolved)
   end
 end

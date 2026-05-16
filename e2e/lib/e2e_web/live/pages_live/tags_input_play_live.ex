@@ -40,10 +40,20 @@ defmodule E2eWeb.TagsInputPlayLive do
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_playground title="Tags input · Playground" heading_class="layout-heading">
         <:controls>
-          <.switch class="switch" id="disabled" checked={@controls.disabled} on_checked_change="control_changed">
+          <.switch
+            class="switch"
+            id="disabled"
+            checked={@controls.disabled}
+            on_checked_change="control_changed"
+          >
             <:label>Disabled</:label>
           </.switch>
-          <.switch class="switch" id="editable" checked={@controls.editable} on_checked_change="control_changed">
+          <.switch
+            class="switch"
+            id="editable"
+            checked={@controls.editable}
+            on_checked_change="control_changed"
+          >
             <:label>Editable</:label>
           </.switch>
           <.switch
@@ -54,7 +64,12 @@ defmodule E2eWeb.TagsInputPlayLive do
           >
             <:label>Allow duplicates</:label>
           </.switch>
-          <.switch class="switch" id="add_on_paste" checked={@controls.add_on_paste} on_checked_change="control_changed">
+          <.switch
+            class="switch"
+            id="add_on_paste"
+            checked={@controls.add_on_paste}
+            on_checked_change="control_changed"
+          >
             <:label>Add on paste</:label>
           </.switch>
         </:controls>

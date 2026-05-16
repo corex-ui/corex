@@ -28,7 +28,8 @@ defmodule Corex.TagsInput.Anatomy do
       on_highlight_change: nil,
       on_highlight_change_client: nil,
       on_value_invalid: nil,
-      on_value_invalid_client: nil
+      on_value_invalid_client: nil,
+      translation: nil
     ]
 
     @type t :: %__MODULE__{
@@ -57,7 +58,8 @@ defmodule Corex.TagsInput.Anatomy do
             on_highlight_change: String.t() | nil,
             on_highlight_change_client: String.t() | nil,
             on_value_invalid: String.t() | nil,
-            on_value_invalid_client: String.t() | nil
+            on_value_invalid_client: String.t() | nil,
+            translation: Corex.TagsInput.Translation.t() | nil
           }
   end
 
@@ -240,14 +242,15 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemDeleteTrigger do
-    defstruct [:root_id, :dir, :value, :index, :disabled]
+    defstruct [:root_id, :dir, :value, :index, :disabled, :aria_label]
 
     @type t :: %__MODULE__{
             root_id: String.t(),
             dir: String.t(),
             value: String.t(),
             index: non_neg_integer(),
-            disabled: boolean()
+            disabled: boolean(),
+            aria_label: String.t() | nil
           }
 
     @ignored_attrs [
@@ -266,14 +269,15 @@ defmodule Corex.TagsInput.Anatomy do
   end
 
   defmodule SsrItemInput do
-    defstruct [:root_id, :dir, :value, :index, :disabled]
+    defstruct [:root_id, :dir, :value, :index, :disabled, :aria_label]
 
     @type t :: %__MODULE__{
             root_id: String.t(),
             dir: String.t(),
             value: String.t(),
             index: non_neg_integer(),
-            disabled: boolean()
+            disabled: boolean(),
+            aria_label: String.t() | nil
           }
 
     @ignored_attrs [

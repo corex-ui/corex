@@ -595,7 +595,10 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   def api_set_value_client_binding_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.TagsInput.set_value(@id, ["lorem", "ipsum"])} class="button button--sm">
+      <.action
+        phx-click={Corex.TagsInput.set_value(@id, ["lorem", "ipsum"])}
+        class="button button--sm"
+      >
         Fill
       </.action>
     </div>
@@ -739,22 +742,46 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       <.tags_input id="tags-style-color-base" class="tags-input w-full" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-muted" class="tags-input w-full tags-input--muted" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-muted"
+        class="tags-input w-full tags-input--muted"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-accent" class="tags-input w-full tags-input--accent" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-accent"
+        class="tags-input w-full tags-input--accent"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-brand" class="tags-input w-full tags-input--brand" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-brand"
+        class="tags-input w-full tags-input--brand"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-alert" class="tags-input w-full tags-input--alert" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-alert"
+        class="tags-input w-full tags-input--alert"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-success" class="tags-input w-full tags-input--success" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-success"
+        class="tags-input w-full tags-input--success"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-color-info" class="tags-input w-full tags-input--info" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-color-info"
+        class="tags-input w-full tags-input--info"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>
@@ -786,19 +813,39 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full">
-      <.tags_input id="tags-style-trigger-accent" class="tags-input w-full tags-input--trigger--accent" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-trigger-accent"
+        class="tags-input w-full tags-input--trigger--accent"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-trigger-brand" class="tags-input w-full tags-input--trigger--brand" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-trigger-brand"
+        class="tags-input w-full tags-input--trigger--brand"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-trigger-alert" class="tags-input w-full tags-input--trigger--alert" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-trigger-alert"
+        class="tags-input w-full tags-input--trigger--alert"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-trigger-success" class="tags-input w-full tags-input--trigger--success" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-trigger-success"
+        class="tags-input w-full tags-input--trigger--success"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-trigger-info" class="tags-input w-full tags-input--trigger--info" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-trigger-info"
+        class="tags-input w-full tags-input--trigger--info"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>
@@ -865,16 +912,32 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full">
-      <.tags_input id="tags-style-text-sm" class="tags-input w-full tags-input--text-sm" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-text-sm"
+        class="tags-input w-full tags-input--text-sm"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-text-xl" class="tags-input w-full tags-input--text-xl" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-text-xl"
+        class="tags-input w-full tags-input--text-xl"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-text-2xl" class="tags-input w-full tags-input--text-2xl" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-text-2xl"
+        class="tags-input w-full tags-input--text-2xl"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-text-4xl" class="tags-input w-full tags-input--text-4xl" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-text-4xl"
+        class="tags-input w-full tags-input--text-4xl"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>
@@ -906,19 +969,39 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
     ~H"""
     <div class="flex flex-col gap-space-lg w-full">
-      <.tags_input id="tags-style-radius-none" class="tags-input w-full tags-input--rounded-none" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-radius-none"
+        class="tags-input w-full tags-input--rounded-none"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-radius-sm" class="tags-input w-full tags-input--rounded-sm" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-radius-sm"
+        class="tags-input w-full tags-input--rounded-sm"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-radius-md" class="tags-input w-full tags-input--rounded-md" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-radius-md"
+        class="tags-input w-full tags-input--rounded-md"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-radius-lg" class="tags-input w-full tags-input--rounded-lg" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-radius-lg"
+        class="tags-input w-full tags-input--rounded-lg"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
-      <.tags_input id="tags-style-radius-xl" class="tags-input w-full tags-input--rounded-xl" value={@demo_tags}>
+      <.tags_input
+        id="tags-style-radius-xl"
+        class="tags-input w-full tags-input--rounded-xl"
+        value={@demo_tags}
+      >
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
     </div>

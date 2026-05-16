@@ -1,6 +1,6 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { TagsInput } from "../components/tags-input";
+import { TagsInput, resolveZagTagsInputTranslations } from "../components/tags-input";
 import type {
   Props,
   ValueChangeDetails,
@@ -69,6 +69,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
     const zag = new TagsInput(el, {
       id: el.id,
+      ...resolveZagTagsInputTranslations(el),
       ...(controlled
         ? { value: parseJsonTags(el, "tags") }
         : { defaultValue: parseJsonTags(el, "defaultTags") }),
@@ -176,6 +177,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
     this.tagsInput?.updateProps({
       id: el.id,
+      ...resolveZagTagsInputTranslations(el),
       ...(controlled ? { value: parseJsonTags(el, "tags") } : {}),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),

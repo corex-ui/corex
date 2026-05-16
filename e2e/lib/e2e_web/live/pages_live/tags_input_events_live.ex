@@ -52,19 +52,22 @@ defmodule E2eWeb.TagsInputEventsLive do
   end
 
   @impl true
-  def handle_event("tags_value_changed", %{"id" => id, "value" => value}, socket) when is_list(value) do
+  def handle_event("tags_value_changed", %{"id" => id, "value" => value}, socket)
+      when is_list(value) do
     log = new_log("server", id, inspect(value))
     {:noreply, socket |> assign(:tags, value) |> stream_insert(:server_logs, log, at: 0)}
   end
 
   @impl true
-  def handle_event("tags_client_changed", %{"id" => id, "value" => value}, socket) when is_list(value) do
+  def handle_event("tags_client_changed", %{"id" => id, "value" => value}, socket)
+      when is_list(value) do
     log = new_log("client", id, inspect(value))
     {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
   end
 
   @impl true
-  def handle_event("tags_invalid_server_changed", %{"value" => value}, socket) when is_list(value) do
+  def handle_event("tags_invalid_server_changed", %{"value" => value}, socket)
+      when is_list(value) do
     {:noreply, assign(socket, :tags_invalid_server, value)}
   end
 

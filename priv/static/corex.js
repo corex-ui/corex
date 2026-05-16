@@ -35063,11 +35063,33 @@ ${err}`);
       input == null ? void 0 : input.removeEventListener("change", resize);
     };
   }
+  function formatTagTemplate(template, tag) {
+    return template.split(TAG_PLACEHOLDER).join(tag);
+  }
+  function buildZagTagsInputTranslations(m2) {
+    var _a4, _b;
+    const deleteTemplate = (_a4 = m2.deleteTagTriggerLabel) != null ? _a4 : DEFAULT_DELETE_TEMPLATE;
+    const editTemplate = (_b = m2.tagEdited) != null ? _b : DEFAULT_TAG_EDITED_TEMPLATE;
+    return {
+      deleteTagTriggerLabel: (value) => formatTagTemplate(deleteTemplate, value),
+      tagEdited: (value) => formatTagTemplate(editTemplate, value)
+    };
+  }
+  function resolveZagTagsInputTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) {
+      return { translations: buildZagTagsInputTranslations({}) };
+    }
+    try {
+      const m2 = JSON.parse(raw);
+      return { translations: buildZagTagsInputTranslations(m2) };
+    } catch (e2) {
+      return { translations: buildZagTagsInputTranslations({}) };
+    }
+  }
   function directItemElements(controlEl) {
     return Array.from(
-      controlEl.querySelectorAll(
-        ':scope > [data-scope="tags-input"][data-part="item"]'
-      )
+      controlEl.querySelectorAll(':scope > [data-scope="tags-input"][data-part="item"]')
     );
   }
   function itemInputIsEditing(input) {
@@ -35100,7 +35122,7 @@ ${err}`);
     const v2 = input == null ? void 0 : input.getAttribute("placeholder");
     return typeof v2 === "string" && v2 !== "" ? v2 : void 0;
   }
-  var anatomy25, parts25, getRootId20, getInputId8, getClearTriggerId4, getHiddenInputId8, getLabelId16, getControlId11, getItemId9, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl8, getInputEl6, getHiddenInputEl7, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, and9, not10, or4, machine25, TagsInput, TagsInputHook;
+  var anatomy25, parts25, getRootId20, getInputId8, getClearTriggerId4, getHiddenInputId8, getLabelId16, getControlId11, getItemId9, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl8, getInputEl6, getHiddenInputEl7, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, and9, not10, or4, machine25, TAG_PLACEHOLDER, DEFAULT_DELETE_TEMPLATE, DEFAULT_TAG_EDITED_TEMPLATE, TagsInput, TagsInputHook;
   var init_tags_input = __esm({
     "../priv/static/tags-input.mjs"() {
       "use strict";
@@ -35877,6 +35899,9 @@ ${err}`);
           }
         }
       });
+      TAG_PLACEHOLDER = "%{tag}";
+      DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
+      DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
       TagsInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -35959,17 +35984,23 @@ ${err}`);
         }
         render() {
           var _a4;
-          const rootEl = this.el.querySelector('[data-scope="tags-input"][data-part="root"]');
+          const rootEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="root"]'
+          );
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const labelEl = this.el.querySelector('[data-scope="tags-input"][data-part="label"]');
+          const labelEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="label"]'
+          );
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
           const controlEl = this.el.querySelector(
             '[data-scope="tags-input"][data-part="control"]'
           );
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           this.renderItems();
-          const inputEl = this.el.querySelector('[data-scope="tags-input"][data-part="input"]');
+          const inputEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="input"]'
+          );
           if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
           const valueInput = this.el.querySelector(
             '[data-scope="tags-input"][data-part="value-input"]'
@@ -36004,9 +36035,9 @@ ${err}`);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
-          const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
+          const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") }), {
+          }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") }), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readOnly"),
             invalid: getBoolean(el, "invalid"),
@@ -36068,7 +36099,8 @@ ${err}`);
           domRegistry.add("corex:tags-input:set-value", (event) => {
             var _a4;
             const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
-            if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) zag.api.setValue(v2);
+            if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string"))
+              zag.api.setValue(v2);
           });
           domRegistry.add("corex:tags-input:clear-value", () => {
             zag.api.clearValue();
@@ -36093,9 +36125,9 @@ ${err}`);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
-          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues({
+          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, controlled ? { value: parseJsonTags(el, "tags") } : {}), {
+          }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : {}), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readOnly"),
             invalid: getBoolean(el, "invalid"),

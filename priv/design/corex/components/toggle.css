@@ -42,6 +42,18 @@
     align-items: center;
     justify-content: center;
   }
+
+  .toggle[data-toggle-dual-label]
+    [data-scope="toggle"][data-part="root"][data-state="off"]
+    > span[data-pressed] {
+    display: none;
+  }
+
+  .toggle[data-toggle-dual-label]
+    [data-scope="toggle"][data-part="root"][data-state="on"]
+    > span:not([data-scope]):not([data-pressed]) {
+    display: none;
+  }
 }
 
 @utility toggle--* {

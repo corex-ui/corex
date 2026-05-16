@@ -19,7 +19,12 @@ defmodule E2eWeb.TogglePlayLive do
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_playground title="Toggle · Playground" heading_class="layout-heading">
         <:controls>
-          <.switch class="switch" id="disabled" checked={@disabled} on_checked_change="control_changed">
+          <.switch
+            class="switch"
+            id="disabled"
+            checked={@disabled}
+            on_checked_change="control_changed"
+          >
             <:label>Disabled</:label>
           </.switch>
         </:controls>

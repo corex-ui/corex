@@ -34,8 +34,10 @@
   {"id": "signature_pad", "phx_hook": "SignaturePad", "connect_module": "Corex.SignaturePad.Connect"},
   {"id": "switch", "phx_hook": "Switch", "connect_module": "Corex.Switch.Connect"},
   {"id": "tabs", "phx_hook": "Tabs", "connect_module": "Corex.Tabs.Connect"},
+  {"id": "tags_input", "phx_hook": "TagsInput", "connect_module": "Corex.TagsInput.Connect"},
   {"id": "timer", "phx_hook": "Timer", "connect_module": "Corex.Timer.Connect"},
   {"id": "toast", "phx_hook": "Toast", "connect_module": "Corex.Toast.Connect"},
+  {"id": "toggle", "phx_hook": "Toggle", "connect_module": "Corex.Toggle.Connect"},
   {"id": "toggle_group", "phx_hook": "ToggleGroup", "connect_module": "Corex.ToggleGroup.Connect"},
   {"id": "tooltip", "phx_hook": "Tooltip", "connect_module": "Corex.Tooltip.Connect"},
   {"id": "tree_view", "phx_hook": "TreeView", "connect_module": "Corex.TreeView.Connect"}

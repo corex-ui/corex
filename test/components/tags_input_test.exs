@@ -22,11 +22,14 @@ defmodule Corex.TagsInputTest do
 
     test "renders default placeholder on main input from SSR" do
       html = render_component(&CorexTest.ComponentHelpers.render_tags_input/1, [])
-      refute html =~ "data-translation="
+      assert html =~ "data-translation="
+      assert html =~ "deleteTagTriggerLabel"
+      assert html =~ "tagEdited"
       refute html =~ "data-placeholder="
       assert html =~ ~r/data-part="input"/
       assert html =~ "placeholder="
       assert html =~ "Add a tag"
+      assert html =~ ~s(aria-label="Delete tag alpha")
     end
 
     test "translation attr merges placeholder" do

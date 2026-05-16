@@ -60,14 +60,24 @@ defmodule E2eWeb.ToggleApiLive do
             </div>
           </:preview>
         </.demo_section>
-        <.demo_section id="toggle-api-client-binding" title="Client binding" code={@codes.client_binding}>
+        <.demo_section
+          id="toggle-api-client-binding"
+          title="Client binding"
+          code={@codes.client_binding}
+        >
           <:preview>
             <div class="flex flex-col gap-4 items-center w-full">
               <div class="flex flex-wrap gap-4 items-center">
-                <.action class="button button--sm" phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}>
+                <.action
+                  class="button button--sm"
+                  phx-click={Corex.Toggle.set_pressed("toggle-api-bind", true)}
+                >
                   donec
                 </.action>
-                <.action class="button button--sm" phx-click={Corex.Toggle.set_pressed("toggle-api-bind", false)}>
+                <.action
+                  class="button button--sm"
+                  phx-click={Corex.Toggle.set_pressed("toggle-api-bind", false)}
+                >
                   lorem
                 </.action>
               </div>

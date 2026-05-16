@@ -10,7 +10,10 @@ defmodule E2eWeb.TagsInputPatternsLive do
       |> assign(:patterns_heex, E2eWeb.Demos.TagsInputDemo.patterns_controlled_heex())
       |> assign(:patterns_elixir, E2eWeb.Demos.TagsInputDemo.patterns_controlled_elixir())
       |> assign(:patterns_validation_heex, E2eWeb.Demos.TagsInputDemo.patterns_validation_heex())
-      |> assign(:patterns_validation_elixir, E2eWeb.Demos.TagsInputDemo.patterns_validation_elixir())
+      |> assign(
+        :patterns_validation_elixir,
+        E2eWeb.Demos.TagsInputDemo.patterns_validation_elixir()
+      )
       |> assign(:allowed_tags, ~w(lorem duis donec))
       |> assign(:tags, ~w(lorem duis donec))
       |> assign(:tags_validated, ~w(lorem duis))

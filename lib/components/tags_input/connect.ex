@@ -2,6 +2,8 @@ defmodule Corex.TagsInput.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.TagsInput.Translation, as: TagsInputTranslation
+
   alias Corex.TagsInput.Anatomy.{
     Control,
     HiddenInput,
@@ -101,7 +103,7 @@ defmodule Corex.TagsInput.Connect do
         "id" => tag_delete_dom_id(a.root_id, a.value, a.index),
         "tabindex" => "-1",
         "aria-disabled" => if(a.disabled, do: "true", else: "false"),
-        "aria-label" => "Delete tag #{a.value}"
+        "aria-label" => a.aria_label
       }
       |> maybe_put_dir_from(a)
       |> put_item_data_disabled(a.disabled)
@@ -127,9 +129,15 @@ defmodule Corex.TagsInput.Connect do
         "hidden" => true
       }
       |> maybe_put_dir_from(a)
+      |> maybe_put_aria_label(a.aria_label)
 
     if a.disabled, do: Map.put(base, "disabled", true), else: base
   end
+
+  defp maybe_put_aria_label(attrs, nil), do: attrs
+
+  defp maybe_put_aria_label(attrs, label) when is_binary(label),
+    do: Map.put(attrs, "aria-label", label)
 
   def ignore_ssr_item_input(%SsrItemInput{} = a) do
     JS.ignore_attributes(SsrItemInput.ignored_attrs(),
@@ -194,7 +202,26 @@ defmodule Corex.TagsInput.Connect do
         false -> Map.put(base, "data-editable", "false")
       end
 
-    base |> maybe_put_data_dir_from(assigns)
+    base
+    |> maybe_put_data_dir_from(assigns)
+    |> Map.put("data-translation", translation_json(assigns))
+  end
+
+  defp translation_json(assigns) do
+    case Map.get(assigns, :translation) do
+      %TagsInputTranslation{} = t ->
+        t
+        |> TagsInputTranslation.to_camel_map()
+        |> Enum.reject(fn {_, v} -> v in [nil, ""] end)
+        |> Map.new()
+        |> then(fn
+          m when map_size(m) == 0 -> nil
+          m -> Corex.Json.encode!(m)
+        end)
+
+      _ ->
+        nil
+    end
   end
 
   @spec root(Root.t()) :: map()

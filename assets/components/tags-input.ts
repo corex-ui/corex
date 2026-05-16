@@ -3,6 +3,46 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { templatesContentRoot } from "../lib/util";
 
+type ZagTagsInputTranslations = NonNullable<Props["translations"]>;
+
+export type TagsInputMessageMap = {
+  deleteTagTriggerLabel?: string;
+  tagEdited?: string;
+};
+
+const TAG_PLACEHOLDER = "%{tag}";
+
+const DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
+const DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
+
+function formatTagTemplate(template: string, tag: string): string {
+  return template.split(TAG_PLACEHOLDER).join(tag);
+}
+
+export function buildZagTagsInputTranslations(m: TagsInputMessageMap): ZagTagsInputTranslations {
+  const deleteTemplate = m.deleteTagTriggerLabel ?? DEFAULT_DELETE_TEMPLATE;
+  const editTemplate = m.tagEdited ?? DEFAULT_TAG_EDITED_TEMPLATE;
+  return {
+    deleteTagTriggerLabel: (value: string) => formatTagTemplate(deleteTemplate, value),
+    tagEdited: (value: string) => formatTagTemplate(editTemplate, value),
+  };
+}
+
+export function resolveZagTagsInputTranslations(el: HTMLElement): {
+  translations: ZagTagsInputTranslations;
+} {
+  const raw = el.dataset.translation;
+  if (!raw) {
+    return { translations: buildZagTagsInputTranslations({}) };
+  }
+  try {
+    const m = JSON.parse(raw) as TagsInputMessageMap;
+    return { translations: buildZagTagsInputTranslations(m) };
+  } catch {
+    return { translations: buildZagTagsInputTranslations({}) };
+  }
+}
+
 function directItemElements(controlEl: HTMLElement): HTMLElement[] {
   return Array.from(
     controlEl.querySelectorAll<HTMLElement>(':scope > [data-scope="tags-input"][data-part="item"]')

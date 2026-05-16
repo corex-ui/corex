@@ -81,7 +81,9 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "donec")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="on"]|, visible: :any),
+        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
 
@@ -90,7 +92,9 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "lorem")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="off"]|, visible: :any),
+        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="off"]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
 
@@ -107,14 +111,18 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "donec")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="on"]|, visible: :any),
+        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
 
       session
       |> Toggle.click_in_section(section, "lorem")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="off"]|, visible: :any),
+        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="off"]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
     end
@@ -131,7 +139,9 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "lorem")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-cjs [data-scope="toggle"][data-part="root"][data-state="off"]|, visible: :any),
+        css(~s|#toggle-api-cjs [data-scope="toggle"][data-part="root"][data-state="off"]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
     end
@@ -188,7 +198,9 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_playground_disabled_switch()
       |> Toggle.wait_for_has(
-        css(~s|#toggle-playground [data-scope="toggle"][data-part="root"][disabled]|, visible: :any),
+        css(~s|#toggle-playground [data-scope="toggle"][data-part="root"][disabled]|,
+          visible: :any
+        ),
         timeout: 8_000
       )
     end

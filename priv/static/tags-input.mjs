@@ -1154,11 +1154,35 @@ var machine = createMachine({
 });
 
 // components/tags-input.ts
+var TAG_PLACEHOLDER = "%{tag}";
+var DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
+var DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
+function formatTagTemplate(template, tag) {
+  return template.split(TAG_PLACEHOLDER).join(tag);
+}
+function buildZagTagsInputTranslations(m) {
+  const deleteTemplate = m.deleteTagTriggerLabel ?? DEFAULT_DELETE_TEMPLATE;
+  const editTemplate = m.tagEdited ?? DEFAULT_TAG_EDITED_TEMPLATE;
+  return {
+    deleteTagTriggerLabel: (value) => formatTagTemplate(deleteTemplate, value),
+    tagEdited: (value) => formatTagTemplate(editTemplate, value)
+  };
+}
+function resolveZagTagsInputTranslations(el) {
+  const raw = el.dataset.translation;
+  if (!raw) {
+    return { translations: buildZagTagsInputTranslations({}) };
+  }
+  try {
+    const m = JSON.parse(raw);
+    return { translations: buildZagTagsInputTranslations(m) };
+  } catch {
+    return { translations: buildZagTagsInputTranslations({}) };
+  }
+}
 function directItemElements(controlEl) {
   return Array.from(
-    controlEl.querySelectorAll(
-      ':scope > [data-scope="tags-input"][data-part="item"]'
-    )
+    controlEl.querySelectorAll(':scope > [data-scope="tags-input"][data-part="item"]')
   );
 }
 function itemInputIsEditing(input) {
@@ -1245,17 +1269,23 @@ var TagsInput = class extends Component {
     }
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="tags-input"][data-part="root"]');
+    const rootEl = this.el.querySelector(
+      '[data-scope="tags-input"][data-part="root"]'
+    );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const labelEl = this.el.querySelector('[data-scope="tags-input"][data-part="label"]');
+    const labelEl = this.el.querySelector(
+      '[data-scope="tags-input"][data-part="label"]'
+    );
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
     const controlEl = this.el.querySelector(
       '[data-scope="tags-input"][data-part="control"]'
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
     this.renderItems();
-    const inputEl = this.el.querySelector('[data-scope="tags-input"][data-part="input"]');
+    const inputEl = this.el.querySelector(
+      '[data-scope="tags-input"][data-part="input"]'
+    );
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
     const valueInput = this.el.querySelector(
       '[data-scope="tags-input"][data-part="value-input"]'
@@ -1320,6 +1350,7 @@ var TagsInputHook = {
     const placeholder = readPlaceholderFromMainInput(el);
     const zag = new TagsInput(el, {
       id: el.id,
+      ...resolveZagTagsInputTranslations(el),
       ...controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") },
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),
@@ -1384,7 +1415,8 @@ var TagsInputHook = {
     this.domRegistry = domRegistry;
     domRegistry.add("corex:tags-input:set-value", (event) => {
       const v = event.detail?.value;
-      if (Array.isArray(v) && v.every((x) => typeof x === "string")) zag.api.setValue(v);
+      if (Array.isArray(v) && v.every((x) => typeof x === "string"))
+        zag.api.setValue(v);
     });
     domRegistry.add("corex:tags-input:clear-value", () => {
       zag.api.clearValue();
@@ -1410,6 +1442,7 @@ var TagsInputHook = {
     const placeholder = readPlaceholderFromMainInput(el);
     this.tagsInput?.updateProps({
       id: el.id,
+      ...resolveZagTagsInputTranslations(el),
       ...controlled ? { value: parseJsonTags(el, "tags") } : {},
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),

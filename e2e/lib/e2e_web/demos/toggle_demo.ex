@@ -37,18 +37,18 @@ defmodule E2eWeb.Demos.ToggleDemo do
 
   def dual_label_code do
     ~S"""
-    <.toggle id="toggle-anatomy-dual-label" class="toggle group">
-      <span class="hidden group-data-[pressed=false]:inline">lorem</span>
-      <span class="hidden group-data-[pressed=true]:inline">donec</span>
+    <.toggle id="toggle-anatomy-dual-label" class="toggle" data-toggle-dual-label>
+      <span>lorem</span>
+      <span data-pressed>donec</span>
     </.toggle>
     """
   end
 
   def dual_label_example(assigns) do
     ~H"""
-    <.toggle id="toggle-anatomy-dual-label" class="toggle group">
-      <span class="hidden group-data-[pressed=false]:inline">lorem</span>
-      <span class="hidden group-data-[pressed=true]:inline">donec</span>
+    <.toggle id="toggle-anatomy-dual-label" class="toggle" data-toggle-dual-label>
+      <span>lorem</span>
+      <span data-pressed>donec</span>
     </.toggle>
     """
   end
