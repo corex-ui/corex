@@ -27,6 +27,7 @@
   {"id": "menu", "phx_hook": "Menu", "connect_module": "Corex.Menu.Connect"},
   {"id": "navigate", "phx_hook": null, "connect_module": null},
   {"id": "number_input", "phx_hook": "NumberInput", "connect_module": "Corex.NumberInput.Connect"},
+  {"id": "pagination", "phx_hook": "Pagination", "connect_module": "Corex.Pagination.Connect"},
   {"id": "password_input", "phx_hook": "PasswordInput", "connect_module": "Corex.PasswordInput.Connect"},
   {"id": "pin_input", "phx_hook": "PinInput", "connect_module": "Corex.PinInput.Connect"},
   {"id": "radio_group", "phx_hook": "RadioGroup", "connect_module": "Corex.RadioGroup.Connect"},
