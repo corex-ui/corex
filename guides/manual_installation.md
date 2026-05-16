@@ -143,7 +143,7 @@ mix assets.build
 
 ## 7. Optional: Corex Design
 
-The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Install the assets with:
+See the [Design guide](design.html) for commands, modifiers, shared utilities, and themes. Short version: install assets with:
 
 ```bash
 mix corex.design

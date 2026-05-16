@@ -87,4 +87,5 @@ See [API](api.html) and [Events](events.html) for how helpers, `on_*`, and brows
 - [Theming](theming.html) theme picker after `--theme`.
 - [Localize](localize.html) locales and routes after `--lang`.
 - [Production](production.html) prod build and run.
+- [Design](design.html) optional Corex Design System (tokens, themes, modifiers).
 - [Manual installation](manual_installation.html) add Corex to an existing Phoenix app.

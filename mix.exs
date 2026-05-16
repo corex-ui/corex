@@ -145,6 +145,7 @@ defmodule Corex.MixProject do
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
+        "guides/design.md",
         "guides/api.md",
         "guides/events.md",
         "guides/tableau.md",
@@ -169,7 +170,8 @@ defmodule Corex.MixProject do
         {:Introduction,
          [
            "guides/installation.md",
-           "guides/manual_installation.md"
+           "guides/manual_installation.md",
+           "guides/design.md"
          ]},
         {:Guides,
          [

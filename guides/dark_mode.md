@@ -6,7 +6,7 @@ This guide walks through wiring **light/dark mode** into a Phoenix + Corex app. 
 
 If you ran `mix corex.new my_app --mode`, the installer wrote everything below for you. Use this guide either to understand what that produced, or to wire it by hand in an existing app.
 
-See [Installation](installation.html) for Corex-only flags (including **`--mcp`**). For the underlying Corex install, see [Manual installation](manual_installation.html).
+See [Installation](installation.html) for Corex-only flags (including **`--mcp`**). For design assets and modifiers, see [Design](design.html). For the underlying Corex install, see [Manual installation](manual_installation.html).
 
 ### The problem
 

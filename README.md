@@ -81,6 +81,7 @@ Every Corex component exposes JS commands for client-side control and matching `
 ## Next steps
 
 - [MCP](https://hexdocs.pm/corex/mcp.html) Corex MCP for AI tooling in development.
+- [Design](https://hexdocs.pm/corex/design.html) optional tokens, themes, and modifier classes.
 - [Dark mode](https://hexdocs.pm/corex/dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](https://hexdocs.pm/corex/theming.html) theme picker after `--theme`.
 - [Localize](https://hexdocs.pm/corex/localize.html) locales and routes after `--lang`.

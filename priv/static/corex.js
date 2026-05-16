@@ -30868,9 +30868,7 @@ ${err}`);
           applyPhoenixLinkAttrsToNavigableParts(this.el);
         }
         directPageElements(list) {
-          return Array.from(
-            list.querySelectorAll(':scope > [data-pagination-part="page"]')
-          );
+          return Array.from(list.querySelectorAll(':scope > [data-pagination-part="page"]'));
         }
         syncPages() {
           var _a4, _b;
@@ -30899,9 +30897,7 @@ ${err}`);
               items = this.directPageElements(list);
               li = items[index];
             }
-            const itemEl = li.querySelector(
-              '[data-scope="pagination"][data-part="item"]'
-            );
+            const itemEl = li.querySelector('[data-scope="pagination"][data-part="item"]');
             const ellipsisEl = li.querySelector(
               '[data-scope="pagination"][data-part="ellipsis"]'
             );
