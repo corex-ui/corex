@@ -743,5 +743,65 @@ defmodule Corex.TreeViewTest do
       assert html =~ ~r/data-scope="tree-view"/
       assert html =~ ~r/data-controlled/
     end
+
+    test "tree_view_skeleton renders loading markup" do
+      html = render_component(&TreeView.tree_view_skeleton/1, count: 2)
+      assert html =~ ~s(data-loading)
+      assert html =~ ~s(data-part="item")
+    end
+
+    test "renders items with link redirect metadata" do
+      items =
+        Corex.Tree.new([
+          %{label: "Patch", value: "p", to: "/p", redirect: :patch, new_tab: true},
+          %{label: "Off", value: "o", redirect: false},
+          %{label: "Nav", value: "n", to: "/n", redirect: :navigate}
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <TreeView.tree_view id="tv-links" items={@items} redirect />
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ ~s(data-redirect)
+      assert html =~ ~s(data-new-tab)
+    end
+  end
+
+  describe "compound errors" do
+    test "raises when compound item is missing from ctx" do
+      items = Corex.Tree.new([%{label: "Only", value: "only"}])
+
+      missing = %Corex.Tree.Item{
+        value: "missing",
+        label: "Missing",
+        children: [],
+        disabled: false,
+        to: nil,
+        redirect: nil,
+        new_tab: false,
+        meta: %{}
+      }
+
+      assert_raise ArgumentError, ~r/not present in ctx.items/, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <TreeView.tree_view id="tv-bad-compound" compound :let={ctx} items={@items}>
+              <TreeView.tree_view_root ctx={ctx}>
+                <TreeView.tree_view_item ctx={ctx} item={@missing} />
+              </TreeView.tree_view_root>
+            </TreeView.tree_view>
+            """
+          end,
+          %{items: items, missing: missing}
+        )
+      end
+    end
   end
 end

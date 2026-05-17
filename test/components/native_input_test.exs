@@ -132,6 +132,19 @@ defmodule Corex.NativeInputTest do
       refute result =~ "data-no-icon"
     end
 
+    test "renders additional input types" do
+      for {type, attrs} <- [
+            {"week", [type: "week", name: "w", value: "2024-W01"]},
+            {"month", [type: "month", name: "m", value: "2024-01"]},
+            {"time", [type: "time", name: "t", value: "12:00"]},
+            {"url", [type: "url", name: "u", value: "https://x.com"]},
+            {"search", [type: "search", name: "s", value: "q"]}
+          ] do
+        result = render_component(&Corex.NativeInput.native_input/1, attrs)
+        assert find_in_html(result, ~s(input[type=#{type}])) != []
+      end
+    end
+
     test "renders errors without :error slot" do
       result =
         render_component(&Corex.NativeInput.native_input/1,

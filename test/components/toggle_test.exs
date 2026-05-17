@@ -1,6 +1,8 @@
 defmodule Corex.ToggleTest do
   use CorexTest.ComponentCase, async: true
 
+  import Phoenix.Component
+
   alias Corex.Toggle
   alias Corex.Toggle.Connect
 
@@ -58,6 +60,32 @@ defmodule Corex.ToggleTest do
       assert r["data-scope"] == "toggle"
       assert r["data-part"] == "root"
       assert r["data-state"] == "on"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "returns JS for ignore functions" do
+      base = %{id: "tog", dir: "ltr", pressed: false, disabled: true}
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_root(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_indicator(base)
+    end
+  end
+
+  describe "toggle disabled" do
+    test "renders disabled state" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Toggle.toggle id="tog-off" disabled aria_label="Off">
+              Off
+            </Corex.Toggle.toggle>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "data-disabled"
     end
   end
 end

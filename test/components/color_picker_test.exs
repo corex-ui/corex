@@ -1,5 +1,6 @@
 defmodule Corex.ColorPickerTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.ColorPicker
   alias Corex.ColorPicker.Connect
@@ -12,6 +13,119 @@ defmodule Corex.ColorPickerTest do
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
       assert html =~ ~r/phx-mounted=/
+    end
+
+    test "renders with presets and form field" do
+      form = Phoenix.Component.to_form(%{"color" => "#336699"}, as: :user)
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              field={@form[:color]}
+              presets={["#ff0000", "#00ff00"]}
+              open
+              read_only={false}
+            />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ ~s(data-scope="color-picker")
+    end
+
+    test "renders controlled value with errors" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              id="cp-full"
+              value="#ff0000"
+              controlled
+              open
+              invalid
+              errors={["Invalid color"]}
+            >
+              <:error :let={msg}>{msg}</:error>
+            </ColorPicker.color_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Invalid color"
+      assert html =~ "data-invalid"
+      assert html =~ ~s(data-part="positioner")
+    end
+
+    test "renders open picker with presets and partial translation" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              id="cp-presets"
+              value="#ff0000"
+              open
+              presets={["#ff0000", "#00ff00", "rgba(0,0,255,0.5)"]}
+              translation={%Corex.ColorPicker.Translation{hex: "Hex"}}
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~s(data-part="swatch-trigger")
+      assert html =~ ~s(data-part="swatch-group")
+      assert html =~ "Hex"
+    end
+
+    test "form field coerces values" do
+      form = Phoenix.Component.to_form(%{"color" => ""}, as: :user)
+
+      empty_html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker field={@form[:color]} />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert empty_html =~ ~s(data-scope="color-picker")
+
+      form2 = Phoenix.Component.to_form(%{"color" => 16_777_215}, as: :user)
+
+      int_html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker field={@form[:color]} />
+            """
+          end,
+          %{form: form2}
+        )
+
+      assert int_html =~ "16777215"
+    end
+  end
+
+  describe "Translation" do
+    test "merge uses default when partial is nil" do
+      default = Corex.ColorPicker.Translation.default()
+      assert Corex.ColorPicker.Translation.merge(nil, default) == default
+    end
+
+    test "merge fills partial fields from default" do
+      default = Corex.ColorPicker.Translation.default()
+      partial = %Corex.ColorPicker.Translation{hex: "Custom hex"}
+      merged = Corex.ColorPicker.Translation.merge(partial, default)
+      assert merged.hex == "Custom hex"
+      assert merged.alpha == default.alpha
     end
   end
 
@@ -318,6 +432,72 @@ defmodule Corex.ColorPickerTest do
       assert initial.hex_value == nil
       assert initial.alpha_value == nil
       assert initial.swatch_style == nil
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    alias Corex.ColorPicker.Anatomy.{
+      Area,
+      Content,
+      Control,
+      Label,
+      Positioner,
+      Root,
+      Swatch,
+      TransparencyGrid
+    }
+
+    test "returns JS for ignore_* functions" do
+      root = %Root{
+        id: "cp",
+        disabled: false,
+        invalid: false,
+        read_only: false,
+        value_style: nil,
+        dir: "ltr"
+      }
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_root(root)
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_label(%Label{
+                 id: "cp",
+                 disabled: false,
+                 invalid: false,
+                 read_only: false,
+                 required: false,
+                 dir: "ltr"
+               })
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_control(%Control{
+                 id: "cp",
+                 disabled: false,
+                 invalid: false,
+                 read_only: false,
+                 open: false
+               })
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_positioner(%Positioner{id: "cp", dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_content(%Content{id: "cp", open: false, dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_area(%Area{picker_id: "cp", dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_transparency_grid(%TransparencyGrid{id: "cp", size: "10px"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_swatch(%Swatch{
+                 id: "cp",
+                 color: "#fff",
+                 value: "#fff",
+                 checked: true
+               })
+
+      assert Connect.swatch_trigger_aria_label("#fff") =~ "#fff"
+      assert is_binary(Connect.channel_input_style())
     end
   end
 

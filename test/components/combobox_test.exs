@@ -63,6 +63,28 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/Required/
     end
 
+    test "renders open controlled combobox" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox
+              id="cb-open"
+              open
+              controlled
+              value="a"
+              items={Corex.List.new([%{label: "A", value: "a"}, %{label: "B", value: "b"}])}
+            >
+              <:trigger>Pick</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~s(data-part="positioner")
+    end
+
     test "Connect.props with filter false sets data-filter to nil" do
       assigns =
         Map.merge(ConnectProps.default_combobox(), %{

@@ -198,4 +198,67 @@ defmodule Corex.PaginationTest do
       assert %Phoenix.LiveView.Socket{} = Pagination.set_page(socket, "my-pagination", 3)
     end
   end
+
+  describe "pagination edge cases" do
+    test "link mode renders ellipsis and page anchors" do
+      html =
+        render_component(
+          &CorexTest.ComponentHelpers.render_pagination_link_patch/1,
+          count: 500,
+          page_size: 10,
+          page: 25
+        )
+
+      assert html =~ ~s(data-part="ellipsis")
+      assert html =~ ~s(<a )
+      assert html =~ ~s(data-pagination-part="page")
+    end
+
+    test "hidden when count is zero" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_pagination/1,
+          count: 0,
+          page_size: 10
+        )
+
+      refute html =~ ~s(data-scope="pagination")
+    end
+  end
+
+  describe "navigation API helpers" do
+    test "set_page_size/2 and /3" do
+      assert %Phoenix.LiveView.JS{} = Pagination.set_page_size("pg", 25)
+
+      assert %Phoenix.LiveView.Socket{} =
+               Pagination.set_page_size(%Phoenix.LiveView.Socket{}, "pg", 25)
+    end
+
+    test "go_to_next_page/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = Pagination.go_to_next_page("pg")
+
+      assert %Phoenix.LiveView.Socket{} =
+               Pagination.go_to_next_page(%Phoenix.LiveView.Socket{}, "pg")
+    end
+
+    test "go_to_prev_page/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = Pagination.go_to_prev_page("pg")
+
+      assert %Phoenix.LiveView.Socket{} =
+               Pagination.go_to_prev_page(%Phoenix.LiveView.Socket{}, "pg")
+    end
+
+    test "go_to_first_page/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = Pagination.go_to_first_page("pg")
+
+      assert %Phoenix.LiveView.Socket{} =
+               Pagination.go_to_first_page(%Phoenix.LiveView.Socket{}, "pg")
+    end
+
+    test "go_to_last_page/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = Pagination.go_to_last_page("pg")
+
+      assert %Phoenix.LiveView.Socket{} =
+               Pagination.go_to_last_page(%Phoenix.LiveView.Socket{}, "pg")
+    end
+  end
 end

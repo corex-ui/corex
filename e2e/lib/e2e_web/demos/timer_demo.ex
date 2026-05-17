@@ -536,7 +536,6 @@ defmodule E2eWeb.Demos.TimerDemo do
     """
   end
 
-
   def styling_color_code do
     ~S"""
     <.timer id="timer-c-def" class="timer w-full max-w-xs" start_ms={60_000} target_ms={0} countdown />

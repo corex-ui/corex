@@ -237,6 +237,73 @@ defmodule Corex.AngleSliderTest do
     end
   end
 
+  describe "angle_slider/1 form field" do
+    test "renders from form field with errors" do
+      form =
+        Phoenix.Component.to_form(
+          %{"angle" => "45"},
+          as: :user,
+          errors: [angle: {"invalid", []}]
+        )
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <AngleSlider.angle_slider field={@form[:angle]} class="angle-slider">
+              <:label>Angle</:label>
+              <:error :let={msg}>{msg}</:error>
+            </AngleSlider.angle_slider>
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ "invalid"
+      assert html =~ "data-invalid"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "returns JS for all ignore_* functions" do
+      base = %{
+        id: "ign",
+        dir: "ltr",
+        orientation: "horizontal",
+        value: 0,
+        disabled: false,
+        read_only: false,
+        invalid: false,
+        name: "angle"
+      }
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_root(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_label(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_hidden_input(Map.put(base, :value, 0))
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_control(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_thumb(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_value_text(Map.put(base, :value, 0))
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_marker_group(base)
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_marker(%{
+                 id: "ign",
+                 value: 0,
+                 slider_value: 0,
+                 dir: "ltr",
+                 orientation: "horizontal",
+                 disabled: false
+               })
+    end
+  end
+
+  describe "Connect.format_number/1" do
+    test "formats integers and floats" do
+      assert Connect.format_number(5) == "5"
+      assert Connect.format_number(5.5) == "5.5"
+    end
+  end
+
   describe "Connect.marker/1" do
     test "at-value when marker equals slider" do
       m =

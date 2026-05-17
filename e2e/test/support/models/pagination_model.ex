@@ -4,7 +4,7 @@ defmodule E2eWeb.PaginationModel do
 
   use E2eWeb.Model, component: "pagination"
 
-  def wait_ready(session, host_id \\ "pagination-anatomy") do
+  def wait_host_ready(session, host_id \\ "pagination-anatomy") do
     assert_has(
       session,
       css(~s(##{host_id}[phx-hook="Pagination"][data-loading]), count: 0, visible: :any)

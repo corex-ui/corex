@@ -15,6 +15,8 @@ defmodule E2eWeb.DocComponentWallaby do
                 :live_form
               ])
 
+  @layout_hook_components [:toast]
+
   def assert_page_behavior(session, component, page_key)
       when is_atom(component) and is_atom(page_key) do
     scope = E2eWeb.ZagScope.for_component(component)
@@ -55,27 +57,27 @@ defmodule E2eWeb.DocComponentWallaby do
     end
   end
 
-  defp assert_hook_page(session, _component, page_key, scope, hook, root_id) do
-    session = wait_hooks_ready(session, scope, hook, root_id, page_key)
+  defp assert_hook_page(session, component, page_key, scope, hook, root_id) do
+    session = wait_hooks_ready(session, component, scope, hook, root_id, page_key)
 
     case page_key do
-      :anatomy -> assert_anatomy_interaction(session, scope, hook, root_id)
-      :api -> assert_api_interaction(session, scope, hook, root_id)
-      :events -> assert_events_interaction(session, scope, hook, root_id)
-      :patterns -> assert_patterns_interaction(session, scope, hook, root_id)
-      :playground -> assert_scope_present(session, scope, root_id)
-      :style -> assert_scope_present(session, scope, root_id)
-      :form -> assert_scope_present(session, scope, root_id)
-      :live_form -> assert_scope_present(session, scope, root_id)
-      _ -> assert_scope_present(session, scope, root_id)
+      :anatomy -> assert_anatomy_interaction(session, component, scope, hook, root_id)
+      :api -> assert_api_interaction(session, component, scope, hook, root_id)
+      :events -> assert_events_interaction(session, component, scope, hook, root_id)
+      :patterns -> assert_patterns_interaction(session, component, scope, hook, root_id)
+      :playground -> assert_scope_present(session, component, scope, root_id)
+      :style -> assert_scope_present(session, component, scope, root_id)
+      :form -> assert_scope_present(session, component, scope, root_id)
+      :live_form -> assert_scope_present(session, component, scope, root_id)
+      _ -> assert_scope_present(session, component, scope, root_id)
     end
 
     session
   end
 
-  defp assert_static_page(session, _component, page_key, scope, root_id) do
+  defp assert_static_page(session, component, page_key, scope, root_id) do
     case page_key do
-      :anatomy -> assert_static_anatomy(session, scope, root_id)
+      :anatomy -> assert_static_anatomy(session, component, scope, root_id)
       :style -> assert_has(session, css("##{root_id}"))
       :form -> assert_has(session, css("##{root_id} form", minimum: 1))
       :patterns -> assert_has(session, css("##{root_id}"))
@@ -85,8 +87,27 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp wait_hooks_ready(session, scope, hook, root_id, _page_key) do
-    base = page_scope_selector(root_id, scope)
+  defp wait_hooks_ready(session, component, _scope, hook, _root_id, _page_key)
+       when component in @layout_hook_components do
+    case Wallaby.Browser.retry(fn ->
+           if E2eWeb.Model.layout_toast_hook_ready?(session) do
+             {:ok, session}
+           else
+             {:error, :not_ready}
+           end
+         end) do
+      {:ok, session} ->
+        session
+
+      {:error, _} ->
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected #layout-toast[phx-hook=\"#{hook}\"][data-ready] before #{component} doc interactions"
+    end
+  end
+
+  defp wait_hooks_ready(session, component, scope, hook, root_id, _page_key) do
+    base = page_scope_selector(component, root_id, scope)
 
     q =
       css("#{base} [phx-hook=\"#{hook}\"]:not([data-loading])", minimum: 1, visible: :any)
@@ -95,41 +116,50 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp assert_anatomy_interaction(session, scope, _hook, root_id) do
-    session = assert_scope_present(session, scope, root_id)
+  defp assert_anatomy_interaction(session, component, scope, _hook, root_id) do
+    session = assert_scope_present(session, component, scope, root_id)
 
     cond do
-      click_if_present(session, page_scope_selector(root_id, scope) <> " [data-part=\"trigger\"]") ->
-        wait_open_state(session, scope, root_id)
+      click_if_present(
+        session,
+        page_scope_selector(component, root_id, scope) <> " [data-part=\"trigger\"]"
+      ) ->
+        wait_open_state(session, component, scope, root_id)
 
-      click_if_present(session, page_scope_selector(root_id, scope) <> " [data-part=\"item\"]") ->
+      click_if_present(
+        session,
+        page_scope_selector(component, root_id, scope) <> " [data-part=\"item\"]"
+      ) ->
         assert_has(
           session,
           css(
-            page_scope_selector(root_id, scope) <>
+            page_scope_selector(component, root_id, scope) <>
               " [data-scope=\"#{scope}\"][data-part=\"item\"]",
             visible: :any
           )
         )
 
-      click_if_present(session, page_scope_selector(root_id, scope) <> " [data-part=\"root\"]") ->
-        assert_scope_present(session, scope, root_id)
+      click_if_present(
+        session,
+        page_scope_selector(component, root_id, scope) <> " [data-part=\"root\"]"
+      ) ->
+        assert_scope_present(session, component, scope, root_id)
 
       true ->
-        assert_scope_present(session, scope, root_id)
+        assert_scope_present(session, component, scope, root_id)
     end
 
     session
   end
 
-  defp assert_api_interaction(session, scope, _hook, root_id) do
-    assert_scope_present(session, scope, root_id)
+  defp assert_api_interaction(session, component, scope, _hook, root_id) do
+    assert_scope_present(session, component, scope, root_id)
     session
   end
 
-  defp assert_events_interaction(session, scope, hook, root_id) do
-    session = assert_scope_present(session, scope, root_id)
-    host_sel = first_hook_host_selector(root_id, scope, hook)
+  defp assert_events_interaction(session, component, scope, hook, root_id) do
+    session = assert_scope_present(session, component, scope, root_id)
+    host_sel = first_hook_host_selector(component, root_id, scope, hook)
 
     if host_sel && click_if_present(session, host_sel <> " [data-part=\"trigger\"]") do
       wait_for_log_row(session, root_id)
@@ -148,9 +178,9 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp assert_patterns_interaction(session, scope, hook, root_id) do
-    session = assert_scope_present(session, scope, root_id)
-    host_sel = first_hook_host_selector(root_id, scope, hook)
+  defp assert_patterns_interaction(session, component, scope, hook, root_id) do
+    session = assert_scope_present(session, component, scope, root_id)
+    host_sel = first_hook_host_selector(component, root_id, scope, hook)
 
     if host_sel && click_if_present(session, host_sel <> " [data-part=\"item\"]") do
       assert_has(
@@ -159,7 +189,7 @@ defmodule E2eWeb.DocComponentWallaby do
       )
     else
       if host_sel && click_if_present(session, host_sel <> " [data-part=\"root\"]") do
-        assert_scope_present(session, scope, root_id)
+        assert_scope_present(session, component, scope, root_id)
       else
         session
       end
@@ -168,21 +198,21 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp assert_static_anatomy(session, scope, root_id) do
+  defp assert_static_anatomy(session, component, scope, root_id) do
     if ComponentWireIndex.hookless?(scope) do
       assert_has(session, css("##{root_id}"))
     else
-      assert_scope_present(session, scope, root_id)
+      assert_scope_present(session, component, scope, root_id)
     end
 
     session
   end
 
-  defp assert_scope_present(session, scope, root_id) do
+  defp assert_scope_present(session, component, scope, root_id) do
     assert_has(
       session,
       css(
-        page_scope_selector(root_id, scope) <> " [data-scope=\"#{scope}\"]",
+        page_scope_selector(component, root_id, scope) <> " [data-scope=\"#{scope}\"]",
         minimum: 1,
         visible: :any
       )
@@ -191,13 +221,13 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp wait_open_state(session, scope, root_id) do
+  defp wait_open_state(session, component, scope, root_id) do
     assert_has(
       session,
       css(
-        page_scope_selector(root_id, scope) <>
+        page_scope_selector(component, root_id, scope) <>
           " [data-scope=\"#{scope}\"][data-state=\"open\"], " <>
-          page_scope_selector(root_id, scope) <>
+          page_scope_selector(component, root_id, scope) <>
           " [data-scope=\"#{scope}\"][data-part=\"content\"]",
         visible: :any
       )
@@ -215,9 +245,15 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp page_scope_selector(root_id, _scope), do: "##{root_id}"
+  defp page_scope_selector(:toast, _root_id, _scope), do: "#layout-toast"
 
-  defp first_hook_host_selector(root_id, scope, hook) do
+  defp page_scope_selector(_component, root_id, _scope), do: "##{root_id}"
+
+  defp first_hook_host_selector(:toast, _root_id, scope, hook) do
+    "#layout-toast [phx-hook=\"#{hook}\"][data-scope=\"#{scope}\"]"
+  end
+
+  defp first_hook_host_selector(_component, root_id, scope, hook) do
     "##{root_id} [phx-hook=\"#{hook}\"][data-scope=\"#{scope}\"]"
   end
 
@@ -256,13 +292,7 @@ defmodule E2eWeb.DocComponentWallaby do
       end
 
     quote do
-      use ExUnit.Case, async: false
-      use Wallaby.Feature
-
-      setup do
-        Localize.put_locale(:en)
-        :ok
-      end
+      use E2eWeb.FeatureCase, async: false
 
       unquote_splicing(page_features)
     end

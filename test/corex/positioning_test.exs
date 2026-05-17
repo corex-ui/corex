@@ -24,5 +24,25 @@ defmodule Corex.PositioningTest do
     test "empty map for nil" do
       assert Corex.Positioning.to_dataset(nil) == %{}
     end
+
+    test "encodes flip list and boolean options" do
+      p = %Corex.Positioning{
+        flip: ["top", "bottom"],
+        slide: false,
+        overlap: true,
+        same_width: true,
+        fit_viewport: false,
+        hide_when_detached: false
+      }
+
+      m = Corex.Positioning.to_dataset(p)
+
+      assert m["data-position-flip"] == "top,bottom"
+      assert m["data-position-slide"] == "false"
+      assert m["data-position-overlap"] == "true"
+      assert m["data-position-same-width"] == "true"
+      assert m["data-position-fit-viewport"] == "false"
+      assert m["data-position-hide-when-detached"] == "false"
+    end
   end
 end

@@ -729,9 +729,21 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_navigate_with_replace(assigns) do
+    ~H"""
+    <.navigate to={@to} type="navigate" replace={true}>Link</.navigate>
+    """
+  end
+
   def render_navigate_method(assigns) do
     ~H"""
     <.navigate to={@to} type="navigate" method="post">Link</.navigate>
+    """
+  end
+
+  def render_navigate_with_method(assigns) do
+    ~H"""
+    <.navigate to={@to} type="href" method="post">Link</.navigate>
     """
   end
 

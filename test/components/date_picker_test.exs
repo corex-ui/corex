@@ -15,6 +15,37 @@ defmodule Corex.DatePickerTest do
     end
   end
 
+  describe "date_picker/1 open rendering" do
+    test "renders open picker with triggers and errors" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <DatePicker.date_picker
+              id="dp-open"
+              open
+              controlled
+              value="2024-06-15"
+              invalid
+              errors={["Invalid date"]}
+            >
+              <:label>Date</:label>
+              <:trigger>Pick</:trigger>
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+              <:error :let={msg}>{msg}</:error>
+            </DatePicker.date_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Invalid date"
+      assert html =~ ~s(data-part="positioner")
+      assert html =~ "Prev"
+    end
+  end
+
   describe "date_picker/1 direct rendering" do
     test "renders directly with all attributes and translations" do
       html =

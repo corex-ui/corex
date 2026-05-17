@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 85
+        threshold: 90
       ]
     ]
   end
@@ -39,7 +39,7 @@ defmodule Corex.MixProject do
     ]
   end
 
-  defp elixirc_paths_base(:test), do: ["lib", "installer/lib", "test/support"]
+  defp elixirc_paths_base(:test), do: ["lib", "test/support"]
   defp elixirc_paths_base(:docs), do: ["lib", "installer/lib"]
   defp elixirc_paths_base(_), do: ["lib"]
 

@@ -1,5 +1,6 @@
 defmodule Corex.CarouselTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Carousel
   alias Corex.Carousel.Connect
@@ -11,6 +12,33 @@ defmodule Corex.CarouselTest do
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
       assert html =~ ~r/phx-mounted=/
+    end
+
+    test "renders multiple slides with vertical layout" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Carousel.carousel
+              id="carousel-multi"
+              items={["/a.jpg", "/b.jpg"]}
+              orientation="vertical"
+              slides_per_page={2}
+              spacing="8px"
+              autoplay
+            >
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+            </Carousel.carousel>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~s(data-orientation="vertical")
+      assert html =~ ~s(data-part="indicator-group")
     end
   end
 

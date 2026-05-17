@@ -1,8 +1,10 @@
 defmodule Corex.ToastTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Toast.Anatomy.Group
   alias Corex.Toast.Connect
+  alias Corex.Toast.Payload
   alias Phoenix.LiveView.JS
 
   describe "create/5" do
@@ -340,6 +342,119 @@ defmodule Corex.ToastTest do
         )
 
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+    end
+  end
+
+  describe "Payload" do
+    test "type_string and duration_value" do
+      assert Payload.type_string(:success) == "success"
+      assert Payload.type_string("warning") == "warning"
+      assert Payload.type_string(:other) == "info"
+      assert Payload.duration_value(:infinity) == "Infinity"
+      assert Payload.duration_value(5000) == 5000
+    end
+
+    test "create_detail and create_server_data" do
+      detail =
+        Payload.create_detail("Title", "Body", :error,
+          id: "t1",
+          priority: 3,
+          action: %{label: "Go", js: JS.push("go")}
+        )
+
+      assert detail.title == "Title"
+      assert detail.type == "error"
+      assert detail.id == "t1"
+      assert detail.priority == 3
+      assert is_map(detail.action)
+
+      server =
+        Payload.create_server_data("group-1", "Title", nil, :loading,
+          duration: :infinity,
+          loading: true
+        )
+
+      assert server.groupId == "group-1"
+      assert server.loading == true
+    end
+
+    test "update_detail and update_server_data" do
+      updated =
+        Payload.update_detail("toast-1", %{
+          "title" => "New",
+          "type" => :success,
+          "duration" => :infinity,
+          "priority" => "4",
+          "action" => %{label: "Ok", js: JS.push("ok"), class: " button "}
+        })
+
+      assert updated.id == "toast-1"
+      assert updated.title == "New"
+      assert updated.type == "success"
+      assert updated.priority == 4
+      assert updated.action["class"] == "button"
+
+      server = Payload.update_server_data("group-1", "toast-1", title: "Server")
+      assert server.groupId == "group-1"
+      assert server.title == "Server"
+    end
+
+    test "normalize_action rejects invalid maps" do
+      assert Payload.normalize_action(nil) == nil
+      assert Payload.normalize_action(%{bad: true}) == nil
+      assert Payload.normalize_action(%{label: "Go"}) == nil
+    end
+
+    test "normalize_action encodes rendered and safe labels" do
+      assigns = %{}
+      rendered = ~H"Run"
+      action = Payload.normalize_action(%{label: rendered, js: JS.push("go")})
+      assert action["label"] =~ "Run"
+
+      safe = {:safe, "<b>Go</b>"}
+      action2 = Payload.normalize_action(%{label: safe, js: JS.push("go")})
+      assert action2["label"] =~ "Go"
+    end
+
+    test "update_detail drops unknown keys and nil priority" do
+      updated = Payload.update_detail("t1", %{"unknown" => "x", "priority" => "99"})
+      assert updated.id == "t1"
+      refute Map.has_key?(updated, :unknown)
+      refute Map.has_key?(updated, :priority)
+    end
+
+    test "normalize_action rejects empty js ops" do
+      assert Payload.normalize_action(%{label: "Go", js: %JS{ops: []}}) == nil
+    end
+
+    test "update_detail ignores id and groupId keys" do
+      updated = Payload.update_detail("t1", %{"id" => "other", "groupId" => "g", "title" => "Hi"})
+      assert updated.id == "t1"
+      assert updated.title == "Hi"
+      refute Map.has_key?(updated, :groupId)
+    end
+
+    test "create_detail omits nil optional fields" do
+      detail = Payload.create_detail("T", nil, :info, [])
+      assert detail.description == nil
+      refute Map.has_key?(detail, :action)
+    end
+
+    test "update_detail skips nil values" do
+      assert %{id: "t1"} = Payload.update_detail("t1", %{duration: nil, title: nil})
+    end
+
+    test "type_string accepts warning string" do
+      assert Payload.type_string("warning") == "warning"
+    end
+
+    test "create_server_data uses warning type" do
+      assert Payload.create_server_data("g", "T", "D", :warning, []).type == "warning"
+    end
+
+    test "normalize_action omits blank class" do
+      action = Payload.normalize_action(%{label: "Go", js: JS.push("go"), class: "   "})
+      refute Map.has_key?(action, "class")
     end
   end
 

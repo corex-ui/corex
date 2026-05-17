@@ -1,5 +1,6 @@
 defmodule Corex.MenuTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Menu
   alias Corex.Menu.Connect
@@ -28,6 +29,230 @@ defmodule Corex.MenuTest do
       html = render_component(&CorexTest.ComponentHelpers.render_menu_with_loading/1, [])
       assert html =~ ~r/data-loading/
       assert html =~ ~r/phx-mounted/
+    end
+
+    test "renders deep nested menu with grouped grandchildren" do
+      items =
+        Corex.Tree.new([
+          %{
+            label: "Share",
+            value: "share",
+            children: [
+              %{
+                label: "Social",
+                value: "social",
+                group: "Channels",
+                children: [%{label: "Twitter", value: "twitter"}]
+              },
+              %{label: "Email", value: "email", group: "Channels"}
+            ]
+          },
+          %{label: "Print", value: "print"}
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu
+              id="menu-deep"
+              items={@items}
+              redirect
+              typeahead={false}
+              loop_focus={true}
+            >
+              <:trigger>Actions</:trigger>
+              <:nested_indicator>›</:nested_indicator>
+            </Menu.menu>
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ "Twitter"
+      assert html =~ "Channels"
+      assert html =~ "Print"
+      assert html =~ ~s(data-nested="menu")
+    end
+
+    test "raises for invalid menu items" do
+      assert_raise ArgumentError, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu id="bad-menu" items={[%{}]}>
+              <:trigger>X</:trigger>
+            </Menu.menu>
+            """
+          end,
+          %{}
+        )
+      end
+    end
+
+    test "renders indicator slot on trigger" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu items={Corex.Tree.new([%{label: "A", value: "a"}])}>
+              <:trigger>Menu</:trigger>
+              <:indicator>▼</:indicator>
+            </Menu.menu>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "▼"
+      assert html =~ ~s(data-part="indicator")
+    end
+
+    test "renders custom item slot" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu items={Corex.Tree.new([%{label: "Plain", value: "plain"}])}>
+              <:trigger>Menu</:trigger>
+              <:item :let={item}>
+                <span data-custom-item>{item.label}</span>
+              </:item>
+            </Menu.menu>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~s(data-custom-item)
+      assert html =~ "Plain"
+    end
+
+    test "renders grouped children inside nested submenu" do
+      items =
+        Corex.Tree.new([
+          %{
+            label: "Share",
+            value: "share",
+            children: [
+              %{label: "Twitter", value: "twitter", group: "Social"},
+              %{label: "Email", value: "email", group: "Social"}
+            ]
+          }
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu id="menu-nested-groups" items={@items}>
+              <:trigger>Menu</:trigger>
+              <:nested_indicator>›</:nested_indicator>
+            </Menu.menu>
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ "Twitter"
+      assert html =~ "Social"
+      assert html =~ ~s(data-part="item-group-label")
+    end
+
+    test "renders three-level nested menu with item slot in submenu" do
+      items =
+        Corex.Tree.new([
+          %{
+            label: "File",
+            value: "file",
+            children: [
+              %{
+                label: "Export",
+                value: "export",
+                children: [%{label: "PDF", value: "pdf"}, %{label: "CSV", value: "csv"}]
+              }
+            ]
+          }
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu id="menu-3-level" items={@items}>
+              <:trigger>Menu</:trigger>
+              <:nested_indicator>›</:nested_indicator>
+              <:item :let={item}>
+                <strong data-menu-item>{item.label}</strong>
+              </:item>
+            </Menu.menu>
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ "PDF"
+      assert html =~ ~s(data-menu-item)
+      assert html =~ "Export"
+    end
+
+    test "renders top-level grouped item with nested children" do
+      items =
+        Corex.Tree.new([
+          %{
+            label: "More",
+            value: "more",
+            group: "Actions",
+            children: [%{label: "Sub", value: "sub"}]
+          }
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu id="menu-group-nested" items={@items}>
+              <:trigger>Menu</:trigger>
+              <:nested_indicator>›</:nested_indicator>
+              <:item :let={item}>
+                <em data-top-item>{item.label}</em>
+              </:item>
+            </Menu.menu>
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ "Actions"
+      assert html =~ ~s(data-top-item)
+      assert html =~ "Sub"
+    end
+
+    test "renders disabled trigger and disabled item" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Menu.menu
+              id="menu-disabled"
+              disabled
+              composite
+              items={
+                Corex.Tree.new([
+                  %{label: "Off", value: "off", disabled: true},
+                  %{label: "On", value: "on"}
+                ])
+              }
+            >
+              <:trigger>Menu</:trigger>
+            </Menu.menu>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "aria-disabled"
+      assert html =~ "Off"
     end
   end
 
@@ -188,6 +413,64 @@ defmodule Corex.MenuTest do
       result = Connect.nested_menu(assigns)
       assert result["data-nested"] == "menu"
       assert result["data-scope"] == "menu"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "returns JS for hook and anatomy ignore functions" do
+      id = "menu-ignore"
+      dir = "ltr"
+      orientation = "horizontal"
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_hook(id)
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_root(%{id: id, dir: dir, orientation: orientation})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_trigger(%{
+                 id: id,
+                 disabled: false,
+                 dir: dir,
+                 orientation: orientation
+               })
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_indicator(%{id: id, dir: dir, orientation: orientation})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_positioner(%{id: id, dir: dir, orientation: orientation})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_content(%{id: id, dir: dir, orientation: orientation})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_item(%{
+                 id: id,
+                 value: "v",
+                 dir: dir,
+                 disabled: false,
+                 nested_menu_id: nil,
+                 has_nested: false,
+                 redirect: false,
+                 new_tab: false
+               })
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_item_group(%{
+                 id: id,
+                 group_id: "g1",
+                 dir: dir,
+                 orientation: orientation
+               })
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_item_group_label(%{
+                 id: id,
+                 group_id: "g1",
+                 dir: dir,
+                 orientation: orientation
+               })
     end
   end
 end

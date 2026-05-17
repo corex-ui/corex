@@ -119,7 +119,23 @@ defmodule E2eWeb.Model do
       end
 
       def visit_path(session, path) when is_binary(path) do
-        visit(session, path)
+        session
+        |> visit(path)
+        |> scroll_to_fragment(path)
+      end
+
+      defp scroll_to_fragment(session, path) do
+        case String.split(path, "#", parts: 2) do
+          [_base, id] when id != "" ->
+            execute_script(
+              session,
+              "document.getElementById(arguments[0])?.scrollIntoView({block: 'start'})",
+              [id]
+            )
+
+          _ ->
+            session
+        end
       end
 
       def goto(session, path) when is_binary(path) do
@@ -184,6 +200,8 @@ defmodule E2eWeb.Model do
       end
 
       def wait_for_has(session, %Wallaby.Query{} = query, opts \\ []) do
+        query = maybe_query_visible(query, opts)
+
         case Keyword.get(opts, :timeout) do
           nil ->
             assert_has(session, query)
@@ -192,6 +210,13 @@ defmodule E2eWeb.Model do
             deadline = System.monotonic_time(:millisecond) + max_ms
             busy_wait_query(session, query, deadline)
             assert_has(session, query)
+        end
+      end
+
+      defp maybe_query_visible(%Wallaby.Query{} = query, opts) do
+        case Keyword.get(opts, :visible) do
+          :any -> %{query | conditions: Keyword.put(query.conditions, :visible, :any)}
+          _ -> query
         end
       end
 
