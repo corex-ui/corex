@@ -16,7 +16,7 @@ defmodule E2eWeb.DocComponentWallaby do
               ])
 
   def assert_page_behavior(session, component, page_key) when is_atom(component) and is_atom(page_key) do
-    scope = Atom.to_string(component)
+    scope = E2eWeb.ZagScope.for_component(component)
     hook = ComponentWireIndex.hook_for_id(component)
     {path, root_sel} = ComponentBehaviorSpec.page(component, page_key)
     locale_path = "/en" <> path
@@ -76,7 +76,7 @@ defmodule E2eWeb.DocComponentWallaby do
     case page_key do
       :anatomy -> assert_static_anatomy(session, scope, root_id)
       :style -> assert_has(session, css("##{root_id}"))
-      :form -> assert_has(session, css("##{root_id} form"))
+      :form -> assert_has(session, css("##{root_id} form", minimum: 1))
       :patterns -> assert_has(session, css("##{root_id}"))
       _ -> assert_has(session, css("##{root_id}"))
     end
@@ -84,7 +84,7 @@ defmodule E2eWeb.DocComponentWallaby do
     session
   end
 
-  defp wait_hooks_ready(session, scope, hook, root_id, page_key) do
+  defp wait_hooks_ready(session, scope, hook, root_id, _page_key) do
     base = page_scope_selector(root_id, scope)
 
     q =

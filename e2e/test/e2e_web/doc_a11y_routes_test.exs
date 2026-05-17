@@ -33,9 +33,9 @@ defmodule E2eWeb.DocA11yRoutesTest do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->
-               p == path and r == ready
+               p == "/en#{path}" and r == ready
              end),
-             "missing DocA11yRoutes entry for #{slug} #{key}: #{path} #{ready}"
+             "missing DocA11yRoutes entry for #{slug} #{key}: /en#{path} #{ready}"
     end
 
     for {slug, comp} <- [
@@ -48,18 +48,18 @@ defmodule E2eWeb.DocA11yRoutesTest do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->
-               p == path and r == ready
+               p == "/en#{path}" and r == ready
              end),
-             "missing DocA11yRoutes entry for #{slug} #{key}: #{path} #{ready}"
+             "missing DocA11yRoutes entry for #{slug} #{key}: /en#{path} #{ready}"
     end
 
     for key <- [:anatomy, :api, :events, :playground, :patterns, :animation] do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(:accordion, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug("accordion"), fn {p, r} ->
-               p == path and r == ready
+               p == "/en#{path}" and r == ready
              end),
-             "missing DocA11yRoutes entry for accordion #{key}: #{path} #{ready}"
+             "missing DocA11yRoutes entry for accordion #{key}: /en#{path} #{ready}"
     end
   end
 end

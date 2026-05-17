@@ -62,7 +62,7 @@ defmodule Corex.Pagination.Connect do
       "id" => "pagination:#{assigns.id}"
     }
     |> maybe_put_dir_from(assigns)
-    |> maybe_put_aria_label(assigns.aria_label)
+    |> maybe_put_aria_label(root_aria_label(assigns.id, assigns.aria_label))
   end
 
   def ignore_root(%Root{} = assigns) do
@@ -79,7 +79,7 @@ defmodule Corex.Pagination.Connect do
       "id" => "pagination:#{assigns.id}:prev"
     }
     |> maybe_put_dir_from(assigns)
-    |> maybe_put_aria_label(assigns.aria_label)
+    |> maybe_put_trigger_aria_label(assigns.aria_label, assigns.disabled, assigns.tag)
     |> maybe_put_data_disabled(assigns.disabled)
     |> maybe_put_disabled(assigns.disabled and assigns.tag == "button")
     |> maybe_put_href(assigns.href)
@@ -102,7 +102,7 @@ defmodule Corex.Pagination.Connect do
       "id" => "pagination:#{assigns.id}:next"
     }
     |> maybe_put_dir_from(assigns)
-    |> maybe_put_aria_label(assigns.aria_label)
+    |> maybe_put_trigger_aria_label(assigns.aria_label, assigns.disabled, assigns.tag)
     |> maybe_put_data_disabled(assigns.disabled)
     |> maybe_put_disabled(assigns.disabled and assigns.tag == "button")
     |> maybe_put_href(assigns.href)
@@ -158,6 +158,12 @@ defmodule Corex.Pagination.Connect do
 
   defp maybe_put_aria_label(attrs, nil), do: attrs
   defp maybe_put_aria_label(attrs, label), do: Map.put(attrs, "aria-label", label)
+
+  defp maybe_put_trigger_aria_label(attrs, _label, true, "link"), do: attrs
+  defp maybe_put_trigger_aria_label(attrs, label, _, _), do: maybe_put_aria_label(attrs, label)
+
+  defp root_aria_label(id, label) when is_binary(label) and label != "", do: "#{label} (#{id})"
+  defp root_aria_label(id, _), do: "Pagination (#{id})"
 
   defp maybe_put_data_disabled(attrs, true), do: Map.put(attrs, "data-disabled", "")
   defp maybe_put_data_disabled(attrs, false), do: attrs

@@ -56,7 +56,7 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
   test "pilots keep dedicated Wallaby test modules" do
     base = Path.expand("../components", __DIR__)
 
-    for {component, file} <- @pilot_test_files do
+    for {_component, file} <- @pilot_test_files do
       path = Path.join(base, file)
       assert File.exists?(path), "missing pilot #{path}"
       refute String.contains?(File.read!(path), "DocComponentWallaby")

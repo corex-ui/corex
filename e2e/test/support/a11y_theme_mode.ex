@@ -13,8 +13,10 @@ defmodule E2eWeb.A11yThemeMode do
   end
 
   def visit_path_with_theme_mode(session, path, theme, mode) do
+    locale_path = "/#{E2eWeb.DocA11yRoutes.locale()}#{path}"
+
     session
-    |> visit(path)
+    |> visit(locale_path)
     |> execute_script(
       """
       localStorage.setItem("phx:theme", #{Jason.encode!(theme)});
@@ -24,7 +26,7 @@ defmodule E2eWeb.A11yThemeMode do
     )
     |> set_cookie("phx_theme", theme, path: "/")
     |> set_cookie("phx_mode", mode, path: "/")
-    |> visit(path)
+    |> visit(locale_path)
   end
 
   def visit_ready_with_theme_mode(session, path, %Wallaby.Query{} = ready_query, theme, mode) do

@@ -299,9 +299,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
   def style_pagination(assigns) do
     assigns =
       assigns
-      |> assign_new(:page, fn -> @style_page end)
-      |> assign_new(:count, fn -> @style_count end)
-      |> assign_new(:page_size, fn -> @style_page_size end)
+      |> assign(:page, assigns[:page] || @style_page)
+      |> assign(:count, assigns[:count] || @style_count)
+      |> assign(:page_size, assigns[:page_size] || @style_page_size)
 
     ~H"""
     <.pagination

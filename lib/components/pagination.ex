@@ -349,8 +349,8 @@ defmodule Corex.Pagination do
 
   defp prepare_pagination_assigns(assigns) do
     default_translation = default_translation()
-    page_size = max(assigns.page_size, 1)
-    count = max(assigns.count, 0)
+    page_size = assigns.page_size |> positive_int(10) |> max(1)
+    count = assigns.count |> non_negative_int(0)
     total_pages = total_pages_for(count, page_size)
     {type_str, redirect_str} = type_and_redirect(assigns)
     page = assigns.page
@@ -407,6 +407,14 @@ defmodule Corex.Pagination do
 
   defp total_pages_for(0, _page_size), do: 0
   defp total_pages_for(count, page_size), do: div(count + page_size - 1, page_size)
+
+  defp positive_int(nil, default), do: default
+  defp positive_int(n, _default) when is_integer(n) and n > 0, do: n
+  defp positive_int(_, default), do: default
+
+  defp non_negative_int(nil, default), do: default
+  defp non_negative_int(n, _default) when is_integer(n) and n >= 0, do: n
+  defp non_negative_int(_, default), do: default
 
   defp type_and_redirect(%{type: :link, redirect: redirect}) do
     {"link", Atom.to_string(redirect)}

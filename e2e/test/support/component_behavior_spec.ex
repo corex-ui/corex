@@ -8,13 +8,12 @@ defmodule E2eWeb.ComponentBehaviorSpec do
            {"/en/" <> rest, root}, acc ->
              case String.split(rest, "/", parts: 2) do
                [slug, page_segment] ->
-                 component =
-                   slug |> String.replace("-", "_") |> String.to_existing_atom()
+                 component = slug |> String.replace("-", "_") |> String.to_atom()
 
                  page_key =
                    case page_segment do
                      "live-form" -> :live_form
-                     other -> other |> String.replace("-", "_") |> String.to_existing_atom()
+                     other -> other |> String.replace("-", "_") |> String.to_atom()
                    end
 
                  path = "/" <> slug <> "/" <> page_segment
@@ -54,6 +53,7 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   """
   def visit_ready(session, model, component, page_key) do
     {path, ready} = page(component, page_key)
-    model.visit_ready(session, path, css(ready))
+    locale_path = "/#{E2eWeb.DocA11yRoutes.locale()}#{path}"
+    model.visit_ready(session, locale_path, css(ready))
   end
 end

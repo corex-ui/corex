@@ -73,6 +73,33 @@ defmodule Corex.PaginationTest do
       assert attrs["data-phx-link-state"] == "push"
     end
 
+    test "prev_trigger disabled link omits aria-label" do
+      attrs =
+        Connect.prev_trigger(%PrevTrigger{
+          id: "p1",
+          dir: "ltr",
+          disabled: true,
+          aria_label: "Previous",
+          href: nil,
+          redirect: "patch",
+          tag: "link"
+        })
+
+      refute Map.has_key?(attrs, "aria-label")
+      assert attrs["data-disabled"] == ""
+    end
+
+    test "root aria-label is unique per id" do
+      attrs =
+        Connect.root(%Corex.Pagination.Anatomy.Root{
+          id: "results",
+          dir: "ltr",
+          aria_label: "Pagination"
+        })
+
+      assert attrs["aria-label"] == "Pagination (results)"
+    end
+
     test "next_trigger with navigate redirect" do
       attrs =
         Connect.next_trigger(%NextTrigger{
