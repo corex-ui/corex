@@ -1,10 +1,10 @@
 defmodule E2eWeb.DocA11yRoutesTest do
   use ExUnit.Case, async: true
 
-  test "all doc paths are unique and locale-prefixed" do
-    paths = E2eWeb.DocA11yRoutes.all() |> Enum.map(&elem(&1, 0))
-    assert length(paths) == length(Enum.uniq(paths))
-    assert Enum.all?(paths, &String.starts_with?(&1, "/en/"))
+  test "all doc path and ready pairs are unique and locale-prefixed" do
+    routes = E2eWeb.DocA11yRoutes.all()
+    assert length(routes) == length(Enum.uniq(routes))
+    assert Enum.all?(routes, fn {path, _} -> String.starts_with?(path, "/en/") end)
   end
 
   test "for_slug returns only matching component paths" do

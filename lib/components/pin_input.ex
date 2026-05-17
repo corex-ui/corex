@@ -139,7 +139,7 @@ defmodule Corex.PinInput do
     @type t :: %__MODULE__{digit: String.t()}
 
     def default do
-      %__MODULE__{digit: Gettext.gettext("Digit %{digit}")}
+      %__MODULE__{digit: Gettext.gettext("Digit %{digit}", digit: "%{digit}")}
     end
 
     def merge(nil, default), do: default

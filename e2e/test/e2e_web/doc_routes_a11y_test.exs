@@ -14,7 +14,7 @@ defmodule E2eWeb.DocRoutesA11yTest do
     @path path
     @ready ready
 
-    feature "a11y doc #{@path}", %{session: session} do
+    feature "a11y doc #{@path} #{@ready}", %{session: session} do
       SiteModel.visit_and_check_a11y(session, @path, css(@ready))
     end
   end
@@ -24,7 +24,7 @@ defmodule E2eWeb.DocRoutesA11yTest do
     @ready ready
     @tag :skip
 
-    feature "a11y doc #{@path}", %{session: session} do
+    feature "a11y doc #{@path} #{@ready}", %{session: session} do
       SiteModel.visit_and_check_a11y(session, @path, css(@ready))
     end
   end
