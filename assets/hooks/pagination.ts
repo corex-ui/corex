@@ -1,6 +1,11 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { Pagination, buildGetPageUrl, parsePaginationTranslations } from "../components/pagination";
+import {
+  Pagination,
+  buildGetPageUrl,
+  parsePaginationTranslations,
+  uniquePaginationTranslations,
+} from "../components/pagination";
 import type { PageChangeDetails, PageSizeChangeDetails, Props } from "@zag-js/pagination";
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
@@ -44,7 +49,7 @@ function buildPaginationProps(
     boundaryCount: getNumber(el, "boundaryCount"),
     dir: getDir(el),
     type: triggerType,
-    translations: parsePaginationTranslations(el),
+    translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
     getPageUrl: buildGetPageUrl(el),
     ...(controlled
       ? { page: getNumber(el, "page") }

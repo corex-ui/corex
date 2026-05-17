@@ -105,6 +105,18 @@ export class Pagination extends Component<Props, Api> {
   }
 }
 
+export function uniquePaginationTranslations(
+  el: HTMLElement,
+  translations?: IntlTranslations
+): IntlTranslations {
+  const label = translations?.rootLabel?.trim() || "Pagination";
+
+  return {
+    ...translations,
+    rootLabel: `${label} (${el.id})`,
+  };
+}
+
 export function parsePaginationTranslations(el: HTMLElement): IntlTranslations | undefined {
   const raw = el.dataset.translation;
   if (!raw) return undefined;

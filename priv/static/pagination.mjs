@@ -471,6 +471,13 @@ var Pagination = class extends Component {
     }
   }
 };
+function uniquePaginationTranslations(el, translations) {
+  const label = translations?.rootLabel?.trim() || "Pagination";
+  return {
+    ...translations,
+    rootLabel: `${label} (${el.id})`
+  };
+}
 function parsePaginationTranslations(el) {
   const raw = el.dataset.translation;
   if (!raw) return void 0;
@@ -559,7 +566,7 @@ function buildPaginationProps(el, pushEvent, canPush) {
     boundaryCount: getNumber(el, "boundaryCount"),
     dir: getDir(el),
     type: triggerType,
-    translations: parsePaginationTranslations(el),
+    translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
     getPageUrl: buildGetPageUrl(el),
     ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") ?? getNumber(el, "page") },
     ...controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {

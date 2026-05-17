@@ -30513,6 +30513,13 @@ ${err}`);
       }
     };
   }
+  function uniquePaginationTranslations(el, translations) {
+    var _a4;
+    const label = ((_a4 = translations == null ? void 0 : translations.rootLabel) == null ? void 0 : _a4.trim()) || "Pagination";
+    return __spreadProps(__spreadValues({}, translations), {
+      rootLabel: `${label} (${el.id})`
+    });
+  }
   function parsePaginationTranslations(el) {
     const raw = el.dataset.translation;
     if (!raw) return void 0;
@@ -30603,7 +30610,7 @@ ${err}`);
       boundaryCount: getNumber(el, "boundaryCount"),
       dir: getDir(el),
       type: triggerType,
-      translations: parsePaginationTranslations(el),
+      translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
       getPageUrl: buildGetPageUrl(el)
     }, controlled ? { page: getNumber(el, "page") } : { defaultPage: (_c = getNumber(el, "defaultPage")) != null ? _c : getNumber(el, "page") }), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
       defaultPageSize: (_d = getNumber(el, "defaultPageSize")) != null ? _d : getNumber(el, "pageSize")
