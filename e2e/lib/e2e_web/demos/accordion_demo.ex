@@ -1442,44 +1442,118 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
-  def patterns_open_single_heex do
+  def patterns_stream_demo_heex do
     ~S"""
-    <.accordion
-      id="patterns-open-single"
-      class="accordion"
-      items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-      ])}
-      multiple={false}
-      value="lorem"
-    >
-      <:indicator>
-        <.heroicon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion>
+    <div class="flex flex-col gap-3 w-full max-w-xl">
+      <div class="flex flex-wrap gap-2">
+        <.action phx-click="add_item" class="button button--sm button--accent">
+          <.heroicon name="hero-plus" /> Add item
+        </.action>
+        <.action phx-click="reset" class="button button--sm button--alert">
+          Reset
+        </.action>
+      </div>
+      <.accordion id="stream-accordion" class="accordion" items={Corex.Content.new(@items_list)}>
+        <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+      </.accordion>
+    </div>
     """
   end
 
-  def patterns_open_multiple_heex do
-    ~S"""
-    <.accordion
-      id="patterns-open-multiple"
-      class="accordion"
-      items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-      ])}
-      multiple
-      value={["lorem", "donec"]}
-    >
-      <:indicator>
-        <.heroicon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion>
-    """
+  def patterns_stream_elixir do
+    ~S'''
+    defmodule MyAppWeb.AccordionStreamDemoLive do
+      use MyAppWeb, :live_view
+
+      @initial_items [
+        %{value: "1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{value: "2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{value: "3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ]
+
+      @impl true
+      def mount(_params, _session, socket) do
+        socket =
+          socket
+          |> stream_configure(:items, dom_id: &("accordion:stream-accordion:item:" <> to_string(&1.value)))
+          |> stream(:items, @initial_items)
+          |> assign(:items_list, @initial_items)
+          |> assign(:next_id, 4)
+
+        if connected?(socket) do
+          Process.send_after(self(), :add_timestamp_item, 3_000)
+        end
+
+        {:ok, socket}
+      end
+
+      @impl true
+      def handle_info(:add_timestamp_item, socket) do
+        Process.send_after(self(), :add_timestamp_item, 10_000)
+        id = to_string(socket.assigns.next_id)
+
+        time =
+          DateTime.utc_now()
+          |> DateTime.truncate(:second)
+          |> DateTime.to_time()
+          |> Time.to_string()
+
+        item = %{
+          value: id,
+          label: "Item " <> id <> " @ " <> time,
+          content: "Content for item " <> id <> "."
+        }
+
+        {:noreply,
+         socket
+         |> stream_insert(:items, item)
+         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:next_id, socket.assigns.next_id + 1)}
+      end
+
+      @impl true
+      def handle_event("add_item", _params, socket) do
+        id = to_string(socket.assigns.next_id)
+        item = %{value: id, label: "Item " <> id, content: "Content for item " <> id <> "."}
+
+        {:noreply,
+         socket
+         |> stream_insert(:items, item)
+         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:next_id, socket.assigns.next_id + 1)}
+      end
+
+      @impl true
+      def handle_event("reset", _params, socket) do
+        {:noreply,
+         socket
+         |> stream(:items, @initial_items, reset: true)
+         |> assign(:items_list, @initial_items)
+         |> assign(:next_id, 4)}
+      end
+
+      @impl true
+      def render(assigns) do
+        ~H"""
+        <Layouts.app flash={@flash} path={@path} mode={@mode} theme={@theme} locale={@locale}>
+          <div class="flex flex-col gap-3 w-full max-w-xl">
+            <div class="flex flex-wrap gap-2">
+              <.action phx-click="add_item" class="button button--sm button--accent">
+                <.heroicon name="hero-plus" /> Add item
+              </.action>
+              <.action phx-click="reset" class="button button--sm button--alert">
+                Reset
+              </.action>
+            </div>
+            <.accordion id="stream-accordion" class="accordion" items={Corex.Content.new(@items_list)}>
+              <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+            </.accordion>
+          </div>
+        </Layouts.app>
+        """
+      end
+    end
+    '''
   end
 
   def animation_items do

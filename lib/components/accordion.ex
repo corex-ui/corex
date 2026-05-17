@@ -387,6 +387,48 @@ defmodule Corex.Accordion do
   end
   ```
 
+  ### Stream
+
+  Use `Phoenix.LiveView.stream/3` to add or remove accordion items at runtime. Keep a list assign in sync with the stream and pass it as `items`. Configure `dom_id` to match each item element id (`accordion:my-accordion:item:#{value}`).
+
+  ```elixir
+  defmodule MyAppWeb.AccordionStreamLive do
+    use MyAppWeb, :live_view
+
+    @initial_items [
+      %{value: "1", label: "Lorem ipsum", content: "Consectetur adipiscing elit."},
+      %{value: "2", label: "Duis dictum", content: "Nullam eget vestibulum ligula."},
+      %{value: "3", label: "Donec condimentum", content: "Congue molestie ipsum gravida a."}
+    ]
+
+    def mount(_params, _session, socket) do
+      {:ok,
+       socket
+       |> stream_configure(:items, dom_id: &"accordion:my-accordion:item:#{&1.value}")
+       |> stream(:items, @initial_items)
+       |> assign(:items_list, @initial_items)
+       |> assign(:next_id, 4)}
+    end
+
+    def handle_event("add_item", _params, socket) do
+      id = to_string(socket.assigns.next_id)
+      item = %{value: id, label: "Item #{id}", content: "Content for item #{id}."}
+
+      {:noreply,
+       socket
+       |> stream_insert(:items, item)
+       |> assign(:items_list, socket.assigns.items_list ++ [item])
+       |> assign(:next_id, socket.assigns.next_id + 1)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new(@items_list)} />
+      """
+    end
+  end
+  ```
+
   <!-- tabs-close -->
 
   ## Animation

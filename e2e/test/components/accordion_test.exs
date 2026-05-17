@@ -439,36 +439,6 @@ defmodule E2eWeb.AccordionTest do
   end
 
   describe "patterns" do
-    feature "open single  -  switching items keeps a single open selection", %{
-      session: session
-    } do
-      section = "accordion-patterns-open-single"
-
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
-        |> Accordion.wait_root_no_loading("#patterns-open-single")
-
-      assert Accordion.trigger_expanded?(session, "patterns-open-single", "lorem", "true")
-
-      _ =
-        session
-        |> Accordion.click_trigger_in_section_at(section, 2)
-
-      assert Accordion.trigger_expanded?(session, "patterns-open-single", "duis", "true")
-      refute Accordion.trigger_expanded?(session, "patterns-open-single", "lorem", "true")
-    end
-
-    feature "open multiple  -  two items are expanded initially", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
-        |> Accordion.wait_root_no_loading("#patterns-open-multiple")
-
-      assert Accordion.trigger_expanded?(session, "patterns-open-multiple", "lorem", "true")
-      assert Accordion.trigger_expanded?(session, "patterns-open-multiple", "donec", "true")
-    end
-
     @tag :accordion_patterns_controlled
     feature "controlled  -  clicking duis updates which item is open", %{session: session} do
       section = "accordion-patterns-controlled"
@@ -495,6 +465,23 @@ defmodule E2eWeb.AccordionTest do
       |> Accordion.wait_root_no_loading("#patterns-async", timeout: 20_000)
 
       assert Accordion.trigger_expanded?(session, "patterns-async", "duis", "true")
+    end
+
+    feature "stream  -  added item can expand", %{session: session} do
+      section = "accordion-patterns-stream"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
+        |> Accordion.wait_root_no_loading("#stream-accordion")
+        |> click(css(~s|##{section} button[phx-click="add_item"]|))
+
+      session =
+        session
+        |> Accordion.wait_root_no_loading("#stream-accordion")
+        |> Accordion.click_trigger_in_section_at(section, 4)
+
+      assert Accordion.trigger_expanded?(session, "stream-accordion", "4", "true")
     end
   end
 

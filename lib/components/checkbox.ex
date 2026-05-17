@@ -393,7 +393,7 @@ defmodule Corex.Checkbox do
             {msg}
           </:error>
         </.checkbox>
-  
+
         <.action type="submit" class="button button--accent w-full">
           Submit
         </.action>
@@ -405,16 +405,16 @@ defmodule Corex.Checkbox do
   ```elixir
       def account_terms_page(conn, _params) do
         changeset = MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{})
-  
+
         form =
           Phoenix.Component.to_form(changeset,
             as: :terms_changeset,
             id: "account-terms-changeset-form"
           )
-  
+
         render(conn, :account_terms, form: form)
       end
-  
+
       def account_terms_create(conn, %{"terms_changeset" => params}) do
         case MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, params) do
           %Ecto.Changeset{valid?: true} = changeset ->
@@ -422,16 +422,16 @@ defmodule Corex.Checkbox do
             conn
             |> put_flash(:info, "Saved: terms=#{data.terms}")
             |> redirect(to: ~p"/account")
-  
+
           changeset ->
             changeset = Map.put(changeset, :action, :insert)
-  
+
             form =
               Phoenix.Component.to_form(changeset,
                 as: :terms_changeset,
                 id: "account-terms-changeset-form"
               )
-  
+
             render(conn, :account_terms, form: form)
         end
       end
@@ -443,18 +443,18 @@ defmodule Corex.Checkbox do
       defmodule MyApp.Forms.Terms do
         use Ecto.Schema
         import Ecto.Changeset
-  
+
         embedded_schema do
           field :terms, :boolean, default: false
         end
-  
+
         def changeset(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
           |> validate_required([:terms])
           |> validate_acceptance(:terms)
         end
-  
+
         def changeset_validate(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
@@ -484,7 +484,7 @@ defmodule Corex.Checkbox do
             {msg}
           </:error>
         </.checkbox>
-  
+
         <.action type="submit" class="button button--accent w-full">
           Submit
         </.action>
@@ -497,16 +497,16 @@ defmodule Corex.Checkbox do
       def account_terms_strict_page(conn, _params) do
         changeset =
           MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, %{})
-  
+
         form =
           Phoenix.Component.to_form(changeset,
             as: :terms_validate,
             id: "account-terms-validate-form"
           )
-  
+
         render(conn, :account_terms_strict, form: form)
       end
-  
+
       def account_terms_strict_create(conn, %{"terms_validate" => params}) do
         case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
           %Ecto.Changeset{valid?: true} = changeset ->
@@ -514,16 +514,16 @@ defmodule Corex.Checkbox do
             conn
             |> put_flash(:info, "Saved: terms=#{data.terms}")
             |> redirect(to: ~p"/account")
-  
+
           changeset ->
             changeset = Map.put(changeset, :action, :insert)
-  
+
             form =
               Phoenix.Component.to_form(changeset,
                 as: :terms_validate,
                 id: "account-terms-validate-form"
               )
-  
+
             render(conn, :account_terms_strict, form: form)
         end
       end
@@ -535,18 +535,18 @@ defmodule Corex.Checkbox do
       defmodule MyApp.Forms.Terms do
         use Ecto.Schema
         import Ecto.Changeset
-  
+
         embedded_schema do
           field :terms, :boolean, default: false
         end
-  
+
         def changeset(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
           |> validate_required([:terms])
           |> validate_acceptance(:terms)
         end
-  
+
         def changeset_validate(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
@@ -595,7 +595,7 @@ defmodule Corex.Checkbox do
             {msg}
           </:error>
         </.checkbox>
-  
+
         <.action type="submit" id="checkbox-form-live-submit" class="button button--accent w-full">
           Submit
         </.action>
@@ -610,24 +610,24 @@ defmodule Corex.Checkbox do
           %MyApp.Forms.Terms{}
           |> MyApp.Forms.Terms.changeset(%{})
           |> Phoenix.Component.to_form(as: :terms)
-  
+
         {:ok, assign(socket, :form, form)}
       end
-  
+
       def handle_event("validate", %{"terms" => params}, socket) do
         changeset =
           %MyApp.Forms.Terms{}
           |> MyApp.Forms.Terms.changeset(params)
           |> Map.put(:action, :validate)
-  
+
         {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms))}
       end
-  
+
       def handle_event("save", %{"terms" => params}, socket) do
         case MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, params) do
           %Ecto.Changeset{valid?: true} = _changeset ->
             {:noreply, assign(socket, :form, Phoenix.Component.to_form(MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{}), as: :terms))}
-  
+
           changeset ->
             {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms))}
         end
@@ -640,18 +640,18 @@ defmodule Corex.Checkbox do
       defmodule MyApp.Forms.Terms do
         use Ecto.Schema
         import Ecto.Changeset
-  
+
         embedded_schema do
           field :terms, :boolean, default: false
         end
-  
+
         def changeset(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
           |> validate_required([:terms])
           |> validate_acceptance(:terms)
         end
-  
+
         def changeset_validate(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
@@ -680,7 +680,7 @@ defmodule Corex.Checkbox do
             {msg}
           </:error>
         </.checkbox>
-  
+
         <.action type="submit" id="checkbox-form-live-strict-submit" class="button button--accent w-full">
           Submit
         </.action>
@@ -695,20 +695,20 @@ defmodule Corex.Checkbox do
           %MyApp.Forms.Terms{}
           |> MyApp.Forms.Terms.changeset_validate(%{})
           |> Phoenix.Component.to_form(as: :terms_strict)
-  
+
         {:ok, assign(socket, :strict_form, form)}
       end
-  
+
       def handle_event("validate_strict", %{"terms_strict" => params}, socket) do
         changeset =
           %MyApp.Forms.Terms{}
           |> MyApp.Forms.Terms.changeset_validate(params)
           |> Map.put(:action, :validate)
-  
+
         {:noreply,
          assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms_strict))}
       end
-  
+
       def handle_event("save_strict", %{"terms_strict" => params}, socket) do
         case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
           %Ecto.Changeset{valid?: true} = _changeset ->
@@ -718,7 +718,7 @@ defmodule Corex.Checkbox do
                :strict_form,
                Phoenix.Component.to_form(MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, %{}), as: :terms_strict)
              )}
-  
+
           changeset ->
             {:noreply, assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms_strict))}
         end
@@ -731,18 +731,18 @@ defmodule Corex.Checkbox do
       defmodule MyApp.Forms.Terms do
         use Ecto.Schema
         import Ecto.Changeset
-  
+
         embedded_schema do
           field :terms, :boolean, default: false
         end
-  
+
         def changeset(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])
           |> validate_required([:terms])
           |> validate_acceptance(:terms)
         end
-  
+
         def changeset_validate(terms, attrs \\ %{}) do
           terms
           |> cast(attrs, [:terms])

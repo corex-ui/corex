@@ -199,6 +199,74 @@ export function runOpenStateTransitionsHeight(args: {
   });
 }
 
+export function isJsAnimation(el: HTMLElement): boolean {
+  return el.dataset.animation === "js";
+}
+
+export function isInOpenValueList(value: string | undefined, openValues: string[]): boolean {
+  return !!value && openValues.includes(value);
+}
+
+export type HeightContentValueResolver = (contentEl: HTMLElement) => string | undefined;
+
+export function contentDatasetValue(contentEl: HTMLElement): string | undefined {
+  return contentEl.dataset.value;
+}
+
+export function closestPartValue(itemSelector: string): HeightContentValueResolver {
+  return (contentEl) => contentEl.closest<HTMLElement>(itemSelector)?.dataset.value;
+}
+
+export function runHeightOpenTransition(args: {
+  el: HTMLElement;
+  selector: string;
+  prevOpen: string[];
+  nextOpen: string[];
+  resolveValue: HeightContentValueResolver;
+}): void {
+  const { el, selector, prevOpen, nextOpen, resolveValue } = args;
+  if (!isJsAnimation(el)) return;
+
+  runOpenStateTransitionsHeight({
+    rootEl: el,
+    selector,
+    opts: readHeightAnimationOptions(el),
+    wasOpen: (node) => isInOpenValueList(resolveValue(node), prevOpen),
+    isOpen: (node) => isInOpenValueList(resolveValue(node), nextOpen),
+  });
+}
+
+export function runHeightOpenToValues(args: {
+  el: HTMLElement;
+  selector: string;
+  openValues: string[];
+  resolveValue: HeightContentValueResolver;
+}): void {
+  const { el, selector, openValues, resolveValue } = args;
+  if (!isJsAnimation(el)) return;
+
+  runOpenStateTransitionsHeight({
+    rootEl: el,
+    selector,
+    opts: readHeightAnimationOptions(el),
+    isOpen: (node) => isInOpenValueList(resolveValue(node), openValues),
+  });
+}
+
+export function prepareJsHeightInitialState(el: HTMLElement, selector: string): void {
+  if (!isJsAnimation(el)) return;
+  prepareInitialHeightState(el, selector, readHeightAnimationOptions(el));
+}
+
+export function prepareJsScaleInitialState(
+  el: HTMLElement,
+  selector: string,
+  closedStyleFor?: (el: HTMLElement) => ScaleClosedStyleFeatures | undefined
+): void {
+  if (!isJsAnimation(el)) return;
+  prepareInitialScaleState(el, selector, readScaleAnimationOptions(el), closedStyleFor);
+}
+
 export function runHeightPanelAnimation(
   targetEl: HTMLElement,
   isOpening: boolean,

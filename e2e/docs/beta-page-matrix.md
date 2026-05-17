@@ -4,7 +4,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 
 | Component | Class | Anatomy | Style | Form | Playground | API | Events | Patterns | Animation | Deep / extra |
 |-----------|--------|---------|-------|------|------------|-----|--------|----------|-----------|--------------|
-| accordion | Zag | yes | yes |  -  | yes | yes | yes | yes | yes |  -  |
+| accordion | Zag | yes | yes |  -  | yes | yes | yes | yes | yes | stream |
 | action | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
 | angle-slider | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
 | avatar | Zag | yes | yes |  -  | yes | yes | yes |  -  |  -  |  -  |

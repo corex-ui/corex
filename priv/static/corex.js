@@ -2739,7 +2739,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-BLTS2JOO.mjs
+  // ../priv/static/chunks/chunk-VBYH4ZIZ.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2872,6 +2872,50 @@ var Corex = (() => {
       runHeightPanelAnimation(el, nowOpen, opts, blockRoot);
     });
   }
+  function isJsAnimation(el) {
+    return el.dataset.animation === "js";
+  }
+  function isInOpenValueList(value, openValues) {
+    return !!value && openValues.includes(value);
+  }
+  function contentDatasetValue(contentEl) {
+    return contentEl.dataset.value;
+  }
+  function closestPartValue(itemSelector) {
+    return (contentEl) => {
+      var _a4;
+      return (_a4 = contentEl.closest(itemSelector)) == null ? void 0 : _a4.dataset.value;
+    };
+  }
+  function runHeightOpenTransition(args) {
+    const { el, selector, prevOpen, nextOpen, resolveValue } = args;
+    if (!isJsAnimation(el)) return;
+    runOpenStateTransitionsHeight({
+      rootEl: el,
+      selector,
+      opts: readHeightAnimationOptions(el),
+      wasOpen: (node) => isInOpenValueList(resolveValue(node), prevOpen),
+      isOpen: (node) => isInOpenValueList(resolveValue(node), nextOpen)
+    });
+  }
+  function runHeightOpenToValues(args) {
+    const { el, selector, openValues, resolveValue } = args;
+    if (!isJsAnimation(el)) return;
+    runOpenStateTransitionsHeight({
+      rootEl: el,
+      selector,
+      opts: readHeightAnimationOptions(el),
+      isOpen: (node) => isInOpenValueList(resolveValue(node), openValues)
+    });
+  }
+  function prepareJsHeightInitialState(el, selector) {
+    if (!isJsAnimation(el)) return;
+    prepareInitialHeightState(el, selector, readHeightAnimationOptions(el));
+  }
+  function prepareJsScaleInitialState(el, selector, closedStyleFor) {
+    if (!isJsAnimation(el)) return;
+    prepareInitialScaleState(el, selector, readScaleAnimationOptions(el), closedStyleFor);
+  }
   function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
     targetEl.getAnimations().forEach((a2) => a2.cancel());
     const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;
@@ -2975,8 +3019,8 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_BLTS2JOO = __esm({
-    "../priv/static/chunks/chunk-BLTS2JOO.mjs"() {
+  var init_chunk_VBYH4ZIZ = __esm({
+    "../priv/static/chunks/chunk-VBYH4ZIZ.mjs"() {
       "use strict";
       init_chunk_XGGASIX4();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
@@ -3313,12 +3357,21 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, Accordion, AccordionHook;
+  function readAccordionLayoutProps(el) {
+    return {
+      id: el.id,
+      collapsible: getBoolean(el, "collapsible"),
+      multiple: getBoolean(el, "multiple"),
+      orientation: getString(el, "orientation"),
+      dir: getDir(el)
+    };
+  }
+  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, Accordion, ITEM_CONTENT_SELECTOR, ITEM_SELECTOR, resolveAccordionValue, AccordionHook;
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_BLTS2JOO();
+      init_chunk_VBYH4ZIZ();
       init_chunk_UUEU3QDP();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
@@ -3539,6 +3592,9 @@ var Corex = (() => {
           }
         }
       };
+      ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"]';
+      ITEM_SELECTOR = '[data-scope="accordion"][data-part="item"]';
+      resolveAccordionValue = closestPartValue(ITEM_SELECTOR);
       AccordionHook = {
         mounted() {
           const el = this.el;
@@ -3574,18 +3630,12 @@ var Corex = (() => {
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
-              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
-                runOpenStateTransitionsHeight({
-                  rootEl: el,
-                  selector: '[data-scope="accordion"][data-part="item-content"]',
-                  opts: readHeightAnimationOptions(el),
-                  isOpen: (contentEl) => {
-                    const itemEl = contentEl.closest(
-                      '[data-scope="accordion"][data-part="item"]'
-                    );
-                    const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                    return !!value && next2.includes(value);
-                  }
+              if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
+                runHeightOpenToValues({
+                  el,
+                  selector: ITEM_CONTENT_SELECTOR,
+                  openValues: next2,
+                  resolveValue: resolveAccordionValue
                 });
               }
             },
@@ -3603,10 +3653,7 @@ var Corex = (() => {
           }));
           accordion.init();
           this.accordion = accordion;
-          if (el.dataset.animation === "js") {
-            const opts = readHeightAnimationOptions(el);
-            prepareInitialHeightState(el, '[data-scope="accordion"][data-part="item-content"]', opts);
-          }
+          prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
           const emitValue = (respondTo) => {
             const value = accordion.api.value;
             emitResponse({
@@ -3700,48 +3747,31 @@ var Corex = (() => {
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-            this.previousValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousValue = (_a4 = getStringList(el, "value")) != null ? _a4 : [];
           }
         },
         updated() {
-          var _a4, _b, _c, _d;
-          const controlled = getBoolean(this.el, "controlled");
-          if (controlled) {
-            const nextValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
-            const prevValue = (_c = (_b = this.previousValue) != null ? _b : this.lastValue) != null ? _c : [];
-            this.previousValue = void 0;
-            this.lastValue = nextValue;
-            if (this.el.dataset.animation === "js") {
-              runOpenStateTransitionsHeight({
-                rootEl: this.el,
-                selector: '[data-scope="accordion"][data-part="item-content"]',
-                opts: readHeightAnimationOptions(this.el),
-                wasOpen: (contentEl) => {
-                  const itemEl = contentEl.closest(
-                    '[data-scope="accordion"][data-part="item"]'
-                  );
-                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                  return !!value && prevValue.includes(value);
-                },
-                isOpen: (contentEl) => {
-                  const itemEl = contentEl.closest(
-                    '[data-scope="accordion"][data-part="item"]'
-                  );
-                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                  return !!value && nextValue.includes(value);
-                }
-              });
-            }
+          var _a4, _b, _c, _d, _e;
+          const { el } = this;
+          const layout = readAccordionLayoutProps(el);
+          if (!getBoolean(el, "controlled")) {
+            (_a4 = this.accordion) == null ? void 0 : _a4.updateProps(layout);
+            return;
           }
-          (_d = this.accordion) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readStringListControlledZagProps(this.el, "value", "defaultValue")), {
-            collapsible: getBoolean(this.el, "collapsible"),
-            multiple: getBoolean(this.el, "multiple"),
-            orientation: getString(this.el, "orientation"),
-            dir: getDir(this.el)
-          }));
+          const nextValue = (_b = getStringList(el, "value")) != null ? _b : [];
+          const prevValue = (_d = (_c = this.previousValue) != null ? _c : this.lastValue) != null ? _d : [];
+          this.previousValue = void 0;
+          this.lastValue = nextValue;
+          runHeightOpenTransition({
+            el,
+            selector: ITEM_CONTENT_SELECTOR,
+            prevOpen: prevValue,
+            nextOpen: nextValue,
+            resolveValue: resolveAccordionValue
+          });
+          (_e = this.accordion) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { value: nextValue }));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -20794,17 +20824,16 @@ var Corex = (() => {
       contentEl.removeAttribute("aria-describedby");
     }
   }
-  function getDialogUpdatePropsFromEl(el) {
-    return __spreadProps(__spreadValues({
-      id: el.id
-    }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
+  function readDialogLayoutProps(el) {
+    return {
+      id: el.id,
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getDir(el)
-    });
+    };
   }
   function runDialogScaleTransitions(el, isOpen) {
     const opts = readScaleAnimationOptions(el);
@@ -20814,13 +20843,17 @@ var Corex = (() => {
     if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
     if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
   }
-  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
+  function runDialogScaleIfJs(el, isOpen) {
+    if (!isJsAnimation(el)) return;
+    runDialogScaleTransitions(el, isOpen);
+  }
+  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_BLTS2JOO();
+      init_chunk_VBYH4ZIZ();
       init_chunk_UUEU3QDP();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
@@ -21860,6 +21893,7 @@ var Corex = (() => {
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
+      DIALOG_SCALE_SELECTOR = '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
       DialogHook = {
         mounted() {
           const el = this.el;
@@ -21867,15 +21901,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           self2.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
-          const dialog = new Dialog(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
-            modal: getBoolean(el, "modal"),
-            closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-            closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-            preventScroll: getBoolean(el, "preventScroll"),
-            restoreFocus: getBoolean(el, "restoreFocus"),
-            dir: getDir(el),
+          const dialog = new Dialog(el, __spreadProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(el)), readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
               var _a4;
@@ -21894,24 +21920,16 @@ var Corex = (() => {
                 serverEventName: getString(el, "onOpenChange"),
                 clientEventName: getString(el, "onOpenChangeClient")
               });
-              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+              if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
                 runDialogScaleTransitions(el, details.open);
               }
             }
           }));
           dialog.init();
           this.dialog = dialog;
-          if (el.dataset.animation === "js") {
-            const opts = readScaleAnimationOptions(el);
-            prepareInitialScaleState(
-              el,
-              '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
-              opts,
-              (sub) => {
-                if (sub.dataset.part === "backdrop") return { scale: false };
-              }
-            );
-          }
+          prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+            if (sub.dataset.part === "backdrop") return { scale: false };
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:dialog:set-open", (event) => {
@@ -21936,22 +21954,24 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4, _b, _c;
-          const el = this.el;
-          const controlled = getBoolean(el, "controlled");
-          if (controlled) {
-            const nextOpen = (_a4 = getBoolean(el, "open")) != null ? _a4 : false;
-            const prevOpen = (_b = this.lastOpen) != null ? _b : false;
-            this.lastOpen = nextOpen;
-            if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
-              runDialogScaleTransitions(el, nextOpen);
-            }
+          var _a4, _b, _c, _d;
+          const { el } = this;
+          const layout = readDialogLayoutProps(el);
+          if (!getBoolean(el, "controlled")) {
+            (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(layout);
+            return;
           }
-          (_c = this.dialog) == null ? void 0 : _c.updateProps(getDialogUpdatePropsFromEl(el));
+          const nextOpen = (_b = getBoolean(el, "open")) != null ? _b : false;
+          const prevOpen = (_c = this.lastOpen) != null ? _c : false;
+          this.lastOpen = nextOpen;
+          if (nextOpen !== prevOpen) {
+            runDialogScaleIfJs(el, nextOpen);
+          }
+          (_d = this.dialog) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
         },
         destroyed() {
           var _a4, _b, _c, _d;
-          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(getDialogUpdatePropsFromEl(this.el));
+          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(this.el)), readBooleanControlledZagProps(this.el, "open", "defaultOpen")));
           (_b = this.domRegistry) == null ? void 0 : _b.teardown();
           (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
           (_d = this.dialog) == null ? void 0 : _d.destroy();
@@ -41749,14 +41769,22 @@ ${err}`);
     }
     return JSON.parse(raw);
   }
-  var anatomy33, parts33, collection4, getRootId26, getLabelId17, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and13, machine33, TreeView, TreeViewHook;
+  function readTreeViewInteractionProps(el) {
+    var _a4;
+    return {
+      selectionMode: (_a4 = getString(el, "selectionMode")) != null ? _a4 : "single",
+      typeahead: el.dataset.typeahead !== "false",
+      dir: getDir(el)
+    };
+  }
+  var anatomy33, parts33, collection4, getRootId26, getLabelId17, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and13, machine33, TreeView, BRANCH_CONTENT_SELECTOR, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
       init_chunk_Q3YPKFFU();
       init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_BLTS2JOO();
+      init_chunk_VBYH4ZIZ();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -42547,6 +42575,7 @@ ${err}`);
           this.syncTree();
         }
       };
+      BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
       TreeViewHook = {
         mounted() {
           var _a4, _b, _c, _d, _e, _f, _g, _h, _i;
@@ -42629,25 +42658,17 @@ ${err}`);
                 serverEventName: getString(el, "onExpandedChange"),
                 clientEventName: getString(el, "onExpandedChangeClient")
               });
-              if (el.dataset.animation === "js") {
-                runOpenStateTransitionsHeight({
-                  rootEl: el,
-                  selector: '[data-scope="tree-view"][data-part="branch-content"]',
-                  opts: readHeightAnimationOptions(el),
-                  isOpen: (contentEl) => {
-                    const value = contentEl.dataset.value;
-                    return !!value && next2.includes(value);
-                  }
-                });
-              }
+              runHeightOpenToValues({
+                el,
+                selector: BRANCH_CONTENT_SELECTOR,
+                openValues: next2,
+                resolveValue: contentDatasetValue
+              });
             }
           }));
           treeView.init();
           this.treeView = treeView;
-          if (el.dataset.animation === "js") {
-            const opts = readHeightAnimationOptions(el);
-            prepareInitialHeightState(el, '[data-scope="tree-view"][data-part="branch-content"]', opts);
-          }
+          prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
           const emitSelectedValue = (respondTo) => {
             const value = treeView.api.selectedValue;
             emitResponse({
@@ -42721,13 +42742,14 @@ ${err}`);
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-            this.previousExpanded = (_a4 = getStringList(this.el, "expandedValue")) != null ? _a4 : [];
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousExpanded = (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [];
           }
         },
         updated() {
-          var _a4, _b, _c, _d, _e, _f, _g;
-          const el = this.el;
+          var _a4, _b, _c, _d, _e, _f;
+          const { el } = this;
           const tv = this.treeView;
           if (!tv) return;
           const rawTree = el.dataset.tree;
@@ -42736,53 +42758,36 @@ ${err}`);
             tv.replaceRootNode(parseRootNode(el));
           }
           const controlled = getBoolean(el, "controlled");
+          const interaction = readTreeViewInteractionProps(el);
           const selected = controlled ? (_a4 = getStringList(el, "selectedValue")) != null ? _a4 : [] : (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
           const expanded = controlled ? (_c = getStringList(el, "expandedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultExpandedValue")) != null ? _d : [];
-          const selectionMode = (_e = getString(el, "selectionMode")) != null ? _e : "single";
-          const typeahead = el.dataset.typeahead !== "false";
-          const dir = getDir(el);
           const expandedAttr = readExpandedAttr(el);
           const selectedAttr = readSelectedAttr(el);
           const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
           const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
           this.lastExpandedAttr = expandedAttr;
           this.lastSelectedAttr = selectedAttr;
-          if (controlled) {
-            const prevExpanded = (_g = (_f = this.previousExpanded) != null ? _f : this.lastExpanded) != null ? _g : [];
-            this.previousExpanded = void 0;
-            if (expandedAttrChanged) this.lastExpanded = expanded;
-            if (selectedAttrChanged) this.lastSelected = selected;
-            if (el.dataset.animation === "js") {
-              runOpenStateTransitionsHeight({
-                rootEl: el,
-                selector: '[data-scope="tree-view"][data-part="branch-content"]',
-                opts: readHeightAnimationOptions(el),
-                wasOpen: (contentEl) => {
-                  const value = contentEl.dataset.value;
-                  return !!value && prevExpanded.includes(value);
-                },
-                isOpen: (contentEl) => {
-                  const value = contentEl.dataset.value;
-                  return !!value && expanded.includes(value);
-                }
-              });
-            }
-            tv.updateProps({
-              expandedValue: expanded,
-              selectedValue: selected,
-              selectionMode,
-              typeahead,
-              dir
-            });
-          } else {
-            tv.updateProps({
-              selectionMode,
-              typeahead,
-              dir
-            });
+          if (!controlled) {
+            tv.updateProps(interaction);
             if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
             if (selectedAttrChanged) tv.api.setSelectedValue(selected);
+            return;
           }
+          const prevExpanded = (_f = (_e = this.previousExpanded) != null ? _e : this.lastExpanded) != null ? _f : [];
+          this.previousExpanded = void 0;
+          if (expandedAttrChanged) this.lastExpanded = expanded;
+          if (selectedAttrChanged) this.lastSelected = selected;
+          runHeightOpenTransition({
+            el,
+            selector: BRANCH_CONTENT_SELECTOR,
+            prevOpen: prevExpanded,
+            nextOpen: expanded,
+            resolveValue: contentDatasetValue
+          });
+          tv.updateProps(__spreadProps(__spreadValues({}, interaction), {
+            expandedValue: expanded,
+            selectedValue: selected
+          }));
         },
         destroyed() {
           var _a4, _b, _c;

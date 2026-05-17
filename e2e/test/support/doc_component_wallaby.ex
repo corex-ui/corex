@@ -15,7 +15,8 @@ defmodule E2eWeb.DocComponentWallaby do
                 :live_form
               ])
 
-  def assert_page_behavior(session, component, page_key) when is_atom(component) and is_atom(page_key) do
+  def assert_page_behavior(session, component, page_key)
+      when is_atom(component) and is_atom(page_key) do
     scope = E2eWeb.ZagScope.for_component(component)
     hook = ComponentWireIndex.hook_for_id(component)
     {path, root_sel} = ComponentBehaviorSpec.page(component, page_key)
@@ -105,7 +106,8 @@ defmodule E2eWeb.DocComponentWallaby do
         assert_has(
           session,
           css(
-            page_scope_selector(root_id, scope) <> " [data-scope=\"#{scope}\"][data-part=\"item\"]",
+            page_scope_selector(root_id, scope) <>
+              " [data-scope=\"#{scope}\"][data-part=\"item\"]",
             visible: :any
           )
         )

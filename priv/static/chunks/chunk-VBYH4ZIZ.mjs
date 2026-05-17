@@ -134,6 +134,47 @@ function runOpenStateTransitionsHeight(args) {
     runHeightPanelAnimation(el, nowOpen, opts, blockRoot);
   });
 }
+function isJsAnimation(el) {
+  return el.dataset.animation === "js";
+}
+function isInOpenValueList(value, openValues) {
+  return !!value && openValues.includes(value);
+}
+function contentDatasetValue(contentEl) {
+  return contentEl.dataset.value;
+}
+function closestPartValue(itemSelector) {
+  return (contentEl) => contentEl.closest(itemSelector)?.dataset.value;
+}
+function runHeightOpenTransition(args) {
+  const { el, selector, prevOpen, nextOpen, resolveValue } = args;
+  if (!isJsAnimation(el)) return;
+  runOpenStateTransitionsHeight({
+    rootEl: el,
+    selector,
+    opts: readHeightAnimationOptions(el),
+    wasOpen: (node) => isInOpenValueList(resolveValue(node), prevOpen),
+    isOpen: (node) => isInOpenValueList(resolveValue(node), nextOpen)
+  });
+}
+function runHeightOpenToValues(args) {
+  const { el, selector, openValues, resolveValue } = args;
+  if (!isJsAnimation(el)) return;
+  runOpenStateTransitionsHeight({
+    rootEl: el,
+    selector,
+    opts: readHeightAnimationOptions(el),
+    isOpen: (node) => isInOpenValueList(resolveValue(node), openValues)
+  });
+}
+function prepareJsHeightInitialState(el, selector) {
+  if (!isJsAnimation(el)) return;
+  prepareInitialHeightState(el, selector, readHeightAnimationOptions(el));
+}
+function prepareJsScaleInitialState(el, selector, closedStyleFor) {
+  if (!isJsAnimation(el)) return;
+  prepareInitialScaleState(el, selector, readScaleAnimationOptions(el), closedStyleFor);
+}
 function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
   targetEl.getAnimations().forEach((a) => a.cancel());
   const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;
@@ -238,11 +279,14 @@ function runScaleAnimation(targetEl, isOpening, opts, blockRoot) {
 }
 
 export {
-  readHeightAnimationOptions,
   readScaleAnimationOptions,
   stripHiddenFromProps,
-  prepareInitialHeightState,
-  prepareInitialScaleState,
-  runOpenStateTransitionsHeight,
+  isJsAnimation,
+  contentDatasetValue,
+  closestPartValue,
+  runHeightOpenTransition,
+  runHeightOpenToValues,
+  prepareJsHeightInitialState,
+  prepareJsScaleInitialState,
   runScaleAnimation
 };
