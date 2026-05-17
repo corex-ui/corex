@@ -250,7 +250,6 @@ defmodule Corex.PasswordInput do
       %__MODULE__{toggle_visibility: Gettext.gettext("Toggle password visibility")}
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         toggle_visibility:

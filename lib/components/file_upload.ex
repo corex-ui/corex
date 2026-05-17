@@ -139,7 +139,6 @@ defmodule Corex.FileUpload do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         dropzone: Corex.Translation.take(partial.dropzone, default.dropzone),

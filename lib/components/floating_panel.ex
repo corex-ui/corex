@@ -159,7 +159,6 @@ defmodule Corex.FloatingPanel do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         minimize: Corex.Translation.take(partial.minimize, default.minimize),

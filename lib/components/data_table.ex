@@ -41,7 +41,6 @@ defmodule Corex.DataTable do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         actions: Corex.Translation.take(partial.actions, default.actions),

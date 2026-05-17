@@ -147,7 +147,6 @@ defmodule Corex.PinInput do
       %__MODULE__{digit: Gettext.gettext("Digit %{digit}", digit: "%{digit}")}
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{digit: Corex.Translation.take(partial.digit, default.digit)}
     end

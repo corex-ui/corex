@@ -42,7 +42,6 @@ defmodule Corex.TagsInput.Translation do
     }
   end
 
-
   defp merge(%__MODULE__{} = user, %__MODULE__{} = default) do
     %__MODULE__{
       placeholder: Corex.Translation.take(user.placeholder, default.placeholder),

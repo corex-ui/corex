@@ -28,7 +28,6 @@ defmodule Corex.Timer.Translation do
     %__MODULE__{area_label: Gettext.gettext("Timer")}
   end
 
-
   defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       area_label: Corex.Translation.take(partial.area_label, default.area_label)

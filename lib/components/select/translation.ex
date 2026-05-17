@@ -28,7 +28,6 @@ defmodule Corex.Select.Translation do
     %__MODULE__{placeholder: Gettext.gettext("Select")}
   end
 
-
   defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       placeholder: Corex.Translation.take(partial.placeholder, default.placeholder)

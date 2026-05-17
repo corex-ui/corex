@@ -121,7 +121,6 @@ defmodule Corex.DatePicker.Translation do
     }
   end
 
-
   defp merge(%__MODULE__{} = p, %__MODULE__{} = d) do
     %__MODULE__{
       content: T.take(p.content, d.content),

@@ -83,7 +83,6 @@ defmodule Corex.ColorPicker do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         hex: Corex.Translation.take(partial.hex, default.hex),

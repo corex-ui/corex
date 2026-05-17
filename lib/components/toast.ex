@@ -144,7 +144,6 @@ defmodule Corex.Toast do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         info: Corex.Translation.take(partial.info, default.info),

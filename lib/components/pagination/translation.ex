@@ -50,7 +50,6 @@ defmodule Corex.Pagination.Translation do
     }
   end
 
-
   defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       root_label: Corex.Translation.take(partial.root_label, default.root_label),

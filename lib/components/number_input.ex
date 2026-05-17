@@ -206,7 +206,6 @@ defmodule Corex.NumberInput do
       }
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         decrease: Corex.Translation.take(partial.decrease, default.decrease),

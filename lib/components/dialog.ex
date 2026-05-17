@@ -317,7 +317,6 @@ defmodule Corex.Dialog do
       %__MODULE__{close: Gettext.gettext("Close")}
     end
 
-
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{close: Corex.Translation.take(partial.close, default.close)}
     end
