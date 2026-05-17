@@ -57,7 +57,7 @@ defmodule Corex.ColorPicker do
     @moduledoc """
     Translatable strings for the color picker channel inputs.
 
-    Pass `translation={%Corex.ColorPicker.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.ColorPicker.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -71,16 +71,20 @@ defmodule Corex.ColorPicker do
 
     @type t :: %__MODULE__{hex: String.t(), alpha: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         hex: Gettext.gettext("Hex color value"),
         alpha: Gettext.gettext("Alpha (opacity) value")
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         hex: Corex.Translation.take(partial.hex, default.hex),
         alpha: Corex.Translation.take(partial.alpha, default.alpha)
@@ -178,7 +182,7 @@ defmodule Corex.ColorPicker do
   end
 
   def color_picker(assigns) do
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns

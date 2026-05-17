@@ -657,7 +657,7 @@ defmodule Corex.Select do
       assign(
         assigns,
         :translation,
-        Corex.Select.Translation.merge(assigns.translation, Corex.Select.Translation.default())
+        Corex.Select.Translation.resolve(assigns.translation)
       )
 
     items = normalize_items(assigns.items)

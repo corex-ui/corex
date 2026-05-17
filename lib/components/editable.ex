@@ -125,7 +125,7 @@ defmodule Corex.Editable do
     @moduledoc """
     Translatable strings for the editable field.
 
-    Pass `translation={%Corex.Editable.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.Editable.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -146,7 +146,12 @@ defmodule Corex.Editable do
             cancel: String.t()
           }
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         input: Gettext.gettext("editable input"),
         edit: Gettext.gettext("edit"),
@@ -155,9 +160,8 @@ defmodule Corex.Editable do
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         input: Corex.Translation.take(partial.input, default.input),
         edit: Corex.Translation.take(partial.edit, default.edit),
@@ -279,7 +283,7 @@ defmodule Corex.Editable do
   end
 
   def editable(assigns) do
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))
     default_s = normalize_default_value(assigns[:default_value])

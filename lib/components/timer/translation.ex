@@ -2,7 +2,7 @@ defmodule Corex.Timer.Translation do
   @moduledoc """
   Strings for Zag timer [`translations`](https://zagjs.com/components/react/timer).
 
-  Pass `translation={%Corex.Timer.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+  Pass `translation={%Corex.Timer.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
@@ -19,13 +19,17 @@ defmodule Corex.Timer.Translation do
 
   @type t :: %__MODULE__{area_label: String.t()}
 
-  def default do
+  @doc false
+  def resolve(nil), do: default()
+
+  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+  defp default do
     %__MODULE__{area_label: Gettext.gettext("Timer")}
   end
 
-  def merge(nil, default), do: default
 
-  def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+  defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       area_label: Corex.Translation.take(partial.area_label, default.area_label)
     }

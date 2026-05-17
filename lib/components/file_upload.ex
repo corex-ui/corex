@@ -113,7 +113,7 @@ defmodule Corex.FileUpload do
     @moduledoc """
     Translatable strings for the file upload.
 
-    Pass `translation={%Corex.FileUpload.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.FileUpload.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -127,16 +127,20 @@ defmodule Corex.FileUpload do
 
     @type t :: %__MODULE__{dropzone: String.t(), open: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         dropzone: Gettext.gettext("Drag your file(s) here"),
         open: Gettext.gettext("Upload file(s)")
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         dropzone: Corex.Translation.take(partial.dropzone, default.dropzone),
         open: Corex.Translation.take(partial.open, default.open)
@@ -311,7 +315,7 @@ defmodule Corex.FileUpload do
   end
 
   def file_upload(assigns) do
-    translation = Translation.merge(Map.get(assigns, :translation), Translation.default())
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assigns

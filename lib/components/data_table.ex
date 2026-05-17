@@ -9,7 +9,7 @@ defmodule Corex.DataTable do
     @moduledoc """
     Translatable strings for the data table.
 
-    Pass `translation={%Corex.DataTable.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.DataTable.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -28,7 +28,12 @@ defmodule Corex.DataTable do
             select_row: String.t()
           }
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         actions: Gettext.gettext("Actions"),
         select_all: Gettext.gettext("Select all"),
@@ -36,9 +41,8 @@ defmodule Corex.DataTable do
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         actions: Corex.Translation.take(partial.actions, default.actions),
         select_all: Corex.Translation.take(partial.select_all, default.select_all),
@@ -299,7 +303,7 @@ defmodule Corex.DataTable do
       assigns
       |> assign(
         :translation,
-        Translation.merge(Map.get(assigns, :translation), Translation.default())
+        Translation.resolve(Map.get(assigns, :translation))
       )
       |> resolve_row_id()
 

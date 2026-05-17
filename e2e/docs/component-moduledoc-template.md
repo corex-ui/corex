@@ -71,14 +71,12 @@ Top-level **## Form** for form components; do not merge into Anatomy.
 
 Components with a `translation` assign expose `Corex.<Component>.Translation` (see ExDoc for that module).
 
-- **`default/0`** — all strings via `Corex.Gettext.gettext/1` (English catalog defaults).
-- **`merge/2`** — partial override; `nil` or `""` falls back to the default field (`Corex.Translation.take/2`).
 - **Module `@moduledoc`** — table `Field | Default | Used for` (same style as the API section).
-
-In the component render path:
+- **Callers** pass a partial struct only: `translation={%Corex.MyComponent.Translation{placeholder: gettext("…")}}`.
+- **Component render path** merges with gettext defaults internally (`Translation.resolve/1` is `@doc false`).
 
 ```elixir
-translation = Corex.MyComponent.Translation.merge(assigns.translation, Corex.MyComponent.Translation.default())
+translation = Translation.resolve(assigns.translation)
 ```
 
 Do not hardcode English in `defstruct` defaults or inline `%Translation{...}` without gettext in the render function.

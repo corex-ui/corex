@@ -477,7 +477,7 @@ defmodule Corex.Combobox do
   end
 
   def combobox(assigns) do
-    translation = Translation.merge(assigns[:translation], Translation.default())
+    translation = Translation.resolve(assigns[:translation])
     placeholder = assigns[:placeholder] || translation.placeholder
     empty_text = translation.empty
 

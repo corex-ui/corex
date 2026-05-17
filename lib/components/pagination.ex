@@ -568,7 +568,6 @@ defmodule Corex.Pagination do
   end
 
   defp prepare_pagination_assigns(assigns) do
-    default_translation = Translation.default()
     page_size = assigns.page_size |> positive_int(10) |> max(1)
     count = assigns.count |> non_negative_int(0)
     total_pages = total_pages_for(count, page_size)
@@ -581,12 +580,12 @@ defmodule Corex.Pagination do
     page_entries =
       Utils.pages(page, total_pages, assigns.sibling_count, assigns.boundary_count)
 
-    translation = Translation.merge(assigns.translation, default_translation)
+    translation = Translation.resolve(assigns.translation)
 
     assigns
     |> assign_new(:id, fn -> "pagination-#{System.unique_integer([:positive])}" end)
     |> assign_new(:dir, fn -> "ltr" end)
-    |> assign_new(:translation, fn -> default_translation end)
+    |> assign_new(:translation, fn -> Translation.resolve(nil) end)
     |> assign(:translation, translation)
     |> assign(:page_size, page_size)
     |> assign(:count, count)

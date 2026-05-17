@@ -265,7 +265,7 @@ defmodule Corex.Timer do
       |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
       |> assign(
         :translation,
-        TimerTranslation.merge(assigns.translation, TimerTranslation.default())
+        TimerTranslation.resolve(assigns.translation)
       )
 
     segments = normalize_segments(assigns.segments)

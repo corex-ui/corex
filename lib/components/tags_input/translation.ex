@@ -2,7 +2,7 @@ defmodule Corex.TagsInput.Translation do
   @moduledoc """
   Translatable strings for the tags input (Zag `translations` and placeholders).
 
-  Pass `translation={%Corex.TagsInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+  Pass `translation={%Corex.TagsInput.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
@@ -25,7 +25,12 @@ defmodule Corex.TagsInput.Translation do
           tag_edited: String.t()
         }
 
-  def default do
+  @doc false
+  def resolve(nil), do: default()
+
+  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+  defp default do
     %__MODULE__{
       placeholder: Gettext.gettext("Add a tag…"),
       delete_tag_trigger_label: Gettext.gettext("Delete tag %{tag}", tag: "%{tag}"),
@@ -37,9 +42,8 @@ defmodule Corex.TagsInput.Translation do
     }
   end
 
-  def merge(nil, default), do: default
 
-  def merge(%__MODULE__{} = user, %__MODULE__{} = default) do
+  defp merge(%__MODULE__{} = user, %__MODULE__{} = default) do
     %__MODULE__{
       placeholder: Corex.Translation.take(user.placeholder, default.placeholder),
       delete_tag_trigger_label:

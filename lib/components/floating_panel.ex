@@ -124,7 +124,7 @@ defmodule Corex.FloatingPanel do
     @moduledoc """
     Translatable strings for the floating panel window controls.
 
-    Pass `translation={%Corex.FloatingPanel.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.FloatingPanel.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -145,7 +145,12 @@ defmodule Corex.FloatingPanel do
             close: String.t()
           }
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         minimize: Gettext.gettext("Minimize window"),
         maximize: Gettext.gettext("Maximize window"),
@@ -154,9 +159,8 @@ defmodule Corex.FloatingPanel do
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         minimize: Corex.Translation.take(partial.minimize, default.minimize),
         maximize: Corex.Translation.take(partial.maximize, default.maximize),
@@ -274,7 +278,7 @@ defmodule Corex.FloatingPanel do
   end
 
   def floating_panel(assigns) do
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns

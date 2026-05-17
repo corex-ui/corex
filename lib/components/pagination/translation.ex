@@ -2,7 +2,7 @@ defmodule Corex.Pagination.Translation do
   @moduledoc """
   Strings for Zag pagination [`translations`](https://zagjs.com/components/react/pagination).
 
-  Pass `translation={%Corex.Pagination.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+  Pass `translation={%Corex.Pagination.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
@@ -32,7 +32,12 @@ defmodule Corex.Pagination.Translation do
           item_label: String.t()
         }
 
-  def default do
+  @doc false
+  def resolve(nil), do: default()
+
+  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+  defp default do
     %__MODULE__{
       root_label: Gettext.gettext("Pagination"),
       prev_trigger_label: Gettext.gettext("Previous page"),
@@ -45,9 +50,8 @@ defmodule Corex.Pagination.Translation do
     }
   end
 
-  def merge(nil, default), do: default
 
-  def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+  defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       root_label: Corex.Translation.take(partial.root_label, default.root_label),
       prev_trigger_label:

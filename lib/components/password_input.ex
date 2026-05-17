@@ -228,7 +228,7 @@ defmodule Corex.PasswordInput do
     @moduledoc """
     Translatable strings for the password input.
 
-    Pass `translation={%Corex.PasswordInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.PasswordInput.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -241,13 +241,17 @@ defmodule Corex.PasswordInput do
 
     @type t :: %__MODULE__{toggle_visibility: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{toggle_visibility: Gettext.gettext("Toggle password visibility")}
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         toggle_visibility:
           Corex.Translation.take(partial.toggle_visibility, default.toggle_visibility)
@@ -337,7 +341,7 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(assigns) do
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns

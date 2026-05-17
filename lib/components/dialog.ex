@@ -295,7 +295,7 @@ defmodule Corex.Dialog do
     @moduledoc """
     Translatable strings for the dialog.
 
-    Pass `translation={%Corex.Dialog.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.Dialog.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -308,13 +308,17 @@ defmodule Corex.Dialog do
 
     @type t :: %__MODULE__{close: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{close: Gettext.gettext("Close")}
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{close: Corex.Translation.take(partial.close, default.close)}
     end
   end
@@ -446,7 +450,7 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns

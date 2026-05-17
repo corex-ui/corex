@@ -165,11 +165,7 @@ defmodule Corex.FileUploadLive do
   end
 
   def file_upload_live(assigns) do
-    translation =
-      Corex.FileUpload.Translation.merge(
-        Map.get(assigns, :translation),
-        Corex.FileUpload.Translation.default()
-      )
+    translation = Corex.FileUpload.Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assigns

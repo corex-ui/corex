@@ -118,7 +118,7 @@ defmodule Corex.Toast do
     @moduledoc """
     Default titles for flash-driven toasts.
 
-    Pass `translation={%Corex.Toast.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.Toast.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -132,16 +132,20 @@ defmodule Corex.Toast do
 
     @type t :: %__MODULE__{info: String.t(), error: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         info: Gettext.gettext("Info"),
         error: Gettext.gettext("Error")
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         info: Corex.Translation.take(partial.info, default.info),
         error: Corex.Translation.take(partial.error, default.error)
@@ -254,7 +258,7 @@ defmodule Corex.Toast do
     info_flash = Phoenix.Flash.get(assigns.flash, :info)
     error_flash = Phoenix.Flash.get(assigns.flash, :error)
 
-    translation = Translation.merge(assigns[:translation], Translation.default())
+    translation = Translation.resolve(assigns[:translation])
 
     flash_info =
       Map.get(assigns, :flash_info) ||

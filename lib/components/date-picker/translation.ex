@@ -2,7 +2,7 @@ defmodule Corex.DatePicker.Translation do
   @moduledoc """
   Translatable UI strings for the date picker ([Zag `translations`](https://zagjs.com/components/react/date-picker) plus Corex field labels).
 
-  Pass `translation={%Corex.DatePicker.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
@@ -88,7 +88,12 @@ defmodule Corex.DatePicker.Translation do
           range_end: String.t()
         }
 
-  def default do
+  @doc false
+  def resolve(nil), do: default()
+
+  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+  defp default do
     %__MODULE__{
       content: Gettext.gettext("calendar"),
       month_select: Gettext.gettext("Select month"),
@@ -116,9 +121,8 @@ defmodule Corex.DatePicker.Translation do
     }
   end
 
-  def merge(nil, default), do: default
 
-  def merge(%__MODULE__{} = p, %__MODULE__{} = d) do
+  defp merge(%__MODULE__{} = p, %__MODULE__{} = d) do
     %__MODULE__{
       content: T.take(p.content, d.content),
       month_select: T.take(p.month_select, d.month_select),

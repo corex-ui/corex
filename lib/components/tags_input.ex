@@ -590,7 +590,7 @@ defmodule Corex.TagsInput do
   defp tags_to_form_string(tags_list, _), do: Enum.join(tags_list, ",")
 
   defp normalize_tags_input_translation(assigns) do
-    merged = TagsInputTranslation.merge(assigns.translation, TagsInputTranslation.default())
+    merged = TagsInputTranslation.resolve(assigns.translation)
 
     placeholder_resolved =
       case Map.get(assigns, :placeholder) do

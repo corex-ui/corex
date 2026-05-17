@@ -274,7 +274,7 @@ defmodule Corex.DatePicker do
 
   ## Localization and `translation`
 
-  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with [`Corex.DatePicker.Translation.default/0`](`Corex.DatePicker.Translation`). See that module for the field table.
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. Omitted fields use gettext defaults (see [`Corex.DatePicker.Translation`](`Corex.DatePicker.Translation`)).
 
   '''
 
@@ -743,7 +743,7 @@ defmodule Corex.DatePicker do
 
   defp merge_date_picker_assigns(%{} = assigns) do
     t =
-      DatePickerTranslation.merge(Map.get(assigns, :translation), DatePickerTranslation.default())
+      DatePickerTranslation.resolve(Map.get(assigns, :translation))
 
     range_start = Map.get(assigns, :range_start_label) || t.range_start
     range_end = Map.get(assigns, :range_end_label) || t.range_end
@@ -751,10 +751,10 @@ defmodule Corex.DatePicker do
   end
 
   @doc """
-  Returns gettext-backed default translatable strings. Same as [`Corex.DatePicker.Translation.default/0`](`Corex.DatePicker.Translation`).
+  Returns gettext-backed default translatable strings.
   """
   @spec default_translation() :: DatePickerTranslation.t()
-  def default_translation, do: DatePickerTranslation.default()
+  def default_translation, do: DatePickerTranslation.resolve(nil)
 
   defp normalize_date_value(nil), do: nil
   defp normalize_date_value(%Date{} = d), do: Date.to_iso8601(d)

@@ -2,7 +2,7 @@ defmodule Corex.Combobox.Translation do
   @moduledoc """
   Translatable strings for the combobox.
 
-  Pass `translation={%Corex.Combobox.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+  Pass `translation={%Corex.Combobox.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
   | Field | Default | Used for |
   | ----- | ------- | -------- |
@@ -24,7 +24,14 @@ defmodule Corex.Combobox.Translation do
           clear_selection: String.t()
         }
 
-  def default do
+  @doc false
+  def resolve(nil), do: default()
+
+  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+  def resolve(map) when is_map(map), do: merge(map, default())
+
+  defp default do
     %__MODULE__{
       placeholder: Gettext.gettext("Select"),
       empty: Gettext.gettext("No results"),
@@ -33,9 +40,8 @@ defmodule Corex.Combobox.Translation do
     }
   end
 
-  def merge(nil, default), do: default
 
-  def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+  defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
       placeholder: T.take(partial.placeholder, default.placeholder),
       empty: T.take(partial.empty, default.empty),
@@ -44,7 +50,7 @@ defmodule Corex.Combobox.Translation do
     }
   end
 
-  def merge(map, default) when is_map(map) do
+  defp merge(map, default) when is_map(map) do
     sm = Map.new(map, fn {k, v} -> {to_string(k), v} end)
 
     merge(

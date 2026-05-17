@@ -180,7 +180,7 @@ defmodule Corex.NumberInput do
     @moduledoc """
     Translatable strings for the number input (Zag trigger `aria-label`s).
 
-    Pass `translation={%Corex.NumberInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
+    Pass `translation={%Corex.NumberInput.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
     | Field | Default | Used for |
     | ----- | ------- | -------- |
@@ -194,16 +194,20 @@ defmodule Corex.NumberInput do
 
     @type t :: %__MODULE__{decrease: String.t(), increase: String.t()}
 
-    def default do
+    @doc false
+    def resolve(nil), do: default()
+
+    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
+
+    defp default do
       %__MODULE__{
         decrease: Gettext.gettext("Decrease value"),
         increase: Gettext.gettext("Increase value")
       }
     end
 
-    def merge(nil, default), do: default
 
-    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
         decrease: Corex.Translation.take(partial.decrease, default.decrease),
         increase: Corex.Translation.take(partial.increase, default.increase)
@@ -296,7 +300,7 @@ defmodule Corex.NumberInput do
   def number_input(assigns) do
     validate_triggers!(assigns)
 
-    translation = Translation.merge(assigns.translation, Translation.default())
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
