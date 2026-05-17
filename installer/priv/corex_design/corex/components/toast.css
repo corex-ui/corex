@@ -99,7 +99,7 @@
   .toast [data-scope="toast"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--sm ui-trigger--square ui-trigger--ghost;
 
-    justify-self: end;
+    flex-shrink: 0;
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="title"] {
