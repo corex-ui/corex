@@ -53,25 +53,19 @@
 
   .toast [data-scope="toast"][data-part="header"] {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    gap: calc(var(--spacing) * 2);
+    gap: var(--spacing-space);
     border-block-end: 1px solid var(--color-border);
-    padding-inline: --spacing(4);
-    padding-block: --spacing(1);
-
+    padding-inline: var(--spacing-space);
+    padding-block: calc(var(--spacing-space) * 0.5);
   }
 
   .toast [data-scope="toast"][data-part="title"] {
     @apply ui-label;
 
-    justify-content: start;
-    width: 100%;
+    flex: 1;
     min-width: 0;
-    padding-inline: var(--spacing-space);
     font-weight: var(--font-weight-medium);
-
   }
 
 
@@ -216,7 +210,7 @@
   & [data-scope="toast"][data-part="header"] {
     gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    padding-block: --value(--spacing-space-*, [length]);
+    padding-block: calc(--value(--spacing-space-*, [length]) * 0.5);
   }
 
   & [data-scope="toast"][data-part="title"] {

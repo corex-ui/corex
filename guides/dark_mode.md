@@ -2,32 +2,31 @@
 
 ## Introduction
 
-This guide walks through wiring **light/dark mode** into a Phoenix + Corex app. The result is a `data-mode="light"` or `data-mode="dark"` attribute on `<html>` that drives CSS (including the Corex Design `dark` variant) and a server-rendered initial value that matches what the user picked previously.
+You wire light/dark mode into a Phoenix + Corex app. The result is `data-mode="light"` or `data-mode="dark"` on `<html>` that drives Corex Design tokens and matches what the user chose on the last visit.
 
-If you ran `mix corex.new my_app --mode`, the installer wrote everything below for you. Use this guide either to understand what that produced, or to wire it by hand in an existing app.
+Static Tableau sites use the same `data-mode` idea without plugs—see [Tableau Mode](tableau_mode.html).
 
-See [Installation](installation.html) for Corex-only flags (including **`--mcp`**). For design assets and modifiers, see [Design](design.html). For the underlying Corex install, see [Manual installation](manual_installation.html).
+## Before you start
 
-### The problem
+| Requirement | Notes |
+| ----------- | ----- |
+| Corex installed | [Manual installation](manual_installation.html) or `mix corex.new --mode` |
+| Corex Design (optional) | `toggle.css` and theme files with `[data-mode=dark]` variants |
+| `toggle` hook | Registered in `assets/js/app.js` |
 
-The classic "toggle a class on `<html>` from JS" approach is fine for purely CSS-driven components, but Corex components need to know the active mode **at render time** to:
+## How it works
 
-- Avoid Flash of Unstyled Content (FOUC) on the first paint
-- Initialize their state machines and ARIA attributes correctly on mount
+1. **`Plugs.Mode`** reads the `phx_mode` cookie and assigns `:mode` for the first HTML byte.
+2. **`<html data-mode={...}>`** carries that value into the document.
+3. **Inline `<script>` in `<head>`** reconciles `localStorage`, `data-mode`, and `prefers-color-scheme`, then writes the cookie back.
+4. **`<.toggle on_pressed_change_client="phx:set-mode">`** updates mode without a server round-trip.
+5. **`on_mount`** copies `:mode` from the session into LiveViews.
 
-If the server renders one mode and the client immediately switches to another, you get a flicker, and any component that ran its `mounted()` hook with the wrong attribute is now stale.
+<!-- tabs-open -->
 
-### The solution
+### Plug and layout
 
-Use **three** layers in concert:
-
-1. **Cookie + Plug**  -  the server reads a `phx_mode` cookie and assigns `:mode` so the initial HTML carries the right `data-mode`.
-2. **Inline `<script>` in `<head>`**  -  runs before `<body>` paints; reconciles `localStorage` ↔ `data-mode` ↔ `prefers-color-scheme`, then writes the cookie back so the next request matches.
-3. **`phx:set-mode` window event**  -  the Corex toggle dispatches it on change; the bridge script listens and updates everything.
-
-## 1. Create the Mode plug
-
-Create `lib/my_app_web/plugs/mode.ex`. It reads the `phx_mode` cookie, normalises it, and assigns `:mode` for the layout. It also writes the value to the session so LiveView mounts can read it back.
+Create `lib/my_app_web/plugs/mode.ex`:
 
 ```elixir
 defmodule MyAppWeb.Plugs.Mode do
@@ -50,11 +49,7 @@ defmodule MyAppWeb.Plugs.Mode do
 end
 ```
 
-`parse_mode/1` falls back to `"light"` for any unknown or missing cookie value, which guarantees `assigns[:mode]` is always a non-nil string.
-
-## 2. Add the plug to the browser pipeline
-
-Mount the plug in `lib/my_app_web/router.ex` **after** `:fetch_live_flash`. The order matters: flash needs to run first so `Plugs.Mode` doesn't interfere with the LiveView flash machinery.
+In `router.ex`, mount **after** `:fetch_live_flash`:
 
 ```elixir
 pipeline :browser do
@@ -68,11 +63,7 @@ pipeline :browser do
 end
 ```
 
-## 3. Update the root layout
-
-In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-mode` on `<html>` from the assign, with `"light"` as the fallback:
-
-**Hand-wired layout**
+In `root.html.heex`:
 
 ```heex
 <!DOCTYPE html>
@@ -93,13 +84,9 @@ In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-mode` on `<h
 </html>
 ```
 
-**`mix corex.new` with `--design`**
+### Bridge script
 
-When Corex Design is on, the generated root layout may set static **`data-theme`** / **`data-mode="light"`** placeholders on **`<html>`** while **`Plugs.Mode`** still assigns **`conn`** for controllers. The **bridge script** (step 4) runs in **`<head>`** before paint and reconciles **`localStorage`**, the attribute on **`<html>`**, and **`prefers-color-scheme`**, so the effective mode still matches the user before the body renders. If you need the first byte of HTML to echo the cookie exactly, switch the template to **`data-mode={assigns[:mode] || "light"}`** as above.
-
-## 4. Add the bridge script
-
-Inside `<head>`, **before** the closing `</head>`, add the bridge script. It runs synchronously on first paint, reconciles `localStorage` ↔ `data-mode` ↔ system preference, persists the result back to the `phx_mode` cookie, and listens for the `phx:set-mode` event the Corex toggle dispatches.
+Inside `<head>`, before `</head>`:
 
 ```heex
 <script>
@@ -139,25 +126,15 @@ Inside `<head>`, **before** the closing `</head>`, add the bridge script. It run
 </script>
 ```
 
-The resolution order is deliberate:
+Resolution order: `localStorage["phx:mode"]`, then `data-mode` from the server, then `prefers-color-scheme`.
 
-1. `localStorage["phx:mode"]`  -  what the user explicitly chose last time
-2. `document.documentElement.getAttribute("data-mode")`  -  what the server rendered (from the cookie via `Plugs.Mode`)
-3. `prefers-color-scheme`  -  fallback when neither exists
+### Toggle
 
-Because the script runs in `<head>` synchronously, the page never paints with the wrong mode.
-
-## 5. Add a mode toggle to the app layout
-
-Use `Corex.Toggle`. The `on_pressed_change_client="phx:set-mode"` attribute makes it dispatch the same window event the bridge script listens for, no `handle_event/3` round-trip.
-
-In `lib/my_app_web/components/layouts.ex`, add a `:mode` attr to your `app/1` and render the toggle inside the header:
+In `layouts.ex`:
 
 ```elixir
-attr :flash, :map, required: true, doc: "the map of flash messages"
-attr :mode, :string, default: "light", doc: "current mode (light or dark) from the session"
-attr :current_scope, :map, default: nil
-
+attr :flash, :map, required: true
+attr :mode, :string, default: "light"
 slot :inner_block, required: true
 
 def app(assigns) do
@@ -173,10 +150,7 @@ def app(assigns) do
   """
 end
 
-attr :mode, :string,
-  default: "light",
-  values: ["light", "dark"],
-  doc: "current mode (light or dark)"
+attr :mode, :string, default: "light", values: ["light", "dark"]
 
 def mode_toggle(assigns) do
   ~H"""
@@ -200,9 +174,7 @@ def mode_toggle(assigns) do
 end
 ```
 
-Use **`data-toggle-dual-label`** so the moon icon shows in light mode and the sun icon when pressed (dark). Adjust **`toggle--sm`** or other **`toggle--*`** modifiers to match your layout.
-
-Then make sure every page that renders the layout passes `mode={@mode}` (or `mode={assigns[:mode] || "light"}`) into it:
+Pass `mode` into the layout from every LiveView and controller template:
 
 ```heex
 <Layouts.app flash={@flash} mode={assigns[:mode] || "light"}>
@@ -210,7 +182,7 @@ Then make sure every page that renders the layout passes `mode={@mode}` (or `mod
 </Layouts.app>
 ```
 
-For LiveViews, attach a small **`on_mount`** hook that pulls **`:mode`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`mode`** (and **`theme`**, **`current_path`**) from the session  -  you do not need a separate **`ModeLive`** in that setup unless you remove that hook.
+### LiveView on_mount
 
 ```elixir
 defmodule MyAppWeb.ModeLive do
@@ -225,16 +197,17 @@ end
 def live_view do
   quote do
     use Phoenix.LiveView
-
     on_mount MyAppWeb.ModeLive
     unquote(html_helpers())
   end
 end
 ```
 
-## 6. Styling
+If you use `mix corex.new --lang`, `on_mount MyAppWeb.Hooks.Layout` may already assign `:mode` from the session.
 
-If you are using **Corex Design**, make sure `assets/css/app.css` includes the `toggle` component CSS  -  that's what styles the mode switcher you just added  -  alongside any theme/dark CSS you depend on:
+<!-- tabs-close -->
+
+## CSS
 
 ```css
 @import "../corex/main.css";
@@ -244,35 +217,18 @@ If you are using **Corex Design**, make sure `assets/css/app.css` includes the `
 @import "../corex/components/toggle.css";
 ```
 
-The Corex Design themes already define `[data-mode=dark]` overrides, so once `<html>` flips to `data-mode="dark"`, your tokens cascade automatically. If you write your own CSS, target the same selector:
-
-```css
-[data-mode="dark"] .my-card {
-  background: #111;
-  color: #f5f5f5;
-}
-```
+Corex Design themes define `[data-mode=dark]` overrides. Custom CSS can target `[data-mode="dark"]` the same way.
 
 ## Troubleshooting
 
-**Wrong mode on first paint.** Confirm the bridge `<script>` is in `<head>` (not `<body>`), `MyAppWeb.Plugs.Mode` runs in the browser pipeline, and the `phx_mode` cookie value matches what the script computes. FOUC almost always traces back to one of those three.
-
-**Mode changes don't persist across tabs.** The bridge script listens for `storage` events. Make sure you have not stripped that listener  -  without it, two open tabs can drift.
-
-**Mode resets on every navigation.** The cookie's `path` is `/`. If you scoped it differently or your reverse proxy rewrites cookies, the server-side `Plugs.Mode` reads `nil` and falls back to `"light"`.
-
-## Summary
-
-1. **Cookie**  -  `Plugs.Mode` reads `phx_mode` and assigns `:mode` for the initial render and the session.
-2. **Server-rendered `data-mode`**  -  `<html data-mode={assigns[:mode] || "light"}>` carries the value into the first paint.
-3. **Inline `<script>` in `<head>`**  -  reconciles `localStorage` ↔ `data-mode` ↔ system preference, persists the cookie, and listens for `phx:set-mode`.
-4. **`Corex.Toggle`**  -  `on_pressed_change_client="phx:set-mode"` dispatches the event the bridge listens for, so the toggle works without a server round-trip.
-5. **LiveView `on_mount`**  -  pulls `:mode` from the session so LiveViews see the same value as the initial render.
-
-Together these layers give you no-flicker dark mode that survives reloads, navigation, and multiple tabs.
+| Symptom | Check |
+| ------- | ----- |
+| Wrong mode on first paint | Bridge `<script>` is in `<head>`; `Plugs.Mode` runs in the browser pipeline |
+| Tabs drift | `storage` listener is present in the bridge script |
+| Resets every navigation | Cookie uses `path=/` |
 
 ## Related
 
-- [Theming](theming.html)  -  orthogonal `data-theme` switcher; the bridge script extends to handle both.
-- [Installation](installation.html)  -  the **`--mode`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
-- [Localize](localize.html)  -  **`Hooks.Layout`** combines locale routing with session **mode**/**theme** when **`--lang`** is enabled.
+- [Theming](theming.html) — `data-theme`; combine both bridges in one `<script>` IIFE
+- [Tableau Mode](tableau_mode.html) — static site equivalent
+- [Installation](installation.html) — `mix corex.new --mode`

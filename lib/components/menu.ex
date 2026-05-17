@@ -2,7 +2,7 @@ defmodule Corex.Menu do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Menu](https://zagjs.com/components/react/menu).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -142,7 +142,11 @@ defmodule Corex.Menu do
 
   <!-- tabs-close -->
 
-  ## Use as Navigation
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Navigation
 
   Set `redirect` on the component so selecting an item navigates to the item's value (e.g. path).
   Per item, choose the navigation kind explicitly via the item's `:redirect` field:
@@ -216,56 +220,76 @@ defmodule Corex.Menu do
   end
   ```
 
-  ## API Control
+  <!-- tabs-close -->
 
-  In order to use the API, you must use an id on the component
+  ## API
 
-  ***Client-side***
+  Requires a stable `id` on `<.menu>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_open
 
   ```heex
-  <button phx-click={Corex.Menu.set_open("my-menu", true)}>
+  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
     Open Menu
-  </button>
+  </.action>
   ```
-
-  ***Server-side***
 
   ```elixir
   def handle_event("open_menu", _, socket) do
-    {:noreply, Corex.Menu.set_open(socket, "my-menu", true)}
+    {:noreply, Corex.Menu.set_open(socket, "menu-api", true)}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  Use data attributes to target elements:
+  ## Events
 
-  ```css
-  [data-scope="menu"][data-part="root"] {}
-  [data-scope="menu"][data-part="trigger"] {}
-  [data-scope="menu"][data-part="positioner"] {}
-  [data-scope="menu"][data-part="content"] {}
-  [data-scope="menu"][data-part="item"] {}
-  [data-scope="menu"][data-part="separator"] {}
-  [data-scope="menu"][data-part="item-group"] {}
-  [data-scope="menu"][data-part="item-group-label"] {}
-  ```
+  ### Server events
 
-  If you wish to use the default Corex styling, you can use the class `menu` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_select="menu_selected"` | Item selected | `%{"id" => id, "value" => value}` |
+  | `on_open_change="menu_open_changed"` | Open state changes | `%{"id" => id, "open" => open}` |
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/menu.css";
-  ```
+  <!-- tabs-open -->
 
-  You can then use modifiers
+  ### on_select
 
   ```heex
-  <.menu class="menu menu--accent menu--lg">
+  <.menu id="menu-events" class="menu" on_select="menu_selected" items={[...]}>
+    <:trigger>Actions</:trigger>
   </.menu>
   ```
+
+  ```elixir
+  def handle_event("menu_selected", %{"value" => value}, socket) do
+    {:noreply, socket}
+  end
+  ```
+
+  ### on_open_change
+
+  ```heex
+  <.menu id="menu-events-open" class="menu" on_open_change="menu_open_changed" items={[...]}>
+    <:trigger>Actions</:trigger>
+  </.menu>
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_select_client="menu-selected"` | Item selected | `id`, `value` |
+  | `on_open_change_client="menu-open-changed"` | Open state changes | `id`, `open` |
 
   '''
 
@@ -809,8 +833,6 @@ defmodule Corex.Menu do
   @doc """
   Sets the menu open state from client-side. Returns a `Phoenix.LiveView.JS` command.
 
-  ## Examples
-
       <button phx-click={Corex.Menu.set_open("my-menu", true)}>
         Open Menu
       </button>
@@ -826,8 +848,6 @@ defmodule Corex.Menu do
   @doc type: :api
   @doc """
   Sets the menu open state from server-side. Pushes a LiveView event.
-
-  ## Examples
 
       def handle_event("open_menu", _params, socket) do
         socket = Corex.Menu.set_open(socket, "my-menu", true)

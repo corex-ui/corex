@@ -20,7 +20,7 @@ defmodule Corex.Code do
 
   Only `makeup` is required. Add the lexer packages you need; without a lexer, code renders as plain escaped text.
 
-  ## Examples
+  ## Anatomy
 
   ### Basic Usage
 
@@ -63,7 +63,7 @@ defmodule Corex.Code do
   The `language` attribute maps to Makeup's registry (e.g. `:elixir` → `"elixir"`).
   Add the corresponding lexer package to your deps for each language. Without it, code renders as plain escaped text.
 
-  ## Styling
+  ## Style
 
   Use data attributes to target elements:
 

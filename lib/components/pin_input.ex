@@ -2,17 +2,79 @@ defmodule Corex.PinInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Pin Input](https://zagjs.com/components/react/pin-input).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
   ```heex
-  <.pin_input id="pin" count={4} class="pin-input">
+  <.pin_input id="pin-input-anatomy" count={4} class="pin-input">
     <:label>Code</:label>
   </.pin_input>
   ```
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.pin_input>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set cell values (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set cell values (server) | `socket` |
+  | [`clear/1`](#clear/1) | Clear all cells (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear/2`](#clear/2) | Clear all cells (server) | `socket` |
+  | [`value/1`](#value/1) | Read values (client) | `%Phoenix.LiveView.JS{}` |
+  | [`value/2`](#value/2) | Read values (client, opts) | `%Phoenix.LiveView.JS{}` |
+  | [`value/3`](#value/3) | Read values (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.pin_input>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="pin_changed"` | Any cell changes | `%{"id" => id, "value" => list}` |
+  | `on_value_complete="pin_complete"` | All cells filled | `%{"id" => id, "value" => list}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.pin_input id="pin-events" count={4} class="pin-input" on_value_change="pin_changed">
+    <:label>Code</:label>
+  </.pin_input>
+  ```
+
+  ```elixir
+  def handle_event("pin_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :pin, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="pin-changed"` | Any cell changes | `id`, `value` |
+  | `on_value_complete_client="pin-complete"` | All cells filled | `id`, `value` |
+
+  ## Form
+
+  Use `field={f[:code]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
+
+  ```heex
+  <.form for={@form} id={@form.id} phx-change="validate">
+    <.pin_input field={@form[:code]} count={4} class="pin-input">
+      <:label>Verification code</:label>
+    </.pin_input>
+  </.form>
+  ```
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -23,22 +85,37 @@ defmodule Corex.PinInput do
   [data-scope="pin-input"][data-part="input"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `pin-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/pin-input.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.pin_input>`).
 
-  ```heex
-  <.pin_input class="pin-input pin-input--accent pin-input--lg" count={4}>
-    <:label>Code</:label>
-  </.pin_input>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pin-input` |
+  | Accent | `pin-input pin-input--accent` |
+  | Brand | `pin-input pin-input--brand` |
+  | Alert | `pin-input pin-input--alert` |
+  | Info | `pin-input pin-input--info` |
+  | Success | `pin-input pin-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `pin-input pin-input--sm` |
+  | MD | `pin-input pin-input--md` |
+  | LG | `pin-input pin-input--lg` |
+  | XL | `pin-input pin-input--xl` |
+
+  <!-- tabs-close -->
 
   The `value` assign is the initial cell contents; it is serialized to `data-default-value` for Zag’s uncontrolled `defaultValue`.
 
@@ -46,13 +123,30 @@ defmodule Corex.PinInput do
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for PinInput component strings.
+    Translatable strings for the pin input.
 
-    Without gettext: `translation={%PinInput.Translation{ digit: "Box %{digit}" }}`
+    Pass `translation={%Corex.PinInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%PinInput.Translation{ digit: "Digit %{digit}" }}` (add to catalog; component calls gettext at render)
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `digit` | Digit %{digit} | Per-cell `aria-label` (`%{digit}` is the 1-based index at render) |
     """
+
+    alias Corex.Gettext
+
     defstruct [:digit]
+
+    @type t :: %__MODULE__{digit: String.t()}
+
+    def default do
+      %__MODULE__{digit: Gettext.gettext("Digit %{digit}")}
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{digit: Corex.Translation.take(partial.digit, default.digit)}
+    end
   end
 
   @doc type: :component
@@ -127,7 +221,7 @@ defmodule Corex.PinInput do
   end
 
   def pin_input(assigns) do
-    default_translation = %Translation{digit: "Digit %{digit}"}
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     value =
       case assigns[:value] do
@@ -141,8 +235,7 @@ defmodule Corex.PinInput do
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:value, validate_value!(value || []))
 
     assigns = assign(assigns, :value_str, Enum.join(assigns.value))
@@ -217,32 +310,7 @@ defmodule Corex.PinInput do
     end
   end
 
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      digit: partial.digit || default.digit
-    }
-  end
-
   @doc type: :api
-  @doc """
-  Sets the pin input value from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  Pass a list of single-character strings, or a binary: comma-separated cells (e.g. `"1,2,,4"`) or a continuous string whose graphemes fill the fields (e.g. `"1234"`).
-
-  #### From Client JS
-
-      ```javascript
-      const el = document.getElementById("my-pin");
-      el?.dispatchEvent(
-        new CustomEvent("corex:pin-input:set-value", {
-          bubbles: false,
-          detail: { value: ["1", "2", "3", "4"] },
-        })
-      );
-      ```
-  """
   def set_value(pin_input_id, value) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:set-value",
       to: "##{pin_input_id}",
@@ -252,13 +320,6 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
-  @doc """
-  Sets the pin value from the server. Pushes a LiveView event handled by the hook.
-
-      def handle_event("fill_pin", _params, socket) do
-        {:noreply, Corex.PinInput.set_value(socket, "my-pin", ["1", "2", "3", "4"])}
-      end
-  """
   def set_value(socket, pin_input_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
     LiveView.push_event(socket, "pin_input_set_value", %{
@@ -280,45 +341,17 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
-  @doc """
-  Clears the pin input from client-side.
-
-      ```javascript
-      document.getElementById("my-pin")?.dispatchEvent(
-        new CustomEvent("corex:pin-input:clear", { bubbles: false })
-      );
-      ```
-  """
   def clear(pin_input_id) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:clear", to: "##{pin_input_id}", bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Clears the pin from the server via a LiveView push.
-
-      def handle_event("clear_pin", _params, socket) do
-        {:noreply, Corex.PinInput.clear(socket, "my-pin")}
-      end
-  """
   def clear(socket, pin_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
     LiveView.push_event(socket, "pin_input_clear", %{id: pin_input_id})
   end
 
   @doc type: :api
-  @doc """
-  Requests the current value from the browser. Returns `Phoenix.LiveView.JS`.
-
-  Options: `:respond_to`  -  `:server` (default, `pin_input_value_response` only), `:both`, or `:client` (DOM `pin-input-value` only).
-
-      <.action phx-click={Corex.PinInput.value("my-pin")} class="button button--sm">Value</.action>
-
-      ```javascript
-      const el = document.getElementById("my-pin");
-      el?.addEventListener("pin-input-value", (e) => console.log(e.detail));
-      ```
-  """
   def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
 
   def value(pin_input_id, opts) when is_binary(pin_input_id) and is_list(opts) do
@@ -330,13 +363,6 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
-  @doc """
-  Requests the current value from the client. Pushes `pin_input_value` for the hook.
-
-      def handle_event("pin_input_value_response", %{"id" => id, "value" => value, "valueAsString" => s}, socket) do
-        {:noreply, assign(socket, :pin, {id, value, s})}
-      end
-  """
   def value(socket, pin_input_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) and
              is_list(opts) do

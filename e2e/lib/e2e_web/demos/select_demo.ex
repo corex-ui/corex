@@ -489,51 +489,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
-  def styling_mix_modifiers_code do
-    items_attr =
-      ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
-
-    """
-    <.select id="select-style-mix-1" class="select select--sm select--brand max-w-2xs" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select id="select-style-mix-2" class="select select--lg select--accent max-w-md" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    <.select id="select-style-mix-3" class="select select--sm select--rounded-lg select--alert max-w-lg" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
-  end
-
-  def styling_mix_modifiers_example(assigns) do
-    ~H"""
-    <div class="flex flex-col gap-4 w-full items-start">
-      <.select
-        id="select-style-mix-1"
-        class="select select--sm select--brand max-w-2xs"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select
-        id="select-style-mix-2"
-        class="select select--lg select--accent max-w-md"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-      <.select
-        id="select-style-mix-3"
-        class="select select--sm select--rounded-lg select--alert max-w-lg"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
-    """
-  end
-
   defp select_items_attr do
     ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
   end

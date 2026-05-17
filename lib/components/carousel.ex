@@ -2,46 +2,112 @@ defmodule Corex.Carousel do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Carousel](https://zagjs.com/components/react/carousel).
 
-  ## Examples
+  ## Anatomy
 
-  ### Basic with image URLs
+  ### Basic
 
   ```heex
-  <.carousel id="car" items={["/images/beach.jpg", "/images/fall.jpg", "/images/sand.jpg"]} class="carousel">
-    <:prev_trigger>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-    </:prev_trigger>
-    <:next_trigger>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-    </:next_trigger>
+  <.carousel
+    id="carousel-basic"
+    items={[
+      ~p"/images/beach.jpg",
+      ~p"/images/fall.jpg",
+      ~p"/images/sand.jpg",
+      ~p"/images/star.jpg",
+      ~p"/images/winter.jpg"
+    ]}
+    class="carousel"
+  >
+    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
   </.carousel>
   ```
 
-  Items can be URLs (strings) or maps with `:url` and optional `:alt` keys.
+  Items can be URL strings or maps with `:url` and optional `:alt`.
 
   ## API
 
-  Imperative helpers target the carousel by DOM `id` on the hook root (the same `id` you pass to `carousel/1`).
+  Requires a stable `id` on `<.carousel>`.
 
-  - **Client**  -  `play/1`, `pause/1`, `scroll_next/1`, `scroll_prev/1`, and `scroll_next/2`, `scroll_prev/2` with optional `instant` (`JS.dispatch` to `corex:carousel:*`).
-  - **Server**  -  `play/2`, `pause/2`, `scroll_next/2`, `scroll_prev/2`, and `scroll_next/3`, `scroll_prev/3` with optional `instant` (`push_event` consumed by the hook).
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`play/1`](#play/1) | Start or resume autoplay (client) | `%Phoenix.LiveView.JS{}` |
+  | [`play/2`](#play/2) | Start or resume autoplay (server) | `socket` |
+  | [`pause/1`](#pause/1) | Pause autoplay (client) | `%Phoenix.LiveView.JS{}` |
+  | [`pause/2`](#pause/2) | Pause autoplay (server) | `socket` |
+  | [`scroll_next/1`](#scroll_next/1) | Next page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`scroll_next/2`](#scroll_next/2) | Next page with `instant` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`scroll_next/3`](#scroll_next/3) | Next page (server) | `socket` |
+  | [`scroll_prev/1`](#scroll_prev/1) | Previous page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`scroll_prev/2`](#scroll_prev/2) | Previous page with `instant` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`scroll_prev/3`](#scroll_prev/3) | Previous page (server) | `socket` |
 
   ## Events
 
-  **From the client**, dispatch `CustomEvent`s on the hook root (`#your-id`):
+  Pick an event name and pass it to `on_*` on `<.carousel>`.
 
-  | Type | Purpose |
-  |------|---------|
-  | `corex:carousel:play` | Start or resume autoplay |
-  | `corex:carousel:pause` | Pause autoplay |
-  | `corex:carousel:scroll-next` | Next page; optional `detail.instant` boolean |
-  | `corex:carousel:scroll-prev` | Previous page; optional `detail.instant` boolean |
+  ### Server events
 
-  **From LiveView**, `push_event` names: `carousel_play`, `carousel_pause`, `carousel_scroll_next`, `carousel_scroll_prev` with payload `%{"id" => ...}` and optional `"instant"` for scroll events.
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_page_change="carousel_page_changed"` | Active page changes | `%{"id" => id, "page" => page}` |
 
-  ## Styling
+  <!-- tabs-open -->
 
-  Use data attributes to target elements:
+  ### on_page_change
+
+  ```heex
+  <.carousel
+    id="carousel-events-server"
+    class="carousel"
+    on_page_change="carousel_page_changed"
+    items={[~p"/images/beach.jpg", ~p"/images/fall.jpg", ~p"/images/sand.jpg"]}
+  >
+    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+  </.carousel>
+  ```
+
+  ```elixir
+  def handle_event("carousel_page_changed", %{"id" => _id, "page" => page}, socket) do
+    {:noreply, assign(socket, :carousel_page, page)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_page_change_client="carousel-page-changed"` | Active page changes | `id`, `page` |
+
+  <!-- tabs-open -->
+
+  ### on_page_change_client
+
+  ```heex
+  <.carousel
+    id="carousel-events-client"
+    class="carousel"
+    on_page_change_client="carousel-page-changed"
+    items={[~p"/images/beach.jpg", ~p"/images/fall.jpg", ~p"/images/sand.jpg"]}
+  >
+    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+  </.carousel>
+  ```
+
+  ```javascript
+  const el = document.getElementById("carousel-events-client");
+  el?.addEventListener("carousel-page-changed", (e) => console.log(e.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `carousel.css`, then set `class="carousel"` on `<.carousel>`.
 
   ```css
   [data-scope="carousel"][data-part="root"] {}
@@ -54,21 +120,37 @@ defmodule Corex.Carousel do
   [data-scope="carousel"][data-part="indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `carousel` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/carousel.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.carousel>`).
 
-  ```heex
-  <.carousel class="carousel carousel--accent carousel--lg" items={[]}>
-  </.carousel>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `carousel` |
+  | Accent | `carousel carousel--accent` |
+  | Brand | `carousel carousel--brand` |
+  | Alert | `carousel carousel--alert` |
+  | Info | `carousel carousel--info` |
+  | Success | `carousel carousel--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `carousel carousel--sm` |
+  | MD | `carousel carousel--md` |
+  | LG | `carousel carousel--lg` |
+  | XL | `carousel carousel--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
@@ -439,17 +521,11 @@ defmodule Corex.Carousel do
   end
 
   @doc type: :api
-  @doc """
-  Starts or resumes carousel autoplay from the client. Returns a `Phoenix.LiveView.JS` command.
-  """
   def play(carousel_id) when is_binary(carousel_id) do
     JS.dispatch("corex:carousel:play", to: "##{carousel_id}", detail: %{}, bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Pauses carousel autoplay from the client.
-  """
   def pause(carousel_id) when is_binary(carousel_id) do
     JS.dispatch("corex:carousel:pause", to: "##{carousel_id}", detail: %{}, bubbles: false)
   end
@@ -467,15 +543,9 @@ defmodule Corex.Carousel do
   end
 
   @doc type: :api
-  @doc """
-  Scrolls to the next page from the client.
-  """
   def scroll_next(carousel_id) when is_binary(carousel_id), do: scroll_next(carousel_id, false)
 
   @doc type: :api
-  @doc """
-  Scrolls to the next page from the client. Pass `true` for `instant` to skip animation.
-  """
   def scroll_next(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
     JS.dispatch("corex:carousel:scroll-next",
       to: "##{carousel_id}",
@@ -498,9 +568,6 @@ defmodule Corex.Carousel do
   end
 
   @doc type: :api
-  @doc """
-  Scrolls to the previous page from the client.
-  """
   def scroll_prev(carousel_id) when is_binary(carousel_id), do: scroll_prev(carousel_id, false)
 
   @doc type: :api

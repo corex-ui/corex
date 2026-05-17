@@ -5,6 +5,11 @@ defmodule E2e.Place.City do
 
   @primary_key {:id, :string, autogenerate: false}
 
+  @derive {
+    Flop.Schema,
+    filterable: [], sortable: [:name, :iata_code, :iata_country_code]
+  }
+
   schema "cities" do
     field :name, :string
     field :iata_code, :string

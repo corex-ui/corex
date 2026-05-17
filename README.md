@@ -87,3 +87,4 @@ Every Corex component exposes JS commands for client-side control and matching `
 - [Localize](https://hexdocs.pm/corex/localize.html) locales and routes after `--lang`.
 - [Production](https://hexdocs.pm/corex/production.html) prod build and run.
 - [Manual installation](https://hexdocs.pm/corex/manual_installation.html) add Corex to an existing Phoenix app.
+- [Tableau](https://hexdocs.pm/corex/tableau.html) Corex on static Tableau sites ([Tableau Theming](https://hexdocs.pm/corex/tableau_theming.html), [Tableau Mode](https://hexdocs.pm/corex/tableau_mode.html), [Tableau Localize](https://hexdocs.pm/corex/tableau_localize.html)).

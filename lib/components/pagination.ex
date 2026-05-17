@@ -2,39 +2,33 @@ defmodule Corex.Pagination do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Pagination](https://zagjs.com/components/react/pagination).
 
-  Pagination `page` is **1-based** (first page is `1`). [Carousel](`Corex.Carousel`) `page` is **0-based** — do not mix the two.
+  Pagination `page` is **1-based** (first page is `1`). [Carousel](`Corex.Carousel`) `page` is **0-based** — do not mix the two. Page numbers and ellipses are rendered on the server so the control is complete before the hook runs.
 
-  Page numbers and ellipses are rendered on the server (same markup as the client) so the control is complete before the hook runs.
+  ## Anatomy
 
-  ## Examples
+  <!-- tabs-open -->
 
   ### Minimal
 
   ```heex
-  <.pagination id="p1" class="pagination" count={120} page_size={10}>
+  <.pagination id="pagination-anatomy" class="pagination" count={95} page_size={10}>
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
 
-  ### Controlled page (LiveView)
-
-  ```elixir
-  def handle_event("page_changed", %{"page" => page}, socket) do
-    {:noreply, assign(socket, :page, page)}
-  end
-  ```
+  ### Controlled page
 
   ```heex
   <.pagination
-    id="results"
+    id="pagination-patterns-controlled"
     class="pagination"
-    count={500}
+    count={18}
     page={@page}
-    page_size={20}
+    page_size={4}
     controlled
-    on_page_change="page_changed"
+    on_page_change="pagination_controlled_changed"
   >
     <:prev><.heroicon name="hero-chevron-left" /></:prev>
     <:next><.heroicon name="hero-chevron-right" /></:next>
@@ -42,55 +36,217 @@ defmodule Corex.Pagination do
   </.pagination>
   ```
 
-  Slice data on the server (Zag `api.slice` is client-only):
-
   ```elixir
-  offset = (@page - 1) * @page_size
-  Enum.slice(items, offset, @page_size)
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :page, 1)}
+  end
+
+  def handle_event("pagination_controlled_changed", %{"page" => page}, socket) do
+    {:noreply, assign(socket, :page, page)}
+  end
   ```
-
-  ### Controlled page size
-
-  Use `controlled_page_size` with `on_page_size_change` independently of `controlled` / `page`.
 
   ### Link mode
 
-  Set `type={:link}`, `to`, and optional `page_param` / `page_size_param`. The hook builds `href` on each page, previous, and next control (SSR and client).
+  Set `type={:link}`, `to`, and optional `page_param` / `page_size_param`. The hook builds `href` on each control (SSR and client).
 
   | `redirect` | Behavior |
   | --- | --- |
-  | `:href` (default) | Normal anchor navigation (full page load) |
-  | `:patch` | Phoenix live link: `data-phx-link="patch"` on anchors (same as `<.navigate type="patch">`) |
-  | `:navigate` | Phoenix live link: `data-phx-link="redirect"` on anchors (same as `<.navigate type="navigate">`) |
+  | `:href` (default) | Full page load |
+  | `:patch` | `data-phx-link="patch"` (same as `<.navigate type="patch">`) |
+  | `:navigate` | `data-phx-link="redirect"` (same as `<.navigate type="navigate">`) |
 
-  Caller must assert the LiveView route accepts patch or navigate for the generated URLs.
-
-  For state held in assigns (not the URL), prefer `type={:button}`, `controlled`, and `push_patch/2` inside `on_page_change` instead of link mode.
+  For assigns-driven state, prefer `type={:button}`, `controlled`, and `on_page_change` instead of link mode.
 
   ### Translation
 
   ```heex
   <.pagination
+    id="pagination-i18n"
+    class="pagination"
+    count={95}
+    page_size={10}
     translation={%Corex.Pagination.Translation{
       prev_trigger_label: Corex.Gettext.gettext("Previous page"),
       next_trigger_label: Corex.Gettext.gettext("Next page"),
-      item_label: Corex.Gettext.gettext("Page %{page} of %{total_pages}")
+      item_label:
+        Corex.Gettext.gettext("Page %{page} of %{total_pages}",
+          page: "%{page}",
+          total_pages: "%{total_pages}"
+        )
     }}
-    ...
-  />
+  >
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  ```css
-  @import "../corex/components/pagination.css";
-  ```
+  ## API
+
+  Requires a stable `id` on `<.pagination>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_page/2`](#set_page/2) | Set active page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_page/3`](#set_page/3) | Set active page (server) | `socket` |
+  | [`set_page_size/2`](#set_page_size/2) | Set page size (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_page_size/3`](#set_page_size/3) | Set page size (server) | `socket` |
+  | [`go_to_next_page/1`](#go_to_next_page/1) | Next page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`go_to_next_page/2`](#go_to_next_page/2) | Next page (server) | `socket` |
+  | [`go_to_prev_page/1`](#go_to_prev_page/1) | Previous page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`go_to_prev_page/2`](#go_to_prev_page/2) | Previous page (server) | `socket` |
+  | [`go_to_first_page/1`](#go_to_first_page/1) | First page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`go_to_first_page/2`](#go_to_first_page/2) | First page (server) | `socket` |
+  | [`go_to_last_page/1`](#go_to_last_page/1) | Last page (client) | `%Phoenix.LiveView.JS{}` |
+  | [`go_to_last_page/2`](#go_to_last_page/2) | Last page (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_page
 
   ```heex
-  <.pagination class="pagination pagination--accent pagination--lg" ...>
+  <.action phx-click={Corex.Pagination.set_page("pagination-api-bind", 5)} class="button button--sm">5</.action>
+  <.pagination id="pagination-api-bind" class="pagination" count={95} page={5} page_size={10}>
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
   ```
 
-  Target parts:
+  ```elixir
+  def handle_event("pagination_api_page_3", _, socket) do
+    {:noreply, Corex.Pagination.set_page(socket, "pagination-api-srv", 3)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.pagination>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_page_change="pagination_page_changed"` | Active page changes | `%{"id" => id, "page" => page}` |
+  | `on_page_size_change="pagination_page_size_changed"` | Page size changes | `%{"id" => id, "page_size" => page_size}` |
+
+  <!-- tabs-open -->
+
+  ### on_page_change
+
+  ```heex
+  <.pagination id="pagination-events-server" class="pagination" count={95} page_size={10} on_page_change="pagination_page_changed">
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  ```elixir
+  def handle_event("pagination_page_changed", %{"id" => id, "page" => page}, socket) do
+    {:noreply, assign(socket, :page, page)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_page_change_client="pagination-page-changed"` | Active page changes | `id`, `page`, `page_size` |
+  | `on_page_size_change_client="pagination-page-size-changed"` | Page size changes | `id`, `page_size` |
+
+  <!-- tabs-open -->
+
+  ### on_page_change_client
+
+  ```heex
+  <.pagination
+    id="pagination-events-client"
+    class="pagination"
+    count={95}
+    page_size={10}
+    on_page_change_client="pagination-page-changed"
+  >
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  ```javascript
+  document.getElementById("pagination-events-client")?.addEventListener("pagination-page-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  Bind `page` (and optionally `page_size`) with `controlled` / `controlled_page_size` and handle `on_page_change` so assigns stay the source of truth.
+
+  ```heex
+  <.pagination
+    id="pagination-patterns-controlled"
+    class="pagination"
+    count={18}
+    page={@page}
+    page_size={4}
+    controlled
+    on_page_change="pagination_controlled_changed"
+  >
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  Slice list data on the server (Zag `api.slice` is client-only):
+
+  ```elixir
+  offset = (page - 1) * page_size
+  Enum.slice(items, offset, page_size)
+  ```
+
+  ### Patch (URL)
+
+  Use `type={:link}`, `controlled`, `to`, and `redirect={:patch}` so page and page size sync from query params via `handle_params/3`.
+
+  ```heex
+  <.pagination
+    id="pagination-patterns-patch"
+    class="pagination"
+    count={18}
+    page={@page}
+    page_size={4}
+    controlled
+    controlled_page_size
+    type={:link}
+    to="/posts"
+    redirect={:patch}
+  >
+    <:prev><.heroicon name="hero-chevron-left" /></:prev>
+    <:next><.heroicon name="hero-chevron-right" /></:next>
+    <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+  </.pagination>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or import `pagination.css` and stack modifiers on the host.
 
   ```css
   [data-scope="pagination"][data-part="root"] {}
@@ -99,12 +255,76 @@ defmodule Corex.Pagination do
   [data-scope="pagination"][data-part="prev-trigger"][data-disabled] {}
   [data-scope="pagination"][data-part="next-trigger"][data-disabled] {}
   ```
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/pagination.css";
+  ```
+
+  Stack modifiers on `<.pagination class="pagination ...">`.
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pagination` |
+  | Accent | `pagination pagination--accent` |
+  | Brand | `pagination pagination--brand` |
+  | Alert | `pagination pagination--alert` |
+  | Success | `pagination pagination--success` |
+  | Info | `pagination pagination--info` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pagination` |
+  | SM | `pagination pagination--sm` |
+  | MD | `pagination pagination--md` |
+  | LG | `pagination pagination--lg` |
+  | XL | `pagination pagination--xl` |
+
+  ### Text
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pagination` |
+  | SM | `pagination pagination--text-sm` |
+  | XL | `pagination pagination--text-xl` |
+  | 2XL | `pagination pagination--text-2xl` |
+  | 4XL | `pagination pagination--text-4xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pagination` |
+  | None | `pagination pagination--rounded-none` |
+  | SM | `pagination pagination--rounded-sm` |
+  | MD | `pagination pagination--rounded-md` |
+  | LG | `pagination pagination--rounded-lg` |
+  | XL | `pagination pagination--rounded-xl` |
+  | Full | `pagination pagination--rounded-full` |
+
+  ### Max width
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `pagination` |
+  | SM | `pagination max-w-sm` |
+  | MD | `pagination max-w-md` |
+  | LG | `pagination max-w-lg` |
+  | XL | `pagination max-w-xl` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Gettext
   alias Corex.Pagination.Anatomy.{NextTrigger, PrevTrigger, Props, Root, SsrEllipsis, SsrPageItem}
   alias Corex.Pagination.Connect
   alias Corex.Pagination.Translation
@@ -348,7 +568,7 @@ defmodule Corex.Pagination do
   end
 
   defp prepare_pagination_assigns(assigns) do
-    default_translation = default_translation()
+    default_translation = Translation.default()
     page_size = assigns.page_size |> positive_int(10) |> max(1)
     count = assigns.count |> non_negative_int(0)
     total_pages = total_pages_for(count, page_size)
@@ -361,7 +581,7 @@ defmodule Corex.Pagination do
     page_entries =
       Utils.pages(page, total_pages, assigns.sibling_count, assigns.boundary_count)
 
-    translation = merge_translation(assigns.translation, default_translation)
+    translation = Translation.merge(assigns.translation, default_translation)
 
     assigns
     |> assign_new(:id, fn -> "pagination-#{System.unique_integer([:positive])}" end)
@@ -394,15 +614,6 @@ defmodule Corex.Pagination do
         page_size: page_size
       })
     end)
-  end
-
-  defp default_translation do
-    %Translation{
-      root_label: Gettext.gettext("Pagination"),
-      prev_trigger_label: Gettext.gettext("Previous page"),
-      next_trigger_label: Gettext.gettext("Next page"),
-      item_label: "Page %{page} of %{total_pages}"
-    }
   end
 
   defp total_pages_for(0, _page_size), do: 0
@@ -482,17 +693,6 @@ defmodule Corex.Pagination do
       raise ArgumentError,
             "Corex.Pagination requires non-empty :prev, :next, and :ellipsis slots"
     end
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(%Translation{} = partial, %Translation{} = default) do
-    %Translation{
-      root_label: partial.root_label || default.root_label,
-      prev_trigger_label: partial.prev_trigger_label || default.prev_trigger_label,
-      next_trigger_label: partial.next_trigger_label || default.next_trigger_label,
-      item_label: partial.item_label || default.item_label
-    }
   end
 
   @doc type: :api

@@ -103,45 +103,9 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ])
   end
 
-  def items_basic do
-    Corex.Content.new([
-      %{
-        label: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-      },
-      %{
-        label: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
-      },
-      %{
-        label: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-      }
-    ])
-  end
+  def items_basic, do: E2eWeb.Demos.DocExamples.content_items()
 
-  def items_with_meta do
-    Corex.Content.new([
-      %{
-        value: "lorem",
-        label: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
-      },
-      %{
-        value: "duis",
-        label: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
-      },
-      %{
-        value: "donec",
-        label: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-        meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
-      }
-    ])
-  end
+  def items_with_meta, do: E2eWeb.Demos.DocExamples.content_items_with_meta()
 
   def shared_items_full do
     Corex.Content.new([
@@ -1097,28 +1061,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
     """
   end
 
-  def styling_mix_modifiers_example(assigns) do
-    ~H"""
-    <.accordion
-      class="accordion accordion--sm accordion--brand max-w-2xs"
-      value="item-1"
-      items={styling_items()}
-    >
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--sm max-w-none" value="item-1" items={styling_items()}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion
-      class="accordion accordion--alert accordion--xl max-w-2xs"
-      value="item-1"
-      items={styling_items()}
-    >
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    """
-  end
-
   def styling_color_code do
     ~S"""
     <.accordion class="accordion" items={Corex.Content.new([
@@ -1302,39 +1244,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     <.accordion class="accordion max-w-5xl" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    """
-  end
-
-  def styling_mix_modifiers_code do
-    ~S"""
-    <.accordion class="accordion accordion--sm max-w-5xs" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--md max-w-xs" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--lg max-w-lg" value="item-1" items={Corex.Content.new([
-      %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])}>
-      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-    </.accordion>
-    <.accordion class="accordion accordion--xl max-w-2xl" value="item-1" items={Corex.Content.new([
       %{value: "item-1", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
       %{value: "item-2", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
       %{value: "item-3", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}

@@ -20,16 +20,7 @@ defmodule E2eWeb.PaginationPatternsLive do
      |> assign(:server_page, 1)
      |> assign(:server_posts, Blog.slice(1, page_size))
      |> assign(:client_posts, Blog.slice(1, page_size))
-     |> assign(:client_pages_json, pages_json(page_size))
-     |> assign(:controlled_heex, Demo.patterns_controlled_heex())
-     |> assign(:controlled_elixir, Demo.patterns_controlled_elixir())
-     |> assign(:patch_heex, Demo.patterns_patch_heex())
-     |> assign(:patch_elixir, Demo.patterns_patch_elixir())
-     |> assign(:patch_data, Demo.patterns_patch_data())
-     |> assign(:server_heex, Demo.patterns_server_heex())
-     |> assign(:server_elixir, Demo.patterns_server_elixir())
-     |> assign(:client_heex, Demo.patterns_client_heex())
-     |> assign(:client_js, Demo.patterns_client_js())}
+     |> assign(:client_pages_json, pages_json(page_size))}
   end
 
   @impl true
@@ -109,10 +100,7 @@ defmodule E2eWeb.PaginationPatternsLive do
         <.demo_section
           id="pagination-patterns-controlled-section"
           title="Controlled"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @controlled_elixir}
-          ]}
+          code_tabs={Demo.patterns_controlled_code_tabs()}
         >
           <:preview>
             <Demo.patterns_controlled_example page={@page} />
@@ -122,11 +110,7 @@ defmodule E2eWeb.PaginationPatternsLive do
         <.demo_section
           id="pagination-patterns-patch-section"
           title="Link patch"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @patch_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @patch_elixir},
-            %{value: "data", label: "Data", language: :elixir, code: @patch_data}
-          ]}
+          code_tabs={Demo.patterns_patch_code_tabs()}
         >
           <:preview>
             <Demo.patterns_patch_example
@@ -139,10 +123,7 @@ defmodule E2eWeb.PaginationPatternsLive do
         <.demo_section
           id="pagination-patterns-server-section"
           title="Trigger server"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
-          ]}
+          code_tabs={Demo.patterns_server_code_tabs()}
         >
           <:preview>
             <Demo.patterns_server_example
@@ -155,10 +136,7 @@ defmodule E2eWeb.PaginationPatternsLive do
         <.demo_section
           id="pagination-patterns-client-section"
           title="Trigger client"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js}
-          ]}
+          code_tabs={Demo.patterns_client_code_tabs()}
         >
           <:preview>
             <Demo.patterns_client_example

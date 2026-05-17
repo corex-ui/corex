@@ -2,8 +2,8 @@
 
 @utility scrollbar {
   &::-webkit-scrollbar {
-    width: var(--spacing-space);
-    height: var(--spacing-space);
+    width: calc(var(--spacing-space) * 0.6);
+    height: calc(var(--spacing-space) * 0.6);
   }
 
   &::-webkit-scrollbar-track {
@@ -21,8 +21,8 @@
 
 @utility scrollbar--* {
   &::-webkit-scrollbar {
-    width: --value(--spacing-space-*, [length]);
-    height: --value(--spacing-space-*, [length]);
+    width: calc(--value(--spacing-space-*, [length]) * 0.6);
+    height: calc(--value(--spacing-space-*, [length]) * 0.6);
   }
 
   &::-webkit-scrollbar-thumb {

@@ -4,6 +4,8 @@ defmodule Corex.Combobox do
 
   Pass options with `Corex.List.new/1`. With `redirect`, use per-item `:to`, `:redirect` (`:href` | `:patch` | `:navigate` | `false`), and `:new_tab`; Zag runs single-select when `redirect` is true.
 
+  ## Anatomy
+
   <!-- tabs-open -->
 
   ### Minimal
@@ -121,13 +123,43 @@ defmodule Corex.Combobox do
       </.combobox>
   ```
 
-  ## Phoenix Form Integration
+  <!-- tabs-close -->
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. The combobox stays uncontrolled in the browser; merge hook-driven updates into changeset params when validating (see Angle Slider form docs). See the Select or NumberInput component docs for full controller and LiveView examples.
+  ## API
 
-  ### Server-side Filtering
+  Requires a stable `id` on `<.combobox>`.
 
-  Disable client filtering with `disabled={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+
+  ```heex
+  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--sm">France</.action>
+  ```
+
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="combobox_value_changed"` | Selection changes | `%{"id" => id, "value" => values}` |
+  | `on_open_change="combobox_open_changed"` | Menu open state changes | `%{"id" => id, "open" => open}` |
+  | `on_input_value_change="combobox_search"` | Input text changes (server filter) | `%{"id" => id, "value" => string, "reason" => reason}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="combobox-value-changed"` | Selection changes | `id`, `value`, `items` |
+  | `on_open_change_client="combobox-open-changed"` | Menu open state changes | `id`, `open` |
+
+  ## Patterns
+
+  ### Server-side filtering
+
+  Disable client filtering with `filter={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
 
   ```heex
   defmodule MyAppWeb.CountryCombobox do
@@ -174,11 +206,9 @@ defmodule Corex.Combobox do
   end
   ```
 
-  <!-- tabs-close -->
+  ## Style
 
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`:
 
   ```css
   [data-scope="combobox"][data-part="root"] {}
@@ -215,30 +245,17 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
-  ## Localization
+  ## Form
 
-  Default `placeholder`, `empty`, `trigger`, and `clear_selection` use English literals; at render
-  they are passed through the host gettext backend gettext/1 unless you set `translation`. Omit keys or use
-  `nil` to keep the built-in default for that field. Same pattern as `Corex.Select`.
+  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. In LiveView, pass `controlled` so the server stays the source of truth. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
+
+  ### Localization
+
+  Pass `translation={%Corex.Combobox.Translation{}}` for partial overrides. See [`Corex.Combobox.Translation`](`Corex.Combobox.Translation`) for defaults.
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for Combobox component strings.
-
-    Defaults are English literals (`"Select"`, `"No results"`); at render time Corex passes them
-    through the host gettext backend gettext/1 unless you override. Partial structs fill missing fields
-    the same way.
-
-    Override: `translation={%Corex.Combobox.Translation{placeholder: "Search…", empty: "Nothing found"}}`
-
-    Trigger and clear buttons use `translation.trigger` and `translation.clear_selection` (defaults **Open options** and **Clear selection**).
-
-    With explicit gettext at the call site: pass your app Gettext module's `gettext("…")` as the field value.
-    """
-    defstruct [:placeholder, :empty, :trigger, :clear_selection]
-  end
+  alias Corex.Combobox.Translation
 
   @doc type: :component
   use Phoenix.Component
@@ -460,7 +477,7 @@ defmodule Corex.Combobox do
   end
 
   def combobox(assigns) do
-    translation = normalize_combobox_translation(assigns[:translation])
+    translation = Translation.merge(assigns[:translation], Translation.default())
     placeholder = assigns[:placeholder] || translation.placeholder
     empty_text = translation.empty
 
@@ -619,49 +636,6 @@ defmodule Corex.Combobox do
       </div>
     </div>
     """
-  end
-
-  defp normalize_combobox_translation(nil) do
-    %Translation{
-      placeholder: combobox_field(nil, "Select"),
-      empty: combobox_field(nil, "No results"),
-      trigger: combobox_field(nil, "Open options"),
-      clear_selection: combobox_field(nil, "Clear selection")
-    }
-  end
-
-  defp normalize_combobox_translation(%Translation{} = t) do
-    %Translation{
-      placeholder: combobox_field(t.placeholder, "Select"),
-      empty: combobox_field(t.empty, "No results"),
-      trigger: combobox_field(t.trigger, "Open options"),
-      clear_selection: combobox_field(t.clear_selection, "Clear selection")
-    }
-  end
-
-  defp normalize_combobox_translation(m) when is_map(m) do
-    sm = Map.new(m, fn {k, v} -> {to_string(k), v} end)
-    ph = Map.get(sm, "placeholder")
-    em = Map.get(sm, "empty")
-    tr = Map.get(sm, "trigger")
-    cl = Map.get(sm, "clear_selection")
-
-    normalize_combobox_translation(%Translation{
-      placeholder: ph,
-      empty: em,
-      trigger: tr,
-      clear_selection: cl
-    })
-  end
-
-  defp combobox_field(nil, msgid), do: Corex.Gettext.gettext(msgid)
-
-  defp combobox_field(s, msgid) when is_binary(s) do
-    case String.trim(s) do
-      "" -> Corex.Gettext.gettext(msgid)
-      ^msgid -> Corex.Gettext.gettext(msgid)
-      trimmed -> trimmed
-    end
   end
 
   defp item_attrs(id, entry, dir, orientation) do

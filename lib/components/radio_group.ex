@@ -2,12 +2,23 @@ defmodule Corex.RadioGroup do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Radio Group](https://zagjs.com/components/react/radio-group).
 
-  ## Examples
+  ## Anatomy
 
-  ### Basic (without indicator)
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
-  <.radio_group id="rg" name="choice" items={[["1", "Option A"], ["2", "Option B"]]} class="radio-group">
+  <.radio_group
+    id="radio-group-anatomy-minimal"
+    name="rg-minimal"
+    class="radio-group"
+    items={[
+      %{value: "a", label: "Option A"},
+      %{value: "b", label: "Option B"},
+      %{value: "c", label: "Option C"}
+    ]}
+  >
     <:label>Choose one</:label>
   </.radio_group>
   ```
@@ -15,30 +26,166 @@ defmodule Corex.RadioGroup do
   ### With indicator
 
   ```heex
-  <.radio_group id="rg" name="choice" items={[["1", "Option A"], ["2", "Option B"]]} class="radio-group">
+  <.radio_group
+    id="radio-group-anatomy-indicator"
+    name="rg-indicator"
+    class="radio-group"
+    items={[
+      %{value: "a", label: "Option A"},
+      %{value: "b", label: "Option B"},
+      %{value: "c", label: "Option C"}
+    ]}
+  >
     <:label>Choose one</:label>
     <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
   </.radio_group>
   ```
 
-  Items can be a list of `{value, label}` tuples or a list of maps with `:value`, `:label`, and optional `:disabled`, `:invalid`. Optional `:item_control` slot renders the check indicator for each item; when omitted, no indicator is shown.
+  <!-- tabs-close -->
 
-  ## Styling
+  Items can be `{value, label}` tuples or maps with `:value`, `:label`, and optional `:disabled`, `:invalid`.
 
-  Use data attributes to target elements:
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.radio_group>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="radio_group_changed"` | Selected value changes | `%{"id" => id, "value" => value}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.radio_group
+    id="radio-group-events-server"
+    name="rg-events"
+    class="radio-group"
+    on_value_change="radio_group_changed"
+    items={[
+      %{value: "a", label: "Option A"},
+      %{value: "b", label: "Option B"},
+      %{value: "c", label: "Option C"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  ```elixir
+  def handle_event("radio_group_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :choice, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="radio-group-changed"` | Selected value changes | `id`, `value` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.radio_group
+    id="radio-group-events-client"
+    name="rg-events-client"
+    class="radio-group"
+    on_value_change_client="radio-group-changed"
+    items={[
+      %{value: "a", label: "Option A"},
+      %{value: "b", label: "Option B"},
+      %{value: "c", label: "Option C"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  ```javascript
+  const el = document.getElementById("radio-group-events-client");
+  el?.addEventListener("radio-group-changed", (event) => console.log(event.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  For server-owned selection, set `controlled`, bind `value`, and handle `on_value_change` in LiveView.
+
+  ```heex
+  <.radio_group
+    id="radio-group-api-controlled"
+    name="rg-controlled"
+    class="radio-group"
+    controlled
+    value={@api_controlled_value}
+    on_value_change="radio_group_api_controlled"
+    items={[
+      %{value: "a", label: "Option A"},
+      %{value: "b", label: "Option B"},
+      %{value: "c", label: "Option C"}
+    ]}
+  >
+    <:label>Pick</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  ```elixir
+  def handle_event("radio_group_api_controlled", %{"value" => v}, socket) do
+    {:noreply, assign(socket, :api_controlled_value, v)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Form
+
+  Use `field={f[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
+
+  ```heex
+  <.form for={@form} id={@form.id} phx-change="validate">
+    <.radio_group
+      field={@form[:choice]}
+      class="radio-group"
+      items={[
+        %{value: "a", label: "Option A"},
+        %{value: "b", label: "Option B"},
+        %{value: "c", label: "Option C"}
+      ]}
+    >
+      <:label>Choose one</:label>
+      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+    </.radio_group>
+  </.form>
+  ```
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `radio-group.css`, then set `class="radio-group"` on `<.radio_group>`.
 
   ```css
   [data-scope="radio-group"][data-part="root"] {}
   [data-scope="radio-group"][data-part="label"] {}
-  [data-scope="radio-group"][data-part="indicator"] {}
   [data-scope="radio-group"][data-part="item"] {}
   [data-scope="radio-group"][data-part="item-text"] {}
   [data-scope="radio-group"][data-part="item-control"] {}
   [data-scope="radio-group"][data-part="item-hidden-input"] {}
   ```
-
-  If you wish to use the default Corex styling, you can use the class `radio-group` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
@@ -46,12 +193,31 @@ defmodule Corex.RadioGroup do
   @import "../corex/components/radio-group.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.radio_group>`).
 
-  ```heex
-  <.radio_group class="radio-group radio-group--accent radio-group--lg" items={[]}>
-  </.radio_group>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `radio-group` |
+  | Accent | `radio-group radio-group--accent` |
+  | Brand | `radio-group radio-group--brand` |
+  | Alert | `radio-group radio-group--alert` |
+  | Info | `radio-group radio-group--info` |
+  | Success | `radio-group radio-group--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `radio-group radio-group--sm` |
+  | MD | `radio-group radio-group--md` |
+  | LG | `radio-group radio-group--lg` |
+  | XL | `radio-group radio-group--xl` |
+
+  <!-- tabs-close -->
 
   '''
 

@@ -1,62 +1,84 @@
 defmodule Corex.Toast do
-  @moduledoc """
+  @moduledoc ~S'''
   Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
-  Compatible with Phoenix Flash messages
+  Replace layout flash groups with `<.toast_group>` and drive toasts from LiveView or the client API.
 
-  ## Examples
+  ## Anatomy
 
-  Toast components is meant to be a replacement for the Core Components and Layout flash group and flash components.
-
-  In your Layout App, you can replace the flash group `<.flash_group flash={@flash} />` components by the toast group
+  ### Layout flash
 
   ```heex
-    <.toast_group id="layout-toast" flash={@flash} class="toast">
-      <:loading>
-        <.heroicon name="hero-arrow-path" />
-      </:loading>
-    </.toast_group>
+  <.toast_group id="layout-toast" flash={@flash} class="toast">
+    <:loading>
+      <.heroicon name="hero-arrow-path" />
+    </:loading>
+  </.toast_group>
   ```
 
-  ## API Control
-
-  ***Client-side***
+  ### Flash defaults
 
   ```heex
-  <button phx-click={Corex.Toast.create("layout-toast", "This is an info toast", "This is an info toast description", :info, [])} class="button">
-   Create Info Toast
-  </button>
-
-  <div phx-disconnected={Corex.Toast.create("layout-toast", "We can't find the internet", "Attempting to reconnect", :info, [duration: :infinity, loading: true])}></div>
-
+  <.toast_group
+    id="layout-toast"
+    class="toast"
+    flash={@flash}
+    flash_info={%{title: "Success", type: :success, duration: 5000}}
+    flash_error={%{title: "Error", type: :error, duration: :infinity}}
+  />
   ```
 
-  ***Server-side***
+  ## API
+
+  Target a toast group by its DOM `id` on `<.toast_group>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`create/5`](#create/5) | Create toast (client) | `%Phoenix.LiveView.JS{}` |
+  | [`create/6`](#create/6) | Create toast (server) | `socket` |
+  | [`update/3`](#update/3) | Update toast (client) | `%Phoenix.LiveView.JS{}` |
+  | [`update/4`](#update/4) | Update toast (server) | `socket` |
+  | [`remove/2`](#remove/2) | Remove toast immediately (client) | `%Phoenix.LiveView.JS{}` |
+  | [`remove/3`](#remove/3) | Remove toast immediately (server) | `socket` |
+  | [`dismiss/2`](#dismiss/2) | Dismiss with lifecycle (client) | `%Phoenix.LiveView.JS{}` |
+  | [`dismiss/3`](#dismiss/3) | Dismiss with lifecycle (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### create (client)
+
+  ```heex
+  <.action
+    phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
+    class="button button--sm"
+  >
+    Info
+  </.action>
+  ```
+
+  ### create (server)
 
   ```elixir
   def handle_event("create_info_toast", _, socket) do
-    {:noreply, Corex.Toast.create(socket, "layout-toast", "This is an info toast", "This is an info toast description", :info, duration: 5000)}
+    {:noreply,
+     Corex.Toast.create(
+       socket,
+       "layout-toast",
+       "Info",
+       "Info description",
+       :info,
+       duration: 5000
+     )}
   end
   ```
 
-  ## Flash Messages
-  You can use the `flash` attribute to display flash messages as toasts.
-  Optional `flash_info` and `flash_error` accept maps with atom keys `title`, `type`, and `duration` for defaults when rendering info and error flashes.
-  The description comes from the Phoenix flash message.
+  <!-- tabs-close -->
 
-  ```heex
+  `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label`, `js`, optional `class`.
 
-  <.toast_group
-  id="layout-toast"
-  class="toast"
-  flash={@flash}
-  flash_info={%{title: "Success", type: :success, duration: 5000}}
-  flash_error={%{title: "Error", type: :error, duration: :infinity}}/>
-  ```
+  ## Style
 
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toast.css`, then set `class="toast"` on `<.toast_group>`.
 
   ```css
   [data-scope="toast"][data-part="group"] {}
@@ -67,45 +89,64 @@ defmodule Corex.Toast do
   [data-scope="toast"][data-part="action-trigger"] {}
   ```
 
-  If you wish to use the default Corex styling, use the class `toast` on the component after installing `Mix.Tasks.Corex.Design` and importing:
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/toast.css";
   ```
 
-  ## Toast options (`create` / `create` server / `update`)
+  Stack modifiers on the group host (`class` on `<.toast_group>`).
 
-  Common opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` integer `1` (highest) through `8` (lowest), optional (Zag defaults by type and action when omitted), `action:`.
+  <!-- tabs-open -->
 
-  Action map: `%{label:, js: %Phoenix.LiveView.JS{}, class: optional}` or `%Corex.Toast.Action{label:, js:, class:}` (same fields; struct is optional sugar).
+  ### Color
 
-  - `label` is trusted HTML for the action button: a plain binary, `Phoenix.HTML.raw/1`, or HEEx (for example `~H{...}` with `<.heroicon />`). HEEx and `{:safe, _}` become HTML through `Phoenix.HTML.Safe` (plain binaries are not escaped).
-  - `js` is a non-empty `Phoenix.LiveView.JS` struct (use `JS.push`, `JS.patch`, `JS.navigate`, and `|>` to compose).
-  - `class` is optional: a binary string of CSS classes for the action button (leading and trailing whitespace stripped; empty means omit).
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `toast` |
+  | Accent | `toast toast--accent` |
+  | Brand | `toast toast--brand` |
+  | Alert | `toast toast--alert` |
+  | Info | `toast toast--info` |
+  | Success | `toast toast--success` |
 
-  ```elixir
-  action: %{
-    label: ~H{
-      <.heroicon name="hero-arrow-uturn-left" />
-      Undo
-    },
-    class: "button button--accent button--sm",
-    js: JS.push("toast_undo", value: %{id: 1}) |> JS.patch(~p"/items")
-  }
-  ```
-  """
+  <!-- tabs-close -->
+
+  '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for Toast component strings (default titles for flash messages).
+    Default titles for flash-driven toasts.
 
-    Without gettext: `translation={%Toast.Translation{ info: "Info", error: "Error" }}`
+    Pass `translation={%Corex.Toast.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%Toast.Translation{ info: Corex.Gettext.gettext("Info"), error: Corex.Gettext.gettext("Error") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `info` | Info | Default title for `:info` flash toasts |
+    | `error` | Error | Default title for `:error` flash toasts |
     """
+
+    alias Corex.Gettext
+
     defstruct [:info, :error]
+
+    @type t :: %__MODULE__{info: String.t(), error: String.t()}
+
+    def default do
+      %__MODULE__{
+        info: Gettext.gettext("Info"),
+        error: Gettext.gettext("Error")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        info: Corex.Translation.take(partial.info, default.info),
+        error: Corex.Translation.take(partial.error, default.error)
+      }
+    end
   end
 
   @doc type: :component
@@ -141,7 +182,7 @@ defmodule Corex.Toast do
 
   This component should be rendered once in your layout.
 
-  ## Examples
+  ## Anatomy
 
   ```heex
    <.toast_group id="layout-toast" class="toast" flash={@flash}>
@@ -183,12 +224,14 @@ defmodule Corex.Toast do
 
   attr(:flash_info, :any,
     default: nil,
-    doc: "Defaults for info flashes: map or struct with title, type, and duration keys"
+    doc:
+      "Defaults for `:info` flashes: [`Corex.Flash.Info`](Corex.Flash.Info.html), map, or omit for translation defaults"
   )
 
   attr(:flash_error, :any,
     default: nil,
-    doc: "Defaults for error flashes: map or struct with title, type, and duration keys"
+    doc:
+      "Defaults for `:error` flashes: [`Corex.Flash.Error`](Corex.Flash.Error.html), map, or omit for translation defaults"
   )
 
   attr(:translation, Corex.Toast.Translation,
@@ -211,12 +254,7 @@ defmodule Corex.Toast do
     info_flash = Phoenix.Flash.get(assigns.flash, :info)
     error_flash = Phoenix.Flash.get(assigns.flash, :error)
 
-    default_translation = %Translation{
-      info: Corex.Gettext.gettext("Info"),
-      error: Corex.Gettext.gettext("Error")
-    }
-
-    translation = merge_translation(assigns[:translation], default_translation)
+    translation = Translation.merge(assigns[:translation], Translation.default())
 
     flash_info =
       Map.get(assigns, :flash_info) ||
@@ -283,7 +321,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects a client-side connection error.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_client_error
         toast_group_id="layout-toast"
@@ -333,7 +371,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects a server-side connection error.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_server_error
         toast_group_id="layout-toast"
@@ -383,7 +421,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects that the connection has been restored.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_connected
         toast_group_id="layout-toast"
@@ -429,7 +467,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects that the connection has been lost.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_disconnected
         toast_group_id="layout-toast"
@@ -470,21 +508,7 @@ defmodule Corex.Toast do
     """
   end
 
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      info: partial.info || default.info,
-      error: partial.error || default.error
-    }
-  end
-
   @doc type: :api
-  @doc """
-  Creates a toast from the client. Returns `Phoenix.LiveView.JS` that dispatches `toast:create` on the group.
-
-  Options: `duration` (default `5000`, or `:infinity`), `loading: true`, `id:`, `priority:` (`1`..`8`, optional; otherwise Zag derives priority from type and whether an action is present), `action:` (see module docs: `%{label:, js: %JS{}, class?:}`).
-  """
   def create(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) and is_list(opts) do
     detail = ToastPayload.create_detail(title, description, type, opts)
@@ -492,9 +516,6 @@ defmodule Corex.Toast do
   end
 
   @doc type: :api
-  @doc """
-  Same as `create/5` but pushes `toast-create` from the server.
-  """
   def create(socket, toast_group_id, title, description, type, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_list(opts) do
@@ -503,9 +524,6 @@ defmodule Corex.Toast do
   end
 
   @doc type: :api
-  @doc """
-  Updates an existing toast from the client. `attrs` may include `:title`, `:description`, `:type`, `:duration`, `:loading`, `:action`, `:priority`.
-  """
   def update(toast_group_id, toast_id, attrs)
       when is_binary(toast_group_id) and is_binary(toast_id) and (is_map(attrs) or is_list(attrs)) do
     detail = ToastPayload.update_detail(toast_id, attrs)
@@ -522,9 +540,6 @@ defmodule Corex.Toast do
   end
 
   @doc type: :api
-  @doc """
-  Removes a toast immediately (Zag `remove`).
-  """
   def remove(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
     JS.dispatch("toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
   end
@@ -537,9 +552,6 @@ defmodule Corex.Toast do
   end
 
   @doc type: :api
-  @doc """
-  Dismisses a toast with the normal dismiss lifecycle (Zag `dismiss`).
-  """
   def dismiss(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
     JS.dispatch("toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
   end

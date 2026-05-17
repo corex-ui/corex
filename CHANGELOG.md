@@ -8,7 +8,7 @@ First release of Corex
 
 - **Corex MCP** — In development, mount an MCP endpoint on your Phoenix app so tools like Cursor can list components and read up-to-date docs from the running project.
 - **Corex Design System** — Token-based CSS, themes, light and dark mode, and ready-made modifier classes (`button--accent`, `dialog--lg`, and similar). Run `mix corex.design` to copy design assets into your app.
-- **API and Events** — Open a dialog, set a slider, or expand an accordion from LiveView or JavaScript. Listen for user-driven changes with `on_*` attributes and `handle_event/3`. See the API and Events guides on Hexdocs.
+- **API and Events** — Open a dialog, set a slider, or expand an accordion from LiveView or JavaScript. Listen for user-driven changes with `on_*` attributes and `handle_event/3`. Documented on each component in Hexdocs.
 - **Phoenix forms** — Inputs and pickers built for forms: checkbox, switch, select, combobox, date picker, color picker, number, password, and pin inputs, tags input, radio group, file upload, signature pad, and more—with controlled values and changeset-friendly wiring.
 - **New Phoenix app** — `mix corex.new` generates a full application with Corex wired in. Optional flags add design assets, theme picker, dark mode, locales, and MCP.
 - **Static sites with Tableau** — Use Corex on [Tableau](https://hex.pm/packages/tableau) sites (HEEx, Esbuild, Tailwind). Reference templates: [soonex](https://github.com/corex-ui/soonex) and [soonex_i18n](https://github.com/corex-ui/soonex_i18n).

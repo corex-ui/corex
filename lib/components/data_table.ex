@@ -1,17 +1,50 @@
 defmodule Corex.DataTable do
   @moduledoc ~S'''
   Renders a data table with sorting, selection, and optional actions.
+
+  See [`data_table/1`](#data_table/1) for **Anatomy** and **Patterns** (basic, actions, streaming, sortable, with database, with Flop).
   '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for DataTable component strings.
+    Translatable strings for the data table.
 
-    Without gettext: `translation={%DataTable.Translation{ actions: "Actions", select_all: "Select all", select_row: "Select row" }}`
+    Pass `translation={%Corex.DataTable.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%DataTable.Translation{ actions: Corex.Gettext.gettext("Actions"), select_all: Corex.Gettext.gettext("Select all"), select_row: Corex.Gettext.gettext("Select row") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `actions` | Actions | Actions column header |
+    | `select_all` | Select all | Select-all checkbox `aria-label` |
+    | `select_row` | Select row | Row checkbox `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:actions, :select_all, :select_row]
+
+    @type t :: %__MODULE__{
+            actions: String.t(),
+            select_all: String.t(),
+            select_row: String.t()
+          }
+
+    def default do
+      %__MODULE__{
+        actions: Gettext.gettext("Actions"),
+        select_all: Gettext.gettext("Select all"),
+        select_row: Gettext.gettext("Select row")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        actions: Corex.Translation.take(partial.actions, default.actions),
+        select_all: Corex.Translation.take(partial.select_all, default.select_all),
+        select_row: Corex.Translation.take(partial.select_row, default.select_row)
+      }
+    end
   end
 
   @doc type: :component
@@ -22,7 +55,7 @@ defmodule Corex.DataTable do
   @doc ~S'''
    Renders a table with data.
 
-   ## Examples
+   ## Anatomy
 
    <!-- tabs-open -->
 
@@ -138,10 +171,32 @@ defmodule Corex.DataTable do
    </.data_table>
    ```
 
+   ### With database
+
+   For Ecto-backed rows, sort and paginate in your context with `order_by`, `limit`, and `offset`, then pass the page to `<.data_table>` and `<.pagination>`. Use LiveView events to re-fetch (see the e2e **With database** pattern demo).
+
+   ```heex
+   <.data_table
+     id="cities-table"
+     class="data-table"
+     rows={@cities}
+     sort_by={@sort_by}
+     sort_order={@sort_order}
+     on_sort="sort"
+   >
+     <:col :let={city} label="Name" name={:name}>{city.name}</:col>
+   </.data_table>
+   <.pagination count={@total} page={@page} page_size={@page_size} controlled on_page_change="page" />
+   ```
+
+   ### With Flop
+
+   Use [Flop](https://hexdocs.pm/flop/readme.html) in the context (`Flop.validate_and_run/3`) and `push_patch` with Flop query params so sort and page are URL-driven. Wire `%Flop.Meta{}` to Corex `<.pagination>`; keep `<.data_table>` for markup only (see the e2e **With Flop** pattern demo).
+
 
    <!-- tabs-close -->
 
-   ## Styling
+   ## Style
 
    Use data attributes to target elements:
 
@@ -187,7 +242,10 @@ defmodule Corex.DataTable do
     doc: "the function for mapping each row before calling the :col and :action slots"
   )
 
-  attr(:translation, Corex.DataTable.Translation, doc: "Override translatable strings")
+  attr(:translation, Corex.DataTable.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
 
   attr(:sort_by, :atom, default: nil, doc: "The currently sorted column name")
 
@@ -239,13 +297,10 @@ defmodule Corex.DataTable do
   def data_table(assigns) do
     assigns =
       assigns
-      |> assign_new(:translation, fn ->
-        %Translation{
-          actions: Gettext.gettext("Actions"),
-          select_all: Gettext.gettext("Select all"),
-          select_row: Gettext.gettext("Select row")
-        }
-      end)
+      |> assign(
+        :translation,
+        Translation.merge(Map.get(assigns, :translation), Translation.default())
+      )
       |> resolve_row_id()
 
     col_count =

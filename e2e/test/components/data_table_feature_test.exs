@@ -24,4 +24,24 @@ defmodule E2eWeb.DataTableFeatureTest do
 
     DataTable.click_select_all(session)
   end
+
+  feature "with database  -  table and pagination render", %{session: session} do
+    session =
+      session
+      |> DataTable.visit_path("/en/data-table/patterns#data-table-patterns-database")
+      |> DataTable.wait_for_has(css("#data-table-patterns-database"), timeout: 15_000)
+
+    DataTable.wait_for_has(session, css("#pattern-db-table"))
+    DataTable.wait_for_has(session, css("#pattern-db-pagination"))
+  end
+
+  feature "with flop  -  table and pagination render", %{session: session} do
+    session =
+      session
+      |> DataTable.visit_path("/en/data-table/patterns#data-table-patterns-flop")
+      |> DataTable.wait_for_has(css("#data-table-patterns-flop"), timeout: 15_000)
+
+    DataTable.wait_for_has(session, css("#pattern-flop-table"))
+    DataTable.wait_for_has(session, css("#pattern-flop-pagination"))
+  end
 end

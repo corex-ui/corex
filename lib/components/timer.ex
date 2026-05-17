@@ -2,89 +2,136 @@ defmodule Corex.Timer do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Timer](https://zagjs.com/components/react/timer).
 
-  Countdown-only leading-zero collapse (hide unused day/hour columns) is **on by default** when `countdown` is true. Override with `collapse_leading_zeros={false}` or with fixed `segments`.
+  Countdown leading-zero collapse is on by default when `countdown` is true. Override with `collapse_leading_zeros={false}` or fixed `segments`.
 
   ## Anatomy
 
-  ### Basic
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
-  <.timer id="t" start_ms={60_000} class="timer">
-    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  <.timer id="timer-anatomy-minimal" start_ms={60_000} class="timer" />
+  ```
+
+  ### With triggers
+
+  ```heex
+  <.timer id="timer-anatomy-controls" start_ms={60_000} class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
   ### Countdown
 
   ```heex
-  <.timer id="t" countdown start_ms={90_000} target_ms={0} class="timer">
-    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  <.timer id="timer-anatomy-countdown" countdown start_ms={60_000} target_ms={0} class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  ### Fixed segments (always four columns)
+  ### Interval tick
 
   ```heex
-  <.timer id="t" countdown start_ms={@ms} segments={[:days, :hours, :minutes, :seconds]} class="timer" />
-  ```
-
-  ### Separator slot
-
-  Omit `:separator` to render nothing between digit columns. Pass it to supply markup (for example `:` or `·`) between segments.
-
-  ```heex
-  <.timer id="t" start_ms={60_000} class="timer">
-    <:separator>·</:separator>
+  <.timer id="timer-anatomy-interval" start_ms={60_000} interval={2000} auto_start class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  ### Region label (a11y)
+  <!-- tabs-close -->
+
+  ## API
+
+  Timer has no imperative Elixir helpers. Use trigger slots, `auto_start`, and event handlers.
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.timer>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_tick="timer_tick"` | Each tick | `%{"id" => id, "formattedTime" => string, ...}` |
+  | `on_complete="timer_complete"` | Countdown reaches target | `%{"id" => id}` |
+
+  <!-- tabs-open -->
+
+  ### on_tick
 
   ```heex
-  <.timer id="t" translation={%Corex.Timer.Translation{area_label: "Countdown"}} class="timer" />
-  ```
-
-  ### Unit labels (optional)
-
-  Per-column caption under each digit cell (stacked column). Omit a slot to hide that unit’s label.
-
-  ```heex
-  <.timer id="t" countdown start_ms={@ms} target_ms={0} class="timer">
-    <:day_label>Days</:day_label>
-    <:hour_label>Hours</:hour_label>
-    <:minute_label>Minutes</:minute_label>
-    <:second_label>Seconds</:second_label>
+  <.timer
+    id="timer-events-server"
+    countdown
+    start_ms={3_600_000}
+    target_ms={0}
+    class="timer"
+    on_tick="timer_tick"
+    on_complete="timer_complete"
+  >
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  Action slots (`:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`) are optional.
+  ```elixir
+  def handle_event("timer_tick", %{"id" => id} = params, socket) do
+    {:noreply, assign(socket, :last_tick, Map.get(params, "formattedTime"))}
+  end
 
-  ## Styling
-
-  ```css
-  [data-scope="timer"][data-part="root"] {}
-  [data-scope="timer"][data-part="area"] {}
-  [data-scope="timer"][data-part="item-label"] {}
-  [data-scope="timer"][data-part="item"] {}
-  [data-scope="timer"][data-part="separator"] {}
-  [data-scope="timer"][data-part="control"] {}
-  [data-scope="timer"][data-part="action-trigger"] {}
+  def handle_event("timer_complete", %{"id" => _id}, socket) do
+    {:noreply, socket}
+  end
   ```
 
-  ```css
-  @import "../corex/components/timer.css";
-  ```
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_tick_client="timer-tick"` | Each tick | `id`, formatted time fields |
+  | `on_complete_client="timer-complete"` | Countdown completes | `id` |
+
+  <!-- tabs-open -->
+
+  ### on_tick_client
 
   ```heex
-  <.timer class="timer timer--accent timer--lg">
+  <.timer
+    id="timer-events-client"
+    countdown
+    start_ms={3_600_000}
+    target_ms={0}
+    class="timer"
+    on_tick_client="timer-tick"
+    on_complete_client="timer-complete"
+  >
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
+
+  ```javascript
+  const el = document.getElementById("timer-events-client");
+  el?.addEventListener("timer-tick", (e) => console.log(e.detail));
+  el?.addEventListener("timer-complete", (e) => console.log(e.detail));
+  ```
+
+  <!-- tabs-close -->
 
   '''
 
@@ -213,7 +260,14 @@ defmodule Corex.Timer do
   end
 
   def timer(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+      |> assign(
+        :translation,
+        TimerTranslation.merge(assigns.translation, TimerTranslation.default())
+      )
+
     segments = normalize_segments(assigns.segments)
     time_values = time_values(assigns.start_ms)
 

@@ -2,15 +2,32 @@ defmodule Corex.NumberInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Number Input](https://zagjs.com/components/react/number-input).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
-  ### Basic
+  ### Minimal
 
   ```heex
-  <.number_input id="num" class="number-input">
+  <.number_input id="number-input-anatomy-minimal" class="number-input">
     <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ### Min, max, step
+
+  ```heex
+  <.number_input
+    id="number-input-anatomy-bounds"
+    class="number-input"
+    min={0.0}
+    max={100.0}
+    step={5.0}
+    default_value="10"
+  >
+    <:label>Amount</:label>
     <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
     <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
   </.number_input>
@@ -18,69 +35,88 @@ defmodule Corex.NumberInput do
 
   <!-- tabs-close -->
 
-  Slots `:decrement_trigger` and `:increment_trigger` are required and render the button content (e.g. icons).
+  Slots `:decrement_trigger` and `:increment_trigger` are required.
 
-  ## Phoenix Form Integration
+  ## API
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Pass `invalid={...}` when you want Zag's invalid styling; the component does not infer it from field errors.
+  Number input has no imperative setters. Use `controlled` with `value` and `on_value_change`, or `field` inside a Phoenix form.
 
-  ### Controller
+  ## Events
 
-  Build the form from a changeset and pass it to the template:
+  Pick an event name and pass it to `on_*` on `<.number_input>`.
 
-  ```elixir
-  def form_page(conn, _params) do
-    form =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(%{})
-      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
-    render(conn, :form_page, form: form)
-  end
-  ```
+  ### Server events
 
-  ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
-    <.number_input field={f[:value]} class="number-input">
-      <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.number_input>
-    <button type="submit">Submit</button>
-  </.form>
-  ```
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="number_input_changed"` | Value changes | `%{"id" => id, "value" => string, "valueAsNumber" => number}` |
 
-  ### Live View with Ecto changeset
+  <!-- tabs-open -->
 
-  With `field={@form[:key]}`, the input stays **uncontrolled** in the Zag sense so increment and decrement work locally; the hidden field still updates for `phx-change` and submit. The `controlled` attribute is ignored when `field` is set.
-
-  For standalone **controlled** mode (no `field`), use `controlled`, `value`, and `on_value_change` (see Number input · Patterns). For uncontrolled standalone markup, `value` sets the visible input; `default_value` also emits `data-default-value` for the hook. A form `field` never emits `data-default-value` from the changeset value (only an explicit `default_value` assign does), so LiveView re-renders after submit do not resync Zag from the server.
-
-  Use a changeset and standard form events; the field value is submitted with the form.
-
-  ```elixir
-  def mount(_params, _session, socket) do
-    form =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(%{})
-      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
-    {:ok, assign(socket, :form, form)}
-  end
-
-  def handle_event("validate", %{"quantity" => params}, socket) do
-    changeset =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(params)
-      |> Map.put(:action, :validate)
-    {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, as: :quantity, id: "quantity-form"))}
-  end
-  ```
+  ### on_value_change
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+  <.number_input
+    id="number-input-events-server"
+    class="number-input"
+    on_value_change="number_input_changed"
+  >
+    <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ```elixir
+  def handle_event("number_input_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :quantity, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="number-input-changed"` | Value changes | `id`, `value`, `valueAsNumber` |
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  Without `field`, set `controlled`, bind `value`, and handle `on_value_change`.
+
+  ```heex
+  <.number_input
+    id="number-input-patterns-controlled"
+    class="number-input"
+    controlled
+    value={@quantity}
+    on_value_change="quantity_changed"
+  >
+    <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ```elixir
+  def handle_event("quantity_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :quantity, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Form
+
+  Use `field={f[:value]}` inside `<.form>`. With a form field, increment and decrement stay local; the hidden input updates for submit.
+
+  ```heex
+  <.form for={@form} id={@form.id} phx-change="validate">
     <.number_input field={@form[:value]} class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -90,13 +126,12 @@ defmodule Corex.NumberInput do
         {msg}
       </:error>
     </.number_input>
-    <button type="submit">Submit</button>
   </.form>
   ```
 
-  ## Styling
+  ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `number-input.css`, then set `class="number-input"` on `<.number_input>`.
 
   ```css
   [data-scope="number-input"][data-part="root"] {}
@@ -107,35 +142,73 @@ defmodule Corex.NumberInput do
   [data-scope="number-input"][data-part="increment-trigger"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `number-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/number-input.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.number_input>`).
 
-  ```heex
-  <.number_input class="number-input number-input--accent number-input--lg">
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-  </.number_input>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `number-input` |
+  | Accent | `number-input number-input--accent` |
+  | Brand | `number-input number-input--brand` |
+  | Alert | `number-input number-input--alert` |
+  | Info | `number-input number-input--info` |
+  | Success | `number-input number-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `number-input number-input--sm` |
+  | MD | `number-input number-input--md` |
+  | LG | `number-input number-input--lg` |
+  | XL | `number-input number-input--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for NumberInput component strings.
+    Translatable strings for the number input (Zag trigger `aria-label`s).
 
-    Without gettext: `translation={%NumberInput.Translation{ decrease: "Decrease value" }}`
+    Pass `translation={%Corex.NumberInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%NumberInput.Translation{ decrease: Corex.Gettext.gettext("Decrease value") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `decrease` | Decrease value | Decrement trigger `aria-label` |
+    | `increase` | Increase value | Increment trigger `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:decrease, :increase]
+
+    @type t :: %__MODULE__{decrease: String.t(), increase: String.t()}
+
+    def default do
+      %__MODULE__{
+        decrease: Gettext.gettext("Decrease value"),
+        increase: Gettext.gettext("Increase value")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        decrease: Corex.Translation.take(partial.decrease, default.decrease),
+        increase: Corex.Translation.take(partial.increase, default.increase)
+      }
+    end
   end
 
   @doc type: :component
@@ -223,18 +296,14 @@ defmodule Corex.NumberInput do
   def number_input(assigns) do
     validate_triggers!(assigns)
 
-    default_translation = %Translation{
-      decrease: Corex.Gettext.gettext("Decrease value"),
-      increase: Corex.Gettext.gettext("Increase value")
-    }
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
       |> assign(
         :default_value,
@@ -314,13 +383,4 @@ defmodule Corex.NumberInput do
 
   defp value_to_string(nil), do: nil
   defp value_to_string(value), do: to_string(value)
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      decrease: partial.decrease || default.decrease,
-      increase: partial.increase || default.increase
-    }
-  end
 end

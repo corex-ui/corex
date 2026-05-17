@@ -2,114 +2,174 @@ defmodule Corex.ToggleGroup do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Toggle Group](https://zagjs.com/components/react/toggle-group).
 
+  ## Anatomy
+
   <!-- tabs-open -->
 
   ### Minimal
 
   ```heex
-    <.toggle_group
-        class="toggle-group">
-        <:item value="a">
-            A
-        </:item>
-        <:item value="b">
-            B
-        </:item>
-        <:item value="c">
-            C
-        </:item>
-      </.toggle_group>
+  <.toggle_group id="toggle-group-anatomy-minimal" class="toggle-group">
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+    <:item value="donec">Donec</:item>
+  </.toggle_group>
   ```
 
-  ### Extended
+  ### With indicator
 
   ```heex
+  <.toggle_group id="toggle-group-anatomy-indicator-label" class="toggle-group">
+    <:item value="bold">
+      <.heroicon name="hero-bold" />
+      Bold
+    </:item>
+  </.toggle_group>
 
-      <.toggle_group multiple={false}
-      on_value_change="on_value_change"
-      id="toggle-group-id"
-      value=["center"]
-      class="toggle-group">
-      <:item value="left">
-       <.heroicon name="hero-bars-3-bottom-left" />
-      </:item>
-      <:item value="center">
-      <.heroicon name="hero-bars-3" />
-      </:item>
-      <:item value="right">
-      <.heroicon name="hero-bars-3-bottom-right" />
-      </:item>
-    </.toggle_group>
-
+  <.toggle_group id="toggle-group-anatomy-indicator-sr" class="toggle-group">
+    <:item value="bold" aria_label="Bold">
+      <.heroicon name="hero-bold" />
+      <span class="sr-only">Bold</span>
+    </:item>
+  </.toggle_group>
   ```
+
+  ### Single selection
+
+  Set `multiple={false}` so only one item can be selected at a time.
+
+  ```heex
+  <.toggle_group
+    id="toggle-group-anatomy-single"
+    class="toggle-group"
+    multiple={false}
+    value={["duis"]}
+  >
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+    <:item value="donec">Donec</:item>
+  </.toggle_group>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.toggle_group>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selected values (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selected values (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.toggle_group>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="toggle_group_changed"` | Selected values change | `%{"id" => id, "value" => values}` — list of selected item `value` strings |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.toggle_group
+    id="toggle-group-events-server"
+    class="toggle-group"
+    on_value_change="toggle_group_changed"
+    multiple
+  >
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+    <:item value="donec">Donec</:item>
+  </.toggle_group>
+  ```
+
+  ```elixir
+  def handle_event("toggle_group_changed", %{"id" => id, "value" => value}, socket) do
+    {:noreply, assign(socket, :toggle_group_value, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="toggle-group-changed"` | Selected values change | `id`, `value` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.toggle_group
+    id="toggle-group-events-client"
+    class="toggle-group"
+    on_value_change_client="toggle-group-changed"
+    multiple
+  >
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+    <:item value="donec">Donec</:item>
+  </.toggle_group>
+  ```
+
+  ```javascript
+  const el = document.getElementById("toggle-group-events-client");
+  el?.addEventListener("toggle-group-changed", (event) => console.log(event.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
 
   ### Controlled
 
-  ```elixir
-  defmodule MyAppWeb.ToggleGroupLive do
-  use MyAppWeb, :live_view
+  For server-owned selection, set `controlled`, bind `value`, and handle `on_value_change` in LiveView.
 
+  ```heex
+  <.toggle_group
+    id="toggle-group-patterns-controlled"
+    class="toggle-group"
+    value={@value}
+    multiple
+    controlled
+    on_value_change="toggle_group_pattern"
+  >
+    <:item value="lorem">Lorem</:item>
+    <:item value="duis">Duis</:item>
+    <:item value="donec">Donec</:item>
+  </.toggle_group>
+  ```
+
+  ```elixir
   def mount(_params, _session, socket) do
     {:ok, assign(socket, :value, ["lorem"])}
   end
 
-  def handle_event("on_value_change", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :value, value)}
+  def handle_event("toggle_group_pattern", %{"value" => v}, socket) do
+    {:noreply, assign(socket, :value, v || [])}
   end
-
-  def render(assigns) do
-    ~H"""
-   <.toggle_group
-        class="toggle-group"
-        controlled
-        value={@value} on_value_change="on_value_change" >
-        <:item value="a">
-            A
-        </:item>
-        <:item value="b">
-            B
-        </:item>
-        <:item value="c">
-            C
-        </:item>
-      </.toggle_group>
-  """
-  end
-  end
-
   ```
+
   <!-- tabs-close -->
 
-  ## Programmatic Control
+  ## Style
 
-  ***Client-side***
-
-  ```heex
-  <button phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["item-1"])}>
-    Toggle Group Item 1
-  </button>
-
-  ```
-
-    ***Server-side***
-
-    ```elixir
-  def handle_event("open_item", _, socket) do
-    {:noreply, Corex.ToggleGroup.set_value(socket, "my-toggle-group", ["item-1"])}
-  end
-  ```
-
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toggle-group.css`, then set `class="toggle-group"` on `<.toggle_group>`.
 
   ```css
   [data-scope="toggle-group"][data-part="root"] {}
   [data-scope="toggle-group"][data-part="item"] {}
   ```
-
-  If you wish to use the default Corex styling, you can use the class `toggle-group` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
@@ -117,11 +177,42 @@ defmodule Corex.ToggleGroup do
   @import "../corex/components/toggle-group.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.toggle_group>`).
 
-  ```heex
-  <.toggle_group class="toggle-group toggle-group--accent toggle-group--lg">
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `toggle-group` |
+  | Accent | `toggle-group toggle-group--accent` |
+  | Brand | `toggle-group toggle-group--brand` |
+  | Alert | `toggle-group toggle-group--alert` |
+  | Info | `toggle-group toggle-group--info` |
+  | Success | `toggle-group toggle-group--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `toggle-group toggle-group--sm` |
+  | MD | `toggle-group toggle-group--md` |
+  | LG | `toggle-group toggle-group--lg` |
+  | XL | `toggle-group toggle-group--xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `toggle-group toggle-group--rounded-none` |
+  | SM | `toggle-group toggle-group--rounded-sm` |
+  | MD | `toggle-group toggle-group--rounded-md` |
+  | LG | `toggle-group toggle-group--rounded-lg` |
+  | XL | `toggle-group toggle-group--rounded-xl` |
+  | Full | `toggle-group toggle-group--rounded-full` |
+
+  <!-- tabs-close -->
 
   '''
 
@@ -262,15 +353,6 @@ defmodule Corex.ToggleGroup do
   end
 
   @doc type: :api
-  @doc """
-  Sets the toggle group value from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <button phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["item-1"])}>
-        Open Item 1
-      </button>
-  """
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
     JS.dispatch("corex:toggle-group:set-value",
       to: "##{toggle_group_id}",
@@ -279,16 +361,6 @@ defmodule Corex.ToggleGroup do
   end
 
   @doc type: :api
-  @doc """
-  Sets the toggle group value from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("open_item", _params, socket) do
-        socket = Corex.ToggleGroup.set_value(socket, "my-toggle-group", ["item-1"])
-        {:noreply, socket}
-      end
-  """
   def set_value(socket, toggle_group_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_group_id) do
     LiveView.push_event(socket, "toggle-group_set_value", %{

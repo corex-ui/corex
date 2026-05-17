@@ -2,7 +2,8 @@ defmodule Corex.Select do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
 
-  ## Examples
+  ## Anatomy
+
   <!-- tabs-open -->
 
   The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through the host Phoenix gettext backend at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
@@ -116,7 +117,11 @@ defmodule Corex.Select do
 
   <!-- tabs-close -->
 
-  ## Use as Navigation
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Navigation
 
   Set `redirect` on the component so the first selected value is used as the destination URL.
   Per item, choose the navigation kind explicitly via the item's `:redirect` field:
@@ -187,7 +192,9 @@ defmodule Corex.Select do
   end
   ```
 
-  ## Phoenix Form Integration
+  <!-- tabs-close -->
+
+  ## Form
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
@@ -307,21 +314,113 @@ defmodule Corex.Select do
   end
   ```
 
-  ## API Control
+  ## API
+
+  Requires a stable `id` on `<.select>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+  | [`set_open/2`](#set_open/2) | Open or close menu (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Open or close menu (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
 
   ```heex
-  <.action phx-click={Corex.Select.set_value("my-select", ["fra"])} class="button button--sm">France</.action>
-  <.action phx-click={Corex.Select.set_open("my-select", true)} class="button button--sm">Open</.action>
+  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--sm">France</.action>
+  <.select id="select-api-bind" class="select" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])
+  }>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
   ```
+
   ```elixir
-  def handle_event("api", _, socket) do
-    {:noreply, Corex.Select.set_value(socket, "my-select", ["bel"])}
+  def handle_event("select_api_set_value", _, socket) do
+    {:noreply, Corex.Select.set_value(socket, "select-api-srv", ["bel"])}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  Use data attributes to target elements:
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="select_value_changed"` | Selection changes | `%{"id" => id, "value" => values, "path" => path, "items" => items}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.select
+    id="select-events-server"
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+    on_value_change="select_value_changed"
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("select_value_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :selected, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="select-value-changed"` | Selection changes | `id`, `value`, `items` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.select
+    id="select-events-client"
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+    on_value_change_client="select-value-changed"
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("select-events-client")?.addEventListener("select-value-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`:
 
   ```css
   [data-scope="select"][data-part="root"] {}
@@ -337,22 +436,66 @@ defmodule Corex.Select do
   [data-scope="select"][data-part="item-indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `select` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/select.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on `<.select class="select ...">`.
 
-  ```heex
-  <.select class="select select--accent select--lg">
-  ```
+  <!-- tabs-open -->
 
+  ### Color
 
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `select` |
+  | Accent | `select select--accent` |
+  | Brand | `select select--brand` |
+  | Alert | `select select--alert` |
+  | Success | `select select--success` |
+  | Info | `select select--info` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select select--sm` |
+  | MD | `select select--md` |
+  | LG | `select select--lg` |
+  | XL | `select select--xl` |
+
+  ### Text
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select select--text-sm` |
+  | XL | `select select--text-xl` |
+  | 2XL | `select select--text-2xl` |
+  | 4XL | `select select--text-4xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `select select--rounded-none` |
+  | SM | `select select--rounded-sm` |
+  | MD | `select select--rounded-md` |
+  | LG | `select select--rounded-lg` |
+  | XL | `select select--rounded-xl` |
+  | Full | `select select--rounded-full` |
+
+  ### Max width
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select max-w-sm` |
+  | MD | `select max-w-md` |
+  | LG | `select max-w-lg` |
+  | XL | `select max-w-xl` |
+
+  <!-- tabs-close -->
   '''
 
   use Phoenix.Component
@@ -456,7 +599,7 @@ defmodule Corex.Select do
   )
 
   attr(:translation, Corex.Select.Translation,
-    default: %Corex.Select.Translation{placeholder: "Select"},
+    default: nil,
     doc: "Translatable strings for the select"
   )
 
@@ -511,15 +654,11 @@ defmodule Corex.Select do
 
   def select(assigns) do
     assigns =
-      case assigns.translation do
-        %Corex.Select.Translation{placeholder: "Select"} ->
-          assign(assigns, :translation, %Corex.Select.Translation{
-            placeholder: Corex.Gettext.gettext("Select")
-          })
-
-        _ ->
-          assigns
-      end
+      assign(
+        assigns,
+        :translation,
+        Corex.Select.Translation.merge(assigns.translation, Corex.Select.Translation.default())
+      )
 
     items = normalize_items(assigns.items)
 

@@ -2,7 +2,7 @@ defmodule Corex.ColorPicker do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Color Picker](https://zagjs.com/components/react/color-picker).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
@@ -16,7 +16,7 @@ defmodule Corex.ColorPicker do
   />
   ```
 
-  ## Styling
+  ## Style
 
   Target elements via data attributes:
 
@@ -48,20 +48,44 @@ defmodule Corex.ColorPicker do
   - `on_format_change` - when format changes (detail: `%{format: string}`)
   - `on_pointer_down_outside` / `on_focus_outside` / `on_interact_outside` - when interacting outside
 
-  ## API Control
+  ## API
 
   Use `set_value` for programmatic color updates.
   '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for ColorPicker component strings.
+    Translatable strings for the color picker channel inputs.
 
-    Without gettext: `translation={%ColorPicker.Translation{ hex: "Hex color value" }}`
+    Pass `translation={%Corex.ColorPicker.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%ColorPicker.Translation{ hex: Corex.Gettext.gettext("Hex color value") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `hex` | Hex color value | Hex channel input `aria-label` |
+    | `alpha` | Alpha (opacity) value | Alpha channel input `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:hex, :alpha]
+
+    @type t :: %__MODULE__{hex: String.t(), alpha: String.t()}
+
+    def default do
+      %__MODULE__{
+        hex: Gettext.gettext("Hex color value"),
+        alpha: Gettext.gettext("Alpha (opacity) value")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        hex: Corex.Translation.take(partial.hex, default.hex),
+        alpha: Corex.Translation.take(partial.alpha, default.alpha)
+      }
+    end
   end
 
   @doc type: :component
@@ -154,17 +178,13 @@ defmodule Corex.ColorPicker do
   end
 
   def color_picker(assigns) do
-    default_translation = %Translation{
-      hex: Corex.Gettext.gettext("Hex color value"),
-      alpha: Corex.Gettext.gettext("Alpha (opacity) value")
-    }
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     assigns =
       assigns
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:dir, assigns.dir || "ltr")
 
     initial_value = initial_value(assigns)
@@ -402,10 +422,6 @@ defmodule Corex.ColorPicker do
   end
 
   @doc type: :api
-  @doc """
-  Sets the color value from client-side. Returns a `Phoenix.LiveView.JS` command.
-  Value can be any color string (e.g. `"#ff0000"`, `"rgba(255, 0, 0, 1)"`).
-  """
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",
       to: "##{color_picker_id}",
@@ -415,23 +431,11 @@ defmodule Corex.ColorPicker do
   end
 
   @doc type: :api
-  @doc """
-  Sets the color value from server-side.
-  """
   def set_value(socket, color_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
     LiveView.push_event(socket, "color_picker_set_value", %{
       color_picker_id: color_picker_id,
       value: to_string(value)
     })
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      hex: partial.hex || default.hex,
-      alpha: partial.alpha || default.alpha
-    }
   end
 end

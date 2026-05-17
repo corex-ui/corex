@@ -116,8 +116,8 @@
   .timer [data-scope="timer"][data-part="action-trigger"] {
     @apply ui-trigger ui-trigger--square;
     padding: 0 !important;
-    min-height: 2em !important;
-    height: 2em;
+    min-height: calc(2em * 0.8) !important;
+    height: calc(2em * 0.8);
   }
 }
 
@@ -157,7 +157,8 @@
   [data-scope="timer"][data-part="action-trigger"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    height: 2em;
+    min-height: calc(2em * 0.8) !important;
+    height: calc(2em * 0.8);
   }
 }
 

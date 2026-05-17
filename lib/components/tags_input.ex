@@ -2,42 +2,118 @@ defmodule Corex.TagsInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Tags Input](https://zagjs.com/components/react/tags-input).
 
+  ## Anatomy
+
   <!-- tabs-open -->
 
-  ### Basic
+  ### Minimal
 
   ```heex
-  <.tags_input id="tags-1" class="tags-input" value={["a", "b"]}>
+  <.tags_input id="tags-anatomy-minimal" class="tags-input" value={["alpha", "beta"]}>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+
+  ### With label
+
+  ```heex
+  <.tags_input id="tags-anatomy-with-label" class="tags-input" value={["alpha", "beta"]}>
+    <:label>Tags</:label>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+
+  ### Translation
+
+  ```heex
+  <.tags_input
+    id="tags-anatomy-translation"
+    class="tags-input"
+    value={["lorem", "duis"]}
+    translation={%Corex.TagsInput.Translation{
+      placeholder: "Add lorem or duis…",
+      delete_tag_trigger_label: "Remove %{tag}",
+      tag_edited: "Edit %{tag}. Press enter to save or escape to cancel."
+    }}
+  >
     <:label>Keywords</:label>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
 
-  ### Phoenix form
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.tags_input>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set tag list (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set tag list (server) | `socket` |
+  | [`add_value/2`](#add_value/2) | Add one tag (client) | `%Phoenix.LiveView.JS{}` |
+  | [`add_value/3`](#add_value/3) | Add one tag (server) | `socket` |
+  | [`remove_value/2`](#remove_value/2) | Remove one tag (client) | `%Phoenix.LiveView.JS{}` |
+  | [`remove_value/3`](#remove_value/3) | Remove one tag (server) | `socket` |
+  | [`clear_value/1`](#clear_value/1) | Clear all tags (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_value/2`](#clear_value/2) | Clear all tags (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.tags_input>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="tags_value_changed"` | Tag list changes | `%{"id" => id, "value" => tags}` |
+  | `on_value_invalid="tags_value_invalid"` | Invalid tag or max overflow | `%{"id" => id, "reason" => reason}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id}>
-    <.tags_input field={f[:tags]} class="tags-input">
-      <:label>Keywords</:label>
-      <:close><.heroicon name="hero-x-mark" /></:close>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" />
-        {msg}
-      </:error>
-    </.tags_input>
-  </.form>
+  <.tags_input
+    id="tags-input-on-value-change-server"
+    class="tags-input"
+    value={["lorem", "duis", "donec"]}
+    on_value_change="tags_value_changed"
+  >
+    <:label>Tags</:label>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
   ```
 
-  With `field={f[:tags]}` or `field={@form[:tags]}`, the component sets `id`, `name`, `form`, initial tag list from the field value (comma-separated string), and shows the `:error` slot when `Phoenix.Component.used_input?/1` and the field has errors. Pass `invalid={true}` only when you want Zag invalid styling; it is not derived from changeset errors.
+  ```elixir
+  def handle_event("tags_value_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :tags, value)}
+  end
+  ```
 
-  ### `on_value_invalid` (Zag `onValueInvalid`)
+  <!-- tabs-close -->
 
-  Zag invokes `onValueInvalid` when the tag list is invalid for **`max`** (`reason: "rangeOverflow"` once there are more tags than `max`, for example after programmatic `set_value` or when **`allow_overflow`** is true and the user commits another tag past `max`) or when Zag’s optional **`validate`** callback returns false on insert or paste (`reason: "invalidTag"`). With **`allow_overflow` false** (the default), Zag blocks `INSERT_TAG` at `max` and **does not** call `onValueInvalid` for that blocked attempt. Corex forwards these to `on_value_invalid` (LiveView `push_event`) and `on_value_invalid_client` (DOM `CustomEvent` on the hook root) with payload `%{"id" => id, "reason" => reason}`. A custom `validate` function is not passed from HEEx today.
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="tags-client-changed"` | Tag list changes | `id`, `value` |
+  | `on_value_invalid_client="tags-client-invalid"` | Invalid tag or max | `id`, `reason` |
+
+  ## Patterns
+
+  <!-- tabs-open -->
 
   ### Controlled
 
   ```heex
-  <.tags_input id="tags-1" class="tags-input" controlled value={@tags} on_value_change="tags_changed">
+  <.tags_input
+    id="tags-patterns-controlled"
+    class="tags-input"
+    controlled
+    value={@tags}
+    on_value_change="tags_changed"
+  >
     <:label>Keywords</:label>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
@@ -51,28 +127,26 @@ defmodule Corex.TagsInput do
 
   <!-- tabs-close -->
 
-  ## Programmatic control
+  ## Form
+
+  Use `field={f[:tags]}` inside `<.form>`. The hidden field submits a delimiter-joined string for Phoenix.
 
   ```heex
-  <button phx-click={Corex.TagsInput.set_value("tags-1", ["lorem", "duis"])}>Set</button>
-  <button phx-click={Corex.TagsInput.add_value("tags-1", "donec")}>Add</button>
-  <button phx-click={Corex.TagsInput.remove_value("tags-1", "lorem")}>Remove</button>
-  <button phx-click={Corex.TagsInput.clear_value("tags-1")}>Clear</button>
+  <.form for={@form} id={@form.id} phx-change="validate">
+    <.tags_input field={@form[:tags]} class="tags-input" controlled>
+      <:label>Keywords</:label>
+      <:close><.heroicon name="hero-x-mark" /></:close>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" />
+        {msg}
+      </:error>
+    </.tags_input>
+  </.form>
   ```
 
-  ```elixir
-  socket = Corex.TagsInput.set_value(socket, "tags-1", ["lorem", "duis"])
-  ```
+  ## Style
 
-  The tag list `value` is JSON-encoded on `data-tags` / `data-default-tags` so strings may contain commas.
-  Initial tags are rendered as direct children of `[data-part="control"]` (same markup as the client) so the field shows chips before the hook runs.
-  With `name` (or `field`), a `type="hidden"` `[data-part="value-input"]` holds the comma- or delimiter-joined value for Phoenix forms, like `Corex.Select`; Zag keeps a separate internal `[data-part="hidden-input"]` without `name`/`form` so it does not submit a duplicate field.
-
-  ## Localization and `translation`
-
-  Pass `translation={%Corex.TagsInput.Translation{}}` to override strings. Defaults use gettext when configured. The struct covers the main input `placeholder`, per-tag delete `aria-label` (`delete_tag_trigger_label` with `%{tag}`), and inline edit `aria-label` (`tag_edited` with `%{tag}`). The scalar `placeholder` attribute still overrides the merged placeholder when set to a non-empty string.
-
-  ## Styling
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tags-input.css`, then set `class="tags-input"` on `<.tags_input>`.
 
   ```css
   [data-scope="tags-input"][data-part="root"] {}
@@ -86,14 +160,38 @@ defmodule Corex.TagsInput do
   @import "../corex/components/tags-input.css";
   ```
 
+  Stack modifiers on the host (`class` on `<.tags_input>`).
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `tags-input` |
+  | Accent | `tags-input tags-input--accent` |
+  | Brand | `tags-input tags-input--brand` |
+  | Alert | `tags-input tags-input--alert` |
+  | Info | `tags-input tags-input--info` |
+  | Success | `tags-input tags-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `tags-input tags-input--sm` |
+  | MD | `tags-input tags-input--md` |
+  | LG | `tags-input tags-input--lg` |
+  | XL | `tags-input tags-input--xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component
   use Phoenix.Component
 
   import Corex.Helpers, only: [validate_value!: 1]
-
-  alias Corex.Gettext
 
   alias Corex.TagsInput.Anatomy.{
     Control,
@@ -492,17 +590,7 @@ defmodule Corex.TagsInput do
   defp tags_to_form_string(tags_list, _), do: Enum.join(tags_list, ",")
 
   defp normalize_tags_input_translation(assigns) do
-    gettext_default = %TagsInputTranslation{
-      placeholder: Gettext.gettext("Add a tag…"),
-      delete_tag_trigger_label: Gettext.gettext("Delete tag %{tag}", tag: "%{tag}"),
-      tag_edited:
-        Gettext.gettext(
-          "Editing tag %{tag}. Press enter to save or escape to cancel.",
-          tag: "%{tag}"
-        )
-    }
-
-    merged = TagsInputTranslation.merge(assigns.translation, gettext_default)
+    merged = TagsInputTranslation.merge(assigns.translation, TagsInputTranslation.default())
 
     placeholder_resolved =
       case Map.get(assigns, :placeholder) do

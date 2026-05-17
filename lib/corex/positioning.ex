@@ -5,6 +5,10 @@ defmodule Corex.Positioning do
   Maps to Zag.js `PositioningOptions` interface. Use `to_dataset/1` to merge
   flat `data-position-*` attributes for hooks and `readPositioningOptions/1` in
   the TypeScript client.
+
+  Optional fine-tuning uses [`Corex.Offset`](Corex.Offset.html) on the `offset` field.
+  Fixed pixel placement for floating panels uses [`Corex.Point`](Corex.Point.html)
+  on [`Corex.FloatingPanel`](Corex.FloatingPanel.html), not this struct.
   """
 
   defstruct hide_when_detached: true,

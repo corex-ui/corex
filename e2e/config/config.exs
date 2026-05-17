@@ -11,6 +11,8 @@ config :corex_web,
   ecto_repos: [E2e.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :flop, repo: E2e.Repo
+
 config :phoenix,
   json_library: Jason,
   gettext_backend: E2eWeb.Gettext

@@ -146,8 +146,6 @@ defmodule Corex.MixProject do
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
-        "guides/api.md",
-        "guides/events.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
         "guides/tableau_mode.md",
@@ -175,8 +173,6 @@ defmodule Corex.MixProject do
          ]},
         {:Guides,
          [
-           "guides/api.md",
-           "guides/events.md",
            "guides/MCP.md",
            "guides/dark_mode.md",
            "guides/theming.md",
@@ -257,6 +253,7 @@ defmodule Corex.MixProject do
         Corex.Tree.Item
       ],
       Flash: [
+        Corex.Flash,
         Corex.Flash.Info,
         Corex.Flash.Error
       ],

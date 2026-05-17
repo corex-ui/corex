@@ -76,7 +76,11 @@ Example:
 <.accordion
   id="faq"
   class="accordion accordion--accent accordion--lg accordion--rounded-lg"
-  items={…}
+  items={Corex.Content.new([
+    [value: "lorem", label: "Lorem", content: "Lorem panel content."],
+    [value: "duis", label: "Duis", content: "Duis panel content."],
+    [value: "donec", label: "Donec", content: "Donec panel content."]
+  ])}
 />
 ```
 

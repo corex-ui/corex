@@ -62,65 +62,57 @@ defmodule Corex.AngleSlider do
 
   ## API
 
-  See [API](api.html).
+  Requires a stable `id` on `<.angle_slider>`.
 
-  ### LiveView
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set angle in degrees (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set angle in degrees (server) | `socket` |
+  | [`value/2`](#value/2) | Read angle (client) | `%Phoenix.LiveView.JS{}` |
+  | [`value/3`](#value/3) | Read angle (server) | `socket` |
 
-  The API targets one angle slider via its DOM `id` (the same `id` you pass to `angle_slider/1`).
-
-  - `set_value/2` and `set_value/3`
-  - `value/2` and `value/3`
-
-  For `value`, use `respond_to: :server | :client | :both` to control whether the response is pushed to LiveView, dispatched as a DOM event, or both.
-
-  ```heex
-  <.action phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}>Set 90°</.action>
-  <.action phx-click={Corex.AngleSlider.value("my-angle-slider")}>Read value</.action>
-  <.action phx-click={Corex.AngleSlider.value("my-angle-slider", respond_to: :client)}>
-    Read value (client only)
-  </.action>
-  ```
-
-  ```elixir
-  def handle_event("set_angle", %{"value" => value}, socket) do
-    {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", String.to_float(value))}
-  end
-  ```
-
-  **From LiveView**, `Corex.AngleSlider.set_value/3` and `value/3` use `push_event/3` to the hook; optional `respond_to: :server | :client | :both` controls where the answer goes for `value/3`.
-
-  **Responses to LiveView** (`push_event` from the hook; handle in `handle_event/3`):
-
-  - `angle_slider_value_response`  -  `%{"id" => ..., "value" => number, "valueAsDegree" => number, "dragging" => boolean}`
-
-  ### Client (DOM)
-
-  **From the client**, dispatch `CustomEvent`s on the hook root (the element with `id`, e.g. `#my-angle-slider`):
-
-  | Dispatch (type) | `detail` |
-  |-----------------|----------|
-  | `corex:angle-slider:set-value` | `value`  -  number in degrees |
-  | `corex:angle-slider:value` | optional `respond_to`: `"server"`, `"client"`, or `"both"` |
-
-  **Responses to the DOM** (listen on the hook root element):
-
-  - `angle-slider-value`  -  `detail` with `id`, `value`, `valueAsDegree`, and `dragging`
+  For `value`, use `respond_to: :server | :client | :both`. LiveView receives `angle_slider_value_response`; the DOM receives `angle-slider-value`.
 
   ## Events
 
-  See [Events](events.html).
+  Pick an event name and pass it to `on_*` on `<.angle_slider>`.
 
-  ### Server (LiveView)
+  ### Server events
 
-  When `phx-hook="AngleSlider"` is active, Zag maps drag and value updates to your LiveView:
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="angle_changed"` | Value changes while dragging | `%{"id" => id, "value" => number, "valueAsDegree" => number}` |
+  | `on_value_change_end="angle_changed_end"` | User releases thumb | `%{"id" => id, "value" => number, "valueAsDegree" => number}` |
 
-  - **`on_value_change`**  -  `pushEvent/3` with the name you set. Params include `%{"id" => dom_id, "value" => number, "valueAsDegree" => number}`.
-  - **`on_value_change_end`**  -  same for the release event when you only care about the final value.
+  <!-- tabs-open -->
 
-  ### Client (CustomEvent / DOM)
+  ### on_value_change
 
-  - **`on_value_change_client`**  -  browser `CustomEvent` **type** is the string you set. `event.detail` matches the same shape (camelCase in JS; bubbles).
-  - **`on_value_change_end_client`**  -  same pattern for the release event.
+  ```heex
+  <.angle_slider
+    id="angle-events-server"
+    class="angle-slider"
+    on_value_change="angle_changed"
+    marker_values={[0, 90, 180, 270]}
+  >
+    <:label>Angle</:label>
+  </.angle_slider>
+  ```
+
+  ```elixir
+  def handle_event("angle_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :value, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="angle-changed"` | Value changes while dragging | `id`, `value`, `valueAsDegree` |
+  | `on_value_change_end_client="angle-changed-end"` | User releases thumb | `id`, `value`, `valueAsDegree` |
 
   ## Style
 
@@ -144,11 +136,31 @@ defmodule Corex.AngleSlider do
   @import "../corex/components/angle-slider.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.angle_slider>`).
 
-  ```heex
-  <.angle_slider class="angle-slider angle-slider--accent angle-slider--lg" value={0} />
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `angle-slider` |
+  | Accent | `angle-slider angle-slider--accent` |
+  | Brand | `angle-slider angle-slider--brand` |
+  | Alert | `angle-slider angle-slider--alert` |
+  | Info | `angle-slider angle-slider--info` |
+  | Success | `angle-slider angle-slider--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `angle-slider angle-slider--sm` |
+  | MD | `angle-slider angle-slider--md` |
+  | LG | `angle-slider angle-slider--lg` |
+  | XL | `angle-slider angle-slider--xl` |
+
+  <!-- tabs-close -->
 
   ## Patterns
 
@@ -677,15 +689,6 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
-  @doc """
-  Sets the angle slider value from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <button phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}>
-        Set to 90°
-      </button>
-  """
   def set_value(angle_slider_id, value) when is_binary(angle_slider_id) and is_number(value) do
     JS.dispatch("corex:angle-slider:set-value",
       to: "##{angle_slider_id}",
@@ -695,16 +698,6 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
-  @doc """
-  Sets the angle slider value from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("set_angle", %{"value" => value}, socket) do
-        angle = String.to_float(value)
-        {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", angle)}
-      end
-  """
   def set_value(socket, angle_slider_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) do
     angle =
@@ -724,42 +717,6 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
-  @doc """
-  Requests the angle slider value from the browser. Returns a `Phoenix.LiveView.JS` command.
-
-  Options:
-
-  - `:respond_to`  -  `:server` (default, LiveView `angle_slider_value_response` only), `:both` (also dispatches
-    `angle-slider-value`), or `:client` (DOM `angle-slider-value` only). When `:server` and the LiveView is not connected, nothing is pushed.
-
-  The hook pushes `angle_slider_value_response` when `:respond_to` is `:both` or `:server`, and dispatches
-  `angle-slider-value` on the element when `:respond_to` is `:both` or `:client`.
-
-  ## Examples
-
-      <.action phx-click={Corex.AngleSlider.value("my-angle-slider")} class="button button--sm">
-        Value
-      </.action>
-      <.action phx-click={Corex.AngleSlider.value("my-angle-slider", respond_to: :client)} class="button button--sm">
-        Value (client only)
-      </.action>
-
-      ```javascript
-      const el = document.getElementById("my-angle-slider");
-      el?.addEventListener("angle-slider-value", (e) => console.log(e.detail));
-      ```
-
-      <.action
-        phx-click={JS.dispatch("corex:angle-slider:value",
-          to: "#my-angle-slider",
-          detail: %{respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        Value (JS.dispatch, client only)
-      </.action>
-  """
 
   def value(angle_slider_id) when is_binary(angle_slider_id), do: value(angle_slider_id, [])
 
@@ -772,18 +729,6 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
-  @doc """
-  Requests the angle slider value from the client. Pushes a LiveView event handled by the hook.
-
-  See `value/2` for `:respond_to`. The hook pushes `angle_slider_value_response` and/or dispatches `angle-slider-value`
-  accordingly.
-
-  ## Examples
-
-      def handle_event("angle_slider_value_response", %{"id" => id, "value" => value}, socket) do
-        {:noreply, assign(socket, :angle, {id, value})}
-      end
-  """
 
   def value(socket, angle_slider_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) and

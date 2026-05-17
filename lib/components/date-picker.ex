@@ -2,7 +2,7 @@ defmodule Corex.DatePicker do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Date Picker](https://zagjs.com/components/react/date-picker).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic Usage
 
@@ -21,60 +21,7 @@ defmodule Corex.DatePicker do
   </.date_picker>
   ```
 
-  ### Controlled Mode
-
-  ```heex
-  <.date_picker
-    id="my-date-picker"
-    controlled
-    value={@date_value}
-    on_value_change="date_changed">
-    <:label>Select a date</:label>
-    <:trigger>
-      <.heroicon name="hero-calendar" />
-    </:trigger>
-           <:prev_trigger>
-          <.heroicon name="hero-chevron-left" class="icon" />
-        </:prev_trigger>
-        <:next_trigger>
-          <.heroicon name="hero-chevron-right" class="icon" />
-        </:next_trigger>
-  </.date_picker>
-  ```
-
-  ```elixir
-  def handle_event("date_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :date_value, value)}
-  end
-  ```
-
-  Pass an ISO-8601 string, or a `Date` struct via `Date.to_iso8601/1` (for a single day use `~D[...]`):
-
-  ```heex
-  <.date_picker
-    id="due"
-    controlled
-    value={@due && Date.to_iso8601(@due)}
-    on_value_change="date_changed"
-  >
-    <:label>Due</:label>
-    <:trigger>
-      <.heroicon name="hero-calendar" />
-    </:trigger>
-    <:prev_trigger>
-      <.heroicon name="hero-chevron-left" class="icon" />
-    </:prev_trigger>
-    <:next_trigger>
-      <.heroicon name="hero-chevron-right" class="icon" />
-    </:next_trigger>
-  </.date_picker>
-  ```
-
-  ```elixir
-  assign(socket, :due, ~D[2024-01-15])
-  ```
-
-  ## Phoenix Form Integration
+  ## Form
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
@@ -192,27 +139,92 @@ defmodule Corex.DatePicker do
   end
   ```
 
-  ## API Control
+  ## API
 
-  In order to use the API, you must use an id on the component
+  Requires a stable `id` on `<.date_picker>`.
 
-  ***Client-side***
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selected date(s) (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selected date(s) (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.date_picker>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="date_changed"` | Selection changes | `%{"id" => id, "value" => iso}` |
+  | `on_open_change="open_changed"` | Popover opens/closes | `%{"id" => id, "open" => boolean}` |
+  | `on_focus_change="focus_changed"` | Focus moves | `%{"id" => id, "value" => value}` |
+  | `on_view_change="view_changed"` | Visible month changes | `%{"id" => id, ...}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
 
   ```heex
-  <button phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}>
-    Set Date
-  </button>
+  <.date_picker
+    id="date-events"
+    class="date-picker"
+    controlled
+    value={@date_value}
+    on_value_change="date_changed"
+  >
+    <:label>Select a date</:label>
+    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+    <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+  </.date_picker>
   ```
 
-  ***Server-side***
-
   ```elixir
-  def handle_event("set_date", _, socket) do
-    {:noreply, Corex.DatePicker.set_value(socket, "my-date-picker", "2024-01-15")}
+  def handle_event("date_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :date_value, value)}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="date-changed"` | Selection changes | `id`, `value` |
+  | `on_open_change_client="open-changed"` | Popover opens/closes | `id`, `open` |
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  Set `controlled`, bind `value`, and handle `on_value_change`. Pass ISO-8601 strings or `Date.to_iso8601/1` for a `Date` assign.
+
+  ```heex
+  <.date_picker
+    id="due"
+    class="date-picker"
+    controlled
+    value={@due && Date.to_iso8601(@due)}
+    on_value_change="date_changed"
+  >
+    <:label>Due</:label>
+    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+    <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
+    <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+  </.date_picker>
+  ```
+
+  ```elixir
+  assign(socket, :due, ~D[2024-01-15])
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -226,27 +238,43 @@ defmodule Corex.DatePicker do
   [data-scope="date-picker"][data-part="content"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `date-picker` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/date-picker.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.date_picker>`).
 
-  ```heex
-  <.date_picker class="date-picker date-picker--accent date-picker--lg" id="my-date-picker">
-  </.date_picker>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `date-picker` |
+  | Accent | `date-picker date-picker--accent` |
+  | Brand | `date-picker date-picker--brand` |
+  | Alert | `date-picker date-picker--alert` |
+  | Info | `date-picker date-picker--info` |
+  | Success | `date-picker date-picker--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `date-picker date-picker--sm` |
+  | MD | `date-picker date-picker--md` |
+  | LG | `date-picker date-picker--lg` |
+  | XL | `date-picker date-picker--xl` |
+
+  <!-- tabs-close -->
 
   In `selection_mode` `"range"`, the control shows two fields with optional `range_start_label` and `range_end_label` (overrides the `translation` map’s range labels, defaulting to **From** / **To** with gettext). In `"multiple"`, a single field shows a comma‑separated list of the formatted selected dates. Use `max_selected_dates` to cap how many days can be selected in multiple mode; omit for no cap.
 
   ## Localization and `translation`
 
-  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with `Corex.DatePicker.default_translation/0` (Zag’s `translations` for open/close, prev/next, view, month/year, week, placeholders, and `input`). Use `open_calendar`, `close_calendar`, and `input` for the popover trigger and fields (SSR `aria-label` and client `data-translation` JSON). Without gettext, the defaults are English. With gettext, call `translation={%Corex.DatePicker.Translation{open_calendar: Corex.Gettext.gettext("Open calendar")}}` for partial overrides.
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any string. The component merges with [`Corex.DatePicker.Translation.default/0`](`Corex.DatePicker.Translation`). See that module for the field table.
 
   '''
 
@@ -682,15 +710,6 @@ defmodule Corex.DatePicker do
   end
 
   @doc type: :api
-  @doc """
-  Sets the date picker value from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <button phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}>
-        Set Date
-      </button>
-  """
   def set_value(date_picker_id, value) when is_binary(date_picker_id) do
     case normalize_date_value(value) do
       nil ->
@@ -707,21 +726,6 @@ defmodule Corex.DatePicker do
   end
 
   @doc type: :api
-  @doc """
-  Sets the date picker value from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("set_date", _params, socket) do
-        socket = Corex.DatePicker.set_value(socket, "my-date-picker", "2024-01-15")
-        {:noreply, socket}
-      end
-
-      def handle_event("set_birthdate", _params, socket) do
-        socket = Corex.DatePicker.set_value(socket, "my-date-picker", ~D[2024-01-15])
-        {:noreply, socket}
-      end
-  """
   def set_value(socket, date_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) do
     case normalize_date_value(value) do
@@ -738,66 +742,19 @@ defmodule Corex.DatePicker do
   end
 
   defp merge_date_picker_assigns(%{} = assigns) do
-    default = default_translation()
-    t = merge_date_picker_translation(Map.get(assigns, :translation), default)
+    t =
+      DatePickerTranslation.merge(Map.get(assigns, :translation), DatePickerTranslation.default())
+
     range_start = Map.get(assigns, :range_start_label) || t.range_start
     range_end = Map.get(assigns, :range_end_label) || t.range_end
     assign(assigns, translation: t, range_start_label: range_start, range_end_label: range_end)
   end
 
-  defp merge_date_picker_translation(nil, default), do: default
-
-  defp merge_date_picker_translation(%DatePickerTranslation{} = p, %DatePickerTranslation{} = d) do
-    m_p = Map.from_struct(p)
-    m_d = Map.from_struct(d)
-
-    merged =
-      for {k, fallback} <- Map.to_list(m_d), into: %{} do
-        {k, take_translation_override(Map.get(m_p, k), fallback)}
-      end
-
-    struct!(DatePickerTranslation, merged)
-  end
-
-  defp take_translation_override(override, fallback) do
-    if is_binary(override) and String.trim(override) != "" do
-      override
-    else
-      fallback
-    end
-  end
-
   @doc """
-  Returns the merged default translatable strings. Uses gettext; override per call site with the `translation` attr.
+  Returns gettext-backed default translatable strings. Same as [`Corex.DatePicker.Translation.default/0`](`Corex.DatePicker.Translation`).
   """
   @spec default_translation() :: DatePickerTranslation.t()
-  def default_translation do
-    %DatePickerTranslation{
-      content: Gettext.gettext("calendar"),
-      month_select: Gettext.gettext("Select month"),
-      year_select: Gettext.gettext("Select year"),
-      clear_trigger: Gettext.gettext("Clear selected dates"),
-      week_column_header: Gettext.gettext("Wk"),
-      open_calendar: Gettext.gettext("Open calendar"),
-      close_calendar: Gettext.gettext("Close calendar"),
-      view_trigger_year: Gettext.gettext("Switch to month view"),
-      view_trigger_month: Gettext.gettext("Switch to day view"),
-      view_trigger_day: Gettext.gettext("Switch to year view"),
-      prev_trigger_year: Gettext.gettext("Switch to previous decade"),
-      prev_trigger_month: Gettext.gettext("Switch to previous year"),
-      prev_trigger_day: Gettext.gettext("Switch to previous month"),
-      next_trigger_year: Gettext.gettext("Switch to next decade"),
-      next_trigger_month: Gettext.gettext("Switch to next year"),
-      next_trigger_day: Gettext.gettext("Switch to next month"),
-      week_number: Gettext.gettext("Week __N__"),
-      placeholder_day: Gettext.gettext("dd"),
-      placeholder_month: Gettext.gettext("mm"),
-      placeholder_year: Gettext.gettext("yyyy"),
-      input: Gettext.gettext("Select date"),
-      range_start: Gettext.gettext("From"),
-      range_end: Gettext.gettext("To")
-    }
-  end
+  def default_translation, do: DatePickerTranslation.default()
 
   defp normalize_date_value(nil), do: nil
   defp normalize_date_value(%Date{} = d), do: Date.to_iso8601(d)

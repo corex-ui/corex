@@ -11,7 +11,7 @@ defmodule Corex.Navigate do
   it renders `<.link>`, exposed here as named attrs so call sites stay explicit. Any other link
   attributes go through `rest`.
 
-  ## Examples
+  ## Anatomy
 
   ```heex
       <.navigate to="/about">About</.navigate>
@@ -30,7 +30,7 @@ defmodule Corex.Navigate do
       </.navigate>
     ```
 
-  ## Styling
+  ## Style
 
   If you wish to use the default Corex styling, you can use the `link` class on the component.
   This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.

@@ -6,7 +6,7 @@ defmodule Corex.FileUploadLive do
 
   Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -107,7 +107,10 @@ defmodule Corex.FileUploadLive do
   alias Phoenix.LiveView.UploadConfig
   alias Phoenix.LiveView.UploadEntry
 
-  attr(:upload, UploadConfig, required: true)
+  attr(:upload, UploadConfig,
+    required: true,
+    doc: "Upload config from `allow_upload/3` on the LiveView socket"
+  )
 
   attr(:field, :atom,
     required: true,
@@ -119,9 +122,14 @@ defmodule Corex.FileUploadLive do
     doc: "Stable prefix for internal ids; defaults to a generated id"
   )
 
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:invalid, :boolean, default: false)
-  attr(:disabled, :boolean, default: false)
+  attr(:dir, :string,
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc: "Text direction (ltr or rtl)"
+  )
+
+  attr(:invalid, :boolean, default: false, doc: "Whether the file upload is invalid")
+  attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
 
   attr(:cancel_event, :string,
     default: "file_upload_live_cancel",
@@ -135,25 +143,33 @@ defmodule Corex.FileUploadLive do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot(:label, required: false, doc: "Label above the dropzone")
 
-  slot(:dropzone, required: false)
+  slot(:dropzone,
+    required: false,
+    doc: "Custom dropzone content; defaults to translation dropzone text"
+  )
 
-  slot(:open, required: false)
+  slot(:open,
+    required: false,
+    doc: "Custom open-picker trigger; defaults to translation open text"
+  )
 
-  slot(:close, required: true)
+  slot(:close, required: true, doc: "Remove control for each upload entry")
 
-  slot(:error, required: false) do
+  slot(:error,
+    required: false,
+    doc: "Error message content; receives the message as slot argument"
+  ) do
     attr(:class, :string, required: false)
   end
 
   def file_upload_live(assigns) do
-    default_translation = %Corex.FileUpload.Translation{
-      dropzone: Corex.Gettext.gettext("Drag your file(s) here"),
-      open: Corex.Gettext.gettext("Upload file(s)")
-    }
-
-    translation = merge_translation(Map.get(assigns, :translation), default_translation)
+    translation =
+      Corex.FileUpload.Translation.merge(
+        Map.get(assigns, :translation),
+        Corex.FileUpload.Translation.default()
+      )
 
     assigns =
       assigns
@@ -265,18 +281,6 @@ defmodule Corex.FileUploadLive do
       </div>
     </div>
     """
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(
-         %Corex.FileUpload.Translation{} = partial,
-         %Corex.FileUpload.Translation{} = default
-       ) do
-    %Corex.FileUpload.Translation{
-      dropzone: partial.dropzone || default.dropzone,
-      open: partial.open || default.open
-    }
   end
 
   defp image_entry?(%UploadEntry{} = entry) do

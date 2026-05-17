@@ -216,7 +216,18 @@ defmodule Corex.Accordion do
   ### on_value_change
 
   ```heex
-  <.accordion id="faq" class="accordion" on_value_change="items_changed" items={@items}>
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_value_change="items_changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
     <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
   </.accordion>
   ```
@@ -230,7 +241,18 @@ defmodule Corex.Accordion do
   ### on_focus_change
 
   ```heex
-  <.accordion id="faq" class="accordion" on_focus_change="focus_changed" items={@items}>
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_focus_change="focus_changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
     <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
   </.accordion>
   ```
@@ -255,7 +277,18 @@ defmodule Corex.Accordion do
   ### on_value_change_client
 
   ```heex
-  <.accordion id="faq" class="accordion" on_value_change_client="items-changed" items={@items}>
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_value_change_client="items-changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
     <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
   </.accordion>
   ```
@@ -269,7 +302,18 @@ defmodule Corex.Accordion do
   ### on_focus_change_client
 
   ```heex
-  <.accordion id="faq" class="accordion" on_focus_change_client="focus-changed" items={@items}>
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_focus_change_client="focus-changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
     <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
   </.accordion>
   ```
@@ -581,17 +625,16 @@ defmodule Corex.Accordion do
 
   ## Style
 
-  Zag exposes `data-scope` and `data-part` on each element:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `accordion.css`, then set `class="accordion"` on `<.accordion>`.
 
   ```css
   [data-scope="accordion"][data-part="root"] {}
   [data-scope="accordion"][data-part="item"] {}
   [data-scope="accordion"][data-part="item-trigger"] {}
+  [data-scope="accordion"][data-part="item-text"] {}
   [data-scope="accordion"][data-part="item-content"] {}
   [data-scope="accordion"][data-part="item-indicator"] {}
   ```
-
-  With Corex Design, import tokens and the accordion stylesheet, then add the `accordion` class and modifiers:
 
   ```css
   @import "../corex/main.css";
@@ -599,17 +642,78 @@ defmodule Corex.Accordion do
   @import "../corex/components/accordion.css";
   ```
 
-  ```heex
-  <.accordion
-    class="accordion accordion--accent accordion--lg"
-    items={
-      Corex.Content.new([
-        %{label: "First", content: "First body."},
-        %{label: "Second", content: "Second body."}
-      ])
-    }
-  />
-  ```
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  Semantic palette on the open item trigger (from design tokens).
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | Accent | `accordion accordion--accent` |
+  | Brand | `accordion accordion--brand` |
+  | Alert | `accordion accordion--alert` |
+  | Info | `accordion accordion--info` |
+  | Success | `accordion accordion--success` |
+
+  ### Size
+
+  Trigger padding, gap, min-height, and content spacing.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | SM | `accordion accordion--sm` |
+  | MD | `accordion accordion--md` |
+  | LG | `accordion accordion--lg` |
+  | XL | `accordion accordion--xl` |
+
+  ### Text
+
+  Font size on trigger and content.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | SM | `accordion accordion--text-sm` |
+  | XL | `accordion accordion--text-xl` |
+  | 2XL | `accordion accordion--text-2xl` |
+  | 4XL | `accordion accordion--text-4xl` |
+
+  ### Rounded
+
+  Corner radius on trigger and content.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | None | `accordion accordion--rounded-none` |
+  | SM | `accordion accordion--rounded-sm` |
+  | MD | `accordion accordion--rounded-md` |
+  | LG | `accordion accordion--rounded-lg` |
+  | XL | `accordion accordion--rounded-xl` |
+  | Full | `accordion accordion--rounded-full` |
+
+  ### Max width
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | None | `accordion max-w-none` |
+  | 5XS | `accordion max-w-5xs` |
+  | 2XS | `accordion max-w-2xs` |
+  | XS | `accordion max-w-xs` |
+  | SM | `accordion max-w-sm` |
+  | MD | `accordion max-w-md` |
+  | LG | `accordion max-w-lg` |
+  | XL | `accordion max-w-xl` |
+  | 2XL | `accordion max-w-2xl` |
+  | 5XL | `accordion max-w-5xl` |
+
+  <!-- tabs-close -->
 
   '''
 
@@ -699,7 +803,18 @@ defmodule Corex.Accordion do
     LiveView event when open items change. Pick any event name.
 
     ```heex
-    <.accordion id="faq" class="accordion" on_value_change="items_changed" items={@items}>
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_value_change="items_changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     ```
@@ -718,7 +833,18 @@ defmodule Corex.Accordion do
     Browser event on the accordion element when open items change (same moment as `on_value_change`).
 
     ```heex
-    <.accordion id="faq" class="accordion" on_value_change_client="items-changed" items={@items}>
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_value_change_client="items-changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     ```
@@ -737,7 +863,18 @@ defmodule Corex.Accordion do
     LiveView event when keyboard focus moves to another item.
 
     ```heex
-    <.accordion id="faq" class="accordion" on_focus_change="focus_changed" items={@items}>
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_focus_change="focus_changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     ```
@@ -756,7 +893,18 @@ defmodule Corex.Accordion do
     Browser event on the accordion element when focus moves.
 
     ```heex
-    <.accordion id="faq" class="accordion" on_focus_change_client="focus-changed" items={@items}>
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_focus_change_client="focus-changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
       <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
     </.accordion>
     ```

@@ -2,7 +2,7 @@ defmodule Corex.FloatingPanel do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Floating Panel](https://zagjs.com/components/react/floating-panel).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
@@ -48,7 +48,35 @@ defmodule Corex.FloatingPanel do
 
   Optional **`positioning={%Corex.Positioning{}}`** sets **`data-position-*`** for the client hook. When **`position`** is omitted, the hook passes Zag **`getAnchorPosition`** from placement and boundary (e.g. **`placement: "bottom-start"`** and **`gutter: 16`** for a bottom corner). Do not rely on both **`position`** and **`positioning`** for the same panel; prefer **`position`** for explicit pixels, **`positioning`** for placement rules.
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.floating_panel>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.floating_panel>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_open_change="panel_open_changed"` | Open state changes | `%{"id" => id, "open" => boolean}` |
+  | `on_position_change="panel_position_changed"` | Position changes | `%{"id" => id, ...}` |
+  | `on_size_change="panel_size_changed"` | Size changes | `%{"id" => id, ...}` |
+  | `on_stage_change="panel_stage_changed"` | Stage changes | `%{"id" => id, ...}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_open_change_client="panel-open-changed"` | Open state changes | `id`, `open` |
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -94,13 +122,48 @@ defmodule Corex.FloatingPanel do
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for FloatingPanel component strings.
+    Translatable strings for the floating panel window controls.
 
-    Without gettext: `translation={%FloatingPanel.Translation{ close: "Close window" }}`
+    Pass `translation={%Corex.FloatingPanel.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%FloatingPanel.Translation{ close: Corex.Gettext.gettext("Close window") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `minimize` | Minimize window | Minimize trigger `aria-label` |
+    | `maximize` | Maximize window | Maximize trigger `aria-label` |
+    | `restore` | Restore window | Restore trigger `aria-label` |
+    | `close` | Close window | Close trigger `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:minimize, :maximize, :restore, :close]
+
+    @type t :: %__MODULE__{
+            minimize: String.t(),
+            maximize: String.t(),
+            restore: String.t(),
+            close: String.t()
+          }
+
+    def default do
+      %__MODULE__{
+        minimize: Gettext.gettext("Minimize window"),
+        maximize: Gettext.gettext("Maximize window"),
+        restore: Gettext.gettext("Restore window"),
+        close: Gettext.gettext("Close window")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        minimize: Corex.Translation.take(partial.minimize, default.minimize),
+        maximize: Corex.Translation.take(partial.maximize, default.maximize),
+        restore: Corex.Translation.take(partial.restore, default.restore),
+        close: Corex.Translation.take(partial.close, default.close)
+      }
+    end
   end
 
   @doc type: :component
@@ -211,19 +274,13 @@ defmodule Corex.FloatingPanel do
   end
 
   def floating_panel(assigns) do
-    default_translation = %Translation{
-      minimize: Gettext.gettext("Minimize window"),
-      maximize: Gettext.gettext("Maximize window"),
-      restore: Gettext.gettext("Restore window"),
-      close: Gettext.gettext("Close window")
-    }
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "floating-panel-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
       |> assign(:default_position, Point.to_map(assigns.position))
@@ -308,13 +365,6 @@ defmodule Corex.FloatingPanel do
   end
 
   @doc type: :api
-  @doc """
-  Sets the panel open state from the browser. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
-  """
   def set_open(floating_panel_id, open)
       when is_binary(floating_panel_id) and is_boolean(open) do
     JS.dispatch("corex:floating-panel:set-open",
@@ -325,15 +375,6 @@ defmodule Corex.FloatingPanel do
   end
 
   @doc type: :api
-  @doc """
-  Sets the panel open state from the server. Pushes a LiveView hook event.
-
-  ## Examples
-
-      def handle_event("open_panel", _, socket) do
-        {:noreply, Corex.FloatingPanel.set_open(socket, "my-floating-panel", true)}
-      end
-  """
   def set_open(socket, floating_panel_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(floating_panel_id) and
              is_boolean(open) do
@@ -341,16 +382,5 @@ defmodule Corex.FloatingPanel do
       floating_panel_id: floating_panel_id,
       open: open
     })
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      minimize: partial.minimize || default.minimize,
-      maximize: partial.maximize || default.maximize,
-      restore: partial.restore || default.restore,
-      close: partial.close || default.close
-    }
   end
 end

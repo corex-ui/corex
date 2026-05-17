@@ -26,7 +26,7 @@ defmodule Corex.Heroicon do
   or add `-solid`, `-mini`, or `-micro` to the icon name. Customize size and
   colors with Tailwind width, height, and color classes.
 
-  ## Examples
+  ## Anatomy
 
       <.heroicon name="hero-x-mark" />
       <.heroicon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />

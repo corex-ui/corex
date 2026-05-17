@@ -55,39 +55,18 @@ defmodule Corex.Checkbox do
 
   ## API
 
-  Put a stable **`id`** on `<.checkbox>`. Imperative helpers set or toggle checked state (boolean only; clears indeterminate).
+  Requires a stable `id` on `<.checkbox>`. Imperative helpers set or toggle checked state (boolean only; clears indeterminate).
 
-  | Surface | When to use | Returns |
-  | ------- | ----------- | ------- |
-  | **Client Binding** | `phx-click={Corex.Checkbox.set_checked("id", true)}` | `%Phoenix.LiveView.JS{}` |
-  | **Server** | `Corex.Checkbox.set_checked(socket, "id", true)` in `handle_event` | Updated `socket` |
-  | **Client JS** | `dispatchEvent` on the checkbox element | `void` |
-
-  ### `set_checked`
-
-  | Surface | Call | Payload |
-  | ------- | ---- | ------- |
-  | Client Binding | `set_checked(id, checked)` when `checked` is `true` or `false` | — |
-  | Server | `set_checked(socket, id, checked)` | `push_event("checkbox_set_checked", %{"id" => id, "checked" => boolean})` |
-  | Client JS | `corex:checkbox:set-checked` | `detail: { checked: boolean }` |
-
-  No reply event.
-
-  ### `toggle_checked`
-
-  | Surface | Call | Payload |
-  | ------- | ---- | ------- |
-  | Client Binding | `toggle_checked(id)` | — |
-  | Server | `toggle_checked(socket, id)` | `push_event("checkbox_toggle_checked", %{"id" => id})` |
-  | Client JS | `corex:checkbox:toggle-checked` | `detail: {}` (empty) |
-
-  No reply event.
-
-  ### Examples
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_checked/2`](#set_checked/2) | Set checked state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_checked/3`](#set_checked/3) | Set checked state (server) | `socket` |
+  | [`toggle_checked/1`](#toggle_checked/1) | Toggle checked state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_checked/2`](#toggle_checked/2) | Toggle checked state (server) | `socket` |
 
   <!-- tabs-open -->
 
-  ### Set checked (Client Binding)
+  ### set_checked
 
   ```heex
   <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
@@ -110,7 +89,7 @@ defmodule Corex.Checkbox do
   </.checkbox>
   ```
 
-  ### Set checked (Client JS)
+  ### set_checked (dispatch)
 
   ```javascript
   document.getElementById("checkbox-api-dispatch")?.dispatchEvent(
@@ -120,10 +99,6 @@ defmodule Corex.Checkbox do
     })
   );
   ```
-
-  ### Set checked (Server)
-
-  #### Elixir
 
   ```elixir
   def handle_event("check", %{"id" => id}, socket) do
@@ -143,22 +118,17 @@ defmodule Corex.Checkbox do
 
   ## Events
 
-  User-driven only (no read API). Declarative **`checked`** on the component may be `true`, `false`, or `:indeterminate`; imperative **`set_checked`** is always boolean.
+  User-driven only. Declarative `checked` may be `true`, `false`, or `:indeterminate`; imperative `set_checked` is always boolean.
 
-  | Attribute | LiveView `handle_event` | Client listener | Payload |
-  | --------- | ----------------------- | --------------- | ------- |
-  | `on_checked_change="my_event"` | `"my_event"` · `%{"id" => id, "checked" => boolean}` | — | `checked` is `true` or `false` |
-  | `on_checked_change_client="my-event"` | — | `my-event` on the checkbox element | `detail: { id, checked }` (camelCase in JS) |
+  ### Server events
 
-  Fired when the user toggles the checkbox (or when Zag reports a checked change).
-
-  ### Examples
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_checked_change="checkbox_changed"` | User toggles checked state | `%{"id" => id, "checked" => boolean}` |
 
   <!-- tabs-open -->
 
-  ### On Checked Change (Server)
-
-  #### Heex
+  ### on_checked_change
 
   ```heex
   <.checkbox
@@ -173,17 +143,23 @@ defmodule Corex.Checkbox do
   </.checkbox>
   ```
 
-  #### Elixir
-
   ```elixir
   def handle_event("checkbox_changed", %{"id" => id, "checked" => checked}, socket) do
     {:noreply, assign(socket, :checked, checked)}
   end
   ```
 
-  ### On Checked Change (Client)
+  <!-- tabs-close -->
 
-  #### Heex
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_checked_change_client="checkbox-changed"` | User toggles checked state | `id`, `checked` |
+
+  <!-- tabs-open -->
+
+  ### on_checked_change_client
 
   ```heex
   <.checkbox
@@ -197,8 +173,6 @@ defmodule Corex.Checkbox do
     </:indicator>
   </.checkbox>
   ```
-
-  #### JS
 
   ```javascript
   document.getElementById("checkbox-on-checked-change-client")?.addEventListener(
@@ -269,9 +243,9 @@ defmodule Corex.Checkbox do
   ```
 
   <!-- tabs-close -->
-  ## Styling
+  ## Style
 
-  Use `data-scope` / `data-part` selectors or Corex Design: import tokens and `checkbox.css`, then apply `checkbox` with BEM modifiers.
+  Target parts with `data-scope` and `data-part`, or import `checkbox.css` and stack modifiers on the host.
 
   ```css
   [data-scope="checkbox"][data-part="root"] {}
@@ -291,8 +265,17 @@ defmodule Corex.Checkbox do
 
   ### Color
 
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `checkbox` |
+  | Accent | `checkbox checkbox--accent` |
+  | Brand | `checkbox checkbox--brand` |
+  | Alert | `checkbox checkbox--alert` |
+  | Info | `checkbox checkbox--info` |
+  | Success | `checkbox checkbox--success` |
+
   ```heex
-      <.checkbox class="checkbox" checked>
+  <.checkbox class="checkbox" checked>
         <:label>Default</:label>
         <:indicator>
           <.heroicon name="hero-check" />
@@ -350,8 +333,15 @@ defmodule Corex.Checkbox do
 
   ### Size
 
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `checkbox checkbox--sm` |
+  | Default | `checkbox` |
+  | LG | `checkbox checkbox--lg` |
+  | XL | `checkbox checkbox--xl` |
+
   ```heex
-      <.checkbox class="checkbox checkbox--sm">
+  <.checkbox class="checkbox checkbox--sm">
         <:label>Small</:label>
       </.checkbox>
       <.checkbox class="checkbox">

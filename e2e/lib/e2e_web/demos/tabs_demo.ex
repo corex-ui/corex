@@ -559,43 +559,6 @@ defmodule E2eWeb.Demos.TabsDemo do
     """
   end
 
-  def styling_mix_modifiers_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
-
-    """
-    <.tabs id="tabs-style-mix-1" class="tabs tabs--sm tabs--brand tabs--rounded-lg w-full max-w-2xs" value="lorem" #{items} />
-    <.tabs id="tabs-style-mix-2" class="tabs tabs--lg tabs--accent tabs--rounded-md w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-mix-3" class="tabs tabs--md tabs--alert tabs--text-lg w-full max-w-lg" value="lorem" #{items} />
-    """
-  end
-
-  def styling_mix_modifiers_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-col gap-4 w-full items-stretch">
-      <.tabs
-        id="tabs-style-mix-1"
-        class="tabs tabs--sm tabs--brand tabs--rounded-lg w-full max-w-2xs"
-        value="lorem"
-        items={E2eWeb.Demos.TabsDemo.basic_items()}
-      />
-      <.tabs
-        id="tabs-style-mix-2"
-        class="tabs tabs--lg tabs--accent tabs--rounded-md w-full max-w-md"
-        value="lorem"
-        items={E2eWeb.Demos.TabsDemo.basic_items()}
-      />
-      <.tabs
-        id="tabs-style-mix-3"
-        class="tabs tabs--md tabs--alert tabs--text-lg w-full max-w-lg"
-        value="lorem"
-        items={E2eWeb.Demos.TabsDemo.basic_items()}
-      />
-    </div>
-    """
-  end
-
   def events_server_heex do
     ~S"""
     <.tabs

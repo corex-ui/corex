@@ -2,7 +2,7 @@ defmodule Corex.Tabs do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Tabs](https://zagjs.com/components/react/tabs).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -65,125 +65,93 @@ defmodule Corex.Tabs do
   </.tabs>
   ```
 
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.tabs>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set active tab (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set active tab (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.tabs>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="tabs_value_changed"` | Active tab changes | `%{"id" => id, "value" => value}` |
+  | `on_focus_change="tabs_focus_changed"` | Focused tab changes | `%{"id" => id, "value" => value}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="tabs-value-changed"` | Active tab changes | `id`, `value` |
+  | `on_focus_change_client="tabs-focus-changed"` | Focused tab changes | `id`, `value` |
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
   ### Controlled
 
-  Render tabs controlled by the server.
-
-  You must use the `on_value_change` event to update the value on the server and pass the value as a string.
-
-  The event will receive the value as a map with the key `value` and the id of the tabs.
+  ```heex
+  <.tabs
+    id="tabs-patterns-controlled"
+    controlled
+    value={@value}
+    on_value_change="tabs_value_changed"
+    class="tabs"
+    items={
+      Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit."},
+        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula."}
+      ])
+    }
+  />
+  ```
 
   ```elixir
-  defmodule MyAppWeb.TabsLive do
-  use MyAppWeb, :live_view
-
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :value, "lorem")}
-  end
-
-  def handle_event("on_value_change", %{"value" => value}, socket) do
+  def handle_event("tabs_value_changed", %{"value" => value}, socket) do
     {:noreply, assign(socket, :value, value)}
   end
-
-  def render(assigns) do
-    ~H"""
-    <.tabs
-      controlled
-      value={@value}
-      on_value_change="on_value_change"
-      class="tabs"
-      items={Corex.Content.new([
-        [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
-        [value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
-      ])}
-    />
-  """
-  end
-  end
-
   ```
 
   ### Async
 
-  When the initial props are not available on mount, you can use the `Phoenix.LiveView.assign_async` function to assign the props asynchronously
-
-  You can use the optional `Corex.Tabs.tabs_skeleton/1` to render a loading or error state
+  ```heex
+  <.async_result :let={tabs} assign={@tabs}>
+    <:loading><.tabs_skeleton count={3} class="tabs" /></:loading>
+    <:failed>Could not load tabs.</:failed>
+    <.tabs id="async-tabs" class="tabs" items={tabs.items} value={tabs.value} />
+  </.async_result>
+  ```
 
   ```elixir
-  defmodule MyAppWeb.TabsAsyncLive do
-  use MyAppWeb, :live_view
-
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign_async(:tabs, fn ->
-        Process.sleep(1000)
-
-        items = Corex.Content.new([
-          [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
-          [value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-          [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
-        ])
-
-        {:ok,
-         %{
-           tabs: %{
-             items: items,
-             value: "duis"
-           }
-         }}
-      end)
-
-    {:ok, socket}
-  end
-
-  def render(assigns) do
-    ~H"""
-      <.async_result :let={tabs} assign={@tabs}>
-        <:loading>
-          <.tabs_skeleton count={3} class="tabs" />
-        </:loading>
-
-        <:failed>
-          there was an error loading the tabs
-        </:failed>
-
-        <.tabs
-          id="async-tabs"
-          class="tabs"
-          items={tabs.items}
-          value={tabs.value}
-        />
-      </.async_result>
-    """
-  end
-  end
-
+  socket =
+    assign_async(socket, :tabs, fn ->
+      {:ok,
+       %{
+         tabs: %{
+           items:
+             Corex.Content.new([
+               %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit."},
+               %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula."}
+             ]),
+           value: "duis"
+         }
+       }}
+    end)
   ```
+
   <!-- tabs-close -->
 
-  ## API Control
-
-  In order to use the API, you must use an id on the component
-
-  ***Client-side***
-
-  ```heex
-  <button phx-click={Corex.Tabs.set_value("my-tabs", "item-1")}>
-    Open Item 1
-  </button>
-
-  ```
-
-  ***Server-side***
-
-  ```elixir
-  def handle_event("open_item", _, socket) do
-    {:noreply, Corex.Tabs.set_value(socket, "my-tabs", "item-1")}
-  end
-  ```
-
-  ## Styling
+  ## Style
 
   Use data attributes to target elements:
 
@@ -195,21 +163,37 @@ defmodule Corex.Tabs do
   [data-scope="tabs"][data-part="item-indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `tabs` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/tabs.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.tabs>`).
 
-  ```heex
-  <.tabs class="tabs tabs--accent tabs--lg">
-  ```
+  <!-- tabs-open -->
 
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `tabs` |
+  | Accent | `tabs tabs--accent` |
+  | Brand | `tabs tabs--brand` |
+  | Alert | `tabs tabs--alert` |
+  | Info | `tabs tabs--info` |
+  | Success | `tabs tabs--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `tabs tabs--sm` |
+  | MD | `tabs tabs--md` |
+  | LG | `tabs tabs--lg` |
+  | XL | `tabs tabs--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
@@ -660,19 +644,6 @@ defmodule Corex.Tabs do
   end
 
   @doc type: :api
-  @doc """
-  Sets the tabs value from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <button phx-click={Corex.Tabs.set_value("my-tabs", "item-1")}>
-        Open Item 1
-      </button>
-
-      <button phx-click={Corex.Tabs.set_value("my-tabs", nil)}>
-        Close all Tabs
-      </button>
-  """
   def set_value(tabs_id, value) when is_binary(tabs_id) do
     JS.dispatch("corex:tabs:set-value",
       to: "##{tabs_id}",
@@ -682,21 +653,6 @@ defmodule Corex.Tabs do
   end
 
   @doc type: :api
-  @doc """
-  Sets the tabs value from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("open_item", _params, socket) do
-        socket = Corex.Tabs.set_value(socket, "my-tabs", "item-1")
-        {:noreply, socket}
-      end
-
-      def handle_event("close_tabs", _params, socket) do
-        socket = Corex.Tabs.set_value(socket, "my-tabs", nil)
-        {:noreply, socket}
-      end
-  """
   def set_value(socket, tabs_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tabs_id) do
     LiveView.push_event(socket, "tabs_set_value", %{

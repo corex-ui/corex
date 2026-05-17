@@ -1,13 +1,38 @@
 defmodule Corex.DatePicker.Translation do
   @moduledoc """
-  Translatable UI strings for the date picker.
+  Translatable UI strings for the date picker ([Zag `translations`](https://zagjs.com/components/react/date-picker) plus Corex field labels).
 
-  These map to the [Zag.js date picker `translations` prop](https://zagjs.com/components/react/date-picker) (plus `input` and range labels, which the Corex host applies because Zag does not set every label from one place).
+  Pass `translation={%Corex.DatePicker.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-  Without gettext: `translation={%Corex.DatePicker.Translation{content: "calendar"}}`
-
-  With gettext: `translation={%Corex.DatePicker.Translation{content: Corex.Gettext.gettext("calendar")}}`
+  | Field | Default | Used for |
+  | ----- | ------- | -------- |
+  | `content` | calendar | Popover content region |
+  | `month_select` | Select month | Month view select |
+  | `year_select` | Select year | Year view select |
+  | `clear_trigger` | Clear selected dates | Clear button |
+  | `week_column_header` | Wk | Week column header |
+  | `open_calendar` | Open calendar | Open trigger `aria-label` |
+  | `close_calendar` | Close calendar | Close trigger `aria-label` |
+  | `view_trigger_year` | Switch to month view | Year view trigger |
+  | `view_trigger_month` | Switch to day view | Month view trigger |
+  | `view_trigger_day` | Switch to year view | Day view trigger |
+  | `prev_trigger_year` | Switch to previous decade | Prev (year view) |
+  | `prev_trigger_month` | Switch to previous year | Prev (month view) |
+  | `prev_trigger_day` | Switch to previous month | Prev (day view) |
+  | `next_trigger_year` | Switch to next decade | Next (year view) |
+  | `next_trigger_month` | Switch to next year | Next (month view) |
+  | `next_trigger_day` | Switch to next month | Next (day view) |
+  | `week_number` | Week __N__ | Week number label |
+  | `placeholder_day` | dd | Day field placeholder |
+  | `placeholder_month` | mm | Month field placeholder |
+  | `placeholder_year` | yyyy | Year field placeholder |
+  | `input` | Select date | Input / trigger label |
+  | `range_start` | From | Range mode start label |
+  | `range_end` | To | Range mode end label |
   """
+
+  alias Corex.Gettext
+  alias Corex.Translation, as: T
 
   @enforce_keys []
 
@@ -62,6 +87,64 @@ defmodule Corex.DatePicker.Translation do
           range_start: String.t(),
           range_end: String.t()
         }
+
+  def default do
+    %__MODULE__{
+      content: Gettext.gettext("calendar"),
+      month_select: Gettext.gettext("Select month"),
+      year_select: Gettext.gettext("Select year"),
+      clear_trigger: Gettext.gettext("Clear selected dates"),
+      week_column_header: Gettext.gettext("Wk"),
+      open_calendar: Gettext.gettext("Open calendar"),
+      close_calendar: Gettext.gettext("Close calendar"),
+      view_trigger_year: Gettext.gettext("Switch to month view"),
+      view_trigger_month: Gettext.gettext("Switch to day view"),
+      view_trigger_day: Gettext.gettext("Switch to year view"),
+      prev_trigger_year: Gettext.gettext("Switch to previous decade"),
+      prev_trigger_month: Gettext.gettext("Switch to previous year"),
+      prev_trigger_day: Gettext.gettext("Switch to previous month"),
+      next_trigger_year: Gettext.gettext("Switch to next decade"),
+      next_trigger_month: Gettext.gettext("Switch to next year"),
+      next_trigger_day: Gettext.gettext("Switch to next month"),
+      week_number: Gettext.gettext("Week __N__"),
+      placeholder_day: Gettext.gettext("dd"),
+      placeholder_month: Gettext.gettext("mm"),
+      placeholder_year: Gettext.gettext("yyyy"),
+      input: Gettext.gettext("Select date"),
+      range_start: Gettext.gettext("From"),
+      range_end: Gettext.gettext("To")
+    }
+  end
+
+  def merge(nil, default), do: default
+
+  def merge(%__MODULE__{} = p, %__MODULE__{} = d) do
+    %__MODULE__{
+      content: T.take(p.content, d.content),
+      month_select: T.take(p.month_select, d.month_select),
+      year_select: T.take(p.year_select, d.year_select),
+      clear_trigger: T.take(p.clear_trigger, d.clear_trigger),
+      week_column_header: T.take(p.week_column_header, d.week_column_header),
+      open_calendar: T.take(p.open_calendar, d.open_calendar),
+      close_calendar: T.take(p.close_calendar, d.close_calendar),
+      view_trigger_year: T.take(p.view_trigger_year, d.view_trigger_year),
+      view_trigger_month: T.take(p.view_trigger_month, d.view_trigger_month),
+      view_trigger_day: T.take(p.view_trigger_day, d.view_trigger_day),
+      prev_trigger_year: T.take(p.prev_trigger_year, d.prev_trigger_year),
+      prev_trigger_month: T.take(p.prev_trigger_month, d.prev_trigger_month),
+      prev_trigger_day: T.take(p.prev_trigger_day, d.prev_trigger_day),
+      next_trigger_year: T.take(p.next_trigger_year, d.next_trigger_year),
+      next_trigger_month: T.take(p.next_trigger_month, d.next_trigger_month),
+      next_trigger_day: T.take(p.next_trigger_day, d.next_trigger_day),
+      week_number: T.take(p.week_number, d.week_number),
+      placeholder_day: T.take(p.placeholder_day, d.placeholder_day),
+      placeholder_month: T.take(p.placeholder_month, d.placeholder_month),
+      placeholder_year: T.take(p.placeholder_year, d.placeholder_year),
+      input: T.take(p.input, d.input),
+      range_start: T.take(p.range_start, d.range_start),
+      range_end: T.take(p.range_end, d.range_end)
+    }
+  end
 
   @doc false
   def to_camel_map(%__MODULE__{} = t) do

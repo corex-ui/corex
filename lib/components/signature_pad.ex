@@ -2,7 +2,7 @@ defmodule Corex.SignaturePad do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Signature Pad](https://zagjs.com/components/react/signature-pad).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -55,7 +55,7 @@ defmodule Corex.SignaturePad do
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ## Form
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
@@ -155,27 +155,82 @@ defmodule Corex.SignaturePad do
   end
   ```
 
-  ## API Control
+  ## API
 
-  In order to use the API, you must use an id on the component
+  Requires a stable `id` on `<.signature_pad>`.
 
-  ***Client-side***
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`clear/1`](#clear/1) | Clear canvas (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear/2`](#clear/2) | Clear canvas (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.signature_pad>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_draw_end="signature_drawn"` | Stroke ends | `%{"id" => id, "paths" => paths}` |
+
+  <!-- tabs-open -->
+
+  ### on_draw_end
 
   ```heex
-  <button phx-click={Corex.SignaturePad.clear("my-signature-pad")}>
-    Clear Signature
-  </button>
+  <.signature_pad
+    id="signature-events"
+    class="signature-pad"
+    on_draw_end="signature_drawn"
+  >
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
   ```
 
-  ***Server-side***
-
   ```elixir
-  def handle_event("clear_signature", _, socket) do
-    {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
+  def handle_event("signature_drawn", %{"id" => _id, "paths" => paths}, socket) do
+    {:noreply, assign(socket, :path_count, length(paths))}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  Bind `value` and handle `on_draw_end` so LiveView owns the serialized paths.
+
+  ```heex
+  <.signature_pad
+    id="signature-controlled"
+    class="signature-pad"
+    controlled
+    value={@signature_paths}
+    on_draw_end="signature_drawn"
+  >
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
+  ```
+
+  ```elixir
+  def handle_event("signature_drawn", %{"paths" => paths}, socket) do
+    {:noreply, assign(socket, :signature_paths, paths)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -440,15 +495,6 @@ defmodule Corex.SignaturePad do
   end
 
   @doc type: :api
-  @doc """
-  Clears the signature pad from client-side. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <button phx-click={Corex.SignaturePad.clear("my-signature-pad")}>
-        Clear
-      </button>
-  """
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
     JS.dispatch("corex:signature-pad:clear",
       to: "##{signature_pad_id}",
@@ -458,15 +504,6 @@ defmodule Corex.SignaturePad do
   end
 
   @doc type: :api
-  @doc """
-  Clears the signature pad from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("clear_signature", _params, socket) do
-        {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
-      end
-  """
   def clear(socket, signature_pad_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(signature_pad_id) do
     LiveView.push_event(socket, "signature_pad_clear", %{

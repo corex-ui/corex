@@ -63,9 +63,22 @@ defmodule Corex.NativeInput do
   </.form>
   ```
 
-  ## Styling
+  ## Form
 
-  Use data attributes to target elements:
+  Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
+
+  ```heex
+  <.form for={@form} id={@form.id} phx-change="validate">
+    <.native_input type="email" field={@form[:email]} class="native-input">
+      <:label>Email</:label>
+      <:error :let={msg}>{msg}</:error>
+    </.native_input>
+  </.form>
+  ```
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `native-input.css`, then set `class="native-input"` on `<.native_input>`.
 
   ```css
   [data-scope="native-input"][data-part="root"] {}

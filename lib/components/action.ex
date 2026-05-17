@@ -1,23 +1,26 @@
 defmodule Corex.Action do
-  @moduledoc """
+  @moduledoc ~S'''
   Renders a button element for actions based on Phoenix Core Components.
   Use the `type` attribute to set the button type.
   Icon-only buttons must pass `aria_label` to screen readers.
 
   ## Anatomy
-    ```elixir
-    <.action>Send!</.action>
-    <.action phx-click="go">Send!</.action>
-    <.action type="submit">Save</.action>
-    <.action aria_label="Close dialog">
-      <.heroicon name="hero-x-mark" aria-hidden="true" />
-    </.action>
-    ```
 
-  ## Styling
+  ```heex
+  <.action class="button">Send!</.action>
 
-  If you wish to use the default Corex styling, you can use the class `button` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  <.action class="button" phx-click="go">Send!</.action>
+
+  <.action class="button" type="submit">Save</.action>
+
+  <.action class="button" aria_label="Close dialog">
+    <.heroicon name="hero-x-mark" aria-hidden="true" />
+  </.action>
+  ```
+
+  ## Style
+
+  Import tokens and `button.css`, then set `class="button"` on `<.action>`.
 
   ```css
   @import "../corex/main.css";
@@ -25,13 +28,44 @@ defmodule Corex.Action do
   @import "../corex/components/button.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host.
 
-  ```heex
-  <.action class="button button--accent button--lg">
-  ```
+  <!-- tabs-open -->
 
-  """
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `button` |
+  | Accent | `button button--accent` |
+  | Brand | `button button--brand` |
+  | Alert | `button button--alert` |
+  | Info | `button button--info` |
+  | Success | `button button--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `button button--sm` |
+  | MD | `button button--md` |
+  | LG | `button button--lg` |
+  | XL | `button button--xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `button button--rounded-none` |
+  | SM | `button button--rounded-sm` |
+  | MD | `button button--rounded-md` |
+  | LG | `button button--rounded-lg` |
+  | XL | `button button--rounded-xl` |
+  | Full | `button button--rounded-full` |
+
+  <!-- tabs-close -->
+
+  '''
 
   @doc type: :component
   use Phoenix.Component

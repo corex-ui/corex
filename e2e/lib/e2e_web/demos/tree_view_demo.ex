@@ -676,53 +676,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
   end
 
-  def styling_mix_modifiers_example(assigns) do
-    ~H"""
-    <.tree_view
-      id="tree-styling-mix-brand"
-      class="tree-view tree-view--brand tree-view--sm tree-view--rounded-md max-w-xs"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-styling-mix-alert"
-      class="tree-view tree-view--alert tree-view--lg tree-view--text-lg tree-view--rounded-full max-w-sm"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-styling-mix-success"
-      class="tree-view tree-view--success tree-view--xl tree-view--text-xl tree-view--rounded-lg max-w-md"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    """
-  end
-
-  def styling_mix_modifiers_code do
-    items = code_styling_items()
-
-    """
-    <.tree_view class="tree-view tree-view--brand tree-view--sm tree-view--rounded-md max-w-xs" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view class="tree-view tree-view--alert tree-view--lg tree-view--text-lg tree-view--rounded-full max-w-sm" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view class="tree-view tree-view--success tree-view--xl tree-view--text-xl tree-view--rounded-lg max-w-md" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    """
-  end
 
   # --------------------------------------------------------------------------
   # API  -  Set Expanded

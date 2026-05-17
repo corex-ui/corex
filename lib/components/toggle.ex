@@ -2,54 +2,153 @@ defmodule Corex.Toggle do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Toggle](https://zagjs.com/components/react/toggle).
 
+  ## Anatomy
+
   <!-- tabs-open -->
 
   ### Minimal
 
   ```heex
-  <.toggle id="bold-toggle" class="toggle">
-    Bold
+  <.toggle id="toggle-anatomy-minimal" class="toggle">
+    lorem
   </.toggle>
   ```
 
   ### With indicator
 
   ```heex
-  <.toggle id="bold-toggle" class="toggle">
+  <.toggle id="toggle-anatomy-indicator-label" class="toggle">
     <:indicator><.heroicon name="hero-bold" /></:indicator>
     Bold
   </.toggle>
+
+  <.toggle id="toggle-anatomy-indicator-sr" class="toggle">
+    <:indicator><.heroicon name="hero-bold" /></:indicator>
+    <span class="sr-only">Bold</span>
+  </.toggle>
   ```
 
-  ### Controlled
+  ### Dual label
+
+  Set `data-toggle-dual-label` on the host to swap visible label text when pressed. Use a second `<span data-pressed>` for the on-state label.
 
   ```heex
-  <.toggle id="t1" class="toggle" controlled pressed={@pressed} on_pressed_change="toggle_changed">
-    Label
+  <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
+    <span>lorem</span>
+    <span data-pressed>donec</span>
+  </.toggle>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.toggle>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_pressed/2`](#set_pressed/2) | Set pressed state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_pressed/3`](#set_pressed/3) | Set pressed state (server) | `socket` |
+  | [`toggle_pressed/2`](#toggle_pressed/2) | Toggle pressed (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_pressed/3`](#toggle_pressed/3) | Toggle pressed (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.toggle>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_pressed_change="toggle_pressed_changed"` | Pressed state changes | `%{"id" => id, "pressed" => boolean}` |
+
+  <!-- tabs-open -->
+
+  ### on_pressed_change
+
+  ```heex
+  <.toggle
+    id="toggle-on-pressed-change-server"
+    class="toggle"
+    controlled
+    pressed={false}
+    on_pressed_change="toggle_pressed_changed"
+  >
+    lorem
   </.toggle>
   ```
 
   ```elixir
-  def handle_event("toggle_changed", %{"pressed" => pressed}, socket) do
-    {:noreply, assign(socket, :pressed, pressed)}
+  def handle_event("toggle_pressed_changed", %{"pressed" => pressed}, socket) do
+    p = pressed == true or pressed == "true"
+    {:noreply, assign(socket, :pressed, p)}
   end
   ```
 
   <!-- tabs-close -->
 
-  ## Programmatic control
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_pressed_change_client="toggle-client-changed"` | Pressed state changes | `id`, `pressed` |
+
+  <!-- tabs-open -->
+
+  ### on_pressed_change_client
 
   ```heex
-  <button phx-click={Corex.Toggle.set_pressed("my-toggle", true)}>On</button>
+  <.toggle
+    id="toggle-on-pressed-change-client"
+    class="toggle"
+    on_pressed_change_client="toggle-client-changed"
+  >
+    lorem
+  </.toggle>
+  ```
+
+  ```javascript
+  const el = document.getElementById("toggle-on-pressed-change-client");
+  el?.addEventListener("toggle-client-changed", (e) => console.log(e.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  For server-owned pressed state, set `controlled`, bind `pressed`, and handle `on_pressed_change` in LiveView.
+
+  ```heex
+  <.toggle
+    id="toggle-patterns-controlled"
+    class="toggle"
+    controlled
+    pressed={@pressed}
+    on_pressed_change="toggle_patterns_pressed"
+  >
+    lorem
+  </.toggle>
   ```
 
   ```elixir
-  def handle_event("on", _, socket) do
-    {:noreply, Corex.Toggle.set_pressed(socket, "my-toggle", true)}
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :pressed, false)}
+  end
+
+  def handle_event("toggle_patterns_pressed", %{"pressed" => pressed}, socket) do
+    {:noreply, assign(socket, :pressed, pressed == true or pressed == "true")}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toggle.css`, then set `class="toggle"` on `<.toggle>`.
 
   ```css
   [data-scope="toggle"][data-part="root"] {}
@@ -62,9 +161,42 @@ defmodule Corex.Toggle do
   @import "../corex/components/toggle.css";
   ```
 
-  ```heex
-  <.toggle class="toggle toggle--accent toggle--sm">
-  ```
+  Stack modifiers on the host (`class` on `<.toggle>`).
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `toggle` |
+  | Accent | `toggle toggle--accent` |
+  | Brand | `toggle toggle--brand` |
+  | Alert | `toggle toggle--alert` |
+  | Info | `toggle toggle--info` |
+  | Success | `toggle toggle--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `toggle toggle--sm` |
+  | MD | `toggle toggle--md` |
+  | LG | `toggle toggle--lg` |
+  | XL | `toggle toggle--xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `toggle toggle--rounded-none` |
+  | SM | `toggle toggle--rounded-sm` |
+  | MD | `toggle toggle--rounded-md` |
+  | LG | `toggle toggle--rounded-lg` |
+  | XL | `toggle toggle--rounded-xl` |
+  | Full | `toggle toggle--rounded-full` |
+
+  <!-- tabs-close -->
 
   '''
 

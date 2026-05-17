@@ -249,47 +249,6 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def styling_mix_modifiers_heex do
-    ~S"""
-    <.pagination id="pagination-style-mix-1" class="pagination pagination--sm pagination--brand max-w-2xs" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination id="pagination-style-mix-2" class="pagination pagination--accent pagination--rounded-xl max-w-md" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    <.pagination id="pagination-style-mix-3" class="pagination pagination--alert pagination--lg pagination--text-xl max-w-xl" count={50} page={3} page_size={10}>
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-      <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-    </.pagination>
-    """
-  end
-
-  def styling_mix_modifiers_example(assigns) do
-    assigns = styling_assigns(assigns)
-
-    ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
-      <.style_pagination
-        id="pagination-style-mix-1"
-        class="pagination pagination--sm pagination--brand max-w-2xs"
-      />
-      <.style_pagination
-        id="pagination-style-mix-2"
-        class="pagination pagination--accent pagination--rounded-xl max-w-md"
-      />
-      <.style_pagination
-        id="pagination-style-mix-3"
-        class="pagination pagination--alert pagination--lg pagination--text-xl max-w-xl"
-      />
-    </div>
-    """
-  end
-
   attr :id, :string, required: true
   attr :class, :string, required: true
   attr :page, :integer, default: nil
@@ -573,57 +532,56 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def patterns_patch_elixir do
-    ~S"""
-    @page_size 4
+  def patterns_patch_liveview do
+    """
+    defmodule MyAppWeb.PaginationPatternsLive do
+      use MyAppWeb, :live_view
 
-    def handle_params(params, _uri, socket) do
-      page = param_to_page(params["page"])
-      posts = MyApp.Blog.slice(page, @page_size)
+      alias MyApp.Blog
 
-      {:noreply,
-       socket
-       |> assign(:page, page)
-       |> assign(:posts, posts)}
-    end
+      @page_size 4
 
-    defp param_to_page(nil), do: 1
-    defp param_to_page(raw) when is_binary(raw) do
-      case Integer.parse(raw) do
-        {n, _} when n > 0 -> n
-        _ -> 1
+      @impl true
+      def mount(_params, _session, socket) do
+        {:ok,
+         socket
+         |> assign(:page, 1)
+         |> assign(:posts, Blog.slice(1, @page_size))}
       end
+
+      @impl true
+      def handle_params(params, _uri, socket) do
+        page = param_to_page(params["page"])
+        posts = Blog.slice(page, @page_size)
+
+        {:noreply,
+         socket
+         |> assign(:page, page)
+         |> assign(:posts, posts)}
+      end
+
+      defp param_to_page(nil), do: 1
+
+      defp param_to_page(raw) when is_binary(raw) do
+        case Integer.parse(raw) do
+          {n, _} when n > 0 -> n
+          _ -> 1
+        end
+      end
+
+      defp param_to_page(n) when is_integer(n) and n > 0, do: n
+      defp param_to_page(_), do: 1
     end
     """
   end
 
   def patterns_patch_data do
-    posts_lines =
-      E2e.PaginationPlayBlog.posts()
-      |> Enum.map(fn %{title: title, excerpt: excerpt} ->
-        "    %{title: #{inspect(title)}, excerpt: #{inspect(excerpt)}}"
-      end)
-      |> Enum.join(",\n")
-
     """
-    http://localhost:4000/en/pagination/patterns?page=1&page_size=4
-
     live "/pagination/patterns", MyAppWeb.PaginationPatternsLive
 
-    defmodule MyApp.Blog do
-      @posts [
-    #{posts_lines}
-      ]
+    # Example URL: /en/pagination/patterns?page=2&page_size=4
 
-      def posts, do: @posts
-
-      def count, do: length(@posts)
-
-      def slice(page, page_size) do
-        offset = max(page - 1, 0) * page_size
-        Enum.slice(@posts, offset, page_size)
-      end
-    end
+    #{patterns_blog_data()}
     """
   end
 
@@ -652,24 +610,43 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def patterns_server_elixir do
-    ~S"""
-    @page_size 4
+  def patterns_server_liveview do
+    """
+    defmodule MyAppWeb.PaginationPatternsLive do
+      use MyAppWeb, :live_view
 
-    def mount(_params, _session, socket) do
-      {:ok,
-       socket
-       |> assign(:page, 1)
-       |> assign(:posts, MyApp.Blog.slice(1, @page_size))}
-    end
+      alias MyApp.Blog
 
-    def handle_event("patterns_server_page", %{"page" => page}, socket) do
-      page = if is_integer(page), do: page, else: String.to_integer(page)
+      @page_size 4
 
-      {:noreply,
-       socket
-       |> assign(:page, page)
-       |> assign(:posts, MyApp.Blog.slice(page, @page_size))}
+      @impl true
+      def mount(_params, _session, socket) do
+        {:ok,
+         socket
+         |> assign(:page, 1)
+         |> assign(:posts, Blog.slice(1, @page_size))}
+      end
+
+      @impl true
+      def handle_event("patterns_server_page", %{"page" => page}, socket) do
+        page = parse_page(page)
+
+        {:noreply,
+         socket
+         |> assign(:page, page)
+         |> assign(:posts, Blog.slice(page, @page_size))}
+      end
+
+      defp parse_page(page) when is_integer(page) and page > 0, do: page
+
+      defp parse_page(page) when is_binary(page) do
+        case Integer.parse(page) do
+          {n, _} when n > 0 -> n
+          _ -> 1
+        end
+      end
+
+      defp parse_page(_), do: 1
     end
     """
   end
@@ -739,32 +716,96 @@ defmodule E2eWeb.Demos.PaginationDemo do
     """
   end
 
-  def patterns_client_js do
-    ~S"""
-    const pages = JSON.parse(document.getElementById("pagination-patterns-client-wrap").dataset.pages);
-    const list = document.getElementById("pagination-patterns-client-list");
-    const pagination = document.getElementById("pagination-patterns-client");
-
-    function render(page) {
-      list.replaceChildren(
-        ...(pages[page - 1] ?? []).map((post) => {
-          const li = document.createElement("li");
-          li.className = "flex flex-col gap-space-xs p-space rounded-md bg-layer border border-border";
-          const title = document.createElement("h3");
-          title.textContent = post.title;
-          const excerpt = document.createElement("p");
-          excerpt.className = "text-ink-muted text-sm";
-          excerpt.textContent = post.excerpt;
-          li.append(title, excerpt);
-          return li;
-        })
-      );
-    }
-
-    pagination?.addEventListener("pagination-page-changed", (e) => {
-      render(e.detail.page);
-    });
+  def patterns_client_liveview do
     """
+    defmodule MyAppWeb.PaginationPatternsLive do
+      use MyAppWeb, :live_view
+
+      alias MyApp.Blog
+
+      @page_size 4
+
+      @impl true
+      def mount(_params, _session, socket) do
+        {:ok,
+         socket
+         |> assign(:posts, Blog.slice(1, @page_size))
+         |> assign(:pages_json, pages_json(@page_size))}
+      end
+
+      defp pages_json(page_size) do
+        total_pages =
+          Blog.count()
+          |> then(fn count ->
+            if count == 0, do: 0, else: div(count + page_size - 1, page_size)
+          end)
+
+        1..max(total_pages, 1)
+        |> Enum.map(fn page ->
+          Blog.slice(page, page_size)
+          |> Enum.map(&Map.take(&1, [:title, :excerpt]))
+        end)
+        |> Jason.encode!()
+      end
+    end
+    """
+  end
+
+  def patterns_blog_data do
+    posts_lines =
+      E2e.PaginationPlayBlog.posts()
+      |> Enum.map(fn %{title: title, excerpt: excerpt} ->
+        "    %{title: #{inspect(title)}, excerpt: #{inspect(excerpt)}}"
+      end)
+      |> Enum.join(",\n")
+
+    """
+    defmodule MyApp.Blog do
+      @posts [
+    #{posts_lines}
+      ]
+
+      def posts, do: @posts
+
+      def count, do: length(@posts)
+
+      def slice(page, page_size) do
+        offset = max(page - 1, 0) * page_size
+        Enum.slice(@posts, offset, page_size)
+      end
+    end
+    """
+  end
+
+  def patterns_controlled_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_controlled_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_controlled_elixir()}
+    ]
+  end
+
+  def patterns_patch_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_patch_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_patch_liveview()},
+      %{value: "data", label: "Data", language: :elixir, code: patterns_patch_data()}
+    ]
+  end
+
+  def patterns_server_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_server_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_server_liveview()},
+      %{value: "data", label: "Data", language: :elixir, code: patterns_blog_data()}
+    ]
+  end
+
+  def patterns_client_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_client_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_client_liveview()},
+      %{value: "data", label: "Data", language: :elixir, code: patterns_blog_data()}
+    ]
   end
 
   attr :posts, :list, required: true
@@ -906,6 +947,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
   end
 
   def mount_assigns do
-    %{count: @count, page_size: @page_size}
+    Map.merge(E2eWeb.Demos.DocExamples.pagination_defaults(), %{
+      count: @count,
+      page_size: @page_size
+    })
   end
 end

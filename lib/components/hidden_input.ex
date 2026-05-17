@@ -2,7 +2,7 @@ defmodule Corex.HiddenInput do
   @moduledoc ~S'''
   Hidden input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 

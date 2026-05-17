@@ -2,7 +2,7 @@ defmodule Corex.DataList do
   @moduledoc ~S'''
   Phoenix component for rendering semantic data lists.
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -53,7 +53,7 @@ defmodule Corex.DataList do
 
   <!-- tabs-close -->
 
-  ## Styling
+  ## Style
 
   ```css
   [data-scope="data-list"][data-part="root"] {}
@@ -70,7 +70,7 @@ defmodule Corex.DataList do
   @doc """
   Renders a semantic data list.
 
-  ## Examples
+  ## Anatomy
 
     <!-- tabs-open -->
 

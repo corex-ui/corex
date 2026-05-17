@@ -1,11 +1,33 @@
 defmodule Corex.Select.Translation do
   @moduledoc """
-  Translation struct for Select component strings.
+  Translatable strings for the select control.
 
-  Without gettext: `translation={%Corex.Select.Translation{placeholder: "Choose an option"}}`
+  Pass `translation={%Corex.Select.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-  With gettext: `translation={%Corex.Select.Translation{placeholder: Corex.Gettext.gettext("Select")}}`
+  | Field | Default | Used for |
+  | ----- | ------- | -------- |
+  | `placeholder` | Select | Trigger label when nothing is selected |
+
+  Partial override example:
+
+      translation={%Corex.Select.Translation{placeholder: Corex.Gettext.gettext("Choose a country")}}
   """
 
+  alias Corex.Gettext
+
   defstruct [:placeholder]
+
+  @type t :: %__MODULE__{placeholder: String.t()}
+
+  def default do
+    %__MODULE__{placeholder: Gettext.gettext("Select")}
+  end
+
+  def merge(nil, default), do: default
+
+  def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+    %__MODULE__{
+      placeholder: Corex.Translation.take(partial.placeholder, default.placeholder)
+    }
+  end
 end

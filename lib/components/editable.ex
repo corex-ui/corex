@@ -2,7 +2,7 @@ defmodule Corex.Editable do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Editable](https://zagjs.com/components/react/editable).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
@@ -17,7 +17,73 @@ defmodule Corex.Editable do
 
   Required slots: `:label`, `:edit_trigger`, `:submit_trigger`, `:cancel_trigger`. Preview value is managed by the component and the Editable TS hook.
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.editable>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set preview value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set preview value (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.editable>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="editable_changed"` | Value committed or cancelled | `%{"id" => id, "value" => string}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.editable
+    id="editable-events"
+    value="Click to edit"
+    class="editable"
+    on_value_change="editable_changed"
+  >
+    <:label>Name</:label>
+    <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+    <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+    <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+  </.editable>
+  ```
+
+  ```elixir
+  def handle_event("editable_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :name, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="editable-changed"` | Value changes | `id`, `value` |
+
+  ## Form
+
+  Use `field={f[:name]}` inside `<.form>` for changeset-backed forms.
+
+  ```heex
+  <.form for={@form} id={@form.id} phx-change="validate">
+    <.editable field={@form[:name]} class="editable">
+      <:label>Name</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+  </.form>
+  ```
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -53,31 +119,52 @@ defmodule Corex.Editable do
   </.editable>
   ```
 
-  ## Programmatic control
-
-  ```heex
-  <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
-    Set Hello
-  </.action>
-  ```
-
-  ```elixir
-  def handle_event("set_text", _, socket) do
-    {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
-  end
-  ```
-
   '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for Editable component strings.
+    Translatable strings for the editable field.
 
-    Without gettext: `translation={%Editable.Translation{ input: "Edit this field" }}`
+    Pass `translation={%Corex.Editable.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%Editable.Translation{ input: Corex.Gettext.gettext("editable input") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `input` | editable input | Input `aria-label` while editing |
+    | `edit` | edit | Preview and edit trigger `aria-label` |
+    | `submit` | submit | Submit trigger `aria-label` |
+    | `cancel` | cancel | Cancel trigger `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:input, :edit, :submit, :cancel]
+
+    @type t :: %__MODULE__{
+            input: String.t(),
+            edit: String.t(),
+            submit: String.t(),
+            cancel: String.t()
+          }
+
+    def default do
+      %__MODULE__{
+        input: Gettext.gettext("editable input"),
+        edit: Gettext.gettext("edit"),
+        submit: Gettext.gettext("submit"),
+        cancel: Gettext.gettext("cancel")
+      }
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        input: Corex.Translation.take(partial.input, default.input),
+        edit: Corex.Translation.take(partial.edit, default.edit),
+        submit: Corex.Translation.take(partial.submit, default.submit),
+        cancel: Corex.Translation.take(partial.cancel, default.cancel)
+      }
+    end
   end
 
   @doc type: :component
@@ -192,12 +279,7 @@ defmodule Corex.Editable do
   end
 
   def editable(assigns) do
-    default_translation = %Translation{
-      input: Gettext.gettext("editable input"),
-      edit: Gettext.gettext("edit"),
-      submit: Gettext.gettext("submit"),
-      cancel: Gettext.gettext("cancel")
-    }
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))
     default_s = normalize_default_value(assigns[:default_value])
@@ -213,8 +295,7 @@ defmodule Corex.Editable do
       |> assign_new(:id, fn -> "editable-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:value, value_s)
       |> assign(:default_value, default_s)
       |> assign(:content_value, content_value)
@@ -280,17 +361,6 @@ defmodule Corex.Editable do
     """
   end
 
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      input: partial.input || default.input,
-      edit: partial.edit || default.edit,
-      submit: partial.submit || default.submit,
-      cancel: partial.cancel || default.cancel
-    }
-  end
-
   defp value_to_string(nil), do: ""
 
   defp value_to_string(v), do: to_string(v)
@@ -299,15 +369,6 @@ defmodule Corex.Editable do
   defp normalize_default_value(v), do: value_to_string(v)
 
   @doc type: :api
-  @doc """
-  Sets the editable text from the client. Returns a `Phoenix.LiveView.JS` command.
-
-  ## Examples
-
-      <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
-        Set Hello
-      </.action>
-  """
   def set_value(editable_id, value)
       when is_binary(editable_id) and is_binary(value) do
     JS.dispatch("corex:editable:set-value",
@@ -318,15 +379,6 @@ defmodule Corex.Editable do
   end
 
   @doc type: :api
-  @doc """
-  Sets the editable text from the server by pushing an event to the hook.
-
-  ## Examples
-
-      def handle_event("set_text", _params, socket) do
-        {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
-      end
-  """
   def set_value(socket, editable_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(editable_id) and
              is_binary(value) do

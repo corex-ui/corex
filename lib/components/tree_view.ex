@@ -2,38 +2,15 @@ defmodule Corex.TreeView do
   @moduledoc ~S'''
    Phoenix implementation of the [Zag.js Tree View](https://zagjs.com/components/react/tree-view).
 
-   ## Features
+   ## Anatomy
 
-   - **Declarative**  -  render from a list of items with `Corex.Tree.new/1`
-   - **Custom slots**  -  override label, branch, branch indicator, item, and item indicator with `:let={item}`
-   - **Compound**  -  take full structural control with dedicated sub-components
-   - **Animated**  -  instant, JS (Web Animations API), or fully custom branch expand/collapse
-   - **Navigation**  -  per-item redirect modes (`:href` / `:patch` / `:navigate` / `false`) and `new_tab`
-   - **Client/Server control**  -  uncontrolled by default; opt in to make LiveView the source of truth
-   - **API control**  -  set selected/expanded from JavaScript, a Phoenix binding, or a LiveView event
-   - **API events**  -  subscribe to selection/expanded changes from the client, the server, or both
-   - **Async-ready**  -  pairs with `assign_async/3`; includes a skeleton for loading states
-   - **Accessible**  -  WAI-ARIA compliant, full keyboard navigation and typeahead via Zag.js
-   - **Unstyled**  -  target `data-part` attributes directly or use Corex Design tokens
-   - **Localizable**  -  automatic LTR/RTL from the document
-
-   ## Declarative
-
-   Pass a list to `Corex.Tree.new/1` to build the tree items. Each item supports:
-
-   | Field | Required | Description |
-   |-------|----------|-------------|
-   | `:value` | yes | Unique value used as the node value in Zag (and in `value` / `expanded_value`) |
-   | `:label` | yes | Label shown in the row |
-   | `:children` | no | Nested list of items to make a branch |
-   | `:to` | no | Destination URL when using `redirect` |
-   | `:redirect` | no | `:href` (default) \| `:patch` \| `:navigate` \| `false` |
-   | `:new_tab` | no | Open destination in a new tab |
-   | `:disabled` | no | Prevents interaction |
+   Render from a list with `Corex.Tree.new/1`.
 
    <!-- tabs-open -->
 
    ### Basic
+
+   Each item supports `:value`, `:label`, optional `:children`, `:to`, `:redirect`, `:new_tab`, `:disabled`.
 
    ```heex
    <.tree_view
@@ -97,9 +74,7 @@ defmodule Corex.TreeView do
 
    <!-- tabs-close -->
 
-   ## Custom Slots
-
-   Customize the rendering of each row with the `:label`, `:branch`, `:branch_indicator`, `:item`, and `:item_indicator` slots. Each of the per-row slots receives a `:let={item}` of type `Corex.Tree.Item`.
+   ### Custom slots
 
    ```heex
    <.tree_view
@@ -125,12 +100,26 @@ defmodule Corex.TreeView do
    </.tree_view>
    ```
 
-   ## Compound
+   ### Compound
 
-   Take full structural control with the `tree_view_root`, `tree_view_branch`, `tree_view_branch_trigger`, `tree_view_branch_content`, and `tree_view_item` sub-components. Branches and items resolve their path from `ctx.items`; iterate recursively or statically.
+   Take full structural control with `tree_view_root`, `tree_view_branch`, and `tree_view_item`. Branches and items resolve their path from `ctx.items`.
 
    ```heex
-   <.tree_view :let={ctx} compound id="compound-tree" class="tree-view" items={@items}>
+   <.tree_view
+     :let={ctx}
+     compound
+     id="compound-tree"
+     class="tree-view"
+     items={
+       Corex.Tree.new([
+         %{label: "Components", value: "components", children: [
+           %{label: "Accordion", value: "accordion"},
+           %{label: "Checkbox", value: "checkbox"}
+         ]},
+         %{label: "Form", value: "form"}
+       ])
+     }
+   >
      <.tree_view_root ctx={ctx}>
        <:label>Project</:label>
        <.tree_view_branch :let={branch} :for={item <- ctx.items} ctx={ctx} item={item}>
@@ -197,7 +186,15 @@ defmodule Corex.TreeView do
        expanded_value={@expanded}
        on_selection_change="tree_selected"
        on_expanded_change="tree_expanded"
-       items={@items}
+       items={
+         Corex.Tree.new([
+           %{label: "Components", value: "components", children: [
+             %{label: "Accordion", value: "accordion"},
+             %{label: "Checkbox", value: "checkbox"}
+           ]},
+           %{label: "Form", value: "form"}
+         ])
+       }
      />
      """
    end
@@ -258,7 +255,16 @@ defmodule Corex.TreeView do
    Zag toggles the native `hidden` attribute; no height animation on branch content.
 
    ```heex
-   <.tree_view class="tree-view" animation="instant" items={@items} />
+   <.tree_view
+     class="tree-view"
+     animation="instant"
+     items={
+       Corex.Tree.new([
+         %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
+         %{label: "Form", value: "form"}
+       ])
+     }
+   />
    ```
 
    ### `js` (default)
@@ -270,7 +276,12 @@ defmodule Corex.TreeView do
      class="tree-view"
      animation="js"
      animation_options={%Corex.Animation.Height{duration: 0.3, easing: "ease-out"}}
-     items={@items}
+     items={
+       Corex.Tree.new([
+         %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
+         %{label: "Form", value: "form"}
+       ])
+     }
    />
    ```
 
@@ -284,7 +295,17 @@ defmodule Corex.TreeView do
    Animate branch content yourself, using `added`/`removed` to drive the transition without diffing on the client side. The example below also seeds initial closed-state styling on mount and after LiveView navigations.
 
    ```heex
-   <.tree_view class="tree-view" animation="custom" on_expanded_change_client="my-tree-expanded" items={@items} />
+   <.tree_view
+     class="tree-view"
+     animation="custom"
+     on_expanded_change_client="my-tree-expanded"
+     items={
+       Corex.Tree.new([
+         %{label: "Components", value: "components", children: [%{label: "Accordion", value: "accordion"}]},
+         %{label: "Form", value: "form"}
+       ])
+     }
+   />
    ```
 
    ```javascript
@@ -332,78 +353,51 @@ defmodule Corex.TreeView do
 
    ## API
 
-   The API targets one specific tree view via its DOM `id`.
+   Requires a stable `id` on `<.tree_view>`.
 
-   - `set_selected_value/2` and `set_selected_value/3`
-   - `set_expanded_value/2` and `set_expanded_value/3`
-   - `value/1`, `value/2`, and `value/3`
-   - `expanded_value/1`, `expanded_value/2`, and `expanded_value/3`
+   | Function | Action | Returns |
+   | -------- | ------ | ------- |
+   | [`set_selected_value/2`](#set_selected_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+   | [`set_selected_value/3`](#set_selected_value/3) | Set selection (server) | `socket` |
+   | [`set_expanded_value/2`](#set_expanded_value/2) | Set expanded nodes (client) | `%Phoenix.LiveView.JS{}` |
+   | [`set_expanded_value/3`](#set_expanded_value/3) | Set expanded nodes (server) | `socket` |
+   | [`value/1`](#value/1) | Read selection (client) | `%Phoenix.LiveView.JS{}` |
+   | [`value/3`](#value/3) | Read selection (server) | `socket` |
+   | [`expanded_value/1`](#expanded_value/1) | Read expanded (client) | `%Phoenix.LiveView.JS{}` |
+   | [`expanded_value/3`](#expanded_value/3) | Read expanded (server) | `socket` |
 
-   For `value` and `expanded_value`, use `respond_to: :server | :client | :both` to control whether the response is pushed to LiveView, dispatched as a DOM event, or both.
-
-   ```heex
-   <.action phx-click={Corex.TreeView.set_selected_value("my-tree", ["lorem"])}>Select Lorem</.action>
-   <.action phx-click={Corex.TreeView.set_expanded_value("my-tree", ["lorem"])}>Expand Lorem</.action>
-   <.action phx-click={Corex.TreeView.value("my-tree")}>Value</.action>
-   <.action phx-click={Corex.TreeView.expanded_value("my-tree")}>Expanded</.action>
-   ```
+   For `value` and `expanded_value`, use `respond_to: :server | :client | :both`.
 
    ## Events
 
-   User interaction and imperative API use different channels. See also the `on_*` attributes on `tree_view/1`.
+   Pick an event name and pass it to `on_*` on `<.tree_view>`.
 
-   ### User interaction
+   ### Server events
 
-   When `phx-hook="TreeView"` is active, Zag invokes callbacks that map to:
+   | Event | When | Payload |
+   | ----- | ---- | ------- |
+   | `on_selection_change="tree_selected"` | Selection changes | `%{"id" => id, "selectedValue" => values, ...}` |
+   | `on_expanded_change="tree_expanded"` | Expanded nodes change | `%{"id" => id, "expandedValue" => values, ...}` |
 
-   - **`on_selection_change`**  -  `pushEvent/3` to LiveView with the name you set. Params: `%{"id" => tree_dom_id, "selectedValue" => [...], "previousSelectedValue" => [...], "added" => [...], "removed" => [...], "focusedValue" => focused_or_nil, "isItem" => bool}` (TS: `TreeViewSelectionChangedDetail`).
-   - **`on_selection_change_client`**  -  browser `CustomEvent` whose **type** is the string you set; `event.detail` mirrors the push payload (bubbles).
-   - **`on_expanded_change`**  -  `pushEvent/3` with `%{"id" => dom_id, "expandedValue" => [...], "previousExpandedValue" => [...], "added" => [...], "removed" => [...], "focusedValue" => focused_or_nil}` (TS: `TreeViewExpandedChangedDetail`).
-   - **`on_expanded_change_client`**  -  `CustomEvent` with the same `detail` shape (bubbles). Required for `animation="custom"`.
+   ### Client events
 
-   ### Imperative API (LiveView helpers and client DOM)
+   | Event | When | `event.detail` |
+   | ----- | ---- | -------------- |
+   | `on_selection_change_client="tree-selection-changed"` | Selection changes | `id`, `selectedValue`, `added`, `removed` |
+   | `on_expanded_change_client="tree-expanded-changed"` | Expanded changes | `id`, `expandedValue`, `added`, `removed` |
 
-   **From LiveView**, see the API list above. All push to the hook; optional `respond_to` controls where the answer goes.
+   ## Style
 
-   **From the client**, dispatch `CustomEvent`s on the tree view root (the same element as `id`, e.g. `#my-tree`):
-
-   | Dispatch (type) | `detail` |
-   |-----------------|----------|
-   | `corex:tree-view:set-selected-value` | `value`  -  list of selected ids |
-   | `corex:tree-view:set-expanded-value` | `value`  -  list of expanded ids |
-   | `corex:tree-view:value` | optional `respond_to`: `"server"`, `"client"`, or `"both"` |
-   | `corex:tree-view:expanded-value` | optional `respond_to` |
-
-   **Responses to LiveView** (`push_event` from the hook; handle in `handle_event/3`):
-
-   - `tree_view_value_response`  -  `%{"id" => ..., "value" => [...]}`
-   - `tree_view_expanded_value_response`  -  `%{"id" => ..., "value" => [...]}`
-
-   **Responses to the DOM** (listen on the tree view root element):
-
-   - `tree-view-value`  -  `detail: { id, value }`
-   - `tree-view-expanded-value`  -  `detail: { id, value }`
-
-   ## Styling
-
-   Zag exposes `data-scope="tree-view"` and `data-part` on each element:
+   Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tree-view.css`, then set `class="tree-view"` on `<.tree_view>`.
 
    ```css
    [data-scope="tree-view"][data-part="root"] {}
    [data-scope="tree-view"][data-part="label"] {}
    [data-scope="tree-view"][data-part="tree"] {}
    [data-scope="tree-view"][data-part="branch"] {}
-   [data-scope="tree-view"][data-part="branch-control"] {}
    [data-scope="tree-view"][data-part="branch-content"] {}
-   [data-scope="tree-view"][data-part="branch-indicator"] {}
-   [data-scope="tree-view"][data-part="branch-text"] {}
-   [data-scope="tree-view"][data-part="branch-indent-guide"] {}
    [data-scope="tree-view"][data-part="item"] {}
-   [data-scope="tree-view"][data-part="item-text"] {}
-   [data-scope="tree-view"][data-part="item-indicator"] {}
    ```
-
-   With Corex Design, import tokens and the tree-view stylesheet, then add the `tree-view` class and modifiers:
 
    ```css
    @import "../corex/main.css";
@@ -411,11 +405,31 @@ defmodule Corex.TreeView do
    @import "../corex/components/tree-view.css";
    ```
 
-   ```heex
-   <.tree_view class="tree-view tree-view--accent tree-view--lg tree-view--rounded-md tree-view--text-md" items={@items}>
-     <:label>Project</:label>
-   </.tree_view>
-   ```
+   Stack modifiers on the host (`class` on `<.tree_view>`).
+
+   <!-- tabs-open -->
+
+   ### Color
+
+   | Modifier | Classes |
+   | -------- | ------- |
+   | Default | `tree-view` |
+   | Accent | `tree-view tree-view--accent` |
+   | Brand | `tree-view tree-view--brand` |
+   | Alert | `tree-view tree-view--alert` |
+   | Info | `tree-view tree-view--info` |
+   | Success | `tree-view tree-view--success` |
+
+   ### Size
+
+   | Modifier | Classes |
+   | -------- | ------- |
+   | SM | `tree-view tree-view--sm` |
+   | MD | `tree-view tree-view--md` |
+   | LG | `tree-view tree-view--lg` |
+   | XL | `tree-view tree-view--xl` |
+
+   <!-- tabs-close -->
 
 
   '''
@@ -998,44 +1012,6 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :api
-  @doc """
-  Requests the tree's current selected values from the browser. Returns a `Phoenix.LiveView.JS` command.
-
-  Options:
-
-  - `:respond_to`  -  `:server` (default, LiveView `tree_view_value_response` only), `:both` (also dispatches
-    `tree-view-value`), or `:client` (DOM `tree-view-value` only). When `:server` and the LiveView is not connected,
-    nothing is pushed.
-
-  The hook pushes `tree_view_value_response` when `:respond_to` is `:both` or `:server`, and dispatches
-  `tree-view-value` on the element when `:respond_to` is `:both` or `:client`.
-
-  ## Examples
-
-  #### From Client Binding
-
-      <.action phx-click={Corex.TreeView.value("my-tree")} class="button button--sm">
-        Value
-      </.action>
-
-      ```javascript
-      const el = document.getElementById("my-tree");
-      el?.addEventListener("tree-view-value", (e) => console.log(e.detail));
-      ```
-
-  #### JS.dispatch
-
-      <.action
-        phx-click={JS.dispatch("corex:tree-view:value",
-          to: "#my-tree",
-          detail: %{respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        Value (JS.dispatch, client only)
-      </.action>
-  """
 
   def value(tree_view_id) when is_binary(tree_view_id), do: value(tree_view_id, [])
 
@@ -1048,18 +1024,6 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :api
-  @doc """
-  Requests the tree's current selected values from the client. Pushes a LiveView event handled by the hook.
-
-  See `value/2` for `:respond_to`. The hook pushes `tree_view_value_response` and/or dispatches `tree-view-value`
-  accordingly.
-
-  ## Examples
-
-      def handle_event("tree_view_value_response", %{"id" => id, "value" => value}, socket) do
-        {:noreply, assign(socket, :tree_view_value, {id, value})}
-      end
-  """
 
   def value(socket, tree_view_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) and
@@ -1072,40 +1036,6 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :api
-  @doc """
-  Requests the tree's current expanded values from the browser. Returns a `Phoenix.LiveView.JS` command.
-
-  Options:
-
-  - `:respond_to`  -  `:server` (default, LiveView `tree_view_expanded_value_response` only), `:both` (also
-    dispatches `tree-view-expanded-value`), or `:client` (DOM `tree-view-expanded-value` only).
-
-  ## Examples
-
-  #### From Client Binding
-
-      <.action phx-click={Corex.TreeView.expanded_value("my-tree")} class="button button--sm">
-        Expanded
-      </.action>
-
-      ```javascript
-      const el = document.getElementById("my-tree");
-      el?.addEventListener("tree-view-expanded-value", (e) => console.log(e.detail));
-      ```
-
-  #### JS.dispatch
-
-      <.action
-        phx-click={JS.dispatch("corex:tree-view:expanded-value",
-          to: "#my-tree",
-          detail: %{respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        Expanded (JS.dispatch, client only)
-      </.action>
-  """
 
   def expanded_value(tree_view_id) when is_binary(tree_view_id),
     do: expanded_value(tree_view_id, [])
@@ -1119,18 +1049,6 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :api
-  @doc """
-  Requests the tree's current expanded values from the client. Pushes a LiveView event handled by the hook.
-
-  See `expanded_value/2` for `:respond_to`. The hook pushes `tree_view_expanded_value_response` and/or dispatches
-  `tree-view-expanded-value` accordingly.
-
-  ## Examples
-
-      def handle_event("tree_view_expanded_value_response", %{"id" => id, "value" => value}, socket) do
-        {:noreply, assign(socket, :tree_view_expanded_value, {id, value})}
-      end
-  """
 
   def expanded_value(socket, tree_view_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) and

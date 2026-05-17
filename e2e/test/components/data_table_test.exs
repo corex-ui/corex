@@ -90,4 +90,34 @@ defmodule E2eWeb.DataTableTest do
       assert html =~ "Apple"
     end
   end
+
+  describe "data_table database patterns" do
+    test "renders database-backed table and pagination", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+
+      assert html =~ "pattern-db-table"
+      assert html =~ "pattern-db-pagination"
+      assert html =~ ~r/data-part="sort-trigger"/
+    end
+  end
+
+  describe "data_table flop patterns" do
+    test "renders flop-backed table and pagination", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+
+      assert html =~ "pattern-flop-table"
+      assert html =~ "pattern-flop-pagination"
+    end
+
+    test "loads sorted cities from flop query params", %{conn: conn} do
+      {:ok, _view, html} =
+        live(
+          conn,
+          ~p"/data-table/patterns?#{%{order_by: ["name"], order_directions: ["desc"], page: 1}}"
+        )
+
+      assert html =~ "pattern-flop-table"
+      assert html =~ "Paris"
+    end
+  end
 end

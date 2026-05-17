@@ -2,7 +2,7 @@ defmodule Corex.Layout.Heading do
   @moduledoc ~S'''
   A layout heading component for page titles, subtitles, and actions.
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
@@ -29,7 +29,7 @@ defmodule Corex.Layout.Heading do
   </.layout_heading>
   ```
 
-  ## Styling
+  ## Style
 
   The e2e demo includes static **Anatomy** and **Style** pages (`/layout-heading/anatomy`, `/layout-heading/style`) built from `E2eWeb.Demos.LayoutHeadingDemo`. Use the `layout-heading` root class, optional `layout-heading--*` modifiers for semantic ink on the title and subtitle (same pattern as other primitives), Tailwind `max-w-*` on the root for width, and typography utilities on the `:title` / `:subtitle` slots when you need scale beyond default `h1` / `h2`.
 

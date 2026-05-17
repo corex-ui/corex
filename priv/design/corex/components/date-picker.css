@@ -208,3 +208,59 @@
     @apply ui-error;
   }
 }
+
+@utility date-picker--* {
+
+  [data-scope="date-picker"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="control"] {
+    max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="date-picker"][data-part="input"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    max-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
+  }
+
+  [data-scope="date-picker"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    max-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
+  }
+
+  [data-scope="date-picker"][data-part="table-cell-trigger"][data-selected]:not(
+      :disabled
+    ):not([data-disabled]):not([disabled]) {
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+    border-color: --value(--color-*, [color]);
+  }
+
+  [data-scope="date-picker"][data-part="table-cell-trigger"][data-selected]:not(
+      :disabled
+    ):not([data-disabled]):not([disabled]):hover {
+    background-color: --value(--color-*-hover, [color]);
+  }
+
+  [data-scope="date-picker"][data-part="table-cell-trigger"][data-selected]:not(
+      :disabled
+    ):not([data-disabled]):not([disabled]):active {
+    background-color: --value(--color-*-active, [color]);
+  }
+}

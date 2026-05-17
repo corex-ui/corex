@@ -2,63 +2,115 @@ defmodule Corex.Tooltip do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Tooltip](https://zagjs.com/components/react/tooltip).
 
-  ## Examples
+  ## Anatomy
 
-  ### Basic
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
-  <.tooltip id="my-tooltip">
+  <.tooltip id="tooltip-anatomy-minimal" class="tooltip" show_arrow={false}>
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
   ```
 
-  ### Multiple triggers (Zag)
-
-  One tooltip content, several triggers. Each `value` must be a stable non-empty string and unique within the component.
+  ### With arrow
 
   ```heex
-  <.tooltip id="shared-tip" show_arrow={false}>
-    <:trigger value="a">First anchor</:trigger>
-    <:trigger value="b">Second anchor</:trigger>
-    <:content>Same panel for both triggers</:content>
-  </.tooltip>
-  ```
-
-  For **multi-trigger** tooltips whose `<:content>` should follow the active trigger in **LiveView**, set **`on_trigger_value_change`** to a `handle_event/3` name and update assigns used inside `<:content>` (see the e2e **Tooltip · Pattern** page).
-
-  ### Without arrow
-
-  ```heex
-  <.tooltip id="my-tooltip" show_arrow={false}>
+  <.tooltip id="tooltip-anatomy-arrow" class="tooltip">
     <:trigger>Hover me</:trigger>
-    <:content>No arrow</:content>
+    <:content>Tooltip content</:content>
   </.tooltip>
   ```
 
-  ## API Control
-
-  Use an id on the component for API control.
-
-  **Client-side**
+  ### Placement
 
   ```heex
-  <button phx-click={Corex.Tooltip.set_open("my-tooltip", true)}>
-    Open tooltip
-  </button>
+  <.tooltip id="tooltip-anatomy-bottom" class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+    <:trigger>Bottom</:trigger>
+    <:content>Tooltip below</:content>
+  </.tooltip>
   ```
 
-  **Server-side**
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.tooltip>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.tooltip>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_open_change="tooltip_open_changed"` | Open state changes | `%{"id" => id, "open" => boolean}` |
+  | `on_trigger_value_change="tooltip_trigger_changed"` | Active trigger changes (multi-trigger) | `%{"id" => id, "value" => value}` |
+
+  <!-- tabs-open -->
+
+  ### on_open_change
+
+  ```heex
+  <.tooltip id="tooltip-events-server" class="tooltip" on_open_change="tooltip_open_changed">
+    <:trigger>Hover me</:trigger>
+    <:content>Tooltip content</:content>
+  </.tooltip>
+  ```
 
   ```elixir
-  def handle_event("open_tooltip", _, socket) do
-    {:noreply, Corex.Tooltip.set_open(socket, "my-tooltip", true)}
+  def handle_event("tooltip_open_changed", %{"id" => _id, "open" => open}, socket) do
+    {:noreply, assign(socket, :tooltip_open, open)}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  Target parts with `data-scope="tooltip"` and `data-part`:
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_open_change_client="tooltip-open-changed"` | Open state changes | `id`, `open` |
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Multi-trigger
+
+  One content panel, several triggers. Each trigger `value` must be unique.
+
+  ```heex
+  <.tooltip
+    id="tooltip-patterns-multi"
+    class="tooltip"
+    on_trigger_value_change="tooltip_trigger_changed"
+  >
+    <:trigger value="a">First</:trigger>
+    <:trigger value="b">Second</:trigger>
+    <:content>Active: {@active_trigger}</:content>
+  </.tooltip>
+  ```
+
+  ```elixir
+  def handle_event("tooltip_trigger_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :active_trigger, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `tooltip.css`, then set `class="tooltip"` on `<.tooltip>`.
 
   ```css
   [data-scope="tooltip"][data-part="trigger"] {}
@@ -67,13 +119,45 @@ defmodule Corex.Tooltip do
   [data-scope="tooltip"][data-part="arrow"] {}
   ```
 
-  Trigger and content have `data-state="open"` or `data-state="closed"`.
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/tooltip.css";
+  ```
 
-  On the root element, optional modifier classes:
+  Stack modifiers on the host (`class` on `<.tooltip>`).
 
-  - `tooltip--{semantic}`  -  surface and ink (for example `tooltip--accent`, `tooltip--brand`)
-  - `tooltip--size-{sm|md|lg|xl}`  -  max width, padding, and arrow scale
-  - `tooltip--text-{scale}`  -  content font size only (for example `tooltip--text-sm`, `tooltip--text-xl`)
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `tooltip` |
+  | Accent | `tooltip tooltip--accent` |
+  | Brand | `tooltip tooltip--brand` |
+  | Alert | `tooltip tooltip--alert` |
+  | Info | `tooltip tooltip--info` |
+  | Success | `tooltip tooltip--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `tooltip tooltip--size-sm` |
+  | MD | `tooltip tooltip--size-md` |
+  | LG | `tooltip tooltip--size-lg` |
+  | XL | `tooltip tooltip--size-xl` |
+
+  ### Text
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `tooltip tooltip--text-sm` |
+  | XL | `tooltip tooltip--text-xl` |
+
+  <!-- tabs-close -->
+
   '''
 
   @doc type: :component

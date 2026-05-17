@@ -2,21 +2,7 @@ defmodule Corex.PasswordInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Password Input](https://zagjs.com/components/react/password-input).
 
-  ## API
-
-  Client DOM dispatches:
-
-  - `corex:password-input:set-visible`  -  `detail.visible` boolean
-  - `corex:password-input:toggle-visible`
-  - `corex:password-input:focus`
-
-  Server pushes (from `set_visible/3`, `toggle_visible/2`, `focus/2`):
-
-  - `password_input_set_visible`  -  `%{"id" => id, "visible" => boolean}`
-  - `password_input_toggle_visible`  -  `%{"id" => id}`
-  - `password_input_focus`  -  `%{"id" => id}`
-
-  ## Examples
+  ## Anatomy
   <!-- tabs-open -->
 
   ### Minimal
@@ -45,7 +31,7 @@ defmodule Corex.PasswordInput do
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ## Form
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
@@ -138,7 +124,60 @@ defmodule Corex.PasswordInput do
   end
   ```
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.password_input>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_visible/2`](#set_visible/2) | Set visibility (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_visible/3`](#set_visible/3) | Set visibility (server) | `socket` |
+  | [`toggle_visible/1`](#toggle_visible/1) | Toggle visibility (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_visible/2`](#toggle_visible/2) | Toggle visibility (server) | `socket` |
+  | [`focus/1`](#focus/1) | Focus input (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focus/2`](#focus/2) | Focus input (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.password_input>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_visibility_change="password_visibility_changed"` | Visibility toggles | `%{"id" => id, "visible" => boolean}` |
+
+  <!-- tabs-open -->
+
+  ### on_visibility_change
+
+  ```heex
+  <.password_input
+    id="password-events"
+    class="password-input"
+    on_visibility_change="password_visibility_changed"
+  >
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("password_visibility_changed", %{"id" => _id, "visible" => visible}, socket) do
+    {:noreply, assign(socket, :password_visible, visible)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_visibility_change_client="password-visibility-changed"` | Visibility toggles | `id`, `visible` |
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -151,35 +190,69 @@ defmodule Corex.PasswordInput do
   [data-scope="password-input"][data-part="indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `password-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/password-input.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.password_input>`).
 
-  ```heex
-  <.password_input class="password-input password-input--accent password-input--lg">
-    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-  </.password_input>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `password-input` |
+  | Accent | `password-input password-input--accent` |
+  | Brand | `password-input password-input--brand` |
+  | Alert | `password-input password-input--alert` |
+  | Info | `password-input password-input--info` |
+  | Success | `password-input password-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `password-input password-input--sm` |
+  | MD | `password-input password-input--md` |
+  | LG | `password-input password-input--lg` |
+  | XL | `password-input password-input--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   defmodule Translation do
     @moduledoc """
-    Translation struct for PasswordInput component strings.
+    Translatable strings for the password input.
 
-    Without gettext: `translation={%PasswordInput.Translation{ toggle_visibility: "Toggle password visibility" }}`
+    Pass `translation={%Corex.PasswordInput.Translation{}}` to override any field. Omitted fields use gettext defaults from [`default/0`](#default/0).
 
-    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: Corex.Gettext.gettext("Toggle password visibility") }}`
+    | Field | Default | Used for |
+    | ----- | ------- | -------- |
+    | `toggle_visibility` | Toggle password visibility | Visibility trigger `aria-label` |
     """
+
+    alias Corex.Gettext
+
     defstruct [:toggle_visibility]
+
+    @type t :: %__MODULE__{toggle_visibility: String.t()}
+
+    def default do
+      %__MODULE__{toggle_visibility: Gettext.gettext("Toggle password visibility")}
+    end
+
+    def merge(nil, default), do: default
+
+    def merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
+      %__MODULE__{
+        toggle_visibility:
+          Corex.Translation.take(partial.toggle_visibility, default.toggle_visibility)
+      }
+    end
   end
 
   @doc type: :component
@@ -264,9 +337,7 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(assigns) do
-    default_translation = %Translation{
-      toggle_visibility: Corex.Gettext.gettext("Toggle password visibility")
-    }
+    translation = Translation.merge(assigns.translation, Translation.default())
 
     assigns =
       assigns
@@ -275,8 +346,7 @@ defmodule Corex.PasswordInput do
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
 
     ~H"""
     <div
@@ -345,14 +415,6 @@ defmodule Corex.PasswordInput do
       </div>
     </div>
     """
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      toggle_visibility: partial.toggle_visibility || default.toggle_visibility
-    }
   end
 
   @doc type: :api
