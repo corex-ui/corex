@@ -141,7 +141,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
       id="ID_PLACEHOLDER"
       class="CLASS_PLACEHOLDER"
       rows={@style_rows}
-      row_id={&"style-#{&1.id}"}
+      row_id={&"ID_PLACEHOLDER-#{&1.id}"}
       sort_by={@style_sort_by}
       sort_order={@style_sort_order}
       on_sort="style_sort"

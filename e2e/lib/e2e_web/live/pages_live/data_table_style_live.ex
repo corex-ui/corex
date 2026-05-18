@@ -84,7 +84,7 @@ defmodule E2eWeb.DataTableStyleLive do
        rows: :style_rows,
        selected: :style_selected,
        table_id: table_id,
-       row_id: &"style-#{&1.id}"
+       row_id: &"#{table_id}-#{&1.id}"
      )}
   end
 
@@ -175,7 +175,7 @@ defmodule E2eWeb.DataTableStyleLive do
       id={@id}
       class={@class}
       rows={@rows}
-      row_id={&"style-#{&1.id}"}
+      row_id={&"#{@id}-#{&1.id}"}
       sort_by={@sort_by}
       sort_order={@sort_order}
       on_sort="style_sort"
