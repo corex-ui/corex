@@ -136,6 +136,7 @@ defmodule Corex.Editable do
     """
 
     alias Corex.Gettext
+    alias Corex.Translation, as: T
 
     defstruct [:input, :edit, :submit, :cancel]
 
@@ -162,10 +163,10 @@ defmodule Corex.Editable do
 
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
-        input: Corex.Translation.take(partial.input, default.input),
-        edit: Corex.Translation.take(partial.edit, default.edit),
-        submit: Corex.Translation.take(partial.submit, default.submit),
-        cancel: Corex.Translation.take(partial.cancel, default.cancel)
+        input: T.take(partial.input, default.input),
+        edit: T.take(partial.edit, default.edit),
+        submit: T.take(partial.submit, default.submit),
+        cancel: T.take(partial.cancel, default.cancel)
       }
     end
   end

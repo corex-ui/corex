@@ -135,6 +135,7 @@ defmodule Corex.FloatingPanel do
     """
 
     alias Corex.Gettext
+    alias Corex.Translation, as: T
 
     defstruct [:minimize, :maximize, :restore, :close]
 
@@ -161,10 +162,10 @@ defmodule Corex.FloatingPanel do
 
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
-        minimize: Corex.Translation.take(partial.minimize, default.minimize),
-        maximize: Corex.Translation.take(partial.maximize, default.maximize),
-        restore: Corex.Translation.take(partial.restore, default.restore),
-        close: Corex.Translation.take(partial.close, default.close)
+        minimize: T.take(partial.minimize, default.minimize),
+        maximize: T.take(partial.maximize, default.maximize),
+        restore: T.take(partial.restore, default.restore),
+        close: T.take(partial.close, default.close)
       }
     end
   end

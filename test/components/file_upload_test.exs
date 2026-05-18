@@ -5,6 +5,7 @@ defmodule Corex.FileUploadTest do
 
   alias Corex.FileUpload
   alias Corex.FileUpload.Connect
+  alias Corex.FileUpload.Translation
 
   describe "file_upload/1" do
     test "renders" do
@@ -84,9 +85,9 @@ defmodule Corex.FileUploadTest do
 
   describe "Translation" do
     test "resolve fills partial from defaults" do
-      defaults = Corex.FileUpload.Translation.resolve(nil)
-      partial = %Corex.FileUpload.Translation{dropzone: "Drop"}
-      merged = Corex.FileUpload.Translation.resolve(partial)
+      defaults = Translation.resolve(nil)
+      partial = %Translation{dropzone: "Drop"}
+      merged = Translation.resolve(partial)
       assert merged.dropzone == "Drop"
       assert merged.open == defaults.open
     end

@@ -17,6 +17,7 @@ defmodule Corex.Pagination.Translation do
   """
 
   alias Corex.Gettext
+  alias Corex.Translation, as: T
 
   defstruct [
     :root_label,
@@ -32,9 +33,10 @@ defmodule Corex.Pagination.Translation do
           item_label: String.t()
         }
 
-  @doc false
+  @doc "Returns default translation strings."
   def resolve(nil), do: default()
 
+  @doc "Merges partial overrides with defaults."
   def resolve(%__MODULE__{} = partial), do: merge(partial, default())
 
   defp default do
@@ -52,16 +54,14 @@ defmodule Corex.Pagination.Translation do
 
   defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
     %__MODULE__{
-      root_label: Corex.Translation.take(partial.root_label, default.root_label),
-      prev_trigger_label:
-        Corex.Translation.take(partial.prev_trigger_label, default.prev_trigger_label),
-      next_trigger_label:
-        Corex.Translation.take(partial.next_trigger_label, default.next_trigger_label),
-      item_label: Corex.Translation.take(partial.item_label, default.item_label)
+      root_label: T.take(partial.root_label, default.root_label),
+      prev_trigger_label: T.take(partial.prev_trigger_label, default.prev_trigger_label),
+      next_trigger_label: T.take(partial.next_trigger_label, default.next_trigger_label),
+      item_label: T.take(partial.item_label, default.item_label)
     }
   end
 
-  @doc false
+  @doc "Encodes translation fields for Zag.js JSON props."
   def to_camel_map(%__MODULE__{} = t) do
     %{
       "rootLabel" => t.root_label,

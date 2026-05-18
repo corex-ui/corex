@@ -521,6 +521,7 @@ defmodule Corex.Select do
   }
 
   alias Corex.Select.Connect
+  alias Corex.Select.Translation
 
   import Corex.Helpers,
     only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
@@ -657,7 +658,7 @@ defmodule Corex.Select do
       assign(
         assigns,
         :translation,
-        Corex.Select.Translation.resolve(assigns.translation)
+        Translation.resolve(assigns.translation)
       )
 
     items = normalize_items(assigns.items)

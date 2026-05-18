@@ -16,6 +16,7 @@ defmodule Corex.TagsInput.Translation do
   """
 
   alias Corex.Gettext
+  alias Corex.Translation, as: T
 
   defstruct [:placeholder, :delete_tag_trigger_label, :tag_edited]
 
@@ -44,10 +45,10 @@ defmodule Corex.TagsInput.Translation do
 
   defp merge(%__MODULE__{} = user, %__MODULE__{} = default) do
     %__MODULE__{
-      placeholder: Corex.Translation.take(user.placeholder, default.placeholder),
+      placeholder: T.take(user.placeholder, default.placeholder),
       delete_tag_trigger_label:
-        Corex.Translation.take(user.delete_tag_trigger_label, default.delete_tag_trigger_label),
-      tag_edited: Corex.Translation.take(user.tag_edited, default.tag_edited)
+        T.take(user.delete_tag_trigger_label, default.delete_tag_trigger_label),
+      tag_edited: T.take(user.tag_edited, default.tag_edited)
     }
   end
 

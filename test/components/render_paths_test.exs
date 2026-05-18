@@ -2,12 +2,11 @@ defmodule Corex.ComponentRenderPathsTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
-  alias Corex.{AngleSlider, Carousel, Content, Menu, Tabs, Timer, Tree, TreeView}
-  alias Corex.Timer.Anatomy.{ActionTrigger, Item, ItemLabel, Segment, Separator}
-  alias Corex.Timer.Connect, as: TimerConnect
-  alias Corex.PinInput
+  alias Corex.{AngleSlider, Carousel, Content, Menu, PinInput, Tabs, Timer, Tree, TreeView}
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Root}
   alias Corex.PinInput.Connect, as: PinConnect
+  alias Corex.Timer.Anatomy.{ActionTrigger, Item, ItemLabel, Segment, Separator}
+  alias Corex.Timer.Connect, as: TimerConnect
 
   describe "tabs compound and skeleton" do
     test "compound mode renders subcomponents" do

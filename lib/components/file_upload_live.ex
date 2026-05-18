@@ -104,6 +104,7 @@ defmodule Corex.FileUploadLive do
 
   use Phoenix.Component
 
+  alias Corex.FileUpload.Translation
   alias Phoenix.LiveView.UploadConfig
   alias Phoenix.LiveView.UploadEntry
 
@@ -165,7 +166,7 @@ defmodule Corex.FileUploadLive do
   end
 
   def file_upload_live(assigns) do
-    translation = Corex.FileUpload.Translation.resolve(Map.get(assigns, :translation))
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assigns

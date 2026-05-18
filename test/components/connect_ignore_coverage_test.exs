@@ -1,26 +1,26 @@
 defmodule Corex.ConnectIgnoreCoverageTest do
   use CorexTest.ComponentCase, async: true
 
-  alias Corex.ColorPicker.Anatomy, as: CP
-  alias Corex.ColorPicker.Connect, as: ColorConnect
   alias Corex.Collapsible.Anatomy.{Content, Root, Trigger}
   alias Corex.Collapsible.Connect, as: CollConnect
+  alias Corex.ColorPicker.Anatomy, as: CP
+  alias Corex.ColorPicker.Connect, as: ColorConnect
+  alias Corex.Combobox.Connect, as: ComboboxConnect
+  alias Corex.DatePicker.Anatomy, as: DP
+  alias Corex.DatePicker.Connect, as: DateConnect
   alias Corex.FileUpload.Connect, as: FileConnect
   alias Corex.Pagination.Anatomy.{NextTrigger, PrevTrigger}
   alias Corex.Pagination.Anatomy.Root, as: PaginationRoot
   alias Corex.Pagination.Connect, as: PageConnect
-  alias Corex.TagsInput.Connect, as: TagsConnect
-  alias Corex.Timer.Anatomy.{Props, Separator}
-  alias Corex.Timer.Connect, as: TimerConnect
-  alias Corex.TreeView.Connect, as: TreeConnect
-  alias Corex.Combobox.Connect, as: ComboboxConnect
-  alias Corex.DatePicker.Anatomy, as: DP
-  alias Corex.DatePicker.Connect, as: DateConnect
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label}
   alias Corex.PinInput.Anatomy.Root, as: PinRoot
   alias Corex.PinInput.Connect, as: PinConnect
   alias Corex.SignaturePad.Connect, as: SigConnect
+  alias Corex.TagsInput.Connect, as: TagsConnect
+  alias Corex.Timer.Anatomy.{Props, Separator}
+  alias Corex.Timer.Connect, as: TimerConnect
   alias Corex.Toggle.Connect, as: ToggleConnect
+  alias Corex.TreeView.Connect, as: TreeConnect
   alias Phoenix.LiveView.JS
 
   describe "ColorPicker.Connect" do

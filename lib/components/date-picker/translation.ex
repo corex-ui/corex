@@ -88,9 +88,10 @@ defmodule Corex.DatePicker.Translation do
           range_end: String.t()
         }
 
-  @doc false
+  @doc "Returns default translation strings."
   def resolve(nil), do: default()
 
+  @doc "Merges partial overrides with defaults."
   def resolve(%__MODULE__{} = partial), do: merge(partial, default())
 
   defp default do
@@ -149,7 +150,7 @@ defmodule Corex.DatePicker.Translation do
     }
   end
 
-  @doc false
+  @doc "Encodes translation fields for Zag.js JSON props."
   def to_camel_map(%__MODULE__{} = t) do
     %{
       "content" => t.content,

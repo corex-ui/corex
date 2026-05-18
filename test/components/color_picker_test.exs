@@ -5,6 +5,7 @@ defmodule Corex.ColorPickerTest do
   alias Corex.ColorPicker
   alias Corex.ColorPicker.Connect
   alias Corex.ColorPicker.Initial
+  alias Corex.ColorPicker.Translation
 
   describe "color_picker/1" do
     test "renders" do
@@ -116,15 +117,15 @@ defmodule Corex.ColorPickerTest do
 
   describe "Translation" do
     test "resolve uses defaults when partial is nil" do
-      defaults = Corex.ColorPicker.Translation.resolve(nil)
+      defaults = Translation.resolve(nil)
       assert defaults.hex =~ "Hex"
       assert defaults.alpha =~ "Alpha"
     end
 
     test "resolve fills partial fields from defaults" do
-      defaults = Corex.ColorPicker.Translation.resolve(nil)
-      partial = %Corex.ColorPicker.Translation{hex: "Custom hex"}
-      merged = Corex.ColorPicker.Translation.resolve(partial)
+      defaults = Translation.resolve(nil)
+      partial = %Translation{hex: "Custom hex"}
+      merged = Translation.resolve(partial)
       assert merged.hex == "Custom hex"
       assert merged.alpha == defaults.alpha
     end

@@ -19,6 +19,7 @@ defmodule Corex.DataTable do
     """
 
     alias Corex.Gettext
+    alias Corex.Translation, as: T
 
     defstruct [:actions, :select_all, :select_row]
 
@@ -43,9 +44,9 @@ defmodule Corex.DataTable do
 
     defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
       %__MODULE__{
-        actions: Corex.Translation.take(partial.actions, default.actions),
-        select_all: Corex.Translation.take(partial.select_all, default.select_all),
-        select_row: Corex.Translation.take(partial.select_row, default.select_row)
+        actions: T.take(partial.actions, default.actions),
+        select_all: T.take(partial.select_all, default.select_all),
+        select_row: T.take(partial.select_row, default.select_row)
       }
     end
   end
