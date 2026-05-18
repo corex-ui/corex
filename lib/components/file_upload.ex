@@ -147,6 +147,7 @@ defmodule Corex.FileUpload do
     end
   end
 
+  @doc type: :component
   use Phoenix.Component
 
   alias Corex.FileUpload.Anatomy.{
@@ -429,6 +430,7 @@ defmodule Corex.FileUpload do
     """
   end
 
+  @doc type: :api
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
       to: "##{file_upload_id}",
@@ -436,11 +438,13 @@ defmodule Corex.FileUpload do
     )
   end
 
+  @doc type: :api
   def clear_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_files", %{"id" => file_upload_id})
   end
 
+  @doc type: :api
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
       to: "##{file_upload_id}",
@@ -448,15 +452,18 @@ defmodule Corex.FileUpload do
     )
   end
 
+  @doc type: :api
   def clear_rejected_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_rejected", %{"id" => file_upload_id})
   end
 
+  @doc type: :api
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
   end
 
+  @doc type: :api
   def open_file_picker(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_open", %{"id" => file_upload_id})

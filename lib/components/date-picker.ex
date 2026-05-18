@@ -413,13 +413,13 @@ defmodule Corex.DatePicker do
   attr(:translation, :any,
     default: nil,
     doc:
-      "Merges with `default_translation/0` to override Zag and Corex strings; see the module section on localization."
+      "Partial `Corex.DatePicker.Translation` struct; omitted fields use gettext defaults (see localization section)."
   )
 
   attr(:range_start_label, :string,
     default: nil,
     doc:
-      "When `selection_mode` is \"range\", overrides `translation.range_start` for the first field side label (default in `default_translation/0` is **From**)."
+      "When `selection_mode` is \"range\", overrides `translation.range_start` for the first field side label (default **From**)."
   )
 
   attr(:range_end_label, :string,
@@ -749,12 +749,6 @@ defmodule Corex.DatePicker do
     range_end = Map.get(assigns, :range_end_label) || t.range_end
     assign(assigns, translation: t, range_start_label: range_start, range_end_label: range_end)
   end
-
-  @doc """
-  Returns gettext-backed default translatable strings.
-  """
-  @spec default_translation() :: DatePickerTranslation.t()
-  def default_translation, do: DatePickerTranslation.resolve(nil)
 
   defp normalize_date_value(nil), do: nil
   defp normalize_date_value(%Date{} = d), do: Date.to_iso8601(d)

@@ -102,6 +102,7 @@ defmodule Corex.FileUploadLive do
   Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
   '''
 
+  @doc type: :component
   use Phoenix.Component
 
   alias Corex.FileUpload.Translation

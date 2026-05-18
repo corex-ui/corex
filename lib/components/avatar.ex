@@ -305,6 +305,7 @@ defmodule Corex.Avatar do
   @doc type: :api
   def loaded(avatar_id) when is_binary(avatar_id), do: loaded(avatar_id, [])
 
+  @doc type: :api
   def loaded(avatar_id, opts) when is_binary(avatar_id) and is_list(opts) do
     JS.dispatch("corex:avatar:loaded",
       to: "##{avatar_id}",

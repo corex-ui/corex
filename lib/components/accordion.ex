@@ -1053,6 +1053,7 @@ defmodule Corex.Accordion do
   Use inside `accordion` compound mode with `:let={ctx}`, wrapping all `accordion_item` components.
   """
 
+  @doc type: :compound
   attr(:ctx, :map,
     required: true,
     doc: "The context map yielded by the parent accordion via :let={ctx}"
@@ -1088,6 +1089,7 @@ defmodule Corex.Accordion do
   Yields the `%Item{}` struct via `:let` for use in child parts.
   """
 
+  @doc type: :compound
   attr(:ctx, :map,
     required: true,
     doc: "The context map yielded by the parent accordion via :let={ctx}"
@@ -1224,7 +1226,6 @@ defmodule Corex.Accordion do
   slot :content do
     attr(:class, :string, required: false)
   end
-
   def accordion_skeleton(assigns) do
     ~H"""
     <div {@rest}>
@@ -1244,6 +1245,7 @@ defmodule Corex.Accordion do
     """
   end
 
+  @doc type: :api
   @doc ~S"""
   Open or close items from a button (`phx-click`). Pass a list (`["lorem"]`), a comma string (`"lorem,donec"`), or `[]` to close all.
 
@@ -1276,6 +1278,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Open or close items from `handle_event`. Same `open` values as [`set_value/2`](#set_value/2).
 
@@ -1318,6 +1321,7 @@ defmodule Corex.Accordion do
 
   defp normalize_set_value!(value), do: validate_value!(value)
 
+  @doc type: :api
   @doc ~S"""
   Read open items from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
@@ -1353,8 +1357,10 @@ defmodule Corex.Accordion do
   });
   ```
   """
+  @doc type: :api
   def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
 
+  @doc type: :api
   def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:value",
       to: "##{accordion_id}",
@@ -1363,6 +1369,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Read open items from `handle_event`. Same replies as [`value/2`](#value/2); server-only unless you also use [`value/2`](#value/2) for the client reply.
 
@@ -1390,6 +1397,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Read the focused item from `phx-click`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
@@ -1419,8 +1427,10 @@ defmodule Corex.Accordion do
   });
   ```
   """
+  @doc type: :api
   def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
 
+  @doc type: :api
   def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:focused",
       to: "##{accordion_id}",
@@ -1429,6 +1439,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Read the focused item from `handle_event`. Same replies as [`focused/2`](#focused/2); server-only unless you also use [`focused/2`](#focused/2) for the client reply.
 
@@ -1456,6 +1467,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Read expanded, focused, and disabled state for one item. Pass the item `value` and optional `disabled:` / `respond_to:`.
 
@@ -1490,6 +1502,7 @@ defmodule Corex.Accordion do
     item_state(accordion_id, item_value, [])
   end
 
+  @doc type: :api
   def item_state(accordion_id, item_value, opts)
       when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
     disabled = Keyword.get(opts, :disabled, false)
@@ -1505,6 +1518,7 @@ defmodule Corex.Accordion do
     )
   end
 
+  @doc type: :api
   @doc ~S"""
   Read item state from `handle_event`. Same replies as [`item_state/3`](#item_state/3); server-only unless you also use [`item_state/3`](#item_state/3) for the client reply.
 
@@ -1528,6 +1542,7 @@ defmodule Corex.Accordion do
     item_state(socket, accordion_id, item_value, [])
   end
 
+  @doc type: :api
   def item_state(socket, accordion_id, item_value, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_binary(item_value) and

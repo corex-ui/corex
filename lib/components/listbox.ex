@@ -536,8 +536,10 @@ defmodule Corex.Listbox do
   @doc """
   Requests the listbox's current selected values from the client. See `value/2` (socket arity) for `:respond_to`.
   """
+  @doc type: :api
   def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
 
+  @doc type: :api
   def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
     JS.dispatch("corex:listbox:value",
       to: "##{listbox_id}",
@@ -557,6 +559,7 @@ defmodule Corex.Listbox do
     value(socket, listbox_id, [])
   end
 
+  @doc type: :api
   def value(socket, listbox_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) and is_list(opts) do
     LiveView.push_event(

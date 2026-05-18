@@ -355,6 +355,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -378,6 +379,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -398,6 +400,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:index, :integer, required: true)
   attr(:rest, :global)
@@ -425,6 +428,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -440,6 +444,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -455,6 +460,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -470,6 +476,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -490,6 +497,7 @@ defmodule Corex.Carousel do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:index, :integer, required: true)
   attr(:rest, :global)

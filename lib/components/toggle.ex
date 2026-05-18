@@ -285,6 +285,7 @@ defmodule Corex.Toggle do
     )
   end
 
+  @doc type: :api
   def set_pressed(socket, toggle_id, pressed)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) and
              is_boolean(pressed) do
@@ -302,6 +303,7 @@ defmodule Corex.Toggle do
     )
   end
 
+  @doc type: :api
   def toggle_pressed(socket, toggle_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) do
     LiveView.push_event(socket, "toggle_toggle_pressed", %{id: toggle_id})

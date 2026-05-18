@@ -966,6 +966,11 @@ defmodule Corex.Checkbox do
     """
   end
 
+  @doc type: :component
+  @doc """
+  Renders a loading skeleton for the checkbox component.
+  """
+
   attr(:skeleton_label, :boolean,
     default: true,
     doc:

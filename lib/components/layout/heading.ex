@@ -41,6 +41,7 @@ defmodule Corex.Layout.Heading do
   - `[data-scope="layout-heading"][data-part="subtitle"]` – subtitle
   - `[data-scope="layout-heading"][data-part="actions"]` – actions wrapper
   '''
+  @doc type: :component
   use Phoenix.Component
 
   attr(:rest, :global)

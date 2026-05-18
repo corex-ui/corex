@@ -356,6 +356,7 @@ defmodule Corex.PinInput do
   @doc type: :api
   def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
 
+  @doc type: :api
   def value(pin_input_id, opts) when is_binary(pin_input_id) and is_list(opts) do
     JS.dispatch("corex:pin-input:value",
       to: "##{pin_input_id}",

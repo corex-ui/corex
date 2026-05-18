@@ -1015,6 +1015,7 @@ defmodule Corex.TreeView do
 
   def value(tree_view_id) when is_binary(tree_view_id), do: value(tree_view_id, [])
 
+  @doc type: :api
   def value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:value",
       to: "##{tree_view_id}",
@@ -1040,6 +1041,7 @@ defmodule Corex.TreeView do
   def expanded_value(tree_view_id) when is_binary(tree_view_id),
     do: expanded_value(tree_view_id, [])
 
+  @doc type: :api
   def expanded_value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:expanded-value",
       to: "##{tree_view_id}",

@@ -487,6 +487,7 @@ defmodule Corex.Tabs do
     }
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -507,6 +508,7 @@ defmodule Corex.Tabs do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -527,6 +529,7 @@ defmodule Corex.Tabs do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:value, :string, required: true)
   attr(:disabled, :boolean, default: false)
@@ -558,6 +561,7 @@ defmodule Corex.Tabs do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:rest, :global)
   slot(:inner_block, required: false)
@@ -579,6 +583,7 @@ defmodule Corex.Tabs do
     """
   end
 
+  @doc type: :compound
   attr(:ctx, :map, required: true)
   attr(:value, :string, required: true)
   attr(:disabled, :boolean, default: false)

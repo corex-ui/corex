@@ -406,6 +406,11 @@ defmodule Corex.Collapsible do
     """
   end
 
+  @doc type: :component
+  @doc """
+  Renders a loading skeleton for the collapsible component.
+  """
+
   attr(:dir, :string,
     default: nil,
     values: [nil, "ltr", "rtl"],

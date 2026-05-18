@@ -526,6 +526,7 @@ defmodule Corex.TagsInput do
     )
   end
 
+  @doc type: :api
   def set_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_list(value) do
     v = Corex.Helpers.validate_value!(value)
@@ -544,6 +545,7 @@ defmodule Corex.TagsInput do
     )
   end
 
+  @doc type: :api
   def clear_value(socket, tags_input_id)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) do
     LiveView.push_event(socket, "tags_input_clear_value", %{id: tags_input_id})
@@ -559,6 +561,7 @@ defmodule Corex.TagsInput do
     )
   end
 
+  @doc type: :api
   def add_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do
@@ -575,6 +578,7 @@ defmodule Corex.TagsInput do
     )
   end
 
+  @doc type: :api
   def remove_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do

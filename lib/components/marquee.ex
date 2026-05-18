@@ -313,6 +313,7 @@ defmodule Corex.Marquee do
     end
   end
 
+  @doc type: :api
   @doc """
   Pauses the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
@@ -320,6 +321,7 @@ defmodule Corex.Marquee do
     JS.dispatch("corex:marquee:pause", to: "##{marquee_id}", bubbles: false)
   end
 
+  @doc type: :api
   @doc """
   Pauses the marquee from server-side. Pushes a LiveView event.
   """
@@ -328,6 +330,7 @@ defmodule Corex.Marquee do
     LiveView.push_event(socket, "marquee_pause", %{marquee_id: marquee_id})
   end
 
+  @doc type: :api
   @doc """
   Resumes the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
@@ -335,6 +338,7 @@ defmodule Corex.Marquee do
     JS.dispatch("corex:marquee:resume", to: "##{marquee_id}", bubbles: false)
   end
 
+  @doc type: :api
   @doc """
   Resumes the marquee from server-side. Pushes a LiveView event.
   """
@@ -343,6 +347,7 @@ defmodule Corex.Marquee do
     LiveView.push_event(socket, "marquee_resume", %{marquee_id: marquee_id})
   end
 
+  @doc type: :api
   @doc """
   Toggles the pause state from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
@@ -350,6 +355,7 @@ defmodule Corex.Marquee do
     JS.dispatch("corex:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
   end
 
+  @doc type: :api
   @doc """
   Toggles the pause state from server-side. Pushes a LiveView event.
   """

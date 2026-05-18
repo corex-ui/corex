@@ -29,6 +29,13 @@ defmodule Corex.DatePicker.Translation do
   | `input` | Select date | Input / trigger label |
   | `range_start` | From | Range mode start label |
   | `range_end` | To | Range mode end label |
+
+  Partial override example:
+
+      translation={%Corex.DatePicker.Translation{
+        open_calendar: Corex.Gettext.gettext("Pick a date"),
+        input: Corex.Gettext.gettext("Event date")
+      }}
   """
 
   alias Corex.Gettext
@@ -88,7 +95,7 @@ defmodule Corex.DatePicker.Translation do
           range_end: String.t()
         }
 
-  @doc "Returns defaults when `translation` is nil, otherwise merges partial overrides."
+  @doc false
   def resolve(nil), do: default()
 
   def resolve(%__MODULE__{} = partial), do: merge(partial, default())

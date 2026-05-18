@@ -720,6 +720,7 @@ defmodule Corex.AngleSlider do
 
   def value(angle_slider_id) when is_binary(angle_slider_id), do: value(angle_slider_id, [])
 
+  @doc type: :api
   def value(angle_slider_id, opts) when is_binary(angle_slider_id) and is_list(opts) do
     JS.dispatch("corex:angle-slider:value",
       to: "##{angle_slider_id}",

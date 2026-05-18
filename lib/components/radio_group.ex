@@ -602,8 +602,10 @@ defmodule Corex.RadioGroup do
   @doc """
   Requests the radio group's current value from the client. See `value/3` for `:respond_to`.
   """
+  @doc type: :api
   def value(radio_group_id) when is_binary(radio_group_id), do: value(radio_group_id, [])
 
+  @doc type: :api
   def value(radio_group_id, opts) when is_binary(radio_group_id) and is_list(opts) do
     JS.dispatch("corex:radio-group:value",
       to: "##{radio_group_id}",
@@ -623,6 +625,7 @@ defmodule Corex.RadioGroup do
     value(socket, radio_group_id, [])
   end
 
+  @doc type: :api
   def value(socket, radio_group_id, opts)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) and is_list(opts) do
     LiveView.push_event(

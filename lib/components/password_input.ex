@@ -430,6 +430,7 @@ defmodule Corex.PasswordInput do
     )
   end
 
+  @doc type: :api
   def set_visible(socket, password_input_id, visible)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) and
              is_boolean(visible) do
@@ -447,6 +448,7 @@ defmodule Corex.PasswordInput do
     )
   end
 
+  @doc type: :api
   def toggle_visible(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_toggle_visible", %{"id" => password_input_id})
@@ -457,6 +459,7 @@ defmodule Corex.PasswordInput do
     JS.dispatch("corex:password-input:focus", to: "##{password_input_id}", bubbles: false)
   end
 
+  @doc type: :api
   def focus(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_focus", %{"id" => password_input_id})
