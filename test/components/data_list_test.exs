@@ -15,6 +15,62 @@ defmodule Corex.DataListTest do
       assert html =~ "No entries"
     end
 
+    test "empty slot is outside dl for definition list accessibility" do
+      html =
+        render_component(&DataList.data_list/1, %{
+          items: [],
+          empty: [%{inner_block: fn _, _ -> "No entries" end}]
+        })
+
+      {:ok, doc} = Floki.parse_fragment(html)
+
+      assert [_] = Floki.find(doc, "[data-part=\"empty\"]")
+      assert Floki.find(doc, "dl") == []
+      assert Floki.find(doc, "dl [data-part=\"empty\"]") == []
+    end
+
+    test "items render in dl without empty as a direct dl child" do
+      items =
+        Corex.Content.new([
+          %{label: "Name", content: "Alice"}
+        ])
+
+      html = render_component(&DataList.data_list/1, %{items: items})
+
+      {:ok, doc} = Floki.parse_fragment(html)
+
+      assert [_] = Floki.find(doc, "dl[data-part=\"root\"]")
+      assert Floki.find(doc, "dl [data-part=\"empty\"]") == []
+
+      for item <- Floki.find(doc, "dl [data-part=\"item\"]") do
+        child_tags =
+          item
+          |> Floki.children()
+          |> Enum.map(fn {tag, _, _} -> tag end)
+
+        assert child_tags == ["dt", "dd"]
+      end
+    end
+
+    test "empty slot with items keeps empty outside dl" do
+      items =
+        Corex.Content.new([
+          %{label: "Name", content: "Alice"}
+        ])
+
+      html =
+        render_component(&DataList.data_list/1, %{
+          items: items,
+          empty: [%{inner_block: fn _, _ -> "No entries" end}]
+        })
+
+      {:ok, doc} = Floki.parse_fragment(html)
+
+      assert [_] = Floki.find(doc, "[data-part=\"empty\"]")
+      assert [_] = Floki.find(doc, "dl [data-part=\"item\"]")
+      assert Floki.find(doc, "dl [data-part=\"empty\"]") == []
+    end
+
     test "renders items from Corex.Content" do
       items =
         Corex.Content.new([
@@ -75,9 +131,11 @@ defmodule Corex.DataListTest do
     end
 
     test "passes orientation and dir to root" do
+      items = Corex.Content.new([%{label: "Name", content: "Alice"}])
+
       html =
         render_component(&DataList.data_list/1, %{
-          items: [],
+          items: items,
           orientation: "horizontal",
           dir: "rtl"
         })

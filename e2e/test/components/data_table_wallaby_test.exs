@@ -77,9 +77,7 @@ defmodule E2eWeb.DataTableWallabyTest do
         session
         |> ComponentBehaviorSpec.visit_ready(DataTable, :data_table, :patterns)
         |> DataTable.prepare_live_form()
-        |> click(
-          css("#data-table-patterns-row-click [data-part='row']", text: "Alice", visible: :any)
-        )
+        |> click(css("#data-table-patterns-row-click [data-part='row']", at: 0, visible: true))
 
       DataTable.see_in_section(session, "data-table-patterns-row-click", "Row clicked: Alice")
     end

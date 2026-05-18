@@ -21,8 +21,7 @@ defmodule E2eWeb.TreeViewTest do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :anatomy)
-        |> TreeView.wait_section_tree_view_ready("tree-view-anatomy-minimal")
-        |> TreeView.click_first_branch_control_in_host(host)
+        |> TreeView.wait_host_tree_view_ready(host)
         |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
 
       assert TreeView.any_branch_content_open_in_host?(session, host)
@@ -33,8 +32,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :anatomy)
-      |> TreeView.wait_section_tree_view_ready("tree-view-anatomy-with-indicator")
-      |> TreeView.click_first_branch_control_in_host(host)
+      |> TreeView.wait_host_tree_view_ready(host)
       |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
     end
   end
@@ -78,11 +76,12 @@ defmodule E2eWeb.TreeViewTest do
         |> TreeView.prepare_live_form()
         |> TreeView.wait_host_tree_view_ready("tree-events-server")
 
-      refute TreeView.tree_view_events_server_log_has_row?(session)
+      before = TreeView.log_row_count(session, "tree-events-log-server")
 
       session
       |> TreeView.click_first_branch_control_in_host("tree-events-server")
-      |> TreeView.wait_for_has(css("#tree-events-log-server tr[data-part='row']"),
+      |> TreeView.wait_for_has(
+        css("#tree-events-log-server tr[data-part='row']", count: before + 1),
         timeout: 10_000
       )
 

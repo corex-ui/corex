@@ -63,7 +63,7 @@ defmodule E2eWeb.ColorPickerModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session

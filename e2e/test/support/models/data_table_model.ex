@@ -49,7 +49,7 @@ defmodule E2eWeb.DataTableModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

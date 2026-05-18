@@ -64,6 +64,7 @@ defmodule E2eWeb.TimerModel do
       session,
       css(
         ~s|##{host_dom_id} [data-scope="timer"][data-part="action-trigger"]|,
+        at: 0,
         visible: :any
       )
     )
@@ -98,7 +99,7 @@ defmodule E2eWeb.TimerModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -110,5 +111,19 @@ defmodule E2eWeb.TimerModel do
 
   def timer_events_client_log_has_row?(session) do
     has?(session, css("#timer-events-log-client tr[data-part='row']"))
+  end
+
+  def wait_remounted_api_timer_ready(session, opts \\ []) do
+    wait_for_has(
+      session,
+      css(
+        "[id^='timer-api-remount-'][phx-hook='Timer']:not([data-loading])",
+        visible: :any,
+        minimum: 1
+      ),
+      opts
+    )
+
+    session
   end
 end

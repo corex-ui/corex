@@ -72,7 +72,8 @@ defmodule E2eWeb.FileUploadTest do
 
       assert has?(
                session,
-               css("#file-upload-events-client [phx-hook='FileUpload']:not([data-loading])",
+               css(
+                 "#file-upload-events-client[phx-hook='FileUpload']:not([data-loading])",
                  visible: :any
                )
              )
@@ -88,7 +89,8 @@ defmodule E2eWeb.FileUploadTest do
 
       assert has?(
                session,
-               css("#file-upload-changeset [phx-hook='FileUpload']:not([data-loading])",
+               css(
+                 "#file-upload-cs-field[phx-hook='FileUpload']:not([data-loading])",
                  visible: :any
                )
              )

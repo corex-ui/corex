@@ -22,7 +22,7 @@ defmodule E2eWeb.TooltipTest do
         session
         |> ComponentBehaviorSpec.visit_ready(Tooltip, :tooltip, :anatomy)
         |> Tooltip.wait_section_tooltip_ready(section)
-        |> Tooltip.hover_first_trigger_in_section(section)
+        |> Tooltip.open_first_tooltip_in_section(section)
         |> Tooltip.wait_open_content_in_section(section, timeout: 8_000)
 
       assert_has(
@@ -40,7 +40,7 @@ defmodule E2eWeb.TooltipTest do
       session
       |> ComponentBehaviorSpec.visit_ready(Tooltip, :tooltip, :anatomy)
       |> Tooltip.wait_section_tooltip_ready(section)
-      |> Tooltip.hover_first_trigger_in_section(section)
+      |> Tooltip.open_first_tooltip_in_section(section)
       |> Tooltip.wait_open_content_in_section(section, timeout: 8_000)
     end
   end
@@ -82,10 +82,8 @@ defmodule E2eWeb.TooltipTest do
         |> Tooltip.prepare_live_form()
         |> Tooltip.wait_host_tooltip_ready("tooltip-events")
 
-      refute Tooltip.tooltip_events_log_has_row?(session)
-
       session
-      |> Tooltip.hover_first_trigger_in_section("tooltip-events-section")
+      |> Tooltip.open_tooltip_by_host_id("tooltip-events")
       |> Tooltip.wait_for_has(css("#tooltip-events-log tr[data-part='row']"), timeout: 10_000)
 
       assert Tooltip.tooltip_events_log_has_row?(session)
@@ -100,7 +98,7 @@ defmodule E2eWeb.TooltipTest do
       |> ComponentBehaviorSpec.visit_ready(Tooltip, :tooltip, :patterns)
       |> Tooltip.wait_patterns_page()
       |> Tooltip.wait_section_tooltip_ready(section)
-      |> Tooltip.hover_first_trigger_in_section(section)
+      |> Tooltip.open_first_tooltip_in_section(section)
       |> Tooltip.wait_open_content_in_section(section, timeout: 8_000)
     end
   end

@@ -38,7 +38,8 @@ defmodule E2eWeb.ToggleGroupModel do
     q =
       css(
         ~s|section##{section_dom_id} [phx-hook="ToggleGroup"]:not([data-loading])|,
-        visible: :any
+        visible: :any,
+        minimum: 1
       )
 
     case timeout do
@@ -96,7 +97,7 @@ defmodule E2eWeb.ToggleGroupModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

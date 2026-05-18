@@ -19,6 +19,14 @@ defmodule E2eWeb.MenuTest do
       session = ComponentBehaviorSpec.visit_ready(session, Menu, :menu, :anatomy)
 
       Enum.reduce(Menu.anatomy_section_ids(), session, fn section_id, sess ->
+        host =
+          case section_id do
+            "menu-anatomy-minimal" -> "menu-anatomy-minimal"
+            "menu-anatomy-grouped" -> "menu-anatomy-grouped"
+            "menu-anatomy-nested" -> "menu-anatomy-nested"
+            "menu-anatomy-nested-grouped" -> "menu-anatomy-nested-grouped"
+          end
+
         item_value =
           case section_id do
             "menu-anatomy-grouped" -> "combobox"
@@ -28,8 +36,8 @@ defmodule E2eWeb.MenuTest do
           end
 
         sess
-        |> Menu.wait_section_menu_ready(section_id)
-        |> Menu.open_menu_in_section(section_id)
+        |> Menu.wait_host_menu_ready(host)
+        |> Menu.open_menu_by_host_id(host)
         |> Menu.click_item_in_section(section_id, item_value, timeout: 8_000)
       end)
     end

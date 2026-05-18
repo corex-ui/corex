@@ -7,23 +7,24 @@ defmodule E2eWeb.DialogModel do
     dialog-anatomy-actions
   )
 
+  @anatomy_section_to_host_id %{
+    "dialog-anatomy-minimal" => "dialog-anatomy-minimal",
+    "dialog-anatomy-title-description" => "dialog-anatomy-titled",
+    "dialog-anatomy-actions" => "dialog-anatomy-actions"
+  }
+
   def anatomy_section_ids, do: @anatomy_sections
 
-  def wait_section_dialog_ready(session, section_dom_id) do
+  def host_id_for_anatomy_section(section_id),
+    do: Map.fetch!(@anatomy_section_to_host_id, section_id)
+
+  def wait_section_dialog_ready(session, section_dom_id, opts \\ []) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
               String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
-    assert_has(
-      session,
-      css(
-        ~s|section##{section_dom_id} [phx-hook="Dialog"]:not([data-loading])|,
-        visible: :any
-      )
-    )
-
-    session
+    wait_section_hook(session, section_dom_id, "Dialog", opts)
   end
 
   def wait_root_dialog_ready(session, host_dom_id) when is_binary(host_dom_id) do
@@ -110,7 +111,7 @@ defmodule E2eWeb.DialogModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session

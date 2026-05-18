@@ -21,7 +21,7 @@ defmodule E2eWeb.TabsTest do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :anatomy)
-        |> Tabs.wait_section_tabs_ready("tabs-anatomy-basic")
+        |> Tabs.wait_host_tabs_ready(host)
         |> Tabs.click_trigger_by_label_in_host(host, "Duis")
         |> Tabs.wait_trigger_selected_by_label_in_host(host, "Duis", timeout: 8_000)
 
@@ -32,7 +32,6 @@ defmodule E2eWeb.TabsTest do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Tabs, :tabs, :anatomy)
-        |> Tabs.wait_section_tabs_ready("tabs-anatomy-nested")
         |> Tabs.wait_host_tabs_ready("tabs-nested-outer")
         |> Tabs.click_trigger_by_label_in_host("tabs-nested-outer", "Outer 2")
         |> Tabs.wait_host_tabs_ready("tabs-nested-inner")

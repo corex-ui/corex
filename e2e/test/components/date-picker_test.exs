@@ -47,8 +47,7 @@ defmodule E2eWeb.DatePickerTest do
         "date-picker-api-set-value-binding",
         "Set to 2024-01-15"
       )
-
-      DatePicker.wait_input_value_in_section(
+      |> DatePicker.wait_input_value_in_section(
         "date-picker-api-set-value-binding",
         "2024-01-15",
         timeout: 8_000
@@ -67,8 +66,7 @@ defmodule E2eWeb.DatePickerTest do
         "date-picker-api-set-value-server",
         "Set to 2024-01-15"
       )
-
-      DatePicker.wait_input_value_in_section(
+      |> DatePicker.wait_input_value_in_section(
         "date-picker-api-set-value-server",
         "2024-01-15",
         timeout: 8_000

@@ -44,10 +44,13 @@ defmodule E2eWeb.TimerTest do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
-        |> Timer.click_in_section("timer-api-remount", "Remount")
-        |> Timer.wait_host_timer_ready("timer-api-remount", timeout: 12_000)
+        |> Timer.click_by_id("timer-api-remount-btn")
+        |> Timer.wait_remounted_api_timer_ready(timeout: 12_000)
 
-      assert Timer.timer_area_visible_in_host?(session, "timer-api-remount")
+      assert_has(
+        session,
+        css("[id^='timer-api-remount-'] [data-scope='timer'][data-part='area']", visible: :any)
+      )
     end
   end
 
@@ -59,11 +62,14 @@ defmodule E2eWeb.TimerTest do
         |> Timer.prepare_live_form()
         |> Timer.wait_host_timer_ready("timer-events-server")
 
-      refute Timer.timer_events_server_log_has_row?(session)
+      before = Timer.log_row_count(session, "timer-events-log-server")
 
       session
       |> Timer.click_start_trigger_in_host("timer-events-server")
-      |> Timer.wait_for_has(css("#timer-events-log-server tr[data-part='row']"), timeout: 12_000)
+      |> Timer.wait_for_has(
+        css("#timer-events-log-server tr[data-part='row']", count: before + 1),
+        timeout: 12_000
+      )
 
       assert Timer.timer_events_server_log_has_row?(session)
     end

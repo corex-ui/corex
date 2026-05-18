@@ -75,7 +75,7 @@ defmodule E2eWeb.PaginationModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -86,7 +86,8 @@ defmodule E2eWeb.PaginationModel do
       session,
       css(
         "##{section_id} ##{pagination_id}[phx-hook='Pagination']:not([data-loading])",
-        visible: :any
+        visible: :any,
+            minimum: 1
       )
     )
 

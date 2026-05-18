@@ -86,7 +86,7 @@ defmodule E2eWeb.EditableTest do
         |> Editable.prepare_live_form()
         |> Editable.wait_host_editable_ready(host)
 
-      refute Editable.editable_events_server_log_has_row?(session)
+      before = Editable.log_row_count(session, "editable-events-log-server")
 
       session
       |> Editable.click_edit_trigger_in_host(host)
@@ -94,7 +94,7 @@ defmodule E2eWeb.EditableTest do
       |> Editable.type_in_focused_input("Event value")
       |> Editable.click_submit_trigger_in_host(host)
       |> Editable.wait_for_has(
-        css("#editable-events-log-server tr[data-part='row']"),
+        css("#editable-events-log-server tr[data-part='row']", count: before + 1),
         timeout: 10_000
       )
 

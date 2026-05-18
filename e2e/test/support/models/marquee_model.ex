@@ -50,20 +50,28 @@ defmodule E2eWeb.MarqueeModel do
     session
   end
 
+  defp marquee_root_selector(host_dom_id),
+    do: ~s|[id="marquee:#{host_dom_id}"]|
+
   def host_paused?(session, host_dom_id) do
     has?(
       session,
-      css(~s|##{host_dom_id}[data-paused]|, visible: :any)
+      css("#{marquee_root_selector(host_dom_id)}[data-paused]", visible: :any)
     )
   end
 
   def wait_host_paused(session, host_dom_id, opts \\ []) do
-    wait_for_has(session, css(~s|##{host_dom_id}[data-paused]|, visible: :any), opts)
+    wait_for_has(session, css("#{marquee_root_selector(host_dom_id)}[data-paused]", visible: :any), opts)
     session
   end
 
   def wait_host_not_paused(session, host_dom_id, opts \\ []) do
-    wait_for_has(session, css(~s|##{host_dom_id}:not([data-paused])|, visible: :any), opts)
+    wait_for_has(
+      session,
+      css("#{marquee_root_selector(host_dom_id)}:not([data-paused])", visible: :any),
+      opts
+    )
+
     session
   end
 
@@ -75,7 +83,7 @@ defmodule E2eWeb.MarqueeModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

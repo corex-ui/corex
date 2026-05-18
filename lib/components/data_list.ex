@@ -57,7 +57,7 @@ defmodule Corex.DataList do
 
   ### Empty
 
-  Optional `<:empty>` when there are no rows. The empty block stays in the DOM and is hidden by CSS when items exist (stream-friendly).
+  Optional `<:empty>` when there are no rows. The empty block renders beside the `<dl>` (not inside it) and is hidden by CSS when items exist (stream-friendly).
 
   ```heex
   <.data_list class="data-list" items={[]}>
@@ -177,23 +177,24 @@ defmodule Corex.DataList do
       assigns
       |> assign(:items, assigns.items || [])
       |> data_list_assign_manual_mode!()
+      |> then(fn a -> assign(a, :data_list_has_items, data_list_has_items?(a)) end)
 
     ~H"""
     <div {@rest}>
+      <div
+        :if={@empty != []}
+        data-scope="data-list"
+        data-part="empty"
+      >
+        {render_slot(@empty)}
+      </div>
       <dl
+        :if={@data_list_has_items}
         data-scope="data-list"
         data-part="root"
         data-orientation={@orientation}
         dir={@dir}
       >
-        <div
-          :if={@empty != []}
-          data-scope="data-list"
-          data-part="empty"
-        >
-          {render_slot(@empty)}
-        </div>
-
         <div
           :if={@data_list_manual_mode}
           :for={panel <- @data_list_manual_panels}
@@ -263,6 +264,11 @@ defmodule Corex.DataList do
   defp manual_slot_entries?(assigns) do
     Enum.any?(assigns.label, &Map.get(&1, :value)) or
       Enum.any?(assigns.content, &Map.get(&1, :value))
+  end
+
+  defp data_list_has_items?(assigns) do
+    (assigns.data_list_manual_mode and assigns.data_list_manual_panels != []) or
+      (!assigns.data_list_manual_mode and assigns.items != [])
   end
 
   defp panel_label_class(%{label: label}) when is_map(label) do

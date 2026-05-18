@@ -50,6 +50,44 @@ defmodule E2eWeb.TooltipModel do
     session
   end
 
+  def open_first_tooltip_in_section(session, section_dom_id) do
+    if not valid_dom_id?(section_dom_id), do: raise(ArgumentError, "invalid section dom id")
+
+    _ =
+      execute_script(
+        session,
+        """
+        const section = document.querySelector(arguments[0]);
+        const host = section?.querySelector('[phx-hook="Tooltip"]');
+        if (!host) return;
+        host.dispatchEvent(
+          new CustomEvent("corex:tooltip:set-open", { detail: { open: true }, bubbles: false })
+        );
+        """,
+        ["section#" <> section_dom_id]
+      )
+
+    session
+  end
+
+  def open_tooltip_by_host_id(session, host_dom_id) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        host?.dispatchEvent(
+          new CustomEvent("corex:tooltip:set-open", { detail: { open: true }, bubbles: false })
+        );
+        """,
+        [host_dom_id]
+      )
+
+    session
+  end
+
   def hover_first_trigger_in_section(session, section_dom_id) do
     if not valid_dom_id?(section_dom_id), do: raise(ArgumentError, "invalid section dom id")
 
@@ -105,7 +143,7 @@ defmodule E2eWeb.TooltipModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

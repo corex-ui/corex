@@ -60,16 +60,22 @@ defmodule E2eWeb.NumberInputModel do
   end
 
   def hidden_value_in_section(session, section_dom_id) do
-    el =
-      find(
+    key = {:e2e_number_input_value, self(), make_ref()}
+
+    _ =
+      execute_script(
         session,
-        css(
-          ~s|section##{section_dom_id} [data-scope="number-input"][data-part="value-input"]|,
-          visible: :any
-        )
+        """
+        const section = document.querySelector(arguments[0]);
+        const hidden = section?.querySelector('[data-part="value-input"]');
+        const visible = section?.querySelector('[data-part="input"]');
+        return (hidden || visible)?.value ?? "";
+        """,
+        ["section#" <> section_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
       )
 
-    Wallaby.Element.attr(el, "value")
+    Process.get(key, "")
   end
 
   def wait_patterns_state_contains(session, substring, opts \\ []) when is_binary(substring) do

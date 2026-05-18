@@ -34,7 +34,7 @@ defmodule E2eWeb.ToggleGroupTest do
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(ToggleGroup, :toggle_group, :anatomy)
-        |> ToggleGroup.wait_section_toggle_group_ready("toggle-group-anatomy-indicator")
+        |> ToggleGroup.wait_host_toggle_group_ready(host)
         |> ToggleGroup.click_item_by_value_in_host(host, "bold")
         |> ToggleGroup.wait_item_on_in_host(host, "bold", timeout: 8_000)
 

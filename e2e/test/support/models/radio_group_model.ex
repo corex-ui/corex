@@ -113,7 +113,7 @@ defmodule E2eWeb.RadioGroupModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session
@@ -147,7 +147,7 @@ defmodule E2eWeb.RadioGroupModel do
     click(
       session,
       css(
-        "#radio-group-live-changeset [data-scope='radio-group'][data-part='item'][data-value='#{value}']"
+        "#radio-group-live-form-changeset [data-scope='radio-group'][data-part='item'][data-value='#{value}']"
       )
     )
 

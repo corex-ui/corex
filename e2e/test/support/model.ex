@@ -105,6 +105,89 @@ defmodule E2eWeb.Model do
         Wallaby.Browser.send_keys(session, [:enter])
       end
 
+      def click_in_section(session, section_id, button_label)
+          when is_binary(section_id) and is_binary(button_label) do
+        if String.contains?(button_label, "'") or String.contains?(button_label, "\"") do
+          raise ArgumentError, "click_in_section: label must not include quotes"
+        end
+
+        click(
+          session,
+          xpath("(//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}'])[1]")
+        )
+
+        session
+      end
+
+      def click_by_id(session, element_id) when is_binary(element_id) do
+        if not (String.match?(element_id, ~r/^[a-zA-Z0-9_-]+$/) and element_id != "") do
+          raise ArgumentError, "invalid element id"
+        end
+
+        click(session, css("##{element_id}", visible: :any))
+        session
+      end
+
+      def log_row_count(session, log_dom_id) when is_binary(log_dom_id) do
+        case find(session, css("##{log_dom_id} tr[data-part='row']", count: :any, visible: :any)) do
+          elements when is_list(elements) -> length(elements)
+          _ -> 0
+        end
+      rescue
+        Wallaby.QueryError -> 0
+      end
+
+      def wait_for_refute_has(session, %Wallaby.Query{} = query, opts \\ []) do
+        query = maybe_query_visible(query, opts)
+
+        case Keyword.get(opts, :timeout) do
+          nil ->
+            refute_has(session, query)
+
+          max_ms when is_integer(max_ms) and max_ms > 0 ->
+            deadline = System.monotonic_time(:millisecond) + max_ms
+            busy_wait_refute_query(session, query, deadline)
+            refute_has(session, query)
+        end
+
+        session
+      end
+
+      defp busy_wait_refute_query(session, query, deadline) do
+        if Wallaby.Browser.has?(session, query) do
+          if System.monotonic_time(:millisecond) >= deadline do
+            :ok
+          else
+            Process.sleep(50)
+            busy_wait_refute_query(session, query, deadline)
+          end
+        else
+          :ok
+        end
+      end
+
+      def wait_section_hook(session, section_dom_id, hook, opts \\ []) do
+        if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and section_dom_id != "") do
+          raise ArgumentError, "invalid section dom id"
+        end
+
+        timeout = Keyword.get(opts, :timeout)
+
+        q =
+          css(
+            ~s|section##{section_dom_id} [phx-hook="#{hook}"]:not([data-loading])|,
+            visible: :any,
+            minimum: 1
+          )
+
+        case timeout do
+          nil -> assert_has(session, q)
+          max_ms when is_integer(max_ms) and max_ms > 0 -> wait_for_has(session, q, timeout: max_ms)
+        end
+
+        session
+      end
+
       def type(session, value) do
         Wallaby.Browser.send_keys(session, [value])
       end

@@ -28,7 +28,7 @@
     gap: 1px;
   }
 
-  .data-list [data-scope="data-list"][data-part="root"] [data-part="empty"]:not(:only-child) {
+  .data-list:has([data-part="root"] [data-part="item"]) [data-part="empty"] {
     display: none;
   }
 

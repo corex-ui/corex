@@ -42,6 +42,50 @@ defmodule E2eWeb.PasswordInputModel do
     wait_root_password_input_ready(session, "password-input-playground")
   end
 
+  def wait_input_value_in_section(session, section_dom_id, expected, opts \\ [])
+      when is_binary(expected) do
+    deadline =
+      Keyword.get(opts, :timeout, 8_000) + System.monotonic_time(:millisecond)
+
+    busy_wait_input_value(session, section_dom_id, expected, deadline)
+    session
+  end
+
+  defp busy_wait_input_value(session, section_dom_id, expected, deadline) do
+    actual = input_value_in_section(session, section_dom_id)
+
+    if actual == expected do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected password input in #{section_dom_id} to have value #{inspect(expected)}, got #{inspect(actual)}"
+      else
+        Process.sleep(50)
+        busy_wait_input_value(session, section_dom_id, expected, deadline)
+      end
+    end
+  end
+
+  def input_value_in_section(session, section_dom_id) do
+    key = {:e2e_password_input_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const section = document.querySelector(arguments[0]);
+        const input = section?.querySelector('[data-scope="password-input"][data-part="input"]');
+        return input?.value ?? "";
+        """,
+        ["section#" <> section_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
   def fill_input_in_section(session, section_dom_id, value) when is_binary(value) do
     fill_in(
       session,
@@ -74,7 +118,7 @@ defmodule E2eWeb.PasswordInputModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session

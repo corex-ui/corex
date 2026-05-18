@@ -22,7 +22,7 @@ defmodule E2eWeb.ClipboardTest do
         host = Clipboard.host_id_for_anatomy_section(section_id)
 
         sess
-        |> Clipboard.wait_section_clipboard_ready(section_id)
+        |> Clipboard.wait_host_clipboard_ready(host)
         |> Clipboard.click_trigger_in_host(host)
         |> Clipboard.wait_trigger_copied_in_host(host, timeout: 8_000)
       end)
@@ -49,7 +49,7 @@ defmodule E2eWeb.ClipboardTest do
         |> Clipboard.wait_host_clipboard_ready("clipboard-api-server")
 
       session
-      |> Clipboard.click_in_section("clipboard-api-server-section", "Copy")
+      |> Clipboard.click_in_section("clipboard-api-server-section", "Push copy")
       |> Clipboard.wait_trigger_copied_in_host("clipboard-api-server", timeout: 8_000)
     end
   end

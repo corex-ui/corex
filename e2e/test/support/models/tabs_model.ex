@@ -45,7 +45,11 @@ defmodule E2eWeb.TabsModel do
     timeout = Keyword.get(opts, :timeout)
 
     q =
-      css(~s|section##{section_dom_id} [phx-hook="Tabs"]:not([data-loading])|, visible: :any)
+      css(
+        ~s|section##{section_dom_id} [phx-hook="Tabs"]:not([data-loading])|,
+        visible: :any,
+        minimum: 1
+      )
 
     case timeout do
       nil -> assert_has(session, q)
@@ -108,7 +112,7 @@ defmodule E2eWeb.TabsModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

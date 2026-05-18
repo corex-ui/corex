@@ -63,13 +63,14 @@ defmodule E2eWeb.PinInputTest do
         |> PinInput.prepare_live_form()
         |> PinInput.wait_section_pin_input_ready(section)
 
-      refute PinInput.pin_input_events_server_log_has_row?(session)
+      before = PinInput.log_row_count(session, "pin-input-events-log-server")
 
       session =
         session
         |> PinInput.fill_pin_in_section(section, "1234", host)
         |> PinInput.wait_pin_complete_in_section(host, "1234", timeout: 8_000)
-        |> PinInput.wait_for_has(css("#pin-input-events-log-server tr[data-part='row']"),
+        |> PinInput.wait_for_has(
+          css("#pin-input-events-log-server tr[data-part='row']", count: before + 1),
           timeout: 10_000
         )
 

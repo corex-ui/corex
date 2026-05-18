@@ -103,19 +103,12 @@ defmodule E2eWeb.SignatureModel do
     session
   end
 
-  def refute_segment_in_host(session, host_dom_id) do
-    if has?(
-         session,
-         css(
-           ~s|##{host_dom_id} [data-scope="signature-pad"][data-part="segment"]|,
-           visible: :any
-         )
-       ) do
-      raise Wallaby.ExpectationNotMetError,
-        message: "expected no signature segment in ##{host_dom_id}"
-    end
-
-    session
+  def refute_segment_in_host(session, host_dom_id, opts \\ []) do
+    wait_for_refute_has(
+      session,
+      css(~s|##{host_dom_id} [data-scope="signature-pad"][data-part="segment"]|, visible: :any),
+      opts
+    )
   end
 
   def click_in_section(session, section_id, button_label)
@@ -126,7 +119,7 @@ defmodule E2eWeb.SignatureModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -157,14 +150,13 @@ defmodule E2eWeb.SignatureModel do
     session
   end
 
-  def wait_for_signature_field_error(session, mode \\ :static, _opts \\ []) do
+  def wait_for_signature_field_error(session, mode \\ :static, opts \\ []) do
     form_id = if mode == :live, do: "signature-form", else: "signature-changeset-form"
 
-    assert_has(
+    wait_for_has(
       session,
-      css(~s(##{form_id} [data-scope="signature-pad"][data-part="error"]),
-        text: "can't be blank"
-      )
+      xpath("//*[@id='#{form_id}']//*[contains(normalize-space(.), \"can't be blank\")]"),
+      opts
     )
 
     session

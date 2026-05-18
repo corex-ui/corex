@@ -10,43 +10,41 @@ defmodule E2eWeb.MenuModel do
 
   def anatomy_section_ids, do: @anatomy_sections
 
-  def wait_section_menu_ready(session, section_dom_id) do
+  defp menu_hook_selector(host_dom_id),
+    do: ~s|[id="menu:#{host_dom_id}"][phx-hook="Menu"]:not([data-loading])|
+
+  def wait_section_menu_ready(session, section_dom_id, opts \\ []) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
               String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
-    assert_has(
-      session,
-      css(
-        ~s|section##{section_dom_id} [phx-hook="Menu"]:not([data-loading])|,
-        visible: :any
-      )
-    )
-
-    session
+    wait_section_hook(session, section_dom_id, "Menu", opts)
   end
 
-  def wait_root_menu_ready(session, host_dom_id) when is_binary(host_dom_id) do
+  def wait_root_menu_ready(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid menu host dom id"
     end
 
-    assert_has(
-      session,
-      css(~s|##{host_dom_id}[phx-hook="Menu"]:not([data-loading])|, visible: :any)
-    )
+    timeout = Keyword.get(opts, :timeout)
+
+    q = css(menu_hook_selector(host_dom_id), visible: :any)
+
+    case timeout do
+      nil -> assert_has(session, q)
+      max_ms when is_integer(max_ms) and max_ms > 0 -> wait_for_has(session, q, timeout: max_ms)
+    end
 
     session
   end
 
   def wait_playground_menu_ready(session) do
-    assert_has(
-      session,
-      css("#menu-playground-page [phx-hook='Menu']:not([data-loading])", visible: :any)
-    )
+    wait_host_menu_ready(session, "menu-playground")
+  end
 
-    session
+  def wait_host_menu_ready(session, host_dom_id, opts \\ []) do
+    wait_root_menu_ready(session, host_dom_id, opts)
   end
 
   def wait_patterns_page(session) do
@@ -77,7 +75,7 @@ defmodule E2eWeb.MenuModel do
     click(
       session,
       css(
-        ~s|##{host_dom_id} [data-scope="menu"][data-part="trigger"]|,
+        ~s|[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="trigger"]|,
         visible: :any
       )
     )
@@ -117,7 +115,7 @@ defmodule E2eWeb.MenuModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session

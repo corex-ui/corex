@@ -65,12 +65,12 @@ defmodule E2eWeb.MarqueeTest do
         |> Marquee.prepare_live_form()
         |> Marquee.wait_host_marquee_ready("marquee-events-server")
 
-      refute Marquee.marquee_events_server_log_has_row?(session)
+      before = Marquee.log_row_count(session, "marquee-events-log-server")
 
       session
       |> click(css("#marquee-events-server", visible: :any))
       |> Marquee.wait_for_has(
-        css("#marquee-events-log-server tr[data-part='row']"),
+        css("#marquee-events-log-server tr[data-part='row']", count: before + 1),
         timeout: 10_000
       )
 

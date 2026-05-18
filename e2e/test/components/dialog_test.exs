@@ -19,10 +19,12 @@ defmodule E2eWeb.DialogTest do
       session = ComponentBehaviorSpec.visit_ready(session, Dialog, :dialog, :anatomy)
 
       Enum.reduce(Dialog.anatomy_section_ids(), session, fn section_id, sess ->
+        host = Dialog.host_id_for_anatomy_section(section_id)
+
         sess
-        |> Dialog.wait_section_dialog_ready(section_id)
-        |> Dialog.open_dialog_in_section(section_id)
-        |> Dialog.wait_dialog_open_in_section(section_id, timeout: 8_000)
+        |> Dialog.wait_root_dialog_ready(host)
+        |> Dialog.open_dialog_by_host_id(host)
+        |> Dialog.wait_dialog_open_by_host_id(host, timeout: 8_000)
       end)
     end
   end
@@ -35,7 +37,7 @@ defmodule E2eWeb.DialogTest do
         |> Dialog.wait_root_dialog_ready("dialog-api")
 
       session
-      |> Dialog.click_button_in_section("dialog-api-client", "Open Dialog")
+      |> Dialog.click_in_section("dialog-api-client", "Open Dialog")
       |> Dialog.wait_dialog_open_by_host_id("dialog-api", timeout: 8_000)
     end
   end

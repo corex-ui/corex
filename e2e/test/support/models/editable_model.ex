@@ -124,7 +124,7 @@ defmodule E2eWeb.EditableModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -136,6 +136,13 @@ defmodule E2eWeb.EditableModel do
 
   def editable_events_client_log_has_row?(session) do
     has?(session, css("#editable-events-log-client tr[data-part='row']"))
+  end
+
+  def set_live_form_text(session, text) when is_binary(text) do
+    session
+    |> click(css("#editable-form [data-part='edit-trigger']", visible: :any))
+    |> fill_in(css("#editable-form [data-part='input']", visible: :any), with: text)
+    |> click(css("#editable-form [data-part='submit-trigger']", visible: :any))
   end
 
   def goto_form(session, mode) do

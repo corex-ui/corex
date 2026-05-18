@@ -95,7 +95,8 @@ defmodule E2eWeb.CheckboxModel do
         session,
         css(
           "#checkbox-api-server-section [phx-hook='Checkbox']:not([data-loading])",
-          visible: :any
+          visible: :any,
+            minimum: 1
         )
       )
 
@@ -155,7 +156,7 @@ defmodule E2eWeb.CheckboxModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session

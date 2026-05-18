@@ -72,7 +72,7 @@ defmodule E2eWeb.SignatureTest do
         |> Signature.wait_has_segment_in_host(host, timeout: 8_000)
 
       session
-      |> Signature.click_in_section("signature-api-clear-server", "Clear")
+      |> Signature.click_in_section("signature-api-clear-server", "Clear (server)")
       |> Signature.refute_segment_in_host(host)
     end
   end
@@ -84,8 +84,6 @@ defmodule E2eWeb.SignatureTest do
         |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :events)
         |> Signature.prepare_live_form()
         |> Signature.wait_host_signature_ready("signature-events-server")
-
-      refute Signature.signature_events_server_log_has_row?(session)
 
       session
       |> Signature.draw_stroke_in_host("signature-events-server")

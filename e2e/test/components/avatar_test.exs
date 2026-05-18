@@ -71,11 +71,14 @@ defmodule E2eWeb.AvatarTest do
         |> Avatar.prepare_live_form()
         |> Avatar.wait_host_avatar_ready("avatar-events")
 
-      refute Avatar.avatar_events_log_has_row?(session)
+      before = Avatar.log_row_count(session, "avatar-events-log")
 
       session
       |> fill_in(css("#avatar-events-src input"), with: "https://corex-ui.com/pwa-192x192.png")
-      |> Avatar.wait_for_has(css("#avatar-events-log tr[data-part='row']"), timeout: 12_000)
+      |> Avatar.wait_for_has(
+        css("#avatar-events-log tr[data-part='row']", count: before + 1),
+        timeout: 12_000
+      )
 
       assert Avatar.avatar_events_log_has_row?(session)
     end

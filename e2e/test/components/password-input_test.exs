@@ -23,13 +23,7 @@ defmodule E2eWeb.PasswordInputTest do
         sess
         |> PasswordInput.wait_section_password_input_ready(section_id)
         |> PasswordInput.fill_input_in_section(section_id, "secret")
-        |> PasswordInput.wait_for_has(
-          css(
-            ~s|section##{section_id} [data-scope="password-input"][data-part="input"][value="secret"]|,
-            visible: :any
-          ),
-          timeout: 8_000
-        )
+        |> PasswordInput.wait_input_value_in_section(section_id, "secret", timeout: 8_000)
       end)
     end
   end
@@ -84,12 +78,12 @@ defmodule E2eWeb.PasswordInputTest do
         |> PasswordInput.prepare_live_form()
         |> PasswordInput.wait_section_password_input_ready(section)
 
-      refute PasswordInput.password_input_events_server_log_has_row?(session)
+      before = PasswordInput.log_row_count(session, "password-input-events-log-server")
 
       session
       |> PasswordInput.fill_input_in_section(section, "abc")
       |> PasswordInput.wait_for_has(
-        css("#password-input-events-log-server tr[data-part='row']", count: 1),
+        css("#password-input-events-log-server tr[data-part='row']", count: before + 1),
         timeout: 10_000
       )
     end
