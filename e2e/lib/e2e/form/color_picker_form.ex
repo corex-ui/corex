@@ -21,7 +21,8 @@ defmodule E2e.Form.ColorPickerForm do
 
   defp validate_alpha_max_50(changeset) do
     with value when is_binary(value) <- get_field(changeset, :color),
-         [_, alpha] <- Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
+         [_, alpha] <-
+           Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
          {float_val, _} <- Float.parse(alpha),
          true <- float_val > 0.5 do
       add_error(changeset, :color, "maximum alpha allowed is 50%")
