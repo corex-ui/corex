@@ -44,15 +44,6 @@ defmodule E2e.Place do
   end
 
   @doc """
-  Returns cities using Flop parameters (sort, page, page_size).
-
-  See [Flop](https://hexdocs.pm/flop/readme.html).
-  """
-  def list_cities_flop(params \\ %{}) do
-    Flop.validate_and_run(City, params, for: City, default_limit: 5)
-  end
-
-  @doc """
   Returns the list of cities.
 
   ## Examples

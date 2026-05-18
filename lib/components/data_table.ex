@@ -2,7 +2,7 @@ defmodule Corex.DataTable do
   @moduledoc ~S'''
   Renders a data table with sorting, selection, and optional actions.
 
-  See [`data_table/1`](#data_table/1) for **Anatomy** and **Patterns** (basic, actions, streaming, sortable, with database, with Flop).
+  See [`data_table/1`](#data_table/1) for **Anatomy** and **Patterns** (basic, actions, streaming, sortable, with database).
   '''
 
   defmodule Translation do
@@ -110,6 +110,30 @@ defmodule Corex.DataTable do
 
    With the `:empty` slot, the empty row stays in the DOM and is hidden by the `data-table` stylesheet whenever the tbody has data rows (same idea as [stream empty state siblings](https://elixirforum.com/t/stream-empty-state-is-there-a-way-to-check-when-a-stream-is-empty/57219/20); avoids counting stream items on the server).
 
+   ### Row click
+
+   Pass `row_click` to handle clicks on data cells (not the action column). Use `JS.push/2` to update LiveView state without navigating.
+
+   ```heex
+   <p :if={@row_clicked}>Row clicked: {@row_clicked}</p>
+   <.data_table
+     id="users-table"
+     class="data-table"
+     rows={@users}
+     row_click={fn user -> JS.push("row_click", value: %{id: user.id, name: user.name}) end}
+   >
+     <:col :let={user} label="Name">{user.name}</:col>
+     <:action :let={user}>
+       <.action class="button button--sm">Edit</.action>
+     </:action>
+   </.data_table>
+   ```
+
+   ```elixir
+   def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
+     {:noreply, assign(socket, :row_clicked, "#{name} (##{id})")}
+   end
+   ```
 
    ### Sortable
 
@@ -193,11 +217,6 @@ defmodule Corex.DataTable do
    <.pagination count={@total} page={@page} page_size={@page_size} controlled on_page_change="page" />
    ```
 
-   ### With Flop
-
-   Use [Flop](https://hexdocs.pm/flop/readme.html) in the context (`Flop.validate_and_run/3`) and `push_patch` with Flop query params so sort and page are URL-driven. Wire `%Flop.Meta{}` to Corex `<.pagination>`; keep `<.data_table>` for markup only (see the e2e **With Flop** pattern demo).
-
-
    <!-- tabs-close -->
 
    ## Style
@@ -226,7 +245,14 @@ defmodule Corex.DataTable do
 
    With the `data-table` class, the stylesheet hides `[data-part="empty-row"]` when it is not the only row in the tbody so list and stream tables can use `<:empty>` without server-side row counts.
 
-   If you wish to use the default Corex styling, you can use the class `data-table` on the component.
+   If you wish to use the default Corex styling, use the class `data-table` on the component.
+
+   Modifier classes on the root:
+
+   - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
+   - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
+
+   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
    This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
    ```css
@@ -278,6 +304,12 @@ defmodule Corex.DataTable do
     doc: "The class applied to the internal checkboxes"
   )
 
+  attr(:dir, :string,
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc: "Text direction"
+  )
+
   attr(:rest, :global)
 
   slot :col, required: true do
@@ -315,7 +347,7 @@ defmodule Corex.DataTable do
     assigns = assign(assigns, :empty_col_count, col_count)
 
     ~H"""
-    <div tabindex="0" {@rest}>
+    <div tabindex="0" dir={@dir} {@rest}>
       <table data-scope="data-table" data-part="root">
         <thead data-scope="data-table" data-part="thead">
           <tr>

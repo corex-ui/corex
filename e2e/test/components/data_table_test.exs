@@ -3,6 +3,44 @@ defmodule E2eWeb.DataTableTest do
 
   import Phoenix.LiveViewTest
 
+  describe "playground" do
+    test "renders playground table", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/data-table/playground")
+
+      assert html =~ "data-table-playground"
+      assert html =~ "Alice"
+    end
+  end
+
+  describe "style page" do
+    test "renders styling sections with full table features", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/data-table/style")
+
+      assert html =~ "data-table-styling-page"
+      assert html =~ "data-table-styling-color"
+      assert html =~ "data-table-styling-size"
+      assert html =~ ~r/data-part="action-cell"/
+      assert html =~ ~r/data-part="sort-trigger"/
+      assert html =~ "hero-pencil-square"
+    end
+  end
+
+  describe "row click pattern" do
+    test "updates row clicked message", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/data-table/patterns")
+
+      assert has_element?(view, "#data-table-patterns-row-click")
+      assert render(view) =~ "Click a row"
+
+      view
+      |> element("#pattern-row-click-table td[data-part=cell]", "1")
+      |> render_click()
+
+      assert render(view) =~ "Row clicked:"
+      assert render(view) =~ "Alice"
+    end
+  end
+
   describe "data_table with list" do
     test "renders headers and rows", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
@@ -98,26 +136,6 @@ defmodule E2eWeb.DataTableTest do
       assert html =~ "pattern-db-table"
       assert html =~ "pattern-db-pagination"
       assert html =~ ~r/data-part="sort-trigger"/
-    end
-  end
-
-  describe "data_table flop patterns" do
-    test "renders flop-backed table and pagination", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
-
-      assert html =~ "pattern-flop-table"
-      assert html =~ "pattern-flop-pagination"
-    end
-
-    test "loads sorted cities from flop query params", %{conn: conn} do
-      {:ok, _view, html} =
-        live(
-          conn,
-          ~p"/data-table/patterns?#{%{order_by: ["name"], order_directions: ["desc"], page: 1}}"
-        )
-
-      assert html =~ "pattern-flop-table"
-      assert html =~ "Paris"
     end
   end
 end

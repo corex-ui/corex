@@ -14,7 +14,7 @@ defmodule E2eWeb.DocPageMatrix do
     color_picker: [:anatomy, :api, :events],
     combobox: [:anatomy, :api, :events, :patterns],
     data_list: [:anatomy, :style, :patterns, :playground],
-    data_table: [:anatomy, :patterns],
+    data_table: [:anatomy, :style, :patterns, :playground],
     date_picker: [:anatomy, :api, :events, :patterns],
     dialog: [:anatomy, :api, :events, :patterns],
     editable: [:anatomy, :api, :events],

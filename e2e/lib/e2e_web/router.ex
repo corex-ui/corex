@@ -99,6 +99,8 @@ defmodule E2eWeb.Router do
       live("/combobox/live-form", ComboboxForm)
 
       live("/data-table/patterns", DataTablePatternsLive)
+      live("/data-table/playground", DataTablePlayLive)
+      live("/data-table/style", DataTableStyleLive)
 
       live("/data-list/playground", DataListPlayLive)
       live("/data-list/patterns", DataListPatternsLive)

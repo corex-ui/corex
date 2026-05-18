@@ -42,15 +42,4 @@ defmodule E2eWeb.DataTableFeatureTest do
     DataTable.wait_for_has(session, css("#pattern-db-table"), visible: :any)
     DataTable.wait_for_has(session, css("#pattern-db-pagination"), visible: :any)
   end
-
-  feature "with flop  -  table and pagination render", %{session: session} do
-    session =
-      session
-      |> DataTable.visit_path("/en/data-table/patterns#data-table-patterns-flop")
-      |> DataTable.wait_for_has(css("#data-table-patterns-page"), visible: :any)
-      |> DataTable.wait_for_has(css("#data-table-patterns-flop"), visible: :any, timeout: 15_000)
-
-    DataTable.wait_for_has(session, css("#pattern-flop-table"), visible: :any)
-    DataTable.wait_for_has(session, css("#pattern-flop-pagination"), visible: :any)
-  end
 end

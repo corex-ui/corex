@@ -56,40 +56,12 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> assign(:pattern_db_sort_by, :name)
      |> assign(:pattern_db_sort_order, :asc)
      |> assign(:pattern_db_total, db_total)
-     |> assign(:pattern_flop_rows, [])
-     |> assign(:pattern_flop_meta, nil)
-     |> assign(:pattern_flop_sort_by, :name)
-     |> assign(:pattern_flop_sort_order, :asc)
-     |> assign(:pattern_flop_params, %{})}
-  end
-
-  @impl true
-  def handle_params(params, _uri, socket) do
-    flop_params = take_flop_params(params)
-
-    case Place.list_cities_flop(flop_params) do
-      {:ok, {rows, meta}} ->
-        {:noreply,
-         socket
-         |> assign(:pattern_flop_rows, rows)
-         |> assign(:pattern_flop_meta, meta)
-         |> assign(:pattern_flop_params, flop_params)
-         |> assign_flop_sort(meta)}
-
-      {:error, _meta} ->
-        case Place.list_cities_flop(%{}) do
-          {:ok, {rows, meta}} ->
-            {:noreply,
-             socket
-             |> assign(:pattern_flop_rows, rows)
-             |> assign(:pattern_flop_meta, meta)
-             |> assign(:pattern_flop_params, %{})
-             |> assign_flop_sort(meta)}
-
-          {:error, _} ->
-            {:noreply, socket}
-        end
-    end
+     |> assign(:pattern_row_clicked, nil)
+     |> assign(:pattern_row_click_rows, [
+       %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
+       %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
+       %{id: 3, name: "Charlie", role: "Editor", email: "charlie@example.com"}
+     ])}
   end
 
   @impl true
@@ -241,31 +213,6 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> assign(:pattern_db_total, total)}
   end
 
-  def handle_event("pattern_flop_sort", %{"sort_by" => sort_by_param}, socket) do
-    sort_by = String.to_existing_atom(sort_by_param)
-    current_by = socket.assigns.pattern_flop_sort_by
-    current_order = socket.assigns.pattern_flop_sort_order
-
-    {sort_by, sort_order} =
-      if current_by == sort_by do
-        {sort_by, toggle_order(current_order)}
-      else
-        {sort_by, :asc}
-      end
-
-    params =
-      socket.assigns.pattern_flop_params
-      |> Map.merge(flop_sort_params(sort_by, sort_order, socket.assigns.pattern_flop_meta))
-
-    {:noreply, push_patch(socket, to: patterns_flop_url(socket, params))}
-  end
-
-  def handle_event("pattern_flop_page", %{"page" => page}, socket) do
-    params = Map.put(socket.assigns.pattern_flop_params, "page", to_string(parse_page(page)))
-
-    {:noreply, push_patch(socket, to: patterns_flop_url(socket, params))}
-  end
-
   def handle_event("pattern_full_check", _params, socket) do
     message =
       if socket.assigns.pattern_full_selected == [] do
@@ -285,6 +232,10 @@ defmodule E2eWeb.DataTablePatternsLive do
      )}
   end
 
+  def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
+    {:noreply, assign(socket, :pattern_row_clicked, "#{name} (##{id})")}
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -297,9 +248,47 @@ defmodule E2eWeb.DataTablePatternsLive do
       <.demo_page
         id="data-table-patterns-page"
         title="Data Table · Pattern"
-        subtitle="Stream, in-memory sort, selection, database-backed tables (manual Ecto and Flop), and a combined table on one page."
+        subtitle="Stream, in-memory sort, selection, a database-backed table with pagination, and a combined table on one page."
         heading_class="layout-heading"
       >
+        <.demo_section
+          id="data-table-patterns-row-click"
+          title="Row click"
+          code_tabs={[
+            %{
+              value: "heex",
+              label: "Heex",
+              language: :heex,
+              code: E2eWeb.Demos.DataTableDemo.patterns_row_click_heex()
+            },
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: E2eWeb.Demos.DataTableDemo.patterns_row_click_elixir()
+            }
+          ]}
+        >
+          <:preview>
+            <p :if={@pattern_row_clicked}>Row clicked: {@pattern_row_clicked}</p>
+            <p :if={is_nil(@pattern_row_clicked)}>Click a row (not the action button).</p>
+            <.data_table
+              id="pattern-row-click-table"
+              class="data-table max-w-none"
+              rows={@pattern_row_click_rows}
+              row_click={fn row -> JS.push("row_click", value: %{id: row.id, name: row.name}) end}
+            >
+              <:col :let={row} label="ID">{row.id}</:col>
+              <:col :let={row} label="Name">{row.name}</:col>
+              <:action :let={row}>
+                <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+                  <.heroicon name="hero-pencil-square" />
+                </.action>
+              </:action>
+            </.data_table>
+          </:preview>
+        </.demo_section>
+
         <.demo_section
           id="data-table-patterns-stream"
           title="Stream"
@@ -557,52 +546,6 @@ defmodule E2eWeb.DataTablePatternsLive do
             </div>
           </:preview>
         </.demo_section>
-
-        <.demo_section
-          id="data-table-patterns-flop"
-          title="With Flop"
-          code_tabs={E2eWeb.Demos.DataTableDemo.patterns_flop_code_tabs()}
-        >
-          <:preview>
-            <div class="flex flex-col gap-4 w-full">
-              <.data_table
-                id="pattern-flop-table"
-                class="data-table max-w-none"
-                rows={@pattern_flop_rows}
-                row_id={&"flop-#{&1.id}"}
-                sort_by={@pattern_flop_sort_by}
-                sort_order={@pattern_flop_sort_order}
-                on_sort="pattern_flop_sort"
-              >
-                <:sort_icon :let={%{direction: direction}}>
-                  <.heroicon name={sort_icon_name(direction)} />
-                </:sort_icon>
-                <:col :let={city} label="Name" name={:name}>{city.name}</:col>
-                <:col :let={city} label="IATA" name={:iata_code}>{city.iata_code}</:col>
-                <:col :let={city} label="Country" name={:iata_country_code}>
-                  {city.iata_country_code}
-                </:col>
-                <:empty>
-                  <p id="pattern-flop-empty">No cities</p>
-                </:empty>
-              </.data_table>
-              <.pagination
-                :if={@pattern_flop_meta}
-                id="pattern-flop-pagination"
-                class="pagination max-w-none mx-auto"
-                count={@pattern_flop_meta.total_count}
-                page={@pattern_flop_meta.current_page}
-                page_size={@pattern_flop_meta.page_size}
-                controlled
-                on_page_change="pattern_flop_page"
-              >
-                <:prev><.heroicon name="hero-chevron-left" /></:prev>
-                <:next><.heroicon name="hero-chevron-right" /></:next>
-                <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
-              </.pagination>
-            </div>
-          </:preview>
-        </.demo_section>
       </.demo_page>
     </Layouts.app>
     """
@@ -625,68 +568,4 @@ defmodule E2eWeb.DataTablePatternsLive do
   end
 
   defp parse_page(_), do: 1
-
-  defp take_flop_params(params) do
-    params
-    |> Map.take(["page", "page_size", "order_by", "order_directions"])
-    |> Enum.reject(fn {_k, v} -> v in [nil, ""] end)
-    |> Map.new()
-  end
-
-  defp assign_flop_sort(socket, %Flop.Meta{flop: flop}) do
-    sort_by = flop.order_by |> List.wrap() |> List.first(:name)
-    sort_order = flop.order_directions |> List.wrap() |> List.first(:asc)
-
-    socket
-    |> assign(:pattern_flop_sort_by, sort_by)
-    |> assign(:pattern_flop_sort_order, sort_order)
-  end
-
-  defp flop_sort_params(sort_by, sort_order, %Flop.Meta{flop: flop}) do
-    %{
-      "order_by" => [Atom.to_string(sort_by)],
-      "order_directions" => [Atom.to_string(sort_order)],
-      "page" => "1",
-      "page_size" => to_string(flop.page_size || @pattern_db_page_size)
-    }
-  end
-
-  defp flop_sort_params(sort_by, sort_order, nil) do
-    %{
-      "order_by" => [Atom.to_string(sort_by)],
-      "order_directions" => [Atom.to_string(sort_order)],
-      "page" => "1",
-      "page_size" => to_string(@pattern_db_page_size)
-    }
-  end
-
-  defp patterns_flop_url(socket, params) do
-    query = flop_encode_query(params)
-    base = E2eWeb.Path.with_current_locale(socket.assigns.path)
-
-    if query == "" do
-      base
-    else
-      base <> "?" <> query
-    end
-  end
-
-  defp flop_encode_query(params) do
-    params
-    |> Enum.flat_map(&flop_query_pair/1)
-    |> URI.encode_query()
-  end
-
-  defp flop_query_pair({"order_by", values}) when is_list(values) do
-    Enum.map(values, &{"order_by[]", &1})
-  end
-
-  defp flop_query_pair({"order_directions", values}) when is_list(values) do
-    Enum.map(values, &{"order_directions[]", &1})
-  end
-
-  defp flop_query_pair({key, value}) when is_binary(value), do: [{key, value}]
-  defp flop_query_pair({key, value}) when is_integer(value), do: [{key, Integer.to_string(value)}]
-  defp flop_query_pair({key, value}) when is_atom(value), do: [{key, Atom.to_string(value)}]
-  defp flop_query_pair(_), do: []
 end

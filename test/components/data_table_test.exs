@@ -113,5 +113,19 @@ defmodule Corex.DataTableTest do
       assert html =~ ~s(data-part="actions")
       assert html =~ "Edit Alice"
     end
+
+    test "renders dir on wrapper" do
+      html =
+        render_component(&DataTable.data_table/1,
+          id: "users",
+          dir: "rtl",
+          rows: [%{id: 1, name: "Alice"}],
+          col: [
+            %{label: "Name", inner_block: fn _assigns, row -> row.name end}
+          ]
+        )
+
+      assert html =~ ~s(dir="rtl")
+    end
   end
 end

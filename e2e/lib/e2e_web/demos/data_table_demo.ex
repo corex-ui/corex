@@ -113,6 +113,112 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
+  def styling_rows, do: @anatomy_rows
+
+  def playground_rows, do: @anatomy_rows
+
+  def styling_color_code do
+    styling_full_table_code(
+      "data-table-styling-color-accent",
+      "data-table data-table--accent max-w-none"
+    )
+  end
+
+  def styling_size_code do
+    styling_full_table_code("data-table-styling-size-lg", "data-table data-table--lg max-w-none")
+  end
+
+  def styling_max_width_code do
+    styling_full_table_code("data-table-styling-max-w-md", "data-table max-w-md")
+  end
+
+  defp styling_full_table_code(id, class) do
+    id_str = id
+    class_str = class
+
+    ~S"""
+    <.data_table
+      id="ID_PLACEHOLDER"
+      class="CLASS_PLACEHOLDER"
+      rows={@style_rows}
+      row_id={&"style-#{&1.id}"}
+      sort_by={@style_sort_by}
+      sort_order={@style_sort_order}
+      on_sort="style_sort"
+      selectable
+      selected={@style_selected}
+      on_select="style_select"
+      on_select_all="style_select_all"
+      checkbox_class="checkbox"
+    >
+      <:checkbox_indicator>
+        <.heroicon name="hero-check" />
+      </:checkbox_indicator>
+      <:sort_icon :let={%{direction: direction}}>
+        <.heroicon name={
+          case direction do
+            :asc -> "hero-chevron-up"
+            :desc -> "hero-chevron-down"
+            :none -> "hero-chevron-up-down"
+          end
+        } />
+      </:sort_icon>
+      <:col :let={u} label="ID" name={:id}>{u.id}</:col>
+      <:col :let={u} label="Name" name={:name}>{u.name}</:col>
+      <:col :let={u} label="Role" name={:role}>{u.role}</:col>
+      <:col :let={u} label="Status" name={:status}>{u.status}</:col>
+      <:action :let={u}>
+        <.action class="button button--sm" aria-label={"Edit #{u.name}"}>
+          <.heroicon name="hero-pencil-square" />
+        </.action>
+      </:action>
+    </.data_table>
+    """
+    |> String.replace("ID_PLACEHOLDER", id_str)
+    |> String.replace("CLASS_PLACEHOLDER", class_str)
+  end
+
+  def patterns_row_click_heex do
+    ~S"""
+    <p :if={@pattern_row_clicked}>Row clicked: {@pattern_row_clicked}</p>
+    <p :if={is_nil(@pattern_row_clicked)}>Click a row (not the action button).</p>
+    <.data_table
+      id="pattern-row-click-table"
+      class="data-table max-w-none"
+      rows={@pattern_row_click_rows}
+      row_click={fn row -> JS.push("row_click", value: %{id: row.id, name: row.name}) end}
+    >
+      <:col :let={row} label="ID">{row.id}</:col>
+      <:col :let={row} label="Name">{row.name}</:col>
+      <:action :let={row}>
+        <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+          <.heroicon name="hero-pencil-square" />
+        </.action>
+      </:action>
+    </.data_table>
+    """
+  end
+
+  def patterns_row_click_elixir do
+    ~S'''
+    @pattern_row_click_rows [
+      %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
+      %{id: 2, name: "Bob", role: "User", email: "bob@example.com"}
+    ]
+
+    def mount(_params, _session, socket) do
+      {:ok,
+       socket
+       |> assign(:pattern_row_clicked, nil)
+       |> assign(:pattern_row_click_rows, @pattern_row_click_rows)}
+    end
+
+    def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
+      {:noreply, assign(socket, :pattern_row_clicked, "#{name} (##{id})")}
+    end
+    '''
+  end
+
   def patterns_stream_heex do
     ~S"""
     <.data_table id="pattern-stream-table" class="data-table max-w-none" rows={@streams.pattern_stream}>
@@ -428,40 +534,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
-  def patterns_flop_heex do
-    ~S"""
-    <.data_table
-      id="pattern-flop-table"
-      class="data-table max-w-none"
-      rows={@pattern_flop_rows}
-      row_id={&"flop-#{&1.id}"}
-      sort_by={@pattern_flop_sort_by}
-      sort_order={@pattern_flop_sort_order}
-      on_sort="pattern_flop_sort"
-    >
-      <:sort_icon :let={%{direction: direction}}>
-        <.heroicon name={sort_icon_name(direction)} />
-      </:sort_icon>
-      <:col :let={city} label="Name" name={:name}>{city.name}</:col>
-      <:col :let={city} label="IATA" name={:iata_code}>{city.iata_code}</:col>
-      <:col :let={city} label="Country" name={:iata_country_code}>{city.iata_country_code}</:col>
-    </.data_table>
-
-    <.pagination
-      id="pattern-flop-pagination"
-      class="pagination max-w-none mx-auto"
-      count={@pattern_flop_meta.total_count}
-      page={@pattern_flop_meta.current_page}
-      page_size={@pattern_flop_meta.page_size}
-      controlled
-      on_page_change="pattern_flop_page"
-    >
-      <:prev><.heroicon name="hero-chevron-left" /></:prev>
-      <:next><.heroicon name="hero-chevron-right" /></:next>
-    </.pagination>
-    """
-  end
-
   def patterns_place_migration do
     """
     defmodule MyApp.Repo.Migrations.CreateCities do
@@ -523,35 +595,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
-  def patterns_place_schema_flop do
-    """
-    defmodule MyApp.Place.City do
-      use Ecto.Schema
-      import Ecto.Changeset
-
-      @primary_key {:id, :string, autogenerate: false}
-
-      @derive {
-        Flop.Schema,
-        filterable: [],
-        sortable: [:name, :iata_code, :iata_country_code]
-      }
-
-      schema "cities" do
-        field :name, :string
-        field :iata_code, :string
-        field :iata_country_code, :string
-      end
-
-      def changeset(city, attrs) do
-        city
-        |> cast(attrs, [:id, :name, :iata_code, :iata_country_code])
-        |> validate_required([:name, :iata_code, :iata_country_code])
-      end
-    end
-    """
-  end
-
   def patterns_database_context do
     """
     defmodule MyApp.Place do
@@ -586,32 +629,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
-  def patterns_flop_context do
-    """
-    defmodule MyApp.Place do
-      alias MyApp.Place.City
-
-      def list_cities_flop(params \\\\ %{}) do
-        Flop.validate_and_run(City, params, for: City, default_limit: 5)
-      end
-    end
-    """
-  end
-
-  def patterns_flop_config do
-    """
-    # mix.exs
-    defp deps do
-      [
-        {:flop, "~> 0.26"}
-      ]
-    end
-
-    # config/config.exs
-    config :flop, repo: MyApp.Repo
-    """
-  end
-
   def patterns_place_data_seed do
     """
     alias MyApp.Place
@@ -642,154 +659,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
-  def patterns_flop_liveview do
-    """
-    defmodule MyAppWeb.CityTableLive do
-      use MyAppWeb, :live_view
-
-      alias MyApp.Place
-
-      @page_size 5
-
-      @impl true
-      def mount(_params, _session, socket) do
-        {:ok,
-         socket
-         |> assign(:pattern_flop_rows, [])
-         |> assign(:pattern_flop_meta, nil)
-         |> assign(:pattern_flop_sort_by, :name)
-         |> assign(:pattern_flop_sort_order, :asc)
-         |> assign(:pattern_flop_params, %{})}
-      end
-
-      @impl true
-      def handle_params(params, _uri, socket) do
-        flop_params = take_flop_params(params)
-
-        case Place.list_cities_flop(flop_params) do
-          {:ok, {rows, meta}} ->
-            {:noreply,
-             socket
-             |> assign(:pattern_flop_rows, rows)
-             |> assign(:pattern_flop_meta, meta)
-             |> assign(:pattern_flop_params, flop_params)
-             |> assign_flop_sort(meta)}
-
-          {:error, _meta} ->
-            case Place.list_cities_flop(%{}) do
-              {:ok, {rows, meta}} ->
-                {:noreply,
-                 socket
-                 |> assign(:pattern_flop_rows, rows)
-                 |> assign(:pattern_flop_meta, meta)
-                 |> assign(:pattern_flop_params, %{})
-                 |> assign_flop_sort(meta)}
-
-              {:error, _} ->
-                {:noreply, socket}
-            end
-        end
-      end
-
-      def handle_event("pattern_flop_sort", %{"sort_by" => sort_by_param}, socket) do
-        sort_by = String.to_existing_atom(sort_by_param)
-        current_by = socket.assigns.pattern_flop_sort_by
-        current_order = socket.assigns.pattern_flop_sort_order
-
-        {sort_by, sort_order} =
-          if current_by == sort_by do
-            {sort_by, toggle_order(current_order)}
-          else
-            {sort_by, :asc}
-          end
-
-        params =
-          socket.assigns.pattern_flop_params
-          |> Map.merge(flop_sort_params(sort_by, sort_order, socket.assigns.pattern_flop_meta))
-
-        {:noreply, push_patch(socket, to: flop_patch_url(socket, params))}
-      end
-
-      def handle_event("pattern_flop_page", %{"page" => page}, socket) do
-        params = Map.put(socket.assigns.pattern_flop_params, "page", to_string(parse_page(page)))
-        {:noreply, push_patch(socket, to: flop_patch_url(socket, params))}
-      end
-
-      defp take_flop_params(params) do
-        params
-        |> Map.take(["page", "page_size", "order_by", "order_directions"])
-        |> Enum.reject(fn {_k, v} -> v in [nil, ""] end)
-        |> Map.new()
-      end
-
-      defp assign_flop_sort(socket, %Flop.Meta{flop: flop}) do
-        sort_by = flop.order_by |> List.wrap() |> List.first(:name)
-        sort_order = flop.order_directions |> List.wrap() |> List.first(:asc)
-
-        socket
-        |> assign(:pattern_flop_sort_by, sort_by)
-        |> assign(:pattern_flop_sort_order, sort_order)
-      end
-
-      defp flop_sort_params(sort_by, sort_order, %Flop.Meta{flop: flop}) do
-        %{
-          "order_by" => [Atom.to_string(sort_by)],
-          "order_directions" => [Atom.to_string(sort_order)],
-          "page" => "1",
-          "page_size" => to_string(flop.page_size || @page_size)
-        }
-      end
-
-      defp flop_sort_params(sort_by, sort_order, nil) do
-        %{
-          "order_by" => [Atom.to_string(sort_by)],
-          "order_directions" => [Atom.to_string(sort_order)],
-          "page" => "1",
-          "page_size" => to_string(@page_size)
-        }
-      end
-
-      defp flop_patch_url(socket, params) do
-        base = MyAppWeb.Path.with_current_locale(socket.assigns.path)
-        query = flop_encode_query(params)
-        if query == "", do: base, else: base <> "?" <> query
-      end
-
-      defp flop_encode_query(params) do
-        params
-        |> Enum.flat_map(&flop_query_pair/1)
-        |> URI.encode_query()
-      end
-
-      defp flop_query_pair({"order_by", values}) when is_list(values) do
-        Enum.map(values, &{"order_by[]", &1})
-      end
-
-      defp flop_query_pair({"order_directions", values}) when is_list(values) do
-        Enum.map(values, &{"order_directions[]", &1})
-      end
-
-      defp flop_query_pair({key, value}) when is_binary(value), do: [{key, value}]
-      defp flop_query_pair({key, value}) when is_integer(value), do: [{key, Integer.to_string(value)}]
-      defp flop_query_pair(_), do: []
-
-      defp toggle_order(:asc), do: :desc
-      defp toggle_order(:desc), do: :asc
-
-      defp parse_page(page) when is_integer(page) and page > 0, do: page
-
-      defp parse_page(page) when is_binary(page) do
-        case Integer.parse(page) do
-          {n, _} when n > 0 -> n
-          _ -> 1
-        end
-      end
-
-      defp parse_page(_), do: 1
-    end
-    """
-  end
-
   def patterns_database_data do
     [
       patterns_place_migration(),
@@ -800,30 +669,11 @@ defmodule E2eWeb.Demos.DataTableDemo do
     |> Enum.join("\n\n")
   end
 
-  def patterns_flop_data do
-    [
-      patterns_flop_config(),
-      patterns_place_migration(),
-      patterns_place_schema_flop(),
-      patterns_flop_context(),
-      patterns_place_data_seed()
-    ]
-    |> Enum.join("\n\n")
-  end
-
   def patterns_database_code_tabs do
     [
       %{value: "heex", label: "Heex", language: :heex, code: patterns_database_heex()},
       %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_database_elixir()},
       %{value: "data", label: "Data", language: :elixir, code: patterns_database_data()}
-    ]
-  end
-
-  def patterns_flop_code_tabs do
-    [
-      %{value: "heex", label: "Heex", language: :heex, code: patterns_flop_heex()},
-      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_flop_liveview()},
-      %{value: "data", label: "Data", language: :elixir, code: patterns_flop_data()}
     ]
   end
 end
