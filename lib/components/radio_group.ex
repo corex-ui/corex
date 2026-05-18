@@ -14,9 +14,9 @@ defmodule Corex.RadioGroup do
     name="rg-minimal"
     class="radio-group"
     items={[
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]}
   >
     <:label>Choose one</:label>
@@ -31,9 +31,53 @@ defmodule Corex.RadioGroup do
     name="rg-indicator"
     class="radio-group"
     items={[
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  ### Invalid
+
+  ```heex
+  <.radio_group
+    id="radio-group-anatomy-invalid"
+    name="rg-invalid"
+    class="radio-group"
+    invalid
+    errors={["Required"]}
+    items={[
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
+    ]}
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.radio_group>
+  ```
+
+  ### Read-only
+
+  ```heex
+  <.radio_group
+    id="radio-group-anatomy-readonly"
+    name="rg-readonly"
+    class="radio-group"
+    read_only
+    value="lorem"
+    items={[
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]}
   >
     <:label>Choose one</:label>
@@ -66,9 +110,9 @@ defmodule Corex.RadioGroup do
     class="radio-group"
     on_value_change="radio_group_changed"
     items={[
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]}
   >
     <:label>Choose one</:label>
@@ -101,9 +145,9 @@ defmodule Corex.RadioGroup do
     class="radio-group"
     on_value_change_client="radio-group-changed"
     items={[
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]}
   >
     <:label>Choose one</:label>
@@ -114,6 +158,48 @@ defmodule Corex.RadioGroup do
   ```javascript
   const el = document.getElementById("radio-group-events-client");
   el?.addEventListener("radio-group-changed", (event) => console.log(event.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.radio_group>`. Imperative helpers set the selected value.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set value (server) | `socket` |
+  | [`clear_value/1`](#clear_value/1) | Clear selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_value/2`](#clear_value/2) | Clear selection (server) | `socket` |
+  | [`focus/1`](#focus/1) | Focus the group (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focus/2`](#focus/2) | Focus the group (server) | `socket` |
+  | [`value/1`](#value/1) | Read current value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`value/2`](#value/2) | Read current value (client, options) | `%Phoenix.LiveView.JS{}` |
+  | [`value/3`](#value/3) | Read current value (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
+
+  ```heex
+  <.action phx-click={Corex.RadioGroup.set_value("radio-group-api-server", "duis")} class="button button--sm">
+    Set Duis
+  </.action>
+  <.radio_group
+    id="radio-group-api-server"
+    name="rg-api-server"
+    class="radio-group"
+    value="lorem"
+    items={[
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
+    ]}
+  >
+    <:label>Pick</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
   ```
 
   <!-- tabs-close -->
@@ -135,9 +221,9 @@ defmodule Corex.RadioGroup do
     value={@api_controlled_value}
     on_value_change="radio_group_api_controlled"
     items={[
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]}
   >
     <:label>Pick</:label>
@@ -151,11 +237,30 @@ defmodule Corex.RadioGroup do
   end
   ```
 
+  ### Stream
+
+  Use `Phoenix.LiveView.stream/3` to add or remove items at runtime. Keep `@items_list` in sync with the stream and pass it as `items`. Configure `dom_id` to match each item (`radio-group:stream-radio-group:item:#{value}`).
+
+  ```heex
+  <.radio_group
+    id="stream-radio-group"
+    name="stream-rg"
+    class="radio-group"
+    items={@items_list}
+    value={@stream_value}
+    controlled
+    on_value_change="patterns_stream_value"
+  >
+    <:label>Choose one</:label>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
   <!-- tabs-close -->
 
   ## Form
 
-  Use `field={f[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
+  Use `field={@form[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms. Pass `invalid` only when you want invalid styling.
 
   ```heex
   <.form for={@form} id={@form.id} phx-change="validate">
@@ -163,13 +268,17 @@ defmodule Corex.RadioGroup do
       field={@form[:choice]}
       class="radio-group"
       items={[
-        %{value: "a", label: "Option A"},
-        %{value: "b", label: "Option B"},
-        %{value: "c", label: "Option C"}
+        %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+        %{value: "donec", label: "Donec condimentum ex mi"}
       ]}
     >
       <:label>Choose one</:label>
       <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.radio_group>
   </.form>
   ```
@@ -223,6 +332,11 @@ defmodule Corex.RadioGroup do
 
   @doc type: :component
   use Phoenix.Component
+
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [respond_to_fields: 1]
 
   alias Corex.RadioGroup.Anatomy.{
     Indicator,
@@ -289,7 +403,6 @@ defmodule Corex.RadioGroup do
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
     |> assign(:value, v)
-    |> assign(:invalid, errors != [])
     |> radio_group()
   end
 
@@ -425,5 +538,97 @@ defmodule Corex.RadioGroup do
         raise ArgumentError,
               "radio_group items must be {value, label}, [value, label], or %{value: ..., label: ...}, got: #{inspect(other)}"
     end)
+  end
+
+  @doc type: :api
+  @doc """
+  Sets radio group selection from the client. Dispatches `corex:radio-group:set-value` on the hook root.
+  """
+  def set_value(radio_group_id, value) when is_binary(radio_group_id) and is_binary(value) do
+    JS.dispatch("corex:radio-group:set-value",
+      to: "##{radio_group_id}",
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets radio group selection from the server via `push_event` (`radio_group_set_value`).
+  """
+  def set_value(socket, radio_group_id, value)
+      when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) and is_binary(value) do
+    LiveView.push_event(socket, "radio_group_set_value", %{id: radio_group_id, value: value})
+  end
+
+  @doc type: :api
+  @doc """
+  Clears radio group selection from the client. Dispatches `corex:radio-group:clear-value` on the hook root.
+  """
+  def clear_value(radio_group_id) when is_binary(radio_group_id) do
+    JS.dispatch("corex:radio-group:clear-value",
+      to: "##{radio_group_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Clears radio group selection from the server via `push_event` (`radio_group_clear_value`).
+  """
+  def clear_value(socket, radio_group_id)
+      when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
+    LiveView.push_event(socket, "radio_group_clear_value", %{id: radio_group_id})
+  end
+
+  @doc type: :api
+  @doc """
+  Focuses the radio group from the client. Dispatches `corex:radio-group:focus` on the hook root.
+  """
+  def focus(radio_group_id) when is_binary(radio_group_id) do
+    JS.dispatch("corex:radio-group:focus", to: "##{radio_group_id}", bubbles: false)
+  end
+
+  @doc type: :api
+  @doc """
+  Focuses the radio group from the server via `push_event` (`radio_group_focus`).
+  """
+  def focus(socket, radio_group_id)
+      when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
+    LiveView.push_event(socket, "radio_group_focus", %{id: radio_group_id})
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the radio group's current value from the client. See `value/3` for `:respond_to`.
+  """
+  def value(radio_group_id) when is_binary(radio_group_id), do: value(radio_group_id, [])
+
+  def value(radio_group_id, opts) when is_binary(radio_group_id) and is_list(opts) do
+    JS.dispatch("corex:radio-group:value",
+      to: "##{radio_group_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the radio group's current value from the client via `push_event` (`radio_group_value`).
+
+  The hook responds with `radio_group_value_response` and/or dispatches `radio-group-value` depending on `:respond_to`.
+  """
+  def value(socket, radio_group_id)
+      when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
+    value(socket, radio_group_id, [])
+  end
+
+  def value(socket, radio_group_id, opts)
+      when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) and is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "radio_group_value",
+      Map.merge(%{id: radio_group_id}, respond_to_fields(opts))
+    )
   end
 end

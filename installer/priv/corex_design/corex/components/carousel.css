@@ -19,7 +19,7 @@
     aspect-ratio: 4/3;
     overflow: hidden;
     min-height: 0;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     justify-content: center;
     position: relative;
   }
@@ -29,7 +29,7 @@
     position: absolute;
     flex-direction: column;
     width: auto;
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     overflow: hidden;
     gap: var(--spacing-space);
     justify-content: center;
@@ -50,7 +50,7 @@
   .carousel [data-scope="carousel"][data-part="next-trigger"],
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
     @apply ui-trigger ui-trigger--square ui-trigger--sm;
-    min-height: --spacing(6);
+    min-height: var(--spacing-size-sm);
     padding: 0;
 
     &:disabled,
@@ -126,8 +126,8 @@
   .carousel [data-scope="carousel"][data-part="indicator"] {
     @apply ui-trigger ui-trigger--circle;
 
-    min-height: --spacing(4);
-    min-width: --spacing(4);
+    min-height: var(--spacing-space);
+    min-width: var(--spacing-space);
     padding: 0;
   }
 
@@ -164,7 +164,8 @@
   [data-scope="carousel"][data-part="prev-trigger"],
   [data-scope="carousel"][data-part="autoplay-trigger"] {
     gap: --value(--spacing-space-*, [length]);
-    
+    min-height: --value(--spacing-size-*, [length]);
+
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
     background-color: --value(--color-ui, [color]);

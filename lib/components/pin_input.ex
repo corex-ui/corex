@@ -219,7 +219,6 @@ defmodule Corex.PinInput do
     |> assign(:form, field.form.id)
     |> assign(:value, value)
     |> assign(:value_str, value_str)
-    |> assign(:invalid, errors != [])
     |> pin_input()
   end
 

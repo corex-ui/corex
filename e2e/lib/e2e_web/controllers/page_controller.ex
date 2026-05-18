@@ -1724,6 +1724,10 @@ defmodule E2eWeb.PageController do
     render(conn, :radio_group_page)
   end
 
+  def radio_group_styling_page(conn, _params) do
+    render(conn, :radio_group_styling_page)
+  end
+
   defp assign_radio_group_form_docs(conn, scroll_to) do
     conn
     |> assign(:scroll_to, scroll_to)

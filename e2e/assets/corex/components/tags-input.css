@@ -1,9 +1,9 @@
 @import "../main.css";
 
 @layer components {
-
   .tags-input {
     @apply ui-root;
+
     width: 100%;
     max-width: var(--container-md);
   }
@@ -14,6 +14,7 @@
 
   .tags-input [data-scope="tags-input"][data-part="root"] {
     @apply ui-root;
+
     position: relative;
   }
 
@@ -50,10 +51,21 @@
     border-color: var(--color-alert);
   }
 
+  .tags-input [data-scope="tags-input"][data-part="control"][data-focus] {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
   .tags-input [data-scope="tags-input"][data-part="input"] {
     @apply ui-input;
 
+    flex: 1 1 8rem;
+    min-width: 6rem;
     max-width: var(--container-7xs);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="input"][data-empty] {
+    min-width: 4rem;
   }
 
   .tags-input [data-scope="tags-input"][data-part="item"] {
@@ -62,24 +74,40 @@
     align-items: center;
     gap: var(--spacing-space);
     max-width: 100%;
+  }
 
+  .tags-input [data-scope="tags-input"][data-part="item-preview"][hidden] {
+    display: none !important;
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-preview"] {
     @apply ui-trigger;
   }
 
+  .tags-input [data-scope="tags-input"][data-part="item-text"] {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 12rem;
+  }
 
   .tags-input [data-scope="tags-input"][data-part="item-delete-trigger"] {
     @apply ui-trigger ui-trigger--square;
+
     min-height: calc(var(--spacing-size) * 0.6);
+    min-width: calc(var(--spacing-size) * 0.6);
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="item-input"][hidden] {
+    display: none !important;
   }
 
   .tags-input [data-scope="tags-input"][data-part="item-input"] {
     @apply ui-input;
+
     max-width: var(--container-7xs);
   }
-
 
   .tags-input [data-scope="tags-input"][data-part="error"] {
     @apply ui-error;

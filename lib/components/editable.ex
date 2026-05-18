@@ -76,6 +76,10 @@ defmodule Corex.Editable do
   <.form for={@form} id={@form.id} phx-change="validate">
     <.editable field={@form[:name]} class="editable">
       <:label>Name</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
@@ -97,6 +101,7 @@ defmodule Corex.Editable do
   [data-scope="editable"][data-part="control"] {}
   [data-scope="editable"][data-part="submit-trigger"] {}
   [data-scope="editable"][data-part="cancel-trigger"] {}
+  [data-scope="editable"][data-part="error"] {}
   ```
 
   If you wish to use the default Corex styling, you can use the class `editable` on the component.
@@ -250,6 +255,8 @@ defmodule Corex.Editable do
     doc: "A form field struct, e.g. f[:text] or @form[:text]"
   )
 
+  attr(:errors, :list, default: [], doc: "List of error messages to display")
+
   attr(:rest, :global)
 
   slot :label, required: true do
@@ -268,6 +275,10 @@ defmodule Corex.Editable do
     attr(:class, :string, required: false)
   end
 
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
   def editable(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
@@ -278,7 +289,7 @@ defmodule Corex.Editable do
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("text", field.value)))
     |> assign(:default_value, nil)
-    |> assign(:invalid, errors != [])
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
     |> editable()
   end
 
@@ -360,6 +371,9 @@ defmodule Corex.Editable do
         </div>
         </div>
 
+      </div>
+      <div :if={@error != []} :for={msg <- @errors} data-scope="editable" data-part="error">
+        {render_slot(@error, msg)}
       </div>
     </div>
     """

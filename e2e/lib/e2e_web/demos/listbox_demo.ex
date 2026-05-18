@@ -302,14 +302,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <Layouts.app
-          flash={@flash}
-          path={@path}
-          mode={@mode}
-          theme={@theme}
-          locale={@locale}
-        >
-          <div class="flex flex-col gap-3 w-full max-w-xl">
+        <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
               <.action phx-click="add_item" class="button button--sm button--accent">
                 <.heroicon name="hero-plus" /> Add item
@@ -324,7 +317,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
           </div>
-        </Layouts.app>
         """
       end
     end
@@ -420,14 +412,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <Layouts.app
-          flash={@flash}
-          path={@path}
-          mode={@mode}
-          theme={@theme}
-          locale={@locale}
-        >
-          <div class="flex flex-col gap-3 w-full max-w-xl">
+        <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
               <.action
                 phx-click="add_to_group"
@@ -457,7 +442,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
           </div>
-        </Layouts.app>
         """
       end
     end
@@ -512,14 +496,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <Layouts.app
-          flash={@flash}
-          path={@path}
-          mode={@mode}
-          theme={@theme}
-          locale={@locale}
-        >
-          <div class="flex flex-col gap-3 max-w-xl w-full">
+        <div class="flex flex-col gap-3 max-w-xl w-full">
             <.listbox
               id="listbox-patterns-controlled-field"
               class="listbox"
@@ -545,7 +522,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
               value: {inspect(@listbox_controlled_value)}
             </p>
           </div>
-        </Layouts.app>
         """
       end
     end

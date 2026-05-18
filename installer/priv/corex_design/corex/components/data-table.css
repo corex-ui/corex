@@ -101,7 +101,7 @@
 
   .data-table [data-scope="data-table"][data-part="row"]:hover {
     background-color: var(--color-ui-hover);
-    padding-inline: --spacing(4);
+    padding-inline: var(--spacing-space);
   }
 
   .data-table [data-scope="data-table"][data-part="actions"] {

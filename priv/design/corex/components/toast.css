@@ -73,8 +73,8 @@
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     font-weight: var(--font-weight-medium);
-    padding: --spacing(6);
-    min-height: --spacing(14);
+    padding: var(--spacing-space-lg);
+    min-height: var(--spacing-size-lg);
     white-space: pre-line;
   }
 
@@ -83,9 +83,9 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    gap: calc(var(--spacing) * 2);
-    padding-inline: --spacing(6);
-    padding-block-end: --spacing(4);
+    gap: var(--spacing-space);
+    padding-inline: var(--spacing-space-lg);
+    padding-block-end: var(--spacing-space);
   }
 
   .toast [data-scope="toast"][data-part="action-trigger"] {
@@ -133,7 +133,7 @@
   }
 
   .toast [data-scope="toast"][data-part="progressbar"] {
-    height: --spacing(1);
+    height: var(--spacing-space-sm);
     background: linear-gradient(to left,
         var(--color-ink-muted),
         var(--color-ink));
@@ -160,7 +160,7 @@
     @apply ui-icon ui-icon--sm;
 
     display: none;
-    min-height: --spacing(5);
+    min-height: var(--spacing-size-sm);
 
     animation: spin 1s linear infinite;
   }

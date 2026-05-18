@@ -27,6 +27,12 @@ defmodule Corex.EditableTest do
 
       assert html =~ ~r/aria-label="Custom input"/
     end
+
+    test "renders error part when errors and error slot are set" do
+      html = render_component(&CorexTest.ComponentHelpers.render_editable_with_errors/1, [])
+      assert html =~ ~r/data-part="error"/
+      assert html =~ "blank"
+    end
   end
 
   describe "set_value/2" do

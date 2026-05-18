@@ -294,6 +294,18 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_editable_with_errors(assigns) do
+    ~H"""
+    <.editable value="text" errors={["can't be blank"]}>
+      <:label>Label</:label>
+      <:error :let={msg}>{msg}</:error>
+      <:edit_trigger>Edit</:edit_trigger>
+      <:submit_trigger>Save</:submit_trigger>
+      <:cancel_trigger>Cancel</:cancel_trigger>
+    </.editable>
+    """
+  end
+
   def render_floating_panel(assigns) do
     ~H"""
     <.floating_panel>

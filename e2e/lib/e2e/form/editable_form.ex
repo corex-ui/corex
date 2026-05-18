@@ -9,5 +9,6 @@ defmodule E2e.Form.EditableForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:text])
+    |> validate_required([:text], message: "can't be blank")
   end
 end

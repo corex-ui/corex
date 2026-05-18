@@ -1444,8 +1444,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <Layouts.app flash={@flash} path={@path} mode={@mode} theme={@theme} locale={@locale}>
-          <div class="flex flex-col gap-3 w-full max-w-xl">
+        <div class="flex flex-col gap-3 w-full max-w-xl">
             <div class="flex flex-wrap gap-2">
               <.action phx-click="add_item" class="button button--sm button--accent">
                 <.heroicon name="hero-plus" /> Add item
@@ -1458,7 +1457,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
               <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
             </.accordion>
           </div>
-        </Layouts.app>
         """
       end
     end

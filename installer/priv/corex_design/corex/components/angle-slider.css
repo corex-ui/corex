@@ -81,8 +81,8 @@
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="control"] {
-    --size: --spacing(14);
-    --thumb-size: --spacing(7);
+    --size: var(--spacing-size-lg);
+    --thumb-size: calc(var(--spacing-size-lg) * 0.5);
     --thumb-indicator-size: min(var(--thumb-size), calc(var(--size) / 2));
 
     width: var(--size);
@@ -119,7 +119,7 @@
     right: -1px;
     top: -1px;
     height: var(--thumb-indicator-size);
-    width: --spacing(1);
+    width: var(--spacing-space-sm);
     background-color: var(--color-ink);
     border-radius: var(--radius-md);
   }
@@ -249,8 +249,8 @@
     [data-scope="angle-slider"][data-part="label"],
   [data-scope="angle-slider"][data-part="root"][data-loading]
     [data-scope="angle-slider"][data-part="label"] {
-    height: --spacing(3);
-    width: --spacing(32);
+    height: var(--spacing-space);
+    width: var(--container-2xs);
     max-width: 60%;
     margin-inline: auto;
     border-radius: var(--radius-md);
@@ -290,7 +290,7 @@
   [data-scope="angle-slider"][data-part="root"][data-loading]
     [data-scope="angle-slider"][data-part="value-text"] {
     justify-content: center;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
   }
 
   .angle-slider
@@ -351,8 +351,8 @@
     color: --value(--color-ink, [color]);
     border-color: --value(--color-border, [color]);
 
-    --size: calc(--value(--spacing-*, [length]) * 14);
-    --thumb-size: calc(--value(--spacing-*, [length]) * 7);
+    --size: --value(--spacing-size-*, [length]);
+    --thumb-size: calc(--value(--spacing-size-*, [length]) * 0.5);
   }
 
   [data-scope="angle-slider"][data-part="thumb"]::before {

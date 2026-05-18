@@ -15,8 +15,8 @@
     position: relative;
     display: inline-grid;
     place-items: center;
-    width: --spacing(11);
-    height: --spacing(11);
+    width: var(--spacing-size);
+    height: var(--spacing-size);
     aspect-ratio: 1 / 1;
     max-width: 100%;
     border-radius: var(--radius-full);
@@ -35,7 +35,7 @@
     font-weight: var(--font-weight-normal);
     border-radius: inherit;
     border: 1px solid var(--color-border);
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     color: var(--color-ink);
     background-color: var(--color-ui);
   }
@@ -86,8 +86,8 @@
   }
 
   .avatar.avatar--sm [data-scope="avatar"][data-part="root"] {
-    width: --spacing(8);
-    height: --spacing(8);
+    width: var(--spacing-size-sm);
+    height: var(--spacing-size-sm);
   }
 
   .avatar.avatar--sm [data-scope="avatar"][data-part="fallback"] {
@@ -96,8 +96,8 @@
   }
 
   .avatar.avatar--md [data-scope="avatar"][data-part="root"] {
-    width: --spacing(11);
-    height: --spacing(11);
+    width: var(--spacing-size);
+    height: var(--spacing-size);
   }
 
   .avatar.avatar--md [data-scope="avatar"][data-part="fallback"] {
@@ -106,8 +106,8 @@
   }
 
   .avatar.avatar--lg [data-scope="avatar"][data-part="root"] {
-    width: --spacing(14);
-    height: --spacing(14);
+    width: var(--spacing-size-lg);
+    height: var(--spacing-size-lg);
   }
 
   .avatar.avatar--lg [data-scope="avatar"][data-part="fallback"] {
@@ -116,8 +116,8 @@
   }
 
   .avatar.avatar--xl [data-scope="avatar"][data-part="root"] {
-    width: --spacing(18);
-    height: --spacing(18);
+    width: var(--spacing-size-xl);
+    height: var(--spacing-size-xl);
   }
 
   .avatar.avatar--xl [data-scope="avatar"][data-part="fallback"] {
@@ -137,14 +137,14 @@
 
 @utility avatar--* {
   [data-scope="avatar"][data-part="root"] {
-    max-width: --value(--spacing-*, [length]);
+    max-width: --value(--container-*, [length]);
+    width: --value(--spacing-size-*, [length]);
+    height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="avatar"][data-part="fallback"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    width: --value(--spacing-*, [length]);
-    height: --value(--spacing-*, [length]);
     background-color: --value(--color-ui, [color]);
     color: --value(--color-ink, [color]);
     border-color: --value(--color-border, [color]);

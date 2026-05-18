@@ -6,8 +6,8 @@
   }
 
   .switch [data-scope="switch"][data-part="root"] {
-    --switch-track-width: var(--spacing-size);
-    --switch-track-height: calc(var(--spacing-size) * 0.5);
+    --switch-track-width: calc(var(--spacing-size) * 0.8);
+    --switch-track-height: calc(var(--spacing-size) * 0.5 * 0.8);
     --switch-track-diff: calc(
       var(--switch-track-width) - var(--switch-track-height)
     );
@@ -34,7 +34,7 @@
     box-sizing: content-box;
     border-radius: var(--radius-4xl);
     border: 1px solid var(--color-border);
-    padding: --spacing(1);
+    padding: calc(var(--spacing-space) * 0.3);
     width: var(--switch-track-width);
     height: var(--switch-track-height);
     transition-property:
@@ -106,12 +106,17 @@
 @utility switch--* {
 
   [data-scope="switch"][data-part="control"] {
-    --switch-track-width: --value(--spacing-size-*, [length]);
-    --switch-track-height: calc(--value(--spacing-size-*, [length]) * 0.5);
+    --switch-track-width: calc(--value(--spacing-size-*, [length]) * 0.8);
+    --switch-track-height: calc(--value(--spacing-size-*, [length]) * 0.5 * 0.8);
     --switch-track-diff: calc(
       var(--switch-track-width) - var(--switch-track-height)
     );
     --switch-thumb-x: var(--switch-track-diff);
+    padding: calc(--value(--spacing-space-*, [length]) * 0.3);
+  }
+
+  [data-scope="switch"][data-part="thumb"]:not([data-state="checked"]) {
+    background-color: --value(--color-*, [color]);
   }
 
   [data-scope="switch"][data-part="control"][data-state="checked"] {
@@ -120,5 +125,9 @@
     & [data-scope="switch"][data-part="thumb"] {
       background-color: --value(--color-*-ink, [color]);
     }
+  }
+
+  [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    background-color: --value(--color-*-ink, [color]);
   }
 }

@@ -63,8 +63,8 @@
     @apply ui-trigger ui-trigger--sm ui-trigger--square;
 
     position: absolute;
-    top: --spacing(1);
-    inset-inline-end: --spacing(1);
+    top: var(--spacing-space-sm);
+    inset-inline-end: var(--spacing-space-sm);
   }
 
   .signature-pad [data-part="preview"] {

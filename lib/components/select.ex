@@ -192,6 +192,19 @@ defmodule Corex.Select do
   end
   ```
 
+  ### Stream
+
+  Use `Phoenix.LiveView.stream/3` to add or remove options at runtime. Keep `@items_list` in sync and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` as `select:stream-select:item:#{value}`.
+
+  ```heex
+  <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+    <:label>Country</:label>
+    <:trigger>
+      <.heroicon name="hero-chevron-down" class="icon" />
+    </:trigger>
+  </.select>
+  ```
+
   <!-- tabs-close -->
 
   ## Form

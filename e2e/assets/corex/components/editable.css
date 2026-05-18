@@ -81,6 +81,10 @@
   .editable [data-scope="editable"][data-part="submit-trigger"] {
     @apply ui-trigger--success;
   }
+
+  .editable [data-scope="editable"][data-part="error"] {
+    @apply ui-error;
+  }
 }
 
 @utility editable--* {

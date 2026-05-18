@@ -18,10 +18,10 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
 
     view
     |> form("#radio-group-live-form")
-    |> render_submit(%{"radio_group_live" => %{"choice" => "a"}})
+    |> render_submit(%{"radio_group_live" => %{"choice" => "lorem"}})
 
     assert_push_event(view, "toast-create", %{
-      description: "Submitted: choice=a",
+      description: "Submitted: choice=lorem",
       duration: 5000,
       groupId: "layout-toast",
       title: "Submitted",
@@ -45,10 +45,10 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
 
     view
     |> form("#radio-group-strict-form-live")
-    |> render_submit(%{"radio_group_strict" => %{"choice" => "c"}})
+    |> render_submit(%{"radio_group_strict" => %{"choice" => "donec"}})
 
     assert_push_event(view, "toast-create", %{
-      description: "Submitted: choice=c",
+      description: "Submitted: choice=donec",
       duration: 5000,
       groupId: "layout-toast",
       title: "Submitted",

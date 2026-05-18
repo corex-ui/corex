@@ -50,7 +50,7 @@
   }
 
   .tree-view [data-scope="tree-view"][data-part="branch-content"] {
-    margin-inline-start: --spacing(4);
+    margin-inline-start: var(--spacing-space);
     min-width: 0;
     align-self: stretch;
     position: relative;

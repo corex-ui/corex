@@ -89,7 +89,7 @@
     flex: 1 1 auto;
     min-height: fit-content;
     height: var(--height);
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     background-color: var(--color-root);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     border: 1px solid var(--color-border);
@@ -105,7 +105,7 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    padding-block: --spacing(1);
+    padding-block: var(--spacing-space-sm);
     padding-inline: var(--spacing-space);
     gap: var(--spacing-space);
   }

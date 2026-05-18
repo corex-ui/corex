@@ -48,6 +48,60 @@ defmodule Corex.RadioGroupTest do
     end
   end
 
+  describe "set_value/2" do
+    test "returns JS command" do
+      js = RadioGroup.set_value("my-radio-group", "lorem")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = RadioGroup.set_value(socket, "my-radio-group", "duis")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "clear_value/1" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = RadioGroup.clear_value("my-radio-group")
+    end
+  end
+
+  describe "clear_value/2" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = RadioGroup.clear_value(socket, "my-radio-group")
+    end
+  end
+
+  describe "focus/1" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = RadioGroup.focus("my-radio-group")
+    end
+  end
+
+  describe "focus/2" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = RadioGroup.focus(socket, "my-radio-group")
+    end
+  end
+
+  describe "value/1" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = RadioGroup.value("my-radio-group")
+    end
+  end
+
+  describe "value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = RadioGroup.value(socket, "my-radio-group")
+    end
+  end
+
   describe "Connect.root/1" do
     test "returns root attributes without label" do
       assigns = %{id: "test-radio", dir: "ltr", orientation: "vertical", has_label: false}

@@ -29,7 +29,7 @@
   .tooltip [data-scope="tooltip"][data-part="content"] {
     @apply ui-content;
 
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     max-width: var(--container-5xs);
     position: relative;
     z-index: 1;

@@ -62,6 +62,11 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 - Tooltip (Zag.js)
 - Tree View (Zag.js)
 
+### Changed
+
+- **Form `invalid` is opt-in** — `field={}` no longer sets `invalid` from changeset errors on radio group, pin input, color picker, or editable (same as checkbox, switch, select). Pass `invalid` explicitly when you want invalid styling.
+- **Radio group** — Size and color modifier utilities in CSS; full Zag API surface (`set_value`, `clear_value`, `focus`, `value`); form docs show the `:error` slot; e2e style page and pattern stream examples.
+
 ### Requirements
 
 Elixir ~> 1.17, Phoenix ~> 1.8, LiveView ~> 1.1.

@@ -62,6 +62,54 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
+  def styling_color_code do
+    ~S"""
+    <.editable id="editable-style-default" class="editable" value="Default">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    </.editable>
+    <.editable id="editable-style-accent" class="editable editable--accent" value="Accent">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    </.editable>
+    <.editable id="editable-style-brand" class="editable editable--brand" value="Brand">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.editable id="editable-style-color-default" class="editable" value="Default">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-color-accent" class="editable editable--accent" value="Accent">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-color-brand" class="editable editable--brand" value="Brand">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.editable id="editable-style-sm" class="editable editable--sm" value="SM">
@@ -272,6 +320,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       def changeset(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:text])
+        |> validate_required([:text], message: "can't be blank")
       end
     end
     """
@@ -295,6 +344,10 @@ defmodule E2eWeb.Demos.EditableDemo do
         class="editable"
       >
         <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
@@ -403,6 +456,10 @@ defmodule E2eWeb.Demos.EditableDemo do
         class="editable"
       >
         <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
@@ -489,6 +546,10 @@ defmodule E2eWeb.Demos.EditableDemo do
         class="editable"
       >
         <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>

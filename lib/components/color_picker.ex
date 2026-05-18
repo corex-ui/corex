@@ -176,7 +176,6 @@ defmodule Corex.ColorPicker do
     |> assign(:id, field.id)
     |> assign(:name, field.name)
     |> assign(:value, v)
-    |> assign(:invalid, errors != [])
     |> color_picker()
   end
 

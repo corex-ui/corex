@@ -53,7 +53,7 @@
     flex-direction: column;
     flex-shrink: 0;
     gap: 0;
-    width: --spacing(11);
+    width: var(--spacing-size);
     min-height: var(--spacing-size);
     height: var(--spacing-size);
     max-height: var(--spacing-size);
@@ -105,7 +105,7 @@
   }
 
   [data-part="trigger-group"] {
-    width: --spacing(11);
+    width: --value(--spacing-size-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
     height: --value(--spacing-size-*, [length]);
     max-height: --value(--spacing-size-*, [length]);

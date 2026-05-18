@@ -46,12 +46,12 @@
 
 
   .data-list [data-scope="data-list"][data-part="item"] {
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     transition: background-color 0.2s ease-in-out;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     background-color: var(--color-layer);
     color: var(--color-ink);
   }

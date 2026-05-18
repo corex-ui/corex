@@ -33,7 +33,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | pagination | Zag | yes | yes |  -  | yes | yes | yes | yes |  -  |  -  |
 | password-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
 | pin-input | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
-| radio-group | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
+| radio-group | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form |
 | select | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |
 | signature | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form |
 | switch | Zag + form | yes | yes | yes | yes | yes | yes | yes |  -  | live-form, controlled |

@@ -289,6 +289,17 @@ defmodule Corex.Dialog do
   ```
 
   <!-- tabs-close -->
+
+  ## Style
+
+  Stack modifiers on the host (`class` on `<.dialog>`). See the e2e Style page for size (`dialog--sm`, `dialog--lg`) and sidebar (`dialog--sidebar`) examples.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `dialog dialog--sm` |
+  | LG | `dialog dialog--lg` |
+  | Sidebar | `dialog dialog--sidebar` |
+
   '''
 
   defmodule Translation do

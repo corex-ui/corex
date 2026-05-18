@@ -58,6 +58,48 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def with_triggers_code, do: minimal_code()
   def with_triggers_example(assigns), do: minimal_example(assigns)
 
+  def styling_color_code do
+    ~S"""
+    <.number_input id="number-input-style-default" class="number-input" default_value="1">
+      <:label>Default</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    <.number_input id="number-input-style-accent" class="number-input number-input--accent" default_value="1">
+      <:label>Accent</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    <.number_input id="number-input-style-brand" class="number-input number-input--brand" default_value="1">
+      <:label>Brand</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+      <.number_input id="number-input-style-color-default" class="number-input" default_value="1">
+        <:label>Default</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-color-accent" class="number-input number-input--accent" default_value="1">
+        <:label>Accent</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-color-brand" class="number-input number-input--brand" default_value="1">
+        <:label>Brand</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+    </div>
+    """
+  end
+
   def styling_size_code do
     ~S"""
     <.number_input id="number-input-style-sm" class="number-input number-input--sm">

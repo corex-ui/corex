@@ -506,6 +506,7 @@ defmodule E2eWeb.Helpers do
           label: "Radio group",
           id: "radio-group",
           anatomy_to: ~p"/radio-group/anatomy",
+          style_to: ~p"/radio-group/style",
           playground_to: ~p"/radio-group/playground",
           api_to: ~p"/radio-group/api",
           events_to: ~p"/radio-group/events",

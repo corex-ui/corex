@@ -144,7 +144,7 @@
   }
 
   .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"]::before {
-    width: --spacing(32);
+    width: var(--container-2xs);
     margin-block: var(--spacing-space);
   }
 

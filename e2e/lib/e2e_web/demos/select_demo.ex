@@ -1480,6 +1480,100 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  def patterns_stream_demo_heex do
+    ~S"""
+    <div class="flex flex-col gap-3 w-full max-w-xl">
+      <div class="flex flex-wrap gap-2">
+        <.action phx-click="add_item" class="button button--sm button--accent">
+          <.heroicon name="hero-plus" /> Add item
+        </.action>
+        <.action phx-click="reset" class="button button--sm button--alert">
+          Reset
+        </.action>
+      </div>
+      <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def patterns_stream_elixir do
+    ~S'''
+    defmodule MyAppWeb.SelectStreamDemoLive do
+      use MyAppWeb, :live_view
+
+      @impl true
+      def mount(_params, _session, socket) do
+        initial = [
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+          %{value: "donec", label: "Donec condimentum ex mi"}
+        ]
+
+        {:ok,
+         socket
+         |> stream_configure(:items, dom_id: &("select:stream-select:item:" <> &1.value))
+         |> stream(:items, initial)
+         |> assign(:items_list, initial)
+         |> assign(:next_id, 1)}
+      end
+
+      @impl true
+      def handle_event("add_item", _params, socket) do
+        id = "item-#{socket.assigns.next_id}"
+        item = %{value: id, label: "Item #{socket.assigns.next_id}"}
+
+        {:noreply,
+         socket
+         |> stream_insert(:items, item)
+         |> assign(:items_list, socket.assigns.items_list ++ [item])
+         |> assign(:next_id, socket.assigns.next_id + 1)}
+      end
+
+      @impl true
+      def handle_event("reset", _params, socket) do
+        initial = [
+          %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+          %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+          %{value: "donec", label: "Donec condimentum ex mi"}
+        ]
+
+        {:noreply,
+         socket
+         |> stream(:items, initial, reset: true)
+         |> assign(:items_list, initial)
+         |> assign(:next_id, 1)}
+      end
+
+      @impl true
+      def render(assigns) do
+        ~H"""
+        <div class="flex flex-col gap-3 w-full max-w-xl">
+          <div class="flex flex-wrap gap-2">
+            <.action phx-click="add_item" class="button button--sm button--accent">
+              <.heroicon name="hero-plus" /> Add item
+            </.action>
+            <.action phx-click="reset" class="button button--sm button--alert">
+              Reset
+            </.action>
+          </div>
+          <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+            <:label>Country</:label>
+            <:trigger>
+              <.heroicon name="hero-chevron-down" class="icon" />
+            </:trigger>
+          </.select>
+        </div>
+        """
+      end
+    end
+    '''
+  end
+
   def patterns_flat_example(assigns) do
     ~H"""
     <.select

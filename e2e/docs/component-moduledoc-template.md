@@ -22,7 +22,7 @@ Every HEEx, Elixir, or JS block in moduledoc must compile if pasted into a LiveV
 - Prefer **three** list/content items unless the demo needs more (stream add-item flows).
 - Reuse canonical data from [`E2eWeb.Demos.DocExamples`](../lib/e2e_web/demos/doc_examples.ex) in demos; **inline the same literals** in moduledoc so Hexdocs readers do not depend on e2e.
 
-Anti-patterns to fix: ellipsis (`...`) anywhere in examples, abbreviated slots, moduledoc vs e2e mismatch for the same tab. Support modules under `lib/corex/` follow the same rule: every HEEx example must be complete and copy-paste ready.
+Anti-patterns to fix: ellipsis (`...`) anywhere in examples, abbreviated slots, moduledoc vs e2e mismatch for the same tab, wrapping copy-paste blocks in `<Layouts.app>` (use only the minimal HEEx the example needs; layout shells belong on e2e pages, not in `*_demo.ex` / moduledoc tabs). Support modules under `lib/corex/` follow the same rule: every HEEx example must be complete and copy-paste ready.
 
 ## Anatomy
 
@@ -67,6 +67,10 @@ Only when the matrix lists Animation (accordion, dialog, tree-view). Tabs: **JS*
 
 Top-level **## Form** for form components; do not merge into Anatomy.
 
+- When the component has a `slot :error`, every Form example must include `<:error :let={msg}>` (match checkbox: heroicon + message).
+- `invalid` is **opt-in**: do not rely on the field clause to set it. Show `invalid` only in a dedicated “Invalid” anatomy tab or an example explicitly labeled for invalid styling (e.g. `invalid={@form[:field].errors != []}` after `used_input?`).
+- Field clause maps `field.errors` to `@errors` when `Phoenix.Component.used_input?(field)`; error text can render without `invalid={true}`.
+
 ## Translation modules
 
 Components with a `translation` assign expose `Corex.<Component>.Translation` (see ExDoc for that module).
@@ -95,6 +99,7 @@ Do not hardcode English in `defstruct` defaults or inline `%Translation{...}` wi
 | `content_items/0` | Accordion, collapsible, content-driven patterns |
 | `content_items_with_meta/0` | Custom slots with `meta` |
 | `list_items/0` | Listbox, select, combobox, menu |
+| `radio_items/0` | Radio group |
 | `list_items_grouped/0` | Grouped listbox/select |
 | `pagination_defaults/0` | Pagination controlled examples |
 

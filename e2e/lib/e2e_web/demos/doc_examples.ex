@@ -97,9 +97,9 @@ defmodule E2eWeb.Demos.DocExamples do
 
   def radio_items do
     [
-      %{value: "a", label: "Option A"},
-      %{value: "b", label: "Option B"},
-      %{value: "c", label: "Option C"}
+      %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+      %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+      %{value: "donec", label: "Donec condimentum ex mi"}
     ]
   end
 end

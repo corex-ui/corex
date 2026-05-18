@@ -356,7 +356,7 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-sort"
-          title="Sort (in memory)"
+          title="Sort"
           code_tabs={[
             %{
               value: "heex",

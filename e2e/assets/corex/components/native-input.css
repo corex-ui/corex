@@ -16,7 +16,7 @@
   .native-input [data-scope="native-input"][data-part="root"] {
     @apply ui-root;
 
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     position: relative;
     padding-inline-end: var(--spacing-space);
   }
@@ -46,11 +46,11 @@
     inset-block: 0;
     inset-inline-start: 0;
     inset-inline-end: auto;
-    width: --spacing(11);
+    width: var(--spacing-size);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-inline: --spacing(4);
+    padding-inline: var(--spacing-space);
     pointer-events: none;
   }
 
@@ -60,11 +60,11 @@
   }
 
   .native-input[data-no-icon] [data-scope="native-input"][data-part="input"] {
-    padding-inline-start: --spacing(4);
+    padding-inline-start: var(--spacing-space);
   }
 
   .native-input:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
-    padding-inline-start: --spacing(11);
+    padding-inline-start: var(--spacing-size);
   }
 
   .native-input [data-scope="native-input"][data-part="error"] {
@@ -98,7 +98,7 @@
     content: "▼";
     position: absolute;
     inset-block: 0;
-    inset-inline-end: --spacing(4);
+    inset-inline-end: var(--spacing-space);
     display: flex;
     align-items: center;
     font-size: 0.75em;
@@ -108,20 +108,20 @@
 
   .native-input select[data-scope="native-input"][data-part="input"] {
     width: 100%;
-    padding-inline-end: --spacing(11);
+    padding-inline-end: var(--spacing-size);
     -webkit-appearance: none;
     appearance: none;
   }
 
   .native-input:not([data-no-icon]) select[data-scope="native-input"][data-part="input"] {
-    padding-inline-start: --spacing(4);
+    padding-inline-start: var(--spacing-space);
   }
 
   .native-input input[type="color"][data-scope="native-input"][data-part="input"] {
     display: block;
     width: 100%;
-    min-width: --spacing(11);
-    height: --spacing(11);
+    min-width: var(--spacing-size);
+    height: var(--spacing-size);
     
     padding: 0;
     cursor: pointer;
@@ -129,12 +129,12 @@
 
   .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"] {
     appearance: none;
-    width: --spacing(8);
-    height: --spacing(8);
-    min-width: --spacing(8);
-    min-height: --spacing(8);
+    width: var(--spacing-size-sm);
+    height: var(--spacing-size-sm);
+    min-width: var(--spacing-size-sm);
+    min-height: var(--spacing-size-sm);
     margin: 0;
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     background: var(--color-ui);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -166,12 +166,12 @@
 
   .native-input input[type="radio"][data-scope="native-input"][data-part="input"] {
     appearance: none;
-    width: --spacing(8);
-    height: --spacing(8);
-    min-width: --spacing(8);
-    min-height: --spacing(8);
+    width: var(--spacing-size-sm);
+    height: var(--spacing-size-sm);
+    min-width: var(--spacing-size-sm);
+    min-height: var(--spacing-size-sm);
     margin: 0;
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     background: var(--color-ui);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
@@ -215,7 +215,7 @@
     inset: 0;
     display: flex;
     align-items: center;
-    padding-inline: --spacing(4);
+    padding-inline: var(--spacing-space);
     pointer-events: none;
     color: var(--color-ink);
   }

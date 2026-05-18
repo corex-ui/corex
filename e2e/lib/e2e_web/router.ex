@@ -327,6 +327,7 @@ defmodule E2eWeb.Router do
     get("/native-input/form", PageController, :native_input_form_page)
     post("/native-input/form", PageController, :native_input_form_submit)
     get("/radio-group/anatomy", PageController, :radio_group_page)
+    get("/radio-group/style", PageController, :radio_group_styling_page)
     get("/radio-group/form", PageController, :radio_group_form_page)
     post("/radio-group/form", PageController, :radio_group_form_submit)
     get("/timer/anatomy", PageController, :timer_page)

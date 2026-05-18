@@ -13,7 +13,7 @@
   .pin-input [data-scope="pin-input"][data-part="root"] {
     @apply ui-root;
 
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     position: relative;
     padding-inline-end: var(--spacing-space);
   }
@@ -51,7 +51,7 @@
   .pin-input [data-scope="pin-input"][data-part="control"] {
     display: flex;
     flex-flow: row nowrap;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     align-items: center;
     margin-inline: auto;
   }
@@ -59,8 +59,8 @@
   .pin-input [data-scope="pin-input"][data-part="input"] {
     @apply ui-input;
 
-    height: --spacing(11);
-    width: --spacing(11);
+    height: var(--spacing-size);
+    width: var(--spacing-size);
     flex-shrink: 0;
     text-align: center;
   }
@@ -81,5 +81,30 @@
     color: var(--color-ink-muted);
     background-color: var(--color-ui-muted);
     cursor: not-allowed;
+  }
+}
+
+@utility pin-input--* {
+
+  [data-scope="pin-input"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="control"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="input"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    height: --value(--spacing-size-*, [length]);
+    width: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
   }
 }

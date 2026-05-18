@@ -12,7 +12,7 @@
 
   .tabs [data-scope="tabs"][data-part="root"] {
     @apply ui-root;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
   }
 
   .tabs [data-scope="tabs"][data-part="root"][data-orientation="vertical"] {

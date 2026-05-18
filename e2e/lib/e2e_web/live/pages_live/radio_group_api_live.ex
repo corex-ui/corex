@@ -7,7 +7,7 @@ defmodule E2eWeb.RadioGroupApiLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :api_controlled_value, "a")}
+    {:ok, assign(socket, :api_controlled_value, "lorem")}
   end
 
   @impl true
@@ -33,6 +33,39 @@ defmodule E2eWeb.RadioGroupApiLive do
         title="Radio Group · API"
         subtitle="LiveView push, client DOM events, and controlled value from the server."
       >
+        <.demo_section
+          id="radio-group-api-clear-section"
+          title="Clear value"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_clear_value_heex()},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_clear_value_elixir()}
+          ]}
+        >
+          <:preview><Demo.api_clear_value_example /></:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="radio-group-api-focus-section"
+          title="Focus"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_focus_heex()},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_focus_elixir()}
+          ]}
+        >
+          <:preview><Demo.api_focus_example /></:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="radio-group-api-server-section"
+          title="Set value (server)"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_server_elixir()}
+          ]}
+        >
+          <:preview><Demo.api_server_example /></:preview>
+        </.demo_section>
+
         <.demo_section
           id="radio-group-api-binding-section"
           title="LiveView binding"
