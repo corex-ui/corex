@@ -2,8 +2,8 @@ defmodule Corex.AnimationTest do
   use ExUnit.Case, async: true
 
   test "namespace module loads" do
-    assert Code.ensure_loaded?(Corex.Animation)
-    assert function_exported?(Corex.Animation.Height, :__info__, 1)
-    assert function_exported?(Corex.Animation.Scale, :__info__, 1)
+    for mod <- [Corex.Animation, Corex.Animation.Height, Corex.Animation.Scale] do
+      assert {:module, _} = Code.ensure_loaded(mod)
+    end
   end
 end
