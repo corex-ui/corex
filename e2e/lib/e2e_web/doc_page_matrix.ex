@@ -48,12 +48,35 @@ defmodule E2eWeb.DocPageMatrix do
   @pilots MapSet.new([
             :accordion,
             :angle_slider,
+            :avatar,
+            :carousel,
             :checkbox,
+            :clipboard,
+            :collapsible,
+            :color_picker,
             :combobox,
+            :date_picker,
+            :dialog,
+            :editable,
+            :file_upload,
+            :floating_panel,
             :listbox,
+            :marquee,
+            :menu,
+            :number_input,
+            :password_input,
+            :pin_input,
+            :radio_group,
+            :select,
+            :signature,
             :switch,
+            :tabs,
             :tags_input,
-            :toggle
+            :timer,
+            :toggle,
+            :toggle_group,
+            :tooltip,
+            :tree_view
           ])
 
   def wallaby_pages(component) when is_atom(component) do

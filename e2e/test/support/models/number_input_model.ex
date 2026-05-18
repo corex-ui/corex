@@ -1,6 +1,95 @@
 defmodule E2eWeb.NumberInputModel do
   use E2eWeb.Model, component: "number-input"
 
+  @anatomy_sections ~w(
+    number-input-anatomy-minimal
+    number-input-anatomy-bounds
+  )
+
+  def anatomy_section_ids, do: @anatomy_sections
+
+  def wait_section_number_input_ready(session, section_dom_id) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
+      raise ArgumentError, "invalid section dom id"
+    end
+
+    assert_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} [phx-hook="NumberInput"]:not([data-loading])|,
+        visible: :any
+      )
+    )
+
+    session
+  end
+
+  def wait_root_number_input_ready(session, host_dom_id) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
+      raise ArgumentError, "invalid number input host dom id"
+    end
+
+    assert_has(
+      session,
+      css(~s|##{host_dom_id}[phx-hook="NumberInput"]:not([data-loading])|, visible: :any)
+    )
+
+    session
+  end
+
+  def wait_playground_number_input_ready(session) do
+    wait_root_number_input_ready(session, "number-input-playground")
+  end
+
+  def wait_patterns_page(session) do
+    assert_has(session, css("#number-input-patterns-page", visible: :any))
+    session
+  end
+
+  def click_increment_in_section(session, section_dom_id) do
+    click(
+      session,
+      css(
+        ~s|section##{section_dom_id} [data-scope="number-input"][data-part="increment-trigger"]|,
+        visible: :any
+      )
+    )
+
+    session
+  end
+
+  def hidden_value_in_section(session, section_dom_id) do
+    el =
+      find(
+        session,
+        css(
+          ~s|section##{section_dom_id} [data-scope="number-input"][data-part="value-input"]|,
+          visible: :any
+        )
+      )
+
+    Wallaby.Element.attr(el, "value")
+  end
+
+  def wait_patterns_state_contains(session, substring, opts \\ []) when is_binary(substring) do
+    if String.contains?(substring, "'") do
+      raise ArgumentError, "substring must not contain single quote"
+    end
+
+    wait_for_has(
+      session,
+      xpath("//*[@id='number-input-patterns-controlled-state' and contains(., '#{substring}')]"),
+      opts
+    )
+
+    session
+  end
+
+  def number_input_events_server_log_has_row?(session) do
+    has?(session, css("#number-input-events-log-server tr[data-part='row']"))
+  end
+
   def goto_form(session, mode) do
     path =
       case mode do

@@ -17,10 +17,7 @@
     "lib/mix/tasks/corex\\.install\\.ex",
     "lib/mix/tasks/corex\\.gen\\.html\\.ex",
     "lib/mix/tasks/corex\\.gen\\.live\\.ex",
-    "lib/mix/tasks/corex\\.gen\\.schema\\.ex",
-    "lib/components/.*/translation\\.ex",
-    "lib/corex/toast/action\\.ex",
-    "lib/corex/translation\\.ex"
+    "lib/mix/tasks/corex\\.gen\\.schema\\.ex"
   ],
   "coverage_options": {
     "minimum_coverage": 90

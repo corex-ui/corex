@@ -46,6 +46,8 @@ This file classifies each Corex demo component and lists which **page types** ex
 | tooltip | Zag | yes |  -  |  -  | yes | yes | yes | yes |  -  |  -  |
 | tree-view | Zag | yes | yes |  -  | yes | yes | yes | yes | yes |  -  |
 
+**Heroicon** and **hidden input** have no e2e doc routes (static helpers only). Coverage lives in Corex unit tests: `test/components/heroicon_test.exs` and `test/components/hidden_input_test.exs`.
+
 ## Events pages (Zag)
 
 Events LiveViews document server `handle_event` flows and client-side listeners. When lists or tables are part of the narrative, prefer **streams** and **`<.data_table>`** as in the Accordion reference implementation.

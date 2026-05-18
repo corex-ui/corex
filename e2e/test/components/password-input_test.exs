@@ -1,3 +1,97 @@
 defmodule E2eWeb.PasswordInputTest do
-  use E2eWeb.DocComponentWallaby, component: :password_input
+  use ExUnit.Case, async: false
+  use Wallaby.Feature
+
+  import Wallaby.Query
+
+  alias E2eWeb.ComponentBehaviorSpec
+  alias E2eWeb.PasswordInputModel, as: PasswordInput
+
+  @moduletag :password_input
+
+  setup do
+    Localize.put_locale(:en)
+    :ok
+  end
+
+  describe "anatomy" do
+    feature "each anatomy section accepts typed password", %{session: session} do
+      session =
+        ComponentBehaviorSpec.visit_ready(session, PasswordInput, :password_input, :anatomy)
+
+      Enum.reduce(PasswordInput.anatomy_section_ids(), session, fn section_id, sess ->
+        sess
+        |> PasswordInput.wait_section_password_input_ready(section_id)
+        |> PasswordInput.fill_input_in_section(section_id, "secret")
+        |> PasswordInput.wait_for_has(
+          css(
+            ~s|section##{section_id} [data-scope="password-input"][data-part="input"][value="secret"]|,
+            visible: :any
+          ),
+          timeout: 8_000
+        )
+      end)
+    end
+  end
+
+  describe "api" do
+    feature "binding  -  Show reveals password text", %{session: session} do
+      section = "password-input-api-binding-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(PasswordInput, :password_input, :api)
+        |> PasswordInput.wait_section_password_input_ready(section)
+        |> PasswordInput.fill_input_in_section(section, "secret")
+        |> PasswordInput.click_button_in_section(section, "Show")
+
+      assert_has(
+        session,
+        css(
+          ~s|section##{section} [data-scope="password-input"][data-part="input"][type="text"]|,
+          visible: :any
+        )
+      )
+    end
+
+    feature "server  -  Show via LiveView reveals password text", %{session: session} do
+      section = "password-input-api-server-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(PasswordInput, :password_input, :api)
+        |> PasswordInput.prepare_live_form()
+        |> PasswordInput.wait_section_password_input_ready(section)
+        |> PasswordInput.click_button_in_section(section, "Show")
+
+      assert_has(
+        session,
+        css(
+          ~s|section##{section} [data-scope="password-input"][data-part="input"][type="text"]|,
+          visible: :any
+        )
+      )
+    end
+  end
+
+  describe "events" do
+    feature "server  -  typing appends log row", %{session: session} do
+      section = "password-input-events-server-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(PasswordInput, :password_input, :events)
+        |> PasswordInput.prepare_live_form()
+        |> PasswordInput.wait_section_password_input_ready(section)
+
+      refute PasswordInput.password_input_events_server_log_has_row?(session)
+
+      session
+      |> PasswordInput.fill_input_in_section(section, "abc")
+      |> PasswordInput.wait_for_has(
+        css("#password-input-events-log-server tr[data-part='row']", count: 1),
+        timeout: 10_000
+      )
+    end
+  end
 end

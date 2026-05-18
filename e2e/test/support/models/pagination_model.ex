@@ -33,4 +33,88 @@ defmodule E2eWeb.PaginationModel do
 
     session
   end
+
+  @anatomy_sections ~w(pagination-anatomy-minimal)
+
+  @style_sections ~w(
+    pagination-styling-color
+    pagination-styling-size
+    pagination-styling-text
+    pagination-styling-radius
+    pagination-styling-max-width
+  )
+
+  @api_sections ~w(
+    pagination-api-client-binding
+    pagination-api-server
+  )
+
+  @events_sections ~w(
+    pagination-events-server-section
+    pagination-events-client-section
+  )
+
+  @pattern_sections ~w(
+    pagination-patterns-controlled-section
+    pagination-patterns-patch-section
+    pagination-patterns-server-section
+    pagination-patterns-client-section
+  )
+
+  def anatomy_section_ids, do: @anatomy_sections
+  def style_section_ids, do: @style_sections
+  def api_section_ids, do: @api_sections
+  def events_section_ids, do: @events_sections
+  def pattern_section_ids, do: @pattern_sections
+
+  def click_in_section(session, section_id, button_label)
+      when is_binary(section_id) and is_binary(button_label) do
+    if String.contains?(button_label, "'") or String.contains?(button_label, "\"") do
+      raise ArgumentError, "click_in_section/3 label must not include quotes"
+    end
+
+    click(
+      session,
+      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+    )
+
+    session
+  end
+
+  def wait_pagination_in_section(session, section_id, pagination_id) do
+    assert_has(
+      session,
+      css(
+        "##{section_id} ##{pagination_id}[phx-hook='Pagination']:not([data-loading])",
+        visible: :any
+      )
+    )
+
+    session
+  end
+
+  def click_page_in_section(session, section_id, page) when is_integer(page) do
+    click(
+      session,
+      css("##{section_id} [data-scope='pagination'][data-part='item']", text: "#{page}")
+    )
+
+    session
+  end
+
+  def assert_item_selected_in_section(session, section_id, page) when is_integer(page) do
+    assert_has(
+      session,
+      css(
+        "##{section_id} [data-scope='pagination'][data-part='item'][data-selected]",
+        text: "#{page}"
+      )
+    )
+
+    session
+  end
+
+  def events_server_log_has_row?(session) do
+    has?(session, css("#pagination-events-log-server tr[data-part='row']"))
+  end
 end
