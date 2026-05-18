@@ -6,8 +6,8 @@ defmodule E2e.Place do
   import Ecto.Query, warn: false
   alias E2e.Repo
 
-  alias E2e.Place.City
   alias E2e.Place.Airport
+  alias E2e.Place.City
 
   @city_table_sortable [:name, :iata_code, :iata_country_code]
 

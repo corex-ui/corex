@@ -99,9 +99,7 @@ defmodule E2eWeb.RecordFields do
   end
 
   defp format_value(value) when is_list(value) do
-    value
-    |> Enum.map(&format_value/1)
-    |> Enum.join(", ")
+    Enum.map_join(value, ", ", &format_value/1)
   end
 
   defp format_value(value) when is_map(value) do

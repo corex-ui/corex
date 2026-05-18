@@ -90,31 +90,54 @@ defmodule E2e.DesignPalette do
       string_key_map(theme["state_lightness_offsets"] || global["state_lightness_offsets"] || %{})
 
     tokens =
-      %{}
-      |> surface_tokens(seeds, surface, state_order, ui_ratio_base, offsets)
-      |> then(fn acc ->
-        {ink_bg_key, ink_bg_cfg} = ink_reference(surface)
-
-        ink_ref_hex =
-          ink_reference_hex(
-            seeds,
-            surface,
-            ink_bg_key,
-            ink_bg_cfg,
-            state_order,
-            ui_ratio_base,
-            offsets
-          )
-
-        acc
-        |> utility_tokens(seeds, utility, ink_bg_key, ink_bg_cfg, ink_ref_hex)
-        |> ink_tokens(seeds, ink, ink_bg_key, ink_bg_cfg, ink_ref_hex)
-        |> semantic_tokens(seeds, semantic, state_order, semantic_ratio_base, offsets)
-      end)
+      surface_tokens(%{}, seeds, surface, state_order, ui_ratio_base, offsets)
+      |> finish_theme_tokens(%{
+        seeds: seeds,
+        surface: surface,
+        utility: utility,
+        ink: ink,
+        semantic: semantic,
+        state_order: state_order,
+        ui_ratio_base: ui_ratio_base,
+        semantic_ratio_base: semantic_ratio_base,
+        offsets: offsets
+      })
 
     names = Map.keys(tokens) |> Enum.sort()
     sd = to_style_dictionary(tokens)
     {sd, names}
+  end
+
+  defp finish_theme_tokens(acc, ctx) do
+    %{
+      seeds: seeds,
+      surface: surface,
+      utility: utility,
+      ink: ink,
+      semantic: semantic,
+      state_order: state_order,
+      ui_ratio_base: ui_ratio_base,
+      semantic_ratio_base: semantic_ratio_base,
+      offsets: offsets
+    } = ctx
+
+    {ink_bg_key, ink_bg_cfg} = ink_reference(surface)
+
+    ink_ref_hex =
+      ink_reference_hex(
+        seeds,
+        surface,
+        ink_bg_key,
+        ink_bg_cfg,
+        state_order,
+        ui_ratio_base,
+        offsets
+      )
+
+    acc
+    |> utility_tokens(seeds, utility, ink_bg_key, ink_bg_cfg, ink_ref_hex)
+    |> ink_tokens(seeds, ink, ink_bg_key, ink_bg_cfg, ink_ref_hex)
+    |> semantic_tokens(seeds, semantic, state_order, semantic_ratio_base, offsets)
   end
 
   defp theme_seeds(global, theme) do
@@ -133,28 +156,53 @@ defmodule E2e.DesignPalette do
 
   defp surface_tokens(acc, seeds, surface, state_order, ui_ratio_base, offsets) do
     Enum.reduce(surface, acc, fn {key, cfg}, tok ->
-      key = to_string(key)
-      color_key = Map.fetch!(cfg, "color")
-      hex = seed_hex(seeds, color_key)
-      lightness = cfg["lightness"]
+      put_surface_token(tok, seeds, to_string(key), cfg, state_order, ui_ratio_base, offsets)
+    end)
+  end
 
-      if cfg["states"] do
-        base = Map.merge(ui_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
-        ratios = ratios_for_lightness(lightness, base)
+  defp put_surface_token(tok, seeds, key, cfg, state_order, ui_ratio_base, offsets) do
+    color_key = Map.fetch!(cfg, "color")
+    hex = seed_hex(seeds, color_key)
+    lightness = cfg["lightness"]
 
-        Enum.reduce(ordered_state_names(ratios, state_order), tok, fn state, t2 ->
-          off = Map.get(offsets, state, 0.0)
-          l = clamp_pct(lightness + off)
-          v = neutral_at(hex, l)
-          sk = if state == "default", do: key, else: "#{key}-#{state}"
-          desc = stateful_surface_desc(key, state, lightness, hex)
-          Map.put(t2, sk, %{value: v, description: desc})
-        end)
-      else
-        v = neutral_at(hex, lightness)
-        desc = solid_surface_desc(key, lightness, hex)
-        Map.put(tok, key, %{value: v, description: desc})
-      end
+    if cfg["states"] do
+      put_stateful_surface_tokens(
+        tok,
+        key,
+        hex,
+        lightness,
+        cfg,
+        state_order,
+        ui_ratio_base,
+        offsets
+      )
+    else
+      v = neutral_at(hex, lightness)
+      desc = solid_surface_desc(key, lightness, hex)
+      Map.put(tok, key, %{value: v, description: desc})
+    end
+  end
+
+  defp put_stateful_surface_tokens(
+         tok,
+         key,
+         hex,
+         lightness,
+         cfg,
+         state_order,
+         ui_ratio_base,
+         offsets
+       ) do
+    base = Map.merge(ui_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
+    ratios = ratios_for_lightness(lightness, base)
+
+    Enum.reduce(ordered_state_names(ratios, state_order), tok, fn state, t2 ->
+      off = Map.get(offsets, state, 0.0)
+      l = clamp_pct(lightness + off)
+      v = neutral_at(hex, l)
+      sk = if state == "default", do: key, else: "#{key}-#{state}"
+      desc = stateful_surface_desc(key, state, lightness, hex)
+      Map.put(t2, sk, %{value: v, description: desc})
     end)
   end
 
@@ -182,29 +230,40 @@ defmodule E2e.DesignPalette do
 
   defp semantic_tokens(acc, seeds, semantic, state_order, semantic_ratio_base, offsets) do
     Enum.reduce(semantic, acc, fn {name, cfg}, tok ->
-      name = to_string(name)
-      bg_hex = seed_hex(seeds, cfg["bg"])
-      lightness = cfg["lightness"]
-      ratio_base = Map.merge(semantic_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
-      ratios = ratios_for_lightness(lightness, ratio_base)
-
-      tok =
-        Enum.reduce(ordered_state_names(ratios, state_order), tok, fn state, t2 ->
-          off = Map.get(offsets, state, 0.0)
-          l = clamp_pct(lightness + off)
-          v = neutral_at(bg_hex, l)
-          sk = if state == "default", do: name, else: "#{name}-#{state}"
-          desc = semantic_fill_desc(name, state, lightness, bg_hex)
-          Map.put(t2, sk, %{value: v, description: desc})
-        end)
-
-      sem_ref = neutral_at(bg_hex, lightness)
-      ink_seed = seed_hex(seeds, cfg["ink"]["color"])
-      ink_ratio = cfg["ink"]["ratio"] * 1.0
-      {ihex, ach} = contrast_fg(ink_seed, sem_ref, ink_ratio)
-      idesc = contrast_desc(ach, name, sem_ref)
-      Map.put(tok, "#{name}-ink", %{value: ihex, description: idesc})
+      put_semantic_tokens(
+        tok,
+        seeds,
+        to_string(name),
+        cfg,
+        state_order,
+        semantic_ratio_base,
+        offsets
+      )
     end)
+  end
+
+  defp put_semantic_tokens(tok, seeds, name, cfg, state_order, semantic_ratio_base, offsets) do
+    bg_hex = seed_hex(seeds, cfg["bg"])
+    lightness = cfg["lightness"]
+    ratio_base = Map.merge(semantic_ratio_base, string_key_map(cfg["ratio_base"] || %{}))
+    ratios = ratios_for_lightness(lightness, ratio_base)
+
+    tok =
+      Enum.reduce(ordered_state_names(ratios, state_order), tok, fn state, t2 ->
+        off = Map.get(offsets, state, 0.0)
+        l = clamp_pct(lightness + off)
+        v = neutral_at(bg_hex, l)
+        sk = if state == "default", do: name, else: "#{name}-#{state}"
+        desc = semantic_fill_desc(name, state, lightness, bg_hex)
+        Map.put(t2, sk, %{value: v, description: desc})
+      end)
+
+    sem_ref = neutral_at(bg_hex, lightness)
+    ink_seed = seed_hex(seeds, cfg["ink"]["color"])
+    ink_ratio = cfg["ink"]["ratio"] * 1.0
+    {ihex, ach} = contrast_fg(ink_seed, sem_ref, ink_ratio)
+    idesc = contrast_desc(ach, name, sem_ref)
+    Map.put(tok, "#{name}-ink", %{value: ihex, description: idesc})
   end
 
   defp ink_output_key("default"), do: "ink"

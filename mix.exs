@@ -56,12 +56,13 @@ defmodule Corex.MixProject do
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
       {:makeup_syntect, "~> 0.1.0", only: [:dev, :test, :docs], optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -80,9 +81,13 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch",
       "archive.build": &raise_on_archive_build/1,
-      "pre.publish": [
+      lint: [
         "format --check-formatted",
         "credo --strict",
+        "oeditus_credo --strict"
+      ],
+      "pre.publish": [
+        "lint",
         "sobelow --exit"
       ],
       tidewave:

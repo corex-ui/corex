@@ -67,18 +67,25 @@ defmodule E2eWeb.MenuModel do
     )
   end
 
-  def open_menu_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do
+  def open_menu_by_host_id(session, host_dom_id, opts \\ []) when is_binary(host_dom_id) do
     if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
       raise ArgumentError, "invalid menu host dom id"
     end
 
-    click(
-      session,
-      css(
-        ~s|[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="trigger"]|,
-        visible: :any
+    session =
+      click(
+        session,
+        css(
+          ~s|[id="menu:#{host_dom_id}"] [data-scope="menu"][data-part="trigger"]|,
+          visible: :any
+        )
       )
-    )
+
+    if Keyword.get(opts, :wait_open, true) do
+      wait_menu_content_open(session, host_dom_id, opts)
+    else
+      session
+    end
   end
 
   def click_item_in_section(session, section_dom_id, value, opts \\ []) when is_binary(value) do
@@ -108,6 +115,20 @@ defmodule E2eWeb.MenuModel do
     session
   end
 
+  def wait_menu_content_open(session, host_dom_id, opts \\ []) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and host_dom_id != "") do
+      raise ArgumentError, "invalid menu host dom id"
+    end
+
+    wait_for_has(
+      session,
+      css(~s|[id="menu:#{host_dom_id}:content"][data-state="open"]|, visible: :any),
+      opts
+    )
+
+    session
+  end
+
   def click_button_in_section(session, section_id, label) when is_binary(label) do
     if String.contains?(label, "'") or String.contains?(label, "\"") do
       raise ArgumentError, "click_button_in_section: label must not include quotes"
@@ -122,10 +143,10 @@ defmodule E2eWeb.MenuModel do
   end
 
   def menu_events_server_log_has_row?(session) do
-    has?(session, css("#menu-events-log-server tr[data-part='row']"))
+    has?(session, css("#menu-events-log-server tr[data-part='row']", visible: :any))
   end
 
   def menu_events_client_log_has_row?(session) do
-    has?(session, css("#menu-events-log-client tr[data-part='row']"))
+    has?(session, css("#menu-events-log-client tr[data-part='row']", visible: :any))
   end
 end

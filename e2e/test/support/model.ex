@@ -76,6 +76,27 @@ defmodule E2eWeb.Model do
   defp script_truthy?(value) when value in [true, "true", 1, "1"], do: true
   defp script_truthy?(_), do: false
 
+  def with_layout_toast_ready(session, error_message) when is_binary(error_message) do
+    case Wallaby.Browser.retry(fn ->
+           if layout_toast_hook_ready?(session), do: {:ok, session}, else: {:error, :not_ready}
+         end) do
+      {:ok, session} -> session
+      {:error, _} -> raise Wallaby.ExpectationNotMetError, message: error_message
+    end
+  end
+
+  def with_layout_toast_text(session, needle, error_message)
+      when is_binary(needle) and is_binary(error_message) do
+    case Wallaby.Browser.retry(fn ->
+           if layout_toast_contains?(session, needle),
+             do: {:ok, session},
+             else: {:error, :no_match}
+         end) do
+      {:ok, session} -> session
+      {:error, _} -> raise Wallaby.ExpectationNotMetError, message: error_message
+    end
+  end
+
   def wait(session, time) do
     Process.sleep(time)
     session
@@ -137,6 +158,21 @@ defmodule E2eWeb.Model do
         Wallaby.QueryError -> 0
       end
 
+      def wait_log_rows_grew(session, log_dom_id, before_count, opts \\ [])
+          when is_binary(log_dom_id) and is_integer(before_count) do
+        wait_for_has(
+          session,
+          css(
+            "##{log_dom_id} tr[data-part='row']",
+            minimum: before_count + 1,
+            visible: :any
+          ),
+          opts
+        )
+
+        session
+      end
+
       def wait_for_refute_has(session, %Wallaby.Query{} = query, opts \\ []) do
         query = maybe_query_visible(query, opts)
 
@@ -181,8 +217,11 @@ defmodule E2eWeb.Model do
           )
 
         case timeout do
-          nil -> assert_has(session, q)
-          max_ms when is_integer(max_ms) and max_ms > 0 -> wait_for_has(session, q, timeout: max_ms)
+          nil ->
+            assert_has(session, q)
+
+          max_ms when is_integer(max_ms) and max_ms > 0 ->
+            wait_for_has(session, q, timeout: max_ms)
         end
 
         session
@@ -237,38 +276,18 @@ defmodule E2eWeb.Model do
       end
 
       def prepare_live_form(session) do
-        case Wallaby.Browser.retry(fn ->
-               if E2eWeb.Model.layout_toast_hook_ready?(session) do
-                 {:ok, session}
-               else
-                 {:error, :not_ready}
-               end
-             end) do
-          {:ok, session} ->
-            session
-
-          {:error, _} ->
-            raise Wallaby.ExpectationNotMetError,
-              message:
-                "expected #layout-toast to exist with data-ready before LiveView interactions"
-        end
+        E2eWeb.Model.with_layout_toast_ready(
+          session,
+          "expected #layout-toast to exist with data-ready before LiveView interactions"
+        )
       end
 
       def assert_toast(session, substring) when is_binary(substring) do
-        case Wallaby.Browser.retry(fn ->
-               if E2eWeb.Model.layout_toast_contains?(session, substring) do
-                 {:ok, session}
-               else
-                 {:error, :no_match}
-               end
-             end) do
-          {:ok, session} ->
-            session
-
-          {:error, _} ->
-            raise Wallaby.ExpectationNotMetError,
-              message: "expected #layout-toast textContent to include #{inspect(substring)}"
-        end
+        E2eWeb.Model.with_layout_toast_text(
+          session,
+          substring,
+          "expected #layout-toast textContent to include #{inspect(substring)}"
+        )
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
@@ -294,6 +313,8 @@ defmodule E2eWeb.Model do
             busy_wait_query(session, query, deadline)
             assert_has(session, query)
         end
+
+        session
       end
 
       defp maybe_query_visible(%Wallaby.Query{} = query, opts) do

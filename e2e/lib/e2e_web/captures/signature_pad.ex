@@ -2,8 +2,8 @@ defmodule CorexWeb.SignaturePad do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.SignaturePad
   alias Corex.Heroicon
+  alias Corex.SignaturePad
 
   capture variants: [
             basic: %{

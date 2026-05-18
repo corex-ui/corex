@@ -96,7 +96,7 @@ defmodule E2eWeb.CheckboxModel do
         css(
           "#checkbox-api-server-section [phx-hook='Checkbox']:not([data-loading])",
           visible: :any,
-            minimum: 1
+          minimum: 1
         )
       )
 

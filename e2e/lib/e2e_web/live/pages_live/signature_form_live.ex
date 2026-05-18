@@ -3,9 +3,9 @@ defmodule E2eWeb.SignatureFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias Corex.Toast
   alias E2e.Form.SignatureForm
   alias E2eWeb.Demos.SignatureDemo, as: SignatureDemo
-  alias Corex.Toast
 
   @impl true
   def mount(_params, _session, socket) do

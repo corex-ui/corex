@@ -144,14 +144,7 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def click_radio_live(session, value) do
-    click(
-      session,
-      css(
-        "#radio-group-live-form-changeset [data-scope='radio-group'][data-part='item'][data-value='#{value}']"
-      )
-    )
-
-    session
+    click_item_in_section(session, "radio-group-live-form-changeset", value)
   end
 
   def click_radio_item(session, value) do

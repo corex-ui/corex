@@ -2,8 +2,8 @@ defmodule CorexWeb.Listbox do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Listbox
   alias Corex.Heroicon
+  alias Corex.Listbox
 
   @collection Corex.List.new([
                 %{label: "France", value: "fra", disabled: true},

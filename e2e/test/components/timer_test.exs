@@ -66,12 +66,7 @@ defmodule E2eWeb.TimerTest do
 
       session
       |> Timer.click_start_trigger_in_host("timer-events-server")
-      |> Timer.wait_for_has(
-        css("#timer-events-log-server tr[data-part='row']", count: before + 1),
-        timeout: 12_000
-      )
-
-      assert Timer.timer_events_server_log_has_row?(session)
+      |> Timer.wait_log_rows_grew("timer-events-log-server", before, timeout: 12_000)
     end
   end
 end

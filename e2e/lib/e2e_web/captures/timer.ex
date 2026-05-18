@@ -2,8 +2,8 @@ defmodule CorexWeb.Timer do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Timer
   alias Corex.Heroicon
+  alias Corex.Timer
 
   capture variants: [
             basic: %{

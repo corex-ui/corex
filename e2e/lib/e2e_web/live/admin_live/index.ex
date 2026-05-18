@@ -81,7 +81,7 @@ defmodule E2eWeb.AdminLive.Index do
     {:noreply, stream_delete(socket, :admins, admin)}
   end
 
-  defp list_admins() do
+  defp list_admins do
     Accounts.list_admins()
   end
 end

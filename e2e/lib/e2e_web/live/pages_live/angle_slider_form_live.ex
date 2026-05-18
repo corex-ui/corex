@@ -3,9 +3,9 @@ defmodule E2eWeb.AngleSliderFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias Corex.Toast
   alias E2e.Form.AngleSliderForm
   alias E2eWeb.Demos.AngleSliderDemo
-  alias Corex.Toast
 
   @impl true
   def mount(_params, _session, socket) do

@@ -27,7 +27,7 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
       paths = wallaby_test_paths(component)
       assert paths != [], "missing Wallaby test for #{component}"
 
-      contents = paths |> Enum.map(&File.read!/1) |> Enum.join("\n")
+      contents = Enum.map_join(paths, "\n", &File.read!/1)
       expected = length(DocPageMatrix.wallaby_pages(component))
 
       feature_count =

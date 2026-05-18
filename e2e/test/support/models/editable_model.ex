@@ -131,18 +131,31 @@ defmodule E2eWeb.EditableModel do
   end
 
   def editable_events_server_log_has_row?(session) do
-    has?(session, css("#editable-events-log-server tr[data-part='row']"))
+    has?(session, css("#editable-events-log-server tr[data-part='row']", visible: :any))
   end
 
   def editable_events_client_log_has_row?(session) do
-    has?(session, css("#editable-events-log-client tr[data-part='row']"))
+    has?(session, css("#editable-events-log-client tr[data-part='row']", visible: :any))
   end
 
   def set_live_form_text(session, text) when is_binary(text) do
     session
-    |> click(css("#editable-form [data-part='edit-trigger']", visible: :any))
-    |> fill_in(css("#editable-form [data-part='input']", visible: :any), with: text)
-    |> click(css("#editable-form [data-part='submit-trigger']", visible: :any))
+    |> click(
+      css(
+        ~s|#editable-form [data-scope="editable"][data-part="edit-trigger"]|,
+        visible: :any
+      )
+    )
+    |> fill_in(
+      css(~s|#editable-form [data-scope="editable"][data-part="input"]|, visible: :any),
+      with: text
+    )
+    |> click(
+      css(
+        ~s|#editable-form [data-scope="editable"][data-part="submit-trigger"]|,
+        visible: :any
+      )
+    )
   end
 
   def goto_form(session, mode) do
@@ -159,6 +172,7 @@ defmodule E2eWeb.EditableModel do
   def submit_form(session, mode \\ :static) do
     id = if mode == :live, do: "editable-form-live-submit", else: "editable-form-submit"
     click(session, css("##{id}"))
+    session
   end
 
   def see_flash(session, flash_text) do

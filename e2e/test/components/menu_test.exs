@@ -2,8 +2,6 @@ defmodule E2eWeb.MenuTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
-  import Wallaby.Query
-
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.MenuModel, as: Menu
 
@@ -19,14 +17,6 @@ defmodule E2eWeb.MenuTest do
       session = ComponentBehaviorSpec.visit_ready(session, Menu, :menu, :anatomy)
 
       Enum.reduce(Menu.anatomy_section_ids(), session, fn section_id, sess ->
-        host =
-          case section_id do
-            "menu-anatomy-minimal" -> "menu-anatomy-minimal"
-            "menu-anatomy-grouped" -> "menu-anatomy-grouped"
-            "menu-anatomy-nested" -> "menu-anatomy-nested"
-            "menu-anatomy-nested-grouped" -> "menu-anatomy-nested-grouped"
-          end
-
         item_value =
           case section_id do
             "menu-anatomy-grouped" -> "combobox"
@@ -36,8 +26,8 @@ defmodule E2eWeb.MenuTest do
           end
 
         sess
-        |> Menu.wait_host_menu_ready(host)
-        |> Menu.open_menu_by_host_id(host)
+        |> Menu.wait_host_menu_ready(section_id)
+        |> Menu.open_menu_by_host_id(section_id)
         |> Menu.click_item_in_section(section_id, item_value, timeout: 8_000)
       end)
     end
@@ -45,37 +35,20 @@ defmodule E2eWeb.MenuTest do
 
   describe "api" do
     feature "client binding  -  Open reveals menu content", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :api)
-        |> Menu.wait_root_menu_ready("menu-api")
-
       session
+      |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :api)
+      |> Menu.wait_root_menu_ready("menu-api")
       |> Menu.click_button_in_section("menu-api-binding", "Open")
-      |> Menu.wait_for_has(
-        css("#menu-api [data-scope='menu'][data-part='content'][data-state='open']",
-          visible: :any
-        ),
-        timeout: 8_000
-      )
+      |> Menu.wait_menu_content_open("menu-api", timeout: 8_000)
     end
 
     feature "server  -  Open via LiveView reveals menu content", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :api)
-        |> Menu.prepare_live_form()
-        |> Menu.wait_root_menu_ready("menu-api-server")
-
       session
+      |> ComponentBehaviorSpec.visit_ready(Menu, :menu, :api)
+      |> Menu.prepare_live_form()
+      |> Menu.wait_root_menu_ready("menu-api-server")
       |> Menu.click_button_in_section("menu-api-server-section", "Open")
-      |> Menu.wait_for_has(
-        css(
-          "#menu-api-server [data-scope='menu'][data-part='content'][data-state='open']",
-          visible: :any
-        ),
-        timeout: 8_000
-      )
+      |> Menu.wait_menu_content_open("menu-api-server", timeout: 8_000)
     end
   end
 
@@ -87,14 +60,15 @@ defmodule E2eWeb.MenuTest do
         |> Menu.prepare_live_form()
         |> Menu.wait_root_menu_ready("menu-events-server")
 
-      refute Menu.menu_events_server_log_has_row?(session)
+      session =
+        session
+        |> Menu.open_menu_by_host_id("menu-events-server", timeout: 8_000)
+
+      before_select = Menu.log_row_count(session, "menu-events-log-server")
 
       session
-      |> Menu.open_menu_by_host_id("menu-events-server")
       |> Menu.click_item_in_section("menu-events-server-section", "menu", timeout: 8_000)
-      |> Menu.wait_for_has(css("#menu-events-log-server tr[data-part='row']", count: 1),
-        timeout: 10_000
-      )
+      |> Menu.wait_log_rows_grew("menu-events-log-server", before_select, timeout: 10_000)
     end
   end
 

@@ -22,7 +22,7 @@ defmodule E2eWeb.EditableFormTest do
     |> Editable.goto_form(:live)
     |> Editable.set_live_form_text("hello")
     |> Editable.submit_form(:live)
-    |> Editable.see_flash("text=\"hello\"")
+    |> Editable.see_flash("text=hello")
   end
 
   feature "live form - has no A11y violations", %{session: session} do

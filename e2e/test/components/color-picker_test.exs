@@ -4,8 +4,8 @@ defmodule E2eWeb.ColorPickerTest do
 
   import Wallaby.Query
 
-  alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.ColorPickerModel, as: ColorPicker
+  alias E2eWeb.ComponentBehaviorSpec
 
   @moduletag :color_picker
 

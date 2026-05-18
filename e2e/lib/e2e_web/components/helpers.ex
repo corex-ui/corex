@@ -131,39 +131,37 @@ defmodule E2eWeb.Helpers do
 
   def prev_next_page(path, direction) do
     list = flat_navigation_list()
+    index = nav_index(list, path)
+    nav_neighbor(list, index, direction)
+  end
+
+  defp nav_index(list, path) do
     here = if is_binary(path), do: String.trim(path), else: ""
 
-    index =
-      Enum.find_index(list, fn item ->
-        item_after =
-          case item.value do
-            id when is_binary(id) -> E2eWeb.Path.strip_after_locale(id)
-            _ -> ""
-          end
+    Enum.find_index(list, fn item ->
+      item_path =
+        case item.value do
+          id when is_binary(id) -> E2eWeb.Path.strip_after_locale(id)
+          _ -> ""
+        end
 
-        String.trim(item_after) == here
-      end)
+      String.trim(item_path) == here
+    end)
+  end
 
-    case {direction, index} do
-      {:prev, nil} ->
-        nil
+  defp nav_neighbor(_list, _index, direction) when direction not in [:prev, :next], do: nil
+  defp nav_neighbor(_list, nil, _direction), do: nil
+  defp nav_neighbor(_list, 0, :prev), do: nil
 
-      {:prev, 0} ->
-        nil
+  defp nav_neighbor(list, index, :prev) when index > 0 do
+    entry = Enum.at(list, index - 1)
+    %{to: entry.to, label: entry.label}
+  end
 
-      {:prev, i} when i > 0 ->
-        entry = Enum.at(list, i - 1)
-        %{to: entry.to, label: entry.label}
-
-      {:next, nil} ->
-        nil
-
-      {:next, i} when i >= 0 and i < length(list) - 1 ->
-        entry = Enum.at(list, i + 1)
-        %{to: entry.to, label: entry.label}
-
-      _ ->
-        nil
+  defp nav_neighbor(list, index, :next) when index >= 0 do
+    case Enum.at(list, index + 1) do
+      nil -> nil
+      entry -> %{to: entry.to, label: entry.label}
     end
   end
 

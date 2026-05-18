@@ -61,7 +61,12 @@ defmodule E2eWeb.MarqueeModel do
   end
 
   def wait_host_paused(session, host_dom_id, opts \\ []) do
-    wait_for_has(session, css("#{marquee_root_selector(host_dom_id)}[data-paused]", visible: :any), opts)
+    wait_for_has(
+      session,
+      css("#{marquee_root_selector(host_dom_id)}[data-paused]", visible: :any),
+      opts
+    )
+
     session
   end
 
@@ -89,11 +94,33 @@ defmodule E2eWeb.MarqueeModel do
     session
   end
 
+  def pause_host(session, host_dom_id) when is_binary(host_dom_id) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    _ =
+      execute_script(
+        session,
+        """
+        const el = document.getElementById(arguments[0]);
+        el?.dispatchEvent(new CustomEvent("corex:marquee:toggle-pause", { bubbles: false }));
+        """,
+        [host_dom_id]
+      )
+
+    session
+  end
+
   def marquee_events_server_log_has_row?(session) do
-    has?(session, css("#marquee-events-log-server tr[data-part='row']"))
+    has?(
+      session,
+      css("#marquee-events-log-server tr[data-part='row']", visible: :any)
+    )
   end
 
   def marquee_events_client_log_has_row?(session) do
-    has?(session, css("#marquee-events-log-client tr[data-part='row']"))
+    has?(
+      session,
+      css("#marquee-events-log-client tr[data-part='row']", visible: :any)
+    )
   end
 end

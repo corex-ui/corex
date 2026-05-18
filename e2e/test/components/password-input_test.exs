@@ -69,7 +69,7 @@ defmodule E2eWeb.PasswordInputTest do
   end
 
   describe "events" do
-    feature "server  -  typing appends log row", %{session: session} do
+    feature "server  -  visibility change appends log row", %{session: session} do
       section = "password-input-events-server-section"
 
       session =
@@ -81,9 +81,8 @@ defmodule E2eWeb.PasswordInputTest do
       before = PasswordInput.log_row_count(session, "password-input-events-log-server")
 
       session
-      |> PasswordInput.fill_input_in_section(section, "abc")
-      |> PasswordInput.wait_for_has(
-        css("#password-input-events-log-server tr[data-part='row']", count: before + 1),
+      |> PasswordInput.click_visibility_trigger_in_section(section)
+      |> PasswordInput.wait_log_rows_grew("password-input-events-log-server", before,
         timeout: 10_000
       )
     end

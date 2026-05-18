@@ -2,8 +2,8 @@ defmodule CorexWeb.NativeInput do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.NativeInput
   alias Corex.Heroicon
+  alias Corex.NativeInput
 
   capture variants: [
             text_with_icon: %{

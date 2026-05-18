@@ -87,7 +87,7 @@ defmodule E2eWeb.PaginationModel do
       css(
         "##{section_id} ##{pagination_id}[phx-hook='Pagination']:not([data-loading])",
         visible: :any,
-            minimum: 1
+        minimum: 1
       )
     )
 

@@ -79,7 +79,7 @@ defmodule E2eWeb.PinInputModel do
   end
 
   def pin_input_events_server_log_has_row?(session) do
-    has?(session, css("#pin-input-events-log-server tr[data-part='row']"))
+    has?(session, css("#pin-input-events-log-server tr[data-part='row']", visible: :any))
   end
 
   def goto_form(session, mode) do

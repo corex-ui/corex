@@ -3,8 +3,8 @@ defmodule E2eWeb.CheckboxApiLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  alias Phoenix.LiveView.JS
   alias E2eWeb.Demos.CheckboxDemo
+  alias Phoenix.LiveView.JS
 
   @id_bind "checkbox-api-bind"
   @id_dispatch "checkbox-api-dispatch"

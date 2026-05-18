@@ -47,7 +47,7 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:live)
     |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-    |> RadioGroup.click_radio_live("b")
+    |> RadioGroup.click_radio_live("duis")
     |> RadioGroup.submit_form(:live)
     |> RadioGroup.see_flash("Submitted: choice=")
   end

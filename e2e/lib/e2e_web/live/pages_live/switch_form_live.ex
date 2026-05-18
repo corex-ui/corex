@@ -3,9 +3,9 @@ defmodule E2eWeb.SwitchFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias Corex.Toast
   alias E2e.Form.Preferences
   alias E2eWeb.Demos.SwitchDemo, as: SwitchDemo
-  alias Corex.Toast
 
   @impl true
   def mount(_params, _session, socket) do

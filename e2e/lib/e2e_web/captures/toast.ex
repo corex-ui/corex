@@ -2,9 +2,9 @@ defmodule CorexWeb.Toast do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Toast
   alias Corex.Action
   alias Corex.Heroicon
+  alias Corex.Toast
 
   capture variants: [
             basic: %{
@@ -26,7 +26,7 @@ defmodule CorexWeb.Toast do
         render_buttons(assigns)
 
       _ ->
-        apply(Toast, :toast_group, [assigns])
+        Toast.toast_group(assigns)
     end
   end
 

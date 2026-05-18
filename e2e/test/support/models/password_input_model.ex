@@ -87,14 +87,20 @@ defmodule E2eWeb.PasswordInputModel do
   end
 
   def fill_input_in_section(session, section_dom_id, value) when is_binary(value) do
-    fill_in(
-      session,
-      css(
-        ~s|section##{section_dom_id} [data-scope="password-input"][data-part="input"]|,
-        visible: :any
-      ),
-      with: value
-    )
+    _ =
+      execute_script(
+        session,
+        """
+        const section = document.getElementById(arguments[0]);
+        const input = section?.querySelector('[data-scope="password-input"][data-part="input"]');
+        if (input) {
+          input.value = arguments[1];
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        """,
+        [section_dom_id, value]
+      )
 
     session
   end

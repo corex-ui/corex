@@ -6,8 +6,8 @@ defmodule E2eWeb.TagsInputFormLive do
   import E2eWeb.Demos.TagsInputDemo,
     only: [form_preview_live_changeset: 1, form_preview_controller_native: 1]
 
-  alias E2e.Form.TagsInputForm
   alias Corex.Toast
+  alias E2e.Form.TagsInputForm
   alias E2eWeb.Demos.TagsInputDemo, as: Demo
 
   @live_changeset_id "tags-input-live-changeset-form"

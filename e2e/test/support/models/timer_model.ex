@@ -59,29 +59,28 @@ defmodule E2eWeb.TimerModel do
     session
   end
 
-  def click_action_trigger_in_host(session, host_dom_id) do
-    click(
-      session,
-      css(
-        ~s|##{host_dom_id} [data-scope="timer"][data-part="action-trigger"]|,
-        at: 0,
-        visible: :any
-      )
-    )
+  def click_action_trigger_in_host(session, host_dom_id, action \\ "start") do
+    if action not in ["start", "pause", "resume", "reset"] do
+      raise ArgumentError, "invalid timer action"
+    end
 
+    click(session, action_trigger_query(host_dom_id, action))
     session
   end
 
   def click_start_trigger_in_host(session, host_dom_id) do
-    click(
-      session,
-      css(
-        ~s|##{host_dom_id} [data-scope="timer"][data-part="start-trigger"]|,
-        visible: :any
-      )
-    )
+    click_action_trigger_in_host(session, host_dom_id, "start")
+  end
 
-    session
+  def click_pause_trigger_in_host(session, host_dom_id) do
+    click_action_trigger_in_host(session, host_dom_id, "pause")
+  end
+
+  defp action_trigger_query(host_dom_id, action) do
+    css(
+      ~s|##{host_dom_id} [data-scope="timer"][data-part="action-trigger"][data-action="#{action}"]|,
+      visible: :any
+    )
   end
 
   def timer_area_visible_in_host?(session, host_dom_id) do
@@ -106,11 +105,11 @@ defmodule E2eWeb.TimerModel do
   end
 
   def timer_events_server_log_has_row?(session) do
-    has?(session, css("#timer-events-log-server tr[data-part='row']"))
+    has?(session, css("#timer-events-log-server tr[data-part='row']", visible: :any))
   end
 
   def timer_events_client_log_has_row?(session) do
-    has?(session, css("#timer-events-log-client tr[data-part='row']"))
+    has?(session, css("#timer-events-log-client tr[data-part='row']", visible: :any))
   end
 
   def wait_remounted_api_timer_ready(session, opts \\ []) do

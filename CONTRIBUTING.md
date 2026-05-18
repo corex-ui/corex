@@ -35,19 +35,23 @@ npm run check
 Optional quality checks before a PR (same as `mix pre.publish`):
 
 ```bash
-mix format
-mix credo --strict
+mix lint
 mix sobelow
 mix docs
 ```
+
+`mix lint` runs `format --check-formatted`, `credo --strict`, and `oeditus_credo --strict` (ExSlop checks are enabled in `.credo.exs`).
 
 ### E2e app (`e2e/`)
 
 The demo and browser tests live here. See also [`e2e/README.md`](e2e/README.md).
 
+Linting uses the same `.credo.exs` rules as the Corex library (Credo, ExSlop, and `mix oeditus_credo --strict`).
+
 ```bash
 cd e2e
 mix deps.get
+mix lint
 mix ecto.setup
 pnpm install
 mix setup

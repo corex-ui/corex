@@ -117,10 +117,10 @@ defmodule E2eWeb.TreeViewModel do
   end
 
   def tree_view_events_server_log_has_row?(session) do
-    has?(session, css("#tree-events-log-server tr[data-part='row']"))
+    has?(session, css("#tree-events-log-server tr[data-part='row']", visible: :any))
   end
 
   def tree_view_events_client_log_has_row?(session) do
-    has?(session, css("#tree-events-log-client tr[data-part='row']"))
+    has?(session, css("#tree-events-log-client tr[data-part='row']", visible: :any))
   end
 end

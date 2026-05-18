@@ -3,9 +3,9 @@ defmodule E2eWeb.NativeInputFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias Corex.Toast
   alias E2e.Form.NativeInputProfile
   alias E2eWeb.Demos.NativeInputDemo, as: Demo
-  alias Corex.Toast
 
   @live_form_id "native-input-live-profile-form"
   @live_strict_form_id "native-input-live-strict-form"

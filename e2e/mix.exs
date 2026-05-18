@@ -81,7 +81,10 @@ defmodule E2e.MixProject do
       {:flagpack, "~> 0.6.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ] ++ maybe_json_polyfill()
   end
 
@@ -136,7 +139,18 @@ defmodule E2e.MixProject do
         "esbuild e2e --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      lint: [
+        "format --check-formatted",
+        "credo --strict",
+        "oeditus_credo --strict"
+      ],
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "lint",
+        "test"
+      ]
     ]
   end
 end

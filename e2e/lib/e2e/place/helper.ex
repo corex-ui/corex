@@ -9,7 +9,7 @@ defmodule E2e.Place.Helper do
     country_name
   end
 
-  def fetch_and_insert_cities() do
+  def fetch_and_insert_cities do
     read_compressed("cities.tar.gz")
     |> Jason.decode!()
     |> Enum.chunk_every(500)
@@ -30,7 +30,7 @@ defmodule E2e.Place.Helper do
     end)
   end
 
-  def fetch_and_insert_airports() do
+  def fetch_and_insert_airports do
     read_compressed("airports.tar.gz")
     |> Jason.decode!()
     |> Enum.chunk_every(500)

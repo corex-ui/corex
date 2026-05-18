@@ -103,6 +103,10 @@ defmodule E2eWeb.AvatarModel do
   end
 
   def avatar_events_log_has_row?(session) do
-    has?(session, css("#avatar-events-log tr[data-part='row']"))
+    has?(session, css("#avatar-events-log tr[data-part='row']", visible: :any))
+  end
+
+  def set_events_src(session, url) when is_binary(url) do
+    E2eWeb.NativeInputModel.fill_input_via_script(session, "avatar-events-src", url)
   end
 end

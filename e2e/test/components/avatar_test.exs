@@ -74,13 +74,8 @@ defmodule E2eWeb.AvatarTest do
       before = Avatar.log_row_count(session, "avatar-events-log")
 
       session
-      |> fill_in(css("#avatar-events-src input"), with: "https://corex-ui.com/pwa-192x192.png")
-      |> Avatar.wait_for_has(
-        css("#avatar-events-log tr[data-part='row']", count: before + 1),
-        timeout: 12_000
-      )
-
-      assert Avatar.avatar_events_log_has_row?(session)
+      |> Avatar.set_events_src("https://corex-ui.com/pwa-192x192.png")
+      |> Avatar.wait_log_rows_grew("avatar-events-log", before, timeout: 12_000)
     end
   end
 end

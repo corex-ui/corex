@@ -87,8 +87,8 @@ defmodule E2eWeb do
       use Corex
 
       # Common modules used in templates
-      alias Phoenix.LiveView.JS
       alias E2eWeb.Layouts
+      alias Phoenix.LiveView.JS
       import E2eWeb.RecordFields
 
       # Routes generation with the ~p sigil

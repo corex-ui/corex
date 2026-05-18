@@ -22,7 +22,7 @@ defmodule Corex.DataListTest do
           empty: [%{inner_block: fn _, _ -> "No entries" end}]
         })
 
-      {:ok, doc} = Floki.parse_fragment(html)
+      doc = parse_html_fragment(html)
 
       assert [_] = Floki.find(doc, "[data-part=\"empty\"]")
       assert Floki.find(doc, "dl") == []
@@ -37,7 +37,7 @@ defmodule Corex.DataListTest do
 
       html = render_component(&DataList.data_list/1, %{items: items})
 
-      {:ok, doc} = Floki.parse_fragment(html)
+      doc = parse_html_fragment(html)
 
       assert [_] = Floki.find(doc, "dl[data-part=\"root\"]")
       assert Floki.find(doc, "dl [data-part=\"empty\"]") == []
@@ -64,7 +64,7 @@ defmodule Corex.DataListTest do
           empty: [%{inner_block: fn _, _ -> "No entries" end}]
         })
 
-      {:ok, doc} = Floki.parse_fragment(html)
+      doc = parse_html_fragment(html)
 
       assert [_] = Floki.find(doc, "[data-part=\"empty\"]")
       assert [_] = Floki.find(doc, "dl [data-part=\"item\"]")

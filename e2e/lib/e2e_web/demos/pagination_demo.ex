@@ -753,11 +753,9 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def patterns_blog_data do
     posts_lines =
-      E2e.PaginationPlayBlog.posts()
-      |> Enum.map(fn %{title: title, excerpt: excerpt} ->
+      Enum.map_join(E2e.PaginationPlayBlog.posts(), ",\n", fn %{title: title, excerpt: excerpt} ->
         "    %{title: #{inspect(title)}, excerpt: #{inspect(excerpt)}}"
       end)
-      |> Enum.join(",\n")
 
     """
     defmodule MyApp.Blog do

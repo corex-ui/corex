@@ -63,7 +63,7 @@ defmodule E2eWeb.AngleSliderModel do
       css(
         "#angle-slider-form-controller [phx-hook='AngleSlider']:not([data-loading])",
         visible: :any,
-            minimum: 1
+        minimum: 1
       )
     )
 
@@ -190,7 +190,7 @@ defmodule E2eWeb.AngleSliderModel do
       session,
       css("#angle-slider-form-changeset [phx-hook='AngleSlider']:not([data-loading])",
         visible: :any,
-            minimum: 1
+        minimum: 1
       )
     )
 
@@ -202,7 +202,7 @@ defmodule E2eWeb.AngleSliderModel do
       session,
       css("#angle-slider-form-validate [phx-hook='AngleSlider']:not([data-loading])",
         visible: :any,
-            minimum: 1
+        minimum: 1
       )
     )
 
@@ -227,7 +227,7 @@ defmodule E2eWeb.AngleSliderModel do
       css(
         "#angle-slider-live-form-validate [phx-hook='AngleSlider']:not([data-loading])",
         visible: :any,
-            minimum: 1
+        minimum: 1
       )
     )
 
@@ -368,7 +368,7 @@ defmodule E2eWeb.AngleSliderModel do
         session,
         css("#angle-slider-api-set-value-js [phx-hook='AngleSlider']:not([data-loading])",
           visible: :any,
-            minimum: 1
+          minimum: 1
         )
       )
 
@@ -391,7 +391,7 @@ defmodule E2eWeb.AngleSliderModel do
         css(
           "#angle-slider-api-set-value-server [phx-hook='AngleSlider']:not([data-loading])",
           visible: :any,
-            minimum: 1
+          minimum: 1
         )
       )
 

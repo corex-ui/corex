@@ -45,34 +45,38 @@ defmodule E2eWeb.DocComponentWallaby do
   end
 
   defp prepare_live_form(session) do
-    case Wallaby.Browser.retry(fn ->
-           if E2eWeb.Model.layout_toast_hook_ready?(session) do
-             {:ok, session}
-           else
-             {:error, :not_ready}
-           end
-         end) do
-      {:ok, session} -> session
-      {:error, _} -> session
-    end
+    E2eWeb.Model.with_layout_toast_ready(
+      session,
+      "expected #layout-toast to exist with data-ready before LiveView interactions"
+    )
+  rescue
+    Wallaby.ExpectationNotMetError -> session
   end
 
   defp assert_hook_page(session, component, page_key, scope, hook, root_id) do
-    session = wait_hooks_ready(session, component, scope, hook, root_id, page_key)
-
-    case page_key do
-      :anatomy -> assert_anatomy_interaction(session, component, scope, hook, root_id)
-      :api -> assert_api_interaction(session, component, scope, hook, root_id)
-      :events -> assert_events_interaction(session, component, scope, hook, root_id)
-      :patterns -> assert_patterns_interaction(session, component, scope, hook, root_id)
-      :playground -> assert_scope_present(session, component, scope, root_id)
-      :style -> assert_scope_present(session, component, scope, root_id)
-      :form -> assert_scope_present(session, component, scope, root_id)
-      :live_form -> assert_scope_present(session, component, scope, root_id)
-      _ -> assert_scope_present(session, component, scope, root_id)
-    end
-
     session
+    |> wait_hooks_ready(component, scope, hook, root_id, page_key)
+    |> run_hook_page_interaction(component, page_key, scope, hook, root_id)
+  end
+
+  defp run_hook_page_interaction(session, component, :anatomy, scope, hook, root_id) do
+    assert_anatomy_interaction(session, component, scope, hook, root_id)
+  end
+
+  defp run_hook_page_interaction(session, component, :api, scope, hook, root_id) do
+    assert_api_interaction(session, component, scope, hook, root_id)
+  end
+
+  defp run_hook_page_interaction(session, component, :events, scope, hook, root_id) do
+    assert_events_interaction(session, component, scope, hook, root_id)
+  end
+
+  defp run_hook_page_interaction(session, component, :patterns, scope, hook, root_id) do
+    assert_patterns_interaction(session, component, scope, hook, root_id)
+  end
+
+  defp run_hook_page_interaction(session, component, _page_key, scope, _hook, root_id) do
+    assert_scope_present(session, component, scope, root_id)
   end
 
   defp assert_static_page(session, component, page_key, scope, root_id) do
@@ -89,21 +93,10 @@ defmodule E2eWeb.DocComponentWallaby do
 
   defp wait_hooks_ready(session, component, _scope, hook, _root_id, _page_key)
        when component in @layout_hook_components do
-    case Wallaby.Browser.retry(fn ->
-           if E2eWeb.Model.layout_toast_hook_ready?(session) do
-             {:ok, session}
-           else
-             {:error, :not_ready}
-           end
-         end) do
-      {:ok, session} ->
-        session
-
-      {:error, _} ->
-        raise Wallaby.ExpectationNotMetError,
-          message:
-            "expected #layout-toast[phx-hook=\"#{hook}\"][data-ready] before #{component} doc interactions"
-    end
+    E2eWeb.Model.with_layout_toast_ready(
+      session,
+      "expected #layout-toast[phx-hook=\"#{hook}\"][data-ready] before #{component} doc interactions"
+    )
   end
 
   defp wait_hooks_ready(session, component, scope, hook, root_id, _page_key) do
@@ -161,21 +154,13 @@ defmodule E2eWeb.DocComponentWallaby do
     session = assert_scope_present(session, component, scope, root_id)
     host_sel = first_hook_host_selector(component, root_id, scope, hook)
 
-    if host_sel && click_if_present(session, host_sel <> " [data-part=\"trigger\"]") do
-      wait_for_log_row(session, root_id)
-    else
-      if host_sel && click_if_present(session, host_sel <> " [data-part=\"root\"]") do
-        wait_for_log_row(session, root_id)
-      else
-        if host_sel && click_if_present(session, host_sel <> " [data-part=\"item\"]") do
-          wait_for_log_row(session, root_id)
-        else
-          session
-        end
-      end
-    end
+    clicked? =
+      host_sel &&
+        Enum.any?(~w(trigger root item), fn part ->
+          click_if_present(session, host_sel <> " [data-part=\"#{part}\"]")
+        end)
 
-    session
+    if clicked?, do: wait_for_log_row(session, root_id), else: session
   end
 
   defp assert_patterns_interaction(session, component, scope, hook, root_id) do
@@ -222,17 +207,12 @@ defmodule E2eWeb.DocComponentWallaby do
   end
 
   defp wait_open_state(session, component, scope, root_id) do
-    assert_has(
-      session,
-      css(
-        page_scope_selector(component, root_id, scope) <>
-          " [data-scope=\"#{scope}\"][data-state=\"open\"], " <>
-          page_scope_selector(component, root_id, scope) <>
-          " [data-scope=\"#{scope}\"][data-part=\"content\"]",
-        visible: :any
-      )
-    )
+    base = page_scope_selector(component, root_id, scope)
 
+    open_sel =
+      ~s|#{base} [data-scope="#{scope}"][data-state="open"], #{base} [data-scope="#{scope}"][data-part="content"]|
+
+    assert_has(session, css(open_sel, visible: :any))
     session
   end
 

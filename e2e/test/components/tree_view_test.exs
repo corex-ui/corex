@@ -2,8 +2,6 @@ defmodule E2eWeb.TreeViewTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
-  import Wallaby.Query
-
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.TreeViewModel, as: TreeView
 
@@ -80,12 +78,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_first_branch_control_in_host("tree-events-server")
-      |> TreeView.wait_for_has(
-        css("#tree-events-log-server tr[data-part='row']", count: before + 1),
-        timeout: 10_000
-      )
-
-      assert TreeView.tree_view_events_server_log_has_row?(session)
+      |> TreeView.wait_log_rows_grew("tree-events-log-server", before, timeout: 10_000)
     end
   end
 

@@ -3,8 +3,8 @@ defmodule E2eWeb.EditableFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  alias E2e.Form.EditableForm
   alias Corex.Toast
+  alias E2e.Form.EditableForm
   alias E2eWeb.Demos.EditableDemo, as: Demo
 
   @impl true

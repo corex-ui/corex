@@ -2,9 +2,9 @@ defmodule CorexWeb.Menu do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
+  alias Corex.Heroicon
   alias Corex.Menu
   alias Corex.Tree.Item
-  alias Corex.Heroicon
 
   @items_minimal [
     %Item{value: "menu", label: "Menu"},

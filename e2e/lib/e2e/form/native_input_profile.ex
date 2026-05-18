@@ -82,27 +82,30 @@ defmodule E2e.Form.NativeInputProfile do
     |> validate_acceptance(:agree, message: "must be accepted to continue")
   end
 
+  @toast_fields ~w(
+    name email bio birth_date datetime reminder_time month week website phone q
+    color count role tags size agree
+  )a
+
   def format_for_toast(data) when is_map(data) do
-    [
-      "name=#{inspect(Map.get(data, :name) || Map.get(data, "name"))}",
-      "email=#{inspect(Map.get(data, :email) || Map.get(data, "email"))}",
-      "bio=#{inspect(Map.get(data, :bio) || Map.get(data, "bio"))}",
-      "birth_date=#{inspect(Map.get(data, :birth_date) || Map.get(data, "birth_date"))}",
-      "datetime=#{inspect(Map.get(data, :datetime) || Map.get(data, "datetime"))}",
-      "reminder_time=#{inspect(Map.get(data, :reminder_time) || Map.get(data, "reminder_time"))}",
-      "month=#{inspect(Map.get(data, :month) || Map.get(data, "month"))}",
-      "week=#{inspect(Map.get(data, :week) || Map.get(data, "week"))}",
-      "website=#{inspect(Map.get(data, :website) || Map.get(data, "website"))}",
-      "phone=#{inspect(Map.get(data, :phone) || Map.get(data, "phone"))}",
-      "q=#{inspect(Map.get(data, :q) || Map.get(data, "q"))}",
-      "color=#{inspect(Map.get(data, :color) || Map.get(data, "color"))}",
-      "count=#{inspect(Map.get(data, :count) || Map.get(data, "count"))}",
-      "password=***",
-      "role=#{inspect(Map.get(data, :role) || Map.get(data, "role"))}",
-      "tags=#{inspect(Map.get(data, :tags) || Map.get(data, "tags"))}",
-      "size=#{inspect(Map.get(data, :size) || Map.get(data, "size"))}",
-      "agree=#{inspect(Map.get(data, :agree) || Map.get(data, "agree"))}"
-    ]
+    data = normalize_atom_keys(data)
+
+    lines =
+      Enum.map(@toast_fields, fn field ->
+        "#{field}=#{inspect(Map.get(data, field))}"
+      end)
+
+    (lines ++ ["password=***"])
     |> Enum.join(", ")
+  end
+
+  defp normalize_atom_keys(map) do
+    Map.new(map, fn
+      {key, value} when is_atom(key) ->
+        {key, value}
+
+      {key, value} when is_binary(key) ->
+        {String.to_existing_atom(key), value}
+    end)
   end
 end

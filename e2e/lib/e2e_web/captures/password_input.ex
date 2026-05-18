@@ -2,8 +2,8 @@ defmodule CorexWeb.PasswordInput do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.PasswordInput
   alias Corex.Heroicon
+  alias Corex.PasswordInput
 
   capture variants: [
             with_visibility_icons: %{

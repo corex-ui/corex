@@ -2,8 +2,8 @@ defmodule CorexWeb.NumberInput do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.NumberInput
   alias Corex.Heroicon
+  alias Corex.NumberInput
 
   capture variants: [
             basic: %{

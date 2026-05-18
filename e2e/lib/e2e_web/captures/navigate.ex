@@ -2,8 +2,8 @@ defmodule CorexWeb.Navigate do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Navigate
   alias Corex.Heroicon
+  alias Corex.Navigate
 
   capture variants: [
             basic: %{

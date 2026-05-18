@@ -1,8 +1,8 @@
 defmodule E2eWeb.PinInputFormLive do
   use E2eWeb, :live_view
 
-  alias E2e.Form.PinInputForm
   alias Corex.Toast
+  alias E2e.Form.PinInputForm
 
   @impl true
   def mount(_params, _session, socket) do

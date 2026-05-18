@@ -13,6 +13,61 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  lint:
+    name: Lint (OTP 27.3 | Elixir 1.18.4)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
+        with:
+          elixir-version: "1.18.4"
+          otp-version: "27.3"
+
+      - name: Restore Corex dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-27.3-1.18.4-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-27.3-1.18.4
+
+      - name: Install Corex dependencies
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Lint Corex
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Restore E2E dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            e2e/deps
+            e2e/_build
+          key: deps-e2e-${{ runner.os }}-27.3-1.18.4-${{ hashFiles('e2e/mix.lock') }}
+          restore-keys: |
+            deps-e2e-${{ runner.os }}-27.3-1.18.4
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Lint E2E
+        working-directory: e2e
+        run: mix lint
+        env:
+          MIX_ENV: test
+
   unit-tests:
     name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04
