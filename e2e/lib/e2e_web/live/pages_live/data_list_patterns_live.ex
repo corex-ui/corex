@@ -5,7 +5,7 @@ defmodule E2eWeb.DataListPatternsLive do
 
   alias E2eWeb.Demos.DataListDemo, as: Demo
 
-  @id_stream "data-list-patterns-stream"
+  @id_stream "data-list-patterns-stream-list"
 
   @initial_stream_items [
     %{

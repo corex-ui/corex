@@ -12,9 +12,21 @@ defmodule E2eWeb.DataListTest do
     |> DataList.see_content("Lorem ipsum dolor sit amet")
   end
 
+  feature "style page renders Lorem", %{session: session} do
+    session
+    |> DataList.visit_ready("/en/data-list/style", css("#data-list-styling-page"))
+    |> DataList.see_content("Lorem ipsum dolor sit amet")
+  end
+
+  feature "patterns stream section renders Lorem", %{session: session} do
+    session
+    |> DataList.visit_ready("/en/data-list/patterns", css("#data-list-patterns-page"))
+    |> DataList.see_content("Lorem ipsum dolor sit amet")
+  end
+
   feature "playground renders Lorem", %{session: session} do
     session
-    |> DataList.visit_ready("/en/data-list/playground")
+    |> DataList.visit_ready("/en/data-list/playground", css("#data-list-playground"))
     |> DataList.see_content("Lorem ipsum dolor sit amet")
   end
 end
