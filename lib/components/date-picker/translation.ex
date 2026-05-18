@@ -88,10 +88,9 @@ defmodule Corex.DatePicker.Translation do
           range_end: String.t()
         }
 
-  @doc "Returns default translation strings."
+  @doc "Returns defaults when `translation` is nil, otherwise merges partial overrides."
   def resolve(nil), do: default()
 
-  @doc "Merges partial overrides with defaults."
   def resolve(%__MODULE__{} = partial), do: merge(partial, default())
 
   defp default do
