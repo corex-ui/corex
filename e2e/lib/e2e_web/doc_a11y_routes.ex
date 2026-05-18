@@ -78,7 +78,6 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/data-table/patterns", "#data-table-patterns-page"},
     {"/en/data-table/patterns", "#data-table-patterns-row-click"},
     {"/en/data-table/patterns", "#data-table-patterns-database"},
-    {"/en/data-table/patterns", "#data-table-patterns-database"},
     {"/en/date-picker/playground", "#date-picker-playground"},
     {"/en/date-picker/anatomy", "#date-picker-anatomy-page"},
     {"/en/date-picker/api", "#date-picker-api-page"},
