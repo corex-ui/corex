@@ -39,7 +39,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       </.layout_heading>
 
       <.data_list class="data-list"><%= for {k, _} <- schema.attrs do %>
-        <:item title="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{@<%= schema.singular %>.<%= k %>}</:item><% end %>
+        <:label value="<%= Atom.to_string(k) %>"><%= Phoenix.Naming.humanize(Atom.to_string(k)) %></:label>
+        <:content value="<%= Atom.to_string(k) %>">{@<%= schema.singular %>.<%= k %>}</:content><% end %>
       </.data_list>
     </Layouts.app>
     """

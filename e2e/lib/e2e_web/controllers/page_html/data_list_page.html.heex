@@ -6,32 +6,40 @@
 >
   <.demo_page
     id="data-list-anatomy-page"
-    title="Data List"
-    subtitle="Display structured key-value data."
+    title="Data List · Anatomy"
+    subtitle="Minimal items list, manual label/content slots, custom slots, and empty state."
     heading_class="layout-heading"
   >
     <.demo_section
-      id="data-list-anatomy-basic"
-      title="Basic"
-      code={E2eWeb.Demos.DataListDemo.anatomy_basic_code()}
+      id="data-list-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.DataListDemo.minimal_code()}
     >
-      <:preview><E2eWeb.Demos.DataListDemo.anatomy_basic_example /></:preview>
+      <:preview><E2eWeb.Demos.DataListDemo.minimal_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="data-list-anatomy-rich-values"
-      title="Rich values"
-      code={E2eWeb.Demos.DataListDemo.anatomy_rich_values_code()}
+      id="data-list-anatomy-manual-slots"
+      title="Manual slots"
+      code={E2eWeb.Demos.DataListDemo.manual_slots_code()}
     >
-      <:preview><E2eWeb.Demos.DataListDemo.anatomy_rich_values_example /></:preview>
+      <:preview><E2eWeb.Demos.DataListDemo.manual_slots_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="data-list-anatomy-items-api"
-      title="Items API"
-      code={E2eWeb.Demos.DataListDemo.api_items_code()}
+      id="data-list-anatomy-custom-slots"
+      title="Custom slots"
+      code={E2eWeb.Demos.DataListDemo.custom_slots_code()}
     >
-      <:preview><E2eWeb.Demos.DataListDemo.api_items_example /></:preview>
+      <:preview><E2eWeb.Demos.DataListDemo.custom_slots_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="data-list-anatomy-empty"
+      title="Empty"
+      code={E2eWeb.Demos.DataListDemo.empty_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.empty_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

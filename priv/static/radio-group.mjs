@@ -10,7 +10,15 @@ import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
-  notifyChange
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
 } from "./chunks/chunk-YECC7BC7.mjs";
 import {
   Component,
@@ -567,6 +575,51 @@ var RadioGroupHook = {
     });
     zag.init();
     this.radioGroup = zag;
+    const emitValue = (respondTo) => {
+      const value = zag.api.value;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "radio_group_value_response",
+        serverPayload: { id: el.id, value },
+        el,
+        domEventName: "radio-group-value",
+        domDetail: { id: el.id, value }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:radio-group:set-value", (event) => {
+      zag.api.setValue(event.detail.value);
+    });
+    domRegistry.add("corex:radio-group:clear-value", () => {
+      zag.api.clearValue();
+    });
+    domRegistry.add("corex:radio-group:focus", () => {
+      zag.api.focus();
+    });
+    domRegistry.add("corex:radio-group:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("radio_group_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(payload.value);
+    });
+    registry.add("radio_group_clear_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.clearValue();
+    });
+    registry.add("radio_group_focus", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.focus();
+    });
+    registry.add("radio_group_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
   },
   updated() {
     this.radioGroup?.updateProps({
@@ -583,6 +636,8 @@ var RadioGroupHook = {
     });
   },
   destroyed() {
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.radioGroup?.destroy();
   }
 };

@@ -1474,6 +1474,4 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     </.radio_group>
     """
   end
-
-
 end

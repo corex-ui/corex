@@ -36,9 +36,12 @@ defmodule E2eWeb.AdminLive.Show do
       </.layout_heading>
 
       <.data_list class="data-list max-w-md">
-        <:item :for={field <- @fields} title={label(field)}>
+        <:label :for={field <- @fields} value={Atom.to_string(field)}>
+          {label(field)}
+        </:label>
+        <:content :for={field <- @fields} value={Atom.to_string(field)}>
           <.record_field_value record={@admin} field={field} />
-        </:item>
+        </:content>
       </.data_list>
     </Layouts.app>
     """

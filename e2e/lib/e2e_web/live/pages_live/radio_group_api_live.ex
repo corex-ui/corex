@@ -38,7 +38,12 @@ defmodule E2eWeb.RadioGroupApiLive do
           title="Clear value"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_clear_value_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_clear_value_elixir()}
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: Demo.api_clear_value_elixir()
+            }
           ]}
         >
           <:preview><Demo.api_clear_value_example /></:preview>

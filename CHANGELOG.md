@@ -67,6 +67,13 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 - **Form `invalid` is opt-in** — `field={}` no longer sets `invalid` from changeset errors on radio group, pin input, color picker, or editable (same as checkbox, switch, select). Pass `invalid` explicitly when you want invalid styling.
 - **Radio group** — Size and color modifier utilities in CSS; full Zag API surface (`set_value`, `clear_value`, `focus`, `value`); form docs show the `:error` slot; e2e style page and pattern stream examples.
 
+### Breaking changes
+
+- **Data list** — `Corex.DataList.Item` removed; use `Corex.Content.new/1` for the `items` attribute.
+- **Data list** — Slot `:item` with `title` removed; use manual `:label` / `:content` pairs with `value`, or custom `:label` / `:content` slots with `:let={item}`.
+- **Data list** — Custom slots renamed from `:title` / `:value` to `:label` / `:content`; `data-part` attributes renamed from `title` / `value` to `label` / `content`.
+- **Data list** — Optional `:empty` slot for empty lists (stream-friendly, same pattern as data table).
+
 ### Requirements
 
 Elixir ~> 1.17, Phoenix ~> 1.8, LiveView ~> 1.1.

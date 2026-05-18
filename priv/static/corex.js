@@ -32370,6 +32370,7 @@ ${err}`);
       init_chunk_VGZJOUNL();
       init_chunk_UUEU3QDP();
       init_chunk_PE34YET2();
+      init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy22 = createAnatomy("radio-group").parts(
@@ -32715,6 +32716,51 @@ ${err}`);
           }));
           zag.init();
           this.radioGroup = zag;
+          const emitValue = (respondTo) => {
+            const value = zag.api.value;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "radio_group_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "radio-group-value",
+              domDetail: { id: el.id, value }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:radio-group:set-value", (event) => {
+            zag.api.setValue(event.detail.value);
+          });
+          domRegistry.add("corex:radio-group:clear-value", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:radio-group:focus", () => {
+            zag.api.focus();
+          });
+          domRegistry.add("corex:radio-group:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("radio_group_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setValue(payload.value);
+          });
+          registry.add("radio_group_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("radio_group_focus", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.focus();
+          });
+          registry.add("radio_group_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
         },
         updated() {
           var _a4;
@@ -32732,8 +32778,10 @@ ${err}`);
           }));
         },
         destroyed() {
-          var _a4;
-          (_a4 = this.radioGroup) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.radioGroup) == null ? void 0 : _c.destroy();
         }
       };
     }

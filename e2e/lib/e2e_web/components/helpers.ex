@@ -312,10 +312,12 @@ defmodule E2eWeb.Helpers do
           label: "Data list",
           id: "data-list",
           anatomy_to: ~p"/data-list/anatomy",
-          playground: false,
+          playground_to: ~p"/data-list/playground",
+          style_to: ~p"/data-list/style",
           api: false,
           event: false,
-          pattern: false
+          pattern: true,
+          patterns_to: ~p"/data-list/patterns"
         },
         %{
           label: "Data table",

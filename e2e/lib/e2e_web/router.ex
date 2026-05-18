@@ -100,6 +100,9 @@ defmodule E2eWeb.Router do
 
       live("/data-table/patterns", DataTablePatternsLive)
 
+      live("/data-list/playground", DataListPlayLive)
+      live("/data-list/patterns", DataListPatternsLive)
+
       live("/date-picker/playground", DatePickerPlayLive)
       live("/date-picker/api", DatePickerApiLive)
       live("/date-picker/events", DatePickerEventsLive)
@@ -302,6 +305,7 @@ defmodule E2eWeb.Router do
     get("/carousel/anatomy", PageController, :carousel_page)
     get("/carousel/style", PageController, :carousel_styling_page)
     get("/data-list/anatomy", PageController, :data_list_page)
+    get("/data-list/style", PageController, :data_list_styling_page)
     get("/data-table/anatomy", PageController, :data_table_page)
     get("/editable/anatomy", PageController, :editable_page)
     get("/editable/style", PageController, :editable_styling_page)

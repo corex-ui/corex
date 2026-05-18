@@ -6,60 +6,80 @@ defmodule Corex.DataList do
 
   <!-- tabs-open -->
 
-  ### Basic
+  ### Minimal
 
-  Pass items directly as slots. The `:item` slot requires a `title` attribute;
-  the inner block renders as the value.
+  Pass a list of `%Corex.Content.Item{}` structs via `Corex.Content.new/1`.
 
   ```heex
-  <.data_list>
-    <:item title="Name">Marie Curie</:item>
-    <:item title="Field">Physics</:item>
-    <:item title="Born">1867</:item>
+  <.data_list
+    class="data-list"
+    items={
+      Corex.Content.new([
+        %{label: "Name", content: "Marie Curie"},
+        %{label: "Field", content: "Physics"},
+        %{label: "Born", content: "1867"}
+      ])
+    }
+  />
+  ```
+
+  ### Manual slots
+
+  With an empty `items` list, use `:label` and `:content` slots with a matching `value` on each pair.
+
+  ```heex
+  <.data_list class="data-list">
+    <:label value="lorem">Lorem ipsum dolor sit amet</:label>
+    <:content value="lorem">Consectetur adipiscing elit.</:content>
+    <:label value="duis">Duis dictum gravida odio ac pharetra?</:label>
+    <:content value="duis">Nullam eget vestibulum ligula.</:content>
   </.data_list>
   ```
 
-  ### Items List
+  ### Custom slots
 
-  Pass a list of `%Corex.DataList.Item{}` structs. The component renders title and value
-  using the default `dt`/`dd` structure.
+  Combine `items` with `:label` and `:content` slots using `:let={item}` for custom markup.
 
   ```heex
-  <.data_list items={Corex.DataList.Item.new([
-    %{title: "Name", value: "Marie Curie"},
-    %{title: "Field", value: "Physics"},
-    %{title: "Born", value: "1867"}
-  ])} />
+  <.data_list
+    class="data-list"
+    items={
+      Corex.Content.new([
+        %{value: "status", label: "Status", content: "Active", meta: %{color: "green"}},
+        %{value: "role", label: "Role", content: "Admin", meta: %{color: "blue"}}
+      ])
+    }
+  >
+    <:label :let={item}>{item.label}</:label>
+    <:content :let={item}>{item.content}</:content>
+  </.data_list>
   ```
 
-  ### Custom Items
+  ### Empty
 
-  Combine both slots for full control over the content, while the component
-  still owns the `dt`/`dd` structure and `data-scope` attributes.
+  Optional `<:empty>` when there are no rows. The empty block stays in the DOM and is hidden by CSS when items exist (stream-friendly).
 
   ```heex
-  <.data_list items={Corex.DataList.Item.new([
-    %{title: "Status", value: "Active", meta: %{color: "green", icon: "hero-check"}},
-    %{title: "Role", value: "Admin", meta: %{color: "blue", icon: "hero-shield-check"}}
-  ])}>
-    <:title :let={item}>
-      <.icon name={item.meta.icon} />{item.title}
-    </:title>
-    <:value :let={item}>
-      <.badge color={item.meta.color}>{item.value}</.badge>
-    </:value>
+  <.data_list class="data-list" items={[]}>
+    <:empty>No entries</:empty>
   </.data_list>
   ```
 
   <!-- tabs-close -->
+
+  ## Stream
+
+  Keep a plain list assign for `items` and update it alongside `stream_insert/3` or `stream/3` reset.
+  Pass `items={Corex.Content.new(@items_list)}` to the component. Include `<:empty>` so an empty list shows the empty state without counting stream entries.
 
   ## Style
 
   ```css
   [data-scope="data-list"][data-part="root"] {}
   [data-scope="data-list"][data-part="item"] {}
-  [data-scope="data-list"][data-part="title"] {}
-  [data-scope="data-list"][data-part="value"] {}
+  [data-scope="data-list"][data-part="label"] {}
+  [data-scope="data-list"][data-part="content"] {}
+  [data-scope="data-list"][data-part="empty"] {}
   ```
   '''
 
@@ -72,50 +92,45 @@ defmodule Corex.DataList do
 
   ## Anatomy
 
-    <!-- tabs-open -->
+  <!-- tabs-open -->
 
-  ### Basic
-
-  Pass items directly as slots. The `:item` slot requires a `title` attribute;
-  the inner block renders as the value.
+  ### Minimal
 
   ```heex
-  <.data_list>
-    <:item title="Name">Marie Curie</:item>
-    <:item title="Field">Physics</:item>
-    <:item title="Born">1867</:item>
+  <.data_list
+    class="data-list"
+    items={
+      Corex.Content.new([
+        %{label: "Name", content: "Marie Curie"},
+        %{label: "Field", content: "Physics"}
+      ])
+    }
+  />
+  ```
+
+  ### Manual slots
+
+  ```heex
+  <.data_list class="data-list">
+    <:label value="lorem">Lorem ipsum dolor sit amet</:label>
+    <:content value="lorem">Consectetur adipiscing elit.</:content>
   </.data_list>
   ```
 
-  ### Items List
-
-  Pass a list of `%Corex.DataList.Item{}` structs. The component renders title and value
-  using the default `dt`/`dd` structure.
+  ### Custom slots
 
   ```heex
-  <.data_list items={Corex.DataList.Item.new([
-    %{title: "Name", value: "Marie Curie"},
-    %{title: "Field", value: "Physics"},
-    %{title: "Born", value: "1867"}
-  ])} />
+  <.data_list class="data-list" items={Corex.Content.new([...])}>
+    <:label :let={item}>{item.label}</:label>
+    <:content :let={item}>{item.content}</:content>
+  </.data_list>
   ```
 
-  ### Custom Items
-
-  Combine both slots for full control over the content, while the component
-  still owns the `dt`/`dd` structure and `data-scope` attributes.
+  ### Empty
 
   ```heex
-  <.data_list items={Corex.DataList.Item.new([
-    %{title: "Status", value: "Active", meta: %{color: "green", icon: "hero-check"}},
-    %{title: "Role", value: "Admin", meta: %{color: "blue", icon: "hero-shield-check"}}
-  ])}>
-    <:title :let={item}>
-      <.icon name={item.meta.icon} />{item.title}
-    </:title>
-    <:value :let={item}>
-      <.badge color={item.meta.color}>{item.value}</.badge>
-    </:value>
+  <.data_list class="data-list" items={[]}>
+    <:empty>No entries</:empty>
   </.data_list>
   ```
 
@@ -123,8 +138,8 @@ defmodule Corex.DataList do
   """
 
   attr(:items, :list,
-    default: nil,
-    doc: "List of %Corex.DataList.Item{} structs for the items API"
+    default: [],
+    doc: "List of %Corex.Content.Item{} structs from Corex.Content.new/1"
   )
 
   attr(:rest, :global)
@@ -141,26 +156,28 @@ defmodule Corex.DataList do
     doc: "Text direction"
   )
 
-  slot :item,
+  slot :label,
     required: false,
-    doc: "Slot API: each item with a required title attr and inner block as value" do
-    attr(:title, :string, required: true)
+    doc: "Manual: label slot with `value`. Custom: `:let={item}` with `items`." do
+    attr(:value, :string)
     attr(:class, :string)
   end
 
-  slot(:title,
+  slot :content,
     required: false,
-    doc:
-      "Items API: customize the title content. Use :let={item} to access the %Corex.DataList.Item{} struct."
-  )
+    doc: "Manual: content slot with `value`. Custom: `:let={item}` with `items`." do
+    attr(:value, :string)
+    attr(:class, :string)
+  end
 
-  slot(:value,
-    required: false,
-    doc:
-      "Items API: customize the value content. Use :let={item} to access the %Corex.DataList.Item{} struct."
-  )
+  slot(:empty, doc: "Optional content when the list has no rows")
 
   def data_list(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, assigns.items || [])
+      |> data_list_assign_manual_mode!()
+
     ~H"""
     <div {@rest}>
       <dl
@@ -170,29 +187,87 @@ defmodule Corex.DataList do
         dir={@dir}
       >
         <div
-          :for={item <- @item}
-          class={item[:class]}
+          :if={@empty != []}
           data-scope="data-list"
-          data-part="item"
+          data-part="empty"
         >
-          <dt data-scope="data-list" data-part="title">{item.title}</dt>
-          <dd data-scope="data-list" data-part="value">{render_slot(item)}</dd>
+          {render_slot(@empty)}
         </div>
 
         <div
-          :for={entry <- @items || []}
+          :if={@data_list_manual_mode}
+          :for={panel <- @data_list_manual_panels}
+          class={panel_label_class(panel)}
           data-scope="data-list"
           data-part="item"
         >
-          <dt data-scope="data-list" data-part="title">
-            {if @title != [], do: render_slot(@title, entry), else: entry.title}
+          <dt data-scope="data-list" data-part="label">
+            {render_slot(panel.label)}
           </dt>
-          <dd data-scope="data-list" data-part="value">
-            {if @value != [], do: render_slot(@value, entry), else: entry.value}
+          <dd data-scope="data-list" data-part="content">
+            {render_slot(panel.content)}
+          </dd>
+        </div>
+
+        <div
+          :if={!@data_list_manual_mode}
+          :for={entry <- @items}
+          data-scope="data-list"
+          data-part="item"
+        >
+          <dt data-scope="data-list" data-part="label">
+            {if @label != [], do: render_slot(@label, entry), else: entry.label}
+          </dt>
+          <dd data-scope="data-list" data-part="content">
+            {if @content != [], do: render_slot(@content, entry), else: entry.content}
           </dd>
         </div>
       </dl>
     </div>
     """
   end
+
+  defp data_list_assign_manual_mode!(assigns) do
+    manual? = manual_data_list_mode?(assigns)
+
+    if manual? and assigns.items != [] do
+      raise ArgumentError,
+            "DataList: use either items={Corex.Content.new([...])} or manual :label/:content slots, not both"
+    end
+
+    if not manual? and assigns.items != [] and manual_slot_entries?(assigns) do
+      raise ArgumentError,
+            "DataList: manual :label/:content slots with value require an empty items list; use :let={item} with items"
+    end
+
+    if manual? do
+      panels =
+        Corex.Slot.resolve_panels!(
+          %{label: assigns.label, content: assigns.content},
+          required: [:label, :content],
+          component: "DataList"
+        )
+
+      assign(assigns, :data_list_manual_mode, true)
+      |> assign(:data_list_manual_panels, panels)
+    else
+      assign(assigns, :data_list_manual_mode, false)
+      |> assign(:data_list_manual_panels, [])
+    end
+  end
+
+  defp manual_data_list_mode?(assigns) do
+    Enum.empty?(assigns.items) and assigns.label != [] and assigns.content != []
+  end
+
+  defp manual_slot_entries?(assigns) do
+    Enum.any?(assigns.label, &Map.get(&1, :value)) or
+      Enum.any?(assigns.content, &Map.get(&1, :value))
+  end
+
+  defp panel_label_class(%{label: label}) when is_map(label) do
+    Map.get(label, :class)
+  end
+
+  defp panel_label_class(_), do: nil
 end

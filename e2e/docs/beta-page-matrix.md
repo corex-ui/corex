@@ -15,7 +15,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | code | non-Zag | yes | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
 | color-picker | Zag + form | yes |  -  | yes | yes | yes | yes |  -  |  -  | live-form |
 | combobox | Zag + form | yes | yes | yes | yes | yes | yes | yes (incl. server filter) |  -  | live-form |
-| data-list | non-Zag | yes |  -  |  -  |  -  |  -  |  -  |  -  |  -  |  -  |
+| data-list | non-Zag | yes | yes |  -  | yes |  -  |  -  | yes |  -  |  -  |
 | data-table | non-Zag | yes |  -  |  -  |  -  |  -  |  -  | yes (unified) |  -  | `/data-table/patterns` only (anatomy is static) |
 | date-picker | Zag + form | yes |  -  | yes | yes | yes | yes | yes |  -  | live-form, controlled |
 | dialog | Zag | yes |  -  |  -  | yes | yes | yes | yes | yes |  -  |
@@ -58,7 +58,7 @@ Server-driven filtering on **`/combobox/patterns`** lives in **`#combobox-patter
 
 - **Number input · Events**  -  `/:locale/number-input/events` is registered as `NumberInputEventsLive`; the matrix marks **Events** as **yes** (not " - ").
 - **Navigate**  -  anatomy and style only; there is no `/navigate/playground` route (playground column stays ** - **).
-- **Data list**  -  static anatomy at `/:locale/data-list/anatomy` only; no playground/API/events (unchanged).
+- **Data list**  -  anatomy, style, patterns (stream), and playground (RTL + orientation); no API/events (static component).
 
 ## Wallaby component behavior checklist (Zag)
 

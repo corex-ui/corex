@@ -86,12 +86,20 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-color-accent" class="number-input number-input--accent" default_value="1">
+      <.number_input
+        id="number-input-style-color-accent"
+        class="number-input number-input--accent"
+        default_value="1"
+      >
         <:label>Accent</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-color-brand" class="number-input number-input--brand" default_value="1">
+      <.number_input
+        id="number-input-style-color-brand"
+        class="number-input number-input--brand"
+        default_value="1"
+      >
         <:label>Brand</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>

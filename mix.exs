@@ -242,7 +242,7 @@ defmodule Corex.MixProject do
         Corex.Content.Item
       ],
       DataList: [
-        Corex.DataList.Item
+        Corex.Content.Item
       ],
       List: [
         Corex.List,

@@ -13,7 +13,7 @@ defmodule E2eWeb.DocPageMatrix do
     collapsible: [:anatomy, :api, :events, :patterns],
     color_picker: [:anatomy, :api, :events],
     combobox: [:anatomy, :api, :events, :patterns],
-    data_list: [:anatomy],
+    data_list: [:anatomy, :style, :patterns, :playground],
     data_table: [:anatomy, :patterns],
     date_picker: [:anatomy, :api, :events, :patterns],
     dialog: [:anatomy, :api, :events, :patterns],

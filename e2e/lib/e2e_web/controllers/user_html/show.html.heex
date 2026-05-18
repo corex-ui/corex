@@ -27,8 +27,11 @@
   </.layout_heading>
 
   <.data_list class="data-list max-w-md">
-    <:item :for={field <- fields(@user)} title={label(field)}>
+    <:label :for={field <- fields(@user)} value={Atom.to_string(field)}>
+      {label(field)}
+    </:label>
+    <:content :for={field <- fields(@user)} value={Atom.to_string(field)}>
       <.record_field_value record={@user} field={field} />
-    </:item>
+    </:content>
   </.data_list>
 </Layouts.app>

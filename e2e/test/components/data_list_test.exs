@@ -6,15 +6,15 @@ defmodule E2eWeb.DataListTest do
 
   alias E2eWeb.DataListModel, as: DataList
 
-  feature "anatomy renders Alice", %{session: session} do
+  feature "anatomy minimal section renders Lorem", %{session: session} do
     session
-    |> DataList.visit_ready("/en/data-list/anatomy", css("#data-list-anatomy-page"))
-    |> DataList.see_content("Alice")
+    |> DataList.visit_ready("/en/data-list/anatomy", css("#data-list-anatomy-minimal"))
+    |> DataList.see_content("Lorem ipsum dolor sit amet")
   end
 
-  feature "anatomy items API section renders repository label", %{session: session} do
+  feature "playground renders Lorem", %{session: session} do
     session
-    |> DataList.visit_ready("/en/data-list/anatomy", css("#data-list-anatomy-items-api"))
-    |> DataList.see_content("Repository")
+    |> DataList.visit_ready("/en/data-list/playground")
+    |> DataList.see_content("Lorem ipsum dolor sit amet")
   end
 end

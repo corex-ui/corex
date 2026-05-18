@@ -96,7 +96,12 @@ defmodule E2eWeb.RadioGroupPatternsLive do
           title="Stream"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.patterns_stream_demo_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.patterns_stream_elixir()}
+            %{
+              value: "elixir",
+              label: "Elixir",
+              language: :elixir,
+              code: Demo.patterns_stream_elixir()
+            }
           ]}
         >
           <:preview>

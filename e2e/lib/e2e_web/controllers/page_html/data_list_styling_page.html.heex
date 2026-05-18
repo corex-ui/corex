@@ -1,0 +1,37 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="data-list-styling-page"
+    title="Data List · Style"
+    subtitle="Semantic ink on the label, size scale on label and content, and host max-width utilities."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="data-list-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.DataListDemo.styling_color_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.styling_color_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="data-list-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.DataListDemo.styling_text_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.styling_text_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="data-list-styling-max-width"
+      title="Max width"
+      code={E2eWeb.Demos.DataListDemo.styling_max_width_code()}
+    >
+      <:preview><E2eWeb.Demos.DataListDemo.styling_max_width_example /></:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>
