@@ -129,14 +129,14 @@ defmodule Corex.NumberInputTest do
       refute html =~ "data-default-value"
     end
 
-    test "default_value sets data-default-value" do
+    test "uncontrolled value sets data-default-value" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input id="x" default_value="7">
+            <Corex.NumberInput.number_input id="x" value="7">
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
@@ -146,9 +146,10 @@ defmodule Corex.NumberInputTest do
         )
 
       assert html =~ ~s(data-default-value="7")
+      refute html =~ "data-value="
     end
 
-    test "value without default_value omits data-default-value" do
+    test "uncontrolled value sets data-default-value and visible input" do
       html =
         render_component(
           fn assigns ->
@@ -164,7 +165,7 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      refute html =~ "data-default-value"
+      assert html =~ ~s(data-default-value="5")
       assert html =~ ~r/<input\b[^>]*\bvalue="5"[^>]*\bdata-part="input"/
     end
 
@@ -212,7 +213,7 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ "data-controlled"
-      refute html =~ "data-default-value"
+      assert html =~ ~s(data-default-value="99")
       assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
     end
 
@@ -252,6 +253,70 @@ defmodule Corex.NumberInputTest do
         )
 
       assert html =~ ~r/<input\b[^>]*\bvalue=""[^>]*\bdata-part="input"/
+    end
+  end
+
+  alias Corex.NumberInput
+
+  describe "set_value/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_value("n1", 42)
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = NumberInput.set_value(socket, "n1", 42)
+    end
+  end
+
+  describe "clear_value/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.clear_value("n1")
+    end
+  end
+
+  describe "increment/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.increment("n1")
+    end
+  end
+
+  describe "decrement/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.decrement("n1")
+    end
+  end
+
+  describe "set_to_min/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_to_min("n1")
+    end
+  end
+
+  describe "set_to_max/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_to_max("n1")
+    end
+  end
+
+  describe "focus/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.focus("n1")
+    end
+  end
+
+  describe "state/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.state("n1")
+    end
+  end
+
+  describe "state/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = NumberInput.state(socket, "n1")
     end
   end
 

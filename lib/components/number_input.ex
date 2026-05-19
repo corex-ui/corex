@@ -25,7 +25,7 @@ defmodule Corex.NumberInput do
     min={0.0}
     max={100.0}
     step={5.0}
-    default_value="10"
+    value="10"
   >
     <:label>Amount</:label>
     <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -39,7 +39,39 @@ defmodule Corex.NumberInput do
 
   ## API
 
-  Number input has no imperative setters. Use `controlled` with `value` and `on_value_change`, or `field` inside a Phoenix form.
+  Requires a stable `id` on `<.number_input>`. For forms, `field` and controlled mode remain the usual path; use the API for imperative updates and reading machine state.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set value (server) | `socket` |
+  | [`clear_value/1`](#clear_value/1) | Clear value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_value/2`](#clear_value/2) | Clear value (server) | `socket` |
+  | [`increment/1`](#increment/1) | Increment by step (client) | `%Phoenix.LiveView.JS{}` |
+  | [`increment/2`](#increment/2) | Increment by step (server) | `socket` |
+  | [`decrement/1`](#decrement/1) | Decrement by step (client) | `%Phoenix.LiveView.JS{}` |
+  | [`decrement/2`](#decrement/2) | Decrement by step (server) | `socket` |
+  | [`set_to_min/1`](#set_to_min/1) | Set to `min` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_to_min/2`](#set_to_min/2) | Set to `min` (server) | `socket` |
+  | [`set_to_max/1`](#set_to_max/1) | Set to `max` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_to_max/2`](#set_to_max/2) | Set to `max` (server) | `socket` |
+  | [`focus/1`](#focus/1) | Focus input (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focus/2`](#focus/2) | Focus input (server) | `socket` |
+  | [`state/1`](#state/1) | Read machine state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`state/2`](#state/2) | Read machine state (client, opts) | `%Phoenix.LiveView.JS{}` |
+  | [`state/3`](#state/3) | Read machine state (server) | `socket` |
+
+  ### Machine state (`state/2`, `state/3`)
+
+  Replies with `number_input_state_response` (server) or `number-input-state` on the host (client). Payload includes Zag machine fields:
+
+  | Field | Type | Meaning |
+  | ----- | ---- | ------- |
+  | `focused` | boolean | Input is focused |
+  | `invalid` | boolean | Input is invalid |
+  | `empty` | boolean | Value is empty |
+  | `value` | string | Formatted value |
+  | `valueAsNumber` | number | Numeric value |
 
   ## Events
 
@@ -231,10 +263,13 @@ defmodule Corex.NumberInput do
   }
 
   alias Corex.NumberInput.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [respond_to_fields: 1]
 
   attr(:id, :string, required: false)
   attr(:value, :string, default: nil)
-  attr(:default_value, :string, default: nil)
   attr(:min, :float, default: nil)
   attr(:max, :float, default: nil)
   attr(:step, :float, default: 1.0)
@@ -308,10 +343,6 @@ defmodule Corex.NumberInput do
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
       |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
-      |> assign(
-        :default_value,
-        value_to_string(Form.normalize_value("number", assigns[:default_value]))
-      )
 
     ~H"""
     <div
@@ -323,7 +354,6 @@ defmodule Corex.NumberInput do
         id: @id,
         controlled: @controlled,
         value: @value,
-        default_value: @default_value,
         min: @min,
         max: @max,
         step: @step,
@@ -386,4 +416,140 @@ defmodule Corex.NumberInput do
 
   defp value_to_string(nil), do: nil
   defp value_to_string(value), do: to_string(value)
+
+  @doc type: :api
+  def set_value(number_input_id, value)
+      when is_binary(number_input_id) and (is_number(value) or is_binary(value)) do
+    JS.dispatch("corex:number-input:set-value",
+      to: "##{number_input_id}",
+      detail: %{value: normalize_api_number!(value)},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def set_value(socket, number_input_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
+             (is_number(value) or is_binary(value)) do
+    LiveView.push_event(socket, "number_input_set_value", %{
+      id: number_input_id,
+      value: normalize_api_number!(value)
+    })
+  end
+
+  @doc type: :api
+  def clear_value(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:clear-value",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def clear_value(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_clear_value", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def increment(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:increment",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def increment(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_increment", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def decrement(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:decrement",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def decrement(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_decrement", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def set_to_min(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:set-to-min",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def set_to_min(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_set_to_min", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def set_to_max(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:set-to-max",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def set_to_max(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_set_to_max", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def focus(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:focus", to: "##{number_input_id}", bubbles: false)
+  end
+
+  @doc type: :api
+  def focus(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_focus", %{id: number_input_id})
+  end
+
+  @doc type: :api
+  def state(number_input_id) when is_binary(number_input_id), do: state(number_input_id, [])
+
+  @doc type: :api
+  def state(number_input_id, opts) when is_binary(number_input_id) and is_list(opts) do
+    JS.dispatch("corex:number-input:state",
+      to: "##{number_input_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  def state(socket, number_input_id, opts \\ [])
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
+             is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "number_input_state",
+      Map.merge(%{id: number_input_id}, respond_to_fields(opts))
+    )
+  end
+
+  defp normalize_api_number!(value) when is_integer(value), do: value * 1.0
+  defp normalize_api_number!(value) when is_float(value), do: value
+
+  defp normalize_api_number!(value) when is_binary(value) do
+    trimmed = String.trim(value)
+
+    case Float.parse(trimmed) do
+      {n, _} -> n
+      :error -> raise ArgumentError, "expected a number, got: #{inspect(value)}"
+    end
+  end
 end

@@ -22,7 +22,7 @@ defmodule Corex.Marquee.Anatomy do
       spacing: "1rem",
       auto_fill: true,
       pause_on_interaction: false,
-      default_paused: false,
+      paused: false,
       delay: 0,
       loop_count: 0,
       respect_reduced_motion: true,
@@ -41,7 +41,7 @@ defmodule Corex.Marquee.Anatomy do
             spacing: String.t(),
             auto_fill: boolean(),
             pause_on_interaction: boolean(),
-            default_paused: boolean(),
+            paused: boolean(),
             delay: number(),
             loop_count: non_neg_integer(),
             reverse: boolean(),
@@ -63,7 +63,7 @@ defmodule Corex.Marquee.Anatomy do
       :loop_count,
       :translate,
       :respect_reduced_motion,
-      default_paused: false
+      paused: false
     ]
 
     @type t :: %__MODULE__{
@@ -77,7 +77,7 @@ defmodule Corex.Marquee.Anatomy do
             loop_count: non_neg_integer(),
             translate: String.t(),
             respect_reduced_motion: boolean(),
-            default_paused: boolean()
+            paused: boolean()
           }
   end
 

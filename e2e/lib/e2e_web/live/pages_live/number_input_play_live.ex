@@ -69,7 +69,7 @@ defmodule E2eWeb.NumberInputPlayLive do
           <.number_input
             id="number-input-playground"
             class="number-input"
-            default_value="1"
+            value="1"
             disabled={@controls.disabled}
             read_only={@controls.read_only}
             invalid={@controls.invalid}

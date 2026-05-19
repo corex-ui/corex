@@ -35,16 +35,49 @@ defmodule E2eWeb.NumberInputTest do
   end
 
   describe "api" do
-    feature "binding section mounts number input hook", %{session: session} do
-      session
-      |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
-      |> NumberInput.wait_root_number_input_ready("number-input-api-binding")
+    feature "set value binding updates hidden value", %{session: session} do
+      section = "number-input-api-set-value-binding"
+      host = "number-input-api-set-client"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
+        |> NumberInput.prepare_live_form()
+        |> NumberInput.wait_root_number_input_ready(host)
+        |> NumberInput.click_button_in_section(section, "Set 42")
+
+      assert NumberInput.hidden_value_at_host(session, host) in ["42", "42.0"]
     end
 
-    feature "client section mounts number input hook", %{session: session} do
-      session
-      |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
-      |> NumberInput.wait_root_number_input_ready("number-input-api-client")
+    feature "increment binding increases value", %{session: session} do
+      section = "number-input-api-commands-binding"
+      host = "number-input-api-cmd-client"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
+        |> NumberInput.prepare_live_form()
+        |> NumberInput.wait_root_number_input_ready(host)
+
+      before = NumberInput.hidden_value_at_host(session, host)
+
+      session = NumberInput.click_button_in_section(session, section, "+")
+
+      after_value = NumberInput.hidden_value_at_host(session, host)
+      assert after_value != before
+    end
+
+    feature "state server shows toast", %{session: session} do
+      section = "number-input-api-state-server"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
+        |> NumberInput.prepare_live_form()
+        |> NumberInput.wait_root_number_input_ready("number-input-api-state-server")
+        |> NumberInput.click_button_in_section(section, "Read state (server)")
+
+      NumberInput.assert_toast(session, "number-input-api-state-server")
     end
   end
 

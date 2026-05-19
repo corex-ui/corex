@@ -72,7 +72,7 @@ defmodule Corex.MarqueeTest do
         spacing: "20px",
         auto_fill: true,
         pause_on_interaction: true,
-        default_paused: true,
+        paused: true,
         delay: 5,
         loop_count: 3,
         reverse: true,
@@ -93,6 +93,7 @@ defmodule Corex.MarqueeTest do
       assert result["data-respect-reduced-motion"] == "false"
       assert result["data-aria-label"] == "L"
       assert result["data-reverse"] == ""
+      assert result["data-default-paused"] == ""
     end
   end
 

@@ -29,7 +29,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       min={0.0}
       max={100.0}
       step={5.0}
-      default_value="10"
+      value="10"
     >
       <:label>Amount</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -46,7 +46,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       min={0.0}
       max={100.0}
       step={5.0}
-      default_value="10"
+      value="10"
     >
       <:label>Amount</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -60,17 +60,17 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def styling_color_code do
     ~S"""
-    <.number_input id="number-input-style-default" class="number-input" default_value="1">
+    <.number_input id="number-input-style-default" class="number-input" value="1">
       <:label>Default</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
     </.number_input>
-    <.number_input id="number-input-style-accent" class="number-input number-input--accent" default_value="1">
+    <.number_input id="number-input-style-accent" class="number-input number-input--accent" value="1">
       <:label>Accent</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
     </.number_input>
-    <.number_input id="number-input-style-brand" class="number-input number-input--brand" default_value="1">
+    <.number_input id="number-input-style-brand" class="number-input number-input--brand" value="1">
       <:label>Brand</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -81,7 +81,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
-      <.number_input id="number-input-style-color-default" class="number-input" default_value="1">
+      <.number_input id="number-input-style-color-default" class="number-input" value="1">
         <:label>Default</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -89,7 +89,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         id="number-input-style-color-accent"
         class="number-input number-input--accent"
-        default_value="1"
+        value="1"
       >
         <:label>Accent</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -98,7 +98,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       <.number_input
         id="number-input-style-color-brand"
         class="number-input number-input--brand"
-        default_value="1"
+        value="1"
       >
         <:label>Brand</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -225,7 +225,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_server_note_heex do
     ~S"""
-    <.number_input id="qty" class="number-input" default_value="1">
+    <.number_input id="qty" class="number-input" value="1">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -235,13 +235,13 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_server_note_elixir do
     ~S"""
-    # Initial value: default_value sets data-default-value; value alone uses the visible input (hook reads it on mount).
+    # Initial value: uncontrolled value sets data-default-value for Zag defaultValue.
     """
   end
 
   def api_server_note_example(assigns) do
     ~H"""
-    <.number_input id="number-input-api-server-note" class="number-input" default_value="1">
+    <.number_input id="number-input-api-server-note" class="number-input" value="1">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -251,6 +251,363 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_overview_code, do: api_binding_heex()
   def api_overview_example(assigns), do: api_binding_example(assigns)
+
+  def api_set_value_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.NumberInput.set_value("number-input-api-set-client", 42)} class="button button--sm">
+      Set 42
+    </.action>
+    <.number_input id="number-input-api-set-client" class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_set_value_server_heex do
+    ~S"""
+    <.action phx-click="api_number_set_value_server" class="button button--sm">
+      Set 99 from server
+    </.action>
+    <.number_input id="number-input-api-set-server" class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_set_value_server_elixir do
+    ~S"""
+    def handle_event("api_number_set_value_server", _params, socket) do
+      {:noreply, Corex.NumberInput.set_value(socket, "number-input-api-set-server", 99)}
+    end
+    """
+  end
+
+  def api_set_value_js_heex do
+    ~S"""
+    <.action
+      phx-click={JS.dispatch("corex:number-input:set-value",
+        to: "#number-input-api-set-js",
+        detail: %{value: 7},
+        bubbles: false
+      )}
+      class="button button--sm"
+    >
+      Set 7 via dispatch
+    </.action>
+    <.number_input id="number-input-api-set-js" class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_set_value_js_js do
+    ~S"""
+    const el = document.getElementById("number-input-api-set-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:number-input:set-value", {
+        bubbles: false,
+        detail: { value: 7 },
+      })
+    );
+    """
+  end
+
+  def api_set_value_js_ts do
+    ~S"""
+    const el = document.getElementById("number-input-api-set-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:number-input:set-value", {
+        bubbles: false,
+        detail: { value: 7 },
+      })
+    );
+    """
+  end
+
+  def api_set_value_client_binding_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.NumberInput.set_value(@id, 42)} class="button button--sm">
+        Set 42
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_set_value_server_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_number_set_value_server" class="button button--sm">
+        Set 99 from server
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_set_value_client_js_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action
+        phx-click={
+          JS.dispatch("corex:number-input:set-value",
+            to: "##{@id}",
+            detail: %{value: 7},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Set 7 via dispatch
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="1">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_clear_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.NumberInput.clear_value("number-input-api-clear-client")} class="button button--sm">
+      Clear
+    </.action>
+    <.number_input id="number-input-api-clear-client" class="number-input" value="10">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_clear_server_heex do
+    ~S"""
+    <.action phx-click="api_number_clear_server" class="button button--sm">
+      Clear from server
+    </.action>
+    <.number_input id="number-input-api-clear-server" class="number-input" value="10">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_clear_server_elixir do
+    ~S"""
+    def handle_event("api_number_clear_server", _params, socket) do
+      {:noreply, Corex.NumberInput.clear_value(socket, "number-input-api-clear-server")}
+    end
+    """
+  end
+
+  def api_clear_client_binding_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.NumberInput.clear_value(@id)} class="button button--sm">
+        Clear
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="10">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_clear_server_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_number_clear_server" class="button button--sm">
+        Clear from server
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="10">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_commands_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.NumberInput.increment("number-input-api-cmd-client")} class="button button--sm">+</.action>
+    <.action phx-click={Corex.NumberInput.decrement("number-input-api-cmd-client")} class="button button--sm">−</.action>
+    <.action phx-click={Corex.NumberInput.set_to_min("number-input-api-cmd-client")} class="button button--sm">Min</.action>
+    <.action phx-click={Corex.NumberInput.set_to_max("number-input-api-cmd-client")} class="button button--sm">Max</.action>
+    <.action phx-click={Corex.NumberInput.focus("number-input-api-cmd-client")} class="button button--sm">Focus</.action>
+    <.number_input id="number-input-api-cmd-client" class="number-input" min={0.0} max={10.0} step={1.0} value="5">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_commands_client_binding_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.NumberInput.increment(@id)} class="button button--sm">+</.action>
+      <.action phx-click={Corex.NumberInput.decrement(@id)} class="button button--sm">−</.action>
+      <.action phx-click={Corex.NumberInput.set_to_min(@id)} class="button button--sm">Min</.action>
+      <.action phx-click={Corex.NumberInput.set_to_max(@id)} class="button button--sm">Max</.action>
+      <.action phx-click={Corex.NumberInput.focus(@id)} class="button button--sm">Focus</.action>
+    </div>
+    <.number_input
+      id={@id}
+      class="number-input"
+      min={0.0}
+      max={10.0}
+      step={1.0}
+      value="5"
+    >
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.NumberInput.state("number-input-api-state-client")} class="button button--sm">
+      Read state
+    </.action>
+    <.number_input id="number-input-api-state-client" class="number-input" value="3">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_server_heex do
+    ~S"""
+    <.action phx-click="api_number_state_server" class="button button--sm">
+      Read state (server)
+    </.action>
+    <.number_input id="number-input-api-state-server" class="number-input" value="8">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_server_elixir do
+    ~S"""
+    def handle_event("api_number_state_server", _params, socket) do
+      {:noreply, Corex.NumberInput.state(socket, "number-input-api-state-server")}
+    end
+    """
+  end
+
+  def api_state_client_js_heex do
+    ~S"""
+    <.action
+      phx-click={JS.dispatch("corex:number-input:state", to: "#number-input-api-state-js", detail: %{}, bubbles: false)}
+      class="button button--sm"
+    >
+      Read via dispatch
+    </.action>
+    <.number_input id="number-input-api-state-js" class="number-input" value="4">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_client_js_js do
+    ~S"""
+    const el = document.getElementById("number-input-api-state-js");
+    el?.dispatchEvent(new CustomEvent("corex:number-input:state", { bubbles: false, detail: {} }));
+    """
+  end
+
+  def api_state_client_js_ts do
+    ~S"""
+    const el = document.getElementById("number-input-api-state-js");
+    el?.addEventListener("number-input-state", (event: Event) => {
+      const d = (event as CustomEvent<{
+        focused?: boolean;
+        invalid?: boolean;
+        empty?: boolean;
+        value?: string;
+        valueAsNumber?: number;
+      }>).detail;
+      console.log(d);
+    });
+    el?.dispatchEvent(new CustomEvent("corex:number-input:state", { bubbles: false, detail: {} }));
+    """
+  end
+
+  def api_state_client_binding_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.NumberInput.state(@id)} class="button button--sm">
+        Read state
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="3">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_server_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_number_state_server" class="button button--sm">
+        Read state (server)
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="8">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
+
+  def api_state_client_js_example(assigns) do
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action
+        phx-click={JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)}
+        class="button button--sm"
+      >
+        Read via dispatch
+      </.action>
+    </div>
+    <.number_input id={@id} class="number-input" value="4">
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
+    """
+  end
 
   def events_server_heex do
     ~S"""

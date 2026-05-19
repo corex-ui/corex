@@ -353,7 +353,6 @@ defmodule Corex.RadioGroup do
 
   attr(:id, :string, required: false)
   attr(:value, :string, default: nil)
-  attr(:default_value, :string, default: nil)
   attr(:controlled, :boolean, default: false)
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)

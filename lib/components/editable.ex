@@ -202,16 +202,7 @@ defmodule Corex.Editable do
 
   attr(:id, :string, required: false, doc: "The id of the editable component")
 
-  attr(:value, :string,
-    default: "",
-    doc:
-      "Initial or current text; merged into default for the client hook (prefer default_value when both are set)"
-  )
-
-  attr(:default_value, :string,
-    default: nil,
-    doc: "Preferred initial text when set (otherwise value)"
-  )
+  attr(:value, :string, default: "", doc: "Initial preview text (Zag defaultValue)")
 
   attr(:disabled, :boolean, default: false, doc: "Whether the editable is disabled")
   attr(:read_only, :boolean, default: false, doc: "Whether the editable is read-only")
@@ -288,7 +279,6 @@ defmodule Corex.Editable do
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("text", field.value)))
-    |> assign(:default_value, nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
     |> editable()
   end
@@ -297,9 +287,7 @@ defmodule Corex.Editable do
     translation = Translation.resolve(assigns.translation)
 
     value_s = value_to_string(Form.normalize_value("text", assigns[:value]))
-    default_s = normalize_default_value(assigns[:default_value])
-
-    content_value = default_s || value_s || ""
+    content_value = value_s || ""
 
     empty = String.trim(content_value) == ""
     editing = assigns[:default_edit] || false
@@ -312,7 +300,6 @@ defmodule Corex.Editable do
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
       |> assign(:value, value_s)
-      |> assign(:default_value, default_s)
       |> assign(:content_value, content_value)
       |> assign(:empty, empty)
       |> assign(:editing, editing)
@@ -328,7 +315,6 @@ defmodule Corex.Editable do
       {Connect.props(%Props{
         id: @id,
         value: @value,
-        default_value: @default_value,
         disabled: @disabled,
         read_only: @read_only,
         required: @required,
@@ -382,9 +368,6 @@ defmodule Corex.Editable do
   defp value_to_string(nil), do: ""
 
   defp value_to_string(v), do: to_string(v)
-
-  defp normalize_default_value(nil), do: nil
-  defp normalize_default_value(v), do: value_to_string(v)
 
   @doc type: :api
   def set_value(editable_id, value)

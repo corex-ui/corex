@@ -152,7 +152,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button button--sm">Alpha</.action>
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button button--sm">Beta</.action>
     </div>
-    <.editable id="editable-api-cb" class="editable" default_value="Start">
+    <.editable id="editable-api-cb" class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -179,7 +179,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         Beta
       </.action>
     </div>
-    <.editable id="editable-api-cb" class="editable" default_value="Start">
+    <.editable id="editable-api-cb" class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -199,7 +199,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         Gamma (client JS)
       </button>
     </div>
-    <.editable id="editable-api-cjs" class="editable" default_value="Start">
+    <.editable id="editable-api-cjs" class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -240,7 +240,7 @@ defmodule E2eWeb.Demos.EditableDemo do
           Gamma (client JS)
         </button>
       </div>
-      <.editable id="editable-api-cjs" class="editable" default_value="Start">
+      <.editable id="editable-api-cjs" class="editable" value="Start">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -256,7 +256,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
       <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
     </div>
-    <.editable id="editable-api-srv" class="editable" default_value="Start">
+    <.editable id="editable-api-srv" class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -286,7 +286,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
         <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
       </div>
-      <.editable id="editable-api-srv" class="editable" default_value="Start">
+      <.editable id="editable-api-srv" class="editable" value="Start">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -476,7 +476,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     <.editable
       id="editable-events-server"
       class="editable"
-      default_value="Edit me"
+      value="Edit me"
       on_value_change="editable_changed"
     >
       <:label>Label</:label>
@@ -501,7 +501,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     <.editable
       id="editable-events-client"
       class="editable"
-      default_value="Edit me"
+      value="Edit me"
       on_value_change_client="editable-changed"
     >
       <:label>Label</:label>

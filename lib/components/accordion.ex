@@ -1226,6 +1226,7 @@ defmodule Corex.Accordion do
   slot :content do
     attr(:class, :string, required: false)
   end
+
   def accordion_skeleton(assigns) do
     ~H"""
     <div {@rest}>

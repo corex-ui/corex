@@ -72,7 +72,7 @@ defmodule E2eWeb.EditableEventsLive do
               <.editable
                 id="editable-events-server"
                 class="editable"
-                default_value="Edit me"
+                value="Edit me"
                 on_value_change="editable_changed"
               >
                 <:label>Label</:label>
@@ -111,7 +111,7 @@ defmodule E2eWeb.EditableEventsLive do
               <.editable
                 id="editable-events-client"
                 class="editable"
-                default_value="Edit me"
+                value="Edit me"
                 on_value_change_client="editable-changed"
               >
                 <:label>Label</:label>

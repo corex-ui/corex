@@ -59,6 +59,38 @@ defmodule E2eWeb.NumberInputModel do
     session
   end
 
+  def click_button_in_section(session, section_id, label) when is_binary(label) do
+    if String.contains?(label, "'") or String.contains?(label, "\"") do
+      raise ArgumentError, "click_button_in_section: label must not include quotes"
+    end
+
+    click(
+      session,
+      xpath("(//*[@id='#{section_id}']//button[normalize-space(.)='#{label}'])[1]")
+    )
+
+    session
+  end
+
+  def hidden_value_at_host(session, host_dom_id) when is_binary(host_dom_id) do
+    key = {:e2e_number_input_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const hidden = host?.querySelector('[data-part="value-input"]');
+        const visible = host?.querySelector('[data-part="input"]');
+        return (hidden || visible)?.value ?? "";
+        """,
+        [host_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
   def hidden_value_in_section(session, section_dom_id) do
     key = {:e2e_number_input_value, self(), make_ref()}
 

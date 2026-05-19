@@ -29414,12 +29414,63 @@ ${err}`);
   function $6c7bd7858deea686$var$escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
+  function machineState(api) {
+    return {
+      focused: api.focused,
+      invalid: api.invalid,
+      empty: api.empty,
+      value: api.value,
+      valueAsNumber: api.valueAsNumber
+    };
+  }
+  function buildMachineProps(el, pushEvent, canPush) {
+    return __spreadProps(__spreadValues({
+      id: el.id
+    }, readNumberControlledZagProps(el)), {
+      min: getNumber(el, "min"),
+      max: getNumber(el, "max"),
+      step: getNumber(el, "step"),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readOnly"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+      dir: getDir(el),
+      onValueChange: (details) => {
+        var _a4;
+        if (details.value !== void 0) {
+          const valueInput = el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            valueInput.value = (_a4 = details.value) != null ? _a4 : "";
+            valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+            valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            valueAsNumber: details.valueAsNumber
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      }
+    });
+  }
   var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
       init_chunk_W6DW6OBY();
+      init_chunk_UUEU3QDP();
       init_chunk_PE34YET2();
+      init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy18 = createAnatomy("numberInput").parts(
@@ -30263,20 +30314,95 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
-          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const controlled = getBoolean(el, "controlled");
-          const uncontrolledDefault = () => {
-            var _a5, _b;
-            const fromAttr = getString(el, "defaultValue");
-            if (fromAttr !== void 0) return fromAttr;
-            return (_b = (_a5 = el.querySelector('[data-scope="number-input"][data-part="input"]')) == null ? void 0 : _a5.value) != null ? _b : "";
+          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
+          zag.init();
+          this.numberInput = zag;
+          const emitState = (respondTo) => {
+            const snapshot2 = machineState(zag.api);
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "number_input_state_response",
+              serverPayload: __spreadValues({ id: el.id }, snapshot2),
+              el,
+              domEventName: "number-input-state",
+              domDetail: __spreadValues({ id: el.id }, snapshot2)
+            });
           };
-          const zag = new NumberInput(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: uncontrolledDefault() }), {
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:number-input:set-value", (event) => {
+            var _a4;
+            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (typeof v2 === "number" && !Number.isNaN(v2)) zag.api.setValue(v2);
+          });
+          domRegistry.add("corex:number-input:clear-value", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:number-input:increment", () => {
+            zag.api.increment();
+          });
+          domRegistry.add("corex:number-input:decrement", () => {
+            zag.api.decrement();
+          });
+          domRegistry.add("corex:number-input:set-to-min", () => {
+            zag.api.setToMin();
+          });
+          domRegistry.add("corex:number-input:set-to-max", () => {
+            zag.api.setToMax();
+          });
+          domRegistry.add("corex:number-input:focus", () => {
+            zag.api.focus();
+          });
+          domRegistry.add("corex:number-input:state", (event) => {
+            emitState(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("number_input_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
+              zag.api.setValue(payload.value);
+            }
+          });
+          registry.add("number_input_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("number_input_increment", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.increment();
+          });
+          registry.add("number_input_decrement", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.decrement();
+          });
+          registry.add("number_input_set_to_min", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setToMin();
+          });
+          registry.add("number_input_set_to_max", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setToMax();
+          });
+          registry.add("number_input_focus", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.focus();
+          });
+          registry.add("number_input_state", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitState(parseRespondTo(payload));
+          });
+        },
+        updated() {
+          var _a4;
+          const el = this.el;
+          const next2 = {
+            id: el.id,
             min: getNumber(el, "min"),
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
@@ -30285,70 +30411,27 @@ ${err}`);
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-            dir: getDir(el),
-            onValueChange: (details) => {
-              var _a5;
-              if (details.value !== void 0) {
-                const valueInput = el.querySelector(
-                  '[data-scope="number-input"][data-part="value-input"]'
-                );
-                if (valueInput) {
-                  valueInput.value = (_a5 = details.value) != null ? _a5 : "";
-                  valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-                  valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              notifyChange({
-                el,
-                canPushServer: canPush(),
-                pushEvent,
-                payload: {
-                  id: el.id,
-                  value: details.value,
-                  valueAsNumber: details.valueAsNumber
-                },
-                serverEventName: getString(el, "onValueChange"),
-                clientEventName: getString(el, "onValueChangeClient")
-              });
-            }
-          }));
-          zag.init();
-          this.numberInput = zag;
-        },
-        updated() {
-          var _a4, _b;
-          const next2 = {
-            id: this.el.id,
-            min: getNumber(this.el, "min"),
-            max: getNumber(this.el, "max"),
-            step: getNumber(this.el, "step"),
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
-            dir: getDir(this.el)
+            dir: getDir(el)
           };
-          if (getBoolean(this.el, "controlled")) {
-            next2.value = (_a4 = getString(this.el, "value")) != null ? _a4 : "";
+          if (getBoolean(el, "controlled")) {
+            Object.assign(next2, readNumberControlledZagProps(el));
           }
-          (_b = this.numberInput) == null ? void 0 : _b.updateProps(next2);
-          const root = this.el;
+          (_a4 = this.numberInput) == null ? void 0 : _a4.updateProps(next2);
           queueMicrotask(() => {
-            const visible = root.querySelector(
+            const visible = el.querySelector(
               '[data-scope="number-input"][data-part="input"]'
             );
             if (visible) {
-              if (!getBoolean(root, "readOnly")) {
+              if (!getBoolean(el, "readOnly")) {
                 visible.readOnly = false;
                 visible.removeAttribute("readonly");
               }
-              if (!getBoolean(root, "disabled")) {
+              if (!getBoolean(el, "disabled")) {
                 visible.disabled = false;
                 visible.removeAttribute("disabled");
               }
             }
-            const triggers = root.querySelectorAll(
+            const triggers = el.querySelectorAll(
               '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
             );
             triggers.forEach((trigger) => {
@@ -30359,8 +30442,10 @@ ${err}`);
           });
         },
         destroyed() {
-          var _a4;
-          (_a4 = this.numberInput) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.numberInput) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -31630,7 +31715,7 @@ ${err}`);
     }
     return padToCount(parseValueWithEmpties(raw), count);
   }
-  function buildMachineProps(el, pushEvent, canPush) {
+  function buildMachineProps2(el, pushEvent, canPush) {
     const count = getNumber(el, "count");
     return {
       id: el.id,
@@ -32070,7 +32155,7 @@ ${err}`);
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush));
+          const zag = new PinInput(el, buildMachineProps2(el, pushEvent, canPush));
           zag.init();
           this.pinInput = zag;
           const emitValue = (respondTo) => {

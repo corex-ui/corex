@@ -79,7 +79,7 @@ defmodule Corex.Editable.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-value" => assigns.default_value || assigns.value || "",
+      "data-default-value" => assigns.value || "",
       "data-disabled" => get_boolean(assigns.disabled),
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),

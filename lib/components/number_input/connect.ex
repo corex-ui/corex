@@ -21,31 +21,16 @@ defmodule Corex.NumberInput.Connect do
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
-  defp value_attr(nil), do: nil
-  defp value_attr(v), do: to_string(v)
-
-  defp controlled_value_str(%{controlled: true} = assigns) do
-    case assigns.value do
-      nil -> ""
-      v -> to_string(v)
-    end
-  end
-
-  defp controlled_value_str(_), do: nil
-
-  defp uncontrolled_default_str(%{controlled: false} = assigns) do
-    value_attr(assigns.default_value)
-  end
-
-  defp uncontrolled_default_str(_), do: nil
+  defp value_str(nil), do: nil
+  defp value_str(v), do: to_string(v)
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
       "data-controlled" => get_boolean(assigns.controlled),
-      "data-value" => controlled_value_str(assigns),
-      "data-default-value" => uncontrolled_default_str(assigns),
+      "data-value" => if(assigns.controlled, do: value_str(assigns.value), else: nil),
+      "data-default-value" => if(assigns.controlled, do: nil, else: value_str(assigns.value)),
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),

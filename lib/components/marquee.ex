@@ -157,7 +157,7 @@ defmodule Corex.Marquee do
     doc: "Whether to pause the animation on interaction"
   )
 
-  attr(:default_paused, :boolean, default: false, doc: "Whether the marquee is paused by default")
+  attr(:paused, :boolean, default: false, doc: "Whether the marquee starts paused")
   attr(:delay, :integer, default: 0, doc: "Delay before starting the animation in seconds")
 
   attr(:loop_count, :integer,
@@ -229,7 +229,7 @@ defmodule Corex.Marquee do
       speed: assigns.speed,
       spacing: assigns.spacing,
       pause_on_interaction: assigns.pause_on_interaction,
-      default_paused: assigns.default_paused,
+      paused: assigns.paused,
       delay: assigns.delay,
       loop_count: assigns.loop_count,
       reverse: assigns.reverse,
@@ -255,7 +255,7 @@ defmodule Corex.Marquee do
       loop_count: assigns.loop_count,
       translate: translate,
       respect_reduced_motion: assigns.respect_reduced_motion,
-      default_paused: assigns.default_paused
+      paused: assigns.paused
     }
 
     assigns =

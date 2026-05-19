@@ -87,6 +87,10 @@ defmodule E2e.Form.NativeInputProfile do
     color count role tags size agree
   )a
 
+  def format_for_toast(%__MODULE__{} = data) do
+    data |> Map.from_struct() |> format_for_toast()
+  end
+
   def format_for_toast(data) when is_map(data) do
     data = normalize_atom_keys(data)
 
