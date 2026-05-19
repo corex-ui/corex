@@ -263,8 +263,17 @@ defmodule Corex.Menu do
   ### on_select
 
   ```heex
-  <.menu id="menu-events" class="menu" on_select="menu_selected" items={[...]}>
+  <.menu
+    class="menu"
+    on_select="menu_selected"
+    items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}
+  >
     <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
   </.menu>
   ```
 
@@ -277,8 +286,17 @@ defmodule Corex.Menu do
   ### on_open_change
 
   ```heex
-  <.menu id="menu-events-open" class="menu" on_open_change="menu_open_changed" items={[...]}>
+  <.menu
+    class="menu"
+    on_open_change="menu_open_changed"
+    items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}
+  >
     <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
   </.menu>
   ```
 
@@ -830,12 +848,24 @@ defmodule Corex.Menu do
   end
 
   @doc type: :api
-  @doc """
-  Sets the menu open state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Set menu open state from a control (`phx-click`). Targets the root with id `menu:<id>`.
 
-      <button phx-click={Corex.Menu.set_open("my-menu", true)}>
-        Open Menu
-      </button>
+  ```heex
+  <.action phx-click={Corex.Menu.set_open("my-menu", true)}>Open</.action>
+  <.menu id="my-menu" class="menu" items={[%Corex.Tree.Item{label: "Edit", value: "edit"}]}>
+    <:trigger>Actions</:trigger>
+  </.menu>
+  ```
+
+  ```javascript
+  document.querySelector('[id="menu:my-menu"]')?.dispatchEvent(
+    new CustomEvent("corex:menu:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
   """
   def set_open(menu_id, open) when is_binary(menu_id) do
     JS.dispatch("corex:menu:set-open",
@@ -846,13 +876,21 @@ defmodule Corex.Menu do
   end
 
   @doc type: :api
-  @doc """
-  Sets the menu open state from server-side. Pushes a LiveView event.
+  @doc ~S"""
+  Set open state from `handle_event`. Pushes `menu_set_open`.
 
-      def handle_event("open_menu", _params, socket) do
-        socket = Corex.Menu.set_open(socket, "my-menu", true)
-        {:noreply, socket}
-      end
+  ```heex
+  <.action phx-click="open_menu">Open</.action>
+  <.menu id="my-menu" class="menu" items={[%Corex.Tree.Item{label: "Edit", value: "edit"}]}>
+    <:trigger>Actions</:trigger>
+  </.menu>
+  ```
+
+  ```elixir
+  def handle_event("open_menu", _, socket) do
+    {:noreply, Corex.Menu.set_open(socket, "my-menu", true)}
+  end
+  ```
   """
   def set_open(socket, menu_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do

@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def minimal_code do
     ~S"""
-    <.password_input id="password-input-anatomy-basic" name="user[password]" class="password-input">
+    <.password_input name="user[password]" class="password-input">
       <:label>Password</:label>
     </.password_input>
     """
@@ -19,7 +19,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def with_visibility_icons_code do
     ~S"""
-    <.password_input id="password-input-anatomy-icons" name="user[password]" class="password-input">
+    <.password_input name="user[password]" class="password-input">
       <:label>Password</:label>
       <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
       <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -354,7 +354,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def events_server_heex do
     ~S"""
     <.password_input
-      id="password-input-events-server"
       class="password-input"
       name="user[password]"
       on_visibility_change="password_visibility_changed"
@@ -367,12 +366,10 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event(\"password_visibility_changed\", %{\"id\" => id, \"visible\" => visible}, socket) do
-      log = %{time: \"12:00:00\", source: \"server\", value: inspect(visible)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "password_visibility_changed",
+      ~S|%{"id" => id, "visible" => visible} = params|
+    )
   end
 
   def events_client_heex do
@@ -437,12 +434,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/account/password"}
+      action="//account/password"
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.password_input field={f[:password]} class="password-input" id="account-password">
+          >
+      <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -452,7 +448,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -479,7 +475,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: ~p"/account")
+          |> redirect(to: "//account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -501,12 +497,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/account/password-strict"}
+      action="//account/password-strict"
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.password_input field={f[:password]} class="password-input" id="account-password-strict">
+          >
+      <.password_input field={f[:password]} class="password-input">
         <:label>Password (stricter validation)</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -516,7 +511,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -544,7 +539,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: ~p"/account")
+          |> redirect(to: "//account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -564,19 +559,17 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_doc_native_heex do
     ~S"""
     <form
-      action={~p"/register"}
+      action="//register"
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input
         type="password"
         name="user[password]"
-        id="register-password"
         class="native-input"
         autocomplete="new-password"
       />
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -588,9 +581,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.password_input field={@form[:password]} class="password-input" id="password-input-live-changeset">
+          >
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -600,7 +592,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" id="password-input-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -664,9 +656,8 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.password_input field={@form[:password]} class="password-input" id="password-input-live-strict">
+          >
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -676,7 +667,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" id="password-input-form-live-strict-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -749,7 +740,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       action={~p"/password-input/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-changeset-field">
         <:label>Password</:label>
@@ -764,7 +754,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-changeset-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -782,7 +772,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       action={~p"/password-input/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-validate-field">
         <:label>Password (stricter validation)</:label>
@@ -797,7 +786,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-validate-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -813,7 +802,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       action={~p"/password-input/form"}
       method="post"
       id="password-input-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <label class="w-full typo-label" for="password-input-native-password">Password</label>
@@ -827,7 +815,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-controller-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -842,7 +830,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input
         field={@form[:password]}
@@ -858,7 +845,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
         </:error>
       </.password_input>
 
-      <.action type="submit" id="password-input-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" id="password-input-form-live-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -872,7 +859,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={@form[:password]} class="password-input" id="password-input-live-strict">
         <:label>Password (stricter validation)</:label>
@@ -887,7 +873,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       <.action
         type="submit"
         id="password-input-form-live-strict-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>

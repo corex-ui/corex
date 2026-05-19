@@ -4,20 +4,20 @@ defmodule E2eWeb.DatePickerApiLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    {:ok, assign(socket, :codes, demo_codes())}
+  end
+
+  defp demo_codes do
     m = E2eWeb.Demos.DatePickerDemo
 
-    socket =
-      socket
-      |> assign(:codes, %{
-        set_value_client: m.api_set_value_client_binding_code(),
-        set_value_js_heex: m.api_set_value_client_js_heex(),
-        set_value_js: m.api_set_value_client_js_js(),
-        set_value_js_ts: m.api_set_value_client_js_ts(),
-        set_value_server_heex: m.api_set_value_server_heex(),
-        set_value_server_elixir: m.api_set_value_server_elixir()
-      })
-
-    {:ok, socket}
+    %{
+      binding: m.api_set_value_client_binding_code(),
+      js_heex: m.api_set_value_client_js_heex(),
+      js: m.api_set_value_client_js_js(),
+      js_ts: m.api_set_value_client_js_ts(),
+      server_heex: m.api_set_value_server_heex(),
+      server_elixir: m.api_set_value_server_elixir()
+    }
   end
 
   @impl true
@@ -42,7 +42,7 @@ defmodule E2eWeb.DatePickerApiLive do
         <.demo_section
           id="date-picker-api-set-value-binding"
           title="Set value (Client binding)"
-          code={@codes.set_value_client}
+          code={@codes.binding}
         >
           <:preview>
             <E2eWeb.Demos.DatePickerDemo.api_set_value_client_binding_example />
@@ -53,9 +53,9 @@ defmodule E2eWeb.DatePickerApiLive do
           id="date-picker-api-set-value-js"
           title="Set value (Client JS)"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_js_heex},
-            %{value: "js", label: "JS", language: :js, code: @codes.set_value_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @codes.set_value_js_ts}
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.js_heex},
+            %{value: "js", label: "JS", language: :js, code: @codes.js},
+            %{value: "ts", label: "TS", language: :javascript, code: @codes.js_ts}
           ]}
         >
           <:preview>
@@ -67,13 +67,8 @@ defmodule E2eWeb.DatePickerApiLive do
           id="date-picker-api-set-value-server"
           title="Set value (Server)"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
-            %{
-              value: "elixir",
-              label: "Elixir",
-              language: :elixir,
-              code: @codes.set_value_server_elixir
-            }
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>

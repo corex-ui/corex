@@ -28,6 +28,8 @@ cd ../integration_test && mix test
 MIX_ENV=docs mix docs
 ```
 
+Spot-check API docs: open `doc/index.html`, confirm imperative helpers under **API** have descriptions and examples (see [API function documentation](api_documentation.html)).
+
 Commit built assets under `priv/static/` when hooks or bundles changed.
 
 ## Publish Hex

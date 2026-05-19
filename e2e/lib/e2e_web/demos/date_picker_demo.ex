@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def minimal_code do
     ~S"""
-    <.date_picker id="date-picker-anatomy-minimal" translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
+    <.date_picker translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
       <:label>Select a date</:label>
       <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
       <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
@@ -36,7 +36,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def anatomy_range_code do
     ~S"""
     <.date_picker
-      id="date-picker-anatomy-range"
       selection_mode="range"
       value="2024-06-01,2024-06-15"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date range", close_calendar: "Select date range", input: "Date range"}}
@@ -76,7 +75,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def anatomy_multiple_code do
     ~S"""
     <.date_picker
-      id="date-picker-anatomy-multiple"
       selection_mode="multiple"
       max_selected_dates={3}
       value="2024-06-03,2024-06-10,2024-06-17"
@@ -321,7 +319,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def events_on_value_server_heex do
     ~S"""
     <.date_picker
-      id="date-picker-e-sv"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_value_change="dpe_on_value_server"
@@ -335,18 +332,15 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   end
 
   def events_on_value_server_elixir do
-    ~S"""
-    def handle_event("dpe_on_value_server", %{"id" => id, "value" => value}, socket) do
-      log = new_log("server", id, inspect(value))
-      {:noreply, stream_insert(socket, :server_value_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "dpe_on_value_server",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_on_open_server_heex do
     ~S"""
     <.date_picker
-      id="date-picker-e-so"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_open_change="dpe_on_open_server"
@@ -360,18 +354,15 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   end
 
   def events_on_open_server_elixir do
-    ~S"""
-    def handle_event("dpe_on_open_server", %{"id" => id, "open" => open}, socket) do
-      log = new_log("server", id, inspect(open))
-      {:noreply, stream_insert(socket, :server_open_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "dpe_on_open_server",
+      ~S|%{"id" => id, "open" => open} = params|
+    )
   end
 
   def events_on_value_client_heex do
     ~S"""
     <.date_picker
-      id="date-picker-e-cv"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_value_change_client="date-picker-value-changed"
@@ -387,20 +378,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def events_on_value_client_js do
     ~S"""
     const el = document.getElementById("date-picker-e-cv");
-    if (!el) return;
-    el.addEventListener("date-picker-value-changed", (e) => {
-      const d = e.detail;
-      this.pushEvent("dpe_on_value_client", { id: d.id, value: d.value });
+    el?.addEventListener("date-picker-value-changed", (event) => {
+      console.log(event.detail);
     });
     """
   end
 
-  def events_on_value_client_ts, do: events_on_value_client_js()
+  def events_on_value_client_ts do
+    ~S"""
+    const el = document.getElementById("date-picker-e-cv");
+    el?.addEventListener("date-picker-value-changed", (event: Event) => {
+      console.log((event as CustomEvent<{ id: string; value: string }>).detail);
+    });
+    """
+  end
 
   def events_on_open_client_heex do
     ~S"""
     <.date_picker
-      id="date-picker-e-co"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
       on_open_change_client="date-picker-open-changed"
@@ -416,20 +411,24 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def events_on_open_client_js do
     ~S"""
     const el = document.getElementById("date-picker-e-co");
-    if (!el) return;
-    el.addEventListener("date-picker-open-changed", (e) => {
-      const d = e.detail;
-      this.pushEvent("dpe_on_open_client", { id: d.id, open: d.open });
+    el?.addEventListener("date-picker-open-changed", (event) => {
+      console.log(event.detail);
     });
     """
   end
 
-  def events_on_open_client_ts, do: events_on_open_client_js()
+  def events_on_open_client_ts do
+    ~S"""
+    const el = document.getElementById("date-picker-e-co");
+    el?.addEventListener("date-picker-open-changed", (event: Event) => {
+      console.log((event as CustomEvent<{ id: string; open: boolean }>).detail);
+    });
+    """
+  end
 
   def patterns_controlled_code do
     ~S"""
     <.date_picker
-      id="date-picker-patterns-controlled"
       class="date-picker"
       controlled
       value={@selected && [@selected]}
@@ -489,7 +488,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         field={f[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
-        id="date-picker-form-changeset-input"
       >
         <:label>Date</:label>
         <:trigger>
@@ -506,7 +504,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent" id="date-picker-changeset-form-submit">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -544,7 +542,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         field={f[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
-        id="date-picker-form-validate-input"
       >
         <:label>Date (required)</:label>
         <:trigger>
@@ -561,7 +558,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           {msg}
         </:error>
       </.date_picker>
-      <.action type="submit" class="button button--accent" id="date-picker-validate-form-submit">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -580,11 +577,10 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_native_heex do
     ~S"""
-    <form action={~p"/date-picker/form"} method="post" id="date-picker-plain-form">
+    <form action={~p"/date-picker/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.date_picker
         name="date_picker_form[date]"
-        id="date-picker-form-native"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -599,7 +595,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
           <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
       </.date_picker>
-      <.action type="submit" class="button button--accent" id="date-picker-form-native-submit">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -613,7 +609,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       phx-submit="save_basic"
     >
       <.date_picker
-        id="date-picker-basic-live"
         field={@form[:date]}
         controlled
         value={@date_display}
@@ -654,7 +649,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       phx-submit="save_validate"
     >
       <.date_picker
-        id="date-picker-validate-live"
         field={@form[:date]}
         controlled
         value={@date_display}
@@ -703,7 +697,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       action={~p"/date-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
         field={f[:date]}
@@ -735,7 +728,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id="date-picker-changeset-form-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -753,7 +746,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       action={~p"/date-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
         field={f[:date]}
@@ -785,7 +777,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id="date-picker-validate-form-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -801,7 +793,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       action={~p"/date-picker/form"}
       method="post"
       id="date-picker-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.date_picker
@@ -830,7 +821,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id="date-picker-form-native-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -848,7 +839,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
         id="date-picker-basic-live"
@@ -883,7 +873,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id="date-picker-basic-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -901,7 +891,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
         id="date-picker-validate-live"
@@ -936,7 +925,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.action
         type="submit"
         id="date-picker-validate-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>

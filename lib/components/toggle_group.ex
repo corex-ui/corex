@@ -9,7 +9,7 @@ defmodule Corex.ToggleGroup do
   ### Minimal
 
   ```heex
-  <.toggle_group id="toggle-group-anatomy-minimal" class="toggle-group">
+  <.toggle_group class="toggle-group">
     <:item value="lorem">Lorem</:item>
     <:item value="duis">Duis</:item>
     <:item value="donec">Donec</:item>
@@ -19,14 +19,14 @@ defmodule Corex.ToggleGroup do
   ### With indicator
 
   ```heex
-  <.toggle_group id="toggle-group-anatomy-indicator-label" class="toggle-group">
+  <.toggle_group class="toggle-group">
     <:item value="bold">
       <.heroicon name="hero-bold" />
       Bold
     </:item>
   </.toggle_group>
 
-  <.toggle_group id="toggle-group-anatomy-indicator-sr" class="toggle-group">
+  <.toggle_group class="toggle-group">
     <:item value="bold" aria_label="Bold">
       <.heroicon name="hero-bold" />
       <span class="sr-only">Bold</span>
@@ -40,7 +40,6 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    id="toggle-group-anatomy-single"
     class="toggle-group"
     multiple={false}
     value={["duis"]}
@@ -78,7 +77,6 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    id="toggle-group-events-server"
     class="toggle-group"
     on_value_change="toggle_group_changed"
     multiple
@@ -137,7 +135,6 @@ defmodule Corex.ToggleGroup do
 
   ```heex
   <.toggle_group
-    id="toggle-group-patterns-controlled"
     class="toggle-group"
     value={@value}
     multiple
@@ -353,6 +350,25 @@ defmodule Corex.ToggleGroup do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set selected values from a control (`phx-click`). Pass a list of item `value` strings (or compatible input validated by the component).
+
+  ```heex
+  <.action phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["a"])}>Pick A</.action>
+  <.toggle_group id="my-toggle-group" class="toggle-group" multiple={false} value={[]}>
+    <:item value="a">A</:item>
+    <:item value="b">B</:item>
+  </.toggle_group>
+  ```
+
+  ```javascript
+  document.getElementById("my-toggle-group")?.dispatchEvent(
+    new CustomEvent("corex:toggle-group:set-value", {
+      detail: { value: ["a"] },
+    })
+  );
+  ```
+  """
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
     JS.dispatch("corex:toggle-group:set-value",
       to: "##{toggle_group_id}",
@@ -361,6 +377,23 @@ defmodule Corex.ToggleGroup do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set selected values from `handle_event`.
+
+  ```heex
+  <.action phx-click="pick_a">Pick A</.action>
+  <.toggle_group id="my-toggle-group" class="toggle-group" multiple={false} value={[]}>
+    <:item value="a">A</:item>
+    <:item value="b">B</:item>
+  </.toggle_group>
+  ```
+
+  ```elixir
+  def handle_event("pick_a", _, socket) do
+    {:noreply, Corex.ToggleGroup.set_value(socket, "my-toggle-group", ["a"])}
+  end
+  ```
+  """
   def set_value(socket, toggle_group_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_group_id) do
     LiveView.push_event(socket, "toggle-group_set_value", %{

@@ -7,7 +7,7 @@
   <.demo_page
     id="carousel-styling-page"
     title="Carousel · Style"
-    subtitle="Utility modifiers for spacing, triggers, and indicators."
+    subtitle="Semantic colors, layout density, trigger scale, corner radius, and width utilities via modifier classes on the carousel."
   >
     <.demo_section
       id="carousel-styling-color"
@@ -26,6 +26,26 @@
     >
       <:preview>
         <E2eWeb.Demos.CarouselDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-styling-trigger"
+      title="Trigger Size"
+      code={E2eWeb.Demos.CarouselDemo.styling_trigger_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CarouselDemo.styling_trigger_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="carousel-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.CarouselDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CarouselDemo.styling_radius_example />
       </:preview>
     </.demo_section>
   </.demo_page>

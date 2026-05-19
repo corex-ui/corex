@@ -5,14 +5,13 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def events_server_heex do
     ~S"""
-    <form phx-change="avatar_events_changed" id="avatar-events-form">
+    <form phx-change="avatar_events_changed">
       <.native_input type="url" name="avatar_src" value="https://corex-ui.com/images/avatar.png" class="native-input native-input--sm w-full">
         <:label>Image URL</:label>
       </.native_input>
     </form>
 
     <.avatar
-      id="avatar-events"
       class="avatar"
       src={@avatar_src}
       alt="Avatar"
@@ -27,13 +26,13 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def minimal_code do
     ~S"""
     <div class="layout__row gap-2">
-      <.avatar id="avatar-fallback" src="" class="avatar">
+      <.avatar src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
-      <.avatar id="avatar-cat" src={~p"/images/avatar.png"} alt="Avatar" class="avatar">
+      <.avatar src="/images/avatar.png" alt="Avatar" class="avatar">
         <:fallback>?</:fallback>
       </.avatar>
-      <.avatar id="avatar-favicon" src={~p"/images/favicon.ico"} alt="Favicon" class="avatar">
+      <.avatar src="/images/favicon.ico" alt="Favicon" class="avatar">
         <:fallback>FX</:fallback>
       </.avatar>
     </div>
@@ -48,10 +47,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
       <.avatar id="avatar-fallback" src="" class="avatar">
         <:fallback>JD</:fallback>
       </.avatar>
-      <.avatar id="avatar-cat" src={~p"/images/avatar.png"} alt="Avatar" class="avatar">
+      <.avatar id="avatar-cat" src="/images/avatar.png" alt="Avatar" class="avatar">
         <:fallback>?</:fallback>
       </.avatar>
-      <.avatar id="avatar-favicon" src={~p"/images/favicon.ico"} alt="Favicon" class="avatar">
+      <.avatar id="avatar-favicon" src="/images/favicon.ico" alt="Favicon" class="avatar">
         <:fallback>FX</:fallback>
       </.avatar>
     </div>
@@ -60,7 +59,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def anatomy_fallback_code do
     ~S"""
-    <.avatar id="avatar-fb" src="" class="avatar">
+    <.avatar src="" class="avatar">
       <:fallback>
         <span class="font-semibold">AB</span>
       </:fallback>
@@ -82,7 +81,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def anatomy_value_code do
     ~S"""
-    <.avatar id="avatar-val" src="https://example.com/photo.jpg" class="avatar">
+    <.avatar src="https://example.com/photo.jpg" class="avatar">
       <:value :let={src}>
         {if src, do: "IMG", else: " - "}
       </:value>
@@ -172,10 +171,10 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_color_code do
     ~S"""
-    <.avatar id="avatar-accent" src="" class="avatar avatar--accent">
+    <.avatar src="" class="avatar avatar--accent">
       <:fallback>A</:fallback>
     </.avatar>
-    <.avatar id="avatar-brand" src="" class="avatar avatar--brand">
+    <.avatar src="" class="avatar avatar--brand">
       <:fallback>B</:fallback>
     </.avatar>
     """
@@ -224,16 +223,16 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def styling_size_code do
     ~S"""
-    <.avatar id="avatar-sm" src="https://corex-ui.com/images/avatar.png" class="avatar avatar--sm">
+    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--sm">
       <:fallback>SM</:fallback>
     </.avatar>
-    <.avatar id="avatar-md" src="https://corex-ui.com/images/avatar.png" class="avatar avatar--md">
+    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--md">
       <:fallback>MD</:fallback>
     </.avatar>
-    <.avatar id="avatar-lg" src="https://corex-ui.com/images/avatar.png" class="avatar avatar--lg">
+    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--lg">
       <:fallback>LG</:fallback>
     </.avatar>
-    <.avatar id="avatar-xl" src="https://corex-ui.com/images/avatar.png" class="avatar avatar--xl">
+    <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--xl">
       <:fallback>XL</:fallback>
     </.avatar>
     """
@@ -303,15 +302,15 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def api_set_src_client_js_ts do
     ~S"""
-    const el = document.getElementById("api-set-src-client-js")
+    const el: HTMLElement | null = document.getElementById("api-set-src-client-js")
     el?.dispatchEvent(
-      new CustomEvent("corex:avatar:set-src", {
+      new CustomEvent<{ src: string }>("corex:avatar:set-src", {
         detail: { src: "https://corex-ui.com/images/avatar.png" },
         bubbles: false
       })
     )
     el?.dispatchEvent(
-      new CustomEvent("corex:avatar:set-src", {
+      new CustomEvent<{ src: string }>("corex:avatar:set-src", {
         detail: { src: "https://corex-ui.com/pwa-192x192.png" },
         bubbles: false
       })

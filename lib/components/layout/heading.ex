@@ -9,11 +9,11 @@ defmodule Corex.Layout.Heading do
   Use the `:title` and `:subtitle` slots for the main heading content. Use the `:actions` slot for buttons or links on the right.
 
   ```heex
-  <.layout_heading>
+  <.layout_heading class="layout-heading">
     <:title>Page Title</:title>
     <:subtitle>Optional subtitle or context</:subtitle>
     <:actions>
-      <.action phx-click="save">Save</.action>
+      <.action phx-click="save" class="button button--accent">Save</.action>
     </:actions>
   </.layout_heading>
   ```
@@ -23,7 +23,7 @@ defmodule Corex.Layout.Heading do
   Omit the `:actions` slot when no action buttons are needed.
 
   ```heex
-  <.layout_heading>
+  <.layout_heading class="layout-heading">
     <:title>Settings</:title>
     <:subtitle>Manage your preferences</:subtitle>
   </.layout_heading>
@@ -31,7 +31,29 @@ defmodule Corex.Layout.Heading do
 
   ## Style
 
-  The e2e demo includes static **Anatomy** and **Style** pages (`/layout-heading/anatomy`, `/layout-heading/style`) built from `E2eWeb.Demos.LayoutHeadingDemo`. Use the `layout-heading` root class, optional `layout-heading--*` modifiers for semantic ink on the title and subtitle (same pattern as other primitives), Tailwind `max-w-*` on the root for width, and typography utilities on the `:title` / `:subtitle` slots when you need scale beyond default `h1` / `h2`.
+  Use `class="layout-heading"` on the host, plus optional `layout-heading--*` modifiers for semantic ink on the title and subtitle.
+
+  <!-- tabs-open -->
+
+  ### Accent
+
+  ```heex
+  <.layout_heading class="layout-heading layout-heading--accent">
+    <:title>Accent title</:title>
+    <:subtitle>Accent subtitle</:subtitle>
+  </.layout_heading>
+  ```
+
+  ### Max width
+
+  ```heex
+  <.layout_heading class="layout-heading layout-heading--max-w-prose">
+    <:title>Constrained width</:title>
+    <:subtitle>Uses a layout-heading width modifier on the host.</:subtitle>
+  </.layout_heading>
+  ```
+
+  <!-- tabs-close -->
 
   Target elements with data attributes:
 

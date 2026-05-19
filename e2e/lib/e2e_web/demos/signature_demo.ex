@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def minimal_code do
     ~S"""
-    <.signature_pad id="signature-anatomy-minimal" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
     """
@@ -21,7 +21,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def with_label_code do
     ~S"""
-    <.signature_pad id="signature-anatomy-labeled" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -193,7 +193,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def events_server_heex do
     ~S"""
-    <.signature_pad id="signature-events-server" class="signature-pad" on_draw_end="signature_drawn">
+    <.signature_pad class="signature-pad" on_draw_end="signature_drawn">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -201,12 +201,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("signature_drawn", %{"id" => id, "url" => url}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(String.slice(url, 0, 32))}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "signature_drawn",
+      ~S|%{"id" => id, "url" => url} = params|
+    )
   end
 
   def events_client_heex do
@@ -284,7 +282,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -323,7 +321,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-validate-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -352,7 +350,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
@@ -365,7 +362,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" id="signature-changeset-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -381,7 +378,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
@@ -394,7 +390,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-validate-submit" class="button button--accent w-full">
+      <.action type="submit" id="signature-validate-submit" class="button button--accent">
         Submit
       </.action>
     </.form>

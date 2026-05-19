@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.ClipboardDemo do
 
   def minimal_code do
     ~S"""
-    <.clipboard id="clipboard-anatomy-min" class="clipboard" value="hello@example.com">
+    <.clipboard class="clipboard" value="hello@example.com">
       <:label>Email</:label>
       <:copy>
         <.heroicon name="hero-clipboard" />
@@ -32,7 +32,6 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   def input_false_code do
     ~S"""
     <.clipboard
-      id="clipboard-anatomy-trigger-only"
       class="clipboard"
       value="https://example.com/share"
       input={false}
@@ -74,7 +73,6 @@ defmodule E2eWeb.Demos.ClipboardDemo do
     </.action>
 
     <.clipboard
-      id="clipboard-events"
       class="clipboard"
       value="info@netoum.com"
       trigger_aria_label="Copy to clipboard"
@@ -94,11 +92,10 @@ defmodule E2eWeb.Demos.ClipboardDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("clipboard_copied", %{"value" => value, "id" => id}, socket) do
-      {:noreply, stream_insert(socket, :logs, %{id: id, value: inspect(value), time: DateTime.utc_now()}, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "clipboard_copied",
+      ~S|%{"value" => value, "id" => id} = params|
+    )
   end
 
   def api_client_binding_code do

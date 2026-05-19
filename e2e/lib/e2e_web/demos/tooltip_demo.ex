@@ -138,7 +138,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def patterns_multi_trigger_heex do
     ~S"""
     <.tooltip
-      id="tooltip-pattern-users"
       class="tooltip"
       show_arrow={false}
       on_trigger_value_change="tooltip_pattern_trigger_value"
@@ -234,7 +233,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
     ~S"""
     <div class="flex flex-col gap-2 items-start w-full max-w-xl">
       <.tooltip
-        id="tooltip-pattern-profile-link-multi-tool"
         class="tooltip"
         show_arrow={false}
         trigger_tag={:span}
@@ -358,7 +356,12 @@ defmodule E2eWeb.Demos.TooltipDemo do
   end
 
   def api_set_open_client_js_ts do
-    api_set_open_client_js_js()
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("tooltip-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:tooltip:set-open", { bubbles: false, detail: { open: true } })
+    );
+    """
   end
 
   def api_set_open_client_js_example(assigns) do
@@ -453,7 +456,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
       <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button button--sm">Open</.action>
       <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button button--sm">Close</.action>
     </div>
-    <.tooltip id="tooltip-patterns-set-open" class="tooltip">
+    <.tooltip class="tooltip">
       <:trigger>Hover or buttons</:trigger>
       <:content>Open state from Corex.Tooltip.set_open/2</:content>
     </.tooltip>
@@ -502,7 +505,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def events_server_heex do
     ~S"""
     <.tooltip
-      id="tooltip-events"
       class="tooltip"
       on_open_change="tooltip_open_changed"
       on_open_change_client="tooltip-open-changed"
@@ -514,12 +516,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("tooltip_open_changed", %{"open" => open, "id" => id}, socket) do
-      _ = {open, id}
-      {:noreply, socket}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "tooltip_open_changed",
+      ~S|%{"open" => open, "id" => id} = params|
+    )
   end
 
   def events_client_listener_js do

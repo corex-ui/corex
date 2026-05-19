@@ -1,6 +1,8 @@
 defmodule Corex.Carousel.Utils do
   @moduledoc false
 
+  alias Corex.Image
+
   def merge_attr_defaults(assigns) when is_map(assigns) do
     defaults = %{
       aria_label: nil,
@@ -60,5 +62,29 @@ defmodule Corex.Carousel.Utils do
 
   defp next_nav_disabled?(loop, page, total_pages) do
     !loop and (total_pages == 0 or page >= total_pages - 1)
+  end
+
+  def item_slot?(assigns) when is_map(assigns) do
+    case Map.get(assigns, :item) do
+      [_ | _] -> true
+      _ -> false
+    end
+  end
+
+  def validate_items!(items, has_item_slot) when is_list(items) do
+    if has_item_slot do
+      :ok
+    else
+      Enum.each(items, &validate_image_item!/1)
+    end
+  end
+
+  defp validate_image_item!(%Image{}), do: :ok
+
+  defp validate_image_item!(item) do
+    raise ArgumentError,
+          "carousel items must be %Corex.Image{} when no <:item> slot is set. " <>
+            "Use Corex.Image.new(src, alt: ...) or add <:item :let={item}> for custom slides. " <>
+            "Got: #{inspect(item)}"
   end
 end

@@ -75,7 +75,7 @@ defmodule E2eWeb.NumberInputTest do
         |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :api)
         |> NumberInput.prepare_live_form()
         |> NumberInput.wait_root_number_input_ready("number-input-api-state-server")
-        |> NumberInput.click_button_in_section(section, "Read state (server)")
+        |> NumberInput.click_button_in_section(section, "Read state")
 
       NumberInput.assert_toast(session, "number-input-api-state-server")
     end

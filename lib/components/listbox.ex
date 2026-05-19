@@ -11,7 +11,7 @@ defmodule Corex.Listbox do
   ### Minimal
 
   ```heex
-  <.listbox id="listbox-anatomy-minimal" class="listbox" items={
+  <.listbox class="listbox" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -28,7 +28,7 @@ defmodule Corex.Listbox do
   ### With indicator
 
   ```heex
-  <.listbox id="listbox-anatomy-indicator" class="listbox" items={
+  <.listbox class="listbox" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -46,7 +46,7 @@ defmodule Corex.Listbox do
   ### Grouped
 
   ```heex
-  <.listbox id="listbox-anatomy-grouped" class="listbox" items={
+  <.listbox class="listbox" items={
     Corex.List.new([
       %{label: "France", value: "fra", group: "Europe"},
       %{label: "Belgium", value: "bel", group: "Europe"},
@@ -66,7 +66,7 @@ defmodule Corex.Listbox do
   Requires [Flagpack](https://hex.pm/packages/flagpack). Use `:item` with `:let={%{item: entry}}`.
 
   ```heex
-  <.listbox id="listbox-anatomy-extended" class="listbox" items={
+  <.listbox class="listbox" items={
     Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -156,7 +156,6 @@ defmodule Corex.Listbox do
 
   ```heex
   <.listbox
-    id="listbox-events-server"
     class="listbox"
     items={
       Corex.List.new([
@@ -270,7 +269,6 @@ defmodule Corex.Listbox do
 
   ```heex
   <.listbox
-    id="listbox-patterns-controlled"
     class="listbox"
     controlled
     value={@value}
@@ -507,8 +505,29 @@ defmodule Corex.Listbox do
   end
 
   @doc type: :api
-  @doc """
-  Sets listbox selection from the client. Dispatches `corex:listbox:set-value` on the hook root.
+  @doc ~S"""
+  Set the listbox selection from `phx-click`. Dispatches `corex:listbox:set-value` with `detail.value` (string list, wrapped if a single scalar is passed internally).
+
+  ```heex
+  <.action phx-click={Corex.Listbox.set_value("my-listbox", ["fra"])}>Choose France</.action>
+  <.listbox id="my-listbox" class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"}
+    ])
+  }>
+    <:label>Country</:label>
+  </.listbox>
+  ```
+
+  ```javascript
+  document.getElementById("my-listbox")?.dispatchEvent(
+    new CustomEvent("corex:listbox:set-value", {
+      bubbles: false,
+      detail: { value: ["fra"] },
+    })
+  );
+  ```
   """
   def set_value(listbox_id, value) when is_binary(listbox_id) do
     JS.dispatch("corex:listbox:set-value",
@@ -519,8 +538,14 @@ defmodule Corex.Listbox do
   end
 
   @doc type: :api
-  @doc """
-  Sets listbox selection from the server via `push_event` (`listbox_set_value`).
+  @doc ~S"""
+  Set the listbox selection from `handle_event` (`listbox_set_value`).
+
+  ```elixir
+  def handle_event("pick_country", %{"code" => c}, socket) do
+    {:noreply, Corex.Listbox.set_value(socket, "my-listbox", [c])}
+  end
+  ```
   """
   def set_value(socket, listbox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
@@ -531,13 +556,27 @@ defmodule Corex.Listbox do
   end
 
   @doc type: :api
-  @doc """
-  Requests the listbox's current selected values from the client. See `value/2` (socket arity) for `:respond_to`.
-  """
-  @doc type: :api
-  def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
+  @doc ~S"""
+  Read selected values from `phx-click`. Dispatches `corex:listbox:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
-  @doc type: :api
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `listbox_value_response` | `%{"id" => id, "value" => selection}` |
+  | Client | `listbox-value` on the root | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.Listbox.value("my-listbox")}>Read selection</.action>
+  <.listbox id="my-listbox" class="listbox" items={Corex.List.new([%{label: "A", value: "a"}])}>
+    <:label>Pick</:label>
+  </.listbox>
+  ```
+
+  ```elixir
+  def handle_event("listbox_value_response", %{"id" => _, "value" => v}, socket) do
+    {:noreply, assign(socket, :picked, v)}
+  end
+  ```
+  """
   def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
     JS.dispatch("corex:listbox:value",
       to: "##{listbox_id}",
@@ -546,18 +585,29 @@ defmodule Corex.Listbox do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Requests the listbox's current selected values from the client via `push_event` (`listbox_value`).
-
-  The hook responds with `listbox_value_response` and/or dispatches `listbox-value` depending on `:respond_to`.
-  """
   def value(socket, listbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
     value(socket, listbox_id, [])
   end
 
   @doc type: :api
+  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
+
+  @doc type: :api
+  @doc ~S"""
+  Read selected values from `handle_event` (`listbox_value`). Same replies as [`value/2`](#value/2).
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `listbox_value_response` | `%{"id" => id, "value" => selection}` |
+
+  ```elixir
+  def handle_event("read_listbox", _, socket) do
+    {:noreply, Corex.Listbox.value(socket, "my-listbox", respond_to: :server)}
+  end
+  ```
+  """
   def value(socket, listbox_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) and is_list(opts) do
     LiveView.push_event(

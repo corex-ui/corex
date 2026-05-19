@@ -12,7 +12,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    id="my-select"
     class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra", disabled: true},
@@ -142,7 +141,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    id="nav-select"
     class="select"
     redirect
     translation={%Corex.Select.Translation{placeholder: "Go to"}}
@@ -197,7 +195,7 @@ defmodule Corex.Select do
   Use `Phoenix.LiveView.stream/3` to add or remove options at runtime. Keep `@items_list` in sync and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` as `select:stream-select:item:#{value}`.
 
   ```heex
-  <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+  <.select class="select" items={Corex.List.new(@items_list)}>
     <:label>Country</:label>
     <:trigger>
       <.heroicon name="hero-chevron-down" class="icon" />
@@ -377,7 +375,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    id="select-events-server"
     class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra"},
@@ -738,7 +735,7 @@ defmodule Corex.Select do
 
       <input phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} name={@name} form={@form} value={@value_for_hidden_input} />
 
-      <select phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} multiple={@multiple} name={@name} form={@form}>
+      <select phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} multiple={@multiple} disabled>
         {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}
       </select>
 
@@ -795,8 +792,31 @@ defmodule Corex.Select do
   end
 
   @doc type: :api
-  @doc """
-  Sets select value in the client. Dispatches `corex:select:set-value` on the hook root.
+  @doc ~S"""
+  Set selected value(s) from a control (`phx-click`). Pass one value or a list (wrapped internally).
+
+  ```heex
+  <.action phx-click={Corex.Select.set_value("my-select", "bel")}>Belgium</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("my-select")?.dispatchEvent(
+    new CustomEvent("corex:select:set-value", {
+      bubbles: false,
+      detail: { value: ["bel"] },
+    })
+  );
+  ```
   """
   def set_value(select_id, value) when is_binary(select_id) do
     JS.dispatch("corex:select:set-value",
@@ -807,8 +827,28 @@ defmodule Corex.Select do
   end
 
   @doc type: :api
-  @doc """
-  Sets select value from the server via `push_event` (`select_set_value`).
+  @doc ~S"""
+  Set selected value(s) from `handle_event`. Pushes `select_set_value`.
+
+  ```heex
+  <.action phx-click="pick_bel" phx-value-value="bel">Belgium</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("pick_bel", %{"value" => v}, socket) do
+    {:noreply, Corex.Select.set_value(socket, "my-select", v)}
+  end
+  ```
   """
   def set_value(socket, select_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) do
@@ -819,8 +859,28 @@ defmodule Corex.Select do
   end
 
   @doc type: :api
-  @doc """
-  Opens or closes the menu. Dispatches `corex:select:set-open` on the hook root.
+  @doc ~S"""
+  Open or close the listbox from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Select.set_open("my-select", true)}>Open</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([%{label: "Belgium", value: "bel"}])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("my-select")?.dispatchEvent(
+    new CustomEvent("corex:select:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
   """
   def set_open(select_id, open) when is_binary(select_id) and is_boolean(open) do
     JS.dispatch("corex:select:set-open",
@@ -831,8 +891,25 @@ defmodule Corex.Select do
   end
 
   @doc type: :api
-  @doc """
-  Sets open state from the server via `push_event` (`select_set_open`).
+  @doc ~S"""
+  Set open state from `handle_event`. Pushes `select_set_open`.
+
+  ```heex
+  <.action phx-click="open_select">Open</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([%{label: "Belgium", value: "bel"}])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("open_select", _, socket) do
+    {:noreply, Corex.Select.set_open(socket, "my-select", true)}
+  end
+  ```
   """
   def set_open(socket, select_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) and

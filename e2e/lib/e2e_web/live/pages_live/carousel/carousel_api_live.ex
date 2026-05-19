@@ -110,13 +110,7 @@ defmodule E2eWeb.CarouselApiLive do
             </div>
             <.carousel
               id={@id_client}
-              items={[
-                ~p"/images/beach.jpg",
-                ~p"/images/fall.jpg",
-                ~p"/images/sand.jpg",
-                ~p"/images/star.jpg",
-                ~p"/images/winter.jpg"
-              ]}
+              items={E2eWeb.Demos.CarouselDemo.gallery_images()}
               autoplay
               loop
               class="carousel"

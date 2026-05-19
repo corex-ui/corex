@@ -4,20 +4,19 @@ defmodule E2eWeb.CheckboxApiLive do
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
   alias E2eWeb.Demos.CheckboxDemo
-  alias Phoenix.LiveView.JS
 
   @id_bind "checkbox-api-bind"
-  @id_dispatch "checkbox-api-dispatch"
   @id_server "checkbox-api-server"
 
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:id_bind, @id_bind)
-     |> assign(:id_dispatch, @id_dispatch)
      |> assign(:id_server, @id_server)
      |> assign(:client_binding_heex, CheckboxDemo.api_client_binding_code())
-     |> assign(:js_dispatch, CheckboxDemo.api_js_dispatch_code())
+     |> assign(:js_dispatch_heex, CheckboxDemo.api_js_dispatch_heex())
+     |> assign(:js_dispatch_js, CheckboxDemo.api_js_dispatch_js())
+     |> assign(:js_dispatch_ts, CheckboxDemo.api_js_dispatch_ts())
      |> assign(:server_elixir, CheckboxDemo.api_server_elixir())}
   end
 
@@ -62,33 +61,13 @@ defmodule E2eWeb.CheckboxApiLive do
           id="checkbox-api-js-dispatch"
           title="Set checked (Client JS)"
           code_tabs={[
-            %{value: "js", label: "JS", language: :js, code: @js_dispatch}
+            %{value: "heex", label: "Heex", language: :heex, code: @js_dispatch_heex},
+            %{value: "js", label: "JS", language: :js, code: @js_dispatch_js},
+            %{value: "ts", label: "TS", language: :javascript, code: @js_dispatch_ts}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <.action
-                phx-click={
-                  JS.dispatch("corex:checkbox:set-checked",
-                    to: "##{@id_dispatch}",
-                    detail: %{checked: true},
-                    bubbles: false
-                  )
-                }
-                class="button button--sm"
-              >
-                Dispatch checked
-              </.action>
-            </div>
-            <.checkbox id={@id_dispatch} class="checkbox">
-              <:label>Terms</:label>
-              <:indicator>
-                <.heroicon name="hero-check" />
-              </:indicator>
-              <:indeterminate>
-                <.heroicon name="hero-minus" />
-              </:indeterminate>
-            </.checkbox>
+            <CheckboxDemo.api_js_dispatch_example />
           </:preview>
         </.demo_section>
 

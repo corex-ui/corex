@@ -81,7 +81,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_carousel(assigns) do
     ~H"""
-    <.carousel items={["/img1.jpg"]}>
+    <.carousel items={[Corex.Image.new("/img1.jpg", alt: "Slide")]}>
       <:prev_trigger>Prev</:prev_trigger>
       <:next_trigger>Next</:next_trigger>
     </.carousel>

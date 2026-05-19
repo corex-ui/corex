@@ -7,7 +7,7 @@ defmodule Corex.FloatingPanel do
   ### Basic
 
   ```heex
-  <.floating_panel id="my-floating-panel" class="floating-panel">
+  <.floating_panel class="floating-panel">
     <:trigger class="button button--ghost button--sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
@@ -369,6 +369,28 @@ defmodule Corex.FloatingPanel do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
+  <.floating_panel id="my-floating-panel" class="floating-panel">
+    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:content><p>Content.</p></:content>
+  </.floating_panel>
+  ```
+
+  ```javascript
+  document.getElementById("my-floating-panel")?.dispatchEvent(
+    new CustomEvent("corex:floating-panel:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """
   def set_open(floating_panel_id, open)
       when is_binary(floating_panel_id) and is_boolean(open) do
     JS.dispatch("corex:floating-panel:set-open",
@@ -379,6 +401,25 @@ defmodule Corex.FloatingPanel do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from `handle_event`.
+
+  ```heex
+  <.action phx-click="open_panel">Open</.action>
+  <.floating_panel id="my-floating-panel" class="floating-panel">
+    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:content><p>Content.</p></:content>
+  </.floating_panel>
+  ```
+
+  ```elixir
+  def handle_event("open_panel", _, socket) do
+    {:noreply, Corex.FloatingPanel.set_open(socket, "my-floating-panel", true)}
+  end
+  ```
+  """
   def set_open(socket, floating_panel_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(floating_panel_id) and
              is_boolean(open) do

@@ -603,7 +603,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={JS.dispatch("corex:accordion:set-value", to: "#api-set-value-client-js", detail: %{value: ["lorem"]}, bubbles: false)}>Open Lorem</.action>
         <.action phx-click={JS.dispatch("corex:accordion:set-value", to: "#api-set-value-client-js", detail: %{value: ["lorem", "donec"]}, bubbles: false)}>Lorem and Donec</.action>
         <.action phx-click={JS.dispatch("corex:accordion:set-value", to: "#api-set-value-client-js", detail: %{value: []}, bubbles: false)}>Close all</.action>
-        <.accordion id="api-set-value-client-js" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-set-value-client-js" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -635,7 +635,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
       :set_value_js_ts ->
         """
-        const el = document.getElementById("api-set-value-client-js");
+        const el: HTMLElement | null = document.getElementById("api-set-value-client-js");
         const set = (value: string[]) =>
           el?.dispatchEvent(
             new CustomEvent("corex:accordion:set-value", {
@@ -653,7 +653,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click="api_set_value_server" value="lorem">Open Lorem</.action>
         <.action phx-click="api_set_value_server" value="lorem,donec">Lorem and Donec</.action>
         <.action phx-click="api_set_value_server" value="">Close all</.action>
-        <.accordion id="api-set-value-server" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-set-value-server" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -671,7 +671,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         """
         <.action phx-click={Corex.Accordion.value("api-value-client")}>Value</.action>
         <.action phx-click={Corex.Accordion.value("api-value-client", respond_to: :client)}>Value (client only)</.action>
-        <.accordion id="api-value-client" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-value-client" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -682,7 +682,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         """
         <.action phx-click={JS.dispatch("corex:accordion:value", to: "#api-value-client-js", detail: %{}, bubbles: false)}>Value</.action>
         <.action phx-click={JS.dispatch("corex:accordion:value", to: "#api-value-client-js", detail: %{respond_to: "client"}, bubbles: false)}>Value (client only)</.action>
-        <.accordion id="api-value-client-js" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-value-client-js" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -721,7 +721,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
             })
           );
         };
-        const el = document.getElementById("api-value-client-js");
+        const el: HTMLElement | null = document.getElementById("api-value-client-js");
         el?.dispatchEvent(
           new CustomEvent("corex:accordion:value", { bubbles: false, detail: {} })
         );
@@ -735,7 +735,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         """
         <.action phx-click="api_value_server">Value</.action>
         <.action phx-click="api_value_server_client_only">Value (client only)</.action>
-        <.accordion id="api-value-server" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-value-server" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -775,7 +775,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         """
         <.action phx-click="api_focused_js">Focused</.action>
         <.action phx-click="api_focused_js_client_only">Focused (client only)</.action>
-        <.accordion id="api-focused-client-js" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-focused-client-js" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -796,7 +796,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
       :focused_js_ts ->
         """
-        const el = document.getElementById(\"api-focused-client-js\");
+        const el: HTMLElement | null = document.getElementById(\"api-focused-client-js\");
         const focused = (respond_to?: \"client\") =>
           el?.dispatchEvent(
             new CustomEvent(\"corex:accordion:focused\", {
@@ -812,7 +812,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         """
         <.action phx-click="api_focused_server">Focused</.action>
         <.action phx-click="api_focused_server_client_only">Focused (client only)</.action>
-        <.accordion id="api-focused-server" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-focused-server" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -872,7 +872,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "lorem")}>lorem</.action>
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "duis")}>duis</.action>
         <.action phx-click={Corex.Accordion.item_state("api-item-client", "donec")}>donec</.action>
-        <.accordion id="api-item-client" items={Corex.Content.new([
+        <.accordion class="accordion" id="api-item-client" items={Corex.Content.new([
           %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
           %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
           %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
@@ -905,7 +905,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
       :item_state_js_ts ->
         """
-        const el = document.getElementById(\"api-item-client-js\");
+        const el: HTMLElement | null = document.getElementById(\"api-item-client-js\");
         const itemState = (value: string) =>
           el?.dispatchEvent(
             new CustomEvent(\"corex:accordion:item-state\", { bubbles: false, detail: { value } })
@@ -920,7 +920,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.action phx-click=\"api_item_state_server_lorem\">lorem</.action>
         <.action phx-click=\"api_item_state_server_duis\">duis</.action>
         <.action phx-click=\"api_item_state_server_donec\">donec</.action>
-        <.accordion id=\"api-item-server\" items={Corex.Content.new([
+        <.accordion class=\"accordion\" id=\"api-item-server\" items={Corex.Content.new([
           %{value: \"lorem\", label: \"Lorem ipsum dolor sit amet\", content: \"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.\"},
           %{value: \"duis\", label: \"Duis dictum gravida odio ac pharetra?\", content: \"Nullam eget vestibulum ligula, at interdum tellus.\"},
           %{value: \"donec\", label: \"Donec condimentum ex mi\", content: \"Congue molestie ipsum gravida a. Sed ac eros luctus.\", disabled: true}
@@ -1264,7 +1264,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
         <.accordion_skeleton count={3} class="accordion" />
       </:loading>
 
-      <.accordion id="patterns-async" class="accordion" items={accordion.items} value={accordion.value}>
+      <.accordion class="accordion" items={accordion.items} value={accordion.value}>
         <:indicator>
           <.heroicon name="hero-chevron-right" />
         </:indicator>
@@ -1275,7 +1275,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def patterns_async_heex_panel do
     ~S"""
-    <.accordion id="patterns-async" class="accordion" items={accordion.items} value={accordion.value}>
+    <.accordion class="accordion" items={accordion.items} value={accordion.value}>
       <:indicator>
         <.heroicon name="hero-chevron-right" />
       </:indicator>
@@ -1308,7 +1308,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def patterns_controlled_heex do
     ~S"""
     <.accordion
-      id="patterns-controlled"
       class="accordion"
       items={Corex.Content.new([
         %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
@@ -1362,7 +1361,7 @@ defmodule E2eWeb.Demos.AccordionDemo do
           Reset
         </.action>
       </div>
-      <.accordion id="stream-accordion" class="accordion" items={Corex.Content.new(@items_list)}>
+      <.accordion class="accordion" items={Corex.Content.new(@items_list)}>
         <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
       </.accordion>
     </div>
@@ -1470,7 +1469,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def animation_playground_heex do
     ~S"""
     <.accordion
-      id="accordion-animation-playground"
       class="accordion"
       animation="js"
       animation_options={
@@ -1587,7 +1585,6 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def events_server_heex do
     ~S"""
     <.accordion
-      id="events-on-value-change-server"
       class="accordion"
       items={Corex.Content.new([
         %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
@@ -1604,19 +1601,10 @@ defmodule E2eWeb.Demos.AccordionDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, socket |> assign(:logs, [])}
-    end
-
-    def handle_event("accordion_value_changed", %{"id" => id, "value" => value}, socket) do
-      socket =
-        socket
-        |> update(:logs, fn logs -> [new_log("server", id, value) | logs] |> Enum.take(25) end)
-
-      {:noreply, socket}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "accordion_value_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do

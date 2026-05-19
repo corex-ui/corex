@@ -10,7 +10,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="radio-group-anatomy-minimal"
     name="rg-minimal"
     class="radio-group"
     items={[
@@ -27,7 +26,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="radio-group-anatomy-indicator"
     name="rg-indicator"
     class="radio-group"
     items={[
@@ -45,7 +43,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="radio-group-anatomy-invalid"
     name="rg-invalid"
     class="radio-group"
     invalid
@@ -69,7 +66,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="radio-group-anatomy-readonly"
     name="rg-readonly"
     class="radio-group"
     read_only
@@ -105,7 +101,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="radio-group-events-server"
     name="rg-events"
     class="radio-group"
     on_value_change="radio_group_changed"
@@ -243,7 +238,6 @@ defmodule Corex.RadioGroup do
 
   ```heex
   <.radio_group
-    id="stream-radio-group"
     name="stream-rg"
     class="radio-group"
     items={@items_list}
@@ -540,8 +534,24 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Sets radio group selection from the client. Dispatches `corex:radio-group:set-value` on the hook root.
+  @doc ~S"""
+  Choose a radio option from `phx-click`. Dispatches `corex:radio-group:set-value` with `detail.value`.
+
+  ```heex
+  <.action phx-click={Corex.RadioGroup.set_value("my-rg", "lorem")}>Pick Lorem</.action>
+  <.radio_group id="my-rg" name="rg-api" class="radio-group" items={[%{value: "lorem", label: "Lorem"}, %{value: "duis", label: "Duis"}]}>
+    <:label>One</:label>
+  </.radio_group>
+  ```
+
+  ```javascript
+  document.getElementById("my-rg")?.dispatchEvent(
+    new CustomEvent("corex:radio-group:set-value", {
+      bubbles: false,
+      detail: { value: "lorem" },
+    })
+  );
+  ```
   """
   def set_value(radio_group_id, value) when is_binary(radio_group_id) and is_binary(value) do
     JS.dispatch("corex:radio-group:set-value",
@@ -552,8 +562,14 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Sets radio group selection from the server via `push_event` (`radio_group_set_value`).
+  @doc ~S"""
+  Choose a radio option from `handle_event` (`radio_group_set_value`).
+
+  ```elixir
+  def handle_event("pick", %{"v" => v}, socket) do
+    {:noreply, Corex.RadioGroup.set_value(socket, "my-rg", v)}
+  end
+  ```
   """
   def set_value(socket, radio_group_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) and is_binary(value) do
@@ -561,8 +577,15 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Clears radio group selection from the client. Dispatches `corex:radio-group:clear-value` on the hook root.
+  @doc ~S"""
+  Clear selection from `phx-click`. Dispatches `corex:radio-group:clear-value`.
+
+  ```heex
+  <.action phx-click={Corex.RadioGroup.clear_value("my-rg")}>Clear</.action>
+  <.radio_group id="my-rg" name="rg-api" class="radio-group" items={[%{value: "lorem", label: "Lorem"}]}>
+    <:label>Pick</:label>
+  </.radio_group>
+  ```
   """
   def clear_value(radio_group_id) when is_binary(radio_group_id) do
     JS.dispatch("corex:radio-group:clear-value",
@@ -572,8 +595,14 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Clears radio group selection from the server via `push_event` (`radio_group_clear_value`).
+  @doc ~S"""
+  Clear selection from `handle_event` (`radio_group_clear_value`).
+
+  ```elixir
+  def handle_event("clear_rg", _, socket) do
+    {:noreply, Corex.RadioGroup.clear_value(socket, "my-rg")}
+  end
+  ```
   """
   def clear_value(socket, radio_group_id)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
@@ -581,16 +610,29 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Focuses the radio group from the client. Dispatches `corex:radio-group:focus` on the hook root.
+  @doc ~S"""
+  Move focus onto the radio group from `phx-click`. Dispatches `corex:radio-group:focus`.
+
+  ```heex
+  <.action phx-click={Corex.RadioGroup.focus("my-rg")}>Focus</.action>
+  <.radio_group id="my-rg" name="rg-api" class="radio-group" items={[%{value: "a", label: "A"}]}>
+    <:label>Pick</:label>
+  </.radio_group>
+  ```
   """
   def focus(radio_group_id) when is_binary(radio_group_id) do
     JS.dispatch("corex:radio-group:focus", to: "##{radio_group_id}", bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Focuses the radio group from the server via `push_event` (`radio_group_focus`).
+  @doc ~S"""
+  Focus the radio group from `handle_event` (`radio_group_focus`).
+
+  ```elixir
+  def handle_event("focus_rg", _, socket) do
+    {:noreply, Corex.RadioGroup.focus(socket, "my-rg")}
+  end
+  ```
   """
   def focus(socket, radio_group_id)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
@@ -598,13 +640,27 @@ defmodule Corex.RadioGroup do
   end
 
   @doc type: :api
-  @doc """
-  Requests the radio group's current value from the client. See `value/3` for `:respond_to`.
-  """
-  @doc type: :api
-  def value(radio_group_id) when is_binary(radio_group_id), do: value(radio_group_id, [])
+  @doc ~S"""
+  Read the current value from `phx-click`. Dispatches `corex:radio-group:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
-  @doc type: :api
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `radio_group_value_response` | `%{"id" => id, "value" => selection}` |
+  | Client | `radio-group-value` on the root | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.RadioGroup.value("my-rg")}>Read</.action>
+  <.radio_group id="my-rg" name="rg-api" class="radio-group" items={[%{value: "a", label: "A"}]}>
+    <:label>Pick</:label>
+  </.radio_group>
+  ```
+
+  ```elixir
+  def handle_event("radio_group_value_response", %{"id" => _, "value" => v}, socket) do
+    {:noreply, assign(socket, :rg, v)}
+  end
+  ```
+  """
   def value(radio_group_id, opts) when is_binary(radio_group_id) and is_list(opts) do
     JS.dispatch("corex:radio-group:value",
       to: "##{radio_group_id}",
@@ -613,18 +669,29 @@ defmodule Corex.RadioGroup do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Requests the radio group's current value from the client via `push_event` (`radio_group_value`).
-
-  The hook responds with `radio_group_value_response` and/or dispatches `radio-group-value` depending on `:respond_to`.
-  """
   def value(socket, radio_group_id)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) do
     value(socket, radio_group_id, [])
   end
 
   @doc type: :api
+  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  def value(radio_group_id) when is_binary(radio_group_id), do: value(radio_group_id, [])
+
+  @doc type: :api
+  @doc ~S"""
+  Read the current value from `handle_event` (`radio_group_value`). Same replies as [`value/2`](#value/2).
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `radio_group_value_response` | `%{"id" => id, "value" => selection}` |
+
+  ```elixir
+  def handle_event("read_rg", _, socket) do
+    {:noreply, Corex.RadioGroup.value(socket, "my-rg", respond_to: :server)}
+  end
+  ```
+  """
   def value(socket, radio_group_id, opts)
       when is_struct(socket, LiveView.Socket) and is_binary(radio_group_id) and is_list(opts) do
     LiveView.push_event(

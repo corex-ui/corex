@@ -10,7 +10,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_minimal_code do
     ~S"""
     <.data_table
-      id="data-table-anatomy-minimal"
       class="data-table max-w-none"
       rows={@rows}
     >
@@ -42,7 +41,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_with_action_code do
     ~S"""
     <.data_table
-      id="data-table-anatomy-with-action"
       class="data-table max-w-none"
       rows={@rows}
     >
@@ -84,14 +82,13 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def anatomy_empty_code do
     ~S"""
     <.data_table
-      id="data-table-anatomy-empty"
       class="data-table max-w-none"
       rows={[]}
     >
       <:col :let={row} label="ID">{row.id}</:col>
       <:col :let={row} label="Name">{row.name}</:col>
       <:empty>
-        <p id="data-table-anatomy-empty-msg">No rows</p>
+        <p>No rows</p>
       </:empty>
     </.data_table>
     """
@@ -138,7 +135,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
     ~S"""
     <.data_table
-      id="ID_PLACEHOLDER"
       class="CLASS_PLACEHOLDER"
       rows={@style_rows}
       row_id={&"ID_PLACEHOLDER-#{&1.id}"}
@@ -183,7 +179,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     <p :if={@pattern_row_clicked}>Row clicked: {@pattern_row_clicked}</p>
     <p :if={is_nil(@pattern_row_clicked)}>Click a row (not the action button).</p>
     <.data_table
-      id="pattern-row-click-table"
       class="data-table max-w-none"
       rows={@pattern_row_click_rows}
       row_click={fn row -> JS.push("row_click", value: %{id: row.id, name: row.name}) end}
@@ -221,12 +216,12 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def patterns_stream_heex do
     ~S"""
-    <.data_table id="pattern-stream-table" class="data-table max-w-none" rows={@streams.pattern_stream}>
+    <.data_table class="data-table max-w-none" rows={@streams.pattern_stream}>
       <:col :let={{_id, row}} label="ID">{row.id}</:col>
       <:col :let={{_id, row}} label="Name">{row.name}</:col>
       <:col :let={{_id, row}} label="Category">{row.category}</:col>
       <:empty>
-        <p id="pattern-stream-empty">No items</p>
+        <p>No items</p>
       </:empty>
       <:action :let={{dom_id, row}}>
         <.action
@@ -274,11 +269,10 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_sort_heex do
     ~S"""
     <.data_table
-      id="pattern-sort-table"
       class="data-table max-w-none"
       rows={@pattern_sort_rows}
-      sort_by={@pattern_sort_by}
-      sort_order={@pattern_sort_order}
+      sort_by={@sort_by}
+      sort_order={@sort_order}
       on_sort="pattern_sort"
     >
       <:sort_icon :let={%{direction: direction}}>
@@ -299,23 +293,14 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_sort_elixir do
     ~S"""
     def mount(_params, _session, socket) do
-      rows = [%{id: 1, name: "Alice"}, %{id: 2, name: "Bob"}]
-      sorted = E2eWeb.DataTablePatternState.sort_rows(rows, :id, :asc)
-
       {:ok,
        socket
-       |> assign(:pattern_sort_rows, sorted)
-       |> assign(:pattern_sort_by, :id)
-       |> assign(:pattern_sort_order, :asc)}
+       |> assign(:pattern_sort_rows, [%{id: 1, name: "Alice"}, %{id: 2, name: "Bob"}])
+       |> Corex.DataTable.Sort.assign_for_sort(:pattern_sort_rows, default_sort_by: :id, default_sort_order: :asc)}
     end
 
-    def handle_event("pattern_sort", %{"sort_by" => _} = params, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_sort_ns(socket, params,
-         rows: :pattern_sort_rows,
-         sort_by: :pattern_sort_by,
-         sort_order: :pattern_sort_order
-       )}
+    def handle_event("pattern_sort", params, socket) do
+      {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :pattern_sort_rows)}
     end
     """
   end
@@ -323,12 +308,11 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_select_heex do
     ~S"""
     <.data_table
-      id="pattern-select-table"
       class="data-table max-w-none"
       rows={@pattern_select_rows}
       row_id={&"pselect-#{&1.id}"}
       selectable
-      selected={@pattern_select_selected}
+      selected={@selected}
       on_select="pattern_select"
       on_select_all="pattern_select_all"
       checkbox_class="checkbox"
@@ -345,26 +329,21 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_select_elixir do
     ~S"""
     def mount(_params, _session, socket) do
-      {:ok, assign(socket, :pattern_select_selected, []) |> assign(:pattern_select_rows, fetch_rows())}
-    end
-
-    def handle_event("pattern_select", params, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_select_ns(socket, params,
-         rows: :pattern_select_rows,
-         selected: :pattern_select_selected,
-         table_id: "pattern-select-table"
-       )}
-    end
-
-    def handle_event("pattern_select_all", params, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_select_all_ns(socket, params,
-         rows: :pattern_select_rows,
-         selected: :pattern_select_selected,
+      {:ok,
+       socket
+       |> assign(:pattern_select_rows, fetch_rows())
+       |> Corex.DataTable.Selection.assign_for_selection(:pattern_select_rows,
          table_id: "pattern-select-table",
          row_id: &"pselect-#{&1.id}"
        )}
+    end
+
+    def handle_event("pattern_select", params, socket) do
+      {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :pattern_select_rows)}
+    end
+
+    def handle_event("pattern_select_all", params, socket) do
+      {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :pattern_select_rows)}
     end
     """
   end
@@ -372,15 +351,14 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_full_heex do
     ~S"""
     <.data_table
-      id="pattern-full-table"
       class="data-table max-w-none"
       rows={@pattern_full_rows}
       row_id={&"pfull-#{&1.id}"}
-      sort_by={@pattern_full_sort_by}
-      sort_order={@pattern_full_sort_order}
+      sort_by={@sort_by}
+      sort_order={@sort_order}
       on_sort="pattern_full_sort"
       selectable
-      selected={@pattern_full_selected}
+      selected={@selected}
       on_select="pattern_full_select"
       on_select_all="pattern_full_select_all"
       checkbox_class="checkbox"
@@ -405,7 +383,7 @@ defmodule E2eWeb.Demos.DataTableDemo do
         </.action>
       </:action>
       <:empty>
-        <p id="pattern-full-empty">No rows</p>
+        <p>No rows</p>
       </:empty>
     </.data_table>
     """
@@ -413,32 +391,16 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def patterns_full_elixir do
     ~S"""
-    def handle_event("pattern_full_sort", %{"sort_by" => _} = p, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_sort_ns(socket, p,
-         rows: :pattern_full_rows,
-         sort_by: :pattern_full_sort_by,
-         sort_order: :pattern_full_sort_order
-       )}
+    def handle_event("pattern_full_sort", params, socket) do
+      {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :pattern_full_rows)}
     end
 
     def handle_event("pattern_full_select", params, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_select_ns(socket, params,
-         rows: :pattern_full_rows,
-         selected: :pattern_full_selected,
-         table_id: "pattern-full-table"
-       )}
+      {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :pattern_full_rows)}
     end
 
     def handle_event("pattern_full_select_all", params, socket) do
-      {:noreply,
-       E2eWeb.DataTablePatternState.handle_select_all_ns(socket, params,
-         rows: :pattern_full_rows,
-         selected: :pattern_full_selected,
-         table_id: "pattern-full-table",
-         row_id: &"pfull-#{&1.id}"
-       )}
+      {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :pattern_full_rows)}
     end
     """
   end
@@ -446,7 +408,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
   def patterns_database_heex do
     ~S"""
     <.data_table
-      id="pattern-db-table"
       class="data-table max-w-none"
       rows={@pattern_db_rows}
       row_id={&"db-#{&1.id}"}
@@ -463,7 +424,6 @@ defmodule E2eWeb.Demos.DataTableDemo do
     </.data_table>
 
     <.pagination
-      id="pattern-db-pagination"
       class="pagination max-w-none mx-auto"
       count={@pattern_db_total}
       page={@pattern_db_page}

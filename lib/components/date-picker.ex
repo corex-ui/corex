@@ -7,7 +7,7 @@ defmodule Corex.DatePicker do
   ### Basic Usage
 
   ```heex
-  <.date_picker id="my-date-picker">
+  <.date_picker>
     <:label>Select a date</:label>
     <:trigger>
       <.heroicon name="hero-calendar" />
@@ -167,7 +167,6 @@ defmodule Corex.DatePicker do
 
   ```heex
   <.date_picker
-    id="date-events"
     class="date-picker"
     controlled
     value={@date_value}
@@ -205,7 +204,6 @@ defmodule Corex.DatePicker do
 
   ```heex
   <.date_picker
-    id="due"
     class="date-picker"
     controlled
     value={@due && Date.to_iso8601(@due)}
@@ -711,6 +709,26 @@ defmodule Corex.DatePicker do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the selected date from a control (`phx-click`). Pass an ISO-8601 date string or `Date`.
+
+  ```heex
+  <.action phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-06-01")}>June</.action>
+  <.date_picker id="my-date-picker" class="date-picker" value="2024-01-15">
+    <:label>Date</:label>
+    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+  </.date_picker>
+  ```
+
+  ```javascript
+  document.getElementById("my-date-picker")?.dispatchEvent(
+    new CustomEvent("corex:date-picker:set-value", {
+      bubbles: false,
+      detail: { value: "2024-06-01" },
+    })
+  );
+  ```
+  """
   def set_value(date_picker_id, value) when is_binary(date_picker_id) do
     case normalize_date_value(value) do
       nil ->
@@ -727,6 +745,23 @@ defmodule Corex.DatePicker do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the selected date from `handle_event`. Accepts ISO strings or `Date` (same as [`set_value/2`](#set_value/2)).
+
+  ```heex
+  <.action phx-click="pick_june" phx-value-value="2024-06-01">June</.action>
+  <.date_picker id="my-date-picker" class="date-picker" value="2024-01-15">
+    <:label>Date</:label>
+    <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
+  </.date_picker>
+  ```
+
+  ```elixir
+  def handle_event("pick_june", %{"value" => iso}, socket) do
+    {:noreply, Corex.DatePicker.set_value(socket, "my-date-picker", iso)}
+  end
+  ```
+  """
   def set_value(socket, date_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) do
     case normalize_date_value(value) do

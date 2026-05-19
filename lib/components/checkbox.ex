@@ -9,7 +9,7 @@ defmodule Corex.Checkbox do
   ### Minimal
 
   ```heex
-  <.checkbox id="checkbox-anatomy-minimal" class="checkbox">
+  <.checkbox class="checkbox">
     <:label>Option</:label>
   </.checkbox>
   ```
@@ -17,7 +17,7 @@ defmodule Corex.Checkbox do
   ### Label and indicator
 
   ```heex
-  <.checkbox id="checkbox-anatomy-labeled" class="checkbox">
+  <.checkbox class="checkbox">
     <:label>Accept the terms</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -28,8 +28,16 @@ defmodule Corex.Checkbox do
   ### Invalid
 
   ```heex
-  <.checkbox id="checkbox-anatomy-invalid" class="checkbox" invalid errors={["Required"]}>
+  <.checkbox
+    class="checkbox checkbox--accent"
+    invalid
+    checked
+    errors={["Required"]}
+  >
     <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
@@ -40,7 +48,7 @@ defmodule Corex.Checkbox do
   ### Indeterminate
 
   ```heex
-  <.checkbox id="checkbox-anatomy-indeterminate" class="checkbox" checked={:indeterminate}>
+  <.checkbox class="checkbox" checked={:indeterminate}>
     <:label>Select some rows</:label>
     <:indicator>
       <.heroicon name="hero-check" />
@@ -92,12 +100,17 @@ defmodule Corex.Checkbox do
   ### set_checked (dispatch)
 
   ```javascript
-  document.getElementById("checkbox-api-dispatch")?.dispatchEvent(
-    new CustomEvent("corex:checkbox:set-checked", {
-      bubbles: true,
-      detail: { checked: true }
-    })
+  const el = document.getElementById("checkbox-api-dispatch");
+
+  el?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: true } })
   );
+
+  el?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: false } })
+  );
+
+  el?.dispatchEvent(new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false }));
   ```
 
   ```elixir
@@ -132,7 +145,6 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.checkbox
-    id="checkbox-on-checked-change-server"
     class="checkbox"
     on_checked_change="checkbox_changed"
   >
@@ -194,7 +206,7 @@ defmodule Corex.Checkbox do
   ```heex
   <.async_result :let={checkbox} assign={@checkbox}>
     <:loading><.checkbox_skeleton class="checkbox" /></:loading>
-    <.checkbox id="patterns-checkbox-async" class="checkbox" checked={checkbox.checked}>
+    <.checkbox class="checkbox" checked={checkbox.checked}>
       <:label>Accept terms</:label>
       <:indicator><.heroicon name="hero-check" /></:indicator>
       <:indeterminate><.heroicon name="hero-minus" /></:indeterminate>
@@ -218,7 +230,6 @@ defmodule Corex.Checkbox do
 
   ```heex
   <.checkbox
-    id="patterns-checkbox-controlled"
     class="checkbox"
     controlled
     checked={@checked}
@@ -355,6 +366,23 @@ defmodule Corex.Checkbox do
       </.checkbox>
   ```
 
+  ### Invalid
+
+  Invalid styles the label and control border. Checked indicators keep their semantic fill color.
+
+  ```heex
+  <.checkbox class="checkbox checkbox--accent" invalid checked errors={["Required"]}>
+    <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.checkbox>
+  ```
+
   <!-- tabs-close -->
 
   ## Form
@@ -371,12 +399,11 @@ defmodule Corex.Checkbox do
       <.form
         :let={f}
         for={@form}
-        action={~p"/account/terms"}
+        action="/account/terms"
         method="post"
         id={@form.id}
-        class="w-full max-w-2xs flex flex-col gap-space items-center"
       >
-        <.checkbox field={f[:terms]} class="checkbox" id="account-terms-acceptance">
+        <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -384,7 +411,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent w-full">
+        <.action type="submit" class="button button--accent">
           Submit
         </.action>
       </.form>
@@ -411,7 +438,7 @@ defmodule Corex.Checkbox do
             data = Ecto.Changeset.apply_changes(changeset)
             conn
             |> put_flash(:info, "Saved: terms=#{data.terms}")
-            |> redirect(to: ~p"/account")
+            |> redirect(to: "/account")
 
           changeset ->
             changeset = Map.put(changeset, :action, :insert)
@@ -462,12 +489,11 @@ defmodule Corex.Checkbox do
       <.form
         :let={f}
         for={@form}
-        action={~p"/account/terms-strict"}
+        action="/account/terms"
         method="post"
         id={@form.id}
-        class="w-full max-w-2xs flex flex-col gap-space items-center"
       >
-        <.checkbox field={f[:terms]} class="checkbox" id="account-terms-strict">
+        <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms (strict messages)</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -475,7 +501,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" class="button button--accent w-full">
+        <.action type="submit" class="button button--accent">
           Submit
         </.action>
       </.form>
@@ -503,7 +529,7 @@ defmodule Corex.Checkbox do
             data = Ecto.Changeset.apply_changes(changeset)
             conn
             |> put_flash(:info, "Saved: terms=#{data.terms}")
-            |> redirect(to: ~p"/account")
+            |> redirect(to: "/account")
 
           changeset ->
             changeset = Map.put(changeset, :action, :insert)
@@ -550,19 +576,17 @@ defmodule Corex.Checkbox do
 
   ```heex
       <form
-        action={~p"/register"}
+        action="/register"
         method="post"
-        class="w-full max-w-2xs flex flex-col gap-space items-center"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <.checkbox
           name="user[accept_terms]"
           class="checkbox"
-          id="register-accept-terms"
         >
           <:label>Accept terms</:label>
         </.checkbox>
-        <.action type="submit" class="button button--accent w-full">Submit</.action>
+        <.action type="submit" class="button button--accent">Submit</.action>
       </form>
   ```
 
@@ -576,9 +600,8 @@ defmodule Corex.Checkbox do
         id={@form.id}
         phx-change="validate"
         phx-submit="save"
-        class="w-full max-w-2xs flex flex-col gap-space items-center"
       >
-        <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-terms">
+        <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>Accept terms</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -586,7 +609,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" id="checkbox-form-live-submit" class="button button--accent w-full">
+        <.action type="submit" class="button button--accent">
           Submit
         </.action>
       </.form>
@@ -661,9 +684,8 @@ defmodule Corex.Checkbox do
         id={@form.id}
         phx-change="validate_strict"
         phx-submit="save_strict"
-        class="w-full max-w-2xs flex flex-col gap-space items-center"
       >
-        <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-strict">
+        <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>Accept terms</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -671,7 +693,7 @@ defmodule Corex.Checkbox do
           </:error>
         </.checkbox>
 
-        <.action type="submit" id="checkbox-form-live-strict-submit" class="button button--accent w-full">
+        <.action type="submit" class="button button--accent">
           Submit
         </.action>
       </.form>
@@ -1018,11 +1040,24 @@ defmodule Corex.Checkbox do
   end
 
   @doc type: :api
-  @doc """
-  Sets checked state from the client.
+  @doc ~S"""
+  Set checked state from a control (`phx-click`). Clears indeterminate when applied.
 
-  Returns `%Phoenix.LiveView.JS{}` dispatching `corex:checkbox:set-checked` on the checkbox element with
-  `detail: %{checked: boolean}`. Clears indeterminate when applied.
+  ```heex
+  <.action phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>Check</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```javascript
+  document.getElementById("my-checkbox")?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", {
+      bubbles: false,
+      detail: { checked: true },
+    })
+  );
+  ```
   """
   def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
     JS.dispatch("corex:checkbox:set-checked",
@@ -1033,10 +1068,21 @@ defmodule Corex.Checkbox do
   end
 
   @doc type: :api
-  @doc """
-  Sets checked state from the server.
+  @doc ~S"""
+  Set checked state from `handle_event`. Pushes `checkbox_set_checked` (no reply event).
 
-  `push_event("checkbox_set_checked", %{"id" => checkbox_id, "checked" => boolean})`. No reply event.
+  ```heex
+  <.action phx-click="check_box">Check</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```elixir
+  def handle_event("check_box", _, socket) do
+    {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
+  end
+  ```
   """
   def set_checked(socket, checkbox_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
@@ -1048,10 +1094,21 @@ defmodule Corex.Checkbox do
   end
 
   @doc type: :api
-  @doc """
-  Toggles checked state from the client.
+  @doc ~S"""
+  Toggle checked state from a control (`phx-click`).
 
-  Returns `%Phoenix.LiveView.JS{}` dispatching `corex:checkbox:toggle-checked` on the checkbox element with empty `detail`.
+  ```heex
+  <.action phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>Toggle</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```javascript
+  document.getElementById("my-checkbox")?.dispatchEvent(
+    new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false })
+  );
+  ```
   """
   def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
     JS.dispatch("corex:checkbox:toggle-checked",
@@ -1061,10 +1118,21 @@ defmodule Corex.Checkbox do
   end
 
   @doc type: :api
-  @doc """
-  Toggles checked state from the server.
+  @doc ~S"""
+  Toggle checked from `handle_event`. Pushes `checkbox_toggle_checked` (no reply event).
 
-  `push_event("checkbox_toggle_checked", %{"id" => checkbox_id})`. No reply event.
+  ```heex
+  <.action phx-click="toggle_box">Toggle</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```elixir
+  def handle_event("toggle_box", _, socket) do
+    {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
+  end
+  ```
   """
   def toggle_checked(socket, checkbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do

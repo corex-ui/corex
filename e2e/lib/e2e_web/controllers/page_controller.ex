@@ -1395,14 +1395,7 @@ defmodule E2eWeb.PageController do
   end
 
   defp assign_file_upload_form_docs(conn, scroll_to) do
-    conn
-    |> assign(:scroll_to, scroll_to)
-    |> assign(:form_ecto, E2eWeb.Demos.FileUploadDemo.form_ecto())
-    |> assign(:changeset_heex, E2eWeb.Demos.FileUploadDemo.form_changeset_heex())
-    |> assign(:changeset_elixir, E2eWeb.Demos.FileUploadDemo.form_changeset_elixir())
-    |> assign(:validate_heex, E2eWeb.Demos.FileUploadDemo.form_validate_heex())
-    |> assign(:validate_elixir, E2eWeb.Demos.FileUploadDemo.form_validate_elixir())
-    |> assign(:native_heex, E2eWeb.Demos.FileUploadDemo.form_native_heex())
+    assign(conn, :scroll_to, scroll_to)
   end
 
   def file_upload_form_page(conn, _params) do
@@ -1901,12 +1894,15 @@ defmodule E2eWeb.PageController do
 
   def templates_page(conn, _params) do
     template_carousel_items = [
-      %{url: "/images/templates/soonex/preview-hero.png", alt: gettext("Hero section")},
-      %{
-        url: "/images/templates/soonex/preview-highlights.png",
+      Corex.Image.new("/images/templates/soonex/preview-hero.png",
+        alt: gettext("Hero section")
+      ),
+      Corex.Image.new("/images/templates/soonex/preview-highlights.png",
         alt: gettext("Highlights section")
-      },
-      %{url: "/images/templates/soonex/preview-waitlist.png", alt: gettext("Waitlist section")}
+      ),
+      Corex.Image.new("/images/templates/soonex/preview-waitlist.png",
+        alt: gettext("Waitlist section")
+      )
     ]
 
     conn

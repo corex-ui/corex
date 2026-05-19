@@ -7,7 +7,7 @@ defmodule Corex.PinInput do
   ### Basic
 
   ```heex
-  <.pin_input id="pin-input-anatomy" count={4} class="pin-input">
+  <.pin_input count={4} class="pin-input">
     <:label>Code</:label>
   </.pin_input>
   ```
@@ -42,7 +42,7 @@ defmodule Corex.PinInput do
   ### on_value_change
 
   ```heex
-  <.pin_input id="pin-events" count={4} class="pin-input" on_value_change="pin_changed">
+  <.pin_input count={4} class="pin-input" on_value_change="pin_changed">
     <:label>Code</:label>
   </.pin_input>
   ```
@@ -138,7 +138,7 @@ defmodule Corex.PinInput do
 
     @type t :: %__MODULE__{digit: String.t()}
 
-    @doc false
+    @doc "Merges partial fields with gettext defaults."
     def resolve(nil), do: default()
 
     def resolve(%__MODULE__{} = partial), do: merge(partial, default())
@@ -313,6 +313,23 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Replace cell values from `phx-click`. Dispatches `corex:pin-input:set-value`; `value` accepts a nonempty string list, a comma string, graphemes string, etc. (normalized like the form helper).
+
+  ```heex
+  <.action phx-click={Corex.PinInput.set_value("my-pin", ["1", "2", "", ""])}>Prefill</.action>
+  <.pin_input id="my-pin" count={4} class="pin-input" />
+  ```
+
+  ```javascript
+  document.getElementById("my-pin")?.dispatchEvent(
+    new CustomEvent("corex:pin-input:set-value", {
+      bubbles: false,
+      detail: { value: ["1", "2", "", ""] },
+    })
+  );
+  ```
+  """
   def set_value(pin_input_id, value) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:set-value",
       to: "##{pin_input_id}",
@@ -322,6 +339,15 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Replace cell values from `handle_event` (`pin_input_set_value`).
+
+  ```elixir
+  def handle_event("fill_pin", _, socket) do
+    {:noreply, Corex.PinInput.set_value(socket, "my-pin", ["0", "0", "0", "0"])}
+  end
+  ```
+  """
   def set_value(socket, pin_input_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
     LiveView.push_event(socket, "pin_input_set_value", %{
@@ -343,20 +369,53 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear all cells from `phx-click`. Dispatches `corex:pin-input:clear`.
+
+  ```heex
+  <.action phx-click={Corex.PinInput.clear("my-pin")}>Clear</.action>
+  <.pin_input id="my-pin" count={4} class="pin-input" />
+  ```
+  """
   def clear(pin_input_id) when is_binary(pin_input_id) do
     JS.dispatch("corex:pin-input:clear", to: "##{pin_input_id}", bubbles: false)
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear all cells from `handle_event` (`pin_input_clear`).
+
+  ```elixir
+  def handle_event("clear_pin", _, socket) do
+    {:noreply, Corex.PinInput.clear(socket, "my-pin")}
+  end
+  ```
+  """
   def clear(socket, pin_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
     LiveView.push_event(socket, "pin_input_clear", %{id: pin_input_id})
   end
 
   @doc type: :api
-  def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
+  @doc ~S"""
+  Read the current value from `phx-click`. Dispatches `corex:pin-input:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
-  @doc type: :api
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `pin_input_value_response` | `%{"id" => id, "value" => cells, "valueAsString" => str}` |
+  | Client | `pin-input-value` on the host | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.PinInput.value("my-pin")}>Read</.action>
+  <.pin_input id="my-pin" count={4} class="pin-input" />
+  ```
+
+  ```elixir
+  def handle_event("pin_input_value_response", %{"id" => _, "valueAsString" => s}, socket) do
+    {:noreply, assign(socket, :otp, s)}
+  end
+  ```
+  """
   def value(pin_input_id, opts) when is_binary(pin_input_id) and is_list(opts) do
     JS.dispatch("corex:pin-input:value",
       to: "##{pin_input_id}",
@@ -366,6 +425,23 @@ defmodule Corex.PinInput do
   end
 
   @doc type: :api
+  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
+
+  @doc type: :api
+  @doc ~S"""
+  Read the current value from `handle_event` (`pin_input_value`). Same replies as [`value/2`](#value/2).
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `pin_input_value_response` | `%{"id" => id, "value" => cells, "valueAsString" => str}` |
+
+  ```elixir
+  def handle_event("read_pin", _, socket) do
+    {:noreply, Corex.PinInput.value(socket, "my-pin", respond_to: :server)}
+  end
+  ```
+  """
   def value(socket, pin_input_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) and
              is_list(opts) do

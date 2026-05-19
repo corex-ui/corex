@@ -11,7 +11,7 @@ defmodule Corex.AngleSlider do
   ### Basic
 
   ```heex
-  <.angle_slider id="angle" class="angle-slider">
+  <.angle_slider class="angle-slider">
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -19,7 +19,7 @@ defmodule Corex.AngleSlider do
   ### With marks
 
   ```heex
-  <.angle_slider id="angle" class="angle-slider" marker_values={[0, 90, 180, 270]}>
+  <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
   </.angle_slider>
   ```
@@ -90,7 +90,6 @@ defmodule Corex.AngleSlider do
 
   ```heex
   <.angle_slider
-    id="angle-events-server"
     class="angle-slider"
     on_value_change="angle_changed"
     marker_values={[0, 90, 180, 270]}
@@ -689,6 +688,23 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the angle from a control (`phx-click`). `value` is degrees (number).
+
+  ```heex
+  <.action phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90.0)}>90°</.action>
+  <.angle_slider id="my-angle-slider" class="angle-slider" value={0.0} name="angle" />
+  ```
+
+  ```javascript
+  document.getElementById("my-angle-slider")?.dispatchEvent(
+    new CustomEvent("corex:angle-slider:set-value", {
+      bubbles: false,
+      detail: { value: 90 },
+    })
+  );
+  ```
+  """
   def set_value(angle_slider_id, value) when is_binary(angle_slider_id) and is_number(value) do
     JS.dispatch("corex:angle-slider:set-value",
       to: "##{angle_slider_id}",
@@ -698,6 +714,20 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the angle from `handle_event`. Accepts a number or a numeric string.
+
+  ```heex
+  <.action phx-click="set_angle" phx-value-value="90">90°</.action>
+  <.angle_slider id="my-angle-slider" class="angle-slider" value={0.0} name="angle" />
+  ```
+
+  ```elixir
+  def handle_event("set_angle", %{"value" => v}, socket) do
+    {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", v)}
+  end
+  ```
+  """
   def set_value(socket, angle_slider_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) do
     angle =
@@ -716,11 +746,27 @@ defmodule Corex.AngleSlider do
     })
   end
 
-  @doc type: :api
-
+  @doc false
   def value(angle_slider_id) when is_binary(angle_slider_id), do: value(angle_slider_id, [])
 
   @doc type: :api
+  @doc ~S"""
+  Read the current value from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
+
+  ```heex
+  <.action phx-click={Corex.AngleSlider.value("my-angle-slider", respond_to: :both)}>Read</.action>
+  <.angle_slider id="my-angle-slider" class="angle-slider" value={45.0} name="angle" />
+  ```
+
+  ```javascript
+  document.getElementById("my-angle-slider")?.dispatchEvent(
+    new CustomEvent("corex:angle-slider:value", {
+      bubbles: false,
+      detail: { respond_to: "both" },
+    })
+  );
+  ```
+  """
   def value(angle_slider_id, opts) when is_binary(angle_slider_id) and is_list(opts) do
     JS.dispatch("corex:angle-slider:value",
       to: "##{angle_slider_id}",
@@ -730,7 +776,20 @@ defmodule Corex.AngleSlider do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Read the value from `handle_event`. Same `respond_to` behavior as [`value/2`](#value/2).
 
+  ```heex
+  <.action phx-click="read_angle">Read</.action>
+  <.angle_slider id="my-angle-slider" class="angle-slider" value={45.0} name="angle" />
+  ```
+
+  ```elixir
+  def handle_event("read_angle", _, socket) do
+    {:noreply, Corex.AngleSlider.value(socket, "my-angle-slider", respond_to: :server)}
+  end
+  ```
+  """
   def value(socket, angle_slider_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) and
              is_list(opts) do

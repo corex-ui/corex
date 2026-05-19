@@ -14,7 +14,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal} id="file-upload-live-anatomy-minimal">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -26,7 +26,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label} id="file-upload-live-anatomy-label">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -39,7 +39,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom} id="file-upload-live-anatomy-custom">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -56,14 +56,14 @@ defmodule Corex.FileUploadLive do
   ### Form with submit
 
   ```heex
-  <form phx-change="validate" phx-submit="save" id="file-upload-live-form">
-    <.file_upload_live upload={@uploads.attachment} field={:attachment} id="file-upload-live-field">
+  <form phx-change="validate" phx-submit="save">
+    <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
       <:label>Attachment</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
     </.file_upload_live>
-    <.action type="submit" class="button button--accent w-full">Submit</.action>
+    <.action type="submit" class="button button--accent">Submit</.action>
   </form>
   ```
 
@@ -97,9 +97,24 @@ defmodule Corex.FileUploadLive do
 
   <!-- tabs-close -->
 
-  The Minimal / With label / Custom slots HEEx matches the e2e anatomy page; each expects `allow_upload` for `:anatomy_minimal`, `:anatomy_label`, or `:anatomy_custom` respectively (same names as `field`).
+  ### LiveView setup
 
-  Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
+  ```elixir
+  def mount(_params, _session, socket) do
+    {:ok,
+     allow_upload(socket, :document,
+       accept: ~w(.jpg .jpeg .png .pdf),
+       max_entries: 3,
+       max_file_size: 8_000_000
+     )}
+  end
+
+  def handle_event("file_upload_live_cancel", %{"ref" => ref, "upload_field" => field}, socket) do
+    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+  end
+  ```
+
+  The `field` atom must match the name passed to `allow_upload/3`. Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
   '''
 
   @doc type: :component

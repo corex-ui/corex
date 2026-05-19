@@ -1334,6 +1334,8 @@ var Select = class extends Component {
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+      hiddenSelect.disabled = true;
+      hiddenSelect.removeAttribute("name");
     }
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -1397,8 +1399,9 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
       const valueInput = el.querySelector(
         '[data-scope="select"][data-part="value-input"]'
       );
-      if (valueInput && getBoolean(el, "controlled")) {
-        valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+      if (valueInput) {
+        const list = details.value.map((v) => String(v));
+        valueInput.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
         valueInput.dispatchEvent(new Event("input", { bubbles: true }));
         valueInput.dispatchEvent(new Event("change", { bubbles: true }));
       }

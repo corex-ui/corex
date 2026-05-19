@@ -74,7 +74,7 @@ defmodule E2eWeb.ComboboxTest do
       session
       |> click(
         xpath(
-          "//*[@id='combobox-api-set-value-js']//button[contains(normalize-space(), 'Germany')]"
+          "//*[@id='combobox-api-set-value-js-section']//button[contains(normalize-space(), 'Germany')]"
         )
       )
 

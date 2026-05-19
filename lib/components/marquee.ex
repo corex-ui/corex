@@ -10,7 +10,6 @@ defmodule Corex.Marquee do
 
   ```heex
   <.marquee
-    id="marquee-anatomy-minimal"
     class="marquee"
     items={[
       %{name: "Apple", logo: "🍎"},
@@ -32,7 +31,6 @@ defmodule Corex.Marquee do
 
   ```heex
   <.marquee
-    id="marquee-anatomy-custom-slots"
     class="marquee"
     items={[
       %{name: "Home", icon: "hero-home"},
@@ -314,16 +312,54 @@ defmodule Corex.Marquee do
   end
 
   @doc type: :api
-  @doc """
-  Pauses the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Pause the marquee from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Marquee.pause("my-marquee")}>Pause</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```javascript
+  document.getElementById("my-marquee")?.dispatchEvent(
+    new CustomEvent("corex:marquee:pause", { bubbles: false })
+  );
+  ```
   """
   def pause(marquee_id) when is_binary(marquee_id) do
     JS.dispatch("corex:marquee:pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Pauses the marquee from server-side. Pushes a LiveView event.
+  @doc ~S"""
+  Pause from `handle_event`. Pushes `marquee_pause`.
+
+  ```heex
+  <.action phx-click="pause_marquee">Pause</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```elixir
+  def handle_event("pause_marquee", _, socket) do
+    {:noreply, Corex.Marquee.pause(socket, "my-marquee")}
+  end
+  ```
   """
   def pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
@@ -331,16 +367,56 @@ defmodule Corex.Marquee do
   end
 
   @doc type: :api
-  @doc """
-  Resumes the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Resume the marquee from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Marquee.resume("my-marquee")}>Resume</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+    paused
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```javascript
+  document.getElementById("my-marquee")?.dispatchEvent(
+    new CustomEvent("corex:marquee:resume", { bubbles: false })
+  );
+  ```
   """
   def resume(marquee_id) when is_binary(marquee_id) do
     JS.dispatch("corex:marquee:resume", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Resumes the marquee from server-side. Pushes a LiveView event.
+  @doc ~S"""
+  Resume from `handle_event`. Pushes `marquee_resume`.
+
+  ```heex
+  <.action phx-click="resume_marquee">Resume</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+    paused
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```elixir
+  def handle_event("resume_marquee", _, socket) do
+    {:noreply, Corex.Marquee.resume(socket, "my-marquee")}
+  end
+  ```
   """
   def resume(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
@@ -348,16 +424,54 @@ defmodule Corex.Marquee do
   end
 
   @doc type: :api
-  @doc """
-  Toggles the pause state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Toggle paused state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Marquee.toggle_pause("my-marquee")}>Toggle</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```javascript
+  document.getElementById("my-marquee")?.dispatchEvent(
+    new CustomEvent("corex:marquee:toggle-pause", { bubbles: false })
+  );
+  ```
   """
   def toggle_pause(marquee_id) when is_binary(marquee_id) do
     JS.dispatch("corex:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc type: :api
-  @doc """
-  Toggles the pause state from server-side. Pushes a LiveView event.
+  @doc ~S"""
+  Toggle pause from `handle_event`. Pushes `marquee_toggle_pause`.
+
+  ```heex
+  <.action phx-click="toggle_marquee">Toggle</.action>
+  <.marquee
+    id="my-marquee"
+    class="marquee"
+    items={[%{name: "A"}, %{name: "B"}]}
+    duration={20}
+    spacing="2rem"
+  >
+    <:item :let={item}><span>{item.name}</span></:item>
+  </.marquee>
+  ```
+
+  ```elixir
+  def handle_event("toggle_marquee", _, socket) do
+    {:noreply, Corex.Marquee.toggle_pause(socket, "my-marquee")}
+  end
+  ```
   """
   def toggle_pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do

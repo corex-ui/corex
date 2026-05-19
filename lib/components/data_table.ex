@@ -1,8 +1,10 @@
 defmodule Corex.DataTable do
   @moduledoc ~S'''
-  Renders a data table with sorting, selection, and optional actions.
+  Phoenix table component for tabular data with column slots, optional row actions, sorting, and row selection.
 
-  See [`data_table/1`](#data_table/1) for **Anatomy** and **Patterns** (basic, actions, streaming, sortable, with database).
+  Supports in-memory lists, LiveView stream rows (`phx-update="stream"`), and Ecto-backed pages paired with [`Corex.Pagination`](Corex.Pagination.html). See [`data_table/1`](#data_table/1) for anatomy and patterns (basic, actions, streaming, sortable, selectable, with database).
+
+  Helpers: [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html), [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html).
   '''
 
   defmodule Translation do
@@ -201,7 +203,21 @@ defmodule Corex.DataTable do
 
    ### With database
 
-   For Ecto-backed rows, sort and paginate in your context with `order_by`, `limit`, and `offset`, then pass the page to `<.data_table>` and `<.pagination>`. Use LiveView events to re-fetch (see the e2e **With database** pattern demo).
+   Sort and paginate in your context (`order_by`, `limit`, `offset`), then pass each page to `<.data_table>` and `<.pagination>`. Re-fetch on `on_sort` and `on_page_change`.
+
+   ```elixir
+   # mount
+   {rows, total} = MyApp.list_cities(page: 1, page_size: 10, order_by: :name, order_dir: :asc)
+
+   {:ok,
+    socket
+    |> assign(:cities, rows)
+    |> assign(:page, 1)
+    |> assign(:page_size, 10)
+    |> assign(:sort_by, :name)
+    |> assign(:sort_order, :asc)
+    |> assign(:total, total)}
+   ```
 
    ```heex
    <.data_table
@@ -214,7 +230,61 @@ defmodule Corex.DataTable do
    >
      <:col :let={city} label="Name" name={:name}>{city.name}</:col>
    </.data_table>
-   <.pagination count={@total} page={@page} page_size={@page_size} controlled on_page_change="page" />
+   <.pagination
+     id="cities-pagination"
+     class="pagination"
+     count={@total}
+     page={@page}
+     page_size={@page_size}
+     controlled
+     on_page_change="page"
+   />
+   ```
+
+   ```elixir
+   def handle_event("sort", %{"sort_by" => sort_by}, socket) do
+     sort_by = String.to_existing_atom(sort_by)
+     order =
+       if socket.assigns.sort_by == sort_by do
+         if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+       else
+         :asc
+       end
+
+     {rows, total} =
+       MyApp.list_cities(
+         page: 1,
+         page_size: socket.assigns.page_size,
+         order_by: sort_by,
+         order_dir: order
+       )
+
+     {:noreply,
+      socket
+      |> assign(:cities, rows)
+      |> assign(:page, 1)
+      |> assign(:sort_by, sort_by)
+      |> assign(:sort_order, order)
+      |> assign(:total, total)}
+   end
+
+   def handle_event("page", %{"page" => page}, socket) do
+     page = String.to_integer(page)
+
+     {rows, total} =
+       MyApp.list_cities(
+         page: page,
+         page_size: socket.assigns.page_size,
+         order_by: socket.assigns.sort_by,
+         order_dir: socket.assigns.sort_order
+       )
+
+     {:noreply,
+      socket
+      |> assign(:cities, rows)
+      |> assign(:page, page)
+      |> assign(:total, total)}
+   end
    ```
 
    <!-- tabs-close -->

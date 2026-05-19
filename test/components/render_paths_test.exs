@@ -216,14 +216,19 @@ defmodule Corex.ComponentRenderPathsTest do
   end
 
   describe "carousel render paths" do
-    test "renders map slide entries" do
+    test "renders image struct slide entries" do
       html =
         render_component(
           fn assigns ->
+            _ = assigns
+
             ~H"""
             <Carousel.carousel
-              id="carousel-maps"
-              items={[@slide_a, @slide_b]}
+              id="carousel-images"
+              items={[
+                Corex.Image.new("/a.jpg", alt: "Slide A"),
+                Corex.Image.new("/b.jpg", alt: "Slide B")
+              ]}
               page={1}
             >
               <:prev_trigger>Prev</:prev_trigger>
@@ -231,15 +236,55 @@ defmodule Corex.ComponentRenderPathsTest do
             </Carousel.carousel>
             """
           end,
-          %{
-            slide_a: %{url: "/a.jpg", alt: "Slide A"},
-            slide_b: %{"url" => "/b.jpg", "alt" => "Slide B"}
-          }
+          %{}
         )
 
-      assert html =~ "Slide A"
+      assert html =~ ~S(alt="Slide A")
       assert html =~ "/b.jpg"
       assert html =~ ~S(data-part="indicator")
+    end
+
+    test "renders item slot entries" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Carousel.carousel
+              id="carousel-slot"
+              items={[@post]}
+            >
+              <:item :let={post}>
+                <h3>{post.title}</h3>
+              </:item>
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+            </Carousel.carousel>
+            """
+          end,
+          %{post: %{title: "Hello"}}
+        )
+
+      assert html =~ "Hello"
+    end
+
+    test "raises when items are not images without item slot" do
+      assert_raise ArgumentError, ~r/%Corex\.Image{}/, fn ->
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Carousel.carousel id="carousel-bad" items={["/a.jpg"]}>
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+            </Carousel.carousel>
+            """
+          end,
+          %{}
+        )
+      end
     end
 
     test "compound mode renders carousel subcomponents" do

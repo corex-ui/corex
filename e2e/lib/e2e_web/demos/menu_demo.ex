@@ -14,7 +14,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_minimal_code do
     ~S"""
     <.menu
-      id="menu-anatomy-minimal"
       class="menu"
       items={[
         %Corex.Tree.Item{value: "menu", label: "Menu"},
@@ -56,7 +55,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_grouped_code do
     ~S"""
     <.menu
-      id="menu-anatomy-grouped"
       class="menu"
       items={[
         %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
@@ -90,7 +88,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_code do
     ~S"""
     <.menu
-      id="menu-anatomy-nested"
       class="menu"
       items={[
         %Corex.Tree.Item{value: "listbox", label: "Listbox"},
@@ -160,7 +157,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_grouped_code do
     ~S"""
     <.menu
-      id="menu-anatomy-nested-grouped"
       class="menu"
       items={[
         %Corex.Tree.Item{value: "tabs", label: "Tabs"},
@@ -284,15 +280,15 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_client_js_ts do
     ~S"""
-    const root = document.getElementById("menu:menu-api-js");
+    const root: HTMLElement | null = document.getElementById("menu:menu-api-js");
     document.querySelector("[data-menu-api-open]")?.addEventListener("click", () => {
       root?.dispatchEvent(
-        new CustomEvent("corex:menu:set-open", { bubbles: false, detail: { open: true } })
+        new CustomEvent<{ open: boolean }>("corex:menu:set-open", { bubbles: false, detail: { open: true } })
       );
     });
     document.querySelector("[data-menu-api-close]")?.addEventListener("click", () => {
       root?.dispatchEvent(
-        new CustomEvent("corex:menu:set-open", { bubbles: false, detail: { open: false } })
+        new CustomEvent<{ open: boolean }>("corex:menu:set-open", { bubbles: false, detail: { open: false } })
       );
     });
     """
@@ -390,7 +386,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def events_binding_code do
     ~S"""
     <.menu
-      id="menu-events-bind"
       class="menu"
       on_select="menu_bind_selected"
       on_open_change="menu_bind_open"
@@ -422,23 +417,15 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def events_binding_elixir do
-    ~S"""
-    def handle_event("menu_bind_open", %{"open" => open, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "binding", value: inspect(%{open: open, id: id})}
-      {:noreply, stream_insert(socket, :bind_logs, log, at: 0)}
-    end
-
-    def handle_event("menu_bind_selected", %{"value" => value, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "binding", value: inspect(%{value: value, id: id})}
-      {:noreply, stream_insert(socket, :bind_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"menu_bind_open", ~S|%{"open" => open, "id" => id} = params|},
+      {"menu_bind_selected", ~S|%{"value" => value, "id" => id} = params|}
+    ])
   end
 
   def events_server_heex do
     ~S"""
     <.menu
-      id="menu-events-server"
       class="menu"
       on_select="menu_selected"
       on_open_change="menu_open_changed"
@@ -455,17 +442,10 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("menu_open_changed", %{"open" => open, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{open: open, id: id})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("menu_selected", %{"value" => value, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{value: value, id: id})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"menu_open_changed", ~S|%{"open" => open, "id" => id} = params|},
+      {"menu_selected", ~S|%{"value" => value, "id" => id} = params|}
+    ])
   end
 
   def events_client_heex do
@@ -509,9 +489,9 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_code do
     """
-    <.menu id="menu-pattern-redirect" class="menu" redirect items={[
-      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
+    <.menu class="menu" redirect items={[
+      %Corex.Tree.Item{value: "/menu/anatomy", label: "Anatomy"},
+      %Corex.Tree.Item{value: "/menu/api", label: "API"}
     ]}>
       <:trigger>Navigate</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -521,8 +501,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_items do
     [
-      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
+      %Corex.Tree.Item{value: "/menu/anatomy", label: "Anatomy"},
+      %Corex.Tree.Item{value: "/menu/api", label: "API"}
     ]
   end
 
@@ -538,7 +518,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def patterns_redirect_external_code do
     ~S"""
     <.menu
-      id="menu-pattern-external"
       class="menu"
       redirect
       items={[
@@ -580,12 +559,11 @@ defmodule E2eWeb.Demos.MenuDemo do
   def patterns_redirect_types_code do
     """
     <.menu
-      id="menu-pattern-types"
       class="menu"
       redirect
       items={[
-        %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
-        %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
+        %Corex.Tree.Item{value: "/menu/playground", label: "href (default)", redirect: :href},
+        %Corex.Tree.Item{value: "/menu/events", label: "LiveView navigate", redirect: :navigate}
       ]}
     >
       <:trigger>Redirect kinds</:trigger>
@@ -596,8 +574,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_types_items do
     [
-      %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
-      %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
+      %Corex.Tree.Item{value: "/menu/playground", label: "href (default)", redirect: :href},
+      %Corex.Tree.Item{value: "/menu/events", label: "LiveView navigate", redirect: :navigate}
     ]
   end
 

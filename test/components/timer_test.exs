@@ -4,6 +4,7 @@ defmodule Corex.TimerTest do
   import Phoenix.Component
   import Corex.Timer, only: [timer: 1]
 
+  alias Corex.Timer
   alias Corex.Timer.Connect
 
   describe "timer/1" do
@@ -155,6 +156,91 @@ defmodule Corex.TimerTest do
         )
 
       assert html =~ ~S(data-scope="timer")
+    end
+  end
+
+  describe "start/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.start("t1")
+    end
+  end
+
+  describe "start/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.start(socket, "t1")
+    end
+  end
+
+  describe "pause/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.pause("t1")
+    end
+  end
+
+  describe "pause/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.pause(socket, "t1")
+    end
+  end
+
+  describe "resume/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.resume("t1")
+    end
+  end
+
+  describe "resume/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.resume(socket, "t1")
+    end
+  end
+
+  describe "reset/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.reset("t1")
+    end
+  end
+
+  describe "reset/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.reset(socket, "t1")
+    end
+  end
+
+  describe "restart/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.restart("t1")
+    end
+  end
+
+  describe "restart/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.restart(socket, "t1")
+    end
+  end
+
+  describe "state/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.state("t1")
+    end
+  end
+
+  describe "state/2" do
+    test "returns JS with opts" do
+      assert %Phoenix.LiveView.JS{} = Timer.state("t1", respond_to: :client)
+    end
+  end
+
+  describe "state/3" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.state(socket, "t1")
+      assert %Phoenix.LiveView.Socket{} = Timer.state(socket, "t1", respond_to: :both)
     end
   end
 end

@@ -42,7 +42,7 @@ defmodule E2eWeb.CollapsibleTest do
         |> Collapsible.wait_host_collapsible_ready(host)
 
       session
-      |> Collapsible.click_in_section("collapsible-api-client", "Open")
+      |> Collapsible.click_in_section("collapsible-api-client-binding", "Open")
       |> Collapsible.wait_trigger_state_in_host(host, "open", timeout: 8_000)
     end
   end

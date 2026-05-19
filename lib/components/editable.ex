@@ -7,7 +7,7 @@ defmodule Corex.Editable do
   ### Basic
 
   ```heex
-  <.editable id="edit" value="Click to edit" class="editable">
+  <.editable value="Click to edit" class="editable">
     <:label>Name</:label>
     <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
     <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -42,7 +42,6 @@ defmodule Corex.Editable do
 
   ```heex
   <.editable
-    id="editable-events"
     value="Click to edit"
     class="editable"
     on_value_change="editable_changed"
@@ -370,6 +369,28 @@ defmodule Corex.Editable do
   defp value_to_string(v), do: to_string(v)
 
   @doc type: :api
+  @doc ~S"""
+  Set the visible text value from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>Reset</.action>
+  <.editable id="my-editable" class="editable" name="title" value="Hi">
+    <:label>Title</:label>
+    <:edit_trigger>Edit</:edit_trigger>
+    <:submit_trigger>Save</:submit_trigger>
+    <:cancel_trigger>Cancel</:cancel_trigger>
+  </.editable>
+  ```
+
+  ```javascript
+  document.getElementById("my-editable")?.dispatchEvent(
+    new CustomEvent("corex:editable:set-value", {
+      bubbles: false,
+      detail: { value: "Hello" },
+    })
+  );
+  ```
+  """
   def set_value(editable_id, value)
       when is_binary(editable_id) and is_binary(value) do
     JS.dispatch("corex:editable:set-value",
@@ -380,6 +401,25 @@ defmodule Corex.Editable do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the value from `handle_event`.
+
+  ```heex
+  <.action phx-click="reset_title" phx-value-value="Hello">Reset</.action>
+  <.editable id="my-editable" class="editable" name="title" value="Hi">
+    <:label>Title</:label>
+    <:edit_trigger>Edit</:edit_trigger>
+    <:submit_trigger>Save</:submit_trigger>
+    <:cancel_trigger>Cancel</:cancel_trigger>
+  </.editable>
+  ```
+
+  ```elixir
+  def handle_event("reset_title", %{"value" => v}, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "my-editable", v)}
+  end
+  ```
+  """
   def set_value(socket, editable_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(editable_id) and
              is_binary(value) do

@@ -2,8 +2,6 @@ defmodule E2eWeb.TimerTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
-  import Wallaby.Query
-
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.TimerModel, as: Timer
 
@@ -40,17 +38,32 @@ defmodule E2eWeb.TimerTest do
   end
 
   describe "api" do
-    feature "remount  -  countdown timer mounts", %{session: session} do
+    feature "controls binding starts timer", %{session: session} do
+      section = "timer-api-controls-binding"
+      host = "timer-api-controls-client"
+
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
-        |> Timer.click_by_id("timer-api-remount-btn")
-        |> Timer.wait_remounted_api_timer_ready(timeout: 12_000)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready(host)
+        |> Timer.click_button_in_section(section, "Start")
 
-      assert_has(
-        session,
-        css("[id^='timer-api-remount-'] [data-scope='timer'][data-part='area']", visible: :any)
-      )
+      assert Timer.timer_area_visible_in_host?(session, host)
+      assert has?(session, Timer.action_trigger_query(host, "pause"))
+    end
+
+    feature "state server shows toast", %{session: session} do
+      section = "timer-api-state-server-section"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Timer, :timer, :api)
+        |> Timer.prepare_live_form()
+        |> Timer.wait_host_timer_ready("timer-api-state-server")
+        |> Timer.click_button_in_section(section, "Read state")
+
+      Timer.assert_toast(session, "timer-api-state-server")
     end
   end
 

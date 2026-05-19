@@ -8,7 +8,7 @@ defmodule E2eWeb.FloatingPanelEventsLiveTest do
 
     html =
       render_click(view, "floating_panel_open_changed", %{
-        "id" => "fp-events-live",
+        "id" => "fp-events-server",
         "open" => true
       })
 

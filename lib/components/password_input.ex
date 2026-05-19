@@ -153,7 +153,6 @@ defmodule Corex.PasswordInput do
 
   ```heex
   <.password_input
-    id="password-events"
     class="password-input"
     on_visibility_change="password_visibility_changed"
   >
@@ -421,6 +420,27 @@ defmodule Corex.PasswordInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set whether the password is visible from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.PasswordInput.set_visible("my-password-input", true)}>Reveal</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:set-visible", {
+      bubbles: false,
+      detail: { visible: true },
+    })
+  );
+  ```
+  """
   def set_visible(password_input_id, visible)
       when is_binary(password_input_id) and is_boolean(visible) do
     JS.dispatch("corex:password-input:set-visible",
@@ -431,6 +451,24 @@ defmodule Corex.PasswordInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set visibility from `handle_event`.
+
+  ```heex
+  <.action phx-click="reveal_pw">Reveal</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("reveal_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.set_visible(socket, "my-password-input", true)}
+  end
+  ```
+  """
   def set_visible(socket, password_input_id, visible)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) and
              is_boolean(visible) do
@@ -441,6 +479,24 @@ defmodule Corex.PasswordInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Toggle visibility from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.PasswordInput.toggle_visible("my-password-input")}>Toggle</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:toggle-visible", { bubbles: false })
+  );
+  ```
+  """
   def toggle_visible(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:toggle-visible",
       to: "##{password_input_id}",
@@ -449,17 +505,71 @@ defmodule Corex.PasswordInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Toggle visibility from `handle_event`.
+
+  ```heex
+  <.action phx-click="toggle_pw">Toggle</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("toggle_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.toggle_visible(socket, "my-password-input")}
+  end
+  ```
+  """
   def toggle_visible(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_toggle_visible", %{"id" => password_input_id})
   end
 
   @doc type: :api
+  @doc ~S"""
+  Focus the input from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.PasswordInput.focus("my-password-input")}>Focus</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:focus", { bubbles: false })
+  );
+  ```
+  """
   def focus(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:focus", to: "##{password_input_id}", bubbles: false)
   end
 
   @doc type: :api
+  @doc ~S"""
+  Focus the input from `handle_event`.
+
+  ```heex
+  <.action phx-click="focus_pw">Focus</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("focus_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.focus(socket, "my-password-input")}
+  end
+  ```
+  """
   def focus(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_focus", %{"id" => password_input_id})

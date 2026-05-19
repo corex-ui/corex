@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+    <.file_upload name="document" class="file-upload">
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -27,7 +27,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def anatomy_with_label_code do
     ~S"""
-    <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+    <.file_upload name="document" class="file-upload">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -52,7 +52,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_minimal_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal} id="file-upload-live-anatomy-minimal">
+      <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal}>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
@@ -64,7 +64,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_with_label_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label} id="file-upload-live-anatomy-label">
+      <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label}>
         <:label>Files</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -76,7 +76,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def anatomy_custom_slots_code do
     ~S"""
-    <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+    <.file_upload name="document" class="file-upload">
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -111,7 +111,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_custom_slots_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom} id="file-upload-live-anatomy-custom">
+      <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom}>
         <:dropzone>
           <span>Custom dropzone</span>
         </:dropzone>
@@ -176,7 +176,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -202,7 +202,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -216,15 +216,15 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/file-upload/form"} method="post" id="file-upload-plain-form" multipart class="w-full max-w-2xs flex flex-col gap-space">
+    <form action={~p"/file-upload/form"} method="post" multipart class="w-full max-w-2xs flex flex-col gap-space">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
+      <.file_upload name="user[avatar]" class="file-upload">
         <:label>Avatar</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-native-submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -239,7 +239,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       method="post"
       id={@form.id}
       multipart
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
       <.file_upload id="file-upload-cs-field" field={@form[:attachment]} class="file-upload">
@@ -252,7 +251,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-cs-submit" class="button button--accent w-full">
+      <.action type="submit" id="file-upload-cs-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -269,7 +268,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       method="post"
       id={@form.id}
       multipart
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="file_upload_validate[_sent]" value="1" />
       <.file_upload id="file-upload-val-field" field={@form[:attachment]} class="file-upload">
@@ -282,7 +280,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           {msg}
         </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-val-submit" class="button button--accent w-full">
+      <.action type="submit" id="file-upload-val-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -298,7 +296,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       method="post"
       id="file-upload-plain-form"
       multipart
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
@@ -307,7 +304,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload>
-      <.action type="submit" id="file-upload-native-submit" class="button button--accent w-full">
+      <.action type="submit" id="file-upload-native-submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -429,7 +426,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def events_server_heex do
     ~S"""
     <.file_upload
-      id="file-upload-events-server"
       class="file-upload"
       name="ev-server[]"
       on_file_change="fu_ev_server"
@@ -443,14 +439,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("fu_ev_server", %{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = payload, socket) do
-      name = Map.get(payload, "firstAcceptedName")
-      suffix = if is_binary(name) and name != "", do: " (#{name})", else: ""
-      log = %{time: "12:00:00", dom_id: id, value: "#{c} accepted, #{r} rejected#{suffix}"}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "fu_ev_server",
+      ~S|%{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = params|
+    )
   end
 
   def events_client_heex do
@@ -477,27 +469,33 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   end
 
   def events_client_elixir do
-    ~S"""
-    def handle_event("fu_ev_client", %{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = payload, socket) do
-      name = Map.get(payload, "firstAcceptedName")
-      suffix = if is_binary(name) and name != "", do: " (#{name})", else: ""
-      log = %{time: "12:00:00", dom_id: id, value: "#{c} accepted, #{r} rejected#{suffix}"}
-      {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "fu_ev_client",
+      ~S|%{"id" => id, "acceptedCount" => c, "rejectedCount" => r} = params|
+    )
   end
 
   def form_live_upload_heex do
     ~S"""
-    <form phx-change="validate" phx-submit="save" id="file-upload-live-form">
-      <.file_upload_live upload={@uploads.attachment} field={:attachment} id="file-upload-live-field">
+    <form phx-change="validate" phx-submit="save">
+      <.file_upload_live upload={@uploads.attachment} field={:attachment}>
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
       </.file_upload_live>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
+    """
+  end
+
+  def form_live_upload_file do
+    ~S"""
+    allow_upload(socket, :attachment,
+      accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
+      max_entries: 3,
+      max_file_size: 8_000_000
+    )
     """
   end
 
@@ -505,8 +503,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~S"""
     def mount(_params, _session, socket) do
       {:ok,
-       allow_upload(socket, :attachment,
-         accept: ~W(.jpg .jpeg .png .pdf .txt),
+       socket
+       |> allow_upload(:attachment,
+         accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
          max_entries: 3,
          max_file_size: 8_000_000
        )}
@@ -529,5 +528,36 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
     end
     """
+  end
+
+  def form_live_upload_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: form_live_upload_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: form_live_upload_elixir()},
+      %{value: "file", label: "File", language: :elixir, code: form_live_upload_file()}
+    ]
+  end
+
+  def form_changeset_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: form_changeset_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: form_changeset_elixir()},
+      %{value: "ecto", label: "Ecto", language: :elixir, code: form_ecto()}
+    ]
+  end
+
+  def form_validate_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: form_validate_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: form_validate_elixir()},
+      %{value: "ecto", label: "Ecto", language: :elixir, code: form_ecto()}
+    ]
+  end
+
+  def form_native_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: form_native_heex()},
+      %{value: "ecto", label: "Ecto", language: :elixir, code: form_ecto()}
+    ]
   end
 end

@@ -14,7 +14,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_minimal_code do
     ~S"""
     <.marquee
-      id="marquee-anatomy-minimal"
       class="marquee"
       items={[
         %{name: "Apple", logo: "🍎"},
@@ -58,7 +57,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_custom_slots_code do
     ~S"""
     <.marquee
-      id="marquee-anatomy-custom-slots"
       class="marquee"
       items={[
         %{name: "Home", icon: "hero-home"},
@@ -106,7 +104,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def anatomy_with_images_code do
     ~S"""
     <.marquee
-      id="marquee-anatomy-with-images"
       class="marquee"
       items={[
         %{name: "Elixir", img: "/images/tech/elixir.svg"},
@@ -199,7 +196,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_pause_client_js_ts do
     """
-    const el = document.getElementById("api-pause-js");
+    const el: HTMLElement | null = document.getElementById("api-pause-js");
     el?.dispatchEvent(new CustomEvent("corex:marquee:pause", { bubbles: false }));
     """
   end
@@ -307,7 +304,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_resume_client_js_ts do
     """
-    const el = document.getElementById("api-resume-js");
+    const el: HTMLElement | null = document.getElementById("api-resume-js");
     el?.dispatchEvent(new CustomEvent("corex:marquee:resume", { bubbles: false }));
     """
   end
@@ -415,7 +412,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
 
   def api_toggle_client_js_ts do
     """
-    const el = document.getElementById("api-toggle-js");
+    const el: HTMLElement | null = document.getElementById("api-toggle-js");
     el?.dispatchEvent(new CustomEvent("corex:marquee:toggle-pause", { bubbles: false }));
     """
   end
@@ -476,7 +473,6 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   def events_server_heex do
     ~S"""
     <.marquee
-      id="marquee-events-server"
       class="marquee"
       on_pause_change="pause_changed"
       on_loop_complete="loop_complete"
@@ -502,22 +498,11 @@ defmodule E2eWeb.Demos.MarqueeDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("pause_changed", %{"paused" => paused, "id" => id}, socket) do
-      log = new_log("server", id, inspect(%{kind: "pause_changed", paused: paused}))
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("loop_complete", %{"id" => id}, socket) do
-      log = new_log("server", id, inspect(%{kind: "loop_complete"}))
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("complete", %{"id" => id}, socket) do
-      log = new_log("server", id, inspect(%{kind: "complete"}))
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"pause_changed", ~S|%{"paused" => paused, "id" => id} = params|},
+      {"loop_complete", ~S|%{"id" => id} = params|},
+      {"complete", ~S|%{"id" => id} = params|}
+    ])
   end
 
   def events_client_heex do

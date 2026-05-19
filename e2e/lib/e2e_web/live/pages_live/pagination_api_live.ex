@@ -7,12 +7,15 @@ defmodule E2eWeb.PaginationApiLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:page, 1)
-     |> assign(:client_binding_heex, Demo.api_set_page_client_binding_heex())
-     |> assign(:server_heex, Demo.api_set_page_server_heex())
-     |> assign(:server_elixir, Demo.api_set_page_server_elixir())}
+    {:ok, socket |> assign(:page, 1) |> assign(:codes, demo_codes())}
+  end
+
+  defp demo_codes do
+    %{
+      binding: Demo.api_set_page_client_binding_heex(),
+      server_heex: Demo.api_set_page_server_heex(),
+      server_elixir: Demo.api_set_page_server_elixir()
+    }
   end
 
   @impl true
@@ -37,7 +40,7 @@ defmodule E2eWeb.PaginationApiLive do
         <.demo_section
           id="pagination-api-client-binding"
           title="LiveView binding"
-          code={@client_binding_heex}
+          code={@codes.binding}
         >
           <:preview><Demo.api_set_page_client_binding_example /></:preview>
         </.demo_section>
@@ -46,8 +49,8 @@ defmodule E2eWeb.PaginationApiLive do
           id="pagination-api-server"
           title="Server push"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview><Demo.api_set_page_server_example page={@page} /></:preview>

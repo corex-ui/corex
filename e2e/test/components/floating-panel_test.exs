@@ -82,14 +82,14 @@ defmodule E2eWeb.FloatingPanelTest do
         session
         |> ComponentBehaviorSpec.visit_ready(FloatingPanel, :floating_panel, :events)
         |> FloatingPanel.prepare_live_form()
-        |> FloatingPanel.wait_host_floating_panel_ready("fp-events-live")
+        |> FloatingPanel.wait_host_floating_panel_ready("fp-events-server")
 
       refute FloatingPanel.floating_panel_events_log_has_row?(session)
 
       session
-      |> FloatingPanel.click_trigger_in_host("fp-events-live")
+      |> FloatingPanel.click_trigger_in_host("fp-events-server")
       |> FloatingPanel.wait_for_has(
-        css("#floating-panel-events-log tr[data-part='row']"),
+        css("#floating-panel-events-log-server tr[data-part='row']"),
         timeout: 10_000
       )
 

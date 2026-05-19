@@ -9,7 +9,7 @@ defmodule Corex.TagsInput do
   ### Minimal
 
   ```heex
-  <.tags_input id="tags-anatomy-minimal" class="tags-input" value={["alpha", "beta"]}>
+  <.tags_input class="tags-input" value={["alpha", "beta"]}>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
@@ -17,7 +17,7 @@ defmodule Corex.TagsInput do
   ### With label
 
   ```heex
-  <.tags_input id="tags-anatomy-with-label" class="tags-input" value={["alpha", "beta"]}>
+  <.tags_input class="tags-input" value={["alpha", "beta"]}>
     <:label>Tags</:label>
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
@@ -27,7 +27,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    id="tags-anatomy-translation"
     class="tags-input"
     value={["lorem", "duis"]}
     translation={%Corex.TagsInput.Translation{
@@ -75,7 +74,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    id="tags-input-on-value-change-server"
     class="tags-input"
     value={["lorem", "duis", "donec"]}
     on_value_change="tags_value_changed"
@@ -108,7 +106,6 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.tags_input
-    id="tags-patterns-controlled"
     class="tags-input"
     controlled
     value={@tags}
@@ -516,6 +513,26 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Replace all tags from `phx-click`. Dispatches `corex:tags-input:set-value` with `detail.value` as a string list.
+
+  ```heex
+  <.action phx-click={Corex.TagsInput.set_value("my-tags", ["a", "b"])}>Reset tags</.action>
+  <.tags_input id="my-tags" value={[]} class="tags-input">
+    <:control><span /></:control>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-tags")?.dispatchEvent(
+    new CustomEvent("corex:tags-input:set-value", {
+      bubbles: false,
+      detail: { value: ["a", "b"] },
+    })
+  );
+  ```
+  """
   def set_value(tags_input_id, value) when is_binary(tags_input_id) and is_list(value) do
     v = Corex.Helpers.validate_value!(value)
 
@@ -527,6 +544,15 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Replace all tags from `handle_event` (`tags_input_set_value`).
+
+  ```elixir
+  def handle_event("set_tags", _, socket) do
+    {:noreply, Corex.TagsInput.set_value(socket, "my-tags", ["x"])}
+  end
+  ```
+  """
   def set_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_list(value) do
     v = Corex.Helpers.validate_value!(value)
@@ -538,6 +564,17 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear tags from `phx-click`. Dispatches `corex:tags-input:clear-value`.
+
+  ```heex
+  <.action phx-click={Corex.TagsInput.clear_value("my-tags")}>Clear</.action>
+  <.tags_input id="my-tags" class="tags-input">
+    <:control><span /></:control>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+  """
   def clear_value(tags_input_id) when is_binary(tags_input_id) do
     JS.dispatch("corex:tags-input:clear-value",
       to: "##{tags_input_id}",
@@ -546,12 +583,32 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear tags from `handle_event` (`tags_input_clear_value`).
+
+  ```elixir
+  def handle_event("clear_tags", _, socket) do
+    {:noreply, Corex.TagsInput.clear_value(socket, "my-tags")}
+  end
+  ```
+  """
   def clear_value(socket, tags_input_id)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) do
     LiveView.push_event(socket, "tags_input_clear_value", %{id: tags_input_id})
   end
 
   @doc type: :api
+  @doc ~S"""
+  Append one tag from `phx-click`. Dispatches `corex:tags-input:add-value` with `detail.value`.
+
+  ```heex
+  <.action phx-click={Corex.TagsInput.add_value("my-tags", "new")}>Add tag</.action>
+  <.tags_input id="my-tags" class="tags-input">
+    <:control><span /></:control>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+  """
   def add_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:add-value",
@@ -562,6 +619,15 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Append one tag from `handle_event` (`tags_input_add_value`).
+
+  ```elixir
+  def handle_event("add_tag", %{"tag" => t}, socket) do
+    {:noreply, Corex.TagsInput.add_value(socket, "my-tags", t)}
+  end
+  ```
+  """
   def add_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do
@@ -569,6 +635,17 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Remove one tag from `phx-click`. Dispatches `corex:tags-input:remove-value` with `detail.value`.
+
+  ```heex
+  <.action phx-click={Corex.TagsInput.remove_value("my-tags", "a")}>Remove a</.action>
+  <.tags_input id="my-tags" class="tags-input">
+    <:control><span /></:control>
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.tags_input>
+  ```
+  """
   def remove_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:remove-value",
@@ -579,6 +656,15 @@ defmodule Corex.TagsInput do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Remove one tag from `handle_event` (`tags_input_remove_value`).
+
+  ```elixir
+  def handle_event("remove_tag", %{"tag" => t}, socket) do
+    {:noreply, Corex.TagsInput.remove_value(socket, "my-tags", t)}
+  end
+  ```
+  """
   def remove_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do

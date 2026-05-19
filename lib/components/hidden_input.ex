@@ -7,7 +7,7 @@ defmodule Corex.HiddenInput do
   ### Basic
 
   ```heex
-  <.hidden_input id="id" name="user[id]" value={@user.id} />
+  <.hidden_input name="user[id]" value={@user.id} />
   ```
 
   ### With form field

@@ -9,7 +9,7 @@ defmodule Corex.Avatar do
   ### Fallback
 
   ```heex
-  <.avatar id="avatar-anatomy-fallback" src="" class="avatar">
+  <.avatar src="" class="avatar">
     <:fallback>
       <span class="font-semibold">AB</span>
     </:fallback>
@@ -21,7 +21,7 @@ defmodule Corex.Avatar do
   Override fallback body and receive the current `src` as `value`. When `:value` is omitted, `<:fallback>` is used.
 
   ```heex
-  <.avatar id="avatar-anatomy-value-img" src="https://corex-ui.com/images/avatar.png" alt="" class="avatar">
+  <.avatar src="https://corex-ui.com/images/avatar.png" alt="" class="avatar">
     <:value :let={src}>
       {if src, do: "IMG", else: " - "}
     </:value>
@@ -33,7 +33,7 @@ defmodule Corex.Avatar do
   With `pending={true}`, the hook and `<img>` are not mounted until `pending={false}`. Use `:loading` or `avatar_skeleton/1`.
 
   ```heex
-  <.avatar id="avatar-anatomy-pending" pending class="avatar">
+  <.avatar pending class="avatar">
     <:loading><span class="text-sm">Loading…</span></:loading>
   </.avatar>
   ```
@@ -70,7 +70,6 @@ defmodule Corex.Avatar do
 
   ```heex
   <.avatar
-    id="avatar-events"
     class="avatar"
     src="https://corex-ui.com/images/avatar.png"
     alt="Avatar"
@@ -288,6 +287,23 @@ defmodule Corex.Avatar do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the image `src` from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Avatar.set_src("my-avatar", "https://example.com/a.png")}>A</.action>
+  <.avatar id="my-avatar" class="avatar" src={nil} />
+  ```
+
+  ```javascript
+  document.getElementById("my-avatar")?.dispatchEvent(
+    new CustomEvent("corex:avatar:set-src", {
+      bubbles: false,
+      detail: { src: "https://example.com/a.png" },
+    })
+  );
+  ```
+  """
   def set_src(avatar_id, src) when is_binary(avatar_id) and is_binary(src) do
     JS.dispatch("corex:avatar:set-src",
       to: "##{avatar_id}",
@@ -297,15 +313,46 @@ defmodule Corex.Avatar do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set `src` from `handle_event`.
+
+  ```heex
+  <.action phx-click="avatar_a" phx-value-src="https://example.com/a.png">A</.action>
+  <.avatar id="my-avatar" class="avatar" src={nil} />
+  ```
+
+  ```elixir
+  def handle_event("avatar_a", %{"src" => src}, socket) do
+    {:noreply, Corex.Avatar.set_src(socket, "my-avatar", src)}
+  end
+  ```
+  """
   def set_src(socket, avatar_id, src)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_binary(src) do
     LiveView.push_event(socket, "avatar_set_src", %{id: avatar_id, src: src})
   end
 
-  @doc type: :api
+  @doc false
   def loaded(avatar_id) when is_binary(avatar_id), do: loaded(avatar_id, [])
 
   @doc type: :api
+  @doc ~S"""
+  Read image load status from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
+
+  ```heex
+  <.action phx-click={Corex.Avatar.loaded("my-avatar", respond_to: :both)}>Status</.action>
+  <.avatar id="my-avatar" class="avatar" src="https://example.com/a.png" />
+  ```
+
+  ```javascript
+  document.getElementById("my-avatar")?.dispatchEvent(
+    new CustomEvent("corex:avatar:loaded", {
+      bubbles: false,
+      detail: { respond_to: "both" },
+    })
+  );
+  ```
+  """
   def loaded(avatar_id, opts) when is_binary(avatar_id) and is_list(opts) do
     JS.dispatch("corex:avatar:loaded",
       to: "##{avatar_id}",
@@ -315,6 +362,20 @@ defmodule Corex.Avatar do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Read load status from `handle_event`. Same `respond_to` behavior as [`loaded/2`](#loaded/2).
+
+  ```heex
+  <.action phx-click="avatar_status">Status</.action>
+  <.avatar id="my-avatar" class="avatar" src="https://example.com/a.png" />
+  ```
+
+  ```elixir
+  def handle_event("avatar_status", _, socket) do
+    {:noreply, Corex.Avatar.loaded(socket, "my-avatar", respond_to: :server)}
+  end
+  ```
+  """
   def loaded(socket, avatar_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_list(opts) do
     attrs =

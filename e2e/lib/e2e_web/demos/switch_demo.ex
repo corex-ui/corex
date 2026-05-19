@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def minimal_code do
     ~S"""
-    <.switch id="switch-anatomy-minimal" class="switch" aria_label="Enable notifications" />
+    <.switch class="switch" aria_label="Enable notifications" />
     """
   end
 
@@ -15,7 +15,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def with_label_code do
     ~S"""
-    <.switch id="switch-anatomy-labeled" class="switch">
+    <.switch class="switch">
       <:label>Enable</:label>
     </.switch>
     """
@@ -32,7 +32,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def patterns_controlled_heex do
     ~S"""
     <.switch
-      id="switch-patterns-controlled"
       class="switch"
       controlled
       checked={@checked}
@@ -57,16 +56,16 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def styling_size_code do
     ~S"""
-    <.switch id="switch-style-sm" class="switch switch--sm" checked>
+    <.switch class="switch switch--sm" checked>
       <:label>SM</:label>
     </.switch>
-    <.switch id="switch-style-md" class="switch switch--md" checked>
+    <.switch class="switch switch--md" checked>
       <:label>MD</:label>
     </.switch>
-    <.switch id="switch-style-lg" class="switch switch--lg" checked>
+    <.switch class="switch switch--lg" checked>
       <:label>LG</:label>
     </.switch>
-    <.switch id="switch-style-xl" class="switch switch--xl" checked>
+    <.switch class="switch switch--xl" checked>
       <:label>XL</:label>
     </.switch>
     """
@@ -95,22 +94,22 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def styling_color_code do
     ~S"""
-    <.switch id="switch-style-c-default" class="switch" checked>
+    <.switch class="switch" checked>
       <:label>Default</:label>
     </.switch>
-    <.switch id="switch-style-c-accent" class="switch switch--accent" checked>
+    <.switch class="switch switch--accent" checked>
       <:label>Accent</:label>
     </.switch>
-    <.switch id="switch-style-c-brand" class="switch switch--brand" checked>
+    <.switch class="switch switch--brand" checked>
       <:label>Brand</:label>
     </.switch>
-    <.switch id="switch-style-c-alert" class="switch switch--alert" checked>
+    <.switch class="switch switch--alert" checked>
       <:label>Alert</:label>
     </.switch>
-    <.switch id="switch-style-c-info" class="switch switch--info" checked>
+    <.switch class="switch switch--info" checked>
       <:label>Info</:label>
     </.switch>
-    <.switch id="switch-style-c-success" class="switch switch--success" checked>
+    <.switch class="switch switch--success" checked>
       <:label>Success</:label>
     </.switch>
     """
@@ -358,18 +357,17 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def events_server_heex do
     ~S"""
-    <.switch id="switch-on-checked-change-server" class="switch" on_checked_change="switch_changed">
+    <.switch class="switch" on_checked_change="switch_changed">
       <:label>Subscribe</:label>
     </.switch>
     """
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("switch_changed", %{"id" => id, "checked" => checked}, socket) do
-      {:noreply, stream_insert(socket, :logs, %{id: id, checked: checked}, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "switch_changed",
+      ~S|%{"id" => id, "checked" => checked} = params|
+    )
   end
 
   def events_client_heex do
@@ -398,7 +396,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def patterns_common_code do
     ~S"""
-    <.switch id="switch-pattern" class="switch">
+    <.switch class="switch">
       <:label>Option</:label>
     </.switch>
     """
@@ -453,7 +451,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -489,7 +487,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-validate-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -518,7 +516,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
@@ -528,7 +525,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" id="switch-changeset-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -544,7 +541,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
@@ -554,7 +550,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-validate-submit" class="button button--accent w-full">
+      <.action type="submit" id="switch-validate-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -566,18 +562,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
     <form
       action={~p"/switch/form"}
       method="post"
-      id="switch-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.switch
         name="user[notifications]"
-        id="switch-form-native"
         class="switch"
       >
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" id="switch-controller-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -593,13 +586,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.switch
         field={@form[:notifications]}
         class="switch"
         controlled
-        id="switch-form-live-notifications"
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -607,7 +598,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -672,13 +663,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.switch
         field={@form[:notifications]}
         class="switch"
         controlled
-        id="switch-form-live-strict"
       >
         <:label>Enable notifications (stricter)</:label>
         <:error :let={msg}>
@@ -686,7 +675,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-strict-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -759,7 +748,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.switch
         field={@form[:notifications]}
@@ -773,7 +761,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" id="switch-form-live-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -787,7 +775,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.switch
         field={@form[:notifications]}
@@ -801,7 +788,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-live-strict-submit" class="button button--accent w-full">
+      <.action type="submit" id="switch-form-live-strict-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -816,7 +803,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
       id="switch-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.switch
@@ -826,7 +812,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       >
         <:label>Enable notifications</:label>
       </.switch>
-      <.action type="submit" id="switch-controller-submit" class="button button--accent w-full">
+      <.action type="submit" id="switch-controller-submit" class="button button--accent">
         Submit
       </.action>
     </form>

@@ -13,7 +13,21 @@ defmodule E2eWeb.AngleSliderApiLive do
      socket
      |> assign(:id_sv_client, @id_sv_client)
      |> assign(:id_sv_js, @id_sv_js)
-     |> assign(:id_sv_server, @id_sv_server)}
+     |> assign(:id_sv_server, @id_sv_server)
+     |> assign(:codes, demo_codes())}
+  end
+
+  defp demo_codes do
+    m = E2eWeb.Demos.AngleSliderDemo
+
+    %{
+      binding: m.api_set_value_client_binding_code(),
+      js_heex: m.api_set_value_client_js_heex(),
+      js: m.api_set_value_client_js_js(),
+      js_ts: m.api_set_value_client_js_ts(),
+      server_heex: m.api_set_value_server_heex(),
+      server_elixir: m.api_set_value_server_elixir()
+    }
   end
 
   @impl true
@@ -44,7 +58,7 @@ defmodule E2eWeb.AngleSliderApiLive do
         <.demo_section
           id="angle-slider-api-set-value-binding"
           title="Set Value (Client Binding)"
-          code={E2eWeb.Demos.AngleSliderDemo.api_set_value_client_binding_code()}
+          code={@codes.binding}
         >
           <:preview>
             <E2eWeb.Demos.AngleSliderDemo.api_set_value_client_binding_example id={@id_sv_client} />
@@ -55,24 +69,9 @@ defmodule E2eWeb.AngleSliderApiLive do
           id="angle-slider-api-set-value-js"
           title="Set Value (Client JS)"
           code_tabs={[
-            %{
-              value: "heex",
-              label: "Heex",
-              language: :heex,
-              code: E2eWeb.Demos.AngleSliderDemo.api_set_value_client_js_heex()
-            },
-            %{
-              value: "js",
-              label: "JS",
-              language: :js,
-              code: E2eWeb.Demos.AngleSliderDemo.api_set_value_client_js_js()
-            },
-            %{
-              value: "ts",
-              label: "TS",
-              language: :javascript,
-              code: E2eWeb.Demos.AngleSliderDemo.api_set_value_client_js_ts()
-            }
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.js_heex},
+            %{value: "js", label: "JS", language: :js, code: @codes.js},
+            %{value: "ts", label: "TS", language: :javascript, code: @codes.js_ts}
           ]}
         >
           <:preview>
@@ -84,18 +83,8 @@ defmodule E2eWeb.AngleSliderApiLive do
           id="angle-slider-api-set-value-server"
           title="Set Value (Server)"
           code_tabs={[
-            %{
-              value: "heex",
-              label: "Heex",
-              language: :heex,
-              code: E2eWeb.Demos.AngleSliderDemo.api_set_value_server_heex()
-            },
-            %{
-              value: "elixir",
-              label: "Elixir",
-              language: :elixir,
-              code: E2eWeb.Demos.AngleSliderDemo.api_set_value_server_elixir()
-            }
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>

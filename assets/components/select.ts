@@ -121,6 +121,8 @@ export class Select extends Component<Props, Api> {
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+      hiddenSelect.disabled = true;
+      hiddenSelect.removeAttribute("name");
     }
 
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {

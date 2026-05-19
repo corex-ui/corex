@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def minimal_code do
     ~S"""
-    <.editable id="editable-anatomy-minimal" class="editable" value="My custom value" placeholder="Enter value">
+    <.editable class="editable" value="My custom value" placeholder="Enter value">
       <:label>Name</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -31,7 +31,6 @@ defmodule E2eWeb.Demos.EditableDemo do
   def with_triggers_code do
     ~S"""
     <.editable
-      id="editable-anatomy-triggers"
       class="editable"
       value="Double click to edit"
       activation_mode="dblclick"
@@ -64,19 +63,19 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def styling_color_code do
     ~S"""
-    <.editable id="editable-style-default" class="editable" value="Default">
+    <.editable class="editable" value="Default">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
     </.editable>
-    <.editable id="editable-style-accent" class="editable editable--accent" value="Accent">
+    <.editable class="editable editable--accent" value="Accent">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
     </.editable>
-    <.editable id="editable-style-brand" class="editable editable--brand" value="Brand">
+    <.editable class="editable editable--brand" value="Brand">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
@@ -112,13 +111,13 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def styling_size_code do
     ~S"""
-    <.editable id="editable-style-sm" class="editable editable--sm" value="SM">
+    <.editable class="editable editable--sm" value="SM">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
     </.editable>
-    <.editable id="editable-style-lg" class="editable editable--lg" value="LG">
+    <.editable class="editable editable--lg" value="LG">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
@@ -333,8 +332,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.editable
         field={@form[:text]}
         on_value_change="value_changed"
@@ -352,7 +350,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -445,7 +443,6 @@ defmodule E2eWeb.Demos.EditableDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.editable
         field={@form[:text]}
@@ -464,7 +461,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" id="editable-form-live-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -474,7 +471,6 @@ defmodule E2eWeb.Demos.EditableDemo do
   def events_server_heex do
     ~S"""
     <.editable
-      id="editable-events-server"
       class="editable"
       value="Edit me"
       on_value_change="editable_changed"
@@ -488,12 +484,10 @@ defmodule E2eWeb.Demos.EditableDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("editable_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "editable_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do
@@ -554,7 +548,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>

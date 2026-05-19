@@ -13,7 +13,7 @@ defmodule Corex.FileUpload do
   ### Minimal
 
   ```heex
-  <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:close>
       <.heroicon name="hero-x-mark" />
     </:close>
@@ -23,7 +23,7 @@ defmodule Corex.FileUpload do
   ### With label
 
   ```heex
-  <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:label>Files</:label>
     <:close>
       <.heroicon name="hero-x-mark" />
@@ -34,7 +34,7 @@ defmodule Corex.FileUpload do
   ### Custom slots
 
   ```heex
-  <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:dropzone>
       <span>Custom dropzone</span>
     </:dropzone>
@@ -431,6 +431,20 @@ defmodule Corex.FileUpload do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Drop every accepted file entry from `phx-click`. Dispatches `corex:file-upload:clear-files`.
+
+  ```heex
+  <.action phx-click={Corex.FileUpload.clear_files("my-fu")}>Clear accepted</.action>
+  <.file_upload id="my-fu" class="file-upload" accept="image/*">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+
+  ```javascript
+  document.getElementById("my-fu")?.dispatchEvent(new CustomEvent("corex:file-upload:clear-files", { bubbles: false }));
+  ```
+  """
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
       to: "##{file_upload_id}",
@@ -439,12 +453,31 @@ defmodule Corex.FileUpload do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear accepted files from `handle_event` (`file_upload_clear_files`).
+
+  ```elixir
+  def handle_event("clear_files", _, socket) do
+    {:noreply, Corex.FileUpload.clear_files(socket, "my-fu")}
+  end
+  ```
+  """
   def clear_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_files", %{"id" => file_upload_id})
   end
 
   @doc type: :api
+  @doc ~S"""
+  Remove rejected entries from `phx-click`. Dispatches `corex:file-upload:clear-rejected`.
+
+  ```heex
+  <.action phx-click={Corex.FileUpload.clear_rejected_files("my-fu")}>Clear rejected</.action>
+  <.file_upload id="my-fu" class="file-upload">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+  """
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
       to: "##{file_upload_id}",
@@ -453,17 +486,45 @@ defmodule Corex.FileUpload do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear rejected files from `handle_event` (`file_upload_clear_rejected`).
+
+  ```elixir
+  def handle_event("clear_rejected", _, socket) do
+    {:noreply, Corex.FileUpload.clear_rejected_files(socket, "my-fu")}
+  end
+  ```
+  """
   def clear_rejected_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_rejected", %{"id" => file_upload_id})
   end
 
   @doc type: :api
+  @doc ~S"""
+  Open the OS file picker from `phx-click`. Dispatches `corex:file-upload:open`.
+
+  ```heex
+  <.action phx-click={Corex.FileUpload.open_file_picker("my-fu")}>Browse</.action>
+  <.file_upload id="my-fu" class="file-upload">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+  """
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
   end
 
   @doc type: :api
+  @doc ~S"""
+  Open the OS file picker from `handle_event` (`file_upload_open`).
+
+  ```elixir
+  def handle_event("browse", _, socket) do
+    {:noreply, Corex.FileUpload.open_file_picker(socket, "my-fu")}
+  end
+  ```
+  """
   def open_file_picker(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_open", %{"id" => file_upload_id})

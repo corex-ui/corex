@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def minimal_code do
     ~S"""
-    <.pin_input id="pin-input-anatomy-minimal" count={4} class="pin-input">
+    <.pin_input count={4} class="pin-input">
       <:label>Code</:label>
     </.pin_input>
     """
@@ -20,7 +20,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
   def with_default_code do
     ~S"""
     <.pin_input
-      id="pin-input-anatomy-default"
       count={4}
       class="pin-input"
       value={["1", "2", "3", "4"]}
@@ -46,7 +45,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
   def events_server_heex do
     ~S"""
     <.pin_input
-      id="pin-input-events-server"
       count={4}
       class="pin-input"
       on_value_change="pin_input_changed"
@@ -57,12 +55,10 @@ defmodule E2eWeb.Demos.PinInputDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("pin_input_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "pin_input_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do
@@ -96,17 +92,16 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_code do
     ~S"""
-    <form action={~p"/pin-input/form"} method="post" id="pin-input-plain-form">
+    <form action={~p"/pin-input/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.pin_input
         name="pin_input_form[pin]"
-        id="pin-input-form-pin"
         count={4}
         class="pin-input"
       >
         <:label>Code</:label>
       </.pin_input>
-      <.action type="submit" id="pin-input-form-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -176,9 +171,9 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_set_value_js_ts do
     ~S"""
-    const el = document.getElementById("pin-api-set-js");
+    const el: HTMLElement | null = document.getElementById("pin-api-set-js");
     el?.dispatchEvent(
-      new CustomEvent("corex:pin-input:set-value", {
+      new CustomEvent<{ value: string[] }>("corex:pin-input:set-value", {
         bubbles: false,
         detail: { value: ["1", "2", "3", "4"] },
       })
@@ -274,7 +269,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def api_value_client_js_ts do
     ~S"""
-    const el = document.getElementById("pin-api-val-js");
+    const el: HTMLElement | null = document.getElementById("pin-api-val-js");
     el?.dispatchEvent(new CustomEvent("corex:pin-input:value", { bubbles: false, detail: {} }));
     """
   end

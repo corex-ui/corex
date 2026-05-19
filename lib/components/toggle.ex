@@ -9,7 +9,7 @@ defmodule Corex.Toggle do
   ### Minimal
 
   ```heex
-  <.toggle id="toggle-anatomy-minimal" class="toggle">
+  <.toggle class="toggle">
     lorem
   </.toggle>
   ```
@@ -17,12 +17,12 @@ defmodule Corex.Toggle do
   ### With indicator
 
   ```heex
-  <.toggle id="toggle-anatomy-indicator-label" class="toggle">
+  <.toggle class="toggle">
     <:indicator><.heroicon name="hero-bold" /></:indicator>
     Bold
   </.toggle>
 
-  <.toggle id="toggle-anatomy-indicator-sr" class="toggle">
+  <.toggle class="toggle">
     <:indicator><.heroicon name="hero-bold" /></:indicator>
     <span class="sr-only">Bold</span>
   </.toggle>
@@ -33,7 +33,7 @@ defmodule Corex.Toggle do
   Set `data-toggle-dual-label` on the host to swap visible label text when pressed. Use a second `<span data-pressed>` for the on-state label.
 
   ```heex
-  <.toggle id="toggle-anatomy-switching-label" class="toggle" data-toggle-dual-label>
+  <.toggle class="toggle" data-toggle-dual-label>
     <span>lorem</span>
     <span data-pressed>donec</span>
   </.toggle>
@@ -68,7 +68,6 @@ defmodule Corex.Toggle do
 
   ```heex
   <.toggle
-    id="toggle-on-pressed-change-server"
     class="toggle"
     controlled
     pressed={false}
@@ -124,7 +123,6 @@ defmodule Corex.Toggle do
 
   ```heex
   <.toggle
-    id="toggle-patterns-controlled"
     class="toggle"
     controlled
     pressed={@pressed}
@@ -277,6 +275,23 @@ defmodule Corex.Toggle do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set pressed state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Toggle.set_pressed("my-toggle", true)}>On</.action>
+  <.toggle id="my-toggle" class="toggle">Label</.toggle>
+  ```
+
+  ```javascript
+  document.getElementById("my-toggle")?.dispatchEvent(
+    new CustomEvent("corex:toggle:set-pressed", {
+      bubbles: false,
+      detail: { pressed: true },
+    })
+  );
+  ```
+  """
   def set_pressed(toggle_id, pressed) when is_binary(toggle_id) and is_boolean(pressed) do
     JS.dispatch("corex:toggle:set-pressed",
       to: "##{toggle_id}",
@@ -286,6 +301,20 @@ defmodule Corex.Toggle do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set pressed state from `handle_event`.
+
+  ```heex
+  <.action phx-click="press_toggle">On</.action>
+  <.toggle id="my-toggle" class="toggle">Label</.toggle>
+  ```
+
+  ```elixir
+  def handle_event("press_toggle", _, socket) do
+    {:noreply, Corex.Toggle.set_pressed(socket, "my-toggle", true)}
+  end
+  ```
+  """
   def set_pressed(socket, toggle_id, pressed)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) and
              is_boolean(pressed) do
@@ -296,6 +325,20 @@ defmodule Corex.Toggle do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Flip pressed state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Toggle.toggle_pressed("my-toggle")}>Toggle</.action>
+  <.toggle id="my-toggle" class="toggle">Label</.toggle>
+  ```
+
+  ```javascript
+  document.getElementById("my-toggle")?.dispatchEvent(
+    new CustomEvent("corex:toggle:toggle-pressed", { bubbles: false })
+  );
+  ```
+  """
   def toggle_pressed(toggle_id) when is_binary(toggle_id) do
     JS.dispatch("corex:toggle:toggle-pressed",
       to: "##{toggle_id}",
@@ -304,6 +347,20 @@ defmodule Corex.Toggle do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Flip pressed state from `handle_event`.
+
+  ```heex
+  <.action phx-click="flip_toggle">Toggle</.action>
+  <.toggle id="my-toggle" class="toggle">Label</.toggle>
+  ```
+
+  ```elixir
+  def handle_event("flip_toggle", _, socket) do
+    {:noreply, Corex.Toggle.toggle_pressed(socket, "my-toggle")}
+  end
+  ```
+  """
   def toggle_pressed(socket, toggle_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) do
     LiveView.push_event(socket, "toggle_toggle_pressed", %{id: toggle_id})

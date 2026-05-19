@@ -151,7 +151,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def anatomy_minimal_code do
     """
     <.tree_view
-      id="tree-minimal"
       class="tree-view"
       expanded_value={["lib"]}
       value={["lib-tree-view-ex"]}
@@ -175,7 +174,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def anatomy_with_indicator_code do
     """
     <.tree_view
-      id="tree-with-indicator"
       class="tree-view"
       expanded_value={["lib"]}
       value={["lib-tree-view-ex"]}
@@ -207,7 +205,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def anatomy_custom_slots_code do
     """
     <.tree_view
-      id="tree-custom-slots"
       class="tree-view"
       expanded_value={["lib"]}
       value={["lib-tree-view-ex"]}
@@ -245,7 +242,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view
       :let={ctx}
       compound
-      id="tree-compound"
       class="tree-view"
       expanded_value={["lib"]}
       value={["lib-tree-view-ex"]}
@@ -777,7 +773,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_expanded_js_ts do
     ~S"""
-    const el = document.getElementById("tree-api-set-expanded-js");
+    const el: HTMLElement | null = document.getElementById("tree-api-set-expanded-js");
     const setExpanded = (value: string[]) =>
       el?.dispatchEvent(
         new CustomEvent("corex:tree-view:set-expanded-value", {
@@ -924,7 +920,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_selected_js_ts do
     ~S"""
-    const el = document.getElementById("tree-api-set-selected-js");
+    const el: HTMLElement | null = document.getElementById("tree-api-set-selected-js");
     const setSelected = (value: string[]) =>
       el?.dispatchEvent(
         new CustomEvent("corex:tree-view:set-selected-value", {
@@ -1082,7 +1078,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def events_server_heex do
     """
     <.tree_view
-      id="tree-events-server"
       class="tree-view"
       items={#{code_api_items()}}
       on_expanded_change="tree_server_expanded"
@@ -1095,21 +1090,10 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, socket |> stream(:server_logs, [])}
-    end
-
-    def handle_event("tree_server_expanded", %{"id" => id, "expandedValue" => expanded}, socket) do
-      log = new_log("server", id, "expanded", expanded)
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("tree_server_selection", %{"id" => id} = payload, socket) do
-      log = new_log("server", id, "selection", Map.drop(payload, ["id"]))
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"tree_server_expanded", ~S|%{"id" => id, "expandedValue" => expanded} = params|},
+      {"tree_server_selection", ~S|%{"id" => id} = params|}
+    ])
   end
 
   def events_client_heex do
@@ -1172,7 +1156,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def animation_playground_heex do
     """
     <.tree_view
-      id="tree-animation-playground"
       class="tree-view"
       animation="js"
       animation_options={
@@ -1273,49 +1256,48 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         label: "Accordion",
         value: "nav-branch-accordion",
         children: [
-          %{label: "Structure", value: ~p"/accordion/anatomy"},
-          %{label: "Playground", value: ~p"/accordion/playground"}
+          %{label: "Structure", value: "/accordion/anatomy"},
+          %{label: "Playground", value: "/accordion/playground"}
         ]
       },
       %{
         label: "Tree view",
         value: "nav-branch-tree-view",
         children: [
-          %{label: "Structure", value: ~p"/tree-view/anatomy"},
-          %{label: "Playground", value: ~p"/tree-view/playground"}
+          %{label: "Structure", value: "/tree-view/anatomy"},
+          %{label: "Playground", value: "/tree-view/playground"}
         ]
       }
     ])
   end
 
   def patterns_redirect_expanded, do: ["nav-branch-accordion", "nav-branch-tree-view"]
-  def patterns_redirect_value, do: [~p"/tree-view/anatomy"]
+  def patterns_redirect_value, do: ["/tree-view/anatomy"]
 
   def patterns_redirect_heex do
     ~S"""
     <.tree_view
-      id="patterns-tree-redirect"
       class="tree-view"
       redirect
       on_selection_change="patterns_tree_redirect_nav"
       expanded_value={["nav-branch-accordion", "nav-branch-tree-view"]}
-      value={[~p"/tree-view/anatomy"]}
+      value={["/tree-view/anatomy"]}
       items={
         Corex.Tree.new([
           %{
             label: "Accordion",
             value: "nav-branch-accordion",
             children: [
-              %{label: "Structure", value: ~p"/accordion/anatomy"},
-              %{label: "Playground", value: ~p"/accordion/playground"}
+              %{label: "Structure", value: "/accordion/anatomy"},
+              %{label: "Playground", value: "/accordion/playground"}
             ]
           },
           %{
             label: "Tree view",
             value: "nav-branch-tree-view",
             children: [
-              %{label: "Structure", value: ~p"/tree-view/anatomy"},
-              %{label: "Playground", value: ~p"/tree-view/playground"}
+              %{label: "Structure", value: "/tree-view/anatomy"},
+              %{label: "Playground", value: "/tree-view/playground"}
             ]
           }
         ])

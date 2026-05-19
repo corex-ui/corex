@@ -9,7 +9,7 @@ defmodule Corex.SignaturePad do
   ### Basic Usage
 
   ```heex
-  <.signature_pad id="my-signature-pad" class="signature-pad">
+  <.signature_pad class="signature-pad">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -21,7 +21,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="my-signature-pad"
     on_draw_end="signature_drawn"
     class="signature-pad">
     <:label>Sign here</:label>
@@ -41,7 +40,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="my-signature-pad"
     drawing_fill="blue"
     drawing_size={3}
     drawing_simulate_pressure
@@ -180,7 +178,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="signature-events"
     class="signature-pad"
     on_draw_end="signature_drawn"
   >
@@ -209,7 +206,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="signature-controlled"
     class="signature-pad"
     controlled
     value={@signature_paths}
@@ -495,6 +491,26 @@ defmodule Corex.SignaturePad do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear all strokes from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")}>Clear</.action>
+  <.signature_pad id="my-signature-pad" class="signature-pad">
+    <:label>Sign</:label>
+    <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+  </.signature_pad>
+  ```
+
+  ```javascript
+  document.getElementById("my-signature-pad")?.dispatchEvent(
+    new CustomEvent("corex:signature-pad:clear", {
+      bubbles: false,
+      detail: { id: "my-signature-pad" },
+    })
+  );
+  ```
+  """
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
     JS.dispatch("corex:signature-pad:clear",
       to: "##{signature_pad_id}",
@@ -504,6 +520,23 @@ defmodule Corex.SignaturePad do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Clear strokes from `handle_event`.
+
+  ```heex
+  <.action phx-click="clear_sig">Clear</.action>
+  <.signature_pad id="my-signature-pad" class="signature-pad">
+    <:label>Sign</:label>
+    <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+  </.signature_pad>
+  ```
+
+  ```elixir
+  def handle_event("clear_sig", _, socket) do
+    {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
+  end
+  ```
+  """
   def clear(socket, signature_pad_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(signature_pad_id) do
     LiveView.push_event(socket, "signature_pad_clear", %{

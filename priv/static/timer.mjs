@@ -9,6 +9,16 @@ import {
   clampValue
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-YECC7BC7.mjs";
+import {
   Component,
   VanillaMachine,
   canPushEvent,
@@ -497,6 +507,15 @@ var Timer = class extends Component {
 };
 
 // hooks/timer.ts
+function machineState(api) {
+  return {
+    running: api.running,
+    paused: api.paused,
+    progressPercent: api.progressPercent,
+    time: api.time,
+    formattedTime: api.formattedTime
+  };
+}
 function parseTimerTranslations(el) {
   const raw = el.dataset.translation;
   if (!raw) return void 0;
@@ -511,82 +530,136 @@ function parseTimerTranslations(el) {
   }
   return void 0;
 }
+function buildTimerProps(el, pushEvent, canPush) {
+  return {
+    id: el.id,
+    countdown: getBoolean(el, "countdown"),
+    startMs: getNumber(el, "startMs"),
+    targetMs: getNumber(el, "targetMs"),
+    autoStart: getBoolean(el, "autoStart"),
+    interval: getNumber(el, "interval"),
+    dir: getDir(el),
+    orientation: getString(el, "orientation"),
+    translations: parseTimerTranslations(el),
+    onTick: (details) => {
+      const eventName = getString(el, "onTick");
+      if (eventName && canPush()) {
+        pushEvent(eventName, {
+          value: details.value,
+          time: details.time,
+          formattedTime: details.formattedTime,
+          id: el.id
+        });
+      }
+      const eventNameClient = getString(el, "onTickClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              value: details.value,
+              time: details.time,
+              formattedTime: details.formattedTime
+            }
+          })
+        );
+      }
+    },
+    onComplete: () => {
+      const eventName = getString(el, "onComplete");
+      if (eventName && canPush()) {
+        pushEvent(eventName, { id: el.id });
+      }
+      const eventNameClient = getString(el, "onCompleteClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: { id: el.id }
+          })
+        );
+      }
+    }
+  };
+}
 var TimerHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const zag = new Timer(el, {
-      id: el.id,
-      countdown: getBoolean(el, "countdown"),
-      startMs: getNumber(el, "startMs"),
-      targetMs: getNumber(el, "targetMs"),
-      autoStart: getBoolean(el, "autoStart"),
-      interval: getNumber(el, "interval"),
-      dir: getDir(el),
-      orientation: getString(el, "orientation"),
-      translations: parseTimerTranslations(el),
-      onTick: (details) => {
-        const eventName = getString(el, "onTick");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            value: details.value,
-            time: details.time,
-            formattedTime: details.formattedTime,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onTickClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value,
-                time: details.time,
-                formattedTime: details.formattedTime
-              }
-            })
-          );
-        }
-      },
-      onComplete: () => {
-        const eventName = getString(el, "onComplete");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, { id: el.id });
-        }
-        const eventNameClient = getString(el, "onCompleteClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { id: el.id }
-            })
-          );
-        }
-      }
-    });
+    const canPush = () => canPushEvent(this.liveSocket);
+    const zag = new Timer(el, buildTimerProps(el, pushEvent, canPush));
     zag.init();
     this.timer = zag;
-    this.handlers = [];
-  },
-  updated() {
-    this.timer?.updateProps({
-      id: this.el.id,
-      countdown: getBoolean(this.el, "countdown"),
-      startMs: getNumber(this.el, "startMs"),
-      targetMs: getNumber(this.el, "targetMs"),
-      autoStart: getBoolean(this.el, "autoStart"),
-      interval: getNumber(this.el, "interval"),
-      dir: getDir(this.el),
-      orientation: getString(this.el, "orientation"),
-      translations: parseTimerTranslations(this.el)
+    const emitState = (respondTo) => {
+      const snapshot = machineState(zag.api);
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "timer_state_response",
+        serverPayload: { id: el.id, ...snapshot },
+        el,
+        domEventName: "timer-state",
+        domDetail: { id: el.id, ...snapshot }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:timer:start", () => {
+      zag.api.start();
+    });
+    domRegistry.add("corex:timer:pause", () => {
+      zag.api.pause();
+    });
+    domRegistry.add("corex:timer:resume", () => {
+      zag.api.resume();
+    });
+    domRegistry.add("corex:timer:reset", () => {
+      zag.api.reset();
+    });
+    domRegistry.add("corex:timer:restart", () => {
+      zag.api.restart();
+    });
+    domRegistry.add("corex:timer:state", (event) => {
+      emitState(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("timer_start", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.start();
+    });
+    registry.add("timer_pause", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.pause();
+    });
+    registry.add("timer_resume", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.resume();
+    });
+    registry.add("timer_reset", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.reset();
+    });
+    registry.add("timer_restart", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.restart();
+    });
+    registry.add("timer_state", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitState(parseRespondTo(payload));
     });
   },
+  updated() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    this.timer?.updateProps(buildTimerProps(el, pushEvent, canPush));
+  },
   destroyed() {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.timer?.destroy();
   }
 };

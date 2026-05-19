@@ -7,11 +7,11 @@ defmodule E2eWeb.DialogEventsLiveTest do
 
     html =
       render_click(view, "dialog_open_changed", %{
-        "id" => "dialog-events",
+        "id" => "dialog-events-server",
         "open" => true
       })
 
-    assert html =~ "open_changed"
+    assert html =~ "server"
     assert html =~ ~S(data-part="row")
   end
 
@@ -20,11 +20,11 @@ defmodule E2eWeb.DialogEventsLiveTest do
 
     html =
       render_click(view, "dialog_open_client_changed", %{
-        "id" => "dialog-events",
+        "id" => "dialog-events-client",
         "open" => false
       })
 
-    assert html =~ "open_client_changed"
+    assert html =~ "client"
     assert html =~ ~S(data-part="row")
   end
 end

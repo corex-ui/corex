@@ -9,7 +9,7 @@ defmodule Corex.Dialog do
   ### Minimal
 
   ```heex
-  <.dialog id="dialog-anatomy-minimal" class="dialog">
+  <.dialog class="dialog">
     <:trigger>Open</:trigger>
     <:content>
       <p>Minimal content.</p>
@@ -23,7 +23,7 @@ defmodule Corex.Dialog do
   ### Title and description
 
   ```heex
-  <.dialog id="dialog-anatomy-titled" class="dialog">
+  <.dialog class="dialog">
     <:trigger>Open Dialog</:trigger>
     <:title>Dialog Title</:title>
     <:description>
@@ -118,7 +118,7 @@ defmodule Corex.Dialog do
   ### on_open_change
 
   ```heex
-  <.dialog id="dialog-events" class="dialog" on_open_change="dialog_open_changed">
+  <.dialog class="dialog" on_open_change="dialog_open_changed">
     <:trigger>Open Dialog</:trigger>
     <:title>Dialog Title</:title>
     <:content>
@@ -172,7 +172,6 @@ defmodule Corex.Dialog do
 
   ```heex
   <.dialog
-    id="patterns-controlled-dialog"
     class="dialog"
     controlled
     open={@dialog_open}
@@ -207,7 +206,7 @@ defmodule Corex.Dialog do
   ### Instant
 
   ```heex
-  <.dialog id="dialog-animate-instant" class="dialog" modal animation="instant">
+  <.dialog class="dialog" modal animation="instant">
     <:trigger>Open</:trigger>
     <:title>Instant</:title>
     <:content>
@@ -225,7 +224,6 @@ defmodule Corex.Dialog do
 
   ```heex
   <.dialog
-    id="dialog-animate-js"
     class="dialog"
     modal
     animation="js"
@@ -247,7 +245,6 @@ defmodule Corex.Dialog do
 
   ```heex
   <.dialog
-    id="dialog-custom-animate"
     class="dialog"
     animation="custom"
     on_open_change_client="my-dialog-open-changed"
@@ -292,13 +289,55 @@ defmodule Corex.Dialog do
 
   ## Style
 
-  Stack modifiers on the host (`class` on `<.dialog>`). See the e2e Style page for size (`dialog--sm`, `dialog--lg`) and sidebar (`dialog--sidebar`) examples.
+  Stack modifiers on the host (`class` on `<.dialog>`).
 
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `dialog dialog--sm` |
-  | LG | `dialog dialog--lg` |
-  | Sidebar | `dialog dialog--sidebar` |
+  <!-- tabs-open -->
+
+  ### Default
+
+  ```heex
+  <.dialog class="dialog">
+    <:trigger>Open</:trigger>
+    <:title>Default</:title>
+    <:content><p>Default size.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Small
+
+  ```heex
+  <.dialog class="dialog dialog--sm">
+    <:trigger>Open</:trigger>
+    <:title>Small</:title>
+    <:content><p>Compact dialog.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Large
+
+  ```heex
+  <.dialog class="dialog dialog--lg">
+    <:trigger>Open</:trigger>
+    <:title>Large</:title>
+    <:content><p>Spacious dialog.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Sidebar
+
+  ```heex
+  <.dialog class="dialog dialog--sidebar">
+    <:trigger>Open</:trigger>
+    <:title>Sidebar</:title>
+    <:content><p>Slides in from the side.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  <!-- tabs-close -->
 
   '''
 
@@ -631,6 +670,27 @@ defmodule Corex.Dialog do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Dialog.set_open("my-dialog", true)}>Open</.action>
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open</:trigger>
+    <:content><p>Content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ```javascript
+  document.getElementById("my-dialog")?.dispatchEvent(
+    new CustomEvent("corex:dialog:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
     JS.dispatch("corex:dialog:set-open",
       to: "##{dialog_id}",
@@ -640,6 +700,24 @@ defmodule Corex.Dialog do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from `handle_event`.
+
+  ```heex
+  <.action phx-click="open_dialog">Open</.action>
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open</:trigger>
+    <:content><p>Content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ```elixir
+  def handle_event("open_dialog", _, socket) do
+    {:noreply, Corex.Dialog.set_open(socket, "my-dialog", true)}
+  end
+  ```
+  """
   def set_open(socket, dialog_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(dialog_id) and
              is_boolean(open) do

@@ -13,7 +13,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def playground_code do
     ~S"""
-    <.native_input type="text" id="native-input-play" name="demo[name]" class="native-input" disabled={false}>
+    <.native_input type="text" name="demo[name]" class="native-input" disabled={false}>
       <:label>Text</:label>
     </.native_input>
     """
@@ -38,54 +38,53 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def anatomy_text_code do
     ~S"""
     <div class="layout__row flex flex-col gap-4">
-      <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
+      <.native_input type="text" name="user[name]" class="native-input">
         <:label>Text</:label>
         <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="text" id="text-basic" name="user[name]" class="native-input">
+      <.native_input type="text" name="user[name]" class="native-input">
         <:label>Text</:label>
       </.native_input>
-      <.native_input type="textarea" id="textarea" name="user[bio]" class="native-input">
+      <.native_input type="textarea" name="user[bio]" class="native-input">
         <:label>Bio</:label>
       </.native_input>
-      <.native_input type="email" id="email-with-icon" name="user[email]" class="native-input">
+      <.native_input type="email" name="user[email]" class="native-input">
         <:label>Email</:label>
         <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="email" id="email-basic" name="user[email]" class="native-input">
+      <.native_input type="email" name="user[email]" class="native-input">
         <:label>Email</:label>
       </.native_input>
-      <.native_input type="url" id="url-with-icon" name="user[website]" class="native-input">
+      <.native_input type="url" name="user[website]" class="native-input">
         <:label>Website</:label>
         <:icon><.heroicon name="hero-link" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="url" id="url-basic" name="user[website]" class="native-input">
+      <.native_input type="url" name="user[website]" class="native-input">
         <:label>Website</:label>
       </.native_input>
-      <.native_input type="tel" id="tel-with-icon" name="user[phone]" class="native-input">
+      <.native_input type="tel" name="user[phone]" class="native-input">
         <:label>Phone</:label>
         <:icon><.heroicon name="hero-phone" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="tel" id="tel-basic" name="user[phone]" class="native-input">
+      <.native_input type="tel" name="user[phone]" class="native-input">
         <:label>Phone</:label>
       </.native_input>
-      <.native_input type="search" id="search-with-icon" name="q" class="native-input" placeholder="Search">
+      <.native_input type="search" name="q" class="native-input" placeholder="Search">
         <:label>Search</:label>
         <:icon><.heroicon name="hero-magnifying-glass" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="search" id="search-basic" name="q" class="native-input" placeholder="Search">
+      <.native_input type="search" name="q" class="native-input" placeholder="Search">
         <:label>Search</:label>
       </.native_input>
-      <.native_input type="password" id="password-with-icon" name="user[password]" class="native-input">
+      <.native_input type="password" name="user[password]" class="native-input">
         <:label>Password</:label>
         <:icon><.heroicon name="hero-lock-closed" class="icon" /></:icon>
       </.native_input>
-      <.native_input type="password" id="password-basic" name="user[password]" class="native-input">
+      <.native_input type="password" name="user[password]" class="native-input">
         <:label>Password</:label>
       </.native_input>
       <.native_input
         type="number"
-        id="number"
         name="user[count]"
         value="42"
         min="0"
@@ -185,19 +184,19 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def anatomy_date_time_code do
     ~S"""
     <div class="layout__row flex flex-col gap-4">
-      <.native_input type="date" id="date" name="user[date]" class="native-input">
+      <.native_input type="date" name="user[date]" class="native-input">
         <:label>Date</:label>
       </.native_input>
-      <.native_input type="datetime-local" id="datetime" name="user[datetime]" class="native-input">
+      <.native_input type="datetime-local" name="user[datetime]" class="native-input">
         <:label>Date and time</:label>
       </.native_input>
-      <.native_input type="time" id="time" name="user[time]" class="native-input">
+      <.native_input type="time" name="user[time]" class="native-input">
         <:label>Time</:label>
       </.native_input>
-      <.native_input type="month" id="month" name="user[month]" class="native-input">
+      <.native_input type="month" name="user[month]" class="native-input">
         <:label>Month</:label>
       </.native_input>
-      <.native_input type="week" id="week" name="user[week]" class="native-input">
+      <.native_input type="week" name="user[week]" class="native-input">
         <:label>Week</:label>
       </.native_input>
     </div>
@@ -234,7 +233,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       <.native_input
         type="select"
         multiple
-        id="select-multiple"
         name="user[tags][]"
         options={[
           {"Elixir", "elixir"},
@@ -281,15 +279,14 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def anatomy_other_code do
     ~S"""
     <div class="layout__row flex flex-col gap-4">
-      <.native_input type="checkbox" id="checkbox" name="user[agree]" class="native-input">
+      <.native_input type="checkbox" name="user[agree]" class="native-input">
         <:label>I agree</:label>
       </.native_input>
-      <.native_input type="color" id="color" name="user[color]" value="#3b82f6" class="native-input">
+      <.native_input type="color" name="user[color]" value="#3b82f6" class="native-input">
         <:label>Color</:label>
       </.native_input>
       <.native_input
         type="radio"
-        id="radio"
         name="user[size]"
         options={[{"Small", "s"}, {"Medium", "m"}, {"Large", "l"}]}
         value="m"
@@ -299,7 +296,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       </.native_input>
       <.native_input
         type="select"
-        id="select"
         name="user[role]"
         options={[{"Admin", "admin"}, {"User", "user"}]}
         prompt="Choose a role..."
@@ -428,63 +424,62 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       action={~p"/native-input/form"}
       method="post"
       id={@form.id}
-      class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Text</p>
-        <.native_input field={f[:name]} type="text" id="native-input-changeset-name" placeholder="Your name" class="native-input">
+        <.native_input field={f[:name]} type="text" placeholder="Your name" class="native-input">
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:email]} type="email" id="native-input-changeset-email" placeholder="you@example.com" class="native-input">
+        <.native_input field={f[:email]} type="email" placeholder="you@example.com" class="native-input">
           <:label>Email</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:bio]} type="textarea" id="native-input-changeset-bio" placeholder="Short bio" class="native-input">
+        <.native_input field={f[:bio]} type="textarea" placeholder="Short bio" class="native-input">
           <:label>Bio</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:website]} type="url" id="native-input-changeset-website" placeholder="https://example.com" class="native-input">
+        <.native_input field={f[:website]} type="url" placeholder="https://example.com" class="native-input">
           <:label>Website</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:phone]} type="tel" id="native-input-changeset-phone" placeholder="+1 234 567 8900" class="native-input">
+        <.native_input field={f[:phone]} type="tel" placeholder="+1 234 567 8900" class="native-input">
           <:label>Phone</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:q]} type="search" id="native-input-changeset-q" placeholder="Search" class="native-input">
+        <.native_input field={f[:q]} type="search" placeholder="Search" class="native-input">
           <:label>Search</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:count]} type="number" id="native-input-changeset-count" min={0} max={100} step={1} class="native-input">
+        <.native_input field={f[:count]} type="number" min={0} max={100} step={1} class="native-input">
           <:label>Count</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:password]} type="password" id="native-input-changeset-password" class="native-input">
+        <.native_input field={f[:password]} type="password" class="native-input">
           <:label>Password</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Date & time</p>
-        <.native_input field={f[:birth_date]} type="date" id="native-input-changeset-birth-date" class="native-input">
+        <.native_input field={f[:birth_date]} type="date" class="native-input">
           <:label>Birth date</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:datetime]} type="datetime-local" id="native-input-changeset-datetime" class="native-input">
+        <.native_input field={f[:datetime]} type="datetime-local" class="native-input">
           <:label>Date and time</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:reminder_time]} type="time" id="native-input-changeset-reminder-time" class="native-input">
+        <.native_input field={f[:reminder_time]} type="time" class="native-input">
           <:label>Reminder time</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:month]} type="month" id="native-input-changeset-month" class="native-input">
+        <.native_input field={f[:month]} type="month" class="native-input">
           <:label>Month</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:week]} type="week" id="native-input-changeset-week" class="native-input">
+        <.native_input field={f[:week]} type="week" class="native-input">
           <:label>Week</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
@@ -495,7 +490,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           field={f[:tags]}
           type="select"
           multiple
-          id="native-input-changeset-tags"
           options={[
             "Elixir": "elixir",
             Phoenix: "phoenix",
@@ -512,14 +506,13 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       </div>
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Other</p>
-        <.native_input field={f[:color]} type="color" id="native-input-changeset-color" value="#3b82f6" class="native-input">
+        <.native_input field={f[:color]} type="color" value="#3b82f6" class="native-input">
           <:label>Color</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
         <.native_input
           field={f[:role]}
           type="select"
-          id="native-input-changeset-role"
           options={[Admin: "admin", User: "user"]}
           prompt="Choose role..."
           class="native-input"
@@ -530,7 +523,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         <.native_input
           field={f[:size]}
           type="radio"
-          id="native-input-changeset-size"
           value="m"
           options={[Small: "s", Medium: "m", Large: "l"]}
           class="native-input"
@@ -538,12 +530,12 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           <:label>Size</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={f[:agree]} type="checkbox" id="native-input-changeset-agree" class="native-input">
+        <.native_input field={f[:agree]} type="checkbox" class="native-input">
           <:label>I agree</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
       </div>
-      <.action type="submit" id="native-input-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -579,7 +571,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved profile")
-          |> redirect(to: ~p"/native-input/form#native-input-form-changeset")
+          |> redirect(to: "/native-input/form#native-input-form-changeset")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -608,7 +600,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved profile (strict)")
-          |> redirect(to: ~p"/native-input/form#native-input-form-validate")
+          |> redirect(to: "/native-input/form#native-input-form-validate")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -628,50 +620,50 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def form_doc_native_heex do
     ~S"""
-    <form action={~p"/native-input/form"} method="post" id="native-input-plain-form" class="flex flex-col gap-6 w-full max-w-lg">
+    <form action={~p"/native-input/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Text</p>
-        <.native_input type="text" name="profile[name]" id="native-input-form-name" placeholder="Your name" class="native-input">
+        <.native_input type="text" name="profile[name]" placeholder="Your name" class="native-input">
           <:label>Name</:label>
         </.native_input>
-        <.native_input type="email" name="profile[email]" id="native-input-form-email" placeholder="you@example.com" class="native-input">
+        <.native_input type="email" name="profile[email]" placeholder="you@example.com" class="native-input">
           <:label>Email</:label>
         </.native_input>
-        <.native_input type="textarea" name="profile[bio]" id="native-input-form-bio" placeholder="Short bio" class="native-input">
+        <.native_input type="textarea" name="profile[bio]" placeholder="Short bio" class="native-input">
           <:label>Bio</:label>
         </.native_input>
-        <.native_input type="url" name="profile[website]" id="native-input-form-website" placeholder="https://example.com" class="native-input">
+        <.native_input type="url" name="profile[website]" placeholder="https://example.com" class="native-input">
           <:label>Website</:label>
         </.native_input>
-        <.native_input type="tel" name="profile[phone]" id="native-input-form-phone" placeholder="+1 234 567 8900" class="native-input">
+        <.native_input type="tel" name="profile[phone]" placeholder="+1 234 567 8900" class="native-input">
           <:label>Phone</:label>
         </.native_input>
-        <.native_input type="search" name="profile[q]" id="native-input-form-q" placeholder="Search" class="native-input">
+        <.native_input type="search" name="profile[q]" placeholder="Search" class="native-input">
           <:label>Search</:label>
         </.native_input>
-        <.native_input type="number" name="profile[count]" id="native-input-form-count" min={0} max={100} step={1} class="native-input">
+        <.native_input type="number" name="profile[count]" min={0} max={100} step={1} class="native-input">
           <:label>Count</:label>
         </.native_input>
-        <.native_input type="password" name="profile[password]" id="native-input-form-password" class="native-input">
+        <.native_input type="password" name="profile[password]" class="native-input">
           <:label>Password</:label>
         </.native_input>
       </div>
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Date & time</p>
-        <.native_input type="date" name="profile[birth_date]" id="native-input-form-birth-date" class="native-input">
+        <.native_input type="date" name="profile[birth_date]" class="native-input">
           <:label>Birth date</:label>
         </.native_input>
-        <.native_input type="datetime-local" name="profile[datetime]" id="native-input-form-datetime" class="native-input">
+        <.native_input type="datetime-local" name="profile[datetime]" class="native-input">
           <:label>Date and time</:label>
         </.native_input>
-        <.native_input type="time" name="profile[reminder_time]" id="native-input-form-reminder-time" class="native-input">
+        <.native_input type="time" name="profile[reminder_time]" class="native-input">
           <:label>Reminder time</:label>
         </.native_input>
-        <.native_input type="month" name="profile[month]" id="native-input-form-month" class="native-input">
+        <.native_input type="month" name="profile[month]" class="native-input">
           <:label>Month</:label>
         </.native_input>
-        <.native_input type="week" name="profile[week]" id="native-input-form-week" class="native-input">
+        <.native_input type="week" name="profile[week]" class="native-input">
           <:label>Week</:label>
         </.native_input>
       </div>
@@ -681,7 +673,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
           type="select"
           multiple
           name="profile[tags][]"
-          id="native-input-form-tags"
           options={[
             "Elixir": "elixir",
             Phoenix: "phoenix",
@@ -697,20 +688,20 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       </div>
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Other</p>
-        <.native_input type="color" name="profile[color]" id="native-input-form-color" value="#3b82f6" class="native-input">
+        <.native_input type="color" name="profile[color]" value="#3b82f6" class="native-input">
           <:label>Color</:label>
         </.native_input>
-        <.native_input type="select" name="profile[role]" id="native-input-form-role" options={[Admin: "admin", User: "user"]} prompt="Choose role..." class="native-input">
+        <.native_input type="select" name="profile[role]" options={[Admin: "admin", User: "user"]} prompt="Choose role..." class="native-input">
           <:label>Role</:label>
         </.native_input>
-        <.native_input type="radio" name="profile[size]" id="native-input-form-size" value="m" options={[Small: "s", Medium: "m", Large: "l"]} class="native-input">
+        <.native_input type="radio" name="profile[size]" value="m" options={[Small: "s", Medium: "m", Large: "l"]} class="native-input">
           <:label>Size</:label>
         </.native_input>
-        <.native_input type="checkbox" name="profile[agree]" id="native-input-form-agree" class="native-input">
+        <.native_input type="checkbox" name="profile[agree]" class="native-input">
           <:label>I agree</:label>
         </.native_input>
       </div>
-      <.action type="submit" id="native-input-form-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -1337,11 +1328,10 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="flex flex-col gap-6 w-full max-w-lg"
     >
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Text</p>
-        <.native_input field={@form[:name]} type="text" id="native-input-form-name" placeholder="Your name" class="native-input">
+        <.native_input field={@form[:name]} type="text" placeholder="Your name" class="native-input">
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
@@ -1381,11 +1371,10 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="flex flex-col gap-6 w-full max-w-lg"
     >
       <div class="flex flex-col gap-3">
         <p class="typo typo--sm font-medium">Text</p>
-        <.native_input field={@form[:name]} type="text" id="native-input-strict-name" placeholder="Your name" class="native-input">
+        <.native_input field={@form[:name]} type="text" placeholder="Your name" class="native-input">
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>

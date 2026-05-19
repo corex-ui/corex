@@ -11,7 +11,7 @@ defmodule Corex.Clipboard do
   ### Minimal
 
   ```heex
-  <.clipboard id="clipboard-anatomy-min" class="clipboard" value="hello@example.com">
+  <.clipboard class="clipboard" value="hello@example.com">
     <:label>Email</:label>
     <:copy>
       <.heroicon name="hero-clipboard" />
@@ -26,7 +26,6 @@ defmodule Corex.Clipboard do
 
   ```heex
   <.clipboard
-    id="clipboard-anatomy-trigger-only"
     class="clipboard"
     value="https://example.com/share"
     input={false}
@@ -70,7 +69,6 @@ defmodule Corex.Clipboard do
 
   ```heex
   <.clipboard
-    id="clipboard-events"
     class="clipboard"
     value="info@netoum.com"
     on_copy="clipboard_copied"
@@ -318,6 +316,24 @@ defmodule Corex.Clipboard do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Copy the component's current value from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Clipboard.copy("my-clipboard")}>Copy</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ```javascript
+  document.getElementById("my-clipboard")?.dispatchEvent(
+    new CustomEvent("corex:clipboard:copy", { bubbles: false })
+  );
+  ```
+  """
   def copy(clipboard_id) when is_binary(clipboard_id) do
     JS.dispatch("corex:clipboard:copy",
       to: "##{clipboard_id}",
@@ -326,6 +342,24 @@ defmodule Corex.Clipboard do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Copy the current value from `handle_event`.
+
+  ```heex
+  <.action phx-click="copy_email">Copy</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ```elixir
+  def handle_event("copy_email", _, socket) do
+    {:noreply, Corex.Clipboard.copy(socket, "my-clipboard")}
+  end
+  ```
+  """
   def copy(socket, clipboard_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) do
     LiveView.push_event(socket, "clipboard_copy", %{
@@ -334,6 +368,27 @@ defmodule Corex.Clipboard do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the string to copy from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Clipboard.set_value("my-clipboard", "next@example.com")}>Load</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ```javascript
+  document.getElementById("my-clipboard")?.dispatchEvent(
+    new CustomEvent("corex:clipboard:set-value", {
+      bubbles: false,
+      detail: { value: "next@example.com" },
+    })
+  );
+  ```
+  """
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
     JS.dispatch("corex:clipboard:set-value",
       to: "##{clipboard_id}",
@@ -343,6 +398,24 @@ defmodule Corex.Clipboard do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the value to copy from `handle_event`.
+
+  ```heex
+  <.action phx-click="load_clipboard" phx-value-value="next@example.com">Load</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ```elixir
+  def handle_event("load_clipboard", %{"value" => value}, socket) do
+    {:noreply, Corex.Clipboard.set_value(socket, "my-clipboard", value)}
+  end
+  ```
+  """
   def set_value(socket, clipboard_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) and
              is_binary(value) do

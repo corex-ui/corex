@@ -50,13 +50,13 @@ defmodule E2eWeb.DialogTest do
         session
         |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :events)
         |> Dialog.prepare_live_form()
-        |> Dialog.wait_root_dialog_ready("dialog-events")
+        |> Dialog.wait_root_dialog_ready("dialog-events-server")
 
       refute Dialog.dialog_events_log_has_row?(session)
 
       session
-      |> Dialog.open_dialog_by_host_id("dialog-events")
-      |> Dialog.wait_for_has(css("#dialog-events-log tr[data-part='row']", count: 1),
+      |> Dialog.open_dialog_by_host_id("dialog-events-server")
+      |> Dialog.wait_for_has(css("#dialog-events-log-server tr[data-part='row']", count: 1),
         timeout: 10_000
       )
     end

@@ -99,7 +99,7 @@ defmodule E2eWeb.ListboxTest do
       session
       |> click(
         xpath(
-          "//*[@id='listbox-api-set-value-js']//button[contains(normalize-space(), 'Germany')]"
+          "//*[@id='listbox-api-set-value-js-section']//button[contains(normalize-space(), 'Germany')]"
         )
       )
       |> Listbox.wait_item_aria_selected("listbox-api-sv-js", "deu", timeout: 5_000)

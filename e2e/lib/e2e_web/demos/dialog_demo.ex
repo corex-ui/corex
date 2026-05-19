@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def minimal_code do
     ~S"""
-    <.dialog id="dialog-anatomy-minimal" class="dialog">
+    <.dialog class="dialog">
       <:trigger>Open</:trigger>
       <:content>
         <p>Minimal content.</p>
@@ -31,7 +31,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def with_title_description_code do
     ~S"""
-    <.dialog id="dialog-anatomy-titled" class="dialog">
+    <.dialog class="dialog">
       <:trigger>Open Dialog</:trigger>
       <:title>Dialog Title</:title>
       <:description>
@@ -67,7 +67,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def actions_code do
     ~S"""
-    <.dialog id="dialog-anatomy-actions" class="dialog">
+    <.dialog class="dialog">
       <:trigger>Open Dialog</:trigger>
       <:title>Confirm</:title>
       <:description>Choose an action to continue.</:description>
@@ -169,9 +169,173 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
+  def api_client_js_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
+            to: "#dialog-api-js",
+            detail: %{open: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Open Dialog
+      </.action>
+    </div>
+
+    <.dialog id="dialog-api-js" class="dialog">
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
+      <:description>Dialog description.</:description>
+      <:content>
+        <p>Dialog content</p>
+        <.action
+          phx-click={
+            Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
+              to: "#dialog-api-js",
+              detail: %{open: false},
+              bubbles: false
+            )
+          }
+          class="button button--sm"
+        >
+          Close
+        </.action>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def api_client_js_js do
+    ~S"""
+    const el = document.getElementById("dialog-api-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:dialog:set-open", { bubbles: false, detail: { open: true } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:dialog:set-open", { bubbles: false, detail: { open: false } })
+    );
+    """
+  end
+
+  def api_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("dialog-api-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:dialog:set-open", { bubbles: false, detail: { open: true } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:dialog:set-open", { bubbles: false, detail: { open: false } })
+    );
+    """
+  end
+
+  def api_client_js_example(assigns) do
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
+            to: "#dialog-api-js",
+            detail: %{open: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Open Dialog
+      </.action>
+    </div>
+
+    <.dialog id="dialog-api-js" class="dialog">
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
+      <:description>Dialog description.</:description>
+      <:content>
+        <p>Dialog content</p>
+        <.action
+          phx-click={
+            Phoenix.LiveView.JS.dispatch("corex:dialog:set-open",
+              to: "#dialog-api-js",
+              detail: %{open: false},
+              bubbles: false
+            )
+          }
+          class="button button--sm"
+        >
+          Close
+        </.action>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def api_server_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action phx-click="dialog_api_open" class="button button--sm">Open Dialog</.action>
+    </div>
+
+    <.dialog id="dialog-api-server" class="dialog">
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
+      <:description>Dialog description.</:description>
+      <:content>
+        <p>Dialog content</p>
+        <.action phx-click="dialog_api_close" class="button button--sm">Close</.action>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def api_server_elixir do
+    ~S"""
+    def handle_event("dialog_api_open", _, socket) do
+      {:noreply, Corex.Dialog.set_open(socket, "dialog-api-server", true)}
+    end
+
+    def handle_event("dialog_api_close", _, socket) do
+      {:noreply, Corex.Dialog.set_open(socket, "dialog-api-server", false)}
+    end
+    """
+  end
+
+  def api_server_example(assigns) do
+    ~H"""
+    <div class="layout__row">
+      <.action phx-click="dialog_api_open" class="button button--sm">Open Dialog</.action>
+    </div>
+
+    <.dialog id="dialog-api-server" class="dialog">
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
+      <:description>Dialog description.</:description>
+      <:content>
+        <p>Dialog content</p>
+        <.action phx-click="dialog_api_close" class="button button--sm">Close</.action>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
   def events_server_heex do
     ~S"""
-    <.dialog id="dialog-events" class="dialog" on_open_change="dialog_open_changed" on_open_change_client="dialog-open-changed">
+    <.dialog class="dialog" on_open_change="dialog_open_changed">
       <:trigger>Open Dialog</:trigger>
       <:title>Dialog Title</:title>
       <:content>
@@ -184,10 +348,49 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
+  def events_server_elixir do
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "dialog_open_changed",
+      ~S|%{"open" => open, "id" => id} = params|
+    )
+  end
+
+  def events_client_heex do
+    ~S"""
+    <.dialog id="dialog-events-client" class="dialog" on_open_change_client="dialog-open-changed">
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
+      <:content>
+        <p>Dialog content</p>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def events_client_js do
+    ~S"""
+    const el = document.getElementById("dialog-events-client");
+    el?.addEventListener("dialog-open-changed", (event) => {
+      console.log(event.detail);
+    });
+    """
+  end
+
+  def events_client_ts do
+    ~S"""
+    const el = document.getElementById("dialog-events-client");
+    el?.addEventListener("dialog-open-changed", (event: Event) => {
+      console.log((event as CustomEvent<{ id: string; open: boolean }>).detail);
+    });
+    """
+  end
+
   def patterns_controlled_heex do
     ~S"""
     <.dialog
-      id="patterns-controlled-dialog"
       class="dialog"
       controlled
       open={@dialog_open}
@@ -217,7 +420,6 @@ defmodule E2eWeb.Demos.DialogDemo do
   def animation_instant_heex do
     ~S"""
     <.dialog
-      id="dialog-animate-instant"
       class="dialog"
       modal
       animation="instant"
@@ -237,7 +439,6 @@ defmodule E2eWeb.Demos.DialogDemo do
   def animation_custom_heex do
     ~S"""
     <.dialog
-      id="dialog-custom-animate"
       class="dialog"
       animation="custom"
       on_open_change_client="my-dialog-open-changed"
@@ -256,25 +457,25 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_size_code do
     ~S"""
-    <.dialog id="dialog-style-sm" class="dialog dialog--sm" modal>
+    <.dialog class="dialog dialog--sm" modal>
       <:trigger>Open (sm)</:trigger>
       <:title>Small</:title>
       <:content><p>Content</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog id="dialog-style-md" class="dialog dialog--md" modal>
+    <.dialog class="dialog dialog--md" modal>
       <:trigger>Open (md)</:trigger>
       <:title>Medium</:title>
       <:content><p>Content</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog id="dialog-style-lg" class="dialog dialog--lg" modal>
+    <.dialog class="dialog dialog--lg" modal>
       <:trigger>Open (lg)</:trigger>
       <:title>Large</:title>
       <:content><p>Content</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
-    <.dialog id="dialog-style-xl" class="dialog dialog--xl" modal>
+    <.dialog class="dialog dialog--xl" modal>
       <:trigger>Open (xl)</:trigger>
       <:title>Extra large</:title>
       <:content><p>Content</p></:content>
@@ -324,7 +525,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_sidebar_code do
     ~S"""
-    <.dialog id="dialog-style-sidebar" class="dialog dialog--sidebar" modal>
+    <.dialog class="dialog dialog--sidebar" modal>
       <:trigger>Open sidebar</:trigger>
       <:title>Sidebar</:title>
       <:content><p>Edge-aligned panel.</p></:content>

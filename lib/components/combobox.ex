@@ -194,7 +194,6 @@ defmodule Corex.Combobox do
     def render(assigns) do
       ~H"""
       <.combobox
-        id="country-combobox"
         items={@items}
         filter={false}
         on_input_value_change="search"
@@ -731,8 +730,32 @@ defmodule Corex.Combobox do
   defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
 
   @doc type: :api
-  @doc """
-  Sets combobox selection from the client. Dispatches `corex:combobox:set-value` on the hook root.
+  @doc ~S"""
+  Set selected value(s) from a control (`phx-click`). Pass a list, comma-separated string, or single value (normalized like the component).
+
+  ```heex
+  <.action phx-click={Corex.Combobox.set_value("my-combobox", "bel")}>Belgium</.action>
+  <.combobox
+    id="my-combobox"
+    class="combobox"
+    translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "None"}}
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
+  ```
+
+  ```javascript
+  document.getElementById("my-combobox")?.dispatchEvent(
+    new CustomEvent("corex:combobox:set-value", {
+      bubbles: false,
+      detail: { value: ["bel"] },
+    })
+  );
+  ```
   """
   def set_value(combobox_id, value) when is_binary(combobox_id) do
     JS.dispatch("corex:combobox:set-value",
@@ -743,8 +766,29 @@ defmodule Corex.Combobox do
   end
 
   @doc type: :api
-  @doc """
-  Sets combobox selection from the server via `push_event` (`combobox_set_value`).
+  @doc ~S"""
+  Set selection from `handle_event`. Pushes `combobox_set_value`.
+
+  ```heex
+  <.action phx-click="pick_bel" phx-value-value="bel">Belgium</.action>
+  <.combobox
+    id="my-combobox"
+    class="combobox"
+    translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "None"}}
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
+  ```
+
+  ```elixir
+  def handle_event("pick_bel", %{"value" => v}, socket) do
+    {:noreply, Corex.Combobox.set_value(socket, "my-combobox", v)}
+  end
+  ```
   """
   def set_value(socket, combobox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) do

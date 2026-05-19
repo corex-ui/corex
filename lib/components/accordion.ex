@@ -553,7 +553,6 @@ defmodule Corex.Accordion do
 
   ```heex
   <.accordion
-    id="accordion-custom-animate"
     class="accordion"
     animation="custom"
     on_value_change_client="my-accordion-changed"
@@ -1358,10 +1357,6 @@ defmodule Corex.Accordion do
   });
   ```
   """
-  @doc type: :api
-  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
-
-  @doc type: :api
   def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:value",
       to: "##{accordion_id}",
@@ -1369,6 +1364,10 @@ defmodule Corex.Accordion do
       bubbles: false
     )
   end
+
+  @doc type: :api
+  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
 
   @doc type: :api
   @doc ~S"""
@@ -1428,10 +1427,6 @@ defmodule Corex.Accordion do
   });
   ```
   """
-  @doc type: :api
-  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
-
-  @doc type: :api
   def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:focused",
       to: "##{accordion_id}",
@@ -1439,6 +1434,10 @@ defmodule Corex.Accordion do
       bubbles: false
     )
   end
+
+  @doc type: :api
+  @doc "Same as [`focused/2`](#focused/2) with default `respond_to:`."
+  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
 
   @doc type: :api
   @doc ~S"""
@@ -1498,12 +1497,6 @@ defmodule Corex.Accordion do
   });
   ```
   """
-  def item_state(accordion_id, item_value)
-      when is_binary(accordion_id) and is_binary(item_value) do
-    item_state(accordion_id, item_value, [])
-  end
-
-  @doc type: :api
   def item_state(accordion_id, item_value, opts)
       when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
     disabled = Keyword.get(opts, :disabled, false)
@@ -1517,6 +1510,19 @@ defmodule Corex.Accordion do
         ),
       bubbles: false
     )
+  end
+
+  def item_state(socket, accordion_id, item_value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
+             is_binary(item_value) do
+    item_state(socket, accordion_id, item_value, [])
+  end
+
+  @doc type: :api
+  @doc "Same as [`item_state/3`](#item_state/3) with default options."
+  def item_state(accordion_id, item_value)
+      when is_binary(accordion_id) and is_binary(item_value) do
+    item_state(accordion_id, item_value, [])
   end
 
   @doc type: :api
@@ -1537,13 +1543,6 @@ defmodule Corex.Accordion do
   end
   ```
   """
-  def item_state(socket, accordion_id, item_value)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) do
-    item_state(socket, accordion_id, item_value, [])
-  end
-
-  @doc type: :api
   def item_state(socket, accordion_id, item_value, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_binary(item_value) and

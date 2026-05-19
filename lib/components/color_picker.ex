@@ -8,7 +8,6 @@ defmodule Corex.ColorPicker do
 
   ```heex
   <.color_picker
-    id="my-color-picker"
     value="rgb(25, 9, 192, 0.9)"
     label="Select Color (RGBA)"
     presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
@@ -39,18 +38,127 @@ defmodule Corex.ColorPicker do
   @import "../corex/components/color-picker.css";
   ```
 
-  ## Events
-
-  - `on_value_change` / `on_value_change_end` - when color changes (detail: `%{valueAsString: string}`)
-  - `on_value_change_client` / `on_value_change_end_client` - client-only variants
-  - `on_open_change` - when open state changes (detail: `%{open: boolean}`)
-  - `on_open_change_client` - client-only variant
-  - `on_format_change` - when format changes (detail: `%{format: string}`)
-  - `on_pointer_down_outside` / `on_focus_outside` / `on_interact_outside` - when interacting outside
-
   ## API
 
-  Use `set_value` for programmatic color updates.
+  Requires a stable `id` on `<.color_picker>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set color (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set color (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
+
+  ```heex
+  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--sm">
+    Set red
+  </.action>
+  <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
+  ```
+
+  ```elixir
+  def handle_event("set_color", %{"color" => hex}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "color-picker-api", hex)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="color_value_changed"` | Color changes | `%{"id" => id, "valueAsString" => value}` |
+  | `on_open_change="color_open_changed"` | Open state changes | `%{"id" => id, "open" => open}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.color_picker
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_value_change="color_value_changed"
+  />
+  ```
+
+  ```elixir
+  def handle_event("color_value_changed", %{"valueAsString" => value}, socket) do
+    {:noreply, assign(socket, :color, value)}
+  end
+  ```
+
+  ### on_open_change
+
+  ```heex
+  <.color_picker
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_open_change="color_open_changed"
+  />
+  ```
+
+  ```elixir
+  def handle_event("color_open_changed", %{"open" => open}, socket) do
+    {:noreply, assign(socket, :color_picker_open, open)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="color-value-changed"` | Color changes | `id`, `valueAsString` |
+  | `on_open_change_client="color-open-changed"` | Open state changes | `id`, `open` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.color_picker
+    id="color-picker-events-client"
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_value_change_client="color-value-changed"
+  />
+  ```
+
+  ```javascript
+  document.getElementById("color-picker-events-client")?.addEventListener("color-value-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  ### on_open_change_client
+
+  ```heex
+  <.color_picker
+    id="color-picker-open-events-client"
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_open_change_client="color-open-changed"
+  />
+  ```
+
+  ```javascript
+  document.getElementById("color-picker-open-events-client")?.addEventListener("color-open-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
   '''
 
   defmodule Translation do
@@ -424,6 +532,23 @@ defmodule Corex.ColorPicker do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the picker value from a control (`phx-click`). `value` is a color string (e.g. hex).
+
+  ```heex
+  <.action phx-click={Corex.ColorPicker.set_value("my-color-picker", "#226677")}>Set</.action>
+  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  ```
+
+  ```javascript
+  document.getElementById("my-color-picker")?.dispatchEvent(
+    new CustomEvent("corex:color-picker:set-value", {
+      bubbles: false,
+      detail: { value: "#226677" },
+    })
+  );
+  ```
+  """
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",
       to: "##{color_picker_id}",
@@ -433,6 +558,20 @@ defmodule Corex.ColorPicker do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the value from `handle_event`.
+
+  ```heex
+  <.action phx-click="pick_color" phx-value-value="#226677">Set</.action>
+  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  ```
+
+  ```elixir
+  def handle_event("pick_color", %{"value" => v}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", v)}
+  end
+  ```
+  """
   def set_value(socket, color_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
     LiveView.push_event(socket, "color_picker_set_value", %{

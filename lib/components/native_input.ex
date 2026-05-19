@@ -14,7 +14,7 @@ defmodule Corex.NativeInput do
   ### Basic
 
   ```heex
-  <.native_input type="text" id="name" name="user[name]" class="native-input">
+  <.native_input type="text" name="user[name]" class="native-input">
     <:label>Name</:label>
   </.native_input>
   ```
@@ -22,7 +22,7 @@ defmodule Corex.NativeInput do
   ### With icon
 
   ```heex
-  <.native_input type="email" id="email" name="user[email]" class="native-input">
+  <.native_input type="email" name="user[email]" class="native-input">
     <:label>Email</:label>
     <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
   </.native_input>
@@ -31,7 +31,7 @@ defmodule Corex.NativeInput do
   ### Textarea (icon slot ignored)
 
   ```heex
-  <.native_input type="textarea" id="bio" name="user[bio]" class="native-input">
+  <.native_input type="textarea" name="user[bio]" class="native-input">
     <:label>Bio</:label>
   </.native_input>
   ```

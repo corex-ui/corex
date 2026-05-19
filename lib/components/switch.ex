@@ -9,13 +9,13 @@ defmodule Corex.Switch do
   ### Minimal
 
   ```heex
-  <.switch id="switch-anatomy-minimal" class="switch" aria_label="Enable notifications" />
+  <.switch class="switch" aria_label="Enable notifications" />
   ```
 
   ### With label
 
   ```heex
-  <.switch id="switch-anatomy-labeled" class="switch">
+  <.switch class="switch">
     <:label>Enable</:label>
   </.switch>
   ```
@@ -48,7 +48,7 @@ defmodule Corex.Switch do
   ### on_checked_change
 
   ```heex
-  <.switch id="switch-on-checked-change-server" class="switch" on_checked_change="switch_changed">
+  <.switch class="switch" on_checked_change="switch_changed">
     <:label>Subscribe</:label>
   </.switch>
   ```
@@ -94,7 +94,6 @@ defmodule Corex.Switch do
 
   ```heex
   <.switch
-    id="switch-patterns-controlled"
     class="switch"
     controlled
     checked={@checked}
@@ -384,6 +383,25 @@ defmodule Corex.Switch do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set checked state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Switch.set_checked("my-switch", true)}>On</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
+
+  ```javascript
+  document.getElementById("my-switch")?.dispatchEvent(
+    new CustomEvent("corex:switch:set-checked", {
+      bubbles: false,
+      detail: { checked: true },
+    })
+  );
+  ```
+  """
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
     JS.dispatch("corex:switch:set-checked",
       to: "##{switch_id}",
@@ -393,6 +411,22 @@ defmodule Corex.Switch do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set checked state from `handle_event`.
+
+  ```heex
+  <.action phx-click="switch_on">On</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
+
+  ```elixir
+  def handle_event("switch_on", _, socket) do
+    {:noreply, Corex.Switch.set_checked(socket, "my-switch", true)}
+  end
+  ```
+  """
   def set_checked(socket, switch_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
@@ -403,6 +437,22 @@ defmodule Corex.Switch do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Toggle checked state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Switch.toggle_checked("my-switch")}>Toggle</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
+
+  ```javascript
+  document.getElementById("my-switch")?.dispatchEvent(
+    new CustomEvent("corex:switch:toggle-checked", { bubbles: false })
+  );
+  ```
+  """
   def toggle_checked(switch_id) when is_binary(switch_id) do
     JS.dispatch("corex:switch:toggle-checked",
       to: "##{switch_id}",
@@ -411,6 +461,22 @@ defmodule Corex.Switch do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Toggle checked state from `handle_event`.
+
+  ```heex
+  <.action phx-click="flip_switch">Toggle</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
+
+  ```elixir
+  def handle_event("flip_switch", _, socket) do
+    {:noreply, Corex.Switch.toggle_checked(socket, "my-switch")}
+  end
+  ```
+  """
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
     LiveView.push_event(socket, "switch_toggle_checked", %{

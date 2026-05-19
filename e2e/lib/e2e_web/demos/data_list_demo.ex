@@ -305,11 +305,9 @@ defmodule E2eWeb.Demos.DataListDemo do
 
   def patterns_stream_demo_heex do
     ~S"""
-    <div class="flex flex-wrap gap-4">
-      <.action phx-click="stream_add" class="button button--accent">Add row</.action>
-      <.action phx-click="stream_reset" class="button button--alert">Reset</.action>
-    </div>
-    <.data_list id="data-list-patterns-stream-list" class="data-list" items={Corex.Content.new(@items_list)}>
+    <.action phx-click="stream_add" class="button button--accent">Add row</.action>
+    <.action phx-click="stream_reset" class="button button--alert">Reset</.action>
+    <.data_list class="data-list" items={Corex.Content.new(@items_list)}>
       <:empty>
         <p>No items</p>
       </:empty>

@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
 
   def anatomy_basic_code do
     ~S"""
-    <.floating_panel id="floating-panel-anatomy" class="floating-panel">
+    <.floating_panel class="floating-panel">
       <:trigger>
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
@@ -70,7 +70,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
-  def api_client_js_code do
+  def api_client_js_heex do
     ~S"""
     <div class="layout__row">
       <button type="button" id="floating-panel-api-js-open" class="button button--sm">
@@ -130,6 +130,30 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  def api_client_js_js do
+    ~S"""
+    const panel = document.getElementById("floating-panel-api-js");
+    panel?.dispatchEvent(
+      new CustomEvent("corex:floating-panel:set-open", { detail: { open: true }, bubbles: false })
+    );
+    panel?.dispatchEvent(
+      new CustomEvent("corex:floating-panel:set-open", { detail: { open: false }, bubbles: false })
+    );
+    """
+  end
+
+  def api_client_js_ts do
+    ~S"""
+    const panel: HTMLElement | null = document.getElementById("floating-panel-api-js");
+    panel?.dispatchEvent(
+      new CustomEvent("corex:floating-panel:set-open", { detail: { open: true }, bubbles: false })
+    );
+    panel?.dispatchEvent(
+      new CustomEvent("corex:floating-panel:set-open", { detail: { open: false }, bubbles: false })
+    );
+    """
+  end
+
   def api_client_js_example(assigns) do
     ~H"""
     <div class="layout__row">
@@ -172,7 +196,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
-  def api_server_heex_code do
+  def api_server_heex do
     """
     <div class="layout__row">
       <.action phx-click="floating_panel_api_server_open" class="button button--sm">
@@ -187,7 +211,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
-  def api_server_handler_code do
+  def api_server_elixir do
     ~S"""
     def handle_event("floating_panel_api_server_open", _, socket) do
       {:noreply, Corex.FloatingPanel.set_open(socket, "floating-panel-api-server", true)}
@@ -242,15 +266,15 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+        <button type="button" class="button button--sm">
           Open
         </button>
-        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+        <button type="button" class="button button--sm">
           Close
         </button>
       </div>
       #{anatomy_no_trigger_external_controls_script()}
-      <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
+      <.floating_panel class="floating-panel">
         <:trigger class="sr-only">
           <span data-closed>Open auxiliary panel</span>
           <span data-open>Close auxiliary panel</span>
@@ -302,7 +326,6 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~S"""
     <div class="inline-block rounded-md border border-border p-space">
       <.floating_panel
-        id="floating-panel-anatomy-positioning"
         class="floating-panel"
         positioning={%Corex.Positioning{placement: "top-start", gutter: 20, flip: true}}
       >
@@ -356,7 +379,6 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_size_code do
     ~S"""
     <.floating_panel
-      id="floating-panel-anatomy-size"
       class="floating-panel"
       size={%{width: 380, height: 220}}
       min_size={%{width: 280, height: 160}}
@@ -440,9 +462,45 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def events_server_heex do
     ~S"""
     <.floating_panel
-      id="fp-events-live"
       class="floating-panel"
       on_open_change="floating_panel_open_changed"
+    >
+      <:trigger>
+        <span data-closed>Open panel</span>
+        <span data-open>Close panel</span>
+      </:trigger>
+      <:title>Panel</:title>
+      <:minimize_trigger>
+        <.heroicon name="hero-arrow-down-left" class="icon" />
+      </:minimize_trigger>
+      <:maximize_trigger>
+        <.heroicon name="hero-arrows-pointing-out" class="icon" />
+      </:maximize_trigger>
+      <:default_trigger>
+        <.heroicon name="hero-rectangle-stack" class="icon" />
+      </:default_trigger>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" class="icon" />
+      </:close_trigger>
+      <:content>
+        <p>Lorem ipsum dolor sit amet.</p>
+      </:content>
+    </.floating_panel>
+    """
+  end
+
+  def events_server_elixir do
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "floating_panel_open_changed",
+      ~S|%{"open" => open, "id" => id} = params|
+    )
+  end
+
+  def events_client_heex do
+    ~S"""
+    <.floating_panel
+      id="fp-events-client"
+      class="floating-panel"
       on_open_change_client="floating-panel-open-changed"
     >
       <:trigger>
@@ -466,6 +524,24 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         <p>Lorem ipsum dolor sit amet.</p>
       </:content>
     </.floating_panel>
+    """
+  end
+
+  def events_client_js do
+    ~S"""
+    const el = document.getElementById("fp-events-client");
+    el?.addEventListener("floating-panel-open-changed", (event) => {
+      console.log(event.detail);
+    });
+    """
+  end
+
+  def events_client_ts do
+    ~S"""
+    const el = document.getElementById("fp-events-client");
+    el?.addEventListener("floating-panel-open-changed", (event: Event) => {
+      console.log((event as CustomEvent<{ id: string; open: boolean }>).detail);
+    });
     """
   end
 

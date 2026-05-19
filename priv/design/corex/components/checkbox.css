@@ -167,12 +167,10 @@
     }
 
     &[data-invalid] {
-      color: var(--color-alert);
       border-color: var(--color-alert);
     }
 
     &[data-required] {
-      color: var(--color-alert);
       border-color: var(--color-alert);
     }
   }

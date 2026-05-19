@@ -15,7 +15,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def minimal_code do
     ~S"""
     <.combobox
-      id="combobox-anatomy-minimal"
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
@@ -50,7 +49,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def slots_code do
     ~S"""
     <.combobox
-      id="combobox-anatomy-slots"
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
@@ -89,7 +87,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def grouped_code do
     ~S"""
     <.combobox
-      id="combobox-anatomy-grouped"
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new([
@@ -130,7 +127,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def extended_code do
     ~S"""
-    <.combobox id="combobox-anatomy-extended" class="combobox" placeholder="Select" items={Corex.List.new(items_minimal())}>
+    <.combobox class="combobox" placeholder="Select" items={Corex.List.new(items_minimal())}>
       <:item :let={item}>
         <Flagpack.flag name={String.to_atom(item.value)} />
         {item.label}
@@ -166,7 +163,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def extended_grouped_code do
     ~S"""
     <.combobox
-      id="combobox-anatomy-extended-grouped"
       class="combobox"
       placeholder="Select"
       items={Corex.List.new([
@@ -216,7 +212,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def labeled_code do
     ~S"""
     <.combobox
-      id="combobox-anatomy-labeled"
       class="combobox"
       placeholder="Select a country"
       items={Corex.List.new(items_minimal())}
@@ -252,19 +247,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox id="combobox-style-sm" class="combobox combobox--sm" placeholder="SM" #{items_attr}>
+    <.combobox class="combobox combobox--sm" placeholder="SM" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-md" class="combobox combobox--md" placeholder="MD" #{items_attr}>
+    <.combobox class="combobox combobox--md" placeholder="MD" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-lg" class="combobox combobox--lg" placeholder="LG" #{items_attr}>
+    <.combobox class="combobox combobox--lg" placeholder="LG" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-xl" class="combobox combobox--xl" placeholder="XL" #{items_attr}>
+    <.combobox class="combobox combobox--xl" placeholder="XL" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -317,7 +312,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def events_server_heex do
     ~S"""
     <.combobox
-      id="combobox-events-server-field"
       class="combobox"
       placeholder="Select"
       items={Corex.List.new(items_minimal())}
@@ -330,12 +324,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("combobox_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "combobox_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do
@@ -407,7 +399,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" id="combobox-form-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -481,7 +473,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   def events_open_server_heex do
     ~S"""
     <.combobox
-      id="combobox-events-open-server-field"
       class="combobox"
       placeholder="Select"
       items={Corex.List.new(items_minimal())}
@@ -494,17 +485,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
   end
 
   def events_open_server_elixir do
-    ~S"""
-    def handle_event("combobox_open_changed", params, socket) do
-      {:noreply, assign(socket, :last_open_event, params)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet("combobox_open_changed")
   end
 
   def events_open_client_heex do
     ~S"""
     <.combobox
-      id="combobox-events-open-client-field"
       class="combobox"
       placeholder="Select"
       items={Corex.List.new(items_minimal())}
@@ -556,9 +542,15 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       action={~p"/combobox/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
+      ])}>
         <:label>Country</:label>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -567,7 +559,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -596,9 +588,15 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       action={~p"/combobox/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
+      ])}>
         <:label>Country</:label>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -607,7 +605,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -630,10 +628,10 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def form_doc_controller_native_heex do
     ~S"""
-    <form action={~p"/combobox/form"} method="post" class="w-full max-w-2xs flex flex-col gap-space items-center">
+    <form action={~p"/combobox/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <input name="combobox_native[country]" type="hidden" value="" />
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -645,14 +643,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={@form[:country]}
-        id="combobox-live-country"
         class="combobox"
         placeholder="Country"
-        items={Corex.List.new(items_minimal())}
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
+        ])}
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
@@ -662,7 +665,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -687,14 +690,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@strict_form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={@strict_form[:country]}
-        id="combobox-live-country-strict"
         class="combobox"
         placeholder="Country"
-        items={Corex.List.new(items_minimal())}
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
+        ])}
       >
         <:label>Country</:label>
         <:empty>No results</:empty>
@@ -704,7 +712,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -737,7 +745,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       action={~p"/combobox/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={f[:country]}
@@ -753,7 +760,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" id="combobox-form-submit" class="button button--accent w-full">
+      <.action type="submit" id="combobox-form-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -770,7 +777,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       action={~p"/combobox/form"}
       method="post"
       id={@validate_form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={f[:country]}
@@ -786,7 +792,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" id="combobox-validate-submit" class="button button--accent w-full">
+      <.action type="submit" id="combobox-validate-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -800,7 +806,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     <form
       action={~p"/combobox/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.combobox
@@ -814,7 +819,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -826,7 +831,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={@form[:country]}
@@ -843,7 +847,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" id="combobox-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" id="combobox-form-live-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -859,7 +863,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       id={@strict_form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
         field={@strict_form[:country]}
@@ -876,7 +879,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
           {msg}
         </:error>
       </.combobox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -886,27 +889,27 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox id="combobox-style-color-default" class="combobox" placeholder="Default" #{items_attr}>
+    <.combobox class="combobox" placeholder="Default" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-color-accent" class="combobox combobox--accent" placeholder="Accent" #{items_attr}>
+    <.combobox class="combobox combobox--accent" placeholder="Accent" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-color-brand" class="combobox combobox--brand" placeholder="Brand" #{items_attr}>
+    <.combobox class="combobox combobox--brand" placeholder="Brand" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-color-alert" class="combobox combobox--alert" placeholder="Alert" #{items_attr}>
+    <.combobox class="combobox combobox--alert" placeholder="Alert" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-color-info" class="combobox combobox--info" placeholder="Info" #{items_attr}>
+    <.combobox class="combobox combobox--info" placeholder="Info" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-color-success" class="combobox combobox--success" placeholder="Success" #{items_attr}>
+    <.combobox class="combobox combobox--success" placeholder="Success" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -979,19 +982,19 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.combobox id="combobox-style-max-2xs" class="combobox max-w-2xs" placeholder="2xs" #{items_attr}>
+    <.combobox class="combobox max-w-2xs" placeholder="2xs" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-max-md" class="combobox max-w-md" placeholder="MD" #{items_attr}>
+    <.combobox class="combobox max-w-md" placeholder="MD" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-max-xl" class="combobox max-w-xl" placeholder="XL" #{items_attr}>
+    <.combobox class="combobox max-w-xl" placeholder="XL" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
-    <.combobox id="combobox-style-max-2xl" class="combobox max-w-2xl" placeholder="2XL" #{items_attr}>
+    <.combobox class="combobox max-w-2xl" placeholder="2XL" #{items_attr}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>

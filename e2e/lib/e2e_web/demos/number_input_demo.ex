@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def minimal_code do
     ~S"""
-    <.number_input id="number-input-anatomy-minimal" class="number-input">
+    <.number_input class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -24,7 +24,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def min_max_default_code do
     ~S"""
     <.number_input
-      id="number-input-anatomy-bounds"
       class="number-input"
       min={0.0}
       max={100.0}
@@ -60,17 +59,17 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def styling_color_code do
     ~S"""
-    <.number_input id="number-input-style-default" class="number-input" value="1">
+    <.number_input class="number-input" value="1">
       <:label>Default</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
     </.number_input>
-    <.number_input id="number-input-style-accent" class="number-input number-input--accent" value="1">
+    <.number_input class="number-input number-input--accent" value="1">
       <:label>Accent</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
     </.number_input>
-    <.number_input id="number-input-style-brand" class="number-input number-input--brand" value="1">
+    <.number_input class="number-input number-input--brand" value="1">
       <:label>Brand</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -110,12 +109,12 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def styling_size_code do
     ~S"""
-    <.number_input id="number-input-style-sm" class="number-input number-input--sm">
+    <.number_input class="number-input number-input--sm">
       <:label>SM</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
     </.number_input>
-    <.number_input id="number-input-style-lg" class="number-input number-input--lg">
+    <.number_input class="number-input number-input--lg">
       <:label>LG</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -268,7 +267,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_set_value_server_heex do
     ~S"""
     <.action phx-click="api_number_set_value_server" class="button button--sm">
-      Set 99 from server
+      Set 99
     </.action>
     <.number_input id="number-input-api-set-server" class="number-input" value="1">
       <:label>Quantity</:label>
@@ -296,7 +295,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       )}
       class="button button--sm"
     >
-      Set 7 via dispatch
+      Set 7
     </.action>
     <.number_input id="number-input-api-set-js" class="number-input" value="1">
       <:label>Quantity</:label>
@@ -320,9 +319,9 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def api_set_value_js_ts do
     ~S"""
-    const el = document.getElementById("number-input-api-set-js");
+    const el: HTMLElement | null = document.getElementById("number-input-api-set-js");
     el?.dispatchEvent(
-      new CustomEvent("corex:number-input:set-value", {
+      new CustomEvent<{ value: number }>("corex:number-input:set-value", {
         bubbles: false,
         detail: { value: 7 },
       })
@@ -349,7 +348,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click="api_number_set_value_server" class="button button--sm">
-        Set 99 from server
+        Set 99
       </.action>
     </div>
     <.number_input id={@id} class="number-input" value="1">
@@ -373,7 +372,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         }
         class="button button--sm"
       >
-        Set 7 via dispatch
+        Set 7
       </.action>
     </div>
     <.number_input id={@id} class="number-input" value="1">
@@ -400,7 +399,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_clear_server_heex do
     ~S"""
     <.action phx-click="api_number_clear_server" class="button button--sm">
-      Clear from server
+      Clear
     </.action>
     <.number_input id="number-input-api-clear-server" class="number-input" value="10">
       <:label>Quantity</:label>
@@ -437,7 +436,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click="api_number_clear_server" class="button button--sm">
-        Clear from server
+        Clear
       </.action>
     </div>
     <.number_input id={@id} class="number-input" value="10">
@@ -503,7 +502,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def api_state_server_heex do
     ~S"""
     <.action phx-click="api_number_state_server" class="button button--sm">
-      Read state (server)
+      Read state
     </.action>
     <.number_input id="number-input-api-state-server" class="number-input" value="8">
       <:label>Quantity</:label>
@@ -527,7 +526,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       phx-click={JS.dispatch("corex:number-input:state", to: "#number-input-api-state-js", detail: %{}, bubbles: false)}
       class="button button--sm"
     >
-      Read via dispatch
+      Read state
     </.action>
     <.number_input id="number-input-api-state-js" class="number-input" value="4">
       <:label>Quantity</:label>
@@ -580,7 +579,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click="api_number_state_server" class="button button--sm">
-        Read state (server)
+        Read state
       </.action>
     </div>
     <.number_input id={@id} class="number-input" value="8">
@@ -600,7 +599,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         }
         class="button button--sm"
       >
-        Read via dispatch
+        Read state
       </.action>
     </div>
     <.number_input id={@id} class="number-input" value="4">
@@ -614,7 +613,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def events_server_heex do
     ~S"""
     <.number_input
-      id="number-input-events-server"
       class="number-input"
       on_value_change="number_input_changed"
     >
@@ -626,12 +624,10 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("number_input_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "number_input_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do
@@ -706,10 +702,9 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
       id={@form.id}
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.number_input field={f[:value]} id="number-input-changeset-field" class="number-input">
+      <.number_input field={f[:value]} class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -722,7 +717,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -749,7 +744,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: ~p"/number-input/form#number-input-form-changeset")
+          |> redirect(to: "/number-input/form#number-input-form-changeset")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -783,7 +778,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved (strict)")
-          |> redirect(to: ~p"/number-input/form#number-input-form-validate")
+          |> redirect(to: "/number-input/form#number-input-form-validate")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -809,20 +804,17 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     <form
       action={~p"/number-input/form"}
       method="post"
-      id="number-input-plain-form"
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <label class="typo typo--sm font-medium" for="number-input-plain-value">Value</label>
       <input
         type="number"
         name="value"
-        id="number-input-plain-value"
         value="1234"
         class="native-input"
         step="any"
       />
-      <button type="submit" id="number-input-plain-submit" class="button button--accent">
+      <button type="submit" class="button button--accent">
         Submit
       </button>
     </form>
@@ -837,7 +829,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
       id={@form.id}
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input
         field={f[:value]}
@@ -871,7 +862,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
       id={@form.id}
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input
         field={f[:value]}
@@ -905,7 +895,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       action={~p"/number-input/form"}
       method="post"
       id="number-input-plain-form"
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <label class="typo typo--sm font-medium" for="number-input-plain-value">Value</label>
       <input
@@ -925,8 +914,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_changeset_heex do
     ~S"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save" class="flex flex-col gap-4 w-full max-w-lg">
-      <.number_input field={@form[:value]} id="number-input-live-changeset-field" class="number-input">
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+      <.number_input field={@form[:value]} class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -939,7 +928,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-form-live-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -987,9 +976,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
-      <.number_input field={@form[:value]} id="number-input-live-validate-field" class="number-input">
+      <.number_input field={@form[:value]} class="number-input">
         <:label>Value (1–9999)</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -1002,7 +990,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           {msg}
         </:error>
       </.number_input>
-      <.action type="submit" id="number-input-form-live-validate-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1050,7 +1038,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input
         field={@form[:value]}
@@ -1087,7 +1074,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input
         field={@form[:value]}

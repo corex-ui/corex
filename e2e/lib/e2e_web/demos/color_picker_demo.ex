@@ -10,7 +10,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def minimal_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-minimal"
       label="Pick a color"
       class="color-picker"
     />
@@ -30,7 +29,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_value_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-with-value"
       value="#22c55e"
       label="Initial value"
       class="color-picker"
@@ -52,7 +50,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_positioning_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-positioning"
       value="#3b82f6"
       label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
@@ -78,7 +75,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_presets_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-with-preset"
       value="#3b82f6"
       label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -164,7 +160,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def events_server_value_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-sv"
       value="#3b82f6"
       label="Value (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -175,18 +170,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   def events_server_value_elixir do
-    ~S"""
-    def handle_event("cp_ev_server_value", %{"id" => id, "valueAsString" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_v_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "cp_ev_server_value",
+      ~S|%{"id" => id, "valueAsString" => value} = params|
+    )
   end
 
   def events_server_open_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-so"
       value="#3b82f6"
       label="Open (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -197,18 +189,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   def events_server_open_elixir do
-    ~S"""
-    def handle_event("cp_ev_server_open", %{"id" => id, "open" => open}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(open)}
-      {:noreply, stream_insert(socket, :server_o_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "cp_ev_server_open",
+      ~S|%{"id" => id, "open" => open} = params|
+    )
   end
 
   def events_client_value_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-cv"
       value="#3b82f6"
       label="Value (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -239,7 +228,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def events_client_open_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-co"
       value="#3b82f6"
       label="Open (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -324,17 +312,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-changeset"
         value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -366,7 +352,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: ~p"/settings")
+          |> redirect(to: "//settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -395,17 +381,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-validate"
         value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-validate-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -420,7 +404,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: ~p"/settings")
+          |> redirect(to: "//settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -447,18 +431,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     <form
       action={~p"/color-picker/form"}
       method="post"
-      id="color-picker-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
         name="color_picker_form[color]"
-        id="color-picker-form-native"
         value="#3b82f6"
         label="Color"
         class="color-picker"
       />
-      <.action type="submit" id="color-picker-form-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -472,18 +453,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-live-basic"
         value={@color}
         label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-basic-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -522,18 +501,16 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-live-validate"
         value={@color}
         label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-validate-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -598,7 +575,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
         name={@form[:color].name}
@@ -611,7 +587,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-changeset-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -628,7 +604,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
         name={@form[:color].name}
@@ -641,7 +616,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-validate-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -657,7 +632,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id="color-picker-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
@@ -670,7 +644,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-form-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -688,7 +662,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
         name={@form[:color].name}
@@ -702,7 +675,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-basic-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -720,7 +693,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
         name={@form[:color].name}
@@ -734,7 +706,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-validate-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>

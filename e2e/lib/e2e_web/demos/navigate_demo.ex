@@ -3,16 +3,14 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def anatomy_basic_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.navigate to="#" class="link">Internal Link</.navigate>
-      <.navigate to="#" class="link">
-        Internal Link
-        <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-      </.navigate>
-      <.navigate to="#" class="link" aria_label="Internal link icon only">
-        <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-      </.navigate>
-    </div>
+    <.navigate to="#" class="link">Internal Link</.navigate>
+    <.navigate to="#" class="link">
+      Internal Link
+      <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
+    </.navigate>
+    <.navigate to="#" class="link" aria_label="Internal link icon only">
+      <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
+    </.navigate>
     """
   end
 
@@ -33,16 +31,14 @@ defmodule E2eWeb.Demos.NavigateDemo do
 
   def anatomy_external_and_download_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.navigate to="https://example.com" class="link" external>
-        External Link
-        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-      </.navigate>
-      <.navigate to="#" class="link" download="report.pdf">
-        Download Link
-        <.heroicon name="hero-arrow-down-tray" class="icon" />
-      </.navigate>
-    </div>
+    <.navigate to="https://example.com" class="link" external>
+      External Link
+      <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+    </.navigate>
+    <.navigate to="#" class="link" download="report.pdf">
+      Download Link
+      <.heroicon name="hero-arrow-down-tray" class="icon" />
+    </.navigate>
     """
   end
 

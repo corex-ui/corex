@@ -159,6 +159,7 @@ defmodule Corex.MixProject do
         "guides/MCP.md",
         "guides/production.md",
         "guides/configuration.md",
+        "guides/api_documentation.md",
         "guides/releasing.md"
       ],
       formatters: ["html", "epub"],
@@ -249,7 +250,8 @@ defmodule Corex.MixProject do
       ],
       Content: [
         Corex.Content,
-        Corex.Content.Item
+        Corex.Content.Item,
+        Corex.Image
       ],
       DataList: [
         Corex.Content.Item

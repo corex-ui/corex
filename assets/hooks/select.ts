@@ -53,13 +53,10 @@ function selectZagPropsBase(
       const valueInput = el.querySelector<HTMLInputElement>(
         '[data-scope="select"][data-part="value-input"]'
       );
-      if (valueInput && getBoolean(el, "controlled")) {
+      if (valueInput) {
+        const list = details.value.map((v) => String(v));
         valueInput.value =
-          details.value.length === 0
-            ? ""
-            : details.value.length === 1
-              ? String(details.value[0])
-              : details.value.map(String).join(",");
+          list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
         valueInput.dispatchEvent(new Event("input", { bubbles: true }));
         valueInput.dispatchEvent(new Event("change", { bubbles: true }));
       }

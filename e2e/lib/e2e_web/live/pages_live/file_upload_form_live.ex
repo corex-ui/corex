@@ -11,8 +11,7 @@ defmodule E2eWeb.FileUploadFormLive do
     {:ok,
      socket
      |> assign(:page_title, "File upload form")
-     |> assign(:live_heex, FileUploadDemo.form_live_upload_heex())
-     |> assign(:live_elixir, FileUploadDemo.form_live_upload_elixir())
+     |> assign(:form_live_upload_code_tabs, FileUploadDemo.form_live_upload_code_tabs())
      |> allow_upload(:attachment,
        accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
        max_entries: 3,
@@ -61,10 +60,7 @@ defmodule E2eWeb.FileUploadFormLive do
         <.demo_section
           id="file-upload-live-form-allow-upload"
           title="allow_upload"
-          code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_elixir}
-          ]}
+          code_tabs={@form_live_upload_code_tabs}
         >
           <:preview>
             <form

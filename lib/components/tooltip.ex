@@ -9,7 +9,7 @@ defmodule Corex.Tooltip do
   ### Minimal
 
   ```heex
-  <.tooltip id="tooltip-anatomy-minimal" class="tooltip" show_arrow={false}>
+  <.tooltip class="tooltip" show_arrow={false}>
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -18,7 +18,7 @@ defmodule Corex.Tooltip do
   ### With arrow
 
   ```heex
-  <.tooltip id="tooltip-anatomy-arrow" class="tooltip">
+  <.tooltip class="tooltip">
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -27,7 +27,7 @@ defmodule Corex.Tooltip do
   ### Placement
 
   ```heex
-  <.tooltip id="tooltip-anatomy-bottom" class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+  <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
     <:trigger>Bottom</:trigger>
     <:content>Tooltip below</:content>
   </.tooltip>
@@ -60,7 +60,7 @@ defmodule Corex.Tooltip do
   ### on_open_change
 
   ```heex
-  <.tooltip id="tooltip-events-server" class="tooltip" on_open_change="tooltip_open_changed">
+  <.tooltip class="tooltip" on_open_change="tooltip_open_changed">
     <:trigger>Hover me</:trigger>
     <:content>Tooltip content</:content>
   </.tooltip>
@@ -90,7 +90,6 @@ defmodule Corex.Tooltip do
 
   ```heex
   <.tooltip
-    id="tooltip-patterns-multi"
     class="tooltip"
     on_trigger_value_change="tooltip_trigger_changed"
   >
@@ -382,6 +381,26 @@ defmodule Corex.Tooltip do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set tooltip open state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Tooltip.set_open("my-tooltip", true)}>Show</.action>
+  <.tooltip id="my-tooltip" class="tooltip">
+    <:trigger>Target</:trigger>
+    <:content>Hint</:content>
+  </.tooltip>
+  ```
+
+  ```javascript
+  document.getElementById("my-tooltip")?.dispatchEvent(
+    new CustomEvent("corex:tooltip:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """
   def set_open(tooltip_id, open) when is_binary(tooltip_id) and is_boolean(open) do
     JS.dispatch("corex:tooltip:set-open",
       to: "##{tooltip_id}",
@@ -391,6 +410,23 @@ defmodule Corex.Tooltip do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from `handle_event`.
+
+  ```heex
+  <.action phx-click="show_tip">Show</.action>
+  <.tooltip id="my-tooltip" class="tooltip">
+    <:trigger>Target</:trigger>
+    <:content>Hint</:content>
+  </.tooltip>
+  ```
+
+  ```elixir
+  def handle_event("show_tip", _, socket) do
+    {:noreply, Corex.Tooltip.set_open(socket, "my-tooltip", true)}
+  end
+  ```
+  """
   def set_open(socket, tooltip_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tooltip_id) and
              is_boolean(open) do

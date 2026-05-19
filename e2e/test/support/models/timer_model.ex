@@ -76,7 +76,7 @@ defmodule E2eWeb.TimerModel do
     click_action_trigger_in_host(session, host_dom_id, "pause")
   end
 
-  defp action_trigger_query(host_dom_id, action) do
+  def action_trigger_query(host_dom_id, action) do
     css(
       ~s|##{host_dom_id} [data-scope="timer"][data-part="action-trigger"][data-action="#{action}"]|,
       visible: :any
@@ -90,10 +90,10 @@ defmodule E2eWeb.TimerModel do
     )
   end
 
-  def click_in_section(session, section_id, button_label)
+  def click_button_in_section(session, section_id, button_label)
       when is_binary(section_id) and is_binary(button_label) do
     if String.contains?(button_label, "'") or String.contains?(button_label, "\"") do
-      raise ArgumentError, "click_in_section/3 label must not include quotes"
+      raise ArgumentError, "click_button_in_section/3 label must not include quotes"
     end
 
     click(

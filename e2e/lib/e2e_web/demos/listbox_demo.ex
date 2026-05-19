@@ -40,7 +40,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.listbox id="listbox-anatomy-minimal" class="listbox" items={
+    <.listbox class="listbox" items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -67,7 +67,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_with_indicator_code do
     ~S"""
-    <.listbox id="listbox-anatomy-indicator" class="listbox" items={
+    <.listbox class="listbox" items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -96,7 +96,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_grouped_code do
     ~S"""
-    <.listbox id="listbox-anatomy-grouped" class="listbox" items={
+    <.listbox class="listbox" items={
       Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
@@ -125,7 +125,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
 
   def anatomy_extended_code do
     ~S"""
-    <.listbox id="listbox-anatomy-extended" class="listbox" items={
+    <.listbox class="listbox" items={
       Corex.List.new([
         %{label: "France", value: "fra"},
         %{label: "Belgium", value: "bel"},
@@ -163,7 +163,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def anatomy_extended_grouped_code do
     ~S"""
     <.listbox
-      id="listbox-anatomy-extended-grouped"
       class="listbox"
       aria_label="Extended grouped countries"
       items={
@@ -216,7 +215,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
           Reset
         </.action>
       </div>
-      <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+      <.listbox class="listbox" items={Corex.List.new(@items_list)}>
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
@@ -346,7 +345,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
         </.action>
       </div>
       <.listbox
-        id="stream-grouped-listbox"
         class="listbox"
         items={Corex.List.new(@grouped_items_list)}
       >
@@ -451,7 +449,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def patterns_controlled_heex do
     ~S"""
     <.listbox
-      id="listbox-patterns-controlled-field"
       class="listbox"
       items={
         Corex.List.new([
@@ -471,7 +468,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Choose countries</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <p class="text-sm text-ink-muted font-mono" id="listbox-patterns-controlled-state">
+    <p class="text-sm text-ink-muted font-mono">
       value: {inspect(@listbox_controlled_value)}
     </p>
     """
@@ -640,7 +637,6 @@ defmodule E2eWeb.Demos.ListboxDemo do
   def events_server_heex do
     ~S"""
     <.listbox
-      id="listbox-events-server"
       class="listbox"
       items={
         Corex.List.new([
@@ -661,12 +657,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("listbox_value_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "listbox_value_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do

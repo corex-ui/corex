@@ -10,7 +10,7 @@ defmodule Corex.CarouselTest do
       html = render_component(&CorexTest.ComponentHelpers.render_carousel/1, [])
       assert html =~ ~r/data-scope="carousel"/
       assert html =~ ~r/data-part="root"/
-      assert html =~ ~r//
+      assert html =~ ~r/src=/
       assert html =~ ~r/phx-mounted=/
     end
 
@@ -23,7 +23,10 @@ defmodule Corex.CarouselTest do
             ~H"""
             <Carousel.carousel
               id="carousel-multi"
-              items={["/a.jpg", "/b.jpg"]}
+              items={[
+                Corex.Image.new("/a.jpg", alt: "A"),
+                Corex.Image.new("/b.jpg", alt: "B")
+              ]}
               orientation="vertical"
               slides_per_page={2}
               spacing="8px"

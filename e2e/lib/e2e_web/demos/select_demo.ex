@@ -34,7 +34,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def minimal_code do
     ~S"""
     <.select
-      id="select-anatomy-minimal"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -62,7 +61,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def with_translation_code do
     ~S"""
     <.select
-      id="select-anatomy-translation"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -92,7 +90,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def item_indicator_code do
     ~S"""
     <.select
-      id="select-anatomy-item-indicator"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -124,7 +121,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def grouped_code do
     ~S"""
     <.select
-      id="select-anatomy-grouped"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
@@ -157,7 +153,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def extended_code do
     ~S"""
     <.select
-      id="select-anatomy-extended"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -200,7 +195,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def extended_grouped_code do
     ~S"""
     <.select
-      id="select-anatomy-extended-grouped"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
@@ -332,16 +326,16 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select id="select-style-sm" class="select select--sm" #{items_attr}>
+    <.select class="select select--sm" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-md" class="select select--md" #{items_attr}>
+    <.select class="select select--md" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-lg" class="select select--lg" #{items_attr}>
+    <.select class="select select--lg" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-xl" class="select select--xl" #{items_attr}>
+    <.select class="select select--xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     """
@@ -371,16 +365,16 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select id="select-style-text-sm" class="select select--text-sm" #{items_attr}>
+    <.select class="select select--text-sm" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-text-xl" class="select select--text-xl" #{items_attr}>
+    <.select class="select select--text-xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-text-2xl" class="select select--text-2xl" #{items_attr}>
+    <.select class="select select--text-2xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-text-4xl" class="select select--text-4xl" #{items_attr}>
+    <.select class="select select--text-4xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     """
@@ -410,19 +404,19 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select id="select-style-rounded-none" class="select select--rounded-none" #{items_attr}>
+    <.select class="select select--rounded-none" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-rounded-md" class="select select--rounded-md" #{items_attr}>
+    <.select class="select select--rounded-md" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-rounded-lg" class="select select--rounded-lg" #{items_attr}>
+    <.select class="select select--rounded-lg" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-rounded-xl" class="select select--rounded-xl" #{items_attr}>
+    <.select class="select select--rounded-xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-rounded-full" class="select select--rounded-full" #{items_attr}>
+    <.select class="select select--rounded-full" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     """
@@ -455,16 +449,16 @@ defmodule E2eWeb.Demos.SelectDemo do
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
     """
-    <.select id="select-style-max-2xs" class="select max-w-2xs" #{items_attr}>
+    <.select class="select max-w-2xs" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-max-md" class="select max-w-md" #{items_attr}>
+    <.select class="select max-w-md" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-max-xl" class="select max-w-xl" #{items_attr}>
+    <.select class="select max-w-xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select id="select-style-max-2xl" class="select max-w-2xl" #{items_attr}>
+    <.select class="select max-w-2xl" #{items_attr}>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     """
@@ -786,7 +780,6 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     """
     <.select
-      id="select-events-server"
       class="select"
       #{items_attr}
       on_value_change="select_changed"
@@ -797,12 +790,10 @@ defmodule E2eWeb.Demos.SelectDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("select_changed", %{"id" => id, "value" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "select_changed",
+      ~S|%{"id" => id, "value" => value} = params|
+    )
   end
 
   def events_client_heex do
@@ -906,7 +897,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -957,7 +948,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-validate-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -979,15 +970,9 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_native_heex do
     ~S"""
-    <form
-      action={~p"/select/form"}
-      method="post"
-      id="select-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+    <form action={~p"/select/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.select
-        id="select-native-country"
         name="user[country]"
         form="select-plain-form"
         class="select"
@@ -1006,7 +991,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
       </.select>
-      <.action type="submit" id="select-controller-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -1020,10 +1005,8 @@ defmodule E2eWeb.Demos.SelectDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.select
-        id="select-form-live-country"
         class="select"
         field={@form[:country]}
         items={Corex.List.new([
@@ -1046,7 +1029,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1060,10 +1043,8 @@ defmodule E2eWeb.Demos.SelectDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.select
-        id="select-form-live-strict"
         class="select"
         field={@form[:country]}
         items={Corex.List.new([
@@ -1086,7 +1067,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-strict-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1250,7 +1231,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.select
@@ -1269,7 +1249,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" id="select-changeset-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1285,7 +1265,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
       id={@form.id}
     >
       <.select
@@ -1304,7 +1283,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-validate-submit" class="button button--accent w-full">
+      <.action type="submit" id="select-validate-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1319,7 +1298,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       action={~p"/select/form"}
       method="post"
       id="select-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.select
@@ -1335,7 +1313,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
       </.select>
-      <.action type="submit" id="select-controller-submit" class="button button--accent w-full">
+      <.action type="submit" id="select-controller-submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -1351,7 +1329,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       id={@form.id}
       phx-change="validate"
       phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.select
         id="select-form-live-country"
@@ -1371,7 +1348,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" id="select-form-live-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1387,7 +1364,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.select
         id="select-form-live-strict"
@@ -1407,7 +1383,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           {msg}
         </:error>
       </.select>
-      <.action type="submit" id="select-form-live-strict-submit" class="button button--accent w-full">
+      <.action type="submit" id="select-form-live-strict-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -1443,7 +1419,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_controlled_heex do
     ~S"""
     <.select
-      id="select-patterns-controlled"
       class="select"
       controlled
       value={@value}
@@ -1491,7 +1466,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           Reset
         </.action>
       </div>
-      <.select id="stream-select" class="select" items={Corex.List.new(@items_list)}>
+      <.select class="select" items={Corex.List.new(@items_list)}>
         <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -1653,7 +1628,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_flat_code do
     ~S"""
     <.select
-      id="select-patterns-flat"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -1675,7 +1649,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_grouped_code do
     ~S"""
     <.select
-      id="select-patterns-grouped"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},
@@ -1701,7 +1674,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_extended_code do
     ~S"""
     <.select
-      id="select-patterns-extended"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -1731,7 +1703,6 @@ defmodule E2eWeb.Demos.SelectDemo do
   def patterns_extended_grouped_code do
     ~S"""
     <.select
-      id="select-patterns-extended-grouped"
       class="select"
       items={Corex.List.new([
         %{label: "France", value: "fra", group: "Europe"},

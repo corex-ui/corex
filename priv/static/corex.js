@@ -33285,6 +33285,7 @@ ${err}`);
       deselectable: getBoolean(el, "deselectable"),
       positioning: readPositioningOptions(el),
       onValueChange: (details) => {
+        var _a4;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (getBoolean(el, "redirect") && firstValue) {
           const itemEl = el.querySelector(
@@ -33295,8 +33296,9 @@ ${err}`);
         const valueInput = el.querySelector(
           '[data-scope="select"][data-part="value-input"]'
         );
-        if (valueInput && getBoolean(el, "controlled")) {
-          valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+        if (valueInput) {
+          const list = details.value.map((v2) => String(v2));
+          valueInput.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
           valueInput.dispatchEvent(new Event("input", { bubbles: true }));
           valueInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
@@ -34217,6 +34219,8 @@ ${err}`);
           );
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+            hiddenSelect.disabled = true;
+            hiddenSelect.removeAttribute("name");
           }
           ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -37875,6 +37879,15 @@ ${err}`);
       }
     }
   }
+  function machineState2(api) {
+    return {
+      running: api.running,
+      paused: api.paused,
+      progressPercent: api.progressPercent,
+      time: api.time,
+      formattedTime: api.formattedTime
+    };
+  }
   function parseTimerTranslations(el) {
     const raw = el.dataset.translation;
     if (!raw) return void 0;
@@ -37889,6 +37902,59 @@ ${err}`);
     }
     return void 0;
   }
+  function buildTimerProps(el, pushEvent, canPush) {
+    return {
+      id: el.id,
+      countdown: getBoolean(el, "countdown"),
+      startMs: getNumber(el, "startMs"),
+      targetMs: getNumber(el, "targetMs"),
+      autoStart: getBoolean(el, "autoStart"),
+      interval: getNumber(el, "interval"),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
+      translations: parseTimerTranslations(el),
+      onTick: (details) => {
+        const eventName = getString(el, "onTick");
+        if (eventName && canPush()) {
+          pushEvent(eventName, {
+            value: details.value,
+            time: details.time,
+            formattedTime: details.formattedTime,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onTickClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value,
+                time: details.time,
+                formattedTime: details.formattedTime
+              }
+            })
+          );
+        }
+      },
+      onComplete: () => {
+        const eventName = getString(el, "onComplete");
+        if (eventName && canPush()) {
+          pushEvent(eventName, { id: el.id });
+        }
+        const eventNameClient = getString(el, "onCompleteClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: { id: el.id }
+            })
+          );
+        }
+      }
+    };
+  }
   var anatomy28, parts28, getRootId23, getAreaId3, validActions, machine28, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
@@ -37896,6 +37962,8 @@ ${err}`);
       init_chunk_W6DW6OBY();
       init_chunk_FFJGC56K();
       init_chunk_PE34YET2();
+      init_chunk_77HPO22C();
+      init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy28 = createAnatomy("timer").parts(
         "root",
@@ -38142,81 +38210,82 @@ ${err}`);
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const zag = new Timer2(el, {
-            id: el.id,
-            countdown: getBoolean(el, "countdown"),
-            startMs: getNumber(el, "startMs"),
-            targetMs: getNumber(el, "targetMs"),
-            autoStart: getBoolean(el, "autoStart"),
-            interval: getNumber(el, "interval"),
-            dir: getDir(el),
-            orientation: getString(el, "orientation"),
-            translations: parseTimerTranslations(el),
-            onTick: (details) => {
-              const eventName = getString(el, "onTick");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  value: details.value,
-                  time: details.time,
-                  formattedTime: details.formattedTime,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onTickClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: details.value,
-                      time: details.time,
-                      formattedTime: details.formattedTime
-                    }
-                  })
-                );
-              }
-            },
-            onComplete: () => {
-              const eventName = getString(el, "onComplete");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, { id: el.id });
-              }
-              const eventNameClient = getString(el, "onCompleteClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { id: el.id }
-                  })
-                );
-              }
-            }
-          });
+          const canPush = () => canPushEvent(this.liveSocket);
+          const zag = new Timer2(el, buildTimerProps(el, pushEvent, canPush));
           zag.init();
           this.timer = zag;
-          this.handlers = [];
+          const emitState = (respondTo) => {
+            const snapshot2 = machineState2(zag.api);
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "timer_state_response",
+              serverPayload: __spreadValues({ id: el.id }, snapshot2),
+              el,
+              domEventName: "timer-state",
+              domDetail: __spreadValues({ id: el.id }, snapshot2)
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:timer:start", () => {
+            zag.api.start();
+          });
+          domRegistry.add("corex:timer:pause", () => {
+            zag.api.pause();
+          });
+          domRegistry.add("corex:timer:resume", () => {
+            zag.api.resume();
+          });
+          domRegistry.add("corex:timer:reset", () => {
+            zag.api.reset();
+          });
+          domRegistry.add("corex:timer:restart", () => {
+            zag.api.restart();
+          });
+          domRegistry.add("corex:timer:state", (event) => {
+            emitState(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("timer_start", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.start();
+          });
+          registry.add("timer_pause", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.pause();
+          });
+          registry.add("timer_resume", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.resume();
+          });
+          registry.add("timer_reset", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.reset();
+          });
+          registry.add("timer_restart", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.restart();
+          });
+          registry.add("timer_state", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitState(parseRespondTo(payload));
+          });
         },
         updated() {
           var _a4;
-          (_a4 = this.timer) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            countdown: getBoolean(this.el, "countdown"),
-            startMs: getNumber(this.el, "startMs"),
-            targetMs: getNumber(this.el, "targetMs"),
-            autoStart: getBoolean(this.el, "autoStart"),
-            interval: getNumber(this.el, "interval"),
-            dir: getDir(this.el),
-            orientation: getString(this.el, "orientation"),
-            translations: parseTimerTranslations(this.el)
-          });
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          (_a4 = this.timer) == null ? void 0 : _a4.updateProps(buildTimerProps(el, pushEvent, canPush));
         },
         destroyed() {
-          var _a4;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a4 = this.timer) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.timer) == null ? void 0 : _c.destroy();
         }
       };
     }

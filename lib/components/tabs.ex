@@ -102,7 +102,6 @@ defmodule Corex.Tabs do
 
   ```heex
   <.tabs
-    id="tabs-patterns-controlled"
     controlled
     value={@value}
     on_value_change="tabs_value_changed"
@@ -128,7 +127,7 @@ defmodule Corex.Tabs do
   <.async_result :let={tabs} assign={@tabs}>
     <:loading><.tabs_skeleton count={3} class="tabs" /></:loading>
     <:failed>Could not load tabs.</:failed>
-    <.tabs id="async-tabs" class="tabs" items={tabs.items} value={tabs.value} />
+    <.tabs class="tabs" items={tabs.items} value={tabs.value} />
   </.async_result>
   ```
 
@@ -649,6 +648,30 @@ defmodule Corex.Tabs do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the active tab from a control (`phx-click`). `value` is the tab item value (same as items' `value`).
+
+  ```heex
+  <.action phx-click={Corex.Tabs.set_value("my-tabs", "lorem")}>Lorem</.action>
+  <.tabs
+    id="my-tabs"
+    class="tabs"
+    items={Corex.Content.new([
+      [value: "lorem", label: "Lorem", content: "A."],
+      [value: "duis", label: "Duis", content: "B."]
+    ])}
+  />
+  ```
+
+  ```javascript
+  document.getElementById("my-tabs")?.dispatchEvent(
+    new CustomEvent("corex:tabs:set-value", {
+      bubbles: false,
+      detail: { value: "lorem" },
+    })
+  );
+  ```
+  """
   def set_value(tabs_id, value) when is_binary(tabs_id) do
     JS.dispatch("corex:tabs:set-value",
       to: "##{tabs_id}",
@@ -658,6 +681,27 @@ defmodule Corex.Tabs do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set the active tab from `handle_event`.
+
+  ```heex
+  <.action phx-click="pick_tab" phx-value-value="lorem">Lorem</.action>
+  <.tabs
+    id="my-tabs"
+    class="tabs"
+    items={Corex.Content.new([
+      [value: "lorem", label: "Lorem", content: "A."],
+      [value: "duis", label: "Duis", content: "B."]
+    ])}
+  />
+  ```
+
+  ```elixir
+  def handle_event("pick_tab", %{"value" => value}, socket) do
+    {:noreply, Corex.Tabs.set_value(socket, "my-tabs", value)}
+  end
+  ```
+  """
   def set_value(socket, tabs_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tabs_id) do
     LiveView.push_event(socket, "tabs_set_value", %{

@@ -9,7 +9,7 @@ defmodule Corex.Collapsible do
   ### Minimal
 
   ```heex
-  <.collapsible id="collapsible-anatomy" class="collapsible">
+  <.collapsible class="collapsible">
     <:trigger>Toggle</:trigger>
     <:content>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -22,7 +22,7 @@ defmodule Corex.Collapsible do
   Optional **`:closed`** and **`:opened`** slots render after the trigger label. Use one chevron in **`:closed`** and default CSS rotates it when open.
 
   ```heex
-  <.collapsible id="collapsible-anatomy-indicator" class="collapsible">
+  <.collapsible class="collapsible">
     <:trigger>Toggle</:trigger>
     <:closed>
       <.heroicon name="hero-chevron-right" />
@@ -38,16 +38,12 @@ defmodule Corex.Collapsible do
   Use `:let={collapsible}` on slots to read `collapsible.open` and `collapsible.disabled`.
 
   ```heex
-  <.collapsible id="collapsible-anatomy-custom" class="collapsible">
+  <.collapsible class="collapsible">
     <:trigger :let={c}>
       {if c.open, do: "Collapse", else: "Expand"}
     </:trigger>
-    <:closed>
-      <span class="text-sm text-ink-muted">▼</span>
-    </:closed>
-    <:opened>
-      <span class="text-sm text-ink-muted">▲</span>
-    </:opened>
+    <:closed>▼</:closed>
+    <:opened>▲</:opened>
     <:content :let={_c}>
       Panel body with custom opened/closed adornments.
     </:content>
@@ -104,7 +100,6 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.collapsible
-    id="collapsible-events-server"
     class="collapsible"
     on_open_change="collapsible_open_changed"
   >
@@ -167,7 +162,7 @@ defmodule Corex.Collapsible do
     <:loading>
       <.collapsible_skeleton class="collapsible" />
     </:loading>
-    <.collapsible id="patterns-collapsible-async" class="collapsible" open={panel.open}>
+    <.collapsible class="collapsible" open={panel.open}>
       <:trigger>Details</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -188,7 +183,6 @@ defmodule Corex.Collapsible do
 
   ```heex
   <.collapsible
-    id="patterns-collapsible-controlled"
     class="collapsible"
     controlled
     open={@open}
@@ -449,6 +443,26 @@ defmodule Corex.Collapsible do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set expanded or collapsed state from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>Expand</.action>
+  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+    <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
+    <:content>Details.</:content>
+  </.collapsible>
+  ```
+
+  ```javascript
+  document.getElementById("my-collapsible")?.dispatchEvent(
+    new CustomEvent("corex:collapsible:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
     JS.dispatch("corex:collapsible:set-open",
       to: "##{collapsible_id}",
@@ -458,6 +472,23 @@ defmodule Corex.Collapsible do
   end
 
   @doc type: :api
+  @doc ~S"""
+  Set open state from `handle_event`.
+
+  ```heex
+  <.action phx-click="expand_collapsible">Expand</.action>
+  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+    <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
+    <:content>Details.</:content>
+  </.collapsible>
+  ```
+
+  ```elixir
+  def handle_event("expand_collapsible", _, socket) do
+    {:noreply, Corex.Collapsible.set_open(socket, "my-collapsible", true)}
+  end
+  ```
+  """
   def set_open(socket, collapsible_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(collapsible_id) and
              is_boolean(open) do

@@ -1,6 +1,14 @@
 defmodule E2eWeb.Demos.TabsDemo do
   use E2eWeb, :html
 
+  @tabs_items_attr ~S"""
+  items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+    %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+    %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+  ])}
+  """
+
   def basic_items do
     Corex.Content.new([
       %{
@@ -22,8 +30,8 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def anatomy_basic_code do
-    ~S"""
-    <.tabs id="tabs-basic" class="tabs w-full max-w-md" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    """
+    <.tabs class="tabs" value="lorem" #{@tabs_items_attr} />
     """
   end
 
@@ -31,7 +39,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <.tabs
       id="tabs-basic"
-      class="tabs w-full max-w-md"
+      class="tabs"
       value="lorem"
       items={E2eWeb.Demos.TabsDemo.basic_items()}
     />
@@ -39,13 +47,12 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def anatomy_indicator_code do
-    ~S"""
+    """
     <.tabs
-      id="tabs-indicator"
-      class="tabs w-full max-w-md"
+      class="tabs"
       indicator
       value="lorem"
-      items={E2eWeb.Demos.TabsDemo.basic_items()}
+      #{@tabs_items_attr}
     />
     """
   end
@@ -54,7 +61,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <.tabs
       id="tabs-indicator"
-      class="tabs w-full max-w-md"
+      class="tabs"
       indicator
       value="lorem"
       items={E2eWeb.Demos.TabsDemo.basic_items()}
@@ -63,8 +70,8 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def anatomy_nested_code do
-    ~S"""
-    <.tabs id="tabs-nested-outer" class="tabs w-full max-w-md" value="outer-2">
+    """
+    <.tabs class="tabs" value="outer-2">
       <:trigger value="outer-1">Outer 1</:trigger>
       <:trigger value="outer-2">Outer 2</:trigger>
 
@@ -74,10 +81,9 @@ defmodule E2eWeb.Demos.TabsDemo do
 
       <:content value="outer-2">
         <.tabs
-          id="tabs-nested-inner"
           class="tabs"
           value="lorem"
-          items={E2eWeb.Demos.TabsDemo.basic_items()}
+          #{@tabs_items_attr}
         />
       </:content>
     </.tabs>
@@ -86,7 +92,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_nested_example(assigns) do
     ~H"""
-    <.tabs id="tabs-nested-outer" class="tabs w-full max-w-md" value="outer-2">
+    <.tabs id="tabs-nested-outer" class="tabs" value="outer-2">
       <:trigger value="outer-1">Outer 1</:trigger>
       <:trigger value="outer-2">Outer 2</:trigger>
 
@@ -113,12 +119,10 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_client_binding_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">Lorem</.action>
-      <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button button--sm">Duis</.action>
-      <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button button--sm">Close all</.action>
-    </div>
-    <.tabs id="tabs-api-cb" class="tabs w-full" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">Lorem</.action>
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button button--sm">Duis</.action>
+    <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button button--sm">Close all</.action>
+    <.tabs id="tabs-api-cb" class="tabs" value="lorem" #{@tabs_items_attr} />
     """
   end
 
@@ -150,16 +154,14 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_client_js_heex do
     ~S"""
-    <div class="layout__row">
-      <button
-        type="button"
-        class="button button--sm"
-        onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
-      >
-        Lorem (client JS)
-      </button>
-    </div>
-    <.tabs id="tabs-api-cjs" class="tabs w-full" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <button
+      type="button"
+      class="button button--sm"
+      onclick="document.getElementById('tabs-api-cjs')?.dispatchEvent(new CustomEvent('corex:tabs:set-value', {bubbles: false, detail: { value: 'lorem' } }))"
+    >
+      Lorem (client JS)
+    </button>
+    <.tabs id="tabs-api-cjs" class="tabs" value="lorem" #{@tabs_items_attr} />
     """
   end
 
@@ -207,12 +209,10 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def api_set_value_server_heex do
     ~S"""
-    <div class="layout__row">
-      <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
-      <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
-      <.action phx-click="tabs_api_close" class="button button--sm">Close all</.action>
-    </div>
-    <.tabs id="tabs-api-srv" class="tabs w-full" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
+    <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
+    <.action phx-click="tabs_api_close" class="button button--sm">Close all</.action>
+    <.tabs id="tabs-api-srv" class="tabs" value="lorem" #{@tabs_items_attr} />
     """
   end
 
@@ -270,12 +270,11 @@ defmodule E2eWeb.Demos.TabsDemo do
   def patterns_controlled_heex do
     ~S"""
     <.tabs
-      id="tabs-patterns-controlled"
-      class="tabs w-full"
+      class="tabs"
       value={@value}
       controlled
       on_value_change="tabs_pattern_value"
-      items={E2eWeb.Demos.TabsDemo.basic_items()}
+      #{@tabs_items_attr}
     />
     """
   end
@@ -319,15 +318,15 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_color_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+    items = @tabs_items_attr
 
     """
-    <.tabs id="tabs-style-color-default" class="tabs w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-color-accent" class="tabs tabs--accent w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-color-brand" class="tabs tabs--brand w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-color-alert" class="tabs tabs--alert w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-color-info" class="tabs tabs--info w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-color-success" class="tabs tabs--success w-full max-w-md" value="lorem" #{items} />
+    <.tabs class="tabs" value="lorem" #{items} />
+    <.tabs class="tabs tabs--accent" value="lorem" #{items} />
+    <.tabs class="tabs tabs--brand" value="lorem" #{items} />
+    <.tabs class="tabs tabs--alert" value="lorem" #{items} />
+    <.tabs class="tabs tabs--info" value="lorem" #{items} />
+    <.tabs class="tabs tabs--success" value="lorem" #{items} />
     """
   end
 
@@ -338,37 +337,37 @@ defmodule E2eWeb.Demos.TabsDemo do
     <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.tabs
         id="tabs-style-color-default"
-        class="tabs w-full max-w-md"
+        class="tabs"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-accent"
-        class="tabs tabs--accent w-full max-w-md"
+        class="tabs tabs--accent"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-brand"
-        class="tabs tabs--brand w-full max-w-md"
+        class="tabs tabs--brand"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-alert"
-        class="tabs tabs--alert w-full max-w-md"
+        class="tabs tabs--alert"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-info"
-        class="tabs tabs--info w-full max-w-md"
+        class="tabs tabs--info"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-color-success"
-        class="tabs tabs--success w-full max-w-md"
+        class="tabs tabs--success"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -377,13 +376,13 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_size_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+    items = @tabs_items_attr
 
     """
-    <.tabs id="tabs-style-sm" class="tabs tabs--sm w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-md" class="tabs tabs--md w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-lg" class="tabs tabs--lg w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-xl" class="tabs tabs--xl w-full max-w-md" value="lorem" #{items} />
+    <.tabs class="tabs tabs--sm" value="lorem" #{items} />
+    <.tabs class="tabs tabs--md" value="lorem" #{items} />
+    <.tabs class="tabs tabs--lg" value="lorem" #{items} />
+    <.tabs class="tabs tabs--xl" value="lorem" #{items} />
     """
   end
 
@@ -391,28 +390,28 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-4">
       <.tabs
         id="tabs-style-sm"
-        class="tabs tabs--sm w-full max-w-md"
+        class="tabs tabs--sm"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-md"
-        class="tabs tabs--md w-full max-w-md"
+        class="tabs tabs--md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-lg"
-        class="tabs tabs--lg w-full max-w-md"
+        class="tabs tabs--lg"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-xl"
-        class="tabs tabs--xl w-full max-w-md"
+        class="tabs tabs--xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -421,13 +420,13 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_text_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+    items = @tabs_items_attr
 
     """
-    <.tabs id="tabs-style-text-sm" class="tabs tabs--text-sm w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-text-xl" class="tabs tabs--text-xl w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-text-2xl" class="tabs tabs--text-2xl w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-text-4xl" class="tabs tabs--text-4xl w-full max-w-md" value="lorem" #{items} />
+    <.tabs class="tabs tabs--text-sm" value="lorem" #{items} />
+    <.tabs class="tabs tabs--text-xl" value="lorem" #{items} />
+    <.tabs class="tabs tabs--text-2xl" value="lorem" #{items} />
+    <.tabs class="tabs tabs--text-4xl" value="lorem" #{items} />
     """
   end
 
@@ -435,28 +434,28 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-4">
       <.tabs
         id="tabs-style-text-sm"
-        class="tabs tabs--text-sm w-full max-w-md"
+        class="tabs tabs--text-sm"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-text-xl"
-        class="tabs tabs--text-xl w-full max-w-md"
+        class="tabs tabs--text-xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-text-2xl"
-        class="tabs tabs--text-2xl w-full max-w-md"
+        class="tabs tabs--text-2xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-text-4xl"
-        class="tabs tabs--text-4xl w-full max-w-md"
+        class="tabs tabs--text-4xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -465,14 +464,14 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_radius_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+    items = @tabs_items_attr
 
     """
-    <.tabs id="tabs-style-rounded-none" class="tabs tabs--rounded-none w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-rounded-md" class="tabs tabs--rounded-md w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-rounded-lg" class="tabs tabs--rounded-lg w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-rounded-xl" class="tabs tabs--rounded-xl w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-rounded-full" class="tabs tabs--rounded-full w-full max-w-md" value="lorem" #{items} />
+    <.tabs class="tabs tabs--rounded-none" value="lorem" #{items} />
+    <.tabs class="tabs tabs--rounded-md" value="lorem" #{items} />
+    <.tabs class="tabs tabs--rounded-lg" value="lorem" #{items} />
+    <.tabs class="tabs tabs--rounded-xl" value="lorem" #{items} />
+    <.tabs class="tabs tabs--rounded-full" value="lorem" #{items} />
     """
   end
 
@@ -480,34 +479,34 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-md">
+    <div class="flex flex-col gap-4">
       <.tabs
         id="tabs-style-rounded-none"
-        class="tabs tabs--rounded-none w-full max-w-md"
+        class="tabs tabs--rounded-none"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-md"
-        class="tabs tabs--rounded-md w-full max-w-md"
+        class="tabs tabs--rounded-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-lg"
-        class="tabs tabs--rounded-lg w-full max-w-md"
+        class="tabs tabs--rounded-lg"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-xl"
-        class="tabs tabs--rounded-xl w-full max-w-md"
+        class="tabs tabs--rounded-xl"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
         id="tabs-style-rounded-full"
-        class="tabs tabs--rounded-full w-full max-w-md"
+        class="tabs tabs--rounded-full"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -516,13 +515,13 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_max_width_code do
-    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+    items = @tabs_items_attr
 
     """
-    <.tabs id="tabs-style-max-2xs" class="tabs w-full max-w-2xs" value="lorem" #{items} />
-    <.tabs id="tabs-style-max-md" class="tabs w-full max-w-md" value="lorem" #{items} />
-    <.tabs id="tabs-style-max-xl" class="tabs w-full max-w-xl" value="lorem" #{items} />
-    <.tabs id="tabs-style-max-2xl" class="tabs w-full max-w-2xl" value="lorem" #{items} />
+    <.tabs class="tabs max-w-2xs" value="lorem" #{items} />
+    <.tabs class="tabs max-w-md" value="lorem" #{items} />
+    <.tabs class="tabs max-w-xl" value="lorem" #{items} />
+    <.tabs class="tabs max-w-2xl" value="lorem" #{items} />
     """
   end
 
@@ -539,7 +538,7 @@ defmodule E2eWeb.Demos.TabsDemo do
       />
       <.tabs
         id="tabs-style-max-md"
-        class="tabs w-full max-w-md"
+        class="tabs"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -562,22 +561,19 @@ defmodule E2eWeb.Demos.TabsDemo do
   def events_server_heex do
     ~S"""
     <.tabs
-      id="tabs-events-server"
       class="tabs"
       value="lorem"
       on_value_change="tabs_value_changed"
-      items={E2eWeb.Demos.TabsDemo.basic_items()}
+      #{@tabs_items_attr}
     />
     """
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("tabs_value_changed", %{"value" => value, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{id: id, value: value})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "tabs_value_changed",
+      ~S|%{"value" => value, "id" => id} = params|
+    )
   end
 
   def events_client_heex do
@@ -587,7 +583,7 @@ defmodule E2eWeb.Demos.TabsDemo do
       class="tabs"
       value="lorem"
       on_value_change_client="tabs-value-changed"
-      items={E2eWeb.Demos.TabsDemo.basic_items()}
+      #{@tabs_items_attr}
     />
     """
   end
