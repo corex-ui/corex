@@ -27,7 +27,7 @@ defmodule E2eWeb.DocRoutesA11yTest do
           end
         end)
 
-      SiteModel.check_accessibility(session)
+      SiteModel.check_accessibility(session, filter: E2eWeb.A11yDocPageFilter)
     end
   end
 end

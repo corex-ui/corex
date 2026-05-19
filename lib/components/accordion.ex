@@ -1014,6 +1014,7 @@ defmodule Corex.Accordion do
           ctx={@ctx}
           value={panel.value}
           disabled={panel.disabled}
+          label={panel_source_label(panel)}
           :let={item}
         >
           <.accordion_trigger item={item}>
@@ -1096,6 +1097,7 @@ defmodule Corex.Accordion do
 
   attr(:value, :string, required: true, doc: "The unique value identifying this item")
   attr(:disabled, :boolean, default: false, doc: "Whether the item is disabled")
+  attr(:label, :string, default: nil, doc: "Visible item label for unique region names")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
@@ -1107,7 +1109,8 @@ defmodule Corex.Accordion do
       values: assigns.ctx.values,
       orientation: assigns.ctx.orientation,
       dir: assigns.ctx.dir,
-      animation: Map.get(assigns.ctx, :animation, "instant")
+      animation: Map.get(assigns.ctx, :animation, "instant"),
+      label: assigns[:label]
     }
 
     assigns = assign(assigns, :item, item)
@@ -1654,6 +1657,11 @@ defmodule Corex.Accordion do
 
   defp accordion_panel_has_indicator?(%{source: :slots, indicator_slot: slot}, _top), do: !!slot
   defp accordion_panel_has_indicator?(%{source: :items}, top_indicator), do: top_indicator != []
+
+  defp panel_source_label(%{source: :items, item_entry: %{label: label}}) when is_binary(label),
+    do: label
+
+  defp panel_source_label(_), do: nil
 
   defp normalize_value(nil), do: []
   defp normalize_value(v) when is_binary(v), do: [v]

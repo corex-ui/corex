@@ -87,7 +87,7 @@ defmodule E2eWeb.DemoPage do
   def demo_playground(assigns) do
     ~H"""
     <div id={@id} class="w-full flex flex-col">
-      <.layout_heading class={@heading_class}>
+      <.layout_heading class={@heading_class} title_tag="h2" subtitle_tag="p">
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>

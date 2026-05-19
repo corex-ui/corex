@@ -4,15 +4,15 @@ defmodule E2eWeb.CarouselModel do
   import Wallaby.Query
 
   @anatomy_sections ~W(
-    carousel-anatomy-basic
-    carousel-anatomy-loop
-    carousel-anatomy-vertical
+    carousel-anatomy-images
+    carousel-anatomy-custom-content
+    carousel-anatomy-compound
   )
 
   @anatomy_section_to_host_id %{
-    "carousel-anatomy-basic" => "carousel-basic",
-    "carousel-anatomy-loop" => "carousel-loop",
-    "carousel-anatomy-vertical" => "carousel-vertical"
+    "carousel-anatomy-images" => "carousel-images",
+    "carousel-anatomy-custom-content" => "carousel-blog",
+    "carousel-anatomy-compound" => "carousel-compound"
   }
 
   def anatomy_section_ids, do: @anatomy_sections

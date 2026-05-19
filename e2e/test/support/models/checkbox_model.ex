@@ -8,7 +8,14 @@ defmodule E2eWeb.CheckboxModel do
     checkbox-anatomy-indeterminate
   )
 
+  @anatomy_toggle_checked_sections ~W(
+    checkbox-anatomy-minimal
+    checkbox-anatomy-labeled
+  )
+
   def anatomy_section_ids, do: @anatomy_sections
+
+  def anatomy_toggle_checked_section_ids, do: @anatomy_toggle_checked_sections
 
   def wait_playground_checkbox_ready(session) do
     assert_has(
@@ -82,7 +89,7 @@ defmodule E2eWeb.CheckboxModel do
     click(
       session,
       xpath(
-        "//*[@id='checkbox-api-js-dispatch']//button[contains(normalize-space(), 'Dispatch checked')]"
+        "//*[@id='checkbox-api-js-dispatch']//button[normalize-space(.)='Set checked']"
       )
     )
 

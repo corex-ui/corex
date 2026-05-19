@@ -131,9 +131,17 @@ defmodule Corex.Accordion.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
-      "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "id" => content_id(assigns.id, assigns.value)
     }
+
+    base =
+      case region_aria_label(assigns) do
+        nil ->
+          Map.put(base, "aria-labelledby", trigger_id(assigns.id, assigns.value))
+
+        aria_label ->
+          Map.put(base, "aria-label", aria_label)
+      end
 
     result =
       cond do
@@ -148,6 +156,19 @@ defmodule Corex.Accordion.Connect do
       end
 
     maybe_put_dir(result, assigns.dir)
+  end
+
+  defp region_aria_label(%{label: label, id: id, value: value})
+       when is_binary(label) and label != "" and is_binary(id) and is_binary(value) do
+    "#{label}, #{region_group_name(id)}"
+  end
+
+  defp region_aria_label(_), do: nil
+
+  defp region_group_name(id) do
+    id
+    |> String.replace("-", " ")
+    |> String.replace("_", " ")
   end
 
   @spec ignore_content(Item.t()) :: JS.t()

@@ -25,5 +25,26 @@ defmodule Corex.Layout.HeadingTest do
       assert html =~ "Manage"
       assert html =~ ~S(data-test="act")
     end
+
+    test "title_tag and subtitle_tag choose heading tags" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.layout_heading title_tag="h2" subtitle_tag="p">
+              <:title>Playground</:title>
+              <:subtitle>Controls</:subtitle>
+            </.layout_heading>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "<h2"
+      assert html =~ "Playground"
+      assert html =~ "<p"
+      assert html =~ "Controls"
+      refute html =~ "<h1"
+    end
   end
 end

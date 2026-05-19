@@ -23,7 +23,8 @@
   }
 
   .layout-heading h1,
-  .layout-heading h2 {
+  .layout-heading h2,
+  .layout-heading p[data-scope="layout-heading"][data-part="subtitle"] {
     margin: 0;
   }
 
