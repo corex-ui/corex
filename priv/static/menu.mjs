@@ -1,4 +1,8 @@
 import {
+  createRect,
+  getRectCorners
+} from "./chunks/chunk-QB2YSZP6.mjs";
+import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
@@ -14,10 +18,6 @@ import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-FOQSALVP.mjs";
-import {
-  createRect,
-  getRectCorners
-} from "./chunks/chunk-QB2YSZP6.mjs";
 import {
   getInteractionModality,
   setInteractionModality,

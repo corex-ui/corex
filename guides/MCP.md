@@ -6,6 +6,8 @@ You expose Corex component metadata to AI tools (Cursor, Claude Desktop, VS Code
 
 Built on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix) (Apache-2.0).
 
+Do not enable MCP in production. The tools are read-only, but the endpoint still widens your attack surface. Use it only while developing locally (or in `:test` when generated apps include it for CI).
+
 ## Before you start
 
 | Requirement | Notes |

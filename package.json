@@ -19,7 +19,6 @@
     "./carousel": "./priv/static/carousel.mjs",
     "./checkbox": "./priv/static/checkbox.mjs",
     "./clipboard": "./priv/static/clipboard.mjs",
-    "./code": "./priv/static/code.mjs",
     "./color-picker": "./priv/static/color-picker.mjs",
     "./collapsible": "./priv/static/collapsible.mjs",
     "./combobox": "./priv/static/combobox.mjs",

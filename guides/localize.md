@@ -96,13 +96,14 @@ config :localize,
   supported_locales: Gettext.known_locales(MyAppWeb.Gettext) |> Enum.map(&String.to_atom/1)
 ```
 
-While you're in config, point Corex at the same Gettext backend so its components use your translations. In **`config/config.exs`**:
+While you're in config, set the Phoenix Gettext backend so Corex components use your translations. In **`config/config.exs`**:
 
 ```elixir
-config :corex,
-  gettext_backend: MyAppWeb.Gettext,
-  json_library: Jason
+config :phoenix,
+  gettext_backend: MyAppWeb.Gettext
 ```
+
+Corex reads **`config :phoenix, :gettext_backend`** (the same key Phoenix uses for `gettext/1` in templates).
 
 ### Download CLDR locale files (mix localize.download_locales)
 
@@ -376,7 +377,7 @@ msgid "Home"
 msgstr "Accueil"
 ```
 
-Corex components that expose translatable labels (Select, Editable, Dialog, …) read them from your Gettext backend automatically because of **`config :corex, :gettext_backend, MyAppWeb.Gettext`**. To override a single label without touching the whole catalog, pass a **`Translation`** struct on the component:
+Corex components that expose translatable labels (Select, Editable, Dialog, …) read them from your Gettext backend automatically when **`config :phoenix, :gettext_backend`** is set. To override a single label without touching the whole catalog, pass a **`Translation`** struct on the component:
 
 ```heex
 <.editable translation={%Corex.Editable.Translation{input: "Champ éditable"}} />

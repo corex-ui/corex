@@ -38,7 +38,9 @@ defmodule E2eWeb.FloatingPanelTest do
 
       session
       |> ComponentBehaviorSpec.visit_ready(FloatingPanel, :floating_panel, :anatomy)
-      |> FloatingPanel.wait_section_floating_panel_ready("floating-panel-anatomy-no-trigger-section")
+      |> FloatingPanel.wait_section_floating_panel_ready(
+        "floating-panel-anatomy-no-trigger-section"
+      )
       |> FloatingPanel.wait_host_floating_panel_ready(host)
       |> FloatingPanel.click_by_id("floating-panel-anatomy-no-trigger-open")
       |> FloatingPanel.wait_content_open_in_host(host, timeout: 8_000)

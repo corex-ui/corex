@@ -2,6 +2,10 @@ import {
   memo
 } from "./chunks/chunk-W6DW6OBY.mjs";
 import {
+  clampValue,
+  isValueWithinRange
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
@@ -15,10 +19,6 @@ import "./chunks/chunk-QS5WHZEI.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-VPEGVSVG.mjs";
-import {
-  clampValue,
-  isValueWithinRange
-} from "./chunks/chunk-PE34YET2.mjs";
 import {
   notifyChange
 } from "./chunks/chunk-YECC7BC7.mjs";

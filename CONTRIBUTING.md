@@ -36,11 +36,10 @@ Optional quality checks before a PR (same as `mix pre.publish`):
 
 ```bash
 mix lint
-mix sobelow
 mix docs
 ```
 
-`mix lint` runs `format --check-formatted`, `credo --strict`, and `oeditus_credo --strict` (ExSlop checks are enabled in `.credo.exs`).
+`mix lint` runs `format --check-formatted`, `credo --strict`, `oeditus_credo --strict`, and `sobelow --exit` (ExSlop checks are enabled in `.credo.exs`).
 
 ### E2e app (`e2e/`)
 
@@ -114,11 +113,11 @@ Coverage is tracked on CI (Coveralls); aim not to lower coverage on touched modu
 
 ## Component and documentation conventions
 
-Reference: [`e2e/docs/component-moduledoc-template.md`](e2e/docs/component-moduledoc-template.md) and [`Corex.Accordion`](lib/components/accordion.ex).
+Reference: [`Corex.Accordion`](lib/components/accordion.ex) moduledoc and [`E2eWeb.DocPageMatrix`](e2e/lib/e2e_web/doc_page_matrix.ex) for which doc page types exist per component.
 
 ### Moduledoc structure
 
-Use H2 sections in this order when applicable (see [`e2e/docs/beta-page-matrix.md`](e2e/docs/beta-page-matrix.md)): **Anatomy**, **API**, **Events**, **Patterns**, **Animation**, **Style**, **Form**. Omit sections the component does not need.
+Use H2 sections in this order when applicable: **Anatomy**, **API**, **Events**, **Patterns**, **Animation**, **Style**, **Form**. Omit sections the component does not need. Match page keys in `E2eWeb.DocPageMatrix` when adding e2e doc routes.
 
 - Examples in moduledoc must be copy-paste ready (inline `Corex.Content.new/1`, stable `id`, root `class`).
 - Keep e2e demo code (`e2e/lib/e2e_web/demos/*_demo.ex`) in sync with the same examples.

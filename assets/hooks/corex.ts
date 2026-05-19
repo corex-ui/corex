@@ -33,7 +33,6 @@ export const Hooks = {
   Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
   Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
   Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
-  Code: createLazyHook(() => import("corex/code"), "Code"),
   Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
   Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
   ColorPicker: createLazyHook(() => import("corex/color-picker"), "ColorPicker"),

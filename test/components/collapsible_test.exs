@@ -63,6 +63,65 @@ defmodule Corex.CollapsibleTest do
     end
   end
 
+  describe "Connect.props/1" do
+    test "maps controlled and uncontrolled open state" do
+      controlled =
+        Connect.props(%{
+          id: "c",
+          open: true,
+          controlled: true,
+          disabled: false,
+          dir: "ltr",
+          orientation: "horizontal",
+          on_open_change: "open_evt",
+          on_open_change_client: "open_client"
+        })
+
+      assert controlled["data-open"] == ""
+      assert controlled["data-controlled"] == ""
+      assert controlled["data-default-open"] == nil
+
+      uncontrolled =
+        Connect.props(%{
+          id: "c",
+          open: false,
+          controlled: false,
+          disabled: false,
+          dir: "ltr",
+          orientation: "vertical",
+          on_open_change: nil,
+          on_open_change_client: nil
+        })
+
+      assert uncontrolled["data-default-open"] == nil
+      assert uncontrolled["data-open"] == nil
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "return JS for all ignore functions" do
+      base = %{id: "c", dir: "ltr", open: true, disabled: false, orientation: "vertical"}
+
+      for fun <- [
+            &Connect.ignore_root/1,
+            &Connect.ignore_trigger/1,
+            &Connect.ignore_content/1,
+            &Connect.ignore_closed_part/1,
+            &Connect.ignore_opened_part/1
+          ] do
+        assert %Phoenix.LiveView.JS{} = fun.(base)
+      end
+    end
+  end
+
+  describe "collapsible_skeleton/1" do
+    test "renders skeleton markup" do
+      html = render_component(&Collapsible.collapsible_skeleton/1, class: "collapsible")
+      assert html =~ "data-loading"
+      assert html =~ ~r/data-scope="collapsible"/
+    end
+  end
+
   describe "Connect.root/1" do
     test "returns root attributes when closed" do
       assigns = %{id: "test-collapsible", dir: "ltr", open: false}

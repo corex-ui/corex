@@ -84,12 +84,10 @@ defmodule Corex.MixProject do
       lint: [
         "format --check-formatted",
         "credo --strict",
-        "oeditus_credo --strict"
-      ],
-      "pre.publish": [
-        "lint",
+        "oeditus_credo --strict",
         "sobelow --exit"
       ],
+      "pre.publish": ["lint"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
@@ -159,7 +157,9 @@ defmodule Corex.MixProject do
         "guides/theming.md",
         "guides/localize.md",
         "guides/MCP.md",
-        "guides/production.md"
+        "guides/production.md",
+        "guides/configuration.md",
+        "guides/releasing.md"
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -182,7 +182,12 @@ defmodule Corex.MixProject do
            "guides/dark_mode.md",
            "guides/theming.md",
            "guides/localize.md",
-           "guides/production.md"
+           "guides/production.md",
+           "guides/configuration.md"
+         ]},
+        {:Maintainers,
+         [
+           "guides/releasing.md"
          ]},
         {"Tableau Guides",
          [

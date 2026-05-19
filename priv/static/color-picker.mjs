@@ -1,4 +1,12 @@
 import {
+  clampValue,
+  getPercentValue,
+  getValuePercent,
+  mod,
+  snapValueToStep,
+  toFixedNumber
+} from "./chunks/chunk-PE34YET2.mjs";
+import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-KHWEM5PS.mjs";
@@ -9,14 +17,6 @@ import "./chunks/chunk-QS5WHZEI.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-VPEGVSVG.mjs";
-import {
-  clampValue,
-  getPercentValue,
-  getValuePercent,
-  mod,
-  snapValueToStep,
-  toFixedNumber
-} from "./chunks/chunk-PE34YET2.mjs";
 import {
   idMatches,
   notifyChange,

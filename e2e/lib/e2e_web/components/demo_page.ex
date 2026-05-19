@@ -45,7 +45,7 @@ defmodule E2eWeb.DemoPage do
 
   ## Which pages exist (component class)
 
-  Routing follows `e2e/docs/beta-page-matrix.md`:
+  Routing follows `E2eWeb.DocPageMatrix`:
 
   - **Zag-backed**  -  anatomy (and style when applicable), playground, API, events, patterns where the primitive supports them; optional animation, live form, controlled when routed.
   - **Form + Zag**  -  static **Form** and live-form routes as listed.

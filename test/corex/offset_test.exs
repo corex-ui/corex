@@ -14,4 +14,16 @@ defmodule Corex.OffsetTest do
   test "module exposes struct" do
     assert %{main_axis: nil, cross_axis: nil} = struct(Offset)
   end
+
+  test "serializes through Positioning.to_dataset/1" do
+    positioning = %Corex.Positioning{
+      placement: "bottom",
+      offset: %Offset{main_axis: 8, cross_axis: -4}
+    }
+
+    dataset = Corex.Positioning.to_dataset(positioning)
+
+    assert dataset["data-position-offset-main-axis"] == "8"
+    assert dataset["data-position-offset-cross-axis"] == "-4"
+  end
 end

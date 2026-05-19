@@ -1,4 +1,7 @@
 import {
+  readStringListControlledZagProps
+} from "./chunks/chunk-UUEU3QDP.mjs";
+import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-KHWEM5PS.mjs";
@@ -28,9 +31,6 @@ import {
   setInteractionModality,
   trackFocusVisible
 } from "./chunks/chunk-VGZJOUNL.mjs";
-import {
-  readStringListControlledZagProps
-} from "./chunks/chunk-UUEU3QDP.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

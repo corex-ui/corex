@@ -46,6 +46,11 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Build docs
+        run: mix docs
+        env:
+          MIX_ENV: docs
+
       - name: Restore E2E dependencies cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
         with:
@@ -276,6 +281,8 @@ jobs:
             otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
+          - elixir: 1.18.4
+            otp: 28.0.1
 
     services:
       postgres:

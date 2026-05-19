@@ -402,8 +402,6 @@ defmodule Corex.Listbox do
     assigns =
       assigns
       |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:controlled, fn -> false end)
       |> assign(:value, validate_value!(assigns[:value] || []))
       |> assign(:items, items)
       |> assign(:has_groups, has_groups)

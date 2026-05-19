@@ -22,4 +22,9 @@ defmodule Corex.FlashTest do
     assert error.title == "Problem"
     assert error.duration == :infinity
   end
+
+  test "structs accept minimal fields" do
+    assert %Info{}.title == nil
+    assert %Error{}.type == nil
+  end
 end

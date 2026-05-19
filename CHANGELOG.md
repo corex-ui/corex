@@ -6,7 +6,7 @@ First release of Corex
 
 ### Features
 
-- **Corex MCP** — In development, mount an MCP endpoint on your Phoenix app so tools like Cursor can list components and read up-to-date docs from the running project.
+- **Corex MCP** — Self-hosted MCP endpoint so tools like Cursor can list components and read docs from your running app. Enable only in development (`if Mix.env() == :dev do plug Corex.MCP end`); do not expose in production.
 - **Corex Design System** — Token-based CSS, themes, light and dark mode, and ready-made modifier classes (`button--accent`, `dialog--lg`, and similar). Run `mix corex.design` to copy design assets into your app.
 - **API and Events** — Open a dialog, set a slider, or expand an accordion from LiveView or JavaScript. Listen for user-driven changes with `on_*` attributes and `handle_event/3`. Documented on each component in Hexdocs.
 - **Phoenix forms** — Inputs and pickers built for forms: checkbox, switch, select, combobox, date picker, color picker, number, password, and pin inputs, tags input, radio group, file upload, signature pad, and more—with controlled values and changeset-friendly wiring.
@@ -66,6 +66,16 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 
 - **Form `invalid` is opt-in** — `field={}` no longer sets `invalid` from changeset errors on radio group, pin input, color picker, or editable (same as checkbox, switch, select). Pass `invalid` explicitly when you want invalid styling.
 - **Radio group** — Size and color modifier utilities in CSS; full Zag API surface (`set_value`, `clear_value`, `focus`, `value`); form docs show the `:error` slot; e2e style page and pattern stream examples.
+
+### Versioning (0.1.x)
+
+Pre-1.0: patch releases may include small fixes; minor releases may include breaking API or behavior changes until 1.0.
+
+**Migrating form `invalid` styling:** if you relied on changeset errors to style radio group, pin input, color picker, or editable automatically, pass `invalid` explicitly:
+
+```heex
+<.radio_group field={@form[:plan]} invalid={@form[:plan].errors != []} />
+```
 
 ### Requirements
 

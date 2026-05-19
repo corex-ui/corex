@@ -1,11 +1,4 @@
 import {
-  TreeCollection
-} from "./chunks/chunk-Q3YPKFFU.mjs";
-import {
-  performRedirect,
-  readDomItemRedirect
-} from "./chunks/chunk-FOQSALVP.mjs";
-import {
   diffStringValues
 } from "./chunks/chunk-JDGMEOQK.mjs";
 import {
@@ -16,6 +9,13 @@ import {
   runHeightOpenTransition,
   stripHiddenFromProps
 } from "./chunks/chunk-VBYH4ZIZ.mjs";
+import {
+  TreeCollection
+} from "./chunks/chunk-Q3YPKFFU.mjs";
+import {
+  performRedirect,
+  readDomItemRedirect
+} from "./chunks/chunk-FOQSALVP.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

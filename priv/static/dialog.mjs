@@ -1,8 +1,4 @@
 import {
-  trackDismissableElement
-} from "./chunks/chunk-YGX3OCBP.mjs";
-import "./chunks/chunk-QS5WHZEI.mjs";
-import {
   isJsAnimation,
   prepareJsScaleInitialState,
   readScaleAnimationOptions,
@@ -13,6 +9,10 @@ import {
   readBooleanControlledZagProps,
   readControlledOrDefaultBoolean
 } from "./chunks/chunk-UUEU3QDP.mjs";
+import {
+  trackDismissableElement
+} from "./chunks/chunk-YGX3OCBP.mjs";
+import "./chunks/chunk-QS5WHZEI.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

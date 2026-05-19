@@ -85,6 +85,24 @@ defmodule Corex.TooltipTest do
       end
     end
 
+    test "renders span trigger and controlled open" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.tooltip id="tip-span" controlled open={true} trigger_tag={:span}>
+              <:trigger><span>Hover</span></:trigger>
+              <:content><span>Open</span></:content>
+            </.tooltip>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "<span"
+      refute html =~ ~S(<button type="button")
+    end
+
     test "raises when multiple triggers reuse value" do
       assert_raise ArgumentError, fn ->
         render_component(
@@ -136,6 +154,70 @@ defmodule Corex.TooltipTest do
         })
 
       assert m["data-on-trigger-value-change"] == "tooltip_trigger"
+    end
+
+    test "maps delays and close flags" do
+      m =
+        Connect.props(%Props{
+          id: "id1",
+          positioning: %Corex.Positioning{},
+          open_delay: 100,
+          close_delay: 50,
+          close_on_escape: false,
+          close_on_click: true,
+          close_on_pointer_down: true,
+          close_on_scroll: false,
+          interactive: true,
+          disabled: true,
+          dir: "rtl"
+        })
+
+      assert m["data-open-delay"] == 100
+      assert m["data-close-delay"] == 50
+      assert m["data-close-on-escape"] == nil
+      assert m["data-interactive"] == ""
+      assert m["data-dir"] == "rtl"
+    end
+  end
+
+  describe "Connect.trigger/1" do
+    test "span trigger omits type button" do
+      t = Connect.trigger(%{id: "t", open: true, disabled: false, dir: "ltr", tag: :span})
+      refute Map.has_key?(t, "type")
+      assert t["data-state"] == "open"
+    end
+
+    test "button trigger includes type and disabled tabindex" do
+      t = Connect.trigger(%{id: "t", open: false, disabled: true, dir: "ltr", tag: :button})
+      assert t["type"] == "button"
+      assert t["tabindex"] == -1
+      assert t["data-value"] == nil
+    end
+
+    test "includes data-value when set" do
+      t = Connect.trigger(%{id: "t", open: true, disabled: false, value: "x"})
+      assert t["data-value"] == "x"
+    end
+  end
+
+  describe "Connect ignore and part helpers" do
+    test "return attrs and ignore JS" do
+      base = %{id: "t", dir: "ltr", open: true, disabled: false, orientation: "vertical"}
+
+      assert Connect.positioner(base)["id"] == "tooltip:t:popper"
+      assert Connect.content(base)["data-part"] == "content"
+      assert Connect.arrow(base)["data-part"] == "arrow"
+      assert Connect.arrow_tip(base)["data-part"] == "arrow-tip"
+
+      for fun <- [
+            &Connect.ignore_trigger/1,
+            &Connect.ignore_positioner/1,
+            &Connect.ignore_content/1,
+            &Connect.ignore_arrow/1,
+            &Connect.ignore_arrow_tip/1
+          ] do
+        assert %Phoenix.LiveView.JS{} = fun.(Map.put(base, :value, nil))
+      end
     end
   end
 

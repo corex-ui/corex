@@ -1,7 +1,4 @@
 import {
-  readPositioningOptions
-} from "./chunks/chunk-VPEGVSVG.mjs";
-import {
   __publicField,
   addPoints,
   createRect,
@@ -11,6 +8,9 @@ import {
   clampValue,
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  readPositioningOptions
+} from "./chunks/chunk-VPEGVSVG.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

@@ -55,6 +55,12 @@ defmodule Corex.ComponentTranslationsTest do
       assert t.area_label == "Timer"
       assert TimerTranslation.to_camel_map(t) == %{"areaLabel" => "Timer"}
     end
+
+    test "resolve partial struct merges defaults" do
+      t = TimerTranslation.resolve(%TimerTranslation{area_label: "Countdown"})
+      assert t.area_label == "Countdown"
+      assert TimerTranslation.to_camel_map(t) == %{"areaLabel" => "Countdown"}
+    end
   end
 
   describe "Pagination.Translation" do

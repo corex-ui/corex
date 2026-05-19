@@ -2,6 +2,7 @@ defmodule Corex.ListboxTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
+  alias Corex.Listbox
   alias Corex.Listbox.Connect
 
   describe "listbox/1" do
@@ -219,7 +220,21 @@ defmodule Corex.ListboxTest do
   describe "listbox/1 with options" do
     test "renders with grouped collection" do
       html = render_component(&CorexTest.ComponentHelpers.render_listbox_grouped/1, [])
-      assert html =~ ~r/data-scope="listbox"/
+
+      groups = find_in_html(html, ~S([data-scope="listbox"][data-part="item-group"]))
+      assert length(groups) == 2
+
+      assert Enum.sort(Floki.attribute(groups, "data-id")) == ["Asia", "Europe"]
+
+      labels = find_in_html(html, ~S([data-scope="listbox"][data-part="item-group-label"]))
+      assert length(labels) == 2
+      assert Enum.sort(Enum.map(labels, &Floki.text/1)) == ["Asia", "Europe"]
+
+      items = find_in_html(html, ~S([data-scope="listbox"][data-part="item"]))
+      assert length(items) == 2
+      assert Enum.sort(Floki.attribute(items, "data-value")) == ["a1", "e1"]
+      assert text_in_html(html) =~ "E1"
+      assert text_in_html(html) =~ "A1"
     end
 
     test "renders with controlled" do
@@ -233,6 +248,145 @@ defmodule Corex.ListboxTest do
       assert html =~ ~r/data-scope="listbox"/
       assert html =~ ~r/Item 1/
       assert html =~ ~r/Item 2/
+    end
+
+    test "renders aria_label when label slot is omitted" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox
+              id="lb-aria"
+              aria_label="Countries"
+              items={Corex.List.new([%{label: "France", value: "fra"}])}
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Countries"
+      assert html =~ ~S(aria-labelledby="listbox:lb-aria:label")
+    end
+
+    test "renders ungrouped items without custom item slot" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox
+              id="lb-plain"
+              items={Corex.List.new([%{label: "One", value: "1"}, %{label: "Two", value: "2"}])}
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "One"
+      assert html =~ "Two"
+      refute html =~ ~S(data-part="item-group")
+    end
+
+    test "marks disabled items and shows selected indicator" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox
+              id="lb-sel"
+              value={["a"]}
+              items={
+                Corex.List.new([
+                  %{label: "A", value: "a"},
+                  %{label: "B", value: "b", disabled: true, to: "/b", redirect: :patch, new_tab: true}
+                ])
+              }
+            >
+              <:item_indicator>✓</:item_indicator>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-disabled)
+      assert html =~ ~S(data-to="/b")
+      assert html =~ "✓"
+    end
+
+    test "renders custom item slot on ungrouped list" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox
+              id="lb-custom"
+              items={Corex.List.new([%{label: "France", value: "fra"}])}
+            >
+              <:item :let={%{label: label}}>Flag {label}</:item>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Flag France"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "return JS for all ignore functions" do
+      base = %{
+        id: "lb",
+        dir: "ltr",
+        orientation: "vertical",
+        group_id: "g",
+        html_for: "g",
+        item: %{value: "x", label: "X"},
+        index: 0,
+        value: "x"
+      }
+
+      for fun <- [
+            &Connect.ignore_root/1,
+            &Connect.ignore_label/1,
+            &Connect.ignore_content/1,
+            &Connect.ignore_item_group/1,
+            &Connect.ignore_item_group_label/1,
+            &Connect.ignore_item/1,
+            &Connect.ignore_item_text/1,
+            &Connect.ignore_item_indicator/1
+          ] do
+        assert %Phoenix.LiveView.JS{} = fun.(base)
+      end
+    end
+  end
+
+  describe "set_value/2 and set_value/3" do
+    test "returns JS and pushes socket event" do
+      assert %Phoenix.LiveView.JS{} = Listbox.set_value("lb", ["a"])
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Listbox.set_value(socket, "lb", ["a", "b"])
+    end
+  end
+
+  describe "value/1 value/2 value/3 value/4" do
+    test "returns JS and pushes socket event" do
+      assert %Phoenix.LiveView.JS{} = Listbox.value("lb")
+      assert %Phoenix.LiveView.JS{} = Listbox.value("lb", respond_to: :client)
+
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Listbox.value(socket, "lb")
+      assert %Phoenix.LiveView.Socket{} = Listbox.value(socket, "lb", respond_to: :both)
     end
   end
 end

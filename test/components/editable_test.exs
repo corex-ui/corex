@@ -12,7 +12,7 @@ defmodule Corex.EditableTest do
     end
 
     test "uses default translation when not provided" do
-      Application.delete_env(:corex, :gettext_backend)
+      Application.delete_env(:phoenix, :gettext_backend)
       html = render_component(&CorexTest.ComponentHelpers.render_editable/1, [])
       assert html =~ ~r/aria-label="editable input"/
     end

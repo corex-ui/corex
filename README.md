@@ -32,7 +32,7 @@ mix corex.new my_app
 
 By default Corex Design will be installed. You can use `--no-design` to opt out.
 
-By default the installer also adds the **`plug Corex.MCP`** hook for development and test (see [MCP](https://hexdocs.pm/corex/mcp.html)); use **`--no-mcp`** if you do not want it.
+By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (see [MCP](https://hexdocs.pm/corex/mcp.html)); never enable it in `:prod`. Use **`--no-mcp`** if you do not want it.
 
 If you want the full feature set:
 

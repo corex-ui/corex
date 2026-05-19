@@ -36,6 +36,30 @@ defmodule Corex.ContentTest do
       assert Enum.at(items, 1).content == "C2"
     end
 
+    test "creates list of items from keyword lists" do
+      items =
+        Content.new([
+          [label: "T1", content: "C1"],
+          [label: "T2", content: "C2", disabled: true]
+        ])
+
+      assert length(items) == 2
+      assert Enum.at(items, 0).value == "item-1"
+      assert Enum.at(items, 1).disabled == true
+    end
+
+    test "raises when row is not a map or keyword list" do
+      assert_raise ArgumentError, ~r/Expected a map or keyword list/, fn ->
+        Content.new([%{label: "T1", content: "C1"}, "invalid"])
+      end
+    end
+
+    test "raises when keyword list row is not a keyword list" do
+      assert_raise ArgumentError, ~r/invalid items/, fn ->
+        Content.new([["not", "keywords"]])
+      end
+    end
+
     test "accepts value, disabled, meta on items" do
       items =
         Content.new([
@@ -57,6 +81,10 @@ defmodule Corex.ContentTest do
     test "raises for invalid list format" do
       assert_raise ArgumentError, ~r/invalid items/, fn ->
         Content.new(["not", "keyword"])
+      end
+
+      assert_raise ArgumentError, ~r/invalid items/, fn ->
+        Content.new([1, 2, 3])
       end
     end
 

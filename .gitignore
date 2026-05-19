@@ -46,3 +46,5 @@ corex-*.tar
 .dexter.db*
 
 /.claude/
+
+/e2e/docs/

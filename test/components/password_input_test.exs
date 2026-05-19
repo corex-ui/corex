@@ -131,5 +131,101 @@ defmodule Corex.PasswordInputTest do
       assert result["data-default-visible"] == ""
       refute Map.has_key?(result, "data-visible")
     end
+
+    test "omits default-visible when not visible" do
+      result =
+        Connect.props(%{
+          id: "test-password",
+          visible: false,
+          disabled: true,
+          invalid: true,
+          read_only: true,
+          required: true,
+          ignore_password_managers: true,
+          name: "pass",
+          form: "user",
+          dir: "rtl",
+          auto_complete: "current-password",
+          on_visibility_change: "vis",
+          on_visibility_change_client: "visc"
+        })
+
+      assert result["data-default-visible"] == nil
+      assert result["data-disabled"] == ""
+      assert result["data-form"] == "user"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "return JS for ignore functions" do
+      base = %{id: "pw", dir: "ltr"}
+
+      for fun <- [
+            &Connect.ignore_root/1,
+            &Connect.ignore_label/1,
+            &Connect.ignore_control/1,
+            &Connect.ignore_input/1,
+            &Connect.ignore_visibility_trigger/1,
+            &Connect.ignore_indicator/1
+          ] do
+        assert %Phoenix.LiveView.JS{} = fun.(base)
+      end
+    end
+  end
+
+  describe "password_input disabled and invalid" do
+    test "renders disabled and invalid attrs" do
+      html =
+        render_component(&PasswordInput.password_input/1,
+          id: "pw-state",
+          name: "secret",
+          disabled: true,
+          invalid: true
+        )
+
+      assert html =~ "data-disabled"
+      assert html =~ "data-invalid"
+    end
+
+    test "renders visible and read_only required attrs" do
+      html =
+        render_component(&PasswordInput.password_input/1,
+          id: "pw-opts",
+          name: "secret",
+          visible: true,
+          read_only: true,
+          required: true,
+          ignore_password_managers: true,
+          on_visibility_change: "vis_evt"
+        )
+
+      assert html =~ "data-default-visible"
+      assert html =~ "data-read-only"
+      assert html =~ "data-required"
+    end
+  end
+
+  describe "set_visible/2 and set_visible/3" do
+    test "returns JS and pushes socket event" do
+      assert %Phoenix.LiveView.JS{} = PasswordInput.set_visible("pw", true)
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = PasswordInput.set_visible(socket, "pw", false)
+    end
+  end
+
+  describe "toggle_visible/1 and toggle_visible/2" do
+    test "returns JS and pushes socket event" do
+      assert %Phoenix.LiveView.JS{} = PasswordInput.toggle_visible("pw")
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = PasswordInput.toggle_visible(socket, "pw")
+    end
+  end
+
+  describe "focus/1 and focus/2" do
+    test "returns JS and pushes socket event" do
+      assert %Phoenix.LiveView.JS{} = PasswordInput.focus("pw")
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = PasswordInput.focus(socket, "pw")
+    end
   end
 end

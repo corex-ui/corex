@@ -62,6 +62,95 @@ defmodule Corex.PinInputTest do
     end
   end
 
+  describe "Connect.props/1" do
+    test "maps list value and options" do
+      result =
+        Connect.props(%{
+          id: "pin",
+          value: ["1", "2"],
+          count: 4,
+          disabled: true,
+          invalid: true,
+          required: true,
+          read_only: true,
+          mask: true,
+          otp: true,
+          blur_on_complete: true,
+          select_on_focus: true,
+          name: "code",
+          form: "f",
+          dir: "rtl",
+          orientation: "vertical",
+          type: "number",
+          placeholder: "○",
+          on_value_change: "vc",
+          on_value_change_client: "vcc",
+          on_value_complete: "done"
+        })
+
+      assert result["data-default-value"] == "1,2"
+      assert result["data-orientation"] == "vertical"
+      assert result["data-dir"] == "rtl"
+      assert result["data-on-value-change"] == "vc"
+    end
+  end
+
+  describe "Connect.control/1 and hidden_input/1 and input/1" do
+    test "return part attributes" do
+      base = %{id: "pin", dir: "ltr", orientation: "horizontal"}
+
+      control = Connect.control(base)
+      assert control["data-part"] == "control"
+
+      hidden =
+        Connect.hidden_input(Map.merge(base, %{name: "otp", value: "12"}))
+
+      assert hidden["type"] == "hidden"
+      assert hidden["value"] == "12"
+
+      input =
+        Connect.input(Map.merge(base, %{index: 0, aria_label: "Digit 1"}))
+
+      assert input["data-index"] == "0"
+      assert input["aria-label"] == "Digit 1"
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "return JS for ignore functions" do
+      base = %{id: "pin", dir: "ltr", index: 0}
+
+      for fun <- [
+            &Connect.ignore_root/1,
+            &Connect.ignore_label/1,
+            &Connect.ignore_hidden_input/1,
+            &Connect.ignore_control/1,
+            &Connect.ignore_input/1
+          ] do
+        assert %Phoenix.LiveView.JS{} = fun.(base)
+      end
+    end
+  end
+
+  describe "clear/1 and clear/2" do
+    test "return JS and push socket event" do
+      assert %Phoenix.LiveView.JS{} = PinInput.clear("pin-1")
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = PinInput.clear(socket, "pin-1")
+    end
+  end
+
+  describe "value/1 value/2 value/3" do
+    test "return JS and push socket event" do
+      assert %Phoenix.LiveView.JS{} = PinInput.value("pin-1")
+      assert %Phoenix.LiveView.JS{} = PinInput.value("pin-1", respond_to: :client)
+
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = PinInput.value(socket, "pin-1")
+      assert %Phoenix.LiveView.Socket{} = PinInput.value(socket, "pin-1", respond_to: :both)
+    end
+  end
+
   describe "pin_input/1 form field" do
     test "renders from form field" do
       form = Phoenix.Component.to_form(%{"code" => "12"}, as: :user)

@@ -7025,42 +7025,6 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/code.mjs
-  var code_exports = {};
-  __export(code_exports, {
-    Code: () => CodeHook
-  });
-  var CodeHook;
-  var init_code = __esm({
-    "../priv/static/code.mjs"() {
-      "use strict";
-      CodeHook = {
-        mounted() {
-          if (this.el.tagName === "PRE") {
-            this._scrollTop = this.el.scrollTop;
-            this._scrollLeft = this.el.scrollLeft;
-          }
-        },
-        beforeUpdate() {
-          if (this.el.tagName === "PRE") {
-            this._scrollTop = this.el.scrollTop;
-            this._scrollLeft = this.el.scrollLeft;
-          }
-        },
-        updated() {
-          var _a4, _b;
-          if (this.el.tagName !== "PRE") return;
-          const st = (_a4 = this._scrollTop) != null ? _a4 : 0;
-          const sl = (_b = this._scrollLeft) != null ? _b : 0;
-          requestAnimationFrame(() => {
-            this.el.scrollTop = st;
-            this.el.scrollLeft = sl;
-          });
-        }
-      };
-    }
-  });
-
   // ../priv/static/collapsible.mjs
   var collapsible_exports = {};
   __export(collapsible_exports, {
@@ -14419,11 +14383,11 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
+      init_chunk_PE34YET2();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
       init_chunk_VPEGVSVG();
-      init_chunk_PE34YET2();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy9 = createAnatomy("color-picker", [
@@ -18354,12 +18318,12 @@ var Corex = (() => {
     "../priv/static/date-picker.mjs"() {
       "use strict";
       init_chunk_W6DW6OBY();
+      init_chunk_PE34YET2();
       init_chunk_7BZGUIUZ();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
       init_chunk_VPEGVSVG();
-      init_chunk_PE34YET2();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy10 = createAnatomy("date-picker").parts(
@@ -20851,10 +20815,10 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_YGX3OCBP();
-      init_chunk_QS5WHZEI();
       init_chunk_VBYH4ZIZ();
       init_chunk_UUEU3QDP();
+      init_chunk_YGX3OCBP();
+      init_chunk_QS5WHZEI();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -24408,9 +24372,9 @@ ${err}`);
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_VPEGVSVG();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
+      init_chunk_VPEGVSVG();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -25855,11 +25819,11 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
+      init_chunk_UUEU3QDP();
       init_chunk_PWLG55J6();
       init_chunk_Q3YPKFFU();
       init_chunk_FOQSALVP();
       init_chunk_VGZJOUNL();
-      init_chunk_UUEU3QDP();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -27657,12 +27621,12 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
+      init_chunk_QB2YSZP6();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
       init_chunk_VPEGVSVG();
       init_chunk_FOQSALVP();
-      init_chunk_QB2YSZP6();
       init_chunk_VGZJOUNL();
       init_chunk_XGGASIX4();
       anatomy17 = createAnatomy("menu").parts(
@@ -32458,9 +32422,9 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_VGZJOUNL();
       init_chunk_UUEU3QDP();
       init_chunk_PE34YET2();
+      init_chunk_VGZJOUNL();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -33355,6 +33319,7 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
+      init_chunk_UUEU3QDP();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
@@ -33363,7 +33328,6 @@ ${err}`);
       init_chunk_Q3YPKFFU();
       init_chunk_FOQSALVP();
       init_chunk_VGZJOUNL();
-      init_chunk_UUEU3QDP();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -38902,9 +38866,9 @@ ${err}`);
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
+      init_chunk_FFJGC56K();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_FFJGC56K();
       init_chunk_XGGASIX4();
       anatomy29 = createAnatomy("toast").parts(
         "group",
@@ -41927,10 +41891,10 @@ ${err}`);
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_Q3YPKFFU();
-      init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
       init_chunk_VBYH4ZIZ();
+      init_chunk_Q3YPKFFU();
+      init_chunk_FOQSALVP();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -43155,7 +43119,6 @@ ${err}`);
     Carousel: createLazyHook(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
     Checkbox: createLazyHook(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
     Clipboard: createLazyHook(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
-    Code: createLazyHook(() => Promise.resolve().then(() => (init_code(), code_exports)), "Code"),
     Collapsible: createLazyHook(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
     Combobox: createLazyHook(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
     ColorPicker: createLazyHook(() => Promise.resolve().then(() => (init_color_picker(), color_picker_exports)), "ColorPicker"),
