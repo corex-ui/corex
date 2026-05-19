@@ -79,7 +79,7 @@ defmodule Corex.Layout.Heading do
 
   attr(:rest, :global, doc: "Additional HTML attributes on the outer wrapper.")
 
-  @heading_tags ~w(h1 h2 h3 h4 h5 h6 p)
+  @heading_tags ~W(h1 h2 h3 h4 h5 h6 p)
 
   attr(:title_tag, :string,
     default: "h1",
@@ -90,7 +90,8 @@ defmodule Corex.Layout.Heading do
   attr(:subtitle_tag, :string,
     default: "h2",
     values: @heading_tags,
-    doc: "HTML tag for the `:subtitle` slot (`h1`–`h6` or `p`). Default `h2`; use `p` for non-heading supporting text."
+    doc:
+      "HTML tag for the `:subtitle` slot (`h1`–`h6` or `p`). Default `h2`; use `p` for non-heading supporting text."
   )
 
   slot(:title, doc: "Main heading text. Rendered with `data-part=\"title\"`.")

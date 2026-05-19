@@ -88,9 +88,7 @@ defmodule E2eWeb.CheckboxModel do
 
     click(
       session,
-      xpath(
-        "//*[@id='checkbox-api-js-dispatch']//button[normalize-space(.)='Set checked']"
-      )
+      xpath("//*[@id='checkbox-api-js-dispatch']//button[normalize-space(.)='Set checked']")
     )
 
     session
