@@ -160,16 +160,14 @@ defmodule Corex.Accordion.Connect do
 
   defp region_aria_label(%{label: label, id: id, value: value})
        when is_binary(label) and label != "" and is_binary(id) and is_binary(value) do
-    "#{label}, #{region_group_name(id)}"
+    "#{label} (#{content_id(id, value)})"
+  end
+
+  defp region_aria_label(%{id: id, value: value}) when is_binary(id) and is_binary(value) do
+    content_id(id, value)
   end
 
   defp region_aria_label(_), do: nil
-
-  defp region_group_name(id) do
-    id
-    |> String.replace("-", " ")
-    |> String.replace("_", " ")
-  end
 
   @spec ignore_content(Item.t()) :: JS.t()
   def ignore_content(assigns) do

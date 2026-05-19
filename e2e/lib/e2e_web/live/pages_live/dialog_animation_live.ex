@@ -90,6 +90,7 @@ defmodule E2eWeb.DialogAnimationLive do
           id="dialog-animation-playground-section"
           title="Playground"
           heading_class="layout-heading"
+          title_tag="h2"
         >
           <:controls>
             <.select

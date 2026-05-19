@@ -80,6 +80,8 @@ defmodule E2eWeb.DemoPage do
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
   attr :heading_class, :string, default: "layout-heading"
+  attr :title_tag, :string, default: "h1"
+  attr :subtitle_tag, :string, default: "p"
   attr :controls_strip, :boolean, default: true
   slot :controls
   slot :canvas, required: true
@@ -87,7 +89,7 @@ defmodule E2eWeb.DemoPage do
   def demo_playground(assigns) do
     ~H"""
     <div id={@id} class="w-full flex flex-col">
-      <.layout_heading class={@heading_class} title_tag="h2" subtitle_tag="p">
+      <.layout_heading class={@heading_class} title_tag={@title_tag} subtitle_tag={@subtitle_tag}>
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>

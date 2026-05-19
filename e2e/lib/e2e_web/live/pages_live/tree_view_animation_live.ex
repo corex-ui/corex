@@ -80,6 +80,7 @@ defmodule E2eWeb.TreeViewAnimationLive do
           id="tree-view-animation-playground"
           title="Playground"
           heading_class="layout-heading"
+          title_tag="h2"
         >
           <:controls>
             <.select

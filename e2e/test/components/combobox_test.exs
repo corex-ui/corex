@@ -3,8 +3,6 @@ defmodule E2eWeb.ComboboxTest do
   use Wallaby.Feature
 
   import Wallaby.Query
-  import Wallaby.Browser
-
   alias E2eWeb.ComboboxModel, as: Combobox
   alias E2eWeb.ComponentBehaviorSpec
 
