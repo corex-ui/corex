@@ -95,7 +95,32 @@ defmodule E2eWeb.DialogModel do
     wait_for_has(
       session,
       css(
-        ~s|##{host_dom_id} [data-scope="dialog"][data-part="content"][data-state="open"]|,
+        ~s|##{host_dom_id} [data-scope="dialog"][data-part="trigger"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
+  def close_dialog_by_host_id(session, host_dom_id) when is_binary(host_dom_id) do
+    click(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="dialog"][data-part="close-trigger"]|,
+        visible: :any
+      )
+    )
+
+    session
+  end
+
+  def wait_dialog_closed_by_host_id(session, host_dom_id, opts \\ []) do
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="dialog"][data-part="trigger"][data-state="closed"]|,
         visible: :any
       ),
       opts

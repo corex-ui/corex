@@ -89,6 +89,14 @@ defmodule E2eWeb.EditableModel do
     session
   end
 
+  def type_in_host(session, host_dom_id, text) when is_binary(text) do
+    fill_in(
+      session,
+      css(~s|##{host_dom_id} [data-scope="editable"][data-part="input"]|, visible: :any),
+      with: text
+    )
+  end
+
   def preview_text_in_host(session, host_dom_id) do
     el =
       find(

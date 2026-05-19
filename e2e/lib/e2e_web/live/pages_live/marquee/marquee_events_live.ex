@@ -28,7 +28,8 @@ defmodule E2eWeb.MarqueeEventsLive do
     {:ok, socket}
   end
 
-  def handle_event("pause_changed", %{"paused" => paused, "id" => id}, socket) do
+  def handle_event("pause_changed", %{"id" => id} = params, socket) do
+    paused = parse_bool(Map.get(params, "paused"))
     log = new_log("server", id, inspect(%{kind: "pause_changed", paused: paused}))
     {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
@@ -57,6 +58,12 @@ defmodule E2eWeb.MarqueeEventsLive do
     log = new_log("client", id, inspect(%{kind: "complete"}))
     {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
   end
+
+  defp parse_bool(true), do: true
+  defp parse_bool(false), do: false
+  defp parse_bool("true"), do: true
+  defp parse_bool("false"), do: false
+  defp parse_bool(_), do: false
 
   defp new_log(source, dom_id, value) do
     %{

@@ -25,6 +25,8 @@ defmodule E2eWeb.DialogTest do
         |> Dialog.wait_root_dialog_ready(host)
         |> Dialog.open_dialog_by_host_id(host)
         |> Dialog.wait_dialog_open_by_host_id(host, timeout: 8_000)
+        |> Dialog.close_dialog_by_host_id(host)
+        |> Dialog.wait_dialog_closed_by_host_id(host, timeout: 8_000)
       end)
     end
   end

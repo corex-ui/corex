@@ -17,6 +17,34 @@ function dataDefaultValue(el: HTMLElement): string {
   return getString(el, "defaultValue") ?? "";
 }
 
+function notifyEditableValueChange(
+  el: HTMLElement,
+  pushEvent: (name: string, payload: Record<string, unknown>) => void,
+  canPush: () => boolean,
+  value: string
+): void {
+  const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]') as {
+    value: string;
+    dispatchEvent: (e: Event) => boolean;
+  } | null;
+  if (inputEl) {
+    inputEl.value = value;
+    inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+    inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  notifyChange({
+    el,
+    canPushServer: canPush(),
+    pushEvent,
+    payload: {
+      id: el.id,
+      value,
+    },
+    serverEventName: getString(el, "onValueChange"),
+    clientEventName: getString(el, "onValueChangeClient"),
+  });
+}
+
 const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & EditableHookState) {
     const el = this.el;
@@ -43,26 +71,10 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
         ? { edit: getBoolean(el, "edit") }
         : { defaultEdit: getBoolean(el, "defaultEdit") }),
       onValueChange: (details: ValueChangeDetails) => {
-        const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]') as {
-          value: string;
-          dispatchEvent: (e: Event) => boolean;
-        } | null;
-        if (inputEl) {
-          inputEl.value = details.value;
-          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-          inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        notifyChange({
-          el,
-          canPushServer: canPush(),
-          pushEvent,
-          payload: {
-            id: el.id,
-            value: details.value,
-          } as Record<string, unknown>,
-          serverEventName: getString(el, "onValueChange"),
-          clientEventName: getString(el, "onValueChangeClient"),
-        });
+        notifyEditableValueChange(el, pushEvent, canPush, details.value);
+      },
+      onValueCommit: (details: ValueChangeDetails) => {
+        notifyEditableValueChange(el, pushEvent, canPush, details.value);
       },
     } as Props);
     zag.init();

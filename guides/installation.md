@@ -80,6 +80,10 @@ Every Corex component exposes JS commands for client-side control and matching `
 
 Each component documents **API** and **Events** on its Hexdocs page (helpers, `on_*`, and browser events).
 
+## Become a sponsor
+
+Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
 - [MCP](mcp.html) Corex MCP for AI tooling in development.
 - [Dark mode](dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](theming.html) theme picker after `--theme`.

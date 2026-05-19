@@ -61,6 +61,25 @@ defmodule E2eWeb.FloatingPanelModel do
     session
   end
 
+  def set_open_host(session, host_dom_id, open) when is_boolean(open) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    _ =
+      execute_script(
+        session,
+        """
+        const panel = document.getElementById(arguments[0]);
+        panel?.dispatchEvent(new CustomEvent("corex:floating-panel:set-open", {
+          detail: { open: arguments[1] },
+          bubbles: false
+        }));
+        """,
+        [host_dom_id, open]
+      )
+
+    session
+  end
+
   def click_trigger_in_host(session, host_dom_id) do
     click(
       session,

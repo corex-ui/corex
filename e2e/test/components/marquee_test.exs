@@ -2,6 +2,8 @@ defmodule E2eWeb.MarqueeTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  import Wallaby.Query
+
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.MarqueeModel, as: Marquee
 
@@ -61,20 +63,23 @@ defmodule E2eWeb.MarqueeTest do
 
   describe "events" do
     feature "server  -  pause appends log row", %{session: session} do
+      host = "marquee-events-server"
+
       session =
         session
         |> ComponentBehaviorSpec.visit_ready(Marquee, :marquee, :events)
         |> Marquee.prepare_live_form()
-        |> Marquee.wait_host_marquee_ready("marquee-events-server")
+        |> Marquee.wait_host_marquee_ready(host)
 
-      before = Marquee.log_row_count(session, "marquee-events-log-server")
+      refute Marquee.marquee_events_server_log_has_row?(session)
 
-      session =
-        session
-        |> Marquee.pause_host("marquee-events-server")
-        |> Marquee.wait_log_rows_grew("marquee-events-log-server", before, timeout: 10_000)
-
-      assert Marquee.marquee_events_server_log_has_row?(session)
+      session
+      |> Marquee.pause_host(host)
+      |> Marquee.wait_host_paused(host, timeout: 8_000)
+      |> Marquee.wait_for_has(
+        css("#marquee-events-log-server tr[data-part='row']", count: 1, visible: :any),
+        timeout: 10_000
+      )
     end
   end
 end

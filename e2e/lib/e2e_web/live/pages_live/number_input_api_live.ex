@@ -171,7 +171,7 @@ defmodule E2eWeb.NumberInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="number-input-api-clear-server"
+          id="number-input-api-clear-server-section"
           title="Clear value (server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.clear_server_heex},
@@ -204,7 +204,7 @@ defmodule E2eWeb.NumberInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="number-input-api-state-server"
+          id="number-input-api-state-server-section"
           title="State (server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.state_server_heex},
@@ -217,7 +217,7 @@ defmodule E2eWeb.NumberInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="number-input-api-state-js"
+          id="number-input-api-state-js-section"
           title="State (client JS / TS)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.state_js_heex},

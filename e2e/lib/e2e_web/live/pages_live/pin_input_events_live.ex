@@ -23,12 +23,14 @@ defmodule E2eWeb.PinInputEventsLive do
     {:ok, socket}
   end
 
-  def handle_event("pin_input_changed", %{"id" => id, "value" => value}, socket) do
+  def handle_event("pin_input_changed", %{"id" => id} = params, socket) do
+    value = Map.get(params, "value") || Map.get(params, "valueAsString")
     log = new_log("server", id, inspect(value))
     {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
 
-  def handle_event("pin_input_client_changed", %{"id" => id, "value" => value}, socket) do
+  def handle_event("pin_input_client_changed", %{"id" => id} = params, socket) do
+    value = Map.get(params, "value") || Map.get(params, "valueAsString")
     log = new_log("client", id, inspect(value))
     {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
   end

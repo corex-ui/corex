@@ -38,14 +38,17 @@ defmodule E2eWeb.PinInputModel do
     session
   end
 
-  def fill_pin_in_section(session, _section_dom_id, pin, host_id) when is_binary(pin) do
+  def fill_pin_in_section(session, section_dom_id, pin, host_id) when is_binary(pin) do
     Enum.reduce(Enum.with_index(String.graphemes(pin)), session, fn {char, idx}, s ->
-      input_id = "pin-input:#{host_id}:#{idx}"
-      q = css("[id='#{input_id}']", visible: :any)
+      q =
+        css(
+          ~s|section##{section_dom_id} ##{host_id} [data-scope="pin-input"][data-part="input"][data-index="#{idx}"]|,
+          visible: :any
+        )
 
       s
       |> click(q)
-      |> send_keys(q, char)
+      |> fill_in(q, with: char)
     end)
   end
 

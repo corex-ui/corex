@@ -560,6 +560,25 @@ var Editable = class extends Component {
 function dataDefaultValue(el) {
   return getString(el, "defaultValue") ?? "";
 }
+function notifyEditableValueChange(el, pushEvent, canPush, value) {
+  const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
+  if (inputEl) {
+    inputEl.value = value;
+    inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+    inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  notifyChange({
+    el,
+    canPushServer: canPush(),
+    pushEvent,
+    payload: {
+      id: el.id,
+      value
+    },
+    serverEventName: getString(el, "onValueChange"),
+    clientEventName: getString(el, "onValueChangeClient")
+  });
+}
 var EditableHook = {
   mounted() {
     const el = this.el;
@@ -583,23 +602,10 @@ var EditableHook = {
       ...selectOnFocus !== void 0 ? { selectOnFocus } : {},
       ...getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") },
       onValueChange: (details) => {
-        const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
-        if (inputEl) {
-          inputEl.value = details.value;
-          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-          inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        notifyChange({
-          el,
-          canPushServer: canPush(),
-          pushEvent,
-          payload: {
-            id: el.id,
-            value: details.value
-          },
-          serverEventName: getString(el, "onValueChange"),
-          clientEventName: getString(el, "onValueChangeClient")
-        });
+        notifyEditableValueChange(el, pushEvent, canPush, details.value);
+      },
+      onValueCommit: (details) => {
+        notifyEditableValueChange(el, pushEvent, canPush, details.value);
       }
     });
     zag.init();

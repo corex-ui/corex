@@ -78,6 +78,10 @@ Every Corex component exposes JS commands for client-side control and matching `
 </.action>
 ```
 
+## Become a sponsor
+
+Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
 ## Next steps
 
 - [MCP](https://hexdocs.pm/corex/mcp.html) Corex MCP for AI tooling in development.

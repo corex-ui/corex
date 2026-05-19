@@ -217,6 +217,12 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
+  defp anatomy_no_trigger_onclick(open) do
+    open_lit = if(open, do: "true", else: "false")
+
+    "document.getElementById('floating-panel-anatomy-no-trigger').dispatchEvent(new CustomEvent('corex:floating-panel:set-open', { detail: { open: #{open_lit} }, bubbles: false }))"
+  end
+
   def anatomy_no_trigger_code do
     ~S"""
     <div class="flex flex-col gap-space">
@@ -242,71 +248,27 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
     </div>
-    <script>
-      (() => {
-        const panel = document.getElementById("floating-panel-anatomy-no-trigger")
-        const openBtn = document.getElementById("floating-panel-anatomy-no-trigger-open")
-        const closeBtn = document.getElementById("floating-panel-anatomy-no-trigger-close")
-        if (!panel || !openBtn || !closeBtn) return
-        openBtn.addEventListener("click", () => {
-          panel.dispatchEvent(
-            new CustomEvent("corex:floating-panel:set-open", {
-              detail: { open: true },
-              bubbles: false,
-            })
-          )
-        })
-        closeBtn.addEventListener("click", () => {
-          panel.dispatchEvent(
-            new CustomEvent("corex:floating-panel:set-open", {
-              detail: { open: false },
-              bubbles: false,
-            })
-          )
-        })
-      })()
-    </script>
     """
   end
 
   def anatomy_no_trigger_example(assigns) do
-    boot =
-      Phoenix.HTML.raw("""
-      <script>
-        (() => {
-          const panel = document.getElementById("floating-panel-anatomy-no-trigger")
-          const openBtn = document.getElementById("floating-panel-anatomy-no-trigger-open")
-          const closeBtn = document.getElementById("floating-panel-anatomy-no-trigger-close")
-          if (!panel || !openBtn || !closeBtn) return
-          openBtn.addEventListener("click", () => {
-            panel.dispatchEvent(
-              new CustomEvent("corex:floating-panel:set-open", {
-                detail: { open: true },
-                bubbles: false,
-              })
-            )
-          })
-          closeBtn.addEventListener("click", () => {
-            panel.dispatchEvent(
-              new CustomEvent("corex:floating-panel:set-open", {
-                detail: { open: false },
-                bubbles: false,
-              })
-            )
-          })
-        })()
-      </script>
-      """)
-
-    assigns = assign(assigns, :floating_panel_anatomy_no_trigger_boot, boot)
-
     ~H"""
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
+        <button
+          type="button"
+          id="floating-panel-anatomy-no-trigger-open"
+          class="button button--sm"
+          onclick={anatomy_no_trigger_onclick(true)}
+        >
           Open
         </button>
-        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
+        <button
+          type="button"
+          id="floating-panel-anatomy-no-trigger-close"
+          class="button button--sm"
+          onclick={anatomy_no_trigger_onclick(false)}
+        >
           Close
         </button>
       </div>
@@ -326,7 +288,6 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
         </:content>
       </.floating_panel>
     </div>
-    {@floating_panel_anatomy_no_trigger_boot}
     """
   end
 

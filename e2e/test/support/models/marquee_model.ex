@@ -102,7 +102,7 @@ defmodule E2eWeb.MarqueeModel do
         session,
         """
         const el = document.getElementById(arguments[0]);
-        el?.dispatchEvent(new CustomEvent("corex:marquee:toggle-pause", { bubbles: false }));
+        el?.dispatchEvent(new CustomEvent("corex:marquee:pause", { bubbles: false }));
         """,
         [host_dom_id]
       )

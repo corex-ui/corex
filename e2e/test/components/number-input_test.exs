@@ -68,7 +68,7 @@ defmodule E2eWeb.NumberInputTest do
     end
 
     feature "state server shows toast", %{session: session} do
-      section = "number-input-api-state-server"
+      section = "number-input-api-state-server-section"
 
       session =
         session

@@ -595,7 +595,9 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
-        phx-click={JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)}
+        phx-click={
+          JS.dispatch("corex:number-input:state", to: "##{@id}", detail: %{}, bubbles: false)
+        }
         class="button button--sm"
       >
         Read via dispatch
