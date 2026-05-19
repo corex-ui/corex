@@ -163,10 +163,6 @@ defmodule Corex.Accordion.Connect do
     "#{label} (#{content_id(id, value)})"
   end
 
-  defp region_aria_label(%{id: id, value: value}) when is_binary(id) and is_binary(value) do
-    content_id(id, value)
-  end
-
   defp region_aria_label(_), do: nil
 
   @spec ignore_content(Item.t()) :: JS.t()
