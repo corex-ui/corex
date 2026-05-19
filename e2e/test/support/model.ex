@@ -388,6 +388,10 @@ defmodule E2eWeb.Model do
         do_check_accessibility(session, scope, [])
       end
 
+      def check_accessibility(session, opts) when is_list(opts) do
+        do_check_accessibility(session, nil, opts)
+      end
+
       def check_accessibility(session, %Wallaby.Query{} = q, opts) when is_list(opts) do
         do_check_accessibility(session, q, opts)
       end
