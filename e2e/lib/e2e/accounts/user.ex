@@ -2,7 +2,7 @@ defmodule E2e.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @currencies ~w(eur usd gbp jpy chf cad aud sek nok sgd)
+  @currencies ~W(eur usd gbp jpy chf cad aud sek nok sgd)
 
   def currencies, do: @currencies
 

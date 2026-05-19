@@ -1,19 +1,19 @@
 defmodule E2eWeb.DataTableModel do
   use E2eWeb.Model, component: "data-table"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     data-table-anatomy-minimal
     data-table-anatomy-with-action
     data-table-anatomy-empty
   )
 
-  @style_sections ~w(
+  @style_sections ~W(
     data-table-styling-color
     data-table-styling-size
     data-table-styling-max-width
   )
 
-  @pattern_sections ~w(
+  @pattern_sections ~W(
     data-table-patterns-row-click
     data-table-patterns-stream
     data-table-patterns-sort

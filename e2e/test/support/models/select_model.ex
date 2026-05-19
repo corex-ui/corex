@@ -1,7 +1,7 @@
 defmodule E2eWeb.SelectModel do
   use E2eWeb.Model, component: "select"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     select-anatomy-minimal
     select-anatomy-translation
     select-anatomy-item-indicator
@@ -285,7 +285,7 @@ defmodule E2eWeb.SelectModel do
 
   def select_item(session, value) when is_binary(value) do
     session
-    |> assert_has(css(~s([data-scope='select'][data-part='content'][data-state='open'])))
+    |> assert_has(css(~S([data-scope='select'][data-part='content'][data-state='open'])))
     |> click(css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
 

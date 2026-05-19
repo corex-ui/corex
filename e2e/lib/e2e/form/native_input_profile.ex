@@ -82,7 +82,7 @@ defmodule E2e.Form.NativeInputProfile do
     |> validate_acceptance(:agree, message: "must be accepted to continue")
   end
 
-  @toast_fields ~w(
+  @toast_fields ~W(
     name email bio birth_date datetime reminder_time month week website phone q
     color count role tags size agree
   )a

@@ -48,11 +48,11 @@ defmodule Corex.PaginationTest do
           page_size: 10
         )
 
-      assert html =~ ~s(data-phx-link="patch")
-      assert html =~ ~s(data-phx-link-state="push")
-      assert html =~ ~s(data-part="prev-trigger")
-      assert html =~ ~s(data-part="next-trigger")
-      assert html =~ ~s(data-part="item")
+      assert html =~ ~S(data-phx-link="patch")
+      assert html =~ ~S(data-phx-link-state="push")
+      assert html =~ ~S(data-part="prev-trigger")
+      assert html =~ ~S(data-part="next-trigger")
+      assert html =~ ~S(data-part="item")
     end
   end
 
@@ -209,9 +209,9 @@ defmodule Corex.PaginationTest do
           page: 25
         )
 
-      assert html =~ ~s(data-part="ellipsis")
-      assert html =~ ~s(<a )
-      assert html =~ ~s(data-pagination-part="page")
+      assert html =~ ~S(data-part="ellipsis")
+      assert html =~ ~S(<a )
+      assert html =~ ~S(data-pagination-part="page")
     end
 
     test "hidden when count is zero" do
@@ -221,7 +221,7 @@ defmodule Corex.PaginationTest do
           page_size: 10
         )
 
-      refute html =~ ~s(data-scope="pagination")
+      refute html =~ ~S(data-scope="pagination")
     end
   end
 

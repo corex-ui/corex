@@ -1,7 +1,7 @@
 defmodule E2e.DesignPalette.Config do
   @moduledoc false
 
-  @theme_order ~w(neo uno duo leo)
+  @theme_order ~W(neo uno duo leo)
 
   def defaults do
     nl = neo_light()

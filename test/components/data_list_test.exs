@@ -11,7 +11,7 @@ defmodule Corex.DataListTest do
           empty: [%{inner_block: fn _, _ -> "No entries" end}]
         })
 
-      assert html =~ ~s(data-part="empty")
+      assert html =~ ~S(data-part="empty")
       assert html =~ "No entries"
     end
 
@@ -80,8 +80,8 @@ defmodule Corex.DataListTest do
 
       html = render_component(&DataList.data_list/1, %{items: items})
 
-      assert html =~ ~s(data-part="label")
-      assert html =~ ~s(data-part="content")
+      assert html =~ ~S(data-part="label")
+      assert html =~ ~S(data-part="content")
       assert html =~ "Name"
       assert html =~ "Alice"
       assert html =~ "Age"
@@ -127,7 +127,7 @@ defmodule Corex.DataListTest do
 
     test "passes rest attributes to wrapper" do
       html = render_component(&DataList.data_list/1, %{class: "my-list", items: []})
-      assert html =~ ~s(class="my-list")
+      assert html =~ ~S(class="my-list")
     end
 
     test "passes orientation and dir to root" do
@@ -140,8 +140,8 @@ defmodule Corex.DataListTest do
           dir: "rtl"
         })
 
-      assert html =~ ~s(data-orientation="horizontal")
-      assert html =~ ~s(dir="rtl")
+      assert html =~ ~S(data-orientation="horizontal")
+      assert html =~ ~S(dir="rtl")
     end
 
     test "raises when items and manual slots are combined" do

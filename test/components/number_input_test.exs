@@ -145,7 +145,7 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      assert html =~ ~s(data-default-value="7")
+      assert html =~ ~S(data-default-value="7")
       refute html =~ "data-value="
     end
 
@@ -165,7 +165,7 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      assert html =~ ~s(data-default-value="5")
+      assert html =~ ~S(data-default-value="5")
       assert html =~ ~r/<input\b[^>]*\bvalue="5"[^>]*\bdata-part="input"/
     end
 
@@ -186,8 +186,8 @@ defmodule Corex.NumberInputTest do
         )
 
       assert html =~ "data-controlled"
-      assert html =~ ~s(data-value="42")
-      refute html =~ ~s(data-default-value="42")
+      assert html =~ ~S(data-value="42")
+      refute html =~ ~S(data-default-value="42")
     end
 
     test "field forces uncontrolled even when controlled is passed" do
@@ -213,7 +213,7 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ "data-controlled"
-      assert html =~ ~s(data-default-value="99")
+      assert html =~ ~S(data-default-value="99")
       assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
     end
 

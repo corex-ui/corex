@@ -7,7 +7,7 @@ defmodule E2eWeb.DatePickerPatternsLiveTest do
     test "controlled value updates and does not revert when the server assigns a new value", %{
       conn: conn
     } do
-      {:ok, live, html} = live(conn, ~p"/date-picker/patterns")
+      {live, html} = live_ok!(conn, ~p"/date-picker/patterns")
 
       assert html =~ "date-picker-patterns-page"
       assert html =~ "date-picker-patterns-status"

@@ -325,6 +325,60 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     ]
   end
 
+  defp scope_param(%{scope: nil}), do: ""
+
+  defp scope_param(%{scope: %{route_prefix: route_prefix}}) when not is_nil(route_prefix),
+    do: "scope"
+
+  defp scope_param(_), do: "_scope"
+
+  defp scope_param_prefix(schema) do
+    param = scope_param(schema)
+    if param != "", do: "#{param}, ", else: ""
+  end
+
+  defp scope_assign_route_prefix(
+         %{scope: %{route_prefix: route_prefix, assign_key: assign_key}} = schema
+       )
+       when not is_nil(route_prefix) do
+    Scope.route_prefix("@#{assign_key}", schema)
+  end
+
+  defp scope_assign_route_prefix(_), do: ""
+
+  defp web_app_name(%Context{} = context) do
+    context.web_module
+    |> inspect()
+    |> Phoenix.Naming.underscore()
+  end
+
+  defp layout_generators_opts(_context, _web_app_name) do
+    Application.get_env(:corex, :generators, [])[:layout] || []
+  end
+
+  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
+  defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
+  defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
+
+  defp layout_themes?(opts) do
+    layout_theme?(opts) and app_has_themes?()
+  end
+
+  defp app_has_themes? do
+    app = Mix.Project.config()[:app]
+    str = to_string(app)
+
+    root_app =
+      if String.ends_with?(str, "_web") do
+        String.to_atom(String.replace_suffix(str, "_web", ""))
+      else
+        app
+      end
+
+    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
+    is_list(themes)
+  end
+
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
   def inputs(%Schema{} = schema) do
     schema.attrs
@@ -480,7 +534,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp error_slot do
-    ~s"""
+    ~S"""
     <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -497,58 +551,4 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp default_options({:array, _}), do: []
 
   defp label(key), do: Phoenix.Naming.humanize(to_string(key))
-
-  defp scope_param(%{scope: nil}), do: ""
-
-  defp scope_param(%{scope: %{route_prefix: route_prefix}}) when not is_nil(route_prefix),
-    do: "scope"
-
-  defp scope_param(_), do: "_scope"
-
-  defp scope_param_prefix(schema) do
-    param = scope_param(schema)
-    if param != "", do: "#{param}, ", else: ""
-  end
-
-  defp scope_assign_route_prefix(
-         %{scope: %{route_prefix: route_prefix, assign_key: assign_key}} = schema
-       )
-       when not is_nil(route_prefix) do
-    Scope.route_prefix("@#{assign_key}", schema)
-  end
-
-  defp scope_assign_route_prefix(_), do: ""
-
-  defp web_app_name(%Context{} = context) do
-    context.web_module
-    |> inspect()
-    |> Phoenix.Naming.underscore()
-  end
-
-  defp layout_generators_opts(_context, _web_app_name) do
-    Application.get_env(:corex, :generators, [])[:layout] || []
-  end
-
-  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
-  defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
-  defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
-
-  defp layout_themes?(opts) do
-    layout_theme?(opts) and app_has_themes?()
-  end
-
-  defp app_has_themes? do
-    app = Mix.Project.config()[:app]
-    str = to_string(app)
-
-    root_app =
-      if String.ends_with?(str, "_web") do
-        String.to_atom(String.replace_suffix(str, "_web", ""))
-      else
-        app
-      end
-
-    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
-    is_list(themes)
-  end
 end

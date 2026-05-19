@@ -42,7 +42,7 @@ defmodule CorexWeb.Marquee do
               item: [
                 %{
                   let: :item,
-                  inner_block: ~s(<span>{item.logo}</span> <span>{item.name}</span>)
+                  inner_block: ~S(<span>{item.logo}</span> <span>{item.name}</span>)
                 }
               ]
             },
@@ -57,7 +57,7 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~s(<.heroicon name={item.icon} class="icon" /><span>{item.name}</span>)
+                    ~S(<.heroicon name={item.icon} class="icon" /><span>{item.name}</span>)
                 }
               ]
             },
@@ -72,7 +72,7 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~s(<img src={item.src} alt={item.name} class="w-10 mx-auto" /><p>{item.name}</p>)
+                    ~S(<img src={item.src} alt={item.name} class="w-10 mx-auto" /><p>{item.name}</p>)
                 }
               ]
             }

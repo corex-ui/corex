@@ -2,8 +2,8 @@ defmodule E2eWeb.A11yThemeMode do
   import Wallaby.Browser
   import ExUnit.Assertions
 
-  @themes ~w(neo uno duo leo)
-  @modes ~w(light dark)
+  @themes ~W(neo uno duo leo)
+  @modes ~W(light dark)
 
   def themes, do: @themes
   def modes, do: @modes

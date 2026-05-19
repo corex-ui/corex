@@ -1,7 +1,7 @@
 defmodule E2eWeb.DialogModel do
   use E2eWeb.Model, component: "dialog"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     dialog-anatomy-minimal
     dialog-anatomy-title-description
     dialog-anatomy-actions

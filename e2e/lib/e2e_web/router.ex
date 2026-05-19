@@ -31,7 +31,7 @@ defmodule E2eWeb.Router do
     pipe_through(:browser)
 
     live_session :marketing,
-      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive] do
+      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive, E2eWeb.MountTelemetry] do
       live("/", HomeLive, :index)
     end
   end
@@ -40,7 +40,7 @@ defmodule E2eWeb.Router do
     pipe_through(:browser)
 
     live_session :default,
-      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive] do
+      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive, E2eWeb.MountTelemetry] do
       live("/admins", AdminLive.Index, :index)
       live("/admins/new", AdminLive.Form, :new)
       live("/admins/:id", AdminLive.Show, :show)

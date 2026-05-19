@@ -29,7 +29,7 @@ defmodule E2eWeb.Endpoint do
   plug Plug.Static,
     at: "/captures",
     from: :live_capture,
-    only: ~w(css js),
+    only: ~W(css js),
     gzip: not code_reloading?
 
   if Mix.env() in [:dev, :test] do

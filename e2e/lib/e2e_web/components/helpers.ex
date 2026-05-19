@@ -31,7 +31,7 @@ defmodule E2eWeb.Helpers do
   defp maybe_add(list, true, fun), do: list ++ [fun.()]
   defp maybe_add(list, false, _fun), do: list
 
-  @aside_no_zag ~w(action navigate data-list data-table layout-heading code native-input file-upload-live)
+  @aside_no_zag ~W(action navigate data-list data-table layout-heading code native-input file-upload-live)
 
   defp components_docs_node(%{label: label, id: id} = cfg) do
     badges =

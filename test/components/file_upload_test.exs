@@ -55,8 +55,8 @@ defmodule Corex.FileUploadTest do
         )
 
       assert html =~ "is required"
-      assert html =~ ~s(data-part="dropzone")
-      assert html =~ ~s(data-part="trigger")
+      assert html =~ ~S(data-part="dropzone")
+      assert html =~ ~S(data-part="trigger")
     end
 
     test "renders custom dropzone and open slots" do

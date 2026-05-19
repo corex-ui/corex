@@ -180,6 +180,7 @@ defmodule Corex.Toast do
     |> assign(:duration_str, toast_duration_dispatch_string(assigns.duration))
   end
 
+  @doc type: :component
   @doc """
   Renders a toast group (toaster) that manages multiple toast notifications.
 
@@ -214,7 +215,7 @@ defmodule Corex.Toast do
 
   attr(:placement, :string,
     default: "bottom-end",
-    values: ~w(top-start top top-end bottom-start bottom bottom-end),
+    values: ~W(top-start top top-end bottom-start bottom bottom-end),
     doc: "Where toasts appear on screen"
   )
 

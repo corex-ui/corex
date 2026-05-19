@@ -3,7 +3,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "changeset validate shows acceptance error when unchecked", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   end
 
   test "changeset save with accepted terms pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-live-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   end
 
   test "changeset save when not accepted shows error markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   end
 
   test "validate_strict shows custom acceptance message", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     html =
       view
@@ -52,7 +52,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   end
 
   test "save_strict with accepted terms pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     view
     |> form("#checkbox-strict-form-live")
@@ -68,7 +68,7 @@ defmodule E2eWeb.CheckboxFormLiveTest do
   end
 
   test "save_strict when not accepted shows strict messages", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/live-form")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/live-form")
 
     html =
       view

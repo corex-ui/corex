@@ -3,7 +3,7 @@ defmodule E2eWeb.EditableFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate reflects text field in markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/editable/live-form")
+    {view, _html} = live_ok!(conn, ~p"/editable/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.EditableFormLiveTest do
   end
 
   test "save pushes toast-create with submitted text", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/editable/live-form")
+    {view, _html} = live_ok!(conn, ~p"/editable/live-form")
 
     view
     |> form("#editable-form")

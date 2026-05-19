@@ -129,8 +129,8 @@ defmodule Corex.AccordionTest do
       assert html =~ "Ind A"
       assert html =~ "Trigger B"
       assert html =~ "Content B"
-      assert html =~ ~s(data-value="lorem")
-      assert html =~ ~s(data-value="duis")
+      assert html =~ ~S(data-value="lorem")
+      assert html =~ ~S(data-value="duis")
     end
 
     test "manual mode raises when only :trigger slots are provided" do

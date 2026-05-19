@@ -42,7 +42,7 @@ defmodule Corex.DatePickerTest do
         )
 
       assert html =~ "Invalid date"
-      assert html =~ ~s(data-part="positioner")
+      assert html =~ ~S(data-part="positioner")
       assert html =~ "Prev"
     end
   end

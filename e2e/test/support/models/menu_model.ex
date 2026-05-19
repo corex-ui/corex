@@ -1,7 +1,7 @@
 defmodule E2eWeb.MenuModel do
   use E2eWeb.Model, component: "menu"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     menu-anatomy-minimal
     menu-anatomy-grouped
     menu-anatomy-nested

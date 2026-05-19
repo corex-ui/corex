@@ -3,7 +3,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "basic save with angle param pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     view
     |> form("#angle-slider-basic-form")
@@ -19,7 +19,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   end
 
   test "basic validate shows cast error for non-float angle", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     html =
       view
@@ -30,7 +30,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   end
 
   test "validate validate reflects out of range on change", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   end
 
   test "validate form save out of range shows number message", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     html =
       view
@@ -52,7 +52,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   end
 
   test "validate form save in range pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/live-form")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     view
     |> form("#angle-slider-validate-form-live")

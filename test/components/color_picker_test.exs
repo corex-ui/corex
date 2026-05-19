@@ -34,7 +34,7 @@ defmodule Corex.ColorPickerTest do
           %{form: form}
         )
 
-      assert html =~ ~s(data-scope="color-picker")
+      assert html =~ ~S(data-scope="color-picker")
     end
 
     test "renders controlled value with errors" do
@@ -59,7 +59,7 @@ defmodule Corex.ColorPickerTest do
 
       assert html =~ "Invalid color"
       assert html =~ "data-invalid"
-      assert html =~ ~s(data-part="positioner")
+      assert html =~ ~S(data-part="positioner")
     end
 
     test "renders open picker with presets and partial translation" do
@@ -79,8 +79,8 @@ defmodule Corex.ColorPickerTest do
           %{}
         )
 
-      assert html =~ ~s(data-part="swatch-trigger")
-      assert html =~ ~s(data-part="swatch-group")
+      assert html =~ ~S(data-part="swatch-trigger")
+      assert html =~ ~S(data-part="swatch-group")
       assert html =~ "Hex"
     end
 
@@ -97,7 +97,7 @@ defmodule Corex.ColorPickerTest do
           %{form: form}
         )
 
-      assert empty_html =~ ~s(data-scope="color-picker")
+      assert empty_html =~ ~S(data-scope="color-picker")
 
       form2 = Phoenix.Component.to_form(%{"color" => 16_777_215}, as: :user)
 

@@ -3,7 +3,7 @@ defmodule E2eWeb.SignatureModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     signature-anatomy-minimal
     signature-anatomy-with-label
   )

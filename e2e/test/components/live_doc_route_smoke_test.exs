@@ -12,7 +12,7 @@ defmodule E2eWeb.LiveDocRouteSmokeTest do
 
   test "every DocA11yRoutes LiveView mounts with its root id", %{conn: conn} do
     for {path, root_sel} <- @live_routes do
-      {:ok, _view, html} = live(conn, path, on_error: :warn)
+      {_view, html} = live_ok!(conn, path, on_error: :warn)
       id = String.trim_leading(root_sel, "#")
       assert html =~ ~s(id="#{id}"), "missing root id #{id} on #{path}"
     end

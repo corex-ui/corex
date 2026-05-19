@@ -97,7 +97,7 @@ defmodule Corex.SignaturePadTest do
         )
 
       assert html =~ ~r/value=""/
-      refute html =~ ~s(value="[]")
+      refute html =~ ~S(value="[]")
     end
 
     test "renders with field value as list" do
@@ -174,8 +174,8 @@ defmodule Corex.SignaturePadTest do
       assert html =~ "Error 1"
       assert html =~ "path1"
       assert html =~ "path2"
-      assert html =~ ~s(data-drawing-fill="red")
-      assert html =~ ~s(data-dir="rtl")
+      assert html =~ ~S(data-drawing-fill="red")
+      assert html =~ ~S(data-dir="rtl")
     end
 
     test "renders empty paths and unknown paths gracefully" do

@@ -8,7 +8,7 @@ defmodule E2eWeb.DataTablePatternsLive do
 
   @pattern_db_page_size 5
 
-  @categories ~w(Fruit Vegetable Misc)
+  @categories ~W(Fruit Vegetable Misc)
   @stream_initial [
     %{id: "1", name: "Apple", category: "Fruit"},
     %{id: "2", name: "Banana", category: "Fruit"},

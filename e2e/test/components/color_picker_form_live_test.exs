@@ -3,7 +3,7 @@ defmodule E2eWeb.ColorPickerFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate_validate shows alpha cap error for high-opacity rgba", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/color-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.ColorPickerFormLiveTest do
   end
 
   test "save_basic submits hex color and pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/color-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     view
     |> form("#color-picker-basic-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.ColorPickerFormLiveTest do
   end
 
   test "save_validate submits rgba within alpha cap and pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/color-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     view
     |> form("#color-picker-validate-form-live")

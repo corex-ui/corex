@@ -3,7 +3,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   import Phoenix.LiveViewTest
 
   test "live changeset submit without toggle pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view |> form("#switch-form-live") |> render_submit()
 
@@ -17,7 +17,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   end
 
   test "changeset validate shows cast error for invalid boolean", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     html =
       view
@@ -28,7 +28,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   end
 
   test "changeset save with notifications true pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
     |> form("#switch-form-live")
@@ -44,7 +44,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   end
 
   test "validate_strict shows cast error for invalid boolean", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     html =
       view
@@ -55,7 +55,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   end
 
   test "save_strict with notifications true pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
     |> form("#switch-strict-form-live")
@@ -71,7 +71,7 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   end
 
   test "save_strict with invalid boolean shows error markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     html =
       view

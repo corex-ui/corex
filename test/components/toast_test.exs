@@ -150,7 +150,7 @@ defmodule Corex.ToastTest do
       result =
         render_component(&Corex.Toast.toast_group/1, id: "layout-toast")
 
-      assert [_] = find_in_html(result, ~s([data-scope="toast"][data-part="group"]))
+      assert [_] = find_in_html(result, ~S([data-scope="toast"][data-part="group"]))
     end
 
     test "renders toast group with flash" do
@@ -160,7 +160,7 @@ defmodule Corex.ToastTest do
           flash: %{info: "Hello", error: "Oops"}
         )
 
-      assert [_] = find_in_html(result, ~s([data-scope="toast"]))
+      assert [_] = find_in_html(result, ~S([data-scope="toast"]))
     end
 
     test "renders toast group with flash structs" do
@@ -172,8 +172,8 @@ defmodule Corex.ToastTest do
           flash_error: %Corex.Flash.Error{title: "Alert", type: :error, duration: :infinity}
         )
 
-      assert [_] = find_in_html(result, ~s([data-flash-info-duration="1000"]))
-      assert [_] = find_in_html(result, ~s([data-flash-error-duration="infinity"]))
+      assert [_] = find_in_html(result, ~S([data-flash-info-duration="1000"]))
+      assert [_] = find_in_html(result, ~S([data-flash-error-duration="infinity"]))
     end
   end
 
@@ -197,7 +197,7 @@ defmodule Corex.ToastTest do
           type: :success
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
 
       result =
         render_component(&Corex.Toast.toast_client_error/1,
@@ -206,7 +206,7 @@ defmodule Corex.ToastTest do
           type: :error
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
 
       result =
         render_component(&Corex.Toast.toast_client_error/1,
@@ -215,7 +215,7 @@ defmodule Corex.ToastTest do
           type: :unknown_type
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
     end
   end
 
@@ -239,7 +239,7 @@ defmodule Corex.ToastTest do
           type: :success
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
 
       result =
         render_component(&Corex.Toast.toast_server_error/1,
@@ -248,7 +248,7 @@ defmodule Corex.ToastTest do
           type: :info
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
 
       result =
         render_component(&Corex.Toast.toast_server_error/1,
@@ -257,7 +257,7 @@ defmodule Corex.ToastTest do
           type: :unknown_type
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
     end
   end
 
@@ -281,7 +281,7 @@ defmodule Corex.ToastTest do
           type: :error
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
 
       result =
         render_component(&Corex.Toast.toast_connected/1,
@@ -290,7 +290,7 @@ defmodule Corex.ToastTest do
           type: :info
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
 
       result =
         render_component(&Corex.Toast.toast_connected/1,
@@ -299,7 +299,7 @@ defmodule Corex.ToastTest do
           type: :unknown_type
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
     end
   end
 
@@ -323,7 +323,7 @@ defmodule Corex.ToastTest do
           type: :success
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;success&quot;)
 
       result =
         render_component(&Corex.Toast.toast_disconnected/1,
@@ -332,7 +332,7 @@ defmodule Corex.ToastTest do
           type: :error
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;error&quot;)
 
       result =
         render_component(&Corex.Toast.toast_disconnected/1,
@@ -341,7 +341,7 @@ defmodule Corex.ToastTest do
           type: :unknown_type
         )
 
-      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+      assert result =~ ~S(&quot;type&quot;:&quot;info&quot;)
     end
   end
 

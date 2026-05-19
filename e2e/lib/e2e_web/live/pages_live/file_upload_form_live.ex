@@ -14,7 +14,7 @@ defmodule E2eWeb.FileUploadFormLive do
      |> assign(:live_heex, FileUploadDemo.form_live_upload_heex())
      |> assign(:live_elixir, FileUploadDemo.form_live_upload_elixir())
      |> allow_upload(:attachment,
-       accept: ~w(.jpg .jpeg .png .gif .webp .pdf .txt),
+       accept: ~W(.jpg .jpeg .png .gif .webp .pdf .txt),
        max_entries: 3,
        max_file_size: 8_000_000
      )}

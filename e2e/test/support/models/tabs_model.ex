@@ -3,7 +3,7 @@ defmodule E2eWeb.TabsModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     tabs-anatomy-basic
     tabs-anatomy-indicator
     tabs-anatomy-nested

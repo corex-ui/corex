@@ -3,7 +3,7 @@ defmodule E2eWeb.ClipboardModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     clipboard-anatomy-minimal
     clipboard-anatomy-input-false
   )

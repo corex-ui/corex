@@ -5,7 +5,7 @@ defmodule Corex.Toast.Payload do
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView.{JS, Rendered}
 
-  @toast_type_strings Map.new(~w(info success error warning loading)a, &{&1, Atom.to_string(&1)})
+  @toast_type_strings Map.new(~W(info success error warning loading)a, &{&1, Atom.to_string(&1)})
 
   @update_attr_strings %{
     "title" => :title,
@@ -19,13 +19,13 @@ defmodule Corex.Toast.Payload do
     "priority" => :priority
   }
 
-  @action_string_keys MapSet.new(~w(label js class))
+  @action_string_keys MapSet.new(~W(label js class))
 
   def type_string(type) when is_atom(type) do
     Map.get(@toast_type_strings, type, "info")
   end
 
-  def type_string(type) when is_binary(type) and type in ~w(info success error warning loading) do
+  def type_string(type) when is_binary(type) and type in ~W(info success error warning loading) do
     type
   end
 

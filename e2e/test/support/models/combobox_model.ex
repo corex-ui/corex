@@ -1,7 +1,7 @@
 defmodule E2eWeb.ComboboxModel do
   use E2eWeb.Model, component: "combobox"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     combobox-anatomy-minimal
     combobox-anatomy-slots
     combobox-anatomy-labeled

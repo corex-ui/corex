@@ -4,7 +4,7 @@ defmodule E2eWeb.FileUploadModel do
   import Wallaby.Query
   import Wallaby.Browser
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     file-upload-anatomy-minimal
     file-upload-anatomy-label
     file-upload-anatomy-custom-slots

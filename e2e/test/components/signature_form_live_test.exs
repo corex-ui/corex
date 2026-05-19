@@ -3,7 +3,7 @@ defmodule E2eWeb.SignatureFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate shows required error for empty signature", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/signature/live-form")
+    {view, _html} = live_ok!(conn, ~p"/signature/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.SignatureFormLiveTest do
   end
 
   test "save with signature data pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/signature/live-form")
+    {view, _html} = live_ok!(conn, ~p"/signature/live-form")
 
     view
     |> form("#signature-form")

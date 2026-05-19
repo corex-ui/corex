@@ -4,7 +4,7 @@ defmodule E2eWeb.AccordionEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "accordion_value_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/accordion/events")
+    {view, _html} = live_ok!(conn, ~p"/accordion/events")
 
     html =
       render_click(view, "accordion_value_changed", %{
@@ -12,11 +12,11 @@ defmodule E2eWeb.AccordionEventsLiveTest do
         "value" => ["duis"]
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 
   test "accordion_client_changed inserts a client log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/accordion/events")
+    {view, _html} = live_ok!(conn, ~p"/accordion/events")
 
     html =
       render_click(view, "accordion_client_changed", %{
@@ -24,6 +24,6 @@ defmodule E2eWeb.AccordionEventsLiveTest do
         "value" => ["duis"]
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

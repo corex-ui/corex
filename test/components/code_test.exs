@@ -4,8 +4,8 @@ defmodule Corex.CodeTest do
   describe "code/1" do
     test "renders plain code" do
       result = render_component(&Corex.Code.code/1, code: "def hello, do: :world")
-      assert [_] = find_in_html(result, ~s([data-scope="code"][data-part="root"]))
-      assert [_] = find_in_html(result, ~s([data-part="content"]))
+      assert [_] = find_in_html(result, ~S([data-scope="code"][data-part="root"]))
+      assert [_] = find_in_html(result, ~S([data-part="content"]))
       assert [_] = find_in_html(result, "pre")
       assert [_] = find_in_html(result, "code")
     end
@@ -17,7 +17,7 @@ defmodule Corex.CodeTest do
           language: :elixir
         )
 
-      assert find_in_html(result, ~s([data-scope="code"])) != []
+      assert find_in_html(result, ~S([data-scope="code"])) != []
     end
 
     test "escapes code when language has no lexer" do

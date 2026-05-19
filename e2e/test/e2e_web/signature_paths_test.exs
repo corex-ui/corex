@@ -13,7 +13,7 @@ defmodule E2eWeb.SignaturePathsTest do
   end
 
   test "parses json array of paths" do
-    assert SignaturePaths.path_d_list(~s'["M1 1","M2 2"]') == ["M1 1", "M2 2"]
+    assert SignaturePaths.path_d_list(~S'["M1 1","M2 2"]') == ["M1 1", "M2 2"]
   end
 
   test "nil and empty" do

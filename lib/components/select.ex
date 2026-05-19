@@ -511,6 +511,7 @@ defmodule Corex.Select do
   <!-- tabs-close -->
   '''
 
+  @doc type: :component
   use Phoenix.Component
 
   alias Phoenix.LiveView

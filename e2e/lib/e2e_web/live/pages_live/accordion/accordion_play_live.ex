@@ -7,7 +7,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
   @accordion_id "my-accordion"
 
-  defp item_values, do: ~w(lorem duis donec)
+  defp item_values, do: ~W(lorem duis donec)
 
   defp accordion_items(controls) do
     disabled = Map.get(controls, :disabled_items, [])
@@ -310,7 +310,7 @@ defmodule E2eWeb.AccordionPlayLive do
               @controls.color != "default" && "accordion--#{@controls.color}",
               "accordion--#{@controls.size}"
             ]}
-            value={~w(lorem duis donec)}
+            value={~W(lorem duis donec)}
             items={@items}
             collapsible={@controls.multiple or @controls.collapsible}
             multiple={@controls.multiple}

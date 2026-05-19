@@ -3,7 +3,7 @@ defmodule E2eWeb.TagsInputModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     tags-input-anatomy-minimal
     tags-input-anatomy-label
     tags-input-anatomy-translation
@@ -73,7 +73,7 @@ defmodule E2eWeb.TagsInputModel do
 
     q =
       css(
-        ~s|#tags-input-playground[phx-hook="TagsInput"]:not([data-loading])|,
+        ~S|#tags-input-playground[phx-hook="TagsInput"]:not([data-loading])|,
         visible: :any
       )
 

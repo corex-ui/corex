@@ -1,14 +1,14 @@
 defmodule E2eWeb.DataListModel do
   use E2eWeb.Model, component: "data-list"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     data-list-anatomy-minimal
     data-list-anatomy-manual-slots
     data-list-anatomy-custom-slots
     data-list-anatomy-empty
   )
 
-  @style_sections ~w(
+  @style_sections ~W(
     data-list-styling-color
     data-list-styling-size
     data-list-styling-max-width

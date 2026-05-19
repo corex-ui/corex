@@ -4,7 +4,7 @@ defmodule E2eWeb.FileUploadEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "fu_ev_server inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/file-upload/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/file-upload/events", on_error: :warn)
 
     html =
       render_click(view, "fu_ev_server", %{
@@ -13,6 +13,6 @@ defmodule E2eWeb.FileUploadEventsLiveTest do
         "rejectedCount" => 0
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

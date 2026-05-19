@@ -3,7 +3,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate shows required error when name blank", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/native-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   end
 
   test "save with required profile fields pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/native-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
     %{proxy: {ref, _, _}} = view
 
     view
@@ -35,7 +35,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   end
 
   test "validate_strict shows email format error", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/native-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
 
     html =
       view
@@ -55,7 +55,7 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   end
 
   test "save_strict with valid profile pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/native-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
     %{proxy: {ref, _, _}} = view
 
     view

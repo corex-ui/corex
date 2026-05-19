@@ -29,7 +29,7 @@ defmodule Corex.TagsInputTest do
       assert html =~ ~r/data-part="input"/
       assert html =~ "placeholder="
       assert html =~ "Add a tag"
-      assert html =~ ~s(aria-label="Delete tag alpha")
+      assert html =~ ~S(aria-label="Delete tag alpha")
     end
 
     test "translation attr merges placeholder" do

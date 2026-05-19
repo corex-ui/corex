@@ -1,7 +1,7 @@
 defmodule E2eWeb.RadioGroupModel do
   use E2eWeb.Model, component: "radio-group"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     radio-group-anatomy-minimal
     radio-group-anatomy-indicator
     radio-group-anatomy-invalid

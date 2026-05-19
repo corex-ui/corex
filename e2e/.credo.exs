@@ -193,9 +193,107 @@
           {Credo.Check.Warning.UnusedRegexOperation, []},
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
-          {Credo.Check.Warning.WrongTestFilename, []}
+          {Credo.Check.Warning.WrongTestFilename, []},
+          # Error Handling
+          {OeditusCredo.Check.Warning.MissingErrorHandling,
+           [
+             files: %{
+               excluded: [
+                 "test/",
+                 "test/support/",
+                 "lib/e2e/design_palette.ex",
+                 "lib/e2e/place/helper.ex",
+                 "lib/e2e_web/controllers/",
+                 "lib/e2e_web/live/admin_live/"
+               ]
+             }
+           ]},
+          {OeditusCredo.Check.Warning.SilentErrorCase, []},
+          {OeditusCredo.Check.Warning.SwallowingException, []},
+          # Database & Performance
+          {OeditusCredo.Check.Warning.InefficientFilter, []},
+          {OeditusCredo.Check.Warning.NPlusOneQuery, []},
+          # LiveView & Concurrency
+          {OeditusCredo.Check.Warning.UnmanagedTask, []},
+          {OeditusCredo.Check.Warning.SyncOverAsync,
+           [
+             files: %{
+               excluded: ["lib/e2e_web/live/pages_live/file_upload_form_live.ex"]
+             }
+           ]},
+          {OeditusCredo.Check.Warning.MissingHandleAsync, []},
+          {OeditusCredo.Check.Warning.MissingThrottle, []},
+          {OeditusCredo.Check.Warning.InlineJavascript, []},
+          # Readability
+          {OeditusCredo.Check.Readability.UnnecessaryInterpolatingSigil, []},
+          # Code Quality
+          {OeditusCredo.Check.Warning.DirectStructUpdate, []},
+          {OeditusCredo.Check.Warning.CallbackHell, [max_nesting: 2]},
+          {OeditusCredo.Check.Warning.BlockingInPlug, []},
+          {OeditusCredo.Check.Warning.UnsafeMapAccess, []},
+          # Refactoring Suggestions
+          {OeditusCredo.Check.Refactoring.SuggestFSM, []},
+          # Telemetry & Observability
+          {OeditusCredo.Check.Warning.MissingTelemetryInObanWorker, []},
+          {OeditusCredo.Check.Warning.TelemetryInRecursiveFunction, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryForExternalHttp, []},
+          # Security - Injection
+          {OeditusCredo.Check.Security.SQLInjection, []},
+          {OeditusCredo.Check.Security.OSCommandInjection, []},
+          {OeditusCredo.Check.Security.CodeInjection, []},
+          {OeditusCredo.Check.Security.XSSVulnerability, []},
+          # Security - Auth
+          {OeditusCredo.Check.Security.MissingAuthentication,
+           [files: %{excluded: ["lib/e2e_web/controllers/"]}]},
+          {OeditusCredo.Check.Security.MissingAuthorization, [files: %{excluded: ["lib/e2e/"]}]},
+          {OeditusCredo.Check.Security.IncorrectAuthorization, []},
+          {OeditusCredo.Check.Security.InsecureDirectObjectReference,
+           [files: %{excluded: ["lib/e2e/"]}]},
+          # Security - Data Protection
+          {OeditusCredo.Check.Security.SensitiveDataExposure, []},
+          {OeditusCredo.Check.Security.HardcodedCredentials,
+           [
+             files: %{
+               excluded: [
+                 "lib/e2e_web/demos/",
+                 "lib/e2e_web/captures/",
+                 "lib/e2e_web/components/",
+                 "lib/e2e_web/live/"
+               ]
+             }
+           ]},
+          {OeditusCredo.Check.Security.UnsafeDeserialization, []},
+          # Security - Input & File Handling
+          {OeditusCredo.Check.Security.ImproperInputValidation,
+           [files: %{excluded: ["lib/e2e_web/live/pages_live/"]}]},
+          {OeditusCredo.Check.Security.PathTraversal,
+           [
+             files: %{
+               excluded: [
+                 "lib/e2e/",
+                 "lib/mix/",
+                 "lib/e2e_web/code_examples.ex",
+                 "lib/e2e_web/live/pages_live/file_upload_form_live.ex",
+                 "test/"
+               ]
+             }
+           ]},
+          {OeditusCredo.Check.Security.UnrestrictedFileUpload, []},
+          # Security - Web
+          {OeditusCredo.Check.Security.MissingCSRFProtection,
+           [
+             files: %{
+               excluded: ["lib/e2e_web/router.ex", "lib/e2e_web/controllers/", "test/"]
+             }
+           ]},
+          {OeditusCredo.Check.Security.SSRFVulnerability, []},
+          # Security - Race Conditions
+          {OeditusCredo.Check.Security.TOCTOU, []}
         ],
         disabled: [
+          {OeditusCredo.Check.Warning.MissingTelemetryInLiveViewMount, []},
+          {OeditusCredo.Check.Warning.MissingPreload, []},
           {ExSlop.Check.Readability.NarratorDoc, []},
           {ExSlop.Check.Readability.DocFalseOnPublicFunction, []},
           {ExSlop.Check.Readability.BoilerplateDocParams, []},

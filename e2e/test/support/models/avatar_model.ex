@@ -3,7 +3,7 @@ defmodule E2eWeb.AvatarModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     avatar-anatomy-basic
     avatar-anatomy-custom-slots
   )

@@ -33,7 +33,7 @@ defmodule Corex.TimerTest do
           %{}
         )
 
-      refute html =~ ~s(data-part="separator")
+      refute html =~ ~S(data-part="separator")
     end
   end
 
@@ -76,7 +76,7 @@ defmodule Corex.TimerTest do
         )
 
       assert html =~ "timer-skeleton"
-      assert html =~ ~s(data-timer-segment)
+      assert html =~ ~S(data-timer-segment)
     end
   end
 
@@ -139,8 +139,8 @@ defmodule Corex.TimerTest do
           %{}
         )
 
-      assert html =~ ~s(data-timer-segment)
-      assert html =~ ~s(data-type="hours")
+      assert html =~ ~S(data-timer-segment)
+      assert html =~ ~S(data-type="hours")
     end
 
     test "renders countdown with collapse default" do
@@ -154,7 +154,7 @@ defmodule Corex.TimerTest do
           %{}
         )
 
-      assert html =~ ~s(data-scope="timer")
+      assert html =~ ~S(data-scope="timer")
     end
   end
 end

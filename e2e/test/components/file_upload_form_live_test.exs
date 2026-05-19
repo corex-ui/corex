@@ -3,7 +3,7 @@ defmodule E2eWeb.FileUploadFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "save with no uploads pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/file-upload-live/form")
+    {view, _html} = live_ok!(conn, ~p"/file-upload-live/form")
 
     view
     |> form("#file-upload-live-form")

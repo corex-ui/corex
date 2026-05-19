@@ -655,6 +655,7 @@ defmodule Corex.TreeView do
     """
   end
 
+  @doc type: :compound
   attr(:id, :string, required: true)
   attr(:dir, :string, required: true)
   attr(:animation, :string, required: true)

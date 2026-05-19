@@ -57,10 +57,10 @@ defmodule Corex.FileUploadLiveTest do
   describe "file_upload_live/1" do
     test "renders scope and live upload input hook" do
       html = render_component(&CorexTest.ComponentHelpers.render_file_upload_live_minimal/1, [])
-      assert html =~ ~s(data-scope="file-upload")
-      assert html =~ ~s(data-part="root")
-      assert html =~ ~s(data-phx-hook="Phoenix.LiveFileUpload")
-      assert html =~ ~s(phx-drop-target="phx-test-ref")
+      assert html =~ ~S(data-scope="file-upload")
+      assert html =~ ~S(data-part="root")
+      assert html =~ ~S(data-phx-hook="Phoenix.LiveFileUpload")
+      assert html =~ ~S(phx-drop-target="phx-test-ref")
       assert html =~ "phx-test-ref"
     end
 
@@ -88,8 +88,8 @@ defmodule Corex.FileUploadLiveTest do
 
       assert html =~ "photo.png"
       assert html =~ "1.4 MB"
-      assert html =~ ~s(data-part="item-preview-image")
-      assert html =~ ~s(phx-value-ref="entry-ref-1")
+      assert html =~ ~S(data-part="item-preview-image")
+      assert html =~ ~S(phx-value-ref="entry-ref-1")
     end
 
     test "renders non-image entry without preview" do
@@ -118,7 +118,7 @@ defmodule Corex.FileUploadLiveTest do
 
       assert html =~ "doc.pdf"
       assert html =~ "512 B"
-      refute html =~ ~s(data-part="item-preview-image")
+      refute html =~ ~S(data-part="item-preview-image")
     end
 
     test "renders upload errors with custom error slot" do
@@ -147,7 +147,7 @@ defmodule Corex.FileUploadLiveTest do
           %{upload: upload}
         )
 
-      assert html =~ ~s(data-err)
+      assert html =~ ~S(data-err)
       assert html =~ "Too many files"
       assert html =~ ":unknown"
     end
@@ -173,7 +173,7 @@ defmodule Corex.FileUploadLiveTest do
         )
 
       assert html =~ "Drop here"
-      assert html =~ ~s(data-part="dropzone")
+      assert html =~ ~S(data-part="dropzone")
     end
 
     test "renders custom dropzone and open slots" do

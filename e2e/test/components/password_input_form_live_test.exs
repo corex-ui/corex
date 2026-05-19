@@ -3,7 +3,7 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "changeset validate shows required error when password blank", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/password-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
   end
 
   test "changeset save with password pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/password-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     view
     |> form("#password-input-live-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
   end
 
   test "validate_strict shows length error for short password", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/password-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.PasswordInputFormLiveTest do
   end
 
   test "save_strict with long password pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/password-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/password-input/live-form")
 
     view
     |> form("#password-input-strict-form-live")

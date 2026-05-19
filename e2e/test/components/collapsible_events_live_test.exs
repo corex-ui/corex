@@ -4,7 +4,7 @@ defmodule E2eWeb.CollapsibleEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "collapsible_open_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/collapsible/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/collapsible/events", on_error: :warn)
 
     html =
       render_click(view, "collapsible_open_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.CollapsibleEventsLiveTest do
         "open" => true
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

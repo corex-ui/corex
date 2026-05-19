@@ -3,7 +3,7 @@ defmodule E2eWeb.CarouselModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     carousel-anatomy-basic
     carousel-anatomy-loop
     carousel-anatomy-vertical

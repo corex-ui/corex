@@ -105,7 +105,7 @@ defmodule Corex.NativeInput do
   use Phoenix.Component
   alias Phoenix.HTML.Form
 
-  @types ~w(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
+  @types ~W(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
 
   attr(:type, :string, required: true, values: @types)
   attr(:id, :string, required: false)
@@ -130,8 +130,8 @@ defmodule Corex.NativeInput do
 
   attr(:rest, :global,
     include:
-      ~w(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept) ++
-        ~w(phx-change phx-blur phx-focus phx-target phx-debounce phx-throttle)
+      ~W(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept) ++
+        ~W(phx-change phx-blur phx-focus phx-target phx-debounce phx-throttle)
   )
 
   slot :label, required: false do
@@ -162,7 +162,7 @@ defmodule Corex.NativeInput do
     |> native_input()
   end
 
-  @types_ignoring_icon ~w(textarea date datetime-local time month week color number checkbox radio select)
+  @types_ignoring_icon ~W(textarea date datetime-local time month week color number checkbox radio select)
 
   def native_input(%{type: "checkbox"} = assigns) do
     assigns =

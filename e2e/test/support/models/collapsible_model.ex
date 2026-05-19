@@ -3,7 +3,7 @@ defmodule E2eWeb.CollapsibleModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     collapsible-anatomy-basic
     collapsible-anatomy-with-indicator
     collapsible-anatomy-custom-slots

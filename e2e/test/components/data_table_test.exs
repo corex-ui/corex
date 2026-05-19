@@ -5,7 +5,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "playground" do
     test "renders playground table", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/playground")
+      {_view, html} = live_ok!(conn, ~p"/data-table/playground")
 
       assert html =~ "data-table-playground"
       assert html =~ "Alice"
@@ -14,7 +14,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "style page" do
     test "renders styling sections with full table features", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/style")
+      {_view, html} = live_ok!(conn, ~p"/data-table/style")
 
       assert html =~ "data-table-styling-page"
       assert html =~ "data-table-styling-color"
@@ -27,7 +27,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "row click pattern" do
     test "updates row clicked message", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/data-table/patterns")
+      {view, _html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert has_element?(view, "#data-table-patterns-row-click")
       assert render(view) =~ "Click a row"
@@ -43,7 +43,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "data_table with list" do
     test "renders headers and rows", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ "ID"
       assert html =~ "Name"
@@ -58,14 +58,14 @@ defmodule E2eWeb.DataTableTest do
     end
 
     test "renders action slot", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ ~r/data-part="actions"/
       assert html =~ "hero-pencil-square"
     end
 
     test "uses data-table data attributes", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ ~r/data-scope="data-table"/
       assert html =~ ~r/data-part="root"/
@@ -74,7 +74,7 @@ defmodule E2eWeb.DataTableTest do
     test "keeps :empty slot markup in the DOM when rows are present; hides via data-table CSS", %{
       conn: conn
     } do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ "pattern-full-empty"
       assert html =~ "Alice"
@@ -91,7 +91,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "data_table with stream" do
     test "renders streamed rows", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ "Apple"
       assert html =~ "Banana"
@@ -99,21 +99,21 @@ defmodule E2eWeb.DataTableTest do
     end
 
     test "uses phx-update stream on tbody", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ ~r/id="pattern-stream-table"/
       assert html =~ ~r/phx-update="stream"/
     end
 
     test "renders action slot for stream rows", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ ~r/data-part="actions"/
       assert html =~ "hero-trash"
     end
 
     test "has row ids for stream", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ ~r/id="pattern_stream-1"/
       assert html =~ ~r/id="pattern_stream-2"/
@@ -122,7 +122,7 @@ defmodule E2eWeb.DataTableTest do
     test "keeps :empty slot markup alongside streamed rows; hides via data-table CSS", %{
       conn: conn
     } do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ "pattern-stream-empty"
       assert html =~ "Apple"
@@ -131,7 +131,7 @@ defmodule E2eWeb.DataTableTest do
 
   describe "data_table database patterns" do
     test "renders database-backed table and pagination", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/data-table/patterns")
+      {_view, html} = live_ok!(conn, ~p"/data-table/patterns")
 
       assert html =~ "pattern-db-table"
       assert html =~ "pattern-db-pagination"

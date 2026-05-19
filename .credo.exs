@@ -201,7 +201,62 @@
           {Credo.Check.Warning.UnusedRegexOperation, []},
           {Credo.Check.Warning.UnusedStringOperation, []},
           {Credo.Check.Warning.UnusedTupleOperation, []},
-          {Credo.Check.Warning.WrongTestFilename, []}
+          {Credo.Check.Warning.WrongTestFilename, []},
+          # Error Handling
+          {OeditusCredo.Check.Warning.MissingErrorHandling, []},
+          {OeditusCredo.Check.Warning.SilentErrorCase, []},
+          {OeditusCredo.Check.Warning.SwallowingException, []},
+          # Database & Performance
+          {OeditusCredo.Check.Warning.InefficientFilter, []},
+          {OeditusCredo.Check.Warning.NPlusOneQuery, []},
+          {OeditusCredo.Check.Warning.MissingPreload, []},
+          # LiveView & Concurrency
+          {OeditusCredo.Check.Warning.UnmanagedTask, []},
+          {OeditusCredo.Check.Warning.SyncOverAsync, []},
+          {OeditusCredo.Check.Warning.MissingHandleAsync, []},
+          {OeditusCredo.Check.Warning.MissingThrottle, []},
+          {OeditusCredo.Check.Warning.InlineJavascript, []},
+          # Readability
+          {OeditusCredo.Check.Readability.UnnecessaryInterpolatingSigil, []},
+          # Code Quality
+          {OeditusCredo.Check.Warning.DirectStructUpdate, []},
+          {OeditusCredo.Check.Warning.CallbackHell, [max_nesting: 2]},
+          {OeditusCredo.Check.Warning.BlockingInPlug, []},
+          {OeditusCredo.Check.Warning.UnsafeMapAccess, []},
+          # Refactoring Suggestions
+          {OeditusCredo.Check.Refactoring.SuggestFSM, []},
+          # Telemetry & Observability
+          {OeditusCredo.Check.Warning.MissingTelemetryInObanWorker, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryInLiveViewMount, []},
+          {OeditusCredo.Check.Warning.TelemetryInRecursiveFunction, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryForExternalHttp, []},
+          # Security - Injection
+          {OeditusCredo.Check.Security.SQLInjection, []},
+          {OeditusCredo.Check.Security.OSCommandInjection, []},
+          {OeditusCredo.Check.Security.CodeInjection, []},
+          {OeditusCredo.Check.Security.XSSVulnerability, []},
+          # Security - Auth
+          {OeditusCredo.Check.Security.MissingAuthentication, []},
+          {OeditusCredo.Check.Security.MissingAuthorization, []},
+          {OeditusCredo.Check.Security.IncorrectAuthorization, []},
+          {OeditusCredo.Check.Security.InsecureDirectObjectReference, []},
+          # Security - Data Protection
+          {OeditusCredo.Check.Security.SensitiveDataExposure, []},
+          {OeditusCredo.Check.Security.HardcodedCredentials,
+           [files: %{excluded: ["lib/components/"]}]},
+          {OeditusCredo.Check.Security.UnsafeDeserialization, []},
+          # Security - Input & File Handling
+          {OeditusCredo.Check.Security.ImproperInputValidation, []},
+          {OeditusCredo.Check.Security.PathTraversal,
+           [files: %{excluded: ["lib/mix/", "test/mix/", "test/corex/"]}]},
+          {OeditusCredo.Check.Security.UnrestrictedFileUpload, []},
+          # Security - Web
+          {OeditusCredo.Check.Security.MissingCSRFProtection,
+           [files: %{excluded: ["lib/mcp/router.ex"]}]},
+          {OeditusCredo.Check.Security.SSRFVulnerability, []},
+          # Security - Race Conditions
+          {OeditusCredo.Check.Security.TOCTOU, []}
         ],
         disabled: [
           #

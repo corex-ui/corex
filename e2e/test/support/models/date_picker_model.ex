@@ -1,7 +1,7 @@
 defmodule E2eWeb.DatePickerModel do
   use E2eWeb.Model, component: "date-picker"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     date-picker-anatomy-minimal
     date-picker-anatomy-range
     date-picker-anatomy-multiple

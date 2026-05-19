@@ -20,10 +20,10 @@ defmodule Corex.Layout.HeadingTest do
           %{}
         )
 
-      assert html =~ ~s(data-scope="layout-heading")
+      assert html =~ ~S(data-scope="layout-heading")
       assert html =~ "Settings"
       assert html =~ "Manage"
-      assert html =~ ~s(data-test="act")
+      assert html =~ ~S(data-test="act")
     end
   end
 end

@@ -506,7 +506,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     def mount(_params, _session, socket) do
       {:ok,
        allow_upload(socket, :attachment,
-         accept: ~w(.jpg .jpeg .png .pdf .txt),
+         accept: ~W(.jpg .jpeg .png .pdf .txt),
          max_entries: 3,
          max_file_size: 8_000_000
        )}

@@ -8,12 +8,12 @@ defmodule CorexWeb.SignaturePad do
   capture variants: [
             basic: %{
               class: "signature-pad",
-              clear_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" />)}]
+              clear_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}]
             },
             with_label: %{
               class: "signature-pad",
               label: [%{inner_block: "Sign here"}],
-              clear_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" />)}]
+              clear_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}]
             }
           ]
 

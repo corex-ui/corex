@@ -3,7 +3,7 @@ defmodule E2eWeb.TooltipModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     tooltip-anatomy-minimal
     tooltip-anatomy-with-arrow
     tooltip-anatomy-placement

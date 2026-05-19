@@ -22,8 +22,8 @@ defmodule Corex.AvatarTest do
         )
 
       assert html =~ "image.png"
-      assert html =~ ~s(phx-mounted=)
-      assert html =~ ~s(data-part="image")
+      assert html =~ ~S(phx-mounted=)
+      assert html =~ ~S(data-part="image")
     end
   end
 

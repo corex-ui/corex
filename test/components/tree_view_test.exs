@@ -65,8 +65,8 @@ defmodule Corex.TreeViewTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-part="label")
-      assert html =~ ~s(class="sr-only")
+      assert html =~ ~S(data-part="label")
+      assert html =~ ~S(class="sr-only")
     end
 
     test "renders expanded and selected values" do
@@ -87,8 +87,8 @@ defmodule Corex.TreeViewTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-state="open")
-      assert html =~ ~s(data-selected)
+      assert html =~ ~S(data-state="open")
+      assert html =~ ~S(data-selected)
     end
   end
 
@@ -746,8 +746,8 @@ defmodule Corex.TreeViewTest do
 
     test "tree_view_skeleton renders loading markup" do
       html = render_component(&TreeView.tree_view_skeleton/1, count: 2)
-      assert html =~ ~s(data-loading)
-      assert html =~ ~s(data-part="item")
+      assert html =~ ~S(data-loading)
+      assert html =~ ~S(data-part="item")
     end
 
     test "renders items with link redirect metadata" do
@@ -768,8 +768,8 @@ defmodule Corex.TreeViewTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-redirect)
-      assert html =~ ~s(data-new-tab)
+      assert html =~ ~S(data-redirect)
+      assert html =~ ~S(data-new-tab)
     end
   end
 

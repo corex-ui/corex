@@ -3,7 +3,7 @@ defmodule E2eWeb.MarqueeModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     marquee-anatomy-minimal
     marquee-anatomy-custom-slots
     marquee-anatomy-with-images

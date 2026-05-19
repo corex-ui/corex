@@ -1,7 +1,7 @@
 defmodule E2eWeb.SwitchModel do
   use E2eWeb.Model, component: "switch"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     switch-anatomy-minimal
     switch-anatomy-labeled
   )

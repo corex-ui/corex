@@ -6,13 +6,13 @@ defmodule E2eWeb.PaginationTest do
   test "anatomy page includes pagination", %{conn: conn} do
     conn = get(conn, ~p"/pagination/anatomy")
     html = html_response(conn, 200)
-    assert html =~ ~s(data-scope="pagination")
-    assert html =~ ~s(data-part="prev-trigger")
-    assert html =~ ~s(data-part="next-trigger")
+    assert html =~ ~S(data-scope="pagination")
+    assert html =~ ~S(data-part="prev-trigger")
+    assert html =~ ~S(data-part="next-trigger")
   end
 
   test "events live logs page change", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pagination/events")
+    {view, _html} = live_ok!(conn, ~p"/pagination/events")
 
     html =
       render_click(view, "pagination_page_changed", %{
@@ -26,7 +26,7 @@ defmodule E2eWeb.PaginationTest do
   end
 
   test "patterns live controlled page", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pagination/patterns", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/pagination/patterns", on_error: :warn)
 
     html =
       render_click(view, "pagination_controlled_changed", %{
@@ -39,7 +39,7 @@ defmodule E2eWeb.PaginationTest do
   end
 
   test "patterns live server page updates posts", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pagination/patterns", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/pagination/patterns", on_error: :warn)
 
     html =
       render_click(view, "patterns_server_page", %{
@@ -52,20 +52,20 @@ defmodule E2eWeb.PaginationTest do
   end
 
   test "patterns live link patch includes phx-link", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/pagination/patterns", on_error: :warn)
+    {_view, html} = live_ok!(conn, ~p"/pagination/patterns", on_error: :warn)
 
-    assert html =~ ~s(data-phx-link="patch")
+    assert html =~ ~S(data-phx-link="patch")
     assert html =~ "pagination-patterns-patch"
   end
 
   test "patterns live patch params load page slice", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/pagination/patterns?page=2", on_error: :warn)
+    {_view, html} = live_ok!(conn, ~p"/pagination/patterns?page=2", on_error: :warn)
 
     assert html =~ "Zag.js under the hood"
   end
 
   test "patterns code tabs include copy-paste modules", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/pagination/patterns", on_error: :warn)
+    {_view, html} = live_ok!(conn, ~p"/pagination/patterns", on_error: :warn)
 
     assert html =~ "MyApp.Blog"
     assert html =~ "PaginationPatternsLive"

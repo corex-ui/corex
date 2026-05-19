@@ -2,7 +2,7 @@ defmodule E2eWeb.E2eBehaviorExceptions do
   @moduledoc false
 
   def wallaby_interaction_skip_slugs do
-    ~w(
+    ~W(
       action
       code
       navigate

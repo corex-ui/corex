@@ -196,8 +196,8 @@ defmodule Corex.FloatingPanel do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  @resize_axes ~w(n e w s ne se sw nw)
-  @stages ~w(minimized maximized default)
+  @resize_axes ~W(n e w s ne se sw nw)
+  @stages ~W(minimized maximized default)
 
   attr(:id, :string, required: false, doc: "The id of the floating panel")
   attr(:draggable, :boolean, default: true, doc: "Whether the panel can be dragged")

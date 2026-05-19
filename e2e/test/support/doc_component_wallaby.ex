@@ -156,7 +156,7 @@ defmodule E2eWeb.DocComponentWallaby do
 
     clicked? =
       host_sel &&
-        Enum.any?(~w(trigger root item), fn part ->
+        Enum.any?(~W(trigger root item), fn part ->
           click_if_present(session, host_sel <> " [data-part=\"#{part}\"]")
         end)
 

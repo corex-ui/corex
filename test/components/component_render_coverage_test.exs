@@ -44,8 +44,8 @@ defmodule Corex.ComponentRenderCoverageTest do
         )
 
       assert html =~ "Files"
-      assert html =~ ~s(data-branch)
-      assert html =~ ~s(data-leaf)
+      assert html =~ ~S(data-branch)
+      assert html =~ ~S(data-leaf)
       assert html =~ "Child"
     end
 
@@ -67,7 +67,7 @@ defmodule Corex.ComponentRenderCoverageTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-animation="js")
+      assert html =~ ~S(data-animation="js")
       assert html =~ "data-anim-height-duration"
     end
   end
@@ -169,7 +169,7 @@ defmodule Corex.ComponentRenderCoverageTest do
         )
 
       assert html =~ "France"
-      assert html =~ ~s(data-part="item-group")
+      assert html =~ ~S(data-part="item-group")
     end
 
     test "combobox with clear and multiple" do
@@ -215,7 +215,7 @@ defmodule Corex.ComponentRenderCoverageTest do
           %{}
         )
 
-      assert html =~ ~s(data-scope="date-picker")
+      assert html =~ ~S(data-scope="date-picker")
       assert html =~ "2024"
     end
 
@@ -233,7 +233,7 @@ defmodule Corex.ComponentRenderCoverageTest do
         )
 
       assert html =~ "Mute"
-      assert html =~ ~s(data-scope="toggle")
+      assert html =~ ~S(data-scope="toggle")
     end
 
     test "tooltip with arrow and controlled" do
@@ -251,7 +251,7 @@ defmodule Corex.ComponentRenderCoverageTest do
         )
 
       assert html =~ "Tip body"
-      assert html =~ ~s(data-scope="tooltip")
+      assert html =~ ~S(data-scope="tooltip")
     end
   end
 end

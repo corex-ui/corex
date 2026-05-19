@@ -3,7 +3,7 @@ defmodule E2eWeb.SelectFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "changeset validate shows required error for empty country", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/select/live-form")
+    {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.SelectFormLiveTest do
   end
 
   test "changeset save with country pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/select/live-form")
+    {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     view
     |> form("#select-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.SelectFormLiveTest do
   end
 
   test "validate_strict shows required error for empty country", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/select/live-form")
+    {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.SelectFormLiveTest do
   end
 
   test "save_strict with country pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/select/live-form")
+    {view, _html} = live_ok!(conn, ~p"/select/live-form")
 
     view
     |> form("#select-strict-form-live")

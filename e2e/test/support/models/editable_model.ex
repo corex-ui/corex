@@ -3,7 +3,7 @@ defmodule E2eWeb.EditableModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     editable-anatomy-minimal
     editable-anatomy-triggers
   )
@@ -150,17 +150,17 @@ defmodule E2eWeb.EditableModel do
     session
     |> click(
       css(
-        ~s|#editable-form [data-scope="editable"][data-part="edit-trigger"]|,
+        ~S|#editable-form [data-scope="editable"][data-part="edit-trigger"]|,
         visible: :any
       )
     )
     |> fill_in(
-      css(~s|#editable-form [data-scope="editable"][data-part="input"]|, visible: :any),
+      css(~S|#editable-form [data-scope="editable"][data-part="input"]|, visible: :any),
       with: text
     )
     |> click(
       css(
-        ~s|#editable-form [data-scope="editable"][data-part="submit-trigger"]|,
+        ~S|#editable-form [data-scope="editable"][data-part="submit-trigger"]|,
         visible: :any
       )
     )

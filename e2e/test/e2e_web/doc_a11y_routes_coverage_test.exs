@@ -23,7 +23,7 @@ defmodule E2eWeb.DocA11yRoutesCoverageTest do
     for {path, root_sel} <- E2eWeb.DocA11yRoutes.all() do
       case Phoenix.Router.route_info(E2eWeb.Router, "GET", path, "") do
         %{plug: Phoenix.LiveView.Plug} ->
-          assert {:ok, _view, html} = live(conn, path, on_error: :warn)
+          assert {_view, html} = live_ok!(conn, path, on_error: :warn)
           id = String.trim_leading(root_sel, "#")
           assert html =~ ~s(id="#{id}")
 

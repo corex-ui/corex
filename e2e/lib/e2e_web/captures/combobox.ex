@@ -19,7 +19,7 @@ defmodule CorexWeb.Combobox do
               placeholder: "Select a country",
               items: @items,
               empty: [%{inner_block: "No results"}],
-              trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              trigger: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             with_value: %{
               class: "combobox",
@@ -27,7 +27,7 @@ defmodule CorexWeb.Combobox do
               items: @items,
               value: ["bel"],
               empty: [%{inner_block: "No results"}],
-              trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              trigger: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             }
           ]
 

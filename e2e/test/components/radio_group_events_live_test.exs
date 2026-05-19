@@ -4,7 +4,7 @@ defmodule E2eWeb.RadioGroupEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "radio_group_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/radio-group/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/radio-group/events", on_error: :warn)
 
     html =
       render_click(view, "radio_group_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.RadioGroupEventsLiveTest do
         "value" => "b"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

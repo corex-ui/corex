@@ -3,7 +3,7 @@ defmodule E2eWeb.AngleSliderModel do
 
   use E2eWeb.Model, component: "angle-slider"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     angle-slider-anatomy-minimal
     angle-slider-anatomy-with-label
     angle-slider-anatomy-custom-slots

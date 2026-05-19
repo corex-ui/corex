@@ -80,7 +80,7 @@ defmodule E2e.DesignPalette do
     ink = theme["ink"] || %{}
     semantic = theme["semantic"] || %{}
 
-    state_order = theme["state_order"] || global["state_order"] || ~w(default muted hover active)
+    state_order = theme["state_order"] || global["state_order"] || ~W(default muted hover active)
     ui_ratio_base = string_key_map(theme["ui_ratio_base"] || global["ui_ratio_base"] || %{})
 
     semantic_ratio_base =

@@ -3,7 +3,7 @@ defmodule E2eWeb.DialogEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "dialog_open_changed inserts log row in table", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/dialog/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/dialog/events", on_error: :warn)
 
     html =
       render_click(view, "dialog_open_changed", %{
@@ -12,11 +12,11 @@ defmodule E2eWeb.DialogEventsLiveTest do
       })
 
     assert html =~ "open_changed"
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 
   test "dialog_open_client_changed inserts log row in table", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/dialog/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/dialog/events", on_error: :warn)
 
     html =
       render_click(view, "dialog_open_client_changed", %{
@@ -25,6 +25,6 @@ defmodule E2eWeb.DialogEventsLiveTest do
       })
 
     assert html =~ "open_client_changed"
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

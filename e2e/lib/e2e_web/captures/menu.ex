@@ -54,30 +54,30 @@ defmodule CorexWeb.Menu do
               class: "menu",
               items: @items_minimal,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             grouped: %{
               id: "menu-anatomy-grouped",
               class: "menu",
               items: @items_grouped,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             nested: %{
               id: "menu-anatomy-nested",
               class: "menu",
               items: @items_nested,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}],
-              nested_indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}],
+              nested_indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}]
             },
             nested_grouped: %{
               id: "menu-anatomy-nested-grouped",
               class: "menu",
               items: @items_nested_grouped,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}],
-              nested_indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}],
+              nested_indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}]
             },
             pattern_redirect: %{
               id: "menu-pattern-redirect",
@@ -88,7 +88,7 @@ defmodule CorexWeb.Menu do
                 %Item{value: "/en/menu/api", label: "API"}
               ],
               trigger: [%{inner_block: "Navigate"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             pattern_redirect_external: %{
               id: "menu-pattern-external",
@@ -107,7 +107,7 @@ defmodule CorexWeb.Menu do
                 }
               ],
               trigger: [%{inner_block: "External"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             pattern_redirect_types: %{
               id: "menu-pattern-types",
@@ -118,7 +118,7 @@ defmodule CorexWeb.Menu do
                 %Item{value: "/en/menu/events", label: "LiveView navigate", redirect: :navigate}
               ],
               trigger: [%{inner_block: "Redirect kinds"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             }
           ]
 

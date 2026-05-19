@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Corex do
 
   @impl true
   @doc false
-  def run([version]) when version in ~w(-v --version) do
+  def run([version]) when version in ~W(-v --version) do
     Mix.shell().info("Corex v#{@version}")
   end
 

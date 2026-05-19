@@ -3,7 +3,7 @@ defmodule E2eWeb.TreeViewModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     tree-view-anatomy-minimal
     tree-view-anatomy-with-indicator
     tree-view-anatomy-custom-slots

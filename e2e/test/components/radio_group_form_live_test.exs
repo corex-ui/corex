@@ -3,7 +3,7 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "changeset validate shows required error for empty choice", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+    {view, _html} = live_ok!(conn, ~p"/radio-group/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
   end
 
   test "changeset save with choice pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+    {view, _html} = live_ok!(conn, ~p"/radio-group/live-form")
 
     view
     |> form("#radio-group-live-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
   end
 
   test "validate_strict shows required error for empty choice", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+    {view, _html} = live_ok!(conn, ~p"/radio-group/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.RadioGroupFormLiveTest do
   end
 
   test "save_strict with choice pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/radio-group/live-form")
+    {view, _html} = live_ok!(conn, ~p"/radio-group/live-form")
 
     view
     |> form("#radio-group-strict-form-live")

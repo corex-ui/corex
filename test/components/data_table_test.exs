@@ -22,12 +22,12 @@ defmodule Corex.DataTableTest do
           ]
         )
 
-      assert html =~ ~s(data-scope="data-table")
-      assert html =~ ~s(data-part="root")
-      assert html =~ ~s(data-part="thead")
-      assert html =~ ~s(data-part="tbody")
-      assert html =~ ~s(data-part="row")
-      assert html =~ ~s(data-part="cell")
+      assert html =~ ~S(data-scope="data-table")
+      assert html =~ ~S(data-part="root")
+      assert html =~ ~S(data-part="thead")
+      assert html =~ ~S(data-part="tbody")
+      assert html =~ ~S(data-part="row")
+      assert html =~ ~S(data-part="cell")
 
       assert html =~ "Alice"
       assert html =~ "Bob"
@@ -52,11 +52,11 @@ defmodule Corex.DataTableTest do
           ]
         )
 
-      assert html =~ ~s(data-part="sort-header")
-      assert html =~ ~s(data-part="sort-trigger")
-      assert html =~ ~s(phx-click="sort_event")
-      assert html =~ ~s(phx-value-sort_by="name")
-      assert html =~ ~s(data-active="true")
+      assert html =~ ~S(data-part="sort-header")
+      assert html =~ ~S(data-part="sort-trigger")
+      assert html =~ ~S(phx-click="sort_event")
+      assert html =~ ~S(phx-value-sort_by="name")
+      assert html =~ ~S(data-active="true")
     end
 
     test "renders selectable checkboxes when selectable is true" do
@@ -77,18 +77,18 @@ defmodule Corex.DataTableTest do
           ]
         )
 
-      assert html =~ ~s(data-part="selection-header")
-      assert html =~ ~s(data-part="selection-cell")
+      assert html =~ ~S(data-part="selection-header")
+      assert html =~ ~S(data-part="selection-cell")
 
       # Check for header checkbox
-      assert html =~ ~s(id="users-select-all")
+      assert html =~ ~S(id="users-select-all")
 
       # Check for individual row checkboxes
-      assert html =~ ~s(id="users-select-user-1")
-      assert html =~ ~s(id="users-select-user-2")
+      assert html =~ ~S(id="users-select-user-1")
+      assert html =~ ~S(id="users-select-user-2")
 
       # Check that the selected row is checked (rendered as checked or with checked inside)
-      assert html =~ ~s(value="user-1")
+      assert html =~ ~S(value="user-1")
     end
 
     test "renders actions in the last column" do
@@ -108,9 +108,9 @@ defmodule Corex.DataTableTest do
           ]
         )
 
-      assert html =~ ~s(data-part="action-header")
-      assert html =~ ~s(data-part="action-cell")
-      assert html =~ ~s(data-part="actions")
+      assert html =~ ~S(data-part="action-header")
+      assert html =~ ~S(data-part="action-cell")
+      assert html =~ ~S(data-part="actions")
       assert html =~ "Edit Alice"
     end
 
@@ -125,7 +125,7 @@ defmodule Corex.DataTableTest do
           ]
         )
 
-      assert html =~ ~s(dir="rtl")
+      assert html =~ ~S(dir="rtl")
     end
   end
 end

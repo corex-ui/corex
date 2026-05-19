@@ -5,7 +5,7 @@ defmodule E2eWeb.ListboxModel do
 
   use E2eWeb.Model, component: "listbox"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     listbox-anatomy-minimal
     listbox-anatomy-with-indicator
     listbox-anatomy-grouped

@@ -3,7 +3,7 @@ defmodule E2eWeb.NumberInputFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "changeset validate shows required error when value blank", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.NumberInputFormLiveTest do
   end
 
   test "changeset save with value pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     view
     |> form("#number-input-live-changeset-form")
@@ -30,7 +30,7 @@ defmodule E2eWeb.NumberInputFormLiveTest do
   end
 
   test "validate_strict reflects number range error on change", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     html =
       view
@@ -41,7 +41,7 @@ defmodule E2eWeb.NumberInputFormLiveTest do
   end
 
   test "save_strict with in-range value pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     view
     |> form("#number-input-live-validate-form")
@@ -57,7 +57,7 @@ defmodule E2eWeb.NumberInputFormLiveTest do
   end
 
   test "save_strict out of range shows number validation in markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 
     html =
       view

@@ -1,7 +1,7 @@
 defmodule E2eWeb.PasswordInputModel do
   use E2eWeb.Model, component: "password-input"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     password-input-anatomy-basic
     password-input-anatomy-icons
   )

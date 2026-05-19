@@ -11,7 +11,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
   @airport_page_size 120
   @search_limit 80
 
-  @grouped_iata ~w(LHR LGW STN JFK LGA EWR CDG ORY IST SAW)
+  @grouped_iata ~W(LHR LGW STN JFK LGA EWR CDG ORY IST SAW)
 
   @controlled_items [
     %{label: "France", value: "fra"},

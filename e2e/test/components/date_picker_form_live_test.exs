@@ -3,7 +3,7 @@ defmodule E2eWeb.DatePickerFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "save_basic submits iso date and pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/date-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     view
     |> form("#date-picker-basic-form")
@@ -19,7 +19,7 @@ defmodule E2eWeb.DatePickerFormLiveTest do
   end
 
   test "validate_validate shows required error for empty date", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/date-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     html =
       view
@@ -30,7 +30,7 @@ defmodule E2eWeb.DatePickerFormLiveTest do
   end
 
   test "save_validate submits date and pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/date-picker/live-form")
+    {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     view
     |> form("#date-picker-validate-form-live")

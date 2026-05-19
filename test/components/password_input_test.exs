@@ -32,10 +32,10 @@ defmodule Corex.PasswordInputTest do
           dir: "rtl"
         )
 
-      assert [{"div", root_attrs, _} | _] = find_in_html(html, ~s([data-part="root"]))
+      assert [{"div", root_attrs, _} | _] = find_in_html(html, ~S([data-part="root"]))
       assert {"dir", "rtl"} in root_attrs
 
-      assert [{"input", input_attrs, _} | _] = find_in_html(html, ~s([data-part="input"]))
+      assert [{"input", input_attrs, _} | _] = find_in_html(html, ~S([data-part="input"]))
       refute Enum.any?(input_attrs, fn {k, _} -> k == "dir" end)
     end
   end

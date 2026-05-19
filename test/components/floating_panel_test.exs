@@ -11,7 +11,7 @@ defmodule Corex.FloatingPanelTest do
       assert html =~ ~r/data-scope="floating-panel"/
       assert html =~ ~r/data-part="root"/
       assert html =~ "Title"
-      assert html =~ ~s(data-part="stage-trigger")
+      assert html =~ ~S(data-part="stage-trigger")
     end
 
     test "omits stage trigger buttons when stage slots are absent" do
@@ -22,7 +22,7 @@ defmodule Corex.FloatingPanelTest do
         )
 
       assert html =~ "No stages"
-      refute html =~ ~s(data-part="stage-trigger")
+      refute html =~ ~S(data-part="stage-trigger")
     end
 
     test "renders with all attributes and custom translation" do
@@ -91,8 +91,8 @@ defmodule Corex.FloatingPanelTest do
       assert html =~ "aria-label=\"Cls\""
       assert html =~ "data-disabled"
       assert html =~ "data-dir=\"rtl\""
-      assert html =~ ~s(&quot;width&quot;:200) and html =~ ~s(&quot;height&quot;:200)
-      assert html =~ ~s(&quot;x&quot;:20) and html =~ ~s(&quot;y&quot;:20)
+      assert html =~ ~S(&quot;width&quot;:200) and html =~ ~S(&quot;height&quot;:200)
+      assert html =~ ~S(&quot;x&quot;:20) and html =~ ~S(&quot;y&quot;:20)
       assert html =~ "data-grid-size=\"10\""
       assert html =~ "data-persist-rect"
     end
@@ -121,8 +121,8 @@ defmodule Corex.FloatingPanelTest do
           %{}
         )
 
-      assert html =~ ~s(data-position-placement="bottom-start")
-      assert html =~ ~s(data-position-gutter="16")
+      assert html =~ ~S(data-position-placement="bottom-start")
+      assert html =~ ~S(data-position-gutter="16")
     end
 
     test "applies class from trigger slot to button" do
@@ -145,7 +145,7 @@ defmodule Corex.FloatingPanelTest do
           %{}
         )
 
-      assert html =~ ~s(class="button button--ghost button--sm")
+      assert html =~ ~S(class="button button--ghost button--sm")
       assert html =~ "Trigger label"
     end
   end

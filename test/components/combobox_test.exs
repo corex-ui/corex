@@ -82,7 +82,7 @@ defmodule Corex.ComboboxTest do
           %{}
         )
 
-      assert html =~ ~s(data-part="positioner")
+      assert html =~ ~S(data-part="positioner")
     end
 
     test "Connect.props with filter false sets data-filter to nil" do

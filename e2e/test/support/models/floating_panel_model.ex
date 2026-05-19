@@ -3,7 +3,7 @@ defmodule E2eWeb.FloatingPanelModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     floating-panel-anatomy-basic
     floating-panel-anatomy-no-trigger
     floating-panel-anatomy-positioning

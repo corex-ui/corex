@@ -278,6 +278,7 @@ defmodule Corex.DatePicker do
 
   '''
 
+  @doc type: :component
   use Phoenix.Component
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect

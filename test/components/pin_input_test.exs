@@ -40,7 +40,7 @@ defmodule Corex.PinInputTest do
 
       assert html =~ "Invalid code"
       assert html =~ "○"
-      assert html =~ ~s(data-select-on-focus)
+      assert html =~ ~S(data-select-on-focus)
     end
   end
 
@@ -79,7 +79,7 @@ defmodule Corex.PinInputTest do
         )
 
       assert html =~ "Code"
-      assert html =~ ~s(data-scope="pin-input")
+      assert html =~ ~S(data-scope="pin-input")
     end
   end
 

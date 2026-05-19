@@ -4,7 +4,7 @@ defmodule E2eWeb.PaginationEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "pagination_page_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pagination/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/pagination/events", on_error: :warn)
 
     html =
       render_click(view, "pagination_page_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.PaginationEventsLiveTest do
         "page" => "2"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

@@ -3,7 +3,7 @@ defmodule E2eWeb.PinInputFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate reflects submitted pin in markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pin-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/pin-input/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.PinInputFormLiveTest do
   end
 
   test "save pushes toast-create with pin description", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/pin-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/pin-input/live-form")
 
     view
     |> form("#pin-input-form")

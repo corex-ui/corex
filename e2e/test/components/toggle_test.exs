@@ -48,7 +48,7 @@ defmodule E2eWeb.ToggleTest do
         click(
           session,
           css(
-            ~s|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"]|,
+            ~S|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"]|,
             visible: :any
           )
         )
@@ -56,7 +56,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.wait_for_has(
         css(
-          ~s|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          ~S|#toggle-anatomy-switching-label [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -79,7 +79,7 @@ defmodule E2eWeb.ToggleTest do
         click(
           session,
           css(
-            ~s|#toggle-anatomy-indicator-label [data-scope="toggle"][data-part="root"]|,
+            ~S|#toggle-anatomy-indicator-label [data-scope="toggle"][data-part="root"]|,
             visible: :any
           )
         )
@@ -101,7 +101,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "Pressed")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="on"]|,
+        css(~S|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -112,7 +112,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="off"]|,
+        css(~S|#toggle-api-srv [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -131,7 +131,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "Pressed")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="on"]|,
+        css(~S|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -140,7 +140,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="off"]|,
+        css(~S|#toggle-api-bind [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -159,7 +159,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_in_section(section, "Not pressed")
       |> Toggle.wait_for_has(
-        css(~s|#toggle-api-cjs [data-scope="toggle"][data-part="root"][data-state="off"]|,
+        css(~S|#toggle-api-cjs [data-scope="toggle"][data-part="root"][data-state="off"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -226,7 +226,7 @@ defmodule E2eWeb.ToggleTest do
       |> Toggle.click_toggle_root_in_section(section)
       |> Toggle.wait_for_has(
         css(
-          ~s|#toggle-patterns-controlled [data-scope="toggle"][data-part="root"][data-state="on"]|,
+          ~S|#toggle-patterns-controlled [data-scope="toggle"][data-part="root"][data-state="on"]|,
           visible: :any
         ),
         timeout: 8_000
@@ -246,7 +246,7 @@ defmodule E2eWeb.ToggleTest do
       session
       |> Toggle.click_playground_disabled_switch()
       |> Toggle.wait_for_has(
-        css(~s|#toggle-playground [data-scope="toggle"][data-part="root"][disabled]|,
+        css(~S|#toggle-playground [data-scope="toggle"][data-part="root"][disabled]|,
           visible: :any
         ),
         timeout: 8_000

@@ -27,35 +27,35 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
 
     inputs = Live.inputs(schema)
 
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>Name</:label>)))
-    assert Enum.any?(inputs, &(&1 =~ "number_input" and &1 =~ ~s(<:label>Age</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ ~S(type="text") and &1 =~ ~S(<:label>Name</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "number_input" and &1 =~ ~S(<:label>Age</:label>)))
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ "number_input" and &1 =~ ~s(step=) and &1 =~ ~s(<:label>Price</:label>))
+             &(&1 =~ "number_input" and &1 =~ ~S(step=) and &1 =~ ~S(<:label>Price</:label>))
            )
 
-    assert Enum.any?(inputs, &(&1 =~ "checkbox" and &1 =~ ~s(<:label>Active</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "checkbox" and &1 =~ ~S(<:label>Active</:label>)))
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ ~s(type="textarea") and &1 =~ ~s(<:label>Description</:label>))
+             &(&1 =~ ~S(type="textarea") and &1 =~ ~S(<:label>Description</:label>))
            )
 
-    assert Enum.any?(inputs, &(&1 =~ "date_picker" and &1 =~ ~s(<:label>Birthdate</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "date_picker" and &1 =~ ~S(<:label>Birthdate</:label>)))
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ ~s(type="select") and &1 =~ ~s(multiple) and &1 =~ ~s(<:label>Roles</:label>))
+             &(&1 =~ ~S(type="select") and &1 =~ ~S(multiple) and &1 =~ ~S(<:label>Roles</:label>))
            )
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ "select" and &1 =~ ~s(placeholder: "Choose a value") and
-                 &1 =~ ~s(<:label>Status</:label>))
+             &(&1 =~ "select" and &1 =~ ~S(placeholder: "Choose a value") and
+                 &1 =~ ~S(<:label>Status</:label>))
            )
 
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>User</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ ~S(type="text") and &1 =~ ~S(<:label>User</:label>)))
 
     # Map is ignored
     refute Enum.any?(inputs, &(&1 =~ "Data"))

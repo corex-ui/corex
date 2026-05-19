@@ -4,7 +4,7 @@ defmodule E2eWeb.ColorPickerEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "cp_ev_server_value inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/color-picker/events")
+    {view, _html} = live_ok!(conn, ~p"/color-picker/events")
 
     html =
       render_click(view, "cp_ev_server_value", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.ColorPickerEventsLiveTest do
         "valueAsString" => "#ff0000"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

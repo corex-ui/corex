@@ -36,12 +36,12 @@ defmodule CorexWeb.Accordion do
               trigger: [
                 %{
                   let: :item,
-                  inner_block: ~s(<.heroicon name={item.meta.icon} />{item.label})
+                  inner_block: ~S(<.heroicon name={item.meta.icon} />{item.label})
                 }
               ],
               content: [%{let: :item, inner_block: "{item.content}"}],
               indicator: [
-                %{let: :item, inner_block: ~s(<.heroicon name={item.meta.indicator} />)}
+                %{let: :item, inner_block: ~S(<.heroicon name={item.meta.indicator} />)}
               ]
             },
             basic: %{
@@ -84,7 +84,7 @@ defmodule CorexWeb.Accordion do
                 ]),
               trigger: [%{let: :item, inner_block: "{item.label}"}],
               content: [%{let: :item, inner_block: "{item.content}"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}]
             },
             with_switching_indicator: %{
               class: "accordion",
@@ -108,7 +108,7 @@ defmodule CorexWeb.Accordion do
               indicator: [
                 %{
                   inner_block:
-                    ~s(<.heroicon name="hero-plus" class="state-closed" /><.heroicon name="hero-minus" class="state-open" />)
+                    ~S(<.heroicon name="hero-plus" class="state-closed" /><.heroicon name="hero-minus" class="state-open" />)
                 }
               ]
             },

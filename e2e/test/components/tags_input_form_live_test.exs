@@ -3,7 +3,7 @@ defmodule E2eWeb.TagsInputFormLiveTest do
   import Phoenix.LiveViewTest
 
   test "validate accepts tags param on changeset form", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/tags-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
 
     html =
       view
@@ -14,7 +14,7 @@ defmodule E2eWeb.TagsInputFormLiveTest do
   end
 
   test "save pushes toast-create with tags description", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/tags-input/live-form")
+    {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
 
     view
     |> form("#tags-input-live-changeset-form")

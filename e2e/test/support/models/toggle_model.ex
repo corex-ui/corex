@@ -5,7 +5,7 @@ defmodule E2eWeb.ToggleModel do
 
   import Wallaby.Browser
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     toggle-anatomy-minimal
     toggle-anatomy-indicator
     toggle-anatomy-dual-label
@@ -77,7 +77,7 @@ defmodule E2eWeb.ToggleModel do
 
     q =
       css(
-        ~s|#toggle-playground[phx-hook="Toggle"]:not([data-loading])|,
+        ~S|#toggle-playground[phx-hook="Toggle"]:not([data-loading])|,
         visible: :any
       )
 

@@ -38,13 +38,13 @@ defmodule Corex.ComponentRenderPathsTest do
 
       assert html =~ "Tab A"
       assert html =~ "Panel A"
-      assert html =~ ~s(data-part="item-indicator")
+      assert html =~ ~S(data-part="item-indicator")
     end
 
     test "tabs_skeleton renders loading parts" do
       html = render_component(&Tabs.tabs_skeleton/1, count: 2)
-      assert html =~ ~s(data-loading)
-      assert html =~ ~s(data-part="item-trigger")
+      assert html =~ ~S(data-loading)
+      assert html =~ ~S(data-part="item-trigger")
     end
 
     test "tabs with controlled and multiple" do
@@ -239,7 +239,7 @@ defmodule Corex.ComponentRenderPathsTest do
 
       assert html =~ "Slide A"
       assert html =~ "/b.jpg"
-      assert html =~ ~s(data-part="indicator")
+      assert html =~ ~S(data-part="indicator")
     end
 
     test "compound mode renders carousel subcomponents" do
@@ -269,7 +269,7 @@ defmodule Corex.ComponentRenderPathsTest do
         )
 
       assert html =~ "One"
-      assert html =~ ~s(data-part="indicator-group")
+      assert html =~ ~S(data-part="indicator-group")
     end
   end
 
@@ -299,7 +299,7 @@ defmodule Corex.ComponentRenderPathsTest do
         )
 
       assert html =~ "Angle"
-      assert html =~ ~s(data-part="thumb")
+      assert html =~ ~S(data-part="thumb")
     end
 
     test "compound mode with markers, value text, and hidden input" do
@@ -329,15 +329,15 @@ defmodule Corex.ComponentRenderPathsTest do
           %{}
         )
 
-      assert html =~ ~s(data-part="marker")
+      assert html =~ ~S(data-part="marker")
       assert html =~ "45"
-      assert html =~ ~s(type="hidden")
+      assert html =~ ~S(type="hidden")
     end
 
     test "angle_slider_skeleton renders loading markup" do
       html = render_component(&AngleSlider.angle_slider_skeleton/1, [])
-      assert html =~ ~s(data-loading)
-      assert html =~ ~s(data-part="marker-group")
+      assert html =~ ~S(data-loading)
+      assert html =~ ~S(data-part="marker-group")
     end
   end
 
@@ -368,7 +368,7 @@ defmodule Corex.ComponentRenderPathsTest do
       assert html =~ "Custom"
       assert html =~ "120"
       assert html =~ "Too low"
-      assert html =~ ~s(data-part="marker-group")
+      assert html =~ ~S(data-part="marker-group")
     end
   end
 
@@ -395,8 +395,8 @@ defmodule Corex.ComponentRenderPathsTest do
           %{}
         )
 
-      assert html =~ ~s(data-timer-segment)
-      assert html =~ ~s(data-type="hours")
+      assert html =~ ~S(data-timer-segment)
+      assert html =~ ~S(data-type="hours")
       assert html =~ "Start"
     end
 
@@ -417,9 +417,9 @@ defmodule Corex.ComponentRenderPathsTest do
         )
 
       assert html =~ ":"
-      assert html =~ ~s(data-part="item-label")
-      assert html =~ ~s(data-type="hours")
-      assert html =~ ~s(data-part="separator")
+      assert html =~ ~S(data-part="item-label")
+      assert html =~ ~S(data-type="hours")
+      assert html =~ ~S(data-part="separator")
     end
   end
 
@@ -427,7 +427,7 @@ defmodule Corex.ComponentRenderPathsTest do
     test "renders full file upload helper" do
       html = render_component(&CorexTest.ComponentHelpers.render_file_upload_full/1, [])
       assert html =~ "Attachment"
-      assert html =~ ~s(data-scope="file-upload")
+      assert html =~ ~S(data-scope="file-upload")
     end
 
     test "renders file upload with form field" do
@@ -462,8 +462,8 @@ defmodule Corex.ComponentRenderPathsTest do
 
       assert html =~ "Code"
       assert html =~ "Invalid"
-      assert html =~ ~s(data-part="control")
-      assert html =~ ~s(autocomplete="one-time-code")
+      assert html =~ ~S(data-part="control")
+      assert html =~ ~S(autocomplete="one-time-code")
     end
 
     test "pin connect helpers" do

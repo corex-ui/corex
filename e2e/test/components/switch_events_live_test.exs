@@ -4,7 +4,7 @@ defmodule E2eWeb.SwitchEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "server switch_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/events")
+    {view, _html} = live_ok!(conn, ~p"/switch/events")
 
     html =
       render_click(view, "switch_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.SwitchEventsLiveTest do
         "checked" => true
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

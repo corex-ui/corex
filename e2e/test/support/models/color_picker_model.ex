@@ -1,7 +1,7 @@
 defmodule E2eWeb.ColorPickerModel do
   use E2eWeb.Model, component: "color-picker"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     color-picker-anatomy-minimal
     color-picker-anatomy-with-value
     color-picker-anatomy-with-preset

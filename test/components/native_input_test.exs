@@ -13,7 +13,7 @@ defmodule Corex.NativeInputTest do
         )
 
       elements =
-        find_in_html(result, ~s([data-scope="native-input"] input[type=text][name="user[name]"]))
+        find_in_html(result, ~S([data-scope="native-input"] input[type=text][name="user[name]"]))
 
       assert [_] = elements
       assert Floki.attribute(elements, "value") == ["John"]
@@ -27,7 +27,7 @@ defmodule Corex.NativeInputTest do
           value: "Hello"
         )
 
-      assert [_] = find_in_html(result, ~s(textarea[name="user[bio]"]))
+      assert [_] = find_in_html(result, ~S(textarea[name="user[bio]"]))
     end
 
     test "renders checkbox" do
@@ -38,7 +38,7 @@ defmodule Corex.NativeInputTest do
           value: true
         )
 
-      assert [_] = find_in_html(result, ~s(input[type=checkbox][name="user[agree]"]))
+      assert [_] = find_in_html(result, ~S(input[type=checkbox][name="user[agree]"]))
     end
 
     test "renders select with options" do
@@ -50,7 +50,7 @@ defmodule Corex.NativeInputTest do
           prompt: "Choose..."
         )
 
-      assert [_] = find_in_html(result, ~s(select[name="user[role]"]))
+      assert [_] = find_in_html(result, ~S(select[name="user[role]"]))
     end
 
     test "renders radio with options" do
@@ -62,7 +62,7 @@ defmodule Corex.NativeInputTest do
           value: "m"
         )
 
-      assert find_in_html(result, ~s(input[type=radio][name="user[size]"])) != []
+      assert find_in_html(result, ~S(input[type=radio][name="user[size]"])) != []
     end
 
     test "renders with form field" do
@@ -86,7 +86,7 @@ defmodule Corex.NativeInputTest do
       assert [_] =
                find_in_html(
                  result,
-                 ~s(input[type=email][name="user[email]"][value="test@example.com"])
+                 ~S(input[type=email][name="user[email]"][value="test@example.com"])
                )
     end
 
@@ -110,7 +110,7 @@ defmodule Corex.NativeInputTest do
           options: ["Admin", "User"]
         )
 
-      assert [_] = find_in_html(result, ~s(select[name="user[roles][]"]))
+      assert [_] = find_in_html(result, ~S(select[name="user[roles][]"]))
     end
 
     test "renders with icon" do
@@ -154,7 +154,7 @@ defmodule Corex.NativeInputTest do
         )
 
       assert result =~ "can&#39;t be blank"
-      assert [_] = find_in_html(result, ~s([data-part="error"]))
+      assert [_] = find_in_html(result, ~S([data-part="error"]))
     end
   end
 end

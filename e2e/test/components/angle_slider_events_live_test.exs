@@ -4,7 +4,7 @@ defmodule E2eWeb.AngleSliderEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "angle_slider_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/angle-slider/events")
+    {view, _html} = live_ok!(conn, ~p"/angle-slider/events")
 
     html =
       render_click(view, "angle_slider_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.AngleSliderEventsLiveTest do
         "value" => 45.0
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

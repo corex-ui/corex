@@ -11,7 +11,7 @@ defmodule E2eWeb.ToastPlayLive do
     %{label: "Error", value: "error"}
   ]
 
-  @toast_types ~w(info success error)
+  @toast_types ~W(info success error)
 
   @toast_field_types %{
     title: :string,

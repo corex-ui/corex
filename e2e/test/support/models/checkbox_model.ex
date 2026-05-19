@@ -1,7 +1,7 @@
 defmodule E2eWeb.CheckboxModel do
   use E2eWeb.Model, component: "checkbox"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     checkbox-anatomy-minimal
     checkbox-anatomy-labeled
     checkbox-anatomy-invalid

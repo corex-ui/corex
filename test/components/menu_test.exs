@@ -72,7 +72,7 @@ defmodule Corex.MenuTest do
       assert html =~ "Twitter"
       assert html =~ "Channels"
       assert html =~ "Print"
-      assert html =~ ~s(data-nested="menu")
+      assert html =~ ~S(data-nested="menu")
     end
 
     test "raises for invalid menu items" do
@@ -105,7 +105,7 @@ defmodule Corex.MenuTest do
         )
 
       assert html =~ "▼"
-      assert html =~ ~s(data-part="indicator")
+      assert html =~ ~S(data-part="indicator")
     end
 
     test "renders custom item slot" do
@@ -124,7 +124,7 @@ defmodule Corex.MenuTest do
           %{}
         )
 
-      assert html =~ ~s(data-custom-item)
+      assert html =~ ~S(data-custom-item)
       assert html =~ "Plain"
     end
 
@@ -156,7 +156,7 @@ defmodule Corex.MenuTest do
 
       assert html =~ "Twitter"
       assert html =~ "Social"
-      assert html =~ ~s(data-part="item-group-label")
+      assert html =~ ~S(data-part="item-group-label")
     end
 
     test "renders three-level nested menu with item slot in submenu" do
@@ -192,7 +192,7 @@ defmodule Corex.MenuTest do
         )
 
       assert html =~ "PDF"
-      assert html =~ ~s(data-menu-item)
+      assert html =~ ~S(data-menu-item)
       assert html =~ "Export"
     end
 
@@ -224,7 +224,7 @@ defmodule Corex.MenuTest do
         )
 
       assert html =~ "Actions"
-      assert html =~ ~s(data-top-item)
+      assert html =~ ~S(data-top-item)
       assert html =~ "Sub"
     end
 

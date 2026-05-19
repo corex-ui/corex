@@ -22,11 +22,11 @@ defmodule Corex.TooltipTest do
           %{}
         )
 
-      assert html =~ ~s(data-scope="tooltip")
-      assert html =~ ~s(id="tooltip:tip-unit:popper")
+      assert html =~ ~S(data-scope="tooltip")
+      assert html =~ ~S(id="tooltip:tip-unit:popper")
       assert html =~ "Hover"
       assert html =~ "Details"
-      assert html =~ ~s(data-part="arrow")
+      assert html =~ ~S(data-part="arrow")
     end
 
     test "omits arrow when show_arrow is false" do
@@ -43,7 +43,7 @@ defmodule Corex.TooltipTest do
           %{}
         )
 
-      refute html =~ ~s(data-part="arrow")
+      refute html =~ ~S(data-part="arrow")
     end
 
     test "renders multiple triggers with distinct ids and data-value" do
@@ -61,10 +61,10 @@ defmodule Corex.TooltipTest do
           %{}
         )
 
-      assert html =~ ~s(id="tooltip:tip-multi:trigger:x")
-      assert html =~ ~s(id="tooltip:tip-multi:trigger:y")
-      assert html =~ ~s(data-value="x")
-      assert html =~ ~s(data-value="y")
+      assert html =~ ~S(id="tooltip:tip-multi:trigger:x")
+      assert html =~ ~S(id="tooltip:tip-multi:trigger:y")
+      assert html =~ ~S(data-value="x")
+      assert html =~ ~S(data-value="y")
       assert html =~ "Shared"
     end
 

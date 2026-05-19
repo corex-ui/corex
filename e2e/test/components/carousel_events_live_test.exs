@@ -4,7 +4,7 @@ defmodule E2eWeb.CarouselEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "carousel_page_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/carousel/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/carousel/events", on_error: :warn)
 
     html =
       render_click(view, "carousel_page_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.CarouselEventsLiveTest do
         "page" => 1
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

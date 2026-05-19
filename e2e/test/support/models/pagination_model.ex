@@ -34,9 +34,9 @@ defmodule E2eWeb.PaginationModel do
     session
   end
 
-  @anatomy_sections ~w(pagination-anatomy-minimal)
+  @anatomy_sections ~W(pagination-anatomy-minimal)
 
-  @style_sections ~w(
+  @style_sections ~W(
     pagination-styling-color
     pagination-styling-size
     pagination-styling-text
@@ -44,17 +44,17 @@ defmodule E2eWeb.PaginationModel do
     pagination-styling-max-width
   )
 
-  @api_sections ~w(
+  @api_sections ~W(
     pagination-api-client-binding
     pagination-api-server
   )
 
-  @events_sections ~w(
+  @events_sections ~W(
     pagination-events-server-section
     pagination-events-client-section
   )
 
-  @pattern_sections ~w(
+  @pattern_sections ~W(
     pagination-patterns-controlled-section
     pagination-patterns-patch-section
     pagination-patterns-server-section

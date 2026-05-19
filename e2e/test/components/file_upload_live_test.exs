@@ -4,22 +4,22 @@ defmodule E2eWeb.FileUploadLiveTest do
   import Phoenix.LiveViewTest
 
   test "playground renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload/playground")
+    {_view, html} = live_ok!(conn, ~p"/file-upload/playground")
     assert html =~ "file-upload-playground"
   end
 
   test "api page renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload/api")
+    {_view, html} = live_ok!(conn, ~p"/file-upload/api")
     assert html =~ "file-upload-api-page"
   end
 
   test "events page renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload/events")
+    {_view, html} = live_ok!(conn, ~p"/file-upload/events")
     assert html =~ "file-upload-events-page"
   end
 
   test "fu_ev_server inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/file-upload/events")
+    {view, _html} = live_ok!(conn, ~p"/file-upload/events")
 
     html =
       render_click(view, "fu_ev_server", %{
@@ -28,7 +28,7 @@ defmodule E2eWeb.FileUploadLiveTest do
         "rejectedCount" => 0
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 
   test "anatomy page GET", %{conn: conn} do
@@ -44,18 +44,18 @@ defmodule E2eWeb.FileUploadLiveTest do
   end
 
   test "file upload live playground renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload-live/playground")
+    {_view, html} = live_ok!(conn, ~p"/file-upload-live/playground")
     assert html =~ "file-upload-live-playground"
   end
 
   test "file upload live anatomy renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload-live/anatomy")
+    {_view, html} = live_ok!(conn, ~p"/file-upload-live/anatomy")
     assert html =~ "file-upload-live-anatomy-page"
     assert html =~ "file-upload-live-anatomy-custom-slots"
   end
 
   test "file upload live form renders", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/file-upload-live/form")
+    {_view, html} = live_ok!(conn, ~p"/file-upload-live/form")
     assert html =~ "file-upload-form-live-page"
     assert html =~ "file-upload-live-field"
   end
@@ -67,7 +67,7 @@ defmodule E2eWeb.FileUploadLiveTest do
       })
 
     body = html_response(conn, 200)
-    assert body =~ ~s(data-part="error")
+    assert body =~ ~S(data-part="error")
     assert body =~ "can&#39;t be blank" or body =~ "can't be blank"
   end
 

@@ -1,7 +1,7 @@
 defmodule E2eWeb.NumberInputModel do
   use E2eWeb.Model, component: "number-input"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     number-input-anatomy-minimal
     number-input-anatomy-bounds
   )

@@ -37,8 +37,8 @@ defmodule Corex.CarouselTest do
           %{}
         )
 
-      assert html =~ ~s(data-orientation="vertical")
-      assert html =~ ~s(data-part="indicator-group")
+      assert html =~ ~S(data-orientation="vertical")
+      assert html =~ ~S(data-part="indicator-group")
     end
   end
 

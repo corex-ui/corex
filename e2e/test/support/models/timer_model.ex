@@ -3,7 +3,7 @@ defmodule E2eWeb.TimerModel do
 
   import Wallaby.Query
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     timer-anatomy-minimal
     timer-anatomy-with-triggers
     timer-anatomy-countdown

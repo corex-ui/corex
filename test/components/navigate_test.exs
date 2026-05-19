@@ -28,7 +28,7 @@ defmodule Corex.NavigateTest do
           aria_label: nil
         )
 
-      assert [_] = find_in_html(result, ~s(a[href="/about"]))
+      assert [_] = find_in_html(result, ~S(a[href="/about"]))
       assert text_in_html(result) =~ "Link text"
     end
 
@@ -55,7 +55,7 @@ defmodule Corex.NavigateTest do
           aria_label: nil
         )
 
-      assert [_] = find_in_html(result, ~s(a[target="_blank"][rel="noopener noreferrer"]))
+      assert [_] = find_in_html(result, ~S(a[target="_blank"][rel="noopener noreferrer"]))
     end
 
     test "renders link with download attribute" do
@@ -68,7 +68,7 @@ defmodule Corex.NavigateTest do
           aria_label: nil
         )
 
-      assert [_] = find_in_html(result, ~s(a[download="report.pdf"]))
+      assert [_] = find_in_html(result, ~S(a[download="report.pdf"]))
     end
 
     test "renders link with aria_label" do
@@ -81,7 +81,7 @@ defmodule Corex.NavigateTest do
           aria_label: "View profile"
         )
 
-      assert [_] = find_in_html(result, ~s(a[aria-label="View profile"]))
+      assert [_] = find_in_html(result, ~S(a[aria-label="View profile"]))
     end
 
     test "renders patch link" do

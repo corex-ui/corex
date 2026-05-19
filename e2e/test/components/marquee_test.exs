@@ -2,8 +2,6 @@ defmodule E2eWeb.MarqueeTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
-  import Wallaby.Query
-
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.MarqueeModel, as: Marquee
 
@@ -71,15 +69,12 @@ defmodule E2eWeb.MarqueeTest do
         |> Marquee.prepare_live_form()
         |> Marquee.wait_host_marquee_ready(host)
 
-      refute Marquee.marquee_events_server_log_has_row?(session)
+      before = Marquee.log_row_count(session, "marquee-events-log-server")
 
       session
       |> Marquee.pause_host(host)
       |> Marquee.wait_host_paused(host, timeout: 8_000)
-      |> Marquee.wait_for_has(
-        css("#marquee-events-log-server tr[data-part='row']", count: 1, visible: :any),
-        timeout: 10_000
-      )
+      |> Marquee.wait_log_rows_grew("marquee-events-log-server", before, timeout: 10_000)
     end
   end
 end
