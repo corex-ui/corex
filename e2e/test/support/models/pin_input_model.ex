@@ -96,8 +96,26 @@ defmodule E2eWeb.PinInputModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def fill_pin_at_host(session, pin, host_id) when is_binary(pin) do
+    Enum.reduce(Enum.with_index(String.graphemes(pin)), session, fn {char, idx}, s ->
+      q =
+        css(
+          ~s|##{host_id} [data-scope="pin-input"][data-part="input"][data-index="#{idx}"]|,
+          visible: :any
+        )
+
+      s
+      |> click(q)
+      |> fill_in(q, with: char)
+    end)
+  end
+
   def fill_pin_input(session, pin) when is_binary(pin) do
-    fill_pin_in_section(session, "pin-input-form-pin", pin, "pin-input-form-pin")
+    host_id = "pin-input-form-pin"
+
+    session
+    |> wait_root_pin_input_ready(host_id)
+    |> fill_pin_at_host(pin, host_id)
   end
 
   def submit_form(session, mode \\ :static) do
