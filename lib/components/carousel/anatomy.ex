@@ -124,6 +124,7 @@ defmodule Corex.Carousel.Anatomy do
       "role",
       "aria-label",
       "aria-hidden",
+      "inert",
       "data-current",
       "data-in-view",
       "tabindex"

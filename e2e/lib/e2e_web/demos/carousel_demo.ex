@@ -9,6 +9,21 @@ defmodule E2eWeb.Demos.CarouselDemo do
   @posts_items_attr "items={#{DocExamples.code_carousel_posts()}}"
   @posts_list_attr DocExamples.code_carousel_posts()
 
+  @styling_colors ~W(default accent brand alert info success)
+  @styling_sizes ~W(sm md lg xl)
+  @styling_size_widths %{
+    "sm" => "max-w-3xs",
+    "md" => "max-w-xs",
+    "lg" => "max-w-md",
+    "xl" => "max-w-lg"
+  }
+  @styling_radii ~W(none sm md lg xl full)
+
+  @styling_carousel_triggers """
+      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+  """
+
   def gallery_images do
     [
       {~p"/images/beach.jpg", "Beach"},
@@ -341,212 +356,27 @@ defmodule E2eWeb.Demos.CarouselDemo do
   end
 
   def styling_color_code do
-    """
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--accent"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    """
+    styling_carousel_code(:color, @styling_colors)
   end
 
   def styling_color_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-wrap gap-4 items-end justify-center">
-      <.carousel
-        id="carousel-style-accent"
-        items={gallery_images()}
-        class="carousel carousel--accent w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-brand"
-        items={gallery_images()}
-        class="carousel carousel--brand w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-alert"
-        items={gallery_images()}
-        class="carousel carousel--alert w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-    </div>
-    """
+    styling_carousel_example(assigns, :color, @styling_colors, "gap-4")
   end
 
   def styling_size_code do
-    """
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--sm"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--lg"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    """
+    styling_carousel_code(:size, @styling_sizes)
   end
 
   def styling_size_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-wrap gap-6 items-end justify-center">
-      <.carousel
-        id="carousel-style-sm"
-        items={gallery_images()}
-        class="carousel carousel--sm w-full max-w-3xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-lg"
-        items={gallery_images()}
-        class="carousel carousel--lg w-full max-w-md"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-    </div>
-    """
-  end
-
-  def styling_trigger_code do
-    """
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--trigger-sm"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--trigger-xl"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    """
-  end
-
-  def styling_trigger_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-wrap gap-6 items-end justify-center">
-      <.carousel
-        id="carousel-style-trigger-sm"
-        items={gallery_images()}
-        class="carousel carousel--trigger-sm w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-trigger-md"
-        items={gallery_images()}
-        class="carousel carousel--trigger-md w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-trigger-lg"
-        items={gallery_images()}
-        class="carousel carousel--trigger-lg w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-trigger-xl"
-        items={gallery_images()}
-        class="carousel carousel--trigger-xl w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-    </div>
-    """
+    styling_carousel_example(assigns, :size, @styling_sizes, "gap-6")
   end
 
   def styling_radius_code do
-    """
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--rounded-none"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    <.carousel
-      #{@gallery_items_attr}
-      class="carousel carousel--rounded-xl"
-    >
-      <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-    </.carousel>
-    """
+    styling_carousel_code(:radius, @styling_radii)
   end
 
   def styling_radius_example(assigns) do
-    _ = assigns
-
-    ~H"""
-    <div class="flex flex-wrap gap-6 items-end justify-center">
-      <.carousel
-        id="carousel-style-rounded-none"
-        items={gallery_images()}
-        class="carousel carousel--rounded-none w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-rounded-md"
-        items={gallery_images()}
-        class="carousel carousel--rounded-md w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-rounded-xl"
-        items={gallery_images()}
-        class="carousel carousel--rounded-xl w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-      <.carousel
-        id="carousel-style-rounded-full"
-        items={gallery_images()}
-        class="carousel carousel--rounded-full w-full max-w-xs"
-      >
-        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-      </.carousel>
-    </div>
-    """
+    styling_carousel_example(assigns, :radius, @styling_radii, "gap-6")
   end
 
   def events_server_heex do
@@ -806,4 +636,64 @@ defmodule E2eWeb.Demos.CarouselDemo do
     </.carousel>
     """
   end
+
+  defp styling_carousel_code(type, variants) do
+    Enum.map_join(variants, "\n", fn variant ->
+      %{id: id, class: class} = styling_carousel_assign(type, variant)
+
+      """
+      <.carousel id="#{id}" #{@gallery_items_attr} class="#{class}">
+      #{@styling_carousel_triggers}
+      </.carousel>
+      """
+    end)
+  end
+
+  defp styling_carousel_example(assigns, type, variants, gap_class) do
+    assigns =
+      assign(
+        assigns,
+        :carousels,
+        Enum.map(variants, &styling_carousel_assign(type, &1))
+      )
+
+    assigns = assign(assigns, :wrap_class, "flex flex-wrap #{gap_class} items-end justify-center")
+
+    ~H"""
+    <div class={@wrap_class}>
+      <.carousel
+        :for={carousel <- @carousels}
+        id={carousel.id}
+        items={gallery_images()}
+        class={carousel.class}
+      >
+        <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
+        <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
+      </.carousel>
+    </div>
+    """
+  end
+
+  defp styling_carousel_assign(:color, "default"),
+    do: %{id: "carousel-style-default", class: styling_carousel_color_class("default")}
+
+  defp styling_carousel_assign(:color, color),
+    do: %{id: "carousel-style-#{color}", class: styling_carousel_color_class(color)}
+
+  defp styling_carousel_assign(:size, size),
+    do: %{id: "carousel-style-#{size}", class: styling_carousel_size_class(size)}
+
+  defp styling_carousel_assign(:radius, radius),
+    do: %{id: "carousel-style-rounded-#{radius}", class: styling_carousel_radius_class(radius)}
+
+  defp styling_carousel_color_class("default"), do: "carousel w-full max-w-xs"
+  defp styling_carousel_color_class(color), do: "carousel carousel--#{color} w-full max-w-xs"
+
+  defp styling_carousel_size_class(size) do
+    width = Map.fetch!(@styling_size_widths, size)
+    "carousel carousel--#{size} w-full #{width}"
+  end
+
+  defp styling_carousel_radius_class(radius),
+    do: "carousel carousel--rounded-#{radius} w-full max-w-xs"
 end

@@ -114,7 +114,6 @@ defmodule E2eWeb.Router do
       live("/dialog/playground", DialogPlayLive)
       live("/dialog/api", DialogApiLive)
       live("/dialog/events", DialogEventsLive)
-      live("/dialog/patterns", DialogPatternsLive)
       live("/dialog/animation", DialogAnimationLive)
 
       live("/editable/playground", EditablePlayLive)

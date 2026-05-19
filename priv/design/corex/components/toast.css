@@ -133,7 +133,7 @@
   }
 
   .toast [data-scope="toast"][data-part="progressbar"] {
-    height: var(--spacing-space-sm);
+    height: calc(var(--spacing-space) * 0.8);
     background: linear-gradient(to left,
         var(--color-ink-muted),
         var(--color-ink));

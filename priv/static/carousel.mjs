@@ -1066,7 +1066,10 @@ var Carousel = class extends Component {
       const itemEl = this.el.querySelector(
         `[data-scope="carousel"][data-part="item"][data-index="${i}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i }));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ index: i }));
+        this.syncSlideInert(itemEl);
+      }
     }
     const prevTriggerEl = this.el.querySelector(
       '[data-scope="carousel"][data-part="prev-trigger"]'
@@ -1096,6 +1099,9 @@ var Carousel = class extends Component {
       '[data-scope="carousel"][data-part="progress-text"]'
     );
     if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
+  }
+  syncSlideInert(itemEl) {
+    itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
   }
 };
 

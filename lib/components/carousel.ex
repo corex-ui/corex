@@ -23,6 +23,8 @@ defmodule Corex.Carousel do
 
   Without `<:item>`, every entry must be `%Corex.Image{}`; other values raise at render time.
 
+  Slides may include links and other controls; off-view slides are marked `inert` on the client so they stay out of the tab order.
+
   <!-- tabs-open -->
 
   ### Images
@@ -240,7 +242,7 @@ defmodule Corex.Carousel do
 
   ### Size
 
-  Layout density for the root and control bar. Does not resize prev/next triggers or indicators.
+  Layout density for the root, control bar, prev/next triggers, autoplay control, and indicators.
 
   | Modifier | Classes |
   | -------- | ------- |
@@ -278,32 +280,9 @@ defmodule Corex.Carousel do
   </.carousel>
   ```
 
-  ### Trigger size
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | SM | `carousel carousel--trigger-sm` |
-  | MD | `carousel carousel--trigger-md` |
-  | LG | `carousel carousel--trigger-lg` |
-  | XL | `carousel carousel--trigger-xl` |
-
-  ```heex
-  <.carousel
-    items={[
-      Corex.Image.new("/images/beach.jpg", alt: "Beach"),
-      Corex.Image.new("/images/fall.jpg", alt: "Fall"),
-      Corex.Image.new("/images/sand.jpg", alt: "Sand"),
-      Corex.Image.new("/images/star.jpg", alt: "Star"),
-      Corex.Image.new("/images/winter.jpg", alt: "Winter")
-    ]}
-    class="carousel carousel--trigger-sm"
-  >
-    <:prev_trigger><.heroicon name="hero-arrow-left" /></:prev_trigger>
-    <:next_trigger><.heroicon name="hero-arrow-right" /></:next_trigger>
-  </.carousel>
-  ```
-
   ### Radius
+
+  Corner radius for the slide area and prev/next triggers.
 
   | Modifier | Classes |
   | -------- | ------- |

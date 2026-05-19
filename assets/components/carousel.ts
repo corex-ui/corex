@@ -33,7 +33,10 @@ export class Carousel extends Component<Props, Api> {
       const itemEl = this.el.querySelector<HTMLElement>(
         `[data-scope="carousel"][data-part="item"][data-index="${i}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i } as ItemProps));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ index: i } as ItemProps));
+        this.syncSlideInert(itemEl);
+      }
     }
 
     const prevTriggerEl = this.el.querySelector<HTMLElement>(
@@ -69,5 +72,9 @@ export class Carousel extends Component<Props, Api> {
       '[data-scope="carousel"][data-part="progress-text"]'
     );
     if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
+  }
+
+  private syncSlideInert(itemEl: HTMLElement): void {
+    itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
   }
 }

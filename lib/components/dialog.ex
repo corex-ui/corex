@@ -164,39 +164,6 @@ defmodule Corex.Dialog do
 
   <!-- tabs-close -->
 
-  ## Patterns
-
-  <!-- tabs-open -->
-
-  ### Controlled
-
-  ```heex
-  <.dialog
-    class="dialog"
-    controlled
-    open={@dialog_open}
-    on_open_change="patterns_dialog_open_changed"
-  >
-    <:trigger>Open dialog</:trigger>
-    <:title>Controlled</:title>
-    <:description>State lives on the LiveView.</:description>
-    <:content>
-      <p>Content</p>
-    </:content>
-    <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
-    </:close_trigger>
-  </.dialog>
-  ```
-
-  ```elixir
-  def handle_event("patterns_dialog_open_changed", %{"open" => open}, socket) do
-    {:noreply, assign(socket, :dialog_open, open)}
-  end
-  ```
-
-  <!-- tabs-close -->
-
   ## Animation
 
   Set `animation` on `<.dialog>` (`instant`, `js`, or `custom`).
@@ -401,13 +368,7 @@ defmodule Corex.Dialog do
 
   attr(:open, :boolean,
     default: false,
-    doc: "The initial open state or the controlled open state"
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Whether the dialog is controlled. Only in LiveView, the on_open_change event is required"
+    doc: "The initial open state of the dialog"
   )
 
   attr(:modal, :boolean,
@@ -534,7 +495,7 @@ defmodule Corex.Dialog do
       {@rest}
       {Connect.props(%Props{
         id: @id,
-        controlled: @controlled,
+        controlled: false,
         open: @open,
         modal: @modal,
         close_on_interact_outside: @close_on_interact_outside,

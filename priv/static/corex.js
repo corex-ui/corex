@@ -5861,7 +5861,10 @@ var Corex = (() => {
             const itemEl = this.el.querySelector(
               `[data-scope="carousel"][data-part="item"][data-index="${i2}"]`
             );
-            if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i2 }));
+            if (itemEl) {
+              this.spreadProps(itemEl, this.api.getItemProps({ index: i2 }));
+              this.syncSlideInert(itemEl);
+            }
           }
           const prevTriggerEl = this.el.querySelector(
             '[data-scope="carousel"][data-part="prev-trigger"]'
@@ -5891,6 +5894,9 @@ var Corex = (() => {
             '[data-scope="carousel"][data-part="progress-text"]'
           );
           if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
+        }
+        syncSlideInert(itemEl) {
+          itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
         }
       };
       CarouselHook = {

@@ -3,7 +3,6 @@ defmodule E2eWeb.ListboxTest do
   use Wallaby.Feature
 
   import Wallaby.Query
-  import Wallaby.Browser
 
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.ListboxModel, as: Listbox
@@ -97,11 +96,7 @@ defmodule E2eWeb.ListboxTest do
       refute Listbox.item_aria_selected?(session, "listbox-api-sv-js", "deu")
 
       session
-      |> click(
-        xpath(
-          "//*[@id='listbox-api-set-value-js-section']//button[contains(normalize-space(), 'Germany')]"
-        )
-      )
+      |> Listbox.click_button_in_section("listbox-api-set-value-js", "Germany (JS.dispatch)")
       |> Listbox.wait_item_aria_selected("listbox-api-sv-js", "deu", timeout: 5_000)
 
       assert Listbox.item_aria_selected?(session, "listbox-api-sv-js", "deu")

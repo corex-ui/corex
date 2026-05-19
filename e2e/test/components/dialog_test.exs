@@ -39,7 +39,7 @@ defmodule E2eWeb.DialogTest do
         |> Dialog.wait_root_dialog_ready("dialog-api")
 
       session
-      |> Dialog.click_in_section("dialog-api-client", "Open Dialog")
+      |> Dialog.click_in_section("dialog-api-client", "Open")
       |> Dialog.wait_dialog_open_by_host_id("dialog-api", timeout: 8_000)
     end
   end
@@ -67,20 +67,6 @@ defmodule E2eWeb.DialogTest do
       session
       |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :playground)
       |> Dialog.wait_playground_dialog_ready()
-    end
-  end
-
-  describe "patterns" do
-    feature "controlled  -  trigger opens dialog", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :patterns)
-        |> Dialog.wait_patterns_page()
-        |> Dialog.wait_root_dialog_ready("patterns-controlled-dialog")
-
-      session
-      |> Dialog.open_dialog_by_host_id("patterns-controlled-dialog")
-      |> Dialog.wait_dialog_open_by_host_id("patterns-controlled-dialog", timeout: 8_000)
     end
   end
 end

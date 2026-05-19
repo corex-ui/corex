@@ -18,7 +18,6 @@ defmodule E2eWeb.DatePickerPlayLive do
       dir: "ltr",
       locale: "en-US",
       selection_mode: "single",
-      view: "day",
       max_selected_dates: nil
     }
 
@@ -62,9 +61,6 @@ defmodule E2eWeb.DatePickerPlayLive do
 
   defp update_control(socket, "selection_mode", value) when is_binary(value),
     do: update(socket, :controls, &Map.put(&1, :selection_mode, value))
-
-  defp update_control(socket, "view", value) when is_binary(value),
-    do: update(socket, :controls, &Map.put(&1, :view, value))
 
   defp update_control(socket, "max_selected_dates", "unlimited"),
     do: update(socket, :controls, &Map.put(&1, :max_selected_dates, nil))
@@ -175,23 +171,6 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
             <:label>Multiple cap</:label>
           </.select>
-
-          <.select
-            class="select select--sm w-4xs"
-            id="view"
-            value={[@controls.view]}
-            deselectable={false}
-            items={[
-              %{value: "day", label: "Day view"},
-              %{value: "month", label: "Month view"},
-              %{value: "year", label: "Year view"}
-            ]}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "View"}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-            <:label>Default view</:label>
-          </.select>
         </:controls>
         <:canvas>
           <.date_picker
@@ -208,7 +187,6 @@ defmodule E2eWeb.DatePickerPlayLive do
             locale={@controls.locale}
             selection_mode={@controls.selection_mode}
             max_selected_dates={@controls.max_selected_dates}
-            view={@controls.view}
             value={@value && [@value]}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

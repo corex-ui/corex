@@ -44,11 +44,6 @@ defmodule E2eWeb.DialogModel do
     wait_root_dialog_ready(session, "dialog-playground")
   end
 
-  def wait_patterns_page(session) do
-    assert_has(session, css("#dialog-patterns-page", visible: :any))
-    session
-  end
-
   def open_dialog_in_section(session, section_dom_id) do
     if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
               String.length(section_dom_id) > 0) do
