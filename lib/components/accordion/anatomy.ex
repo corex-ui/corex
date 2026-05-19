@@ -87,6 +87,7 @@ defmodule Corex.Accordion.Anatomy do
 
     @ignored_attrs [
       "aria-expanded",
+      "aria-label",
       "disabled",
       "aria-disabled",
       "data-state",
@@ -108,7 +109,6 @@ defmodule Corex.Accordion.Anatomy do
       "data-focus",
       "data-orientation",
       "dir",
-      "aria-label",
       "aria-labelledby"
     ]
     def ignored_attrs, do: @ignored_attrs

@@ -22507,6 +22507,10 @@ var Corex = (() => {
           var _a4;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="editable"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
           if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
           const labelEl = this.el.querySelector(

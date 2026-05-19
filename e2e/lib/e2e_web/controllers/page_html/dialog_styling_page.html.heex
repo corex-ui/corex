@@ -7,7 +7,7 @@
   <.demo_page
     id="dialog-styling-page"
     title="Dialog · Style"
-    subtitle="Content width via size modifiers and a sidebar (edge) layout."
+    subtitle="Size, type scale, corner radius, and edge (side) layout via modifier classes on the dialog."
   >
     <.demo_section
       id="dialog-styling-size"
@@ -20,8 +20,28 @@
     </.demo_section>
 
     <.demo_section
+      id="dialog-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.DialogDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.DialogDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.DialogDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
       id="dialog-styling-sidebar"
-      title="Sidebar"
+      title="Side"
       code={E2eWeb.Demos.DialogDemo.styling_sidebar_code()}
     >
       <:preview>

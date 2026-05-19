@@ -17,6 +17,11 @@ export class Editable extends Component<Props, Api> {
       this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
+    const controlEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="control"]'
+    );
+    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+
     const areaEl = this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
 

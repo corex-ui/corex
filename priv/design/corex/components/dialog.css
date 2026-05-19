@@ -97,9 +97,50 @@
 }
 
 @utility dialog--* {
-
-  [data-scope="dialog"][data-part="content"] {
+  & [data-scope="dialog"][data-part="content"] {
     padding: --value(--spacing-space-*, [length]);
     max-width: --value(--container-*, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="header"] {
+    padding: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="description"] {
+    padding-inline: --value(--spacing-space-*, [length]);
+    padding-bottom: --value(--spacing-space-*, [length]);
+  }
+}
+
+@utility dialog--rounded-* {
+  & [data-scope="dialog"][data-part="content"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="close-trigger"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}
+
+@utility dialog--text-* {
+  & [data-scope="dialog"][data-part="title"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="description"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="content"] p {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  & [data-scope="dialog"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 }

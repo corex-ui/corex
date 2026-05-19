@@ -39,7 +39,7 @@ defmodule E2eWeb.DialogTest do
         |> Dialog.wait_root_dialog_ready("dialog-api")
 
       session
-      |> Dialog.click_in_section("dialog-api-client", "Open")
+      |> Dialog.click_in_section("dialog-api-client-binding", "Open")
       |> Dialog.wait_dialog_open_by_host_id("dialog-api", timeout: 8_000)
     end
   end

@@ -293,13 +293,35 @@ defmodule Corex.Dialog do
   </.dialog>
   ```
 
-  ### Sidebar
+  ### Text
 
   ```heex
-  <.dialog class="dialog dialog--sidebar">
+  <.dialog class="dialog dialog--text-xl">
     <:trigger>Open</:trigger>
-    <:title>Sidebar</:title>
-    <:content><p>Slides in from the side.</p></:content>
+    <:title>Larger type</:title>
+    <:content><p>Title, description, and body scale with the modifier.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Radius
+
+  ```heex
+  <.dialog class="dialog dialog--rounded-xl">
+    <:trigger>Open</:trigger>
+    <:title>Rounded panel</:title>
+    <:content><p>Corner radius on the content panel and close trigger.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Side
+
+  ```heex
+  <.dialog class="dialog dialog--side" modal>
+    <:trigger>Open</:trigger>
+    <:title>Side panel</:title>
+    <:content><p>Slides in from the edge.</p></:content>
     <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
   </.dialog>
   ```

@@ -538,9 +538,213 @@ defmodule E2eWeb.Demos.DialogDemo do
     """
   end
 
+  def styling_text_code do
+    ~S"""
+    <.dialog class="dialog dialog--text-sm" modal>
+      <:trigger>Open (text-sm)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--text-xl" modal>
+      <:trigger>Open (text-xl)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--text-2xl" modal>
+      <:trigger>Open (text-2xl)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--text-4xl" modal>
+      <:trigger>Open (text-4xl)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def styling_text_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+      <.dialog id="dialog-style-text-sm" class="dialog dialog--text-sm" modal>
+        <:trigger>Open (text-sm)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-text-xl" class="dialog dialog--text-xl" modal>
+        <:trigger>Open (text-xl)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-text-2xl" class="dialog dialog--text-2xl" modal>
+        <:trigger>Open (text-2xl)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-text-4xl" class="dialog dialog--text-4xl" modal>
+        <:trigger>Open (text-4xl)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    ~S"""
+    <.dialog class="dialog dialog--rounded-none" modal>
+      <:trigger>Open (rounded-none)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--rounded-sm" modal>
+      <:trigger>Open (rounded-sm)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--rounded-md" modal>
+      <:trigger>Open (rounded-md)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--rounded-lg" modal>
+      <:trigger>Open (rounded-lg)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--rounded-xl" modal>
+      <:trigger>Open (rounded-xl)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    <.dialog class="dialog dialog--rounded-full" modal>
+      <:trigger>Open (rounded-full)</:trigger>
+      <:title>Lorem ipsum dolor sit amet</:title>
+      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 items-start w-full max-w-2xl">
+      <.dialog id="dialog-style-rounded-none" class="dialog dialog--rounded-none" modal>
+        <:trigger>Open (rounded-none)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-rounded-sm" class="dialog dialog--rounded-sm" modal>
+        <:trigger>Open (rounded-sm)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-rounded-md" class="dialog dialog--rounded-md" modal>
+        <:trigger>Open (rounded-md)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-rounded-lg" class="dialog dialog--rounded-lg" modal>
+        <:trigger>Open (rounded-lg)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-rounded-xl" class="dialog dialog--rounded-xl" modal>
+        <:trigger>Open (rounded-xl)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+      <.dialog id="dialog-style-rounded-full" class="dialog dialog--rounded-full" modal>
+        <:trigger>Open (rounded-full)</:trigger>
+        <:title>Lorem ipsum dolor sit amet</:title>
+        <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+        <:content>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </:content>
+        <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+      </.dialog>
+    </div>
+    """
+  end
+
   def styling_sidebar_code do
     ~S"""
-    <.dialog class="dialog dialog--sidebar" modal>
+    <.dialog class="dialog dialog--side" modal>
       <:trigger>Open</:trigger>
       <:title>Lorem ipsum dolor sit amet</:title>
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
@@ -552,7 +756,7 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def styling_sidebar_example(assigns) do
     ~H"""
-    <.dialog id="dialog-style-sidebar" class="dialog dialog--sidebar" modal>
+    <.dialog id="dialog-style-sidebar" class="dialog dialog--side" modal>
       <:trigger>Open</:trigger>
       <:title>Lorem ipsum dolor sit amet</:title>
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>

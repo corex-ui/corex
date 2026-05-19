@@ -109,6 +109,12 @@ defmodule Corex.Accordion.Connect do
       "data-ownedby" => root_id(assigns.id)
     }
 
+    base_trigger =
+      case trigger_aria_label(assigns) do
+        nil -> base_trigger
+        aria_label -> Map.put(base_trigger, "aria-label", aria_label)
+      end
+
     maybe_put_dir(base_trigger, assigns.dir)
   end
 
@@ -134,14 +140,7 @@ defmodule Corex.Accordion.Connect do
       "id" => content_id(assigns.id, assigns.value)
     }
 
-    base =
-      case region_aria_label(assigns) do
-        nil ->
-          Map.put(base, "aria-labelledby", trigger_id(assigns.id, assigns.value))
-
-        aria_label ->
-          Map.put(base, "aria-label", aria_label)
-      end
+    base = Map.put(base, "aria-labelledby", trigger_id(assigns.id, assigns.value))
 
     result =
       cond do
@@ -158,12 +157,16 @@ defmodule Corex.Accordion.Connect do
     maybe_put_dir(result, assigns.dir)
   end
 
-  defp region_aria_label(%{label: label, id: id, value: value})
+  defp trigger_aria_label(%{label: label, id: id, value: value})
        when is_binary(label) and label != "" and is_binary(id) and is_binary(value) do
-    "#{label} (#{content_id(id, value)})"
+    "#{label} (#{trigger_id(id, value)})"
   end
 
-  defp region_aria_label(_), do: nil
+  defp trigger_aria_label(%{id: id, value: value}) when is_binary(id) and is_binary(value) do
+    trigger_id(id, value)
+  end
+
+  defp trigger_aria_label(_), do: nil
 
   @spec ignore_content(Item.t()) :: JS.t()
   def ignore_content(assigns) do
