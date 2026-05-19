@@ -217,14 +217,29 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     """
   end
 
-  defp anatomy_no_trigger_onclick(open) do
-    open_lit = if(open, do: "true", else: "false")
-
-    "document.getElementById('floating-panel-anatomy-no-trigger').dispatchEvent(new CustomEvent('corex:floating-panel:set-open', { detail: { open: #{open_lit} }, bubbles: false }))"
+  defp anatomy_no_trigger_external_controls_script do
+    ~S"""
+    <script>
+      (function () {
+        const openBtn = document.getElementById("floating-panel-anatomy-no-trigger-open");
+        const closeBtn = document.getElementById("floating-panel-anatomy-no-trigger-close");
+        const dispatch = (open) => {
+          document.getElementById("floating-panel-anatomy-no-trigger")?.dispatchEvent(
+            new CustomEvent("corex:floating-panel:set-open", {
+              detail: { open },
+              bubbles: false,
+            })
+          );
+        };
+        openBtn?.addEventListener("click", () => dispatch(true));
+        closeBtn?.addEventListener("click", () => dispatch(false));
+      })();
+    </script>
+    """
   end
 
   def anatomy_no_trigger_code do
-    ~S"""
+    """
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
         <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
@@ -234,6 +249,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
           Close
         </button>
       </div>
+      #{anatomy_no_trigger_external_controls_script()}
       <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
         <:trigger class="sr-only">
           <span data-closed>Open auxiliary panel</span>
@@ -255,23 +271,14 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
     ~H"""
     <div class="flex flex-col gap-space">
       <div class="flex flex-wrap gap-2">
-        <button
-          type="button"
-          id="floating-panel-anatomy-no-trigger-open"
-          class="button button--sm"
-          onclick={anatomy_no_trigger_onclick(true)}
-        >
+        <button type="button" id="floating-panel-anatomy-no-trigger-open" class="button button--sm">
           Open
         </button>
-        <button
-          type="button"
-          id="floating-panel-anatomy-no-trigger-close"
-          class="button button--sm"
-          onclick={anatomy_no_trigger_onclick(false)}
-        >
+        <button type="button" id="floating-panel-anatomy-no-trigger-close" class="button button--sm">
           Close
         </button>
       </div>
+      {Phoenix.HTML.raw(anatomy_no_trigger_external_controls_script())}
       <.floating_panel id="floating-panel-anatomy-no-trigger" class="floating-panel">
         <:trigger class="sr-only">
           <span data-closed>Open auxiliary panel</span>

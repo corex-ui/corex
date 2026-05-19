@@ -5,14 +5,14 @@ defmodule E2eWeb.FloatingPanelModel do
 
   @anatomy_sections ~W(
     floating-panel-anatomy-basic
-    floating-panel-anatomy-no-trigger
+    floating-panel-anatomy-no-trigger-section
     floating-panel-anatomy-positioning
     floating-panel-anatomy-size
   )
 
   @anatomy_section_to_host_id %{
     "floating-panel-anatomy-basic" => "floating-panel-anatomy",
-    "floating-panel-anatomy-no-trigger" => "floating-panel-anatomy-no-trigger",
+    "floating-panel-anatomy-no-trigger-section" => "floating-panel-anatomy-no-trigger",
     "floating-panel-anatomy-positioning" => "floating-panel-anatomy-positioning",
     "floating-panel-anatomy-size" => "floating-panel-anatomy-size"
   }
