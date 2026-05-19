@@ -138,7 +138,7 @@ defmodule Corex.ColorPicker do
   attr(:read_only, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:positioning, :map, default: %Corex.Positioning{})
+  attr(:positioning, :map, default: %Corex.Positioning{fit_viewport: false})
   attr(:presets, :list, default: [])
   attr(:class, :string, default: nil)
   attr(:on_value_change, :string, default: nil)

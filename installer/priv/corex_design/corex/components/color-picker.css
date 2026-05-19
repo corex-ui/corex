@@ -140,7 +140,8 @@
     max-width: var(--container-3xs);
     gap: var(--spacing-space);
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .color-picker [data-scope="color-picker"][data-part="area"] {
@@ -360,7 +361,8 @@
     max-width: --value(--container-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   & [data-scope="color-picker"][data-part="area-thumb"],
