@@ -16,11 +16,17 @@ if Mix.env() in [:dev, :test] do
     ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input pagination password-input pin-input radio-group select signature-pad switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
 
+  node_path = [
+    Path.expand("../deps", __DIR__),
+    Path.expand("../node_modules", __DIR__),
+    Mix.Project.build_path()
+  ]
+
   esbuild = fn args ->
     [
       args: ~w(./hooks/corex --bundle) ++ args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
   end
 
@@ -28,7 +34,7 @@ if Mix.env() in [:dev, :test] do
     [
       args: ~w(./hooks/hooks --bundle) ++ args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
   end
 
@@ -95,6 +101,6 @@ if Mix.env() in [:dev, :test] do
     hooks: [
       args: hooks_args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
 end
