@@ -279,7 +279,7 @@ jobs:
 
       - name: Install e2e JS dependencies
         working-directory: e2e
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Set up Elixir
         uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
