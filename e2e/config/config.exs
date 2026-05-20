@@ -53,7 +53,13 @@ config :esbuild,
       --external:/images/*
       --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+    env: %{
+      "NODE_PATH" => [
+        Path.expand("../deps", __DIR__),
+        Path.expand("../node_modules", __DIR__),
+        Mix.Project.build_path()
+      ]
+    }
   ]
 
 config :designex,
