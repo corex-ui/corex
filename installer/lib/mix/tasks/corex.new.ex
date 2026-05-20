@@ -139,8 +139,10 @@ defmodule Mix.Tasks.Corex.New do
 
     if version_task do
       try do
-        %Version{} = latest_version = Task.await(version_task, 3_000)
-        VersionCheck.warn_if_outdated(@version, latest_version)
+        case Task.await(version_task, 3_000) do
+          %Version{} = latest -> VersionCheck.warn_if_outdated(@version, latest)
+          _ -> :ok
+        end
       rescue
         _ -> :ok
       catch

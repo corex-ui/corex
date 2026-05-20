@@ -84,7 +84,6 @@ defmodule Corex.MixProject do
       lint: [
         "format --check-formatted",
         "credo --strict",
-        "oeditus_credo --strict",
         "sobelow --exit"
       ],
       "pre.publish": ["lint"],

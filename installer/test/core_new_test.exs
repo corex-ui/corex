@@ -177,7 +177,7 @@ defmodule Mix.Tasks.Corex.NewTest do
       send(self(), {:mix_shell_input, :yes?, false})
 
       assert_raise Mix.Error, ~r/Please select another directory for installation/, fn ->
-        Mix.Tasks.Corex.New.run(["phx_blog"])
+        Mix.Tasks.Corex.New.run(["phx_blog", "--no-version-check"])
       end
     end)
   end

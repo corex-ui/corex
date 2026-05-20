@@ -81,7 +81,6 @@ defmodule Corex.Integration.MixProject do
       lint: [
         "format --check-formatted",
         "credo --strict",
-        "oeditus_credo --strict",
         "sobelow --exit"
       ]
     ]

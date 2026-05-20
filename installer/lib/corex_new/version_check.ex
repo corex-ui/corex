@@ -48,17 +48,26 @@ defmodule Corex.New.VersionCheck do
     end
 
     def fetch_latest_version(package, installer_version) do
-      with {:ok, package} <- fetch_package(package, installer_version) do
-        versions =
-          for release <- package["releases"],
-              version = Version.parse!(release["version"]),
-              version.pre == [] do
-            version
-          end
-
-        Enum.max(versions, Version)
+      with {:ok, hex_package} <- fetch_package(package, installer_version) do
+        latest_stable_version(hex_package)
       end
     end
+
+    def latest_stable_version(%{"releases" => releases}) when is_list(releases) do
+      versions =
+        for release <- releases,
+            version = Version.parse!(release["version"]),
+            version.pre == [] do
+          version
+        end
+
+      case versions do
+        [] -> {:error, :no_releases}
+        _ -> Enum.max(versions, Version)
+      end
+    end
+
+    def latest_stable_version(_), do: {:error, :no_releases}
 
     def fetch_package(name, installer_version) do
       http_options = [

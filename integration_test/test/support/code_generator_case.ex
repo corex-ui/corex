@@ -1,4 +1,5 @@
 defmodule Corex.Integration.CodeGeneratorCase do
+  @moduledoc false
   use ExUnit.CaseTemplate
 
   using do

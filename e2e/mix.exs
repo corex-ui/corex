@@ -141,8 +141,7 @@ defmodule E2e.MixProject do
       ],
       lint: [
         "format --check-formatted",
-        "credo --strict",
-        "oeditus_credo --strict"
+        "credo --strict"
       ],
       precommit: [
         "compile --warnings-as-errors",

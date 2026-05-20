@@ -45,13 +45,13 @@ mix lint
 mix docs
 ```
 
-`mix lint` runs `format --check-formatted`, `credo --strict`, `oeditus_credo --strict`, and `sobelow --exit` (ExSlop checks are enabled in `.credo.exs`).
+`mix lint` runs `format --check-formatted`, `credo --strict`, and `sobelow --exit`. OeditusCredo and ExSlop checks are enabled in `.credo.exs` and run via `mix credo --strict` (not `mix oeditus_credo`, which uses a separate default config).
 
 ### E2e app (`e2e/`)
 
 The demo and browser tests live here. See also [`e2e/README.md`](e2e/README.md).
 
-Linting uses the same `.credo.exs` rules as the Corex library (Credo, ExSlop, and `mix oeditus_credo --strict`).
+Linting uses the same `.credo.exs` rules as the Corex library (Credo, ExSlop, and OeditusCredo checks via `mix credo --strict`).
 
 ```bash
 cd e2e

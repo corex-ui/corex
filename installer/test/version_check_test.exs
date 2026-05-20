@@ -30,6 +30,26 @@ defmodule Corex.New.VersionCheckTest do
                VersionCheck.fetch_latest_version("corex-new-not-a-real-package-xyz", "0.1.0")
     end
 
+    test "latest_stable_version/1 returns error when there are no stable releases" do
+      assert {:error, :no_releases} = VersionCheck.latest_stable_version(%{"releases" => []})
+
+      assert {:error, :no_releases} =
+               VersionCheck.latest_stable_version(%{
+                 "releases" => [%{"version" => "0.1.0-dev"}]
+               })
+    end
+
+    test "latest_stable_version/1 returns the highest stable version" do
+      assert %Version{major: 2, minor: 0, patch: 0} =
+               VersionCheck.latest_stable_version(%{
+                 "releases" => [
+                   %{"version" => "1.0.0"},
+                   %{"version" => "2.0.0"},
+                   %{"version" => "1.5.0-rc.1"}
+                 ]
+               })
+    end
+
     test "fetch_package/2 returns decoded hex metadata for a public package" do
       case VersionCheck.fetch_package("phoenix", Mix.Project.config()[:version]) do
         {:ok, %{"releases" => [_ | _]}} ->
@@ -54,6 +74,7 @@ defmodule Corex.New.VersionCheckTest do
       case Task.await(task, 5_000) do
         %Version{} -> :ok
         {:error, _} -> :ok
+        other -> flunk("unexpected task result: #{inspect(other)}")
       end
     end
   end

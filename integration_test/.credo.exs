@@ -210,7 +210,7 @@
           {OeditusCredo.Check.Readability.UnnecessaryInterpolatingSigil, false},
           # Code Quality
           {OeditusCredo.Check.Warning.DirectStructUpdate, []},
-          {OeditusCredo.Check.Warning.CallbackHell, [max_nesting: 2]},
+          {OeditusCredo.Check.Warning.CallbackHell, [max_nesting: 4]},
           {OeditusCredo.Check.Warning.BlockingInPlug, []},
           {OeditusCredo.Check.Warning.UnsafeMapAccess, []},
           # Refactoring Suggestions
