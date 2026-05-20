@@ -297,11 +297,14 @@ jobs:
         working-directory: installer
         run: mix deps.get
 
+      - name: Install phx_new archive for installer coverage
+        run: mix archive.install hex phx_new --force
+
       - name: Run installer tests with coverage
         working-directory: installer
         run: |
           mix compile --force
-          mix test --cover
+          mix test --cover --include integration
 
       - name: Verify corex_new archive embeds priv design snapshot
         working-directory: installer
@@ -366,8 +369,11 @@ jobs:
 
       - name: Install installer dependencies and local corex_new archive
         working-directory: installer
+        env:
+          MIX_ENV: test
         run: |
           mix deps.get
+          mix compile --force
           mix archive.build -o corex_new.ez
           mix archive.install corex_new.ez --force
 
@@ -376,7 +382,11 @@ jobs:
 
       - name: Run installer integration test
         working-directory: installer
-        run: mix test --include integration
+        env:
+          MIX_ENV: test
+        run: |
+          mix compile --force
+          mix test --include integration
 
       - name: Run integration tests (no database tag)
         working-directory: integration_test

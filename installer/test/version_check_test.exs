@@ -19,7 +19,31 @@ defmodule Corex.New.VersionCheckTest do
     refute_received {:mix_shell, :info, ["A new version of corex.new is available:" | _]}
   end
 
+  test "await_and_warn/2 is a no-op when the task is nil" do
+    assert :ok = VersionCheck.await_and_warn("0.1.0", nil)
+  end
+
   if Version.match?(System.version(), "~> 1.18") do
+    test "await_and_warn/2 ignores non-version task results" do
+      flush()
+
+      task = Task.async(fn -> {:error, :no_releases} end)
+      assert :ok = VersionCheck.await_and_warn("0.1.0", task)
+      refute_received {:mix_shell, :info, ["A new version of corex.new is available:" | _]}
+    end
+
+    test "await_and_warn/2 prints when the task returns a newer version" do
+      task = Task.async(fn -> Version.parse!("99.0.0") end)
+      assert :ok = VersionCheck.await_and_warn("0.1.0", task)
+      assert_received {:mix_shell, :info, [msg]} when is_binary(msg)
+      assert msg =~ "A new version of corex.new is available"
+    end
+
+    test "start_latest_version_task/2 reuses the task supervisor" do
+      assert %Task{} = VersionCheck.start_latest_version_task("phoenix", "0.1.0")
+      assert %Task{} = VersionCheck.start_latest_version_task("phoenix", "0.1.0")
+    end
+
     test "fetch_package/2 returns error status for unknown packages" do
       assert {:error, 404} =
                VersionCheck.fetch_package("corex-new-not-a-real-package-xyz", "0.1.0")

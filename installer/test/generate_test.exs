@@ -2,7 +2,6 @@ defmodule Corex.New.GenerateTest do
   use ExUnit.Case, async: false
 
   import ExUnit.CaptureIO
-  import MixHelper
 
   alias Corex.New.{Generate, ScaffoldHelper}
 

@@ -137,18 +137,7 @@ defmodule Mix.Tasks.Corex.New do
           run_with_path(base_path, opts)
       end
 
-    if version_task do
-      try do
-        case Task.await(version_task, 3_000) do
-          %Version{} = latest -> VersionCheck.warn_if_outdated(@version, latest)
-          _ -> :ok
-        end
-      rescue
-        _ -> :ok
-      catch
-        :exit, _ -> :ok
-      end
-    end
+    VersionCheck.await_and_warn(@version, version_task)
 
     result
   end

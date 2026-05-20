@@ -1,6 +1,19 @@
 defmodule Corex.New.VersionCheck do
   @moduledoc false
 
+  def await_and_warn(_current, nil), do: :ok
+
+  def await_and_warn(current, task) when is_struct(task, Task) do
+    try do
+      case Task.await(task, 3_000) do
+        %Version{} = latest -> warn_if_outdated(current, latest)
+        _ -> :ok
+      end
+    catch
+      :exit, _ -> :ok
+    end
+  end
+
   def warn_if_outdated(current, latest) when is_binary(current) and is_struct(latest, Version) do
     current = Version.parse!(current)
 
