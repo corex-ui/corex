@@ -1,0 +1,552 @@
+---
+title: "تشريح مكوّن Corex"
+description: "Corex هي مكوّنات Phoenix الدالة مع خيار: كم HEEx تكتب بينما تبقي المكتبة على الأكورديون أو select أو checkbox يعملان بشكل صحيح."
+date: "2026-05-21 12:00:00 +0000"
+permalink: /ar/blog/anatomy-of-a-corex-component/
+tags:
+  - Corex
+  - Phoenix
+  - Anatomy
+sitemap:
+  priority: 0.9
+  changefreq: monthly
+---
+
+مكوّن Corex على الشبكة شيئان معاً.
+
+**HEEx** هو الهيكل الذي تعلنه: attrs، slots، `items`، فئات BEM على الجذر. يطبع شجرة مع `data-scope` و`data-part` وخصائص `data-*` التي يقرأها الـ hook.
+
+**JavaScript** هو العقل الذي لا تكتبه في القوالب: آلة حالة Zag تبدأها خطافة LiveView على ذلك الجذر. تملك حالة الفتح، التركيز، التنقل بلوحة المفاتيح، وARIA. تعيد رسم تلك الخصائص على الأجزاء كلما تحركت الآلة أو أصلح LiveView الجذر.
+
+**Anatomy** يخص جانب HEEx فقط: لنفس `<.accordion>`، كم ترميزاً ما زلت تؤلفه بنفسك. **Minimal** يعني استدعاء واحد وقائمة. **Custom Slots** تعني `:let` لكل صف. **Manual Slots** و**compound** يذهبان أبعد عندما يفرض شكل DOM ذلك. لا شيء من ذلك يغيّر الآلة؛ يغيّر HTML الذي يتصل به الـ hook.
+
+أقسام **Anatomy** في moduledoc تستخدم نفس التسميات في كل مكان. هذا المنشور يشرح الأكورديون بالكامل، ثم select وtabs وcheckbox.
+
+## مكوّنات الدالة و assigns
+
+مكوّنات Corex هي [**function components**](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html): دوال Elixir تستقبل خريطة **`assigns`** وتعيد قالب **`~H`**. تستدعيها مثل `<.accordion id="faq" items={@topics} />`. **`attr`** و**`slot`** المعلَنان على المكوّن يحددان ما يمكنك تمريره؛ المترجم يتحقق من الأنواع والمفاتيح المطلوبة.
+
+LiveView يحتفظ ببيانات التطبيق في الـ socket ضمن **`assigns`**. في HEEx تقرأ **`@topics`**، وليس `socket.assigns.topics`. عند تغيّر assign، يعيد LiveView تنفيذ الأجزاء **الديناميكية** فقط من القالب التي تعتمد عليه ويرسل diff إلى العميل. راجع [Assigns and HEEx templates](https://hexdocs.pm/phoenix_live_view/assigns-eex.html).
+
+قواعد عملية مهمة لـ Corex:
+
+- حمّل القوائم في **`mount/3`** أو **`handle_event/3`**، ثم مرّر **`items={@topics}`**. لا تستعلم داخل القالب؛ LiveView لن يعيد تشغيل ذلك الكتلة عندما تتغيّر قاعدة البيانات.
+- استخدم **`assign/2`** و**`update/3`** في LiveView. تجنّب **`Map.put/3`** على `assigns` داخل function component؛ تتبع التغيير لن يرى التحديثات بعد أول رسم.
+- فضّل attrs صريحة على **`{assigns}`** إلى الأبناء. تمرير خريطة assigns كاملة يعطّل التتبع الدقيق ويجبر إعادة رسم الأبناء بالكامل.
+
+خصائص anatomy (`items`، slots، `compound`) كلها **assigns** من منظور المستدعي. قد **`assign`** المكوّن قيماً مشتقة (قوائم اللوحات، `ctx` لـ `:let`) قبل الرسم. ما تختاره في anatomy لا يستبدل **`phx-hook`** أو آلة Zag؛ يشكّل فقط HTML الذي تتصل به تلك الطبقات.
+
+خصائص تفاعلية مثل **`value`** و**`controlled`** و**`on_value_change`** تربط إلى [bindings](https://hexdocs.pm/phoenix_live_view/bindings.html): الـ hook ي **`pushEvent`** إلى **`handle_event/3`**، وتعيد **`{:noreply, socket}`**، والتصحيح التالي يحدّث `data-*` على الجذر. ذلك المسار مغطى في منشورات آلات الحالة و vanilla JS؛ هنا نبقى على شكل الترميز.
+
+## الإعداد
+
+أضف `{:corex, "~> 0.1.0"}` إلى `mix.exs`، شغّل `mix deps.get`، وسجّل الـ hooks في `assets/js/app.js`:
+
+```javascript
+import corex from "corex"
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  hooks: { ...corex }
+})
+
+liveSocket.connect()
+```
+
+استورد CSS لكل مكوّن ترسمه، أو استخدم Corex Design مع `mix corex.design`. السلوك لا يعتمد على CSS مجمّع.
+
+## Minimal: `items` فقط
+
+الأكورديون وtabs المدفوعة بقائمة تأخذ **`items`**. القيمة قائمة من `Corex.Content.new/1`. كل خريطة تحتاج **`label`** و**`content`**. حقول اختيارية: **`value`** (معرّف ثابت)، **`disabled`**، **`meta`** (إضافات لـ Custom Slots).
+
+```heex
+<.accordion
+  class="accordion"
+  id="faq"
+  items={
+    Corex.Content.new([
+      %{
+        label: "Lorem ipsum dolor sit amet",
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+      },
+      %{
+        label: "Duis dictum gravida odio ac pharetra?",
+        content: "Nullam eget vestibulum ligula, at interdum tellus."
+      },
+      %{
+        label: "Donec condimentum ex mi",
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+      }
+    ])
+  }
+/>
+```
+
+Corex يرسم مُشغّلاً من كل `label` ولوحة من كل `content`. تحصل على دعم لوحة المفاتيح، سلوك الفتح الافتراضي، وشجرة `data-scope` / `data-part` للـ hook. أضف فئات BEM على الجذر، مثلاً `class="accordion accordion--accent"`. Anatomy لا يغيّر attrs؛ يغيّر عدد العقد الابنة التي تعلنها.
+
+من قاعدة البيانات، ابنِ القائمة في LiveView ومرّرها. الخاصية دائماً **`items`**، وليست assign خاصاً في socket ما لم تضع القائمة في assigns بنفسك:
+
+```elixir
+items =
+  Corex.Content.new(
+    Enum.map(rows, fn row ->
+      %{
+        value: row.slug,
+        label: row.title,
+        content: row.body,
+        disabled: row.archived
+      }
+    end)
+  )
+```
+
+```heex
+<.accordion class="accordion" id="faq" items={items} />
+```
+
+## slot مشترك على كل صف
+
+احتفظ بنفس قائمة `items` وأضف slot واحداً `<:indicator>`. Corex يكرره لكل عنصر. سلوك الفتح ولوحة المفاتيح دون تغيير. moduledocs تسمي هذا anatomy **With Indicator**.
+
+```heex
+<.accordion
+  class="accordion"
+  id="faq"
+  items={
+    Corex.Content.new([
+      %{
+        label: "Lorem ipsum dolor sit amet",
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+      },
+      %{
+        label: "Duis dictum gravida odio ac pharetra?",
+        content: "Nullam eget vestibulum ligula, at interdum tellus."
+      },
+      %{
+        label: "Donec condimentum ex mi",
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+      }
+    ])
+  }
+>
+  <:indicator>
+    <.heroicon name="hero-chevron-right" />
+  </:indicator>
+</.accordion>
+```
+
+## Custom Slots: `:let` لكل صف
+
+عندما يحتاج كل صف ترميزاً مختلفاً، احتفظ بـ `items` واستخدم `:let={item}` على الـ slots التي تستبدلها. ضع بيانات كل صف في **`meta`**. هذا anatomy **Custom Slots**.
+
+```heex
+<.accordion
+  class="accordion"
+  id="faq"
+  value="lorem"
+  items={
+    Corex.Content.new([
+      %{
+        value: "lorem",
+        label: "Lorem ipsum dolor sit amet",
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+        meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
+      },
+      %{
+        label: "Duis dictum gravida odio ac pharetra?",
+        content: "Nullam eget vestibulum ligula, at interdum tellus.",
+        meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
+      },
+      %{
+        value: "donec",
+        label: "Donec condimentum ex mi",
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+        disabled: true,
+        meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
+      }
+    ])
+  }
+>
+  <:trigger :let={item}>
+    <.heroicon name={item.meta.icon} />
+    {item.label}
+  </:trigger>
+  <:content :let={item}>
+    <p>{item.content}</p>
+  </:content>
+  <:indicator :let={item}>
+    <.heroicon name={item.meta.indicator} />
+  </:indicator>
+</.accordion>
+```
+
+داخل كل slot، `item` يحتوي `label` و`content` و`value` و`disabled` و`meta`. يمكنك استبدال `:trigger` فقط أو `:content` فقط.
+
+## Manual Slots
+
+لعدد قليل من اللوحات الثابتة مع HTML غني في كل جسم، احذف `items` واعلن slots بنفس **`value`** على `:trigger` و`:content` و`:indicator` الاختياري.
+
+```heex
+<.accordion class="accordion" id="faq" value="lorem">
+  <:trigger value="lorem">
+    <.heroicon name="hero-chevron-right" />
+    Lorem ipsum dolor sit amet
+  </:trigger>
+  <:content value="lorem">
+    <p>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</p>
+  </:content>
+  <:indicator value="lorem">
+    <.heroicon name="hero-chevron-down" />
+  </:indicator>
+
+  <:trigger value="duis">
+    <.heroicon name="hero-chevron-right" />
+    Duis dictum gravida odio ac pharetra?
+  </:trigger>
+  <:content value="duis">
+    <p>Nullam eget vestibulum ligula, at interdum tellus.</p>
+  </:content>
+  <:indicator value="duis">
+    <.heroicon name="hero-chevron-down" />
+  </:indicator>
+
+  <:trigger value="donec">
+    <.heroicon name="hero-chevron-right" />
+    Donec condimentum ex mi
+  </:trigger>
+  <:content value="donec">
+    <p>Congue molestie ipsum gravida a. Sed ac eros luctus.</p>
+  </:content>
+  <:indicator value="donec">
+    <.heroicon name="hero-chevron-down" />
+  </:indicator>
+</.accordion>
+```
+
+استخدم `items` لصفوف كثيرة موحّدة من البيانات؛ استخدم **Manual Slots** عندما شكل القائمة خاطئ. كل `value` في slot يربط المُشغّل باللوحة، مثل `value` في خريطة `items`.
+
+## compound
+
+عندما لا تنتج الـ slots الـ DOM الذي تحتاجه، استخدم **`compound`** على `<.accordion>` مع `:let={ctx}` ومكوّنات فرعية: `accordion_root`، `accordion_item`، `accordion_trigger`، `accordion_content`، `accordion_indicator`.
+
+عناصر موضوعة يدوياً:
+
+```heex
+<.accordion :let={ctx} compound class="accordion" id="faq">
+  <.accordion_root ctx={ctx}>
+    <.accordion_item :let={item} ctx={ctx} value="lorem">
+      <.accordion_trigger item={item}>
+        Lorem ipsum dolor sit amet
+        <:indicator>
+          <.accordion_indicator item={item}>
+            <.heroicon name="hero-chevron-right" />
+          </.accordion_indicator>
+        </:indicator>
+      </.accordion_trigger>
+      <.accordion_content item={item}>
+        <p>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</p>
+      </.accordion_content>
+    </.accordion_item>
+    <.accordion_item :let={item} ctx={ctx} value="duis">
+      <.accordion_trigger item={item}>
+        Duis dictum gravida odio ac pharetra?
+        <:indicator>
+          <.accordion_indicator item={item}>
+            <.heroicon name="hero-chevron-right" />
+          </.accordion_indicator>
+        </:indicator>
+      </.accordion_trigger>
+      <.accordion_content item={item}>
+        <p>Nullam eget vestibulum ligula, at interdum tellus.</p>
+      </.accordion_content>
+    </.accordion_item>
+    <.accordion_item :let={item} ctx={ctx} value="donec">
+      <.accordion_trigger item={item}>
+        Donec condimentum ex mi
+        <:indicator>
+          <.accordion_indicator item={item}>
+            <.heroicon name="hero-chevron-right" />
+          </.accordion_indicator>
+        </:indicator>
+      </.accordion_trigger>
+      <.accordion_content item={item}>
+        <p>Congue molestie ipsum gravida a. Sed ac eros luctus.</p>
+      </.accordion_content>
+    </.accordion_item>
+  </.accordion_root>
+</.accordion>
+```
+
+مع قائمة في assigns، استخدم `:for`:
+
+```heex
+<.accordion :let={ctx} compound id="faq" class="accordion">
+  <.accordion_root ctx={ctx}>
+    <.accordion_item :for={entry <- @entries} :let={item} ctx={ctx} value={entry.value}>
+      <.accordion_trigger item={item}>
+        {entry.label}
+        <:indicator>
+          <.accordion_indicator item={item}>
+            <.heroicon name="hero-chevron-right" />
+          </.accordion_indicator>
+        </:indicator>
+      </.accordion_trigger>
+      <.accordion_content item={item}>
+        <p>{entry.content}</p>
+      </.accordion_content>
+    </.accordion_item>
+  </.accordion_root>
+</.accordion>
+```
+
+جرّب `items` والـ slots أولاً. استخدم compound عندما تحتاج غلافات بين العناصر أو شكل DOM لا تستطيع الـ slots إصداره.
+
+## Select: `Corex.List.new`
+
+`<.select>` يأخذ **`items`** كخيارات (`label` + `value`)، وليس مُشغّلاً وجسماً. استخدم `Corex.List.new/1`. **`group`** اختياري على كل خريطة لعناوين الأقسام.
+
+select **Minimal**: قائمة مع سهم في slot المُشغّل:
+
+```heex
+<.select
+  class="select"
+  id="country"
+  items={
+    Corex.List.new([
+      %{label: "France", value: "fra", disabled: true},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
+    ])
+  }
+>
+  <:trigger>
+    <.heroicon name="hero-chevron-down" />
+  </:trigger>
+</.select>
+```
+
+خيارات مجمّعة بنفس قائمة `items` مع حقل `group` على كل خريطة:
+
+```heex
+<.select
+  class="select"
+  id="country"
+  items={
+    Corex.List.new([
+      %{label: "France", value: "fra", group: "Europe"},
+      %{label: "Belgium", value: "bel", group: "Europe"},
+      %{label: "Germany", value: "deu", group: "Europe"},
+      %{label: "Netherlands", value: "nld", group: "Europe"},
+      %{label: "Switzerland", value: "che", group: "Europe"},
+      %{label: "Austria", value: "aut", group: "Europe"},
+      %{label: "Japan", value: "jpn", group: "Asia"},
+      %{label: "China", value: "chn", group: "Asia"},
+      %{label: "South Korea", value: "kor", group: "Asia"},
+      %{label: "Thailand", value: "tha", group: "Asia"},
+      %{label: "USA", value: "usa", group: "North America"},
+      %{label: "Canada", value: "can", group: "North America"},
+      %{label: "Mexico", value: "mex", group: "North America"}
+    ])
+  }
+>
+  <:trigger>
+    <.heroicon name="hero-chevron-down" />
+  </:trigger>
+</.select>
+```
+
+صفوف خيارات مخصّصة: احتفظ بـ `items` وأضف `<:item :let={item}>` (الأكورديون يستخدم `:trigger` لوجه الصف):
+
+```heex
+<.select
+  class="select"
+  id="country"
+  items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
+    ])
+  }
+>
+  <:label>Country of residence</:label>
+  <:item :let={item}>
+    <.heroicon name="hero-globe-alt" />
+    {item.label}
+  </:item>
+  <:trigger>
+    <.heroicon name="hero-chevron-down" />
+  </:trigger>
+  <:item_indicator>
+    <.heroicon name="hero-check" />
+  </:item_indicator>
+</.select>
+```
+
+نص بديل: `translation={%Corex.Select.Translation{placeholder: "Choose a country"}}`.
+
+## Tabs: نفس `items`، أجزاء مختلفة
+
+`<.tabs>` يستخدم `Corex.Content.new/1` مثل الأكورديون. anatomy **Minimal** هو `items` فقط:
+
+```heex
+<.tabs
+  class="tabs"
+  id="settings-tabs"
+  value="lorem"
+  items={
+    Corex.Content.new([
+      %{label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])
+  }
+/>
+```
+
+مؤشر منزلق مشترك: خاصية منطقية **`indicator`** على `<.tabs>`، وليس slot لكل تبويب:
+
+```heex
+<.tabs
+  class="tabs"
+  id="settings-tabs"
+  indicator
+  value="lorem"
+  items={
+    Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])
+  }
+/>
+```
+
+تسميات ولوحات تبويب مخصّصة: `:trigger` و`:content` مع `:let={item}`.
+
+## Checkbox: slots على عنصر تحكم واحد
+
+`<.checkbox>` **بلا قائمة `items`**. استخدم `<:label>` و`<:indicator>` و`<:error>` و`<:indeterminate>`.
+
+```heex
+<.checkbox class="checkbox" id="terms">
+  <:label>Accept the terms</:label>
+</.checkbox>
+```
+
+مع أيقونة تحقق مخصّصة:
+
+```heex
+<.checkbox class="checkbox" id="terms">
+  <:label>Accept the terms</:label>
+  <:indicator>
+    <.heroicon name="hero-check" />
+  </:indicator>
+</.checkbox>
+```
+
+التحقق وترميز خطأ مخصّص:
+
+```heex
+<.checkbox
+  class="checkbox checkbox--accent"
+  id="subscribe"
+  invalid
+  checked
+  errors={["Required"]}
+>
+  <:label>Subscribe to updates</:label>
+  <:indicator>
+    <.heroicon name="hero-check" />
+  </:indicator>
+  <:error :let={msg}>
+    <.heroicon name="hero-exclamation-circle" />
+    {msg}
+  </:error>
+</.checkbox>
+```
+
+حالة غير محددة (مثلاً رأس جدول «تحديد بعض»):
+
+```heex
+<.checkbox class="checkbox" id="select-all" checked={:indeterminate}>
+  <:label>Select some rows</:label>
+  <:indicator>
+    <.heroicon name="hero-check" />
+  </:indicator>
+  <:indeterminate>
+    <.heroicon name="hero-minus" />
+  </:indeterminate>
+</.checkbox>
+```
+
+نفس فكرة الـ slot كالأكورديون. الشكل كان عنصر تحكم واحداً بدلاً من مجموعة.
+
+## Core Components مقابل Corex من Hex
+
+**Core Components** في Phoenix ملفات تعدّلها. Corex يأتي من Hex: خصّص بـ attrs وslots، لا تنسخ الوحدة وتلف الجذر. الـ hook يتوقع شجرة ثابتة.
+
+في LiveView واحد يمكنك خلط anatomy لكل استدعاء. لا يوجد وضع عام للتطبيق.
+
+## حالة الفتح من خارج المكوّن
+
+لفتح لوحة من عنصر تحكم آخر، استخدم الـ API (احتفظ بنفس قائمة `items` في القالب):
+
+```elixir
+def handle_event("open-faq", _params, socket) do
+  Corex.Accordion.set_value(socket, "faq", "lorem")
+  {:noreply, socket}
+end
+```
+
+`id` على `<.accordion id="faq" ...>` يجب أن يطابق الوسيط الأول لـ `set_value`. سلاسل `value` للوحات تأتي من خرائط `items` أو خصائص `value` في Manual Slots. تحت الغطاء ذلك يستخدم **`Phoenix.LiveView.push_event/3`** و**`handleEvent`** في الـ hook، نفس مسار العميل/الخادم الموثّق في [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html#handling-server-pushed-events).
+
+## خطافات LiveView على الجذر
+
+كل مكوّن Corex تفاعلي يرسم جذراً مع **`phx-hook="ComponentName"`** و**`id`** فريد. بعد أول رسم HTTP، **`liveSocket.connect()`** يشغّل callback **`mounted`** في الـ hook. إدخال المستخدم يحدّث آلة Zag؛ خصائص **`on_*`** اختيارية **`pushEvent`** إلى **`handle_event/3`**. تغييرات assigns على الخادم تصحّح الجذر وتشغّل **`updated`**.
+
+لا تنفّذ تلك الـ callbacks في LiveView. تعلن **attrs** و**slots** في HEEx. منشورات [vanilla JS](/ar/blog/vanilla-js/) و[آلات الحالة](/ar/blog/state-machines/) في هذه السلسلة تغطي **`LiveSocket`** ودورة الحياة والوضع controlled و**`push_event`** بالكامل.
+
+## اختيار anatomy في كل استدعاء
+
+استخدم أخف خيار يطابق بياناتك وترميزك:
+
+- **Minimal** (`items` فقط): صفوف موحّدة، نص المُشغّل واللوحة الافتراضي يكفي.
+- **slot مشترك** (`<:indicator>` واحد أو `indicator` في tabs): نفس الزينة على كل صف، القائمة دون تغيير.
+- **Custom Slots** (`:let={item}`): أيقونات أو تخطيط أو HTML لوحة مختلف لكل صف؛ ما زال مدفوعاً بـ `items`.
+- **Manual Slots**: مجموعة ثابتة صغيرة من اللوحات؛ الأجسام ليست سلسلة واحدة لكل صف.
+- **compound**: تحتاج مكوّنات فرعية للتحكم في شجرة DOM (غلافات، بنية عنصر غير قياسية).
+
+الأكورديون وtabs يستخدمان `Corex.Content.new` لأن كل صف له `label` و`content`. Select وcombobox يستخدمان `Corex.List.new` لأن كل صف خيار (`label` + `value`). Checkbox بلا قائمة: مكوّن واحد، slots منطقة فقط.
+
+يمكنك استخدام anatomy مختلف في استدعاءات مختلفة في نفس LiveView. لا يوجد إعداد على مستوى التطبيق. الـ hook وواجهة attrs تبقى كما هي؛ فقط HEEx الذي تكتبه يتغيّر.
+
+ابدأ بـ **Minimal** في كل شاشة جديدة. انتقل إلى **Custom Slots** عندما يحتاج صف واحد أيقونة أو تخطيط لوحة مختلف. احتفظ بـ **Manual Slots** و**compound** للكتل التسويقية أو التخطيطات حيث خرائط `items` تصارع التصميم. العروض تحت `/ar/<component>/anatomy` على هذا الموقع تعرض كل مستوى جنباً إلى جنب؛ قارن حجم HTML وقابلية الصيانة قبل الالتزام بـ compound للتطبيق كاملاً.
+
+## الاستيعابات و`:key` وanatomy المدفوع بقائمة
+
+عندما ترسم صفوفاً كثيرة متشابهة بـ **`:for`**، يمكن لـ LiveView تتبع المدخلات بالفهرس أو بـ **`:key`**. **`items`** المدفوعة بقائمة في Corex تتوسع إلى بنية داخلية ثابتة؛ لحلقات slots مخصّصة تؤلفها بنفسك، اتبع [إرشادات الاستيعابات](https://hexdocs.pm/phoenix_live_view/assigns-eex.html#comprehensions): استخدم **`:key={item.value}`** عندما يمكن إعادة ترتيب الصفوف أو إدراجها حتى تبقى التصحيحات صغيرة.
+
+**Manual Slots** و**compound** عندما لا يكون DOM قائمة موحّدة. تستبدل assign **`items`** واحداً بمحتوى slots صريح. الآلة ما زالت تتوقع شجرة **`data-part`** الموثّقة في **Anatomy** في moduledoc.
+
+## ما لا يشمله anatomy
+
+Anatomy هو شكل القالب عند أول رسم. لا يستبدل:
+
+- `value` controlled و`on_value_change`
+- `Corex.Accordion.set_value/2` من عنصر تحكم آخر
+- بحث combobox من الخادم (`filter={false}`، `on_input_value_change`)
+- خصائص أحداث العميل لمستمعي DOM فقط
+
+هذه حالة وتدفق بيانات، وليست شكل قالب.
+
+---
+
+ابدأ بـ `items` و`Corex.Content.new` أو `Corex.List.new`. أضف slots عندما لا يكفي الترميز الافتراضي. استخدم **Manual Slots** أو **compound** فقط عندما لا تستطيع `items` و`:let` مطابقة التخطيط.
+
+المنشورات التالية في هذه السلسلة تغطي [آلات الحالة](/ar/blog/state-machines/) (assigns والوضع controlled)، [vanilla JS](/ar/blog/vanilla-js/) (`LiveSocket` والـ hooks)، [التصميم](/ar/blog/corex-design-a11y/) (الرموز على `data-part`)، و[حجم combobox](/ar/blog/combobox-thousands-of-items/) (قوائم من الخادم). Anatomy هو الأساس: اجعل شجرة HEEx صحيحة ويكون للـ hook شيء موثوق لتحسينه.

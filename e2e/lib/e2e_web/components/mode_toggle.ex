@@ -23,11 +23,11 @@ defmodule E2eWeb.ModeToggle do
     >
       <span>
         <.heroicon name="hero-moon" />
-        <span class="sr-only">{gettext("Dark mode")}</span>
+        <span class="sr-only">{"Dark mode"}</span>
       </span>
       <span data-pressed>
         <.heroicon name="hero-sun" />
-        <span class="sr-only">{gettext("Light mode")}</span>
+        <span class="sr-only">{"Light mode"}</span>
       </span>
     </.toggle>
     """

@@ -2,12 +2,12 @@
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
     id="file-upload-form-page"
-    title="File Upload · Form"
-    subtitle="Multipart forms and Plug.Upload"
+    title={~t"File Upload · Form"}
+    subtitle={~t"Multipart forms and Plug.Upload"}
   >
     <.demo_section
       id="file-upload-form-changeset"
-      title="Phoenix Form (changeset)"
+      title={~t"Phoenix Form (changeset)"}
       code_tabs={E2eWeb.Demos.FileUploadDemo.form_changeset_code_tabs()}
     >
       <:preview>
@@ -17,7 +17,7 @@
 
     <.demo_section
       id="file-upload-form-validate"
-      title="Ecto changeset (validation)"
+      title={~t"Ecto changeset (validation)"}
       code_tabs={E2eWeb.Demos.FileUploadDemo.form_validate_code_tabs()}
     >
       <:preview>
@@ -27,7 +27,7 @@
 
     <.demo_section
       id="file-upload-form-controller"
-      title="Native form (plain HTML)"
+      title={~t"Native form (plain HTML)"}
       code_tabs={E2eWeb.Demos.FileUploadDemo.form_native_code_tabs()}
     >
       <:preview>

@@ -79,12 +79,12 @@ defmodule E2eWeb.AvatarApiLive do
     >
       <.demo_page
         id="avatar-api-page"
-        title="Avatar · API"
-        subtitle="Set the image URL or query load state from LiveView or the client."
+        title={~t"Avatar · API"}
+        subtitle={~t"Set the image URL or query load state from LiveView or the client."}
       >
         <.demo_section
           id="avatar-api-set-src-binding"
-          title="Set Src (Client Binding)"
+          title={~t"Set Src (Client Binding)"}
           code={@codes.set_src_binding}
         >
           <:preview>
@@ -110,23 +110,23 @@ defmodule E2eWeb.AvatarApiLive do
 
         <.demo_section
           id="avatar-api-set-src-js"
-          title="Set Src (Client JS)"
+          title={~t"Set Src (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_src_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.set_src_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.set_src_js_ts
             }
@@ -139,17 +139,17 @@ defmodule E2eWeb.AvatarApiLive do
 
         <.demo_section
           id="avatar-api-set-src-server"
-          title="Set Src (Server)"
+          title={~t"Set Src (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_src_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.set_src_server_elixir
             }
@@ -165,17 +165,17 @@ defmodule E2eWeb.AvatarApiLive do
 
         <.demo_section
           id="avatar-api-loaded-server"
-          title="Loaded (Server)"
+          title={~t"Loaded (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.loaded_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.loaded_server_elixir
             }

@@ -60,15 +60,15 @@ defmodule E2eWeb.PasswordInputEventsLive do
     >
       <.demo_page
         id="password-input-events-page"
-        title="Password Input · Event"
-        subtitle="Subscribe to visibility changes from LiveView or the client."
+        title={~t"Password Input · Event"}
+        subtitle={~t"Subscribe to visibility changes from LiveView or the client."}
       >
         <.demo_section
           id="password-input-events-server-section"
-          title="On Visibility Change (Server)"
+          title={~t"On Visibility Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -104,11 +104,11 @@ defmodule E2eWeb.PasswordInputEventsLive do
 
         <.demo_section
           id="password-input-events-client-section"
-          title="On Visibility Change (Client)"
+          title={~t"On Visibility Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

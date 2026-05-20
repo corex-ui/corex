@@ -89,15 +89,17 @@ defmodule E2eWeb.MenuEventsLive do
     >
       <.demo_page
         id="menu-events-page"
-        title="Menu · Events"
-        subtitle="Declarative LiveView attrs, server pushEvent logs, and client CustomEvent listeners."
+        title={~t"Menu · Events"}
+        subtitle={
+          ~t"Declarative LiveView attrs, server pushEvent logs, and client CustomEvent listeners."
+        }
       >
         <.demo_section
           id="menu-events-binding"
-          title="Binding (Heex attrs)"
+          title={~t"Binding (Heex attrs)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @binding_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @binding_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @binding_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @binding_elixir}
           ]}
         >
           <:preview>
@@ -121,10 +123,10 @@ defmodule E2eWeb.MenuEventsLive do
 
         <.demo_section
           id="menu-events-server-section"
-          title="Server (Heex + Elixir)"
+          title={~t"Server (Heex + Elixir)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -158,11 +160,11 @@ defmodule E2eWeb.MenuEventsLive do
 
         <.demo_section
           id="menu-events-client-section"
-          title="Client (Heex + JS + TS)"
+          title={~t"Client (Heex + JS + TS)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

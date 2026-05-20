@@ -97,12 +97,12 @@ defmodule E2eWeb.ComboboxPatternsLive do
     |> Repo.all()
     |> Enum.map(fn a ->
       city = a.city_name || " - "
-      %{value: a.iata_code, label: "#{a.name} (#{a.iata_code})", group: city}
+      %{value: a.iata_code, label: ~t"#{a.name} (#{a.iata_code})", group: city}
     end)
   end
 
   defp format_airport(a) do
-    %{value: a.iata_code, label: "#{a.name} (#{a.iata_code})"}
+    %{value: a.iata_code, label: ~t"#{a.name} (#{a.iata_code})"}
   end
 
   def render(assigns) do
@@ -115,17 +115,17 @@ defmodule E2eWeb.ComboboxPatternsLive do
     >
       <.demo_page
         id="combobox-patterns-page"
-        title="Combobox · Patterns"
-        subtitle="Server-driven filtering and controlled value."
+        title={~t"Combobox · Patterns"}
+        subtitle={~t"Server-driven filtering and controlled value."}
       >
         <.demo_section
           id="combobox-patterns-server-filter-doc"
-          title="Server Side Filtering"
+          title={~t"Server Side Filtering"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: patterns_server_filter_heex()},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: patterns_server_filter_heex()},
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: patterns_server_filter_elixir()
             }
@@ -135,7 +135,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
             <.combobox
               id="combobox-patterns-server-filter-field"
               class="combobox"
-              placeholder="Search…"
+              placeholder={~t"Search…"}
               items={Corex.List.new(@airports)}
               filter={false}
               on_input_value_change="search_airports"
@@ -149,17 +149,17 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
         <.demo_section
           id="combobox-patterns-server-filter-grouped-doc"
-          title="Server Side Filtering Grouped"
+          title={~t"Server Side Filtering Grouped"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: patterns_server_filter_grouped_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: patterns_server_filter_grouped_elixir()
             }
@@ -169,7 +169,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
             <.combobox
               id="combobox-patterns-server-filter-grouped-field"
               class="combobox"
-              placeholder="Search…"
+              placeholder={~t"Search…"}
               items={Corex.List.new(@airports_grouped)}
               filter={false}
               on_input_value_change="search_airports_grouped"
@@ -183,10 +183,15 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
         <.demo_section
           id="combobox-patterns-controlled-doc"
-          title="Controlled (value)"
+          title={~t"Controlled (value)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: patterns_controlled_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_controlled_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: patterns_controlled_heex()},
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: patterns_controlled_elixir()
+            }
           ]}
         >
           <:preview>
@@ -194,7 +199,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
               <.combobox
                 id="combobox-patterns-controlled-field"
                 class="combobox"
-                placeholder="Select a country…"
+                placeholder={~t"Select a country…"}
                 items={@combobox_controlled_items}
                 controlled
                 value={@combobox_controlled_value}
@@ -221,7 +226,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     <.combobox
       id="airport-combobox"
       class="combobox"
-      placeholder="Search…"
+      placeholder={~t"Search…"}
       items={@items}
       filter={false}
       on_input_value_change="filter_airports"
@@ -240,9 +245,9 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
       defp all_rows do
         [
-          %{value: "LHR", label: "London Heathrow (LHR)"},
-          %{value: "CDG", label: "Paris Charles de Gaulle (CDG)"},
-          %{value: "JFK", label: "New York John F. Kennedy (JFK)"}
+          %{value: "LHR", label: ~t"London Heathrow (LHR)"},
+          %{value: "CDG", label: ~t"Paris Charles de Gaulle (CDG)"},
+          %{value: "JFK", label: ~t"New York John F. Kennedy (JFK)"}
         ]
       end
 
@@ -276,7 +281,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         <.combobox
           id="airport-combobox"
           class="combobox"
-          placeholder="Search…"
+          placeholder={~t"Search…"}
           items={@items}
           filter={false}
           on_input_value_change="filter_airports"
@@ -296,7 +301,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     <.combobox
       id="airport-combobox-grouped"
       class="combobox"
-      placeholder="Search…"
+      placeholder={~t"Search…"}
       items={@items}
       filter={false}
       on_input_value_change="filter_airports_grouped"
@@ -315,16 +320,16 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
       defp all_rows do
         [
-          %{value: "LHR", label: "London Heathrow (LHR)", group: "London"},
-          %{value: "LGW", label: "London Gatwick (LGW)", group: "London"},
-          %{value: "STN", label: "London Stansted (STN)", group: "London"},
-          %{value: "JFK", label: "New York John F. Kennedy (JFK)", group: "New York"},
-          %{value: "LGA", label: "New York LaGuardia (LGA)", group: "New York"},
-          %{value: "EWR", label: "Newark Liberty (EWR)", group: "New York"},
-          %{value: "CDG", label: "Paris Charles de Gaulle (CDG)", group: "Paris"},
-          %{value: "ORY", label: "Paris Orly (ORY)", group: "Paris"},
-          %{value: "IST", label: "Istanbul Airport (IST)", group: "Istanbul"},
-          %{value: "SAW", label: "Istanbul Sabiha Gökçen (SAW)", group: "Istanbul"}
+          %{value: "LHR", label: ~t"London Heathrow (LHR)", group: "London"},
+          %{value: "LGW", label: ~t"London Gatwick (LGW)", group: "London"},
+          %{value: "STN", label: ~t"London Stansted (STN)", group: "London"},
+          %{value: "JFK", label: ~t"New York John F. Kennedy (JFK)", group: "New York"},
+          %{value: "LGA", label: ~t"New York LaGuardia (LGA)", group: "New York"},
+          %{value: "EWR", label: ~t"Newark Liberty (EWR)", group: "New York"},
+          %{value: "CDG", label: ~t"Paris Charles de Gaulle (CDG)", group: "Paris"},
+          %{value: "ORY", label: ~t"Paris Orly (ORY)", group: "Paris"},
+          %{value: "IST", label: ~t"Istanbul Airport (IST)", group: "Istanbul"},
+          %{value: "SAW", label: ~t"Istanbul Sabiha Gökçen (SAW)", group: "Istanbul"}
         ]
       end
 
@@ -358,7 +363,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         <.combobox
           id="airport-combobox-grouped"
           class="combobox"
-          placeholder="Search…"
+          placeholder={~t"Search…"}
           items={@items}
           filter={false}
           on_input_value_change="filter_airports_grouped"
@@ -378,7 +383,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
     <.combobox
       id="combobox-patterns-controlled-field"
       class="combobox"
-      placeholder="Select a country…"
+      placeholder={~t"Select a country…"}
       items={@combobox_controlled_items}
       controlled
       value={@combobox_controlled_value}
@@ -396,8 +401,8 @@ defmodule E2eWeb.ComboboxPatternsLive do
     ~S"""
     def mount(_params, _session, socket) do
       items = Corex.List.new([
-        %{label: "Belgium", value: "bel"},
-        %{label: "Germany", value: "deu"}
+        %{label: ~t"Belgium", value: "bel"},
+        %{label: ~t"Germany", value: "deu"}
       ])
 
       {:ok,

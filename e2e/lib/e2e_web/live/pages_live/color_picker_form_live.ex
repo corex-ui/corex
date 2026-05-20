@@ -221,16 +221,16 @@ defmodule E2eWeb.ColorPickerFormLive do
     >
       <.demo_page
         id="color-picker-form-live-page"
-        title="Color Picker form"
-        subtitle="Live View Form"
+        title={~t"Color Picker form"}
+        subtitle={~t"Live View Form"}
       >
         <.demo_section
           id="color-picker-live-form-changeset"
-          title="Phoenix form (changeset)"
+          title={~t"Phoenix form (changeset)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_basic_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_basic_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
@@ -243,11 +243,11 @@ defmodule E2eWeb.ColorPickerFormLive do
 
         <.demo_section
           id="color-picker-live-form-validate"
-          title="Ecto changeset (validation)"
+          title={~t"Ecto changeset (validation)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_validate_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_validate_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>

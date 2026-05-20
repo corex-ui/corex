@@ -5,46 +5,46 @@ defmodule E2eWeb.HomeLive do
     [
       %{
         value: "anatomy",
-        label: "Anatomy & slots",
-        content: "Structure, custom slots, compound mode."
+        label: ~t"Anatomy & slots",
+        content: ~t"Structure, custom slots, compound mode."
       },
       %{
         value: "machine",
-        label: "State machines",
-        content: "Zag.js powers accessibility, keyboard, and focus."
+        label: ~t"State machines",
+        content: ~t"Zag.js powers accessibility, keyboard, and focus."
       }
     ]
   end
 
   defp hero_marquee_items do
     [
-      %{name: "Elixir", img: "/images/tech/elixir.svg"},
-      %{name: "Phoenix", img: "/images/tech/phoenix.svg"},
-      %{name: "Zag.js", img: "/images/tech/zag.webp"},
-      %{name: "TypeScript", img: "/images/tech/typescript.svg"},
-      %{name: "Tailwind", img: "/images/tech/tailwind.svg"},
-      %{name: "Figma", img: "/images/tech/figma.svg"}
+      %{name: ~t"Elixir", img: "/images/tech/elixir.svg"},
+      %{name: ~t"Phoenix", img: "/images/tech/phoenix.svg"},
+      %{name: ~t"Zag.js", img: "/images/tech/zag.webp"},
+      %{name: ~t"TypeScript", img: "/images/tech/typescript.svg"},
+      %{name: ~t"Tailwind", img: "/images/tech/tailwind.svg"},
+      %{name: ~t"Figma", img: "/images/tech/figma.svg"}
     ]
   end
 
   defp hero_bullets do
     [
       %{
-        title: "Server & client API.",
+        title: ~t"Server & client API.",
         body:
-          "Drive every component from LiveView or JavaScript and listen back from either side."
+          ~t"Drive every component from LiveView or JavaScript and listen back from either side."
       },
       %{
-        title: "LiveView‑native.",
-        body: "Update props at runtime without resetting component state."
+        title: ~t"LiveView‑native.",
+        body: ~t"Update props at runtime without resetting component state."
       },
       %{
-        title: "Truly unstyled.",
-        body: "Bring your own CSS or opt into Corex Design tokens, themes and modes."
+        title: ~t"Truly unstyled.",
+        body: ~t"Bring your own CSS or opt into Corex Design tokens, themes and modes."
       },
       %{
-        title: "Accessible by default.",
-        body: "Keyboard, focus and ARIA wired in by Zag.js state machines."
+        title: ~t"Accessible by default.",
+        body: ~t"Keyboard, focus and ARIA wired in by Zag.js state machines."
       }
     ]
   end
@@ -67,6 +67,7 @@ defmodule E2eWeb.HomeLive do
     {:ok,
      socket
      |> assign(:page_title, "Corex")
+     |> assign(:seo, E2eWeb.SEO.home())
      |> assign(:hero_code, @hero_code_snippet)
      |> assign(:install_command, @install_command)
      |> assign(:hero_marquee_items, hero_marquee_items())
@@ -104,17 +105,16 @@ defmodule E2eWeb.HomeLive do
           <div class="home__hero__inner">
             <div class="home__hero__copy">
               <h1 id="home-hero-heading" class="home__display home__display--lg">
-                The Phoenix UI with a <span class="home__display__accent">real API</span>.
+                {"The Phoenix UI with a"} <span class="home__display__accent">{"real API"}</span>.
               </h1>
 
               <p class="home__lede">
-                Accessible, unstyled Phoenix components with a full server‑and‑client API,
-                powered by
+                {"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
                 <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
-                state machines.
+                {"state machines."}
               </p>
 
-              <ul class="home__bullets" aria-label="Highlights">
+              <ul class="home__bullets" aria_label="Highlights">
                 <li :for={bullet <- @hero_bullets} class="home__bullet">
                   <.heroicon name="hero-check" class="home__bullet__icon" />
                   <span>
@@ -128,7 +128,7 @@ defmodule E2eWeb.HomeLive do
                   to={~p"/accordion/playground"}
                   class="button button--brand rounded-full"
                 >
-                  {gettext("Browse components")}
+                  {"Browse components"}
                   <.heroicon name="hero-arrow-right" class="icon" />
                 </.navigate>
                 <.navigate
@@ -136,18 +136,18 @@ defmodule E2eWeb.HomeLive do
                   class="button button--ghost rounded-full"
                   external
                 >
-                  {gettext("Visit Hexdocs")}
+                  {"Visit Hexdocs"}
                   <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
                 </.navigate>
               </div>
             </div>
 
             <div class="home__hero__composition">
-              <h2 class="sr-only">{gettext("Interactive preview")}</h2>
+              <h2 class="sr-only">{"Interactive preview"}</h2>
               <div class="home__card home__card--accordion">
                 <div class="home__card__label">
                   <.heroicon name="hero-bars-3-bottom-left" class="icon" />
-                  <span>Accordion</span>
+                  <span>{"Accordion"}</span>
                 </div>
                 <.accordion
                   id="hero-accordion"
@@ -167,13 +167,13 @@ defmodule E2eWeb.HomeLive do
                   <.heroicon name="hero-command-line" class="icon" />
                   <span>API</span>
                 </div>
-                <p class="home__card__hint">Drive the accordion from anywhere.</p>
+                <p class="home__card__hint">{"Drive the accordion from anywhere."}</p>
                 <div class="home__card__actions">
                   <.action
                     phx-click={Corex.Accordion.set_value("hero-accordion", ["anatomy"])}
                     class="button button--sm button--accent"
                   >
-                    <.heroicon name="hero-chevron-right" class="icon" /> Open first
+                    <.heroicon name="hero-chevron-right" class="icon" /> {"Open first"}
                   </.action>
                   <.action
                     phx-click={
@@ -184,13 +184,13 @@ defmodule E2eWeb.HomeLive do
                     }
                     class="button button--sm"
                   >
-                    <.heroicon name="hero-square-3-stack-3d" class="icon" /> Open all
+                    <.heroicon name="hero-square-3-stack-3d" class="icon" /> {~t"Open all"}
                   </.action>
                   <.action
                     phx-click={Corex.Accordion.set_value("hero-accordion", [])}
                     class="button button--sm button--ghost"
                   >
-                    <.heroicon name="hero-x-mark" class="icon" /> Close all
+                    <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
                   </.action>
                 </div>
               </div>
@@ -206,14 +206,14 @@ defmodule E2eWeb.HomeLive do
                     class="clipboard clipboard--sm"
                     value={@hero_code}
                     input={false}
-                    trigger_aria_label="Copy snippet"
+                    trigger_aria_label={~t"Copy snippet"}
                   >
                     <:copy>
-                      <span>Copy</span>
+                      <span>{~t"Copy"}</span>
                       <.heroicon name="hero-clipboard" />
                     </:copy>
                     <:copied>
-                      <span>Copied</span>
+                      <span>{~t"Copied"}</span>
                       <.heroicon name="hero-check" />
                     </:copied>
                   </.clipboard>
@@ -229,20 +229,20 @@ defmodule E2eWeb.HomeLive do
               <div class="home__card home__card--events">
                 <div class="home__card__label">
                   <.heroicon name="hero-signal" class="icon" />
-                  <span>Events</span>
+                  <span>{~t"Events"}</span>
                 </div>
                 <.data_table
                   id="hero-events-table"
                   class="data-table home__card__events-table"
                   rows={@streams.accordion_events}
                 >
-                  <:col :let={{_id, row}} label="Time">
+                  <:col :let={{_id, row}} label={~t"Time"}>
                     {Calendar.strftime(row.at, "%H:%M:%S")}
                   </:col>
-                  <:col :let={{_id, row}} label="Open items">{row.open}</:col>
+                  <:col :let={{_id, row}} label={~t"Open items"}>{row.open}</:col>
                   <:empty>
                     <p class="home__card__events-empty">
-                      Toggle the accordion to watch events land.
+                      {~t"Toggle the accordion to watch events land."}
                     </p>
                   </:empty>
                 </.data_table>
@@ -258,43 +258,43 @@ defmodule E2eWeb.HomeLive do
       >
         <div class="home__section__inner">
           <h2 id="home-numbers-heading" class="sr-only">
-            {gettext("Corex by the numbers")}
+            {~t"Corex by the numbers"}
           </h2>
           <div class="home__numbers">
             <div class="home__numbers__cell">
               <span class="home__numbers__value">
                 {@component_count}<span class="home__numbers__value__suffix">+</span>
               </span>
-              <span class="home__numbers__label">Components</span>
+              <span class="home__numbers__label">{~t"Components"}</span>
               <p class="home__numbers__hint">
-                Works in Controller and Live View
+                {~t"Works in Controller and Live View"}
               </p>
             </div>
             <div class="home__numbers__cell">
               <span class="home__numbers__value">
                 100<span class="home__numbers__value__suffix">+</span>
               </span>
-              <span class="home__numbers__label">API & Events</span>
+              <span class="home__numbers__label">{~t"API & Events"}</span>
               <p class="home__numbers__hint">
-                From the Server and the Client
+                {~t"From the Server and the Client"}
               </p>
             </div>
             <div class="home__numbers__cell">
               <span class="home__numbers__value">
                 100<span class="home__numbers__value__suffix">%</span>
               </span>
-              <span class="home__numbers__label">Open Source</span>
+              <span class="home__numbers__label">{~t"Open Source"}</span>
               <p class="home__numbers__hint">
-                Open Source and free to use. MIT License
+                {~t"Open Source and free to use. MIT License"}
               </p>
             </div>
             <div class="home__numbers__cell">
               <span class="home__numbers__value">
                 A<span class="home__numbers__value__suffix">11y</span>
               </span>
-              <span class="home__numbers__label">Built in</span>
+              <span class="home__numbers__label">{~t"Built in"}</span>
               <p class="home__numbers__hint">
-                Keyboard, focus and ARIA from Zag.js machines.
+                {~t"Keyboard, focus and ARIA from Zag.js machines."}
               </p>
             </div>
           </div>
@@ -305,7 +305,7 @@ defmodule E2eWeb.HomeLive do
         <div class="home__section__inner home__stack">
           <div class="home__stack__head">
             <span class="home__stack__rule" aria-hidden="true"></span>
-            <h2 id="home-stack-heading" class="home__eyebrow">Built with</h2>
+            <h2 id="home-stack-heading" class="home__eyebrow">{~t"Built with"}</h2>
             <span class="home__stack__rule" aria-hidden="true"></span>
           </div>
 
@@ -332,26 +332,26 @@ defmodule E2eWeb.HomeLive do
       >
         <div class="home__section__inner">
           <div class="home__cta__inner">
-            <p class="home__eyebrow">Ready?</p>
+            <p class="home__eyebrow">{~t"Ready?"}</p>
             <h2 id="home-cta-heading" class="home__cta__display">
-              Install Corex <span class="home__display__accent">in one command.</span>
+              {~t"Install Corex"} <span class="home__display__accent">{~t"in one command."}</span>
             </h2>
             <p class="home__lede">
-              Corex generator wires up the dependency, the design tokens and the assets pipeline for you.
+              {~t"Corex generator wires up the dependency, the design tokens and the assets pipeline for you."}
             </p>
 
             <.clipboard
               id="home-install-clipboard"
               class="clipboard max-w-md"
               value={@install_command}
-              trigger_aria_label="Copy install command"
+              trigger_aria_label={~t"Copy install command"}
             >
               <:copy>
-                <span>Copy</span>
+                <span>{~t"Copy"}</span>
                 <.heroicon name="hero-clipboard" />
               </:copy>
               <:copied>
-                <span>Copied</span>
+                <span>{~t"Copied"}</span>
                 <.heroicon name="hero-check" />
               </:copied>
             </.clipboard>
@@ -361,7 +361,7 @@ defmodule E2eWeb.HomeLive do
                 to={~p"/accordion/playground"}
                 class="button button--brand rounded-full"
               >
-                {gettext("Browse components")}
+                {~t"Browse components"}
                 <.heroicon name="hero-arrow-right" class="icon" />
               </.navigate>
               <.navigate
@@ -369,7 +369,7 @@ defmodule E2eWeb.HomeLive do
                 class="button button--ghost rounded-full"
                 external
               >
-                {gettext("Star on GitHub")}
+                {~t"Star on GitHub"}
                 <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
               </.navigate>
             </div>

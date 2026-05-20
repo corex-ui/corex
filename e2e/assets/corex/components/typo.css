@@ -1,5 +1,6 @@
 @import "../main.css";
 @import "./scrollbar.css";
+@import "./prose.css";
 
 @layer components {
   .typo {

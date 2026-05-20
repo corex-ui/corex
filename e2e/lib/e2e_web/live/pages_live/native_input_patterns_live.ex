@@ -75,7 +75,7 @@ defmodule E2eWeb.NativeInputPatternsLive do
             id="search-with-icon"
             name="q"
             class="native-input"
-            placeholder="Search"
+            placeholder={~t"Search"}
           >
             <:label>Search</:label>
             <:icon><.heroicon name="hero-magnifying-glass" class="icon" /></:icon>
@@ -85,7 +85,7 @@ defmodule E2eWeb.NativeInputPatternsLive do
             id="search-basic"
             name="q"
             class="native-input"
-            placeholder="Search"
+            placeholder={~t"Search"}
           >
             <:label>Search</:label>
           </.native_input>

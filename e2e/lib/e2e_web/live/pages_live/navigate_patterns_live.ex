@@ -25,7 +25,7 @@ defmodule E2eWeb.NavigatePatternsLive do
             Internal Link
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.navigate>
-          <.navigate to="#" class="link" aria_label="Internal link icon only">
+          <.navigate to="#" class="link" aria_label={~t"Internal link icon only"}>
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.navigate>
           <.navigate to="https://example.com" class="link" external>

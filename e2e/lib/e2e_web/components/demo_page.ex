@@ -33,6 +33,7 @@ defmodule E2eWeb.DemoPage do
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
 
   ## Shell contract (page types)
+  ## Shell contract (page types)
 
   - **Anatomy**  -  `<.demo_page>` + one `<.demo_section>` per variant; stable `id` on each section.
   - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout.
@@ -167,7 +168,7 @@ defmodule E2eWeb.DemoPage do
         assign(assigns, :code_tabs, [
           %{
             value: "heex",
-            label: "Heex",
+            label: ~t"Heex",
             language: :heex,
             code: assigns[:code]
           }

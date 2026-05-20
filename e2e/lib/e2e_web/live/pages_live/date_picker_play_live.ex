@@ -159,11 +159,11 @@ defmodule E2eWeb.DatePickerPlayLive do
             ]}
             deselectable={false}
             items={[
-              %{value: "unlimited", label: "Unlimited days"},
-              %{value: "1", label: "Max 1 day"},
-              %{value: "2", label: "Max 2 days"},
-              %{value: "3", label: "Max 3 days"},
-              %{value: "5", label: "Max 5 days"}
+              %{value: "unlimited", label: ~t"Unlimited days"},
+              %{value: "1", label: ~t"Max 1 day"},
+              %{value: "2", label: ~t"Max 2 days"},
+              %{value: "3", label: ~t"Max 3 days"},
+              %{value: "5", label: ~t"Max 5 days"}
             ]}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Max selected"}}

@@ -56,15 +56,15 @@ defmodule E2eWeb.EditableEventsLive do
     >
       <.demo_page
         id="editable-events-page"
-        title="Editable · Event"
-        subtitle="Value change events (server + client)."
+        title={~t"Editable · Event"}
+        subtitle={~t"Value change events (server + client)."}
       >
         <.demo_section
           id="editable-events-server-section"
-          title="On Value Change (Server)"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -99,11 +99,11 @@ defmodule E2eWeb.EditableEventsLive do
 
         <.demo_section
           id="editable-events-client-section"
-          title="On Value Change (Client)"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

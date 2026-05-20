@@ -42,14 +42,14 @@ defmodule E2eWeb.CheckboxApiLive do
     >
       <.demo_page
         id="checkbox-api-page"
-        title="Checkbox · API"
-        subtitle="Programmatically set the checked state from the server or client bindings."
+        title={~t"Checkbox · API"}
+        subtitle={~t"Programmatically set the checked state from the server or client bindings."}
       >
         <.demo_section
           id="checkbox-api-client-binding"
-          title="Set checked (Client Binding)"
+          title={~t"Set checked (Client Binding)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_binding_heex}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_binding_heex}
           ]}
         >
           <:preview>
@@ -59,11 +59,11 @@ defmodule E2eWeb.CheckboxApiLive do
 
         <.demo_section
           id="checkbox-api-js-dispatch"
-          title="Set checked (Client JS)"
+          title={~t"Set checked (Client JS)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @js_dispatch_heex},
-            %{value: "js", label: "JS", language: :js, code: @js_dispatch_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @js_dispatch_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @js_dispatch_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @js_dispatch_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @js_dispatch_ts}
           ]}
         >
           <:preview>
@@ -73,9 +73,9 @@ defmodule E2eWeb.CheckboxApiLive do
 
         <.demo_section
           id="checkbox-api-server-section"
-          title="Set checked (Server)"
+          title={~t"Set checked (Server)"}
           code_tabs={[
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>

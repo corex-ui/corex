@@ -1256,48 +1256,49 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         label: "Accordion",
         value: "nav-branch-accordion",
         children: [
-          %{label: "Structure", value: "/accordion/anatomy"},
-          %{label: "Playground", value: "/accordion/playground"}
+          %{label: "Structure", value: ~p"/accordion/anatomy"},
+          %{label: "Playground", value: ~p"/accordion/playground"}
         ]
       },
       %{
         label: "Tree view",
         value: "nav-branch-tree-view",
         children: [
-          %{label: "Structure", value: "/tree-view/anatomy"},
-          %{label: "Playground", value: "/tree-view/playground"}
+          %{label: "Structure", value: ~p"/tree-view/anatomy"},
+          %{label: "Playground", value: ~p"/tree-view/playground"}
         ]
       }
     ])
   end
 
   def patterns_redirect_expanded, do: ["nav-branch-accordion", "nav-branch-tree-view"]
-  def patterns_redirect_value, do: ["/tree-view/anatomy"]
+
+  def patterns_redirect_value, do: [~p"/tree-view/anatomy"]
 
   def patterns_redirect_heex do
-    ~S"""
+    """
     <.tree_view
       class="tree-view"
       redirect
       on_selection_change="patterns_tree_redirect_nav"
       expanded_value={["nav-branch-accordion", "nav-branch-tree-view"]}
-      value={["/tree-view/anatomy"]}
+      value={[#{inspect(~p"/tree-view/anatomy")}]}
       items={
         Corex.Tree.new([
           %{
             label: "Accordion",
             value: "nav-branch-accordion",
             children: [
-              %{label: "Structure", value: "/accordion/anatomy"},
-              %{label: "Playground", value: "/accordion/playground"}
+              %{label: "Structure", value: #{inspect(~p"/accordion/anatomy")}},
+              %{label: "Playground", value: #{inspect(~p"/accordion/playground")}}
             ]
           },
           %{
             label: "Tree view",
             value: "nav-branch-tree-view",
             children: [
-              %{label: "Structure", value: "/tree-view/anatomy"},
-              %{label: "Playground", value: "/tree-view/playground"}
+              %{label: "Structure", value: #{inspect(~p"/tree-view/anatomy")}},
+              %{label: "Playground", value: #{inspect(~p"/tree-view/playground")}}
             ]
           }
         ])

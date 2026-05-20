@@ -112,10 +112,10 @@ defmodule E2eWeb.ToggleApiLive do
         </.demo_section>
         <.demo_section
           id="toggle-api-server"
-          title="Server push"
+          title={~t"Server push"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>

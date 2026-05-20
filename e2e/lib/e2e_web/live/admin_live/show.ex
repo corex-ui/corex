@@ -21,7 +21,7 @@ defmodule E2eWeb.AdminLive.Show do
             to={~p"/admins"}
             type="navigate"
             class="button button--sm button--square"
-            aria_label={gettext("Previous page")}
+            aria_label="Previous page"
           >
             <.heroicon name="hero-arrow-left" />
           </.navigate>

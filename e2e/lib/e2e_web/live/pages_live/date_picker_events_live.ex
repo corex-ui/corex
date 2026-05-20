@@ -80,15 +80,17 @@ defmodule E2eWeb.DatePickerEventsLive do
     >
       <.demo_page
         id="date-picker-events-page"
-        title="Date Picker · Event"
-        subtitle="Subscribe to value or open changes on LiveView, or to CustomEvent on the client."
+        title={~t"Date Picker · Event"}
+        subtitle={
+          ~t"Subscribe to value or open changes on LiveView, or to CustomEvent on the client."
+        }
       >
         <.demo_section
           id="date-picker-events-on-value-server"
-          title="On value change (Server)"
+          title={~t"On value change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @on_value_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @on_value_server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @on_value_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @on_value_server_elixir}
           ]}
         >
           <:preview>
@@ -129,10 +131,10 @@ defmodule E2eWeb.DatePickerEventsLive do
 
         <.demo_section
           id="date-picker-events-on-open-server"
-          title="On open change (Server)"
+          title={~t"On open change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @on_open_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @on_open_server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @on_open_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @on_open_server_elixir}
           ]}
         >
           <:preview>
@@ -173,11 +175,11 @@ defmodule E2eWeb.DatePickerEventsLive do
 
         <.demo_section
           id="date-picker-events-on-value-client"
-          title="On value change (Client)"
+          title={~t"On value change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @on_value_client_heex},
-            %{value: "js", label: "JS", language: :js, code: @on_value_client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @on_value_client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @on_value_client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @on_value_client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @on_value_client_ts}
           ]}
         >
           <:preview>
@@ -238,11 +240,11 @@ defmodule E2eWeb.DatePickerEventsLive do
 
         <.demo_section
           id="date-picker-events-on-open-client"
-          title="On open change (Client)"
+          title={~t"On open change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @on_open_client_heex},
-            %{value: "js", label: "JS", language: :js, code: @on_open_client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @on_open_client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @on_open_client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @on_open_client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @on_open_client_ts}
           ]}
         >
           <:preview>

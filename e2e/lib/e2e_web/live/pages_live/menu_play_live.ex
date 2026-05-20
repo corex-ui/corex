@@ -91,7 +91,7 @@ defmodule E2eWeb.MenuPlayLive do
                 label: "Corex",
                 children: E2eWeb.Demos.MenuDemo.demo_nested_flat_children()
               },
-              %Corex.Tree.Item{value: "tabs", label: "Tabs"}
+              %Corex.Tree.Item{value: "tabs", label: ~t"Tabs"}
             ]}
           >
             <:trigger>Corex</:trigger>

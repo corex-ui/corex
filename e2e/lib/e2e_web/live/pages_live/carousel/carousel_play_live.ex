@@ -119,7 +119,7 @@ defmodule E2eWeb.CarouselPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Carousel · Playground" heading_class="layout-heading">
+      <.demo_playground title={~t"Carousel · Playground"} heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -135,10 +135,10 @@ defmodule E2eWeb.CarouselPlayLive do
             deselectable={false}
             value={[@controls.orientation]}
           >
-            <:item value="vertical" aria_label="Vertical orientation">
+            <:item value="vertical" aria_label={~t"Vertical orientation"}>
               <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
             </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
+            <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
               <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
             </:item>
           </.toggle_group>

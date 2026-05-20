@@ -39,12 +39,12 @@ defmodule E2eWeb.FileUploadApiLive do
 
         <.demo_section
           id="file-upload-api-open-server"
-          title="open_file_picker (push_event from LiveView)"
+          title={~t"open_file_picker (push_event from LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_open_server_heex()},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_open_server_heex()},
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: Demo.api_open_server_elixir()
             }
@@ -55,9 +55,9 @@ defmodule E2eWeb.FileUploadApiLive do
 
         <.demo_section
           id="file-upload-api-open-js"
-          title="open_file_picker (CustomEvent from JavaScript)"
+          title={~t"open_file_picker (CustomEvent from JavaScript)"}
           code_tabs={[
-            %{value: "js", label: "JS", language: :js, code: Demo.api_open_client_js()}
+            %{value: "js", label: ~t"JS", language: :js, code: Demo.api_open_client_js()}
           ]}
         >
           <:preview><Demo.api_open_client_example /></:preview>

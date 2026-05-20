@@ -200,16 +200,16 @@ defmodule E2eWeb.DatePickerFormLive do
     >
       <.demo_page
         id="date-picker-form-live-page"
-        title="Date Picker form"
-        subtitle="Live View Form"
+        title={~t"Date Picker form"}
+        subtitle={~t"Live View Form"}
       >
         <.demo_section
           id="date-picker-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          title={~t"Phoenix Form (changeset)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_basic_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_basic_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
@@ -222,11 +222,11 @@ defmodule E2eWeb.DatePickerFormLive do
 
         <.demo_section
           id="date-picker-live-form-validate"
-          title="Ecto Changeset (validation)"
+          title={~t"Ecto Changeset (validation)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_validate_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_validate_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>

@@ -18,6 +18,7 @@ defmodule E2eWeb.Router do
 
     plug(Localize.Plug.PutSession)
     plug(E2eWeb.Plugs.Path)
+    plug(E2eWeb.Plugs.SEO)
     plug(:put_root_layout, html: {E2eWeb.Layouts, :root})
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
@@ -30,8 +31,17 @@ defmodule E2eWeb.Router do
   scope "/", E2eWeb do
     pipe_through(:browser)
 
+    get("/sitemap.xml", SitemapController, :index)
+    get("/feed.xml", FeedController, :index)
+
     live_session :marketing,
-      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive, E2eWeb.MountTelemetry] do
+      on_mount: [
+        E2eWeb.ModeLive,
+        E2eWeb.ThemeLive,
+        E2eWeb.PathLive,
+        E2eWeb.MountTelemetry,
+        E2eWeb.SEO.Live
+      ] do
       live("/", HomeLive, :index)
     end
   end
@@ -40,7 +50,16 @@ defmodule E2eWeb.Router do
     pipe_through(:browser)
 
     live_session :default,
-      on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.PathLive, E2eWeb.MountTelemetry] do
+      on_mount: [
+        E2eWeb.ModeLive,
+        E2eWeb.ThemeLive,
+        E2eWeb.PathLive,
+        E2eWeb.MountTelemetry,
+        E2eWeb.SEO.Live
+      ] do
+      live("/blog", BlogIndexLive, :index)
+      live("/blog/:slug", BlogPostLive, :show)
+
       live("/admins", AdminLive.Index, :index)
       live("/admins/new", AdminLive.Form, :new)
       live("/admins/:id", AdminLive.Show, :show)

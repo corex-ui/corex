@@ -1,12 +1,14 @@
 <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
   <.demo_page
     id="tags-input-anatomy-page"
-    title="Tags input · Anatomy"
-    subtitle="Tags are JSON-encoded for safe commas in values. Pass Corex.TagsInput.Translation to customize placeholder and per-tag aria-labels."
+    title={~t"Tags input · Anatomy"}
+    subtitle={
+      ~t"Tags are JSON-encoded for safe commas in values. Pass Corex.TagsInput.Translation to customize placeholder and per-tag aria-labels."
+    }
   >
     <.demo_section
       id="tags-input-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.TagsInputDemo.minimal_code()}
     >
       <:preview>
@@ -16,7 +18,7 @@
 
     <.demo_section
       id="tags-input-anatomy-label"
-      title="With label"
+      title={~t"With label"}
       code={E2eWeb.Demos.TagsInputDemo.with_label_code()}
     >
       <:preview>
@@ -26,7 +28,7 @@
 
     <.demo_section
       id="tags-input-anatomy-translation"
-      title="Translation"
+      title={~t"Translation"}
       code={E2eWeb.Demos.TagsInputDemo.with_translation_code()}
     >
       <:preview>

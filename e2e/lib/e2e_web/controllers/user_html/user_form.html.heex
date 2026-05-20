@@ -15,7 +15,7 @@
   <.select
     class="select  max-w-none"
     field={f[:country]}
-    placeholder="Select a country"
+    placeholder={~t"Select a country"}
     items={[
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -39,7 +39,7 @@
   <.combobox
     field={f[:currency]}
     class="combobox  max-w-none"
-    placeholder="Search currency"
+    placeholder={~t"Search currency"}
     items={currency_items()}
   >
     <:label>Preferred currency</:label>

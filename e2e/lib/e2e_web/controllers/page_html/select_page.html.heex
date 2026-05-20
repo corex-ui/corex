@@ -6,12 +6,14 @@
 >
   <.demo_page
     id="select-anatomy-page"
-    title="Select · Anatomy"
-    subtitle="Trigger slot, item indicator, grouped options, and custom item content. Placeholder uses the default translation unless you pass Corex.Select.Translation."
+    title={~t"Select · Anatomy"}
+    subtitle={
+      ~t"Trigger slot, item indicator, grouped options, and custom item content. Placeholder uses the default translation unless you pass Corex.Select.Translation."
+    }
   >
     <.demo_section
       id="select-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.SelectDemo.minimal_code()}
     >
       <:preview>
@@ -21,7 +23,7 @@
 
     <.demo_section
       id="select-anatomy-translation"
-      title="With translation"
+      title={~t"With translation"}
       code={E2eWeb.Demos.SelectDemo.with_translation_code()}
     >
       <:preview>
@@ -31,7 +33,7 @@
 
     <.demo_section
       id="select-anatomy-item-indicator"
-      title="With item indicator"
+      title={~t"With item indicator"}
       code={E2eWeb.Demos.SelectDemo.item_indicator_code()}
     >
       <:preview>
@@ -41,7 +43,7 @@
 
     <.demo_section
       id="select-anatomy-grouped"
-      title="Grouped"
+      title={~t"Grouped"}
       code={E2eWeb.Demos.SelectDemo.grouped_code()}
     >
       <:preview>
@@ -51,7 +53,7 @@
 
     <.demo_section
       id="select-anatomy-extended"
-      title="Extended"
+      title={~t"Extended"}
       code={E2eWeb.Demos.SelectDemo.extended_code()}
     >
       <:preview>
@@ -61,7 +63,7 @@
 
     <.demo_section
       id="select-anatomy-extended-grouped"
-      title="Extended grouped"
+      title={~t"Extended grouped"}
       code={E2eWeb.Demos.SelectDemo.extended_grouped_code()}
     >
       <:preview>

@@ -6,13 +6,15 @@
 >
   <.demo_page
     id="data-list-styling-page"
-    title="Data List · Style"
-    subtitle="Semantic ink on the label, size scale on label and content, and host max-width utilities."
+    title={~t"Data List · Style"}
+    subtitle={
+      ~t"Semantic ink on the label, size scale on label and content, and host max-width utilities."
+    }
     heading_class="layout-heading"
   >
     <.demo_section
       id="data-list-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.DataListDemo.styling_color_code()}
     >
       <:preview><E2eWeb.Demos.DataListDemo.styling_color_example /></:preview>
@@ -20,7 +22,7 @@
 
     <.demo_section
       id="data-list-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.DataListDemo.styling_text_code()}
     >
       <:preview><E2eWeb.Demos.DataListDemo.styling_text_example /></:preview>
@@ -28,7 +30,7 @@
 
     <.demo_section
       id="data-list-styling-max-width"
-      title="Max width"
+      title={~t"Max width"}
       code={E2eWeb.Demos.DataListDemo.styling_max_width_code()}
     >
       <:preview><E2eWeb.Demos.DataListDemo.styling_max_width_example /></:preview>

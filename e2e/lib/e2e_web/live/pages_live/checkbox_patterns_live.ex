@@ -49,15 +49,15 @@ defmodule E2eWeb.CheckboxPatternsLive do
     >
       <.demo_page
         id="checkbox-patterns-page"
-        title="Checkbox · Pattern"
-        subtitle="Common ways to structure Checkbox state and data flows."
+        title={~t"Checkbox · Pattern"}
+        subtitle={~t"Common ways to structure Checkbox state and data flows."}
       >
         <.demo_section
           id="checkbox-patterns-async"
-          title="Async"
+          title={~t"Async"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @async_heex_full},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @async_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex_full},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
           ]}
         >
           <:preview>
@@ -85,10 +85,10 @@ defmodule E2eWeb.CheckboxPatternsLive do
 
         <.demo_section
           id="checkbox-patterns-controlled"
-          title="Controlled (LiveView)"
+          title={~t"Controlled (LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @controlled_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @controlled_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @controlled_elixir}
           ]}
         >
           <:preview>

@@ -6,26 +6,28 @@
 >
   <.demo_page
     id="date-picker-anatomy-page"
-    title="Date Picker Anatomy"
-    subtitle="Single date, range, and multiple selection (uncontrolled); same slots as minimal."
+    title={~t"Date Picker Anatomy"}
+    subtitle={
+      ~t"Single date, range, and multiple selection (uncontrolled); same slots as minimal."
+    }
   >
     <.demo_section
       id="date-picker-anatomy-minimal"
-      title="Minimal (single)"
+      title={~t"Minimal (single)"}
       code={E2eWeb.Demos.DatePickerDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.DatePickerDemo.minimal_example /></:preview>
     </.demo_section>
     <.demo_section
       id="date-picker-anatomy-range"
-      title="Range"
+      title={~t"Range"}
       code={E2eWeb.Demos.DatePickerDemo.anatomy_range_code()}
     >
       <:preview><E2eWeb.Demos.DatePickerDemo.anatomy_range_example /></:preview>
     </.demo_section>
     <.demo_section
       id="date-picker-anatomy-multiple"
-      title="Multiple"
+      title={~t"Multiple"}
       code={E2eWeb.Demos.DatePickerDemo.anatomy_multiple_code()}
     >
       <:preview><E2eWeb.Demos.DatePickerDemo.anatomy_multiple_example /></:preview>

@@ -78,15 +78,15 @@ defmodule E2eWeb.CarouselEventsLive do
     >
       <.demo_page
         id="carousel-events-page"
-        title="Carousel · Event"
-        subtitle="Subscribe to page changes from LiveView or the client."
+        title={~t"Carousel · Event"}
+        subtitle={~t"Subscribe to page changes from LiveView or the client."}
       >
         <.demo_section
           id="carousel-events-server-section"
-          title="On Page Change (Server)"
+          title={~t"On Page Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -123,11 +123,11 @@ defmodule E2eWeb.CarouselEventsLive do
 
         <.demo_section
           id="carousel-events-client-section"
-          title="On Page Change (Client)"
+          title={~t"On Page Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

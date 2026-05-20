@@ -7,12 +7,12 @@
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
     id="tags-input-form-page"
-    title="Tags Input · Form"
-    subtitle="Phoenix to_form/2 and plain HTML."
+    title={~t"Tags Input · Form"}
+    subtitle={~t"Phoenix to_form/2 and plain HTML."}
   >
     <.demo_section
       id="tags-input-form-changeset"
-      title="Phoenix Form (changeset)"
+      title={~t"Phoenix Form (changeset)"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
         %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
@@ -26,7 +26,7 @@
 
     <.demo_section
       id="tags-input-form-native"
-      title="Native form (plain HTML)"
+      title={~t"Native form (plain HTML)"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
         %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}

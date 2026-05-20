@@ -1895,18 +1895,19 @@ defmodule E2eWeb.PageController do
   def templates_page(conn, _params) do
     template_carousel_items = [
       Corex.Image.new("/images/templates/soonex/preview-hero.png",
-        alt: gettext("Hero section")
+        alt: ~t"Hero section"
       ),
       Corex.Image.new("/images/templates/soonex/preview-highlights.png",
-        alt: gettext("Highlights section")
+        alt: ~t"Highlights section"
       ),
       Corex.Image.new("/images/templates/soonex/preview-waitlist.png",
-        alt: gettext("Waitlist section")
+        alt: ~t"Waitlist section"
       )
     ]
 
     conn
-    |> assign(:page_title, gettext("Templates · Corex"))
+    |> assign(:page_title, ~t"Templates · Corex")
+    |> assign(:seo, E2eWeb.SEO.templates())
     |> assign(:template_carousel_items, template_carousel_items)
     |> render(:templates_page)
   end

@@ -7,12 +7,12 @@
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
     id="signature-form-page"
-    title="Signature · Form"
-    subtitle="Phoenix to_form/2 and stricter validation"
+    title={~t"Signature · Form"}
+    subtitle={~t"Phoenix to_form/2 and stricter validation"}
   >
     <.demo_section
       id="signature-form-changeset"
-      title="Phoenix form (changeset)"
+      title={~t"Phoenix form (changeset)"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
         %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
@@ -26,7 +26,7 @@
 
     <.demo_section
       id="signature-form-validate"
-      title="Ecto changeset (validation)"
+      title={~t"Ecto changeset (validation)"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
         %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},

@@ -9,7 +9,20 @@ import Config
 
 config :corex_web,
   ecto_repos: [E2e.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  mdex: [
+    extension: [
+      table: true,
+      header_id_prefix: "",
+      tasklist: true,
+      strikethrough: true,
+      autolink: true,
+      alerts: true,
+      footnotes: true
+    ],
+    render: [unsafe: true],
+    syntax_highlight: nil
+  ]
 
 config :phoenix,
   json_library: Jason,

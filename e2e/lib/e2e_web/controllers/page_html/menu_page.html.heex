@@ -6,12 +6,14 @@
 >
   <.demo_page
     id="menu-anatomy-page"
-    title="Menu Anatomy"
-    subtitle="Minimal list, grouped sections, flat nested and grouped nested panels, and more."
+    title={~t"Menu Anatomy"}
+    subtitle={
+      ~t"Minimal list, grouped sections, flat nested and grouped nested panels, and more."
+    }
   >
     <.demo_section
       id="menu-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.MenuDemo.anatomy_minimal_code()}
     >
       <:preview><E2eWeb.Demos.MenuDemo.anatomy_minimal_example /></:preview>
@@ -19,7 +21,7 @@
 
     <.demo_section
       id="menu-anatomy-grouped"
-      title="Grouped"
+      title={~t"Grouped"}
       code={E2eWeb.Demos.MenuDemo.anatomy_grouped_code()}
     >
       <:preview><E2eWeb.Demos.MenuDemo.anatomy_grouped_example /></:preview>
@@ -27,7 +29,7 @@
 
     <.demo_section
       id="menu-anatomy-nested"
-      title="Nested"
+      title={~t"Nested"}
       code={E2eWeb.Demos.MenuDemo.anatomy_nested_code()}
     >
       <:preview><E2eWeb.Demos.MenuDemo.anatomy_nested_example /></:preview>
@@ -35,7 +37,7 @@
 
     <.demo_section
       id="menu-anatomy-nested-grouped"
-      title="Nested grouped"
+      title={~t"Nested grouped"}
       code={E2eWeb.Demos.MenuDemo.anatomy_nested_grouped_code()}
     >
       <:preview><E2eWeb.Demos.MenuDemo.anatomy_nested_grouped_example /></:preview>

@@ -103,6 +103,11 @@ defmodule E2eWeb.App.Footer do
               </g>
             </svg>
           </.navigate>
+
+          <.navigate class="button button--sm button--circle" to="/feed.xml" external>
+            <span class="sr-only">Corex Blog RSS</span>
+            <.heroicon name="hero-rss" />
+          </.navigate>
         </div>
       </div>
     </footer>

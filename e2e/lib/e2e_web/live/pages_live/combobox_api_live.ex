@@ -41,14 +41,14 @@ defmodule E2eWeb.ComboboxApiLive do
     >
       <.demo_page
         id="combobox-api-page"
-        title="Combobox · API"
-        subtitle="Programmatic selection from LiveView or the client."
+        title={~t"Combobox · API"}
+        subtitle={~t"Programmatic selection from LiveView or the client."}
       >
         <.demo_section
           id="combobox-api-set-value-binding"
-          title="Set Value (Client Binding)"
+          title={~t"Set Value (Client Binding)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_binding}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_binding}
           ]}
         >
           <:preview>
@@ -69,7 +69,7 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-client"
               class="combobox"
-              placeholder="Select"
+              placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -80,12 +80,12 @@ defmodule E2eWeb.ComboboxApiLive do
 
         <.demo_section
           id="combobox-api-set-value-server"
-          title="Set Value (Server)"
+          title={~t"Set Value (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_server_heex},
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.set_value_server_elixir
             }
@@ -99,7 +99,7 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-server"
               class="combobox"
-              placeholder="Select"
+              placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>
@@ -110,9 +110,9 @@ defmodule E2eWeb.ComboboxApiLive do
 
         <.demo_section
           id="combobox-api-set-value-js"
-          title="Set Value (Client JS)"
+          title={~t"Set Value (Client JS)"}
           code_tabs={[
-            %{value: "js", label: "JS", language: :js, code: @codes.set_value_js}
+            %{value: "js", label: ~t"JS", language: :js, code: @codes.set_value_js}
           ]}
         >
           <:preview>
@@ -147,7 +147,7 @@ defmodule E2eWeb.ComboboxApiLive do
             <.combobox
               id="combobox-api-sv-js"
               class="combobox"
-              placeholder="Select"
+              placeholder={~t"Select"}
               items={Corex.List.new(Demo.items_minimal())}
             >
               <:empty>No results</:empty>

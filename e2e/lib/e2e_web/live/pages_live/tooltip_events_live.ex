@@ -58,13 +58,13 @@ defmodule E2eWeb.TooltipEventsLive do
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.TooltipDemo.events_server_elixir()
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: E2eWeb.Demos.TooltipDemo.events_client_listener_js()
             }

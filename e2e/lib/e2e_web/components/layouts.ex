@@ -4,6 +4,7 @@ defmodule E2eWeb.Layouts do
   used by your application.
   """
   use E2eWeb, :html
+  import E2eWeb.SEO, only: [head: 1]
   import E2eWeb.App.{Footer, Header, Pagination, Aside}
 
   import E2eWeb.{ModeToggle, ThemeToggle}
@@ -61,8 +62,8 @@ defmodule E2eWeb.Layouts do
         </.toast_group>
         <.toast_client_error
           toast_group_id="layout-toast"
-          title={gettext("We lost the connection")}
-          description={gettext("We're trying to reconnect you...")}
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
           type={:error}
           duration={:infinity}
         />
@@ -81,6 +82,40 @@ defmodule E2eWeb.Layouts do
   attr(:path, :string, default: nil)
 
   slot(:inner_block, required: true)
+
+  def blog(assigns) do
+    path = path_resolved(assigns)
+    assigns = assign(assigns, :path, path)
+
+    ~H"""
+    <.header path={@path} theme={@theme} mode={@mode} />
+    <div class="layout__wrapper">
+      <main id="main-content" class="layout__main layout__main--blog">
+        <div class="layout__content--blog">
+          {render_slot(@inner_block)}
+        </div>
+        <.toast_group
+          id="layout-toast"
+          class="toast"
+          phx-update="ignore"
+          flash={@flash}
+        >
+          <:loading>
+            <.heroicon name="hero-arrow-path" class="icon" />
+          </:loading>
+        </.toast_group>
+        <.toast_client_error
+          toast_group_id="layout-toast"
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
+          type={:error}
+          duration={:infinity}
+        />
+      </main>
+    </div>
+    <.footer path={@path} />
+    """
+  end
 
   def marketing(assigns) do
     path = path_resolved(assigns)
@@ -105,8 +140,8 @@ defmodule E2eWeb.Layouts do
         </.toast_group>
         <.toast_client_error
           toast_group_id="layout-toast"
-          title={gettext("We lost the connection")}
-          description={gettext("We're trying to reconnect you...")}
+          title={~t"We lost the connection"}
+          description={~t"We're trying to reconnect you..."}
           type={:error}
           duration={:infinity}
         />

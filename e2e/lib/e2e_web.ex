@@ -40,7 +40,7 @@ defmodule E2eWeb do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
 
-      use Gettext, backend: E2eWeb.Gettext
+      use GettextSigils, backend: E2eWeb.Gettext
 
       import Plug.Conn
 
@@ -79,7 +79,7 @@ defmodule E2eWeb do
   defp html_helpers do
     quote do
       # Translation
-      use Gettext, backend: E2eWeb.Gettext
+      use GettextSigils, backend: E2eWeb.Gettext
 
       # HTML escaping functionality
       import Phoenix.HTML

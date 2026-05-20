@@ -155,17 +155,17 @@ defmodule E2eWeb.TreeViewPatternsLive do
     >
       <.demo_page
         id="tree-view-patterns-page"
-        title="Tree view · Pattern"
-        subtitle="Async loading, controlled state, and redirect navigation."
+        title={~t"Tree view · Pattern"}
+        subtitle={~t"Async loading, controlled state, and redirect navigation."}
       >
         <.demo_section
           id="patterns-tree-async-section"
           tabs_id="tabs-tree-view-patterns-async"
-          title="Async"
+          title={~t"Async"}
           trigger_class="button--sm"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @async_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @async_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
           ]}
         >
           <:preview>

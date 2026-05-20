@@ -58,9 +58,9 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> assign(:pattern_db_total, db_total)
      |> assign(:pattern_row_clicked, nil)
      |> assign(:pattern_row_click_rows, [
-       %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
-       %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
-       %{id: 3, name: "Charlie", role: "Editor", email: "charlie@example.com"}
+       %{id: 1, name: ~t"Alice", role: "Admin", email: "alice@example.com"},
+       %{id: 2, name: ~t"Bob", role: "User", email: "bob@example.com"},
+       %{id: 3, name: ~t"Charlie", role: "Editor", email: "charlie@example.com"}
      ])}
   end
 
@@ -70,7 +70,7 @@ defmodule E2eWeb.DataTablePatternsLive do
 
     item = %{
       id: id,
-      name: "name-#{System.unique_integer([:positive])}",
+      name: ~t"name-#{System.unique_integer([:positive])}",
       category: Enum.random(socket.assigns.pattern_stream_categories)
     }
 
@@ -263,7 +263,7 @@ defmodule E2eWeb.DataTablePatternsLive do
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_row_click_elixir()
             }
@@ -291,17 +291,17 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-stream"
-          title="Stream"
+          title={~t"Stream"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_stream_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_stream_elixir()
             }
@@ -345,17 +345,17 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-sort"
-          title="Sort"
+          title={~t"Sort"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_sort_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_sort_elixir()
             }
@@ -390,17 +390,17 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-select"
-          title="Select"
+          title={~t"Select"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_select_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_select_elixir()
             }
@@ -437,17 +437,17 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-full"
-          title="Full (action, sort, select)"
+          title={~t"Full (action, sort, select)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_full_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_full_elixir()
             }
@@ -504,7 +504,7 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-database"
-          title="With database"
+          title={~t"With database"}
           code_tabs={E2eWeb.Demos.DataTableDemo.patterns_database_code_tabs()}
         >
           <:preview>

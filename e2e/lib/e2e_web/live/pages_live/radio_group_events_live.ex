@@ -62,15 +62,15 @@ defmodule E2eWeb.RadioGroupEventsLive do
     >
       <.demo_page
         id="radio-group-events-page"
-        title="Radio Group · Event"
-        subtitle="Subscribe to value changes from LiveView or the client."
+        title={~t"Radio Group · Event"}
+        subtitle={~t"Subscribe to value changes from LiveView or the client."}
       >
         <.demo_section
           id="radio-group-events-server-section"
-          title="On Value Change (Server)"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -104,11 +104,11 @@ defmodule E2eWeb.RadioGroupEventsLive do
 
         <.demo_section
           id="radio-group-events-client-section"
-          title="On Value Change (Client)"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

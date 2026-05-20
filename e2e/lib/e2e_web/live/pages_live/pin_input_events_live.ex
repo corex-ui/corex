@@ -58,15 +58,15 @@ defmodule E2eWeb.PinInputEventsLive do
     >
       <.demo_page
         id="pin-input-events-page"
-        title="Pin Input · Event"
-        subtitle="Subscribe to value changes from the server or a DOM listener."
+        title={~t"Pin Input · Event"}
+        subtitle={~t"Subscribe to value changes from the server or a DOM listener."}
       >
         <.demo_section
           id="pin-input-events-server-section"
-          title="On Value Change (Server)"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -98,11 +98,11 @@ defmodule E2eWeb.PinInputEventsLive do
 
         <.demo_section
           id="pin-input-events-client-section"
-          title="On Value Change (Client)"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

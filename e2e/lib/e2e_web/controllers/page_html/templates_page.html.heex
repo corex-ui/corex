@@ -3,30 +3,28 @@
     <section class="layout__section w-full min-w-0 max-w-none" aria-labelledby="templates-heading">
       <.layout_heading class="layout-heading max-w-3xl w-full">
         <:title>
-          <span id="templates-heading">{gettext("Templates")}</span>
+          <span id="templates-heading">{~t"Templates"}</span>
         </:title>
         <:subtitle>
-          {gettext("Static Tableau starters with Corex")}
+          {~t"Static Tableau starters with Corex"}
         </:subtitle>
       </.layout_heading>
 
       <p class="m-0 max-w-prose text-ink-muted">
-        {gettext(
-          "Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components. Choose English-first Soonex or Soonex i18n with locales and RTL."
-        )}
+        {~t"Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components. Choose English-first Soonex or Soonex i18n with locales and RTL."}
       </p>
 
       <div class="grid w-full gap-space-xl lg:grid-cols-2">
         <article class="flex min-h-0 min-w-0 flex-col gap-space rounded-xl border border-border bg-layer p-size-lg shadow-md">
           <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
             <.heroicon name="hero-bolt" class="icon" />
-            <span>{gettext("Starter kit")}</span>
+            <span>{~t"Starter kit"}</span>
           </div>
 
           <div class="overflow-hidden rounded-lg border border-border bg-root">
             <.carousel
               id="soonex-templates-carousel"
-              aria_label={gettext("Soonex preview slides")}
+              aria_label={~t"Soonex preview slides"}
               orientation="vertical"
               loop
               items={@template_carousel_items}
@@ -42,12 +40,10 @@
           </div>
 
           <p class="m-0 text-lg font-semibold tracking-tight text-ink">
-            {gettext("Soonex")}
+            {~t"Soonex"}
           </p>
           <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
-            {gettext(
-              "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."
-            )}
+            {~t"Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN."}
           </p>
 
           <div class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
@@ -56,7 +52,7 @@
               class="button button--brand rounded-full"
               external
             >
-              {gettext("Live demo")}
+              {~t"Live demo"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
             <.navigate
@@ -64,7 +60,7 @@
               class="button button--ghost rounded-full"
               external
             >
-              {gettext("GitHub")}
+              {~t"GitHub"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
           </div>
@@ -73,13 +69,13 @@
         <article class="flex min-h-0 min-w-0 flex-col gap-space rounded-xl border border-border bg-layer p-size-lg shadow-md">
           <div class="inline-flex items-center gap-space-sm self-start rounded-full border border-border bg-root px-space-sm py-space-sm text-xs font-medium text-ink-muted">
             <.heroicon name="hero-language" class="icon" />
-            <span>{gettext("Locales & RTL")}</span>
+            <span>{~t"Locales & RTL"}</span>
           </div>
 
           <div class="overflow-hidden rounded-lg border border-border bg-root">
             <.carousel
               id="soonex-i18n-templates-carousel"
-              aria_label={gettext("Soonex i18n preview slides")}
+              aria_label={~t"Soonex i18n preview slides"}
               orientation="vertical"
               loop
               items={@template_carousel_items}
@@ -95,12 +91,10 @@
           </div>
 
           <p class="m-0 text-lg font-semibold tracking-tight text-ink">
-            {gettext("Soonex i18n")}
+            {~t"Soonex i18n"}
           </p>
           <p class="m-0 max-w-prose text-base leading-snug text-ink-muted">
-            {gettext(
-              "Same Soonex surface with Gettext and Localize: Arabic, English, and French out of the box, RTL-aware controls, and the same static build pipeline."
-            )}
+            {~t"Same Soonex surface with Gettext and Localize: Arabic, English, and French out of the box, RTL-aware controls, and the same static build pipeline."}
           </p>
 
           <div class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
@@ -109,7 +103,7 @@
               class="button button--brand rounded-full"
               external
             >
-              {gettext("Live demo")}
+              {~t"Live demo"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
             <.navigate
@@ -117,7 +111,7 @@
               class="button button--ghost rounded-full"
               external
             >
-              {gettext("GitHub")}
+              {~t"GitHub"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
           </div>

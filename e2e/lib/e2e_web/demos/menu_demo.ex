@@ -488,10 +488,16 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def patterns_redirect_code do
+    items = patterns_redirect_items()
+
+    item_lines =
+      Enum.map_join(items, ",\n      ", fn item ->
+        ~s|%Corex.Tree.Item{value: #{inspect(item.value)}, label: #{inspect(item.label)}}|
+      end)
+
     """
     <.menu class="menu" redirect items={[
-      %Corex.Tree.Item{value: "/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{value: "/menu/api", label: "API"}
+      #{item_lines}
     ]}>
       <:trigger>Navigate</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -501,8 +507,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_items do
     [
-      %Corex.Tree.Item{value: "/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{value: "/menu/api", label: "API"}
+      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
+      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
     ]
   end
 
@@ -557,13 +563,19 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def patterns_redirect_types_code do
+    items = patterns_redirect_types_items()
+
+    item_lines =
+      Enum.map_join(items, ",\n        ", fn item ->
+        ~s|%Corex.Tree.Item{value: #{inspect(item.value)}, label: #{inspect(item.label)}, redirect: #{inspect(item.redirect)}}|
+      end)
+
     """
     <.menu
       class="menu"
       redirect
       items={[
-        %Corex.Tree.Item{value: "/menu/playground", label: "href (default)", redirect: :href},
-        %Corex.Tree.Item{value: "/menu/events", label: "LiveView navigate", redirect: :navigate}
+        #{item_lines}
       ]}
     >
       <:trigger>Redirect kinds</:trigger>
@@ -574,8 +586,8 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def patterns_redirect_types_items do
     [
-      %Corex.Tree.Item{value: "/menu/playground", label: "href (default)", redirect: :href},
-      %Corex.Tree.Item{value: "/menu/events", label: "LiveView navigate", redirect: :navigate}
+      %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
+      %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
     ]
   end
 

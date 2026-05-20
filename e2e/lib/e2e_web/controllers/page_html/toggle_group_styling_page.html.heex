@@ -1,12 +1,14 @@
 <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
   <.demo_page
     id="toggle-group-styling-page"
-    title="Toggle group · Style"
-    subtitle="Semantic text when off, filled color when selected; density, radius, and disabled muted backgrounds."
+    title={~t"Toggle group · Style"}
+    subtitle={
+      ~t"Semantic text when off, filled color when selected; density, radius, and disabled muted backgrounds."
+    }
   >
     <.demo_section
       id="toggle-group-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_color_code()}
     >
       <:preview>
@@ -16,7 +18,7 @@
 
     <.demo_section
       id="toggle-group-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_size_code()}
     >
       <:preview>
@@ -26,7 +28,7 @@
 
     <.demo_section
       id="toggle-group-styling-radius"
-      title="Radius"
+      title={~t"Radius"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_radius_code()}
     >
       <:preview>
@@ -36,7 +38,7 @@
 
     <.demo_section
       id="toggle-group-styling-disabled"
-      title="Disabled"
+      title={~t"Disabled"}
       code={E2eWeb.Demos.ToggleGroupDemo.styling_disabled_code()}
     >
       <:preview>

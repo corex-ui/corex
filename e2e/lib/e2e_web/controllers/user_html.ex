@@ -14,16 +14,16 @@ defmodule E2eWeb.UserHTML do
 
   def currency_items do
     [
-      %{value: "eur", label: "Euro"},
-      %{value: "usd", label: "US Dollar"},
-      %{value: "gbp", label: "British Pound"},
-      %{value: "jpy", label: "Japanese Yen"},
-      %{value: "chf", label: "Swiss Franc"},
-      %{value: "cad", label: "Canadian Dollar"},
-      %{value: "aud", label: "Australian Dollar"},
-      %{value: "sek", label: "Swedish Krona"},
-      %{value: "nok", label: "Norwegian Krone"},
-      %{value: "sgd", label: "Singapore Dollar"}
+      %{value: "eur", label: ~t"Euro"},
+      %{value: "usd", label: ~t"US Dollar"},
+      %{value: "gbp", label: ~t"British Pound"},
+      %{value: "jpy", label: ~t"Japanese Yen"},
+      %{value: "chf", label: ~t"Swiss Franc"},
+      %{value: "cad", label: ~t"Canadian Dollar"},
+      %{value: "aud", label: ~t"Australian Dollar"},
+      %{value: "sek", label: ~t"Swedish Krona"},
+      %{value: "nok", label: ~t"Norwegian Krone"},
+      %{value: "sgd", label: ~t"Singapore Dollar"}
     ]
   end
 

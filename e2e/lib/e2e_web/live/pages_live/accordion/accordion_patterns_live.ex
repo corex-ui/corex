@@ -49,18 +49,18 @@ defmodule E2eWeb.AccordionPatternsLive do
           Corex.Content.new([
             %{
               value: "lorem",
-              label: "Lorem ipsum dolor sit amet",
-              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+              label: ~t"Lorem ipsum dolor sit amet",
+              content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
             },
             %{
               value: "duis",
-              label: "Duis dictum gravida odio ac pharetra?",
-              content: "Nullam eget vestibulum ligula, at interdum tellus."
+              label: ~t"Duis dictum gravida odio ac pharetra?",
+              content: ~t"Nullam eget vestibulum ligula, at interdum tellus."
             },
             %{
               value: "donec",
-              label: "Donec condimentum ex mi",
-              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+              label: ~t"Donec condimentum ex mi",
+              content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus."
             }
           ])
 
@@ -83,8 +83,8 @@ defmodule E2eWeb.AccordionPatternsLive do
 
     item = %{
       value: id,
-      label: "Item #{id} @ #{time}",
-      content: "Content for item #{id}."
+      label: ~t"Item #{id} @ #{time}",
+      content: ~t"Content for item #{id}."
     }
 
     {:noreply,
@@ -96,7 +96,7 @@ defmodule E2eWeb.AccordionPatternsLive do
 
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
-    item = %{value: id, label: "Item #{id}", content: "Content for item #{id}."}
+    item = %{value: id, label: ~t"Item #{id}", content: ~t"Content for item #{id}."}
 
     {:noreply,
      socket
@@ -127,15 +127,15 @@ defmodule E2eWeb.AccordionPatternsLive do
     >
       <.demo_page
         id="accordion-patterns-page"
-        title="Accordion · Pattern"
-        subtitle="Async loading, controlled state, and streaming items."
+        title={~t"Accordion · Pattern"}
+        subtitle={~t"Async loading, controlled state, and streaming items."}
       >
         <.demo_section
           id="accordion-patterns-async"
-          title="Async"
+          title={~t"Async"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @async_heex_full},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @async_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex_full},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
           ]}
         >
           <:preview>
@@ -160,10 +160,10 @@ defmodule E2eWeb.AccordionPatternsLive do
 
         <.demo_section
           id="accordion-patterns-controlled"
-          title="Controlled (LiveView)"
+          title={~t"Controlled (LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @controlled_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @controlled_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @controlled_elixir}
           ]}
         >
           <:preview>
@@ -185,10 +185,10 @@ defmodule E2eWeb.AccordionPatternsLive do
 
         <.demo_section
           id="accordion-patterns-stream"
-          title="Stream"
+          title={~t"Stream"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @stream_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @stream_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @stream_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @stream_elixir}
           ]}
         >
           <:preview>

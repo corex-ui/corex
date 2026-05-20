@@ -76,7 +76,7 @@ defmodule E2eWeb.App.Header do
                   value={documentation_menu_selected_ids(@path)}
                   items={documentation_menu_items()}
                 >
-                  <:label class="sr-only">{gettext("Corex Links")}</:label>
+                  <:label class="sr-only">{~t"Corex Links"}</:label>
                   <:item :let={item}>
                     <span class="w-full">{item.label}</span>
                     <%= if item_new_tab?(item) do %>
@@ -95,7 +95,7 @@ defmodule E2eWeb.App.Header do
               </div>
               <div
                 class="shrink-0 flex flex-wrap items-center justify-center gap-2 sm:gap-3 border-t border-[var(--color-border)] bg-[var(--color-layer)] p-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden"
-                aria-label={gettext("Display settings")}
+                aria-label={~t"Display settings"}
               >
                 <.theme_toggle id="theme-select-menu" theme={@theme} />
                 <.mode_toggle id="mode-switcher-menu" mode={@mode} />
@@ -124,28 +124,35 @@ defmodule E2eWeb.App.Header do
 
           <nav
             class="hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
-            aria-label={gettext("Main")}
+            aria-label={~t"Main"}
           >
             <.navigate
               to={~p"/accordion/anatomy"}
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               aria-current={header_nav_components_aria_current(@path)}
             >
-              {gettext("Components")}
+              {~t"Components"}
             </.navigate>
             <.navigate
               to={~p"/templates"}
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               aria-current={header_nav_templates_aria_current(@path)}
             >
-              {gettext("Templates")}
+              {~t"Templates"}
+            </.navigate>
+            <.navigate
+              to={~p"/blog"}
+              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
+              aria-current={header_nav_blog_aria_current(@path)}
+            >
+              {~t"Blog"}
             </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex"
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               external
             >
-              {gettext("Documentation")}
+              {~t"Documentation"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
             <.navigate
@@ -153,7 +160,7 @@ defmodule E2eWeb.App.Header do
               class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               external
             >
-              {gettext("MCP")}
+              {~t"MCP"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
           </nav>
@@ -173,42 +180,42 @@ defmodule E2eWeb.App.Header do
     Corex.Tree.new([
       %{
         value: "doc-installation",
-        label: gettext("Installation"),
+        label: ~t"Installation",
         to: "https://hexdocs.pm/corex/installation.html",
         redirect: :href,
         new_tab: true
       },
       %{
         value: "doc-localize",
-        label: gettext("Localize"),
+        label: ~t"Localize",
         to: "https://hexdocs.pm/corex/localize.html",
         redirect: :href,
         new_tab: true
       },
       %{
         value: "doc-theming",
-        label: gettext("Theming"),
+        label: ~t"Theming",
         to: "https://hexdocs.pm/corex/theming.html",
         redirect: :href,
         new_tab: true
       },
       %{
         value: "doc-dark-mode",
-        label: gettext("Dark Mode"),
+        label: ~t"Dark Mode",
         to: "https://hexdocs.pm/corex/dark_mode.html",
         redirect: :href,
         new_tab: true
       },
       %{
         value: "doc-mcp",
-        label: gettext("MCP"),
+        label: ~t"MCP",
         to: "https://hexdocs.pm/corex/mcp.html",
         redirect: :href,
         new_tab: true
       },
       %{
         value: "doc-templates",
-        label: gettext("Templates"),
+        label: ~t"Templates",
         to: templates_path,
         redirect: :href,
         new_tab: false
@@ -224,6 +231,12 @@ defmodule E2eWeb.App.Header do
 
   defp header_nav_templates_aria_current("/templates"), do: "page"
   defp header_nav_templates_aria_current(_), do: nil
+
+  defp header_nav_blog_aria_current(path) when is_binary(path) do
+    if String.starts_with?(path, "/blog"), do: "page", else: nil
+  end
+
+  defp header_nav_blog_aria_current(_), do: nil
 
   defp header_nav_components_aria_current(raw_path) do
     path = normalize_header_path(raw_path)

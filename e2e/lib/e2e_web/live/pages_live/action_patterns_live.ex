@@ -25,10 +25,10 @@ defmodule E2eWeb.ActionPatternsLive do
             Text and SVG
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
-          <.action class="button button--square" aria_label="Button text">
+          <.action class="button button--square" aria_label={~t"Button text"}>
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
-          <.action class="button button--square" aria_label="Button text">B</.action>
+          <.action class="button button--square" aria_label={~t"Button text"}>B</.action>
         </div>
       </section>
 
@@ -57,14 +57,14 @@ defmodule E2eWeb.ActionPatternsLive do
       <h3>Shape</h3>
       <section class="layout__section">
         <div class="layout__row gap-2 items-center">
-          <.action class="button button--square" aria_label="Square button">
+          <.action class="button button--square" aria_label={~t"Square button"}>
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
-          <.action class="button button--square" aria_label="Square button">B</.action>
-          <.action class="button button--circle" aria_label="Circle button">
+          <.action class="button button--square" aria_label={~t"Square button"}>B</.action>
+          <.action class="button button--circle" aria_label={~t"Circle button"}>
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
-          <.action class="button button--circle" aria_label="Circle button">B</.action>
+          <.action class="button button--circle" aria_label={~t"Circle button"}>B</.action>
         </div>
       </section>
 
@@ -73,7 +73,7 @@ defmodule E2eWeb.ActionPatternsLive do
         <div class="layout__row gap-2 items-center">
           <.action class="button" disabled>Text</.action>
           <.action class="button button--accent" disabled>Text</.action>
-          <.action class="button button--square" aria_label="Disabled" disabled>
+          <.action class="button button--square" aria_label={~t"Disabled"} disabled>
             <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
         </div>

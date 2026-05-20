@@ -28,19 +28,19 @@ defmodule E2eWeb.AccordionPlayLive do
       %{
         value: "lorem",
         label: t1,
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+        content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         disabled: "lorem" in disabled
       },
       %{
         value: "duis",
         label: t2,
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
+        content: ~t"Nullam eget vestibulum ligula, at interdum tellus.",
         disabled: "duis" in disabled
       },
       %{
         value: "donec",
         label: t3,
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+        content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: "donec" in disabled
       }
     ])
@@ -177,29 +177,29 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp disabled_select_items do
     [
-      %{label: "Lorem", value: "lorem"},
-      %{label: "Duis", value: "duis"},
-      %{label: "Donec", value: "donec"}
+      %{label: ~t"Lorem", value: "lorem"},
+      %{label: ~t"Duis", value: "duis"},
+      %{label: ~t"Donec", value: "donec"}
     ]
   end
 
   defp accordion_color_items do
     [
-      %{label: "Default", value: "default"},
-      %{label: "Accent", value: "accent"},
-      %{label: "Brand", value: "brand"},
-      %{label: "Alert", value: "alert"},
-      %{label: "Info", value: "info"},
-      %{label: "Success", value: "success"}
+      %{label: ~t"Default", value: "default"},
+      %{label: ~t"Accent", value: "accent"},
+      %{label: ~t"Brand", value: "brand"},
+      %{label: ~t"Alert", value: "alert"},
+      %{label: ~t"Info", value: "info"},
+      %{label: ~t"Success", value: "success"}
     ]
   end
 
   defp accordion_size_items do
     [
-      %{label: "SM", value: "sm"},
-      %{label: "MD", value: "md"},
-      %{label: "LG", value: "lg"},
-      %{label: "XL", value: "xl"}
+      %{label: ~t"SM", value: "sm"},
+      %{label: ~t"MD", value: "md"},
+      %{label: ~t"LG", value: "lg"},
+      %{label: ~t"XL", value: "xl"}
     ]
   end
 

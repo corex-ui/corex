@@ -48,6 +48,24 @@ defmodule CorexWeb.Menu do
     }
   ]
 
+  @pattern_redirect_items [
+    %Item{value: E2eWeb.Path.join_locale_path("en", "/menu/anatomy"), label: "Anatomy"},
+    %Item{value: E2eWeb.Path.join_locale_path("en", "/menu/api"), label: "API"}
+  ]
+
+  @pattern_redirect_types_items [
+    %Item{
+      value: E2eWeb.Path.join_locale_path("en", "/menu/playground"),
+      label: "href (default)",
+      redirect: :href
+    },
+    %Item{
+      value: E2eWeb.Path.join_locale_path("en", "/menu/events"),
+      label: "LiveView navigate",
+      redirect: :navigate
+    }
+  ]
+
   capture variants: [
             minimal: %{
               id: "menu-anatomy-minimal",
@@ -83,10 +101,7 @@ defmodule CorexWeb.Menu do
               id: "menu-pattern-redirect",
               class: "menu",
               redirect: true,
-              items: [
-                %Item{value: "/en/menu/anatomy", label: "Anatomy"},
-                %Item{value: "/en/menu/api", label: "API"}
-              ],
+              items: @pattern_redirect_items,
               trigger: [%{inner_block: "Navigate"}],
               indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
@@ -113,10 +128,7 @@ defmodule CorexWeb.Menu do
               id: "menu-pattern-types",
               class: "menu",
               redirect: true,
-              items: [
-                %Item{value: "/en/menu/playground", label: "href (default)", redirect: :href},
-                %Item{value: "/en/menu/events", label: "LiveView navigate", redirect: :navigate}
-              ],
+              items: @pattern_redirect_types_items,
               trigger: [%{inner_block: "Redirect kinds"}],
               indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             }

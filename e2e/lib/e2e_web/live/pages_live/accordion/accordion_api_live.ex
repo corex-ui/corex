@@ -205,12 +205,12 @@ defmodule E2eWeb.AccordionApiLive do
     >
       <.demo_page
         id="accordion-api-page"
-        title="Accordion · API"
-        subtitle="Control and interact with the accordion from LiveView or the client."
+        title={~t"Accordion · API"}
+        subtitle={~t"Control and interact with the accordion from LiveView or the client."}
       >
         <.demo_section
           id="accordion-api-set-value-binding"
-          title="Set Value (Client Binding)"
+          title={~t"Set Value (Client Binding)"}
           code={@codes.set_value_binding}
         >
           <:preview>
@@ -243,23 +243,23 @@ defmodule E2eWeb.AccordionApiLive do
         </.demo_section>
         <.demo_section
           id="accordion-api-set-value-js"
-          title="Set Value (Client JS)"
+          title={~t"Set Value (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_value_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.set_value_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.set_value_js_ts
             }
@@ -275,17 +275,17 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-set-value-server"
-          title="Set Value (Server)"
+          title={~t"Set Value (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_value_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.set_value_server_elixir
             }
@@ -302,7 +302,7 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-value-binding"
-          title="Value (Client Binding)"
+          title={~t"Value (Client Binding)"}
           code={@codes.value_client_heex}
         >
           <:preview>
@@ -315,23 +315,23 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-value-js"
-          title="Value (Client JS)"
+          title={~t"Value (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.value_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.value_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.value_js_ts
             }
@@ -347,17 +347,17 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-value-server"
-          title="Value (Server)"
+          title={~t"Value (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.value_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.value_elixir
             }
@@ -375,7 +375,7 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-focused-binding"
-          title="Focused (Client Binding)"
+          title={~t"Focused (Client Binding)"}
           code={@codes.focused_client_heex}
         >
           <:preview>
@@ -393,23 +393,23 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-focused-js"
-          title="Focused (Client JS)"
+          title={~t"Focused (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.focused_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.focused_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.focused_js_ts
             }
@@ -430,17 +430,17 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-focused-server"
-          title="Focused (Server)"
+          title={~t"Focused (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.focused_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.focused_elixir
             }
@@ -461,7 +461,7 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-item-state-binding"
-          title="Item State (Client Binding)"
+          title={~t"Item State (Client Binding)"}
           code={@codes.item_state_client_heex}
         >
           <:preview>
@@ -477,23 +477,23 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-item-state-js"
-          title="Item State (Client JS)"
+          title={~t"Item State (Client JS)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.item_state_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.item_state_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.item_state_js_ts
             }
@@ -530,17 +530,17 @@ defmodule E2eWeb.AccordionApiLive do
 
         <.demo_section
           id="accordion-api-item-state-server"
-          title="Item State (Server)"
+          title={~t"Item State (Server)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.item_state_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.item_state_elixir
             }
@@ -565,18 +565,18 @@ defmodule E2eWeb.AccordionApiLive do
     Corex.Content.new([
       %{
         value: "lorem",
-        label: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+        label: ~t"Lorem ipsum dolor sit amet",
+        content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
       %{
         value: "duis",
-        label: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
+        label: ~t"Duis dictum gravida odio ac pharetra?",
+        content: ~t"Nullam eget vestibulum ligula, at interdum tellus."
       },
       %{
         value: "donec",
-        label: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+        label: ~t"Donec condimentum ex mi",
+        content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
     ])
   end

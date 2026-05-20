@@ -63,10 +63,23 @@
   }
 
   .menu [data-scope="menu"][data-part="item-group-label"] {
-    @apply ui-label;
-
-    border-block-end: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    text-align: start;
+    min-height: var(--spacing-size);
     padding-inline: var(--spacing-space);
+    background-color: var(--color-root);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .menu [data-scope="menu"][data-part="item-group"]:not(:first-child) [data-part="item-group-label"] {
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-ui);
   }
 
   .menu [data-scope="menu"][data-part="item"],

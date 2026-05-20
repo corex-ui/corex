@@ -67,25 +67,25 @@ defmodule E2eWeb.Helpers do
 
     []
     |> maybe_add(Map.get(cfg, :playground, true) && playground_to != nil, fn ->
-      menu_item("Playground", playground_to, playground_to)
+      menu_item(~t"Playground", playground_to, playground_to)
     end)
     |> maybe_add(Map.get(cfg, :anatomy, true), fn ->
-      menu_item("Anatomy", anatomy_to, anatomy_to)
+      menu_item(~t"Anatomy", anatomy_to, anatomy_to)
     end)
     |> maybe_add(Map.get(cfg, :api, true) && api_to != nil, fn ->
-      menu_item("API", api_to, api_to)
+      menu_item(~t"API", api_to, api_to)
     end)
     |> maybe_add(Map.get(cfg, :event, true) && events_to != nil, fn ->
-      menu_item("Event", events_to, events_to)
+      menu_item(~t"Event", events_to, events_to)
     end)
     |> maybe_add(Map.get(cfg, :pattern, true) && patterns_to != nil, fn ->
-      menu_item("Pattern", patterns_to, patterns_to)
+      menu_item(~t"Pattern", patterns_to, patterns_to)
     end)
     |> maybe_add(show_animation? && animation_to != nil, fn ->
-      menu_item("Animation", animation_to, animation_to)
+      menu_item(~t"Animation", animation_to, animation_to)
     end)
     |> maybe_add(style_to != nil, fn ->
-      menu_item("Style", style_to, style_to)
+      menu_item(~t"Style", style_to, style_to)
     end)
     |> Kernel.++(Map.get(cfg, :deep_routes, []))
     |> Kernel.++(Map.get(cfg, :forms, []))
@@ -169,7 +169,7 @@ defmodule E2eWeb.Helpers do
     components =
       [
         %{
-          label: "Accordion",
+          label: ~t"Accordion",
           id: "accordion",
           anatomy_to: ~p"/accordion/anatomy",
           api: true,
@@ -185,7 +185,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/accordion/style"
         },
         %{
-          label: "Action",
+          label: ~t"Action",
           id: "action",
           anatomy_to: ~p"/action/anatomy",
           style: true,
@@ -193,13 +193,13 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/action/style"
         },
         %{
-          label: "Angle slider",
+          label: ~t"Angle slider",
           id: "angle-slider",
           anatomy_to: ~p"/angle-slider/anatomy",
           style: true,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/angle-slider/form"),
-            doc_form_menu_item("Live Form", ~p"/angle-slider/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/angle-slider/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/angle-slider/live-form")
           ],
           playground_to: ~p"/angle-slider/playground",
           api_to: ~p"/angle-slider/api",
@@ -208,7 +208,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/angle-slider/style"
         },
         %{
-          label: "Avatar",
+          label: ~t"Avatar",
           id: "avatar",
           anatomy_to: ~p"/avatar/anatomy",
           style: true,
@@ -219,7 +219,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/avatar/style"
         },
         %{
-          label: "Carousel",
+          label: ~t"Carousel",
           id: "carousel",
           anatomy_to: ~p"/carousel/anatomy",
           api: true,
@@ -230,7 +230,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/carousel/style"
         },
         %{
-          label: "Checkbox",
+          label: ~t"Checkbox",
           id: "checkbox",
           anatomy_to: ~p"/checkbox/anatomy",
           style: true,
@@ -240,12 +240,12 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/checkbox/patterns",
           style_to: ~p"/checkbox/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/checkbox/form"),
-            doc_form_menu_item("Live Form", ~p"/checkbox/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/checkbox/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/checkbox/live-form")
           ]
         },
         %{
-          label: "Clipboard",
+          label: ~t"Clipboard",
           id: "clipboard",
           anatomy_to: ~p"/clipboard/anatomy",
           style: true,
@@ -257,7 +257,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/clipboard/style"
         },
         %{
-          label: "Collapsible",
+          label: ~t"Collapsible",
           id: "collapsible",
           anatomy_to: ~p"/collapsible/anatomy",
           style: true,
@@ -268,7 +268,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/collapsible/style"
         },
         %{
-          label: "Code",
+          label: ~t"Code",
           id: "code",
           anatomy_to: ~p"/code/anatomy",
           api: false,
@@ -279,7 +279,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/code/style"
         },
         %{
-          label: "Color picker",
+          label: ~t"Color picker",
           id: "color-picker",
           anatomy_to: ~p"/color-picker/anatomy",
           playground_to: ~p"/color-picker/playground",
@@ -287,12 +287,12 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/color-picker/events",
           pattern: false,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/color-picker/form"),
-            doc_form_menu_item("Live Form", ~p"/color-picker/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/color-picker/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/color-picker/live-form")
           ]
         },
         %{
-          label: "Combobox",
+          label: ~t"Combobox",
           id: "combobox",
           anatomy_to: ~p"/combobox/anatomy",
           style: true,
@@ -302,12 +302,12 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/combobox/patterns",
           style_to: ~p"/combobox/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/combobox/form"),
-            doc_form_menu_item("Live Form", ~p"/combobox/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/combobox/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/combobox/live-form")
           ]
         },
         %{
-          label: "Data list",
+          label: ~t"Data list",
           id: "data-list",
           anatomy_to: ~p"/data-list/anatomy",
           playground_to: ~p"/data-list/playground",
@@ -318,7 +318,7 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/data-list/patterns"
         },
         %{
-          label: "Data table",
+          label: ~t"Data table",
           id: "data-table",
           anatomy_to: ~p"/data-table/anatomy",
           playground_to: ~p"/data-table/playground",
@@ -329,7 +329,7 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/data-table/patterns"
         },
         %{
-          label: "Date picker",
+          label: ~t"Date picker",
           id: "date-picker",
           anatomy_to: ~p"/date-picker/anatomy",
           playground_to: ~p"/date-picker/playground",
@@ -337,12 +337,12 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/date-picker/events",
           patterns_to: ~p"/date-picker/patterns",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/date-picker/form"),
-            doc_form_menu_item("Live Form", ~p"/date-picker/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/date-picker/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/date-picker/live-form")
           ]
         },
         %{
-          label: "Dialog",
+          label: ~t"Dialog",
           id: "dialog",
           anatomy_to: ~p"/dialog/anatomy",
           playground_to: ~p"/dialog/playground",
@@ -355,7 +355,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/dialog/style"
         },
         %{
-          label: "Editable",
+          label: ~t"Editable",
           id: "editable",
           anatomy_to: ~p"/editable/anatomy",
           style: true,
@@ -365,12 +365,12 @@ defmodule E2eWeb.Helpers do
           pattern: false,
           style_to: ~p"/editable/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/editable/form"),
-            doc_form_menu_item("Live Form", ~p"/editable/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/editable/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/editable/live-form")
           ]
         },
         %{
-          label: "File upload",
+          label: ~t"File upload",
           id: "file-upload",
           anatomy_to: ~p"/file-upload/anatomy",
           playground_to: ~p"/file-upload/playground",
@@ -378,11 +378,11 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/file-upload/events",
           pattern: false,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/file-upload/form")
+            doc_form_menu_item(~t"Controller Form", ~p"/file-upload/form")
           ]
         },
         %{
-          label: "File upload live",
+          label: ~t"File upload live",
           id: "file-upload-live",
           anatomy_to: ~p"/file-upload-live/anatomy",
           playground_to: ~p"/file-upload-live/playground",
@@ -390,11 +390,11 @@ defmodule E2eWeb.Helpers do
           event: false,
           pattern: false,
           forms: [
-            doc_form_menu_item("Live Form", ~p"/file-upload-live/form")
+            doc_form_menu_item(~t"Live Form", ~p"/file-upload-live/form")
           ]
         },
         %{
-          label: "Floating panel",
+          label: ~t"Floating panel",
           id: "floating-panel",
           anatomy_to: ~p"/floating-panel/anatomy",
           playground_to: ~p"/floating-panel/playground",
@@ -403,7 +403,7 @@ defmodule E2eWeb.Helpers do
           pattern: false
         },
         %{
-          label: "Layout heading",
+          label: ~t"Layout heading",
           id: "layout-heading",
           anatomy_to: ~p"/layout-heading/anatomy",
           playground: false,
@@ -414,7 +414,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/layout-heading/style"
         },
         %{
-          label: "Listbox",
+          label: ~t"Listbox",
           id: "listbox",
           anatomy_to: ~p"/listbox/anatomy",
           playground_to: ~p"/listbox/playground",
@@ -423,7 +423,7 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/listbox/patterns"
         },
         %{
-          label: "Marquee",
+          label: ~t"Marquee",
           id: "marquee",
           anatomy_to: ~p"/marquee/anatomy",
           playground: false,
@@ -432,7 +432,7 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/marquee/events"
         },
         %{
-          label: "Menu",
+          label: ~t"Menu",
           id: "menu",
           anatomy_to: ~p"/menu/anatomy",
           playground_to: ~p"/menu/playground",
@@ -441,7 +441,7 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/menu/patterns"
         },
         %{
-          label: "Native input",
+          label: ~t"Native input",
           id: "native-input",
           anatomy_to: ~p"/native-input/anatomy",
           playground: false,
@@ -449,12 +449,12 @@ defmodule E2eWeb.Helpers do
           event: false,
           pattern: false,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/native-input/form"),
-            doc_form_menu_item("Live Form", ~p"/native-input/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/native-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/native-input/live-form")
           ]
         },
         %{
-          label: "Navigate",
+          label: ~t"Navigate",
           id: "navigate",
           anatomy_to: ~p"/navigate/anatomy",
           style: true,
@@ -462,7 +462,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/navigate/style"
         },
         %{
-          label: "Number input",
+          label: ~t"Number input",
           id: "number-input",
           anatomy_to: ~p"/number-input/anatomy",
           style: true,
@@ -473,12 +473,12 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/number-input/patterns",
           style_to: ~p"/number-input/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/number-input/form"),
-            doc_form_menu_item("Live Form", ~p"/number-input/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/number-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/number-input/live-form")
           ]
         },
         %{
-          label: "Password input",
+          label: ~t"Password input",
           id: "password-input",
           anatomy_to: ~p"/password-input/anatomy",
           playground_to: ~p"/password-input/playground",
@@ -486,12 +486,12 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/password-input/events",
           pattern: false,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/password-input/form"),
-            doc_form_menu_item("Live Form", ~p"/password-input/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/password-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/password-input/live-form")
           ]
         },
         %{
-          label: "Pin input",
+          label: ~t"Pin input",
           id: "pin-input",
           anatomy_to: ~p"/pin-input/anatomy",
           playground_to: ~p"/pin-input/playground",
@@ -499,12 +499,12 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/pin-input/events",
           pattern: false,
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/pin-input/form"),
-            doc_form_menu_item("Live Form", ~p"/pin-input/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/pin-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/pin-input/live-form")
           ]
         },
         %{
-          label: "Radio group",
+          label: ~t"Radio group",
           id: "radio-group",
           anatomy_to: ~p"/radio-group/anatomy",
           style_to: ~p"/radio-group/style",
@@ -513,12 +513,12 @@ defmodule E2eWeb.Helpers do
           events_to: ~p"/radio-group/events",
           patterns_to: ~p"/radio-group/patterns",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/radio-group/form"),
-            doc_form_menu_item("Live Form", ~p"/radio-group/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/radio-group/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/radio-group/live-form")
           ]
         },
         %{
-          label: "Select",
+          label: ~t"Select",
           id: "select",
           anatomy_to: ~p"/select/anatomy",
           style: true,
@@ -528,12 +528,12 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/select/patterns",
           style_to: ~p"/select/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/select/form"),
-            doc_form_menu_item("Live Form", ~p"/select/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/select/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/select/live-form")
           ]
         },
         %{
-          label: "Signature pad",
+          label: ~t"Signature pad",
           id: "signature-pad",
           pattern: false,
           anatomy_to: ~p"/signature-pad/anatomy",
@@ -541,12 +541,12 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/signature-pad/api",
           events_to: ~p"/signature-pad/events",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/signature-pad/form"),
-            doc_form_menu_item("Live Form", ~p"/signature-pad/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/signature-pad/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/signature-pad/live-form")
           ]
         },
         %{
-          label: "Switch",
+          label: ~t"Switch",
           id: "switch",
           anatomy_to: ~p"/switch/anatomy",
           style: true,
@@ -556,12 +556,12 @@ defmodule E2eWeb.Helpers do
           patterns_to: ~p"/switch/patterns",
           style_to: ~p"/switch/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/switch/form"),
-            doc_form_menu_item("Live Form", ~p"/switch/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/switch/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/switch/live-form")
           ]
         },
         %{
-          label: "Tabs",
+          label: ~t"Tabs",
           id: "tabs",
           style: true,
           anatomy_to: ~p"/tabs/anatomy",
@@ -572,7 +572,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/tabs/style"
         },
         %{
-          label: "Tags input",
+          label: ~t"Tags input",
           id: "tags-input",
           anatomy_to: ~p"/tags-input/anatomy",
           playground_to: ~p"/tags-input/playground",
@@ -582,12 +582,12 @@ defmodule E2eWeb.Helpers do
           style: true,
           style_to: ~p"/tags-input/style",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/tags-input/form"),
-            doc_form_menu_item("Live Form", ~p"/tags-input/live-form")
+            doc_form_menu_item(~t"Controller Form", ~p"/tags-input/form"),
+            doc_form_menu_item(~t"Live Form", ~p"/tags-input/live-form")
           ]
         },
         %{
-          label: "Timer",
+          label: ~t"Timer",
           id: "timer",
           style: true,
           anatomy_to: ~p"/timer/anatomy",
@@ -598,7 +598,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/timer/style"
         },
         %{
-          label: "Toast",
+          label: ~t"Toast",
           id: "toast",
           pattern: false,
           event: false,
@@ -607,7 +607,7 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/toast/api"
         },
         %{
-          label: "Pagination",
+          label: ~t"Pagination",
           id: "pagination",
           style: true,
           anatomy_to: ~p"/pagination/anatomy",
@@ -618,7 +618,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/pagination/style"
         },
         %{
-          label: "Toggle",
+          label: ~t"Toggle",
           id: "toggle",
           anatomy_to: ~p"/toggle/anatomy",
           playground_to: ~p"/toggle/playground",
@@ -629,7 +629,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/toggle/style"
         },
         %{
-          label: "Toggle group",
+          label: ~t"Toggle group",
           id: "toggle-group",
           style: true,
           anatomy_to: ~p"/toggle-group/anatomy",
@@ -640,7 +640,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/toggle-group/style"
         },
         %{
-          label: "Tooltip",
+          label: ~t"Tooltip",
           id: "tooltip",
           style: true,
           playground: false,
@@ -652,7 +652,7 @@ defmodule E2eWeb.Helpers do
           style_to: ~p"/tooltip/style"
         },
         %{
-          label: "Tree view",
+          label: ~t"Tree view",
           id: "tree-view",
           anatomy_to: ~p"/tree-view/anatomy",
           api: true,
@@ -675,8 +675,8 @@ defmodule E2eWeb.Helpers do
 
   def form_menu_items do
     Corex.Tree.new([
-      menu_item("Controller View", ~p"/users", ~p"/users"),
-      menu_item("Live View", ~p"/admins", ~p"/admins")
+      menu_item(~t"Controller View", ~p"/users", ~p"/users"),
+      menu_item(~t"Live View", ~p"/admins", ~p"/admins")
     ])
   end
 end

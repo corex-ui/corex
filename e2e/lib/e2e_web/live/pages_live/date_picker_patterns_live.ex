@@ -28,7 +28,7 @@ defmodule E2eWeb.DatePickerPatternsLive do
           },
           %{
             value: "elixir",
-            label: "Elixir",
+            label: ~t"Elixir",
             language: :elixir,
             code: E2eWeb.Demos.DatePickerDemo.patterns_controlled_elixir()
           }
@@ -44,12 +44,12 @@ defmodule E2eWeb.DatePickerPatternsLive do
     >
       <.demo_page
         id="date-picker-patterns-page"
-        title="Date Picker · Pattern"
-        subtitle="Controlled value with LiveView as source of truth."
+        title={~t"Date Picker · Pattern"}
+        subtitle={~t"Controlled value with LiveView as source of truth."}
       >
         <.demo_section
           id="date-picker-patterns-controlled-section"
-          title="Controlled (value)"
+          title={~t"Controlled (value)"}
           code_tabs={@code_tabs}
         >
           <:preview>

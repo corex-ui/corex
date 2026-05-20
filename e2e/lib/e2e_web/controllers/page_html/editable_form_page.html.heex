@@ -6,12 +6,12 @@
 >
   <.demo_page
     id="editable-form-page"
-    title="Editable · Form"
-    subtitle="Controller-rendered form with field={f[:...]}"
+    title={~t"Editable · Form"}
+    subtitle={~t"Controller-rendered form with field={f[:...]}"}
   >
     <.demo_section
       id="editable-form-plain"
-      title="Phoenix Form (changeset)"
+      title={~t"Phoenix Form (changeset)"}
       code={E2eWeb.Demos.EditableDemo.form_code()}
     >
       <:preview>
@@ -25,7 +25,7 @@
           <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
           <.editable
             field={f[:text]}
-            placeholder="Enter text"
+            placeholder={~t"Enter text"}
             activation_mode="dblclick"
             select_on_focus
             class="editable"

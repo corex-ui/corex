@@ -51,10 +51,10 @@ defmodule E2eWeb.RadioGroupApiLive do
 
         <.demo_section
           id="radio-group-api-focus-section"
-          title="Focus"
+          title={~t"Focus"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_focus_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_focus_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_focus_heex()},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: Demo.api_focus_elixir()}
           ]}
         >
           <:preview><Demo.api_focus_example /></:preview>
@@ -62,10 +62,10 @@ defmodule E2eWeb.RadioGroupApiLive do
 
         <.demo_section
           id="radio-group-api-server-section"
-          title="Set value (server)"
+          title={~t"Set value (server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_server_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_server_heex()},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: Demo.api_server_elixir()}
           ]}
         >
           <:preview><Demo.api_server_example /></:preview>
@@ -73,10 +73,10 @@ defmodule E2eWeb.RadioGroupApiLive do
 
         <.demo_section
           id="radio-group-api-binding-section"
-          title="LiveView binding"
+          title={~t"LiveView binding"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_binding_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_binding_heex()},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: Demo.api_binding_elixir()}
           ]}
         >
           <:preview><Demo.api_binding_example /></:preview>
@@ -84,11 +84,11 @@ defmodule E2eWeb.RadioGroupApiLive do
 
         <.demo_section
           id="radio-group-api-client-section"
-          title="Client JS"
+          title={~t"Client JS"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_heex()},
-            %{value: "js", label: "JS", language: :js, code: Demo.api_client_js()},
-            %{value: "ts", label: "TS", language: :javascript, code: Demo.api_client_ts()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_client_heex()},
+            %{value: "js", label: ~t"JS", language: :js, code: Demo.api_client_js()},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: Demo.api_client_ts()}
           ]}
         >
           <:preview><Demo.api_client_example /></:preview>
@@ -96,10 +96,15 @@ defmodule E2eWeb.RadioGroupApiLive do
 
         <.demo_section
           id="radio-group-api-controlled-section"
-          title="Controlled value"
+          title={~t"Controlled value"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_controlled_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_controlled_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_controlled_heex()},
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: Demo.api_controlled_elixir()
+            }
           ]}
         >
           <:preview><Demo.api_controlled_example value={@api_controlled_value} /></:preview>

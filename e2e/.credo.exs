@@ -259,7 +259,9 @@
                  "lib/e2e_web/demos/",
                  "lib/e2e_web/captures/",
                  "lib/e2e_web/components/",
-                 "lib/e2e_web/live/"
+                 "lib/e2e_web/live/",
+                 "lib/e2e_web/controllers/",
+                 "test/"
                ]
              }
            ]},
@@ -284,7 +286,15 @@
           {OeditusCredo.Check.Security.MissingCSRFProtection,
            [
              files: %{
-               excluded: ["lib/e2e_web/router.ex", "lib/e2e_web/controllers/", "test/"]
+               excluded: [
+                 "lib/e2e_web/router.ex",
+                 "lib/e2e_web/controllers/",
+                 "lib/e2e/blog.ex",
+                 "lib/e2e_web/seo.ex",
+                 "lib/e2e_web/components/blog_page.ex",
+                 "lib/e2e_web/live/pages_live/blog_post_live.ex",
+                 "test/"
+               ]
              }
            ]},
           {OeditusCredo.Check.Security.SSRFVulnerability, []},
