@@ -41,22 +41,30 @@ defmodule Corex.New.VersionCheck do
     def start_latest_version_task(package, installer_version) do
       ensure_task_supervisor!()
 
-      Task.Supervisor.async_nolink(Corex.New.VersionCheck.Supervisor, fn ->
-        fetch_latest_version(package, installer_version)
-      end)
+      try do
+        Task.Supervisor.async_nolink(Corex.New.VersionCheck.Supervisor, fn ->
+          fetch_latest_version(package, installer_version)
+        end)
+      catch
+        :exit, _ -> nil
+      end
     end
 
     defp ensure_task_supervisor! do
       case Process.whereis(Corex.New.VersionCheck.Supervisor) do
         pid when is_pid(pid) ->
-          :ok
+          if Process.alive?(pid), do: :ok, else: start_task_supervisor!()
 
         nil ->
-          case Task.Supervisor.start_link(name: Corex.New.VersionCheck.Supervisor) do
-            {:ok, _} -> :ok
-            {:error, {:already_started, _}} -> :ok
-            {:error, _} -> :ok
-          end
+          start_task_supervisor!()
+      end
+    end
+
+    defp start_task_supervisor! do
+      case Task.Supervisor.start_link(name: Corex.New.VersionCheck.Supervisor) do
+        {:ok, _} -> :ok
+        {:error, {:already_started, _}} -> :ok
+        {:error, _} -> :ok
       end
     end
 
