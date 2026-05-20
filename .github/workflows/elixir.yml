@@ -14,7 +14,7 @@ env:
 
 jobs:
   lint:
-    name: Lint (OTP 27.3 | Elixir 1.18.4)
+    name: Lint
     runs-on: ubuntu-24.04
 
     steps:
@@ -41,12 +41,12 @@ jobs:
         env:
           MIX_ENV: test
 
-      - name: Lint Corex
+      - name: Elixir — Corex
         run: mix lint
         env:
           MIX_ENV: test
 
-      - name: Build docs
+      - name: Elixir — build docs
         run: mix docs
         env:
           MIX_ENV: docs
@@ -67,7 +67,7 @@ jobs:
         env:
           MIX_ENV: test
 
-      - name: Lint E2E
+      - name: Elixir — E2E
         working-directory: e2e
         run: mix lint
         env:
@@ -79,7 +79,7 @@ jobs:
         env:
           MIX_ENV: test
 
-      - name: Lint installer
+      - name: Elixir — installer
         working-directory: installer
         run: mix lint
         env:
@@ -91,11 +91,63 @@ jobs:
         env:
           MIX_ENV: test
 
-      - name: Lint integration test
+      - name: Elixir — integration test
         working-directory: integration_test
         run: mix lint
         env:
           MIX_ENV: test
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript — typecheck
+        run: pnpm run typecheck
+
+      - name: TypeScript — format
+        run: pnpm run format:check
+
+      - name: TypeScript — ESLint
+        run: pnpm run lint
+
+      - name: TypeScript — component declarations
+        run: pnpm run gen:components-dts:check
+
+  hooks:
+    name: Hooks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Vitest — hooks and components
+        run: pnpm test
 
   unit-tests:
     name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
@@ -141,24 +193,11 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: "24"
-          cache: npm
-          cache-dependency-path: package.json
-
-      - name: Install npm dependencies
-        run: npm install
-
-      - name: Check JavaScript (prettier + eslint)
-        run: npm run check
-
       - name: Verify version alignment
         if: matrix.coveralls
         run: |
           COREX_V=$(grep '@version' mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
-          PKG_V=$(node -p "require('./package.json').version")
+          PKG_V=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json | head -1)
           INST_V=$(grep '@version' installer/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
           test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V"
 

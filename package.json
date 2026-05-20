@@ -69,7 +69,8 @@
     "gen:components-dts:check": "node assets/scripts/gen-components-dts.mjs --check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run test && npm run typecheck && npm run gen:components-dts:check && npm run format:check && npm run lint"
+    "lint:js": "npm run typecheck && npm run format:check && npm run lint && npm run gen:components-dts:check",
+    "check": "npm run test && npm run lint:js"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

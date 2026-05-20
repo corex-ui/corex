@@ -37,7 +37,7 @@ pnpm run check
 - **`:corex` (root):** 95% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
 - **`:corex_new` (installer):** 90% via `mix test --cover` in `installer/`.
 - **e2e / integration_test:** functional tests; not counted in root Coveralls.
-- **`assets/` (Vitest + TypeScript):** `pnpm test` runs unit tests; `pnpm run typecheck` runs `tsc --noEmit` (same checks the editor shows); `pnpm run lint` runs ESLint only (style and recommended TS rules, not full type checking). `pnpm run check` runs tests, typecheck, generated dts check, Prettier, and ESLint.
+- **`assets/` (Vitest + TypeScript):** `pnpm test` runs Vitest (hooks, components, lib); `pnpm run lint:js` runs typecheck, Prettier, ESLint, and generated `.d.ts` check (CI **Lint** job); `pnpm run check` runs `pnpm test` then `pnpm run lint:js` (local pre-PR). `pnpm run typecheck` and `pnpm run lint` are also available individually.
 
 Optional quality checks before a PR (same as `mix pre.publish`):
 
@@ -103,7 +103,7 @@ Design CSS is copied into the installer on `mix assets.build` (`installer/priv/c
 2. Keep changes focused; one logical change per PR when possible.
 3. Run the checks that match your change (see below).
 4. Open a PR against `main` with a short summary and a test plan (what you ran, what you clicked).
-5. CI must pass (unit, e2e, installer, integration jobs on [GitHub Actions](.github/workflows/elixir.yml)).
+5. CI must pass on [GitHub Actions](.github/workflows/elixir.yml): **Lint** (Elixir + TypeScript static checks), **Hooks** (Vitest), **Unit tests**, **E2E tests**, **Installer tests**, **Integration tests**.
 
 We use [Conventional Commits](https://www.conventionalcommits.org/) style when it helps reviewers scan history, but it is not enforced by tooling.
 
@@ -163,7 +163,7 @@ Every `attr` and `slot` should have a `doc:` (except `rest` / `:global`).
 
 - Run `mix format` on Elixir changes.
 - No comments in source unless required by tooling (see project rules).
-- JavaScript: `npm run check` (Prettier + ESLint).
+- JavaScript: `pnpm run check` (Vitest + `lint:js`).
 
 ### Corex Design CSS
 
