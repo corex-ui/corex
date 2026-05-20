@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import * as hookModule from "../../hooks/file-upload";
-import {
-  fileAcceptPayload,
-  fileChangePayload,
-  fileRejectPayload,
-} from "../../hooks/file-upload";
+import { fileAcceptPayload, fileChangePayload, fileRejectPayload } from "../../hooks/file-upload";
 import { expectHookModule } from "../helpers/expect-hook";
 
 describe("file-upload hook module", () => {

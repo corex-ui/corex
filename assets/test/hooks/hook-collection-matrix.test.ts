@@ -22,9 +22,9 @@ describe("listbox buildCollection matrix", () => {
     [grouped, true, 3],
     [[], false, 0],
   ] as const)("%#", (items, hasGroups, size) => {
-    expect(buildListboxCollection(mutableArray(items as readonly ValueLabelItem[]), hasGroups).size).toBe(
-      size
-    );
+    expect(
+      buildListboxCollection(mutableArray(items as readonly ValueLabelItem[]), hasGroups).size
+    ).toBe(size);
   });
 
   it("first item value matches", () => {
@@ -38,8 +38,8 @@ describe("select buildCollection matrix", () => {
     [flat, false, 3],
     [grouped, true, 3],
   ] as const)("%#", (items, hasGroups, size) => {
-    expect(buildSelectCollection(mutableArray(items as readonly ValueLabelItem[]), hasGroups).size).toBe(
-      size
-    );
+    expect(
+      buildSelectCollection(mutableArray(items as readonly ValueLabelItem[]), hasGroups).size
+    ).toBe(size);
   });
 });

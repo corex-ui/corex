@@ -26,7 +26,10 @@ describe("computeItemHidden", () => {
   it("collapses leading zeros in countdown mode", () => {
     const root = document.createElement("div");
     root.dataset.countdown = "true";
-    const hidden = computeItemHidden(root, timerTime({ days: 0, hours: 0, minutes: 1, seconds: 5 }));
+    const hidden = computeItemHidden(
+      root,
+      timerTime({ days: 0, hours: 0, minutes: 1, seconds: 5 })
+    );
     expect(hidden[0]).toBe(true);
     expect(hidden[1]).toBe(true);
   });
@@ -34,7 +37,10 @@ describe("computeItemHidden", () => {
   it("shows all segments when collapseLeadingZeros is false", () => {
     const root = document.createElement("div");
     root.dataset.collapseLeadingZeros = "false";
-    const hidden = computeItemHidden(root, timerTime({ days: 0, hours: 0, minutes: 0, seconds: 1 }));
+    const hidden = computeItemHidden(
+      root,
+      timerTime({ days: 0, hours: 0, minutes: 0, seconds: 1 })
+    );
     expect(hidden).toEqual([false, false, false, false]);
   });
 });

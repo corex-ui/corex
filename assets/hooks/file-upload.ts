@@ -19,7 +19,10 @@ type FileUploadHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-export function fileChangePayload(el: HTMLElement, details: FileChangeDetails): Record<string, unknown> {
+export function fileChangePayload(
+  el: HTMLElement,
+  details: FileChangeDetails
+): Record<string, unknown> {
   const first = details.acceptedFiles[0];
   return {
     id: el.id,
@@ -30,14 +33,20 @@ export function fileChangePayload(el: HTMLElement, details: FileChangeDetails): 
   };
 }
 
-export function fileAcceptPayload(el: HTMLElement, details: FileAcceptDetails): Record<string, unknown> {
+export function fileAcceptPayload(
+  el: HTMLElement,
+  details: FileAcceptDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     count: details.files.length,
   };
 }
 
-export function fileRejectPayload(el: HTMLElement, details: FileRejectDetails): Record<string, unknown> {
+export function fileRejectPayload(
+  el: HTMLElement,
+  details: FileRejectDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     count: details.files.length,

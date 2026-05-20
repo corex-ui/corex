@@ -21,7 +21,10 @@ type AngleSliderHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-export function valueChangePayload(el: HTMLElement, details: ValueChangeDetails): Record<string, unknown> {
+export function valueChangePayload(
+  el: HTMLElement,
+  details: ValueChangeDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     value: details.value,

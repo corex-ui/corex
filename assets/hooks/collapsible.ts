@@ -22,7 +22,10 @@ type CollapsibleHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-export function openChangePayload(el: HTMLElement, details: OpenChangeDetails): Record<string, unknown> {
+export function openChangePayload(
+  el: HTMLElement,
+  details: OpenChangeDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     open: details.open,
