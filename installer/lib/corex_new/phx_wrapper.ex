@@ -80,7 +80,7 @@ defmodule Corex.New.PhxWrapper do
       System.cmd(bin, args,
         cd: cd,
         env: pty_subprocess_env(),
-        into: IO.binstream(:stdio, 16_384),
+        into: mix_cmd_into(),
         stderr_to_stdout: true
       )
 
@@ -102,21 +102,25 @@ defmodule Corex.New.PhxWrapper do
 
   def port_cmd_stream!(argv, cd) when is_list(argv) and is_binary(cd) do
     port =
-      Port.open({:spawn_executable, System.find_executable("mix")}, [
-        :binary,
-        :exit_status,
-        :use_stdio,
-        {:cd, cd},
-        {:args, argv}
-      ])
+      Port.open({:spawn_executable, System.find_executable("mix")}, port_open_opts(argv, cd))
 
     receive_port_output(port, argv)
+  end
+
+  defp port_open_opts(argv, cd) do
+    base = [:binary, :exit_status, {:cd, cd}, {:args, argv}]
+
+    if Application.get_env(:corex_new, :silent_mix_output, false) do
+      base
+    else
+      [:use_stdio | base]
+    end
   end
 
   defp receive_port_output(port, argv) do
     receive do
       {^port, {:data, data}} ->
-        IO.binwrite(data)
+        write_mix_output(data)
         receive_port_output(port, argv)
 
       {^port, {:exit_status, 0}} ->
@@ -124,6 +128,20 @@ defmodule Corex.New.PhxWrapper do
 
       {^port, {:exit_status, code}} ->
         Mix.raise("mix #{Enum.join(argv, " ")} failed (exit #{code})")
+    end
+  end
+
+  defp mix_cmd_into do
+    if Application.get_env(:corex_new, :silent_mix_output, false) do
+      ""
+    else
+      IO.binstream(:stdio, 16_384)
+    end
+  end
+
+  defp write_mix_output(data) do
+    unless Application.get_env(:corex_new, :silent_mix_output, false) do
+      IO.binwrite(data)
     end
   end
 

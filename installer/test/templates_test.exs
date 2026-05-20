@@ -3,6 +3,17 @@ defmodule Corex.New.TemplatesTest do
 
   alias Corex.New.Templates
 
+  test "list_templates/0 returns all bundled template keys" do
+    keys = Templates.list_templates()
+
+    assert :layouts_ex in keys
+    assert :root_heex in keys
+    assert :home_heex in keys
+    assert :app_js in keys
+    assert :app_css in keys
+    assert length(keys) == 9
+  end
+
   @base_assigns [
     web_module: "MyAppWeb",
     app_module: "MyApp",

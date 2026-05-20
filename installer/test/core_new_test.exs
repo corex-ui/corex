@@ -91,6 +91,49 @@ defmodule Mix.Tasks.Corex.NewTest do
     end
   end
 
+  test "runs hex version check when generating without --no-version-check" do
+    if match?({_, 0}, System.cmd("mix", ["help", "phx.new"], stderr_to_stdout: true)) do
+      name = "corexver#{:rand.uniform(999_999)}"
+
+      in_tmp("corex new version", fn ->
+        send(self(), {:mix_shell_input, :yes?, false})
+
+        capture_io(fn ->
+          Mix.Tasks.Corex.New.run([name, "--no-install"])
+        end)
+
+        assert File.dir?(Path.join(name, "assets/corex"))
+      end)
+    end
+  end
+
+  test "installs corex into phx.new output when phx_new is available" do
+    if match?({_, 0}, System.cmd("mix", ["help", "phx.new"], stderr_to_stdout: true)) do
+      name = "corexcov#{:rand.uniform(999_999)}"
+
+      in_tmp("corex new scaffold", fn ->
+        send(self(), {:mix_shell_input, :yes?, false})
+
+        capture_io(fn ->
+          Mix.Tasks.Corex.New.run([
+            name,
+            "--no-version-check",
+            "--no-install",
+            "--mode",
+            "--theme",
+            "--lang",
+            "--designex"
+          ])
+        end)
+
+        assert File.dir?(Path.join(name, "assets/corex"))
+        assert [_ | _] = Path.wildcard(Path.join([name, "lib", "*_web", "plugs", "mode.ex"]))
+        assert File.regular?(Path.join(name, "mix.exs"))
+        assert [_ | _] = Path.wildcard(Path.join([name, "lib", "**", "layouts.ex"]))
+      end)
+    end
+  end
+
   @tag :integration
   test "integration: new project with archives" do
     unless match?({_, 0}, System.cmd("mix", ["phx.new", "-v"], stderr_to_stdout: true)) do
@@ -103,6 +146,30 @@ defmodule Mix.Tasks.Corex.NewTest do
       Mix.Tasks.Corex.New.run(["corex_integration_app", "--no-version-check", "--no-install"])
       assert File.dir?("corex_integration_app")
       assert File.regular?("corex_integration_app/mix.exs")
+    end)
+  end
+
+  test "umbrella flag is rejected" do
+    in_tmp("umbrella", fn ->
+      assert_raise Mix.Error, ~r/not supported yet/, fn ->
+        Mix.Tasks.Corex.New.run(["my_app", "--umbrella"])
+      end
+    end)
+  end
+
+  test "lang with no-gettext is rejected" do
+    in_tmp("lang gettext", fn ->
+      assert_raise Mix.Error, ~r/--no-gettext/, fn ->
+        Mix.Tasks.Corex.New.run(["my_app", "--lang", "--no-gettext"])
+      end
+    end)
+  end
+
+  test "ecto false is rejected" do
+    in_tmp("no ecto", fn ->
+      assert_raise Mix.Error, ~r/--no-ecto/, fn ->
+        Mix.Tasks.Corex.New.run(["my_app", "--no-ecto"])
+      end
     end)
   end
 

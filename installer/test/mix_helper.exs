@@ -184,4 +184,40 @@ defmodule MixHelper do
       0 -> :ok
     end
   end
+
+  def with_fake_mix!(fun) when is_function(fun, 0) do
+    with_fake_mix!("#!/bin/sh\nexit 2\n", fun)
+  end
+
+  def with_fake_mix!(script, fun) when is_binary(script) and is_function(fun, 0) do
+    bin = Path.join(File.cwd!(), "bin")
+    File.mkdir_p!(bin)
+    mix = Path.join(bin, "mix")
+    File.write!(mix, script)
+    File.chmod!(mix, 0o755)
+
+    previous = System.get_env("PATH")
+
+    try do
+      System.put_env("PATH", "#{bin}:#{previous || ""}")
+      fun.()
+    after
+      if previous, do: System.put_env("PATH", previous), else: System.delete_env("PATH")
+    end
+  end
+
+  def write_minimal_mix!(path \\ "mix.exs") do
+    File.write!(
+      path,
+      """
+      defmodule Tmp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :tmp, version: "0.1.0", deps: []]
+        end
+      end
+      """
+    )
+  end
 end

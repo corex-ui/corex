@@ -15,6 +15,7 @@ defmodule Corex.New.MixProject do
   def project do
     [
       app: :corex_new,
+      elixirc_paths: elixirc_paths(Mix.env()),
       test_coverage: [summary: [threshold: 90]],
       start_permanent: Mix.env() == :prod,
       version: @version,
@@ -47,7 +48,7 @@ defmodule Corex.New.MixProject do
 
   def application do
     [
-      extra_applications: [:eex, :crypto, :public_key]
+      extra_applications: [:eex, :crypto, :public_key, :ssl, :inets]
     ]
   end
 
@@ -67,4 +68,7 @@ defmodule Corex.New.MixProject do
   defp aliases do
     []
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 end

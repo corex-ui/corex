@@ -170,6 +170,9 @@ defmodule Corex.New.Generate do
       :non_existing ->
         nil
 
+      :cover_compiled ->
+        nil
+
       beam ->
         beam = beam_path_to_string(beam)
 
