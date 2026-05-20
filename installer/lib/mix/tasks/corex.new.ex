@@ -124,7 +124,7 @@ defmodule Mix.Tasks.Corex.New do
     Cli.validate_phx_new_flags!(opts)
 
     version_task =
-      if opts[:no_version_check] or argv == [] do
+      if opts[:no_version_check] == true or argv == [] do
         nil
       else
         VersionCheck.start_latest_version_task("corex_new", @version)
