@@ -261,6 +261,8 @@ jobs:
   installer-tests:
     name: Installer tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
 
     strategy:
       matrix:
@@ -287,7 +289,7 @@ jobs:
           path: |
             installer/deps
             installer/_build
-          key: deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('installer/mix.lock') }}
+          key: deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('installer/mix.lock', 'installer/mix.exs') }}-test-support
           restore-keys: |
             deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
 
@@ -297,7 +299,9 @@ jobs:
 
       - name: Run installer tests with coverage
         working-directory: installer
-        run: mix test --cover
+        run: |
+          mix compile --force
+          mix test --cover
 
       - name: Verify corex_new archive embeds priv design snapshot
         working-directory: installer
