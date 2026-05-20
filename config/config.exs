@@ -11,7 +11,7 @@ config :phoenix,
   trim_on_html_eex_engine: false,
   sort_verified_routes_query_params: true
 
-if Mix.env() == :dev do
+if Mix.env() in [:dev, :test] do
   corex_externals =
     ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input pagination password-input pin-input radio-group select signature-pad switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)

@@ -109,7 +109,10 @@ defmodule MixGenHelpers do
 
   def copy_new_files(context, binding \\ nil) do
     binding = binding || context_binding(context)
-    GenContext.copy_new_files(context, binding)
+
+    with_quiet_shell(fn ->
+      GenContext.copy_new_files(context, binding)
+    end)
   end
 
   def run_generator(task, args, opts \\ []) do

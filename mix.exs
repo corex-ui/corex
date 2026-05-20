@@ -49,7 +49,7 @@ defmodule Corex.MixProject do
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0"},
-      {:esbuild, "~> 0.8", only: :dev},
+      {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},

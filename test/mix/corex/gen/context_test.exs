@@ -54,7 +54,7 @@ defmodule Mix.Corex.Gen.ContextTest do
   test "copy_new_files/2 creates context, tests, fixtures, schema, and migration", %{tmp: tmp} do
     context = build_context(tmp)
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     assert File.exists?(context.file)
     assert File.exists?(context.test_file)
@@ -72,7 +72,7 @@ defmodule Mix.Corex.Gen.ContextTest do
     File.write!(context.test_file, "defmodule StubTest do\n  use ExUnit.Case\nend\n")
     File.write!(context.test_fixtures_file, "defmodule Fixtures do\nend\n")
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     assert File.read!(context.file) =~ "list_users"
     assert File.read!(context.test_file) =~ "user"
@@ -91,15 +91,11 @@ defmodule Mix.Corex.Gen.ContextTest do
         schema_table: :users
       )
 
-    schema =
-      build_schema(attrs: [name: :string])
-      |> Map.put(:scope, scope)
-
     context =
-      Mix.Phoenix.Context.new("Accounts", schema, context_app: :corex)
-      |> remap_context_paths(schema, tmp)
+      build_context(tmp, attrs: [name: :string])
+      |> Map.update!(:schema, &Map.put(&1, :scope, scope))
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     assert File.read!(context.file) =~ "list_users(%Scope{}"
     assert File.read!(context.test_file) =~ "other_scope"
@@ -108,7 +104,7 @@ defmodule Mix.Corex.Gen.ContextTest do
   test "copy_new_files/2 without schema generation only emits context files", %{tmp: tmp} do
     context = build_context(tmp, generate?: false, migration?: false)
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     assert File.exists?(context.file)
     refute File.exists?(context.schema.file)
@@ -117,7 +113,7 @@ defmodule Mix.Corex.Gen.ContextTest do
   test "copy_new_files/2 generates unique fixture helpers for unique fields", %{tmp: tmp} do
     context = build_context(tmp, attrs: [email: :string], unique: ["email"])
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     fixtures = File.read!(context.test_fixtures_file)
     assert fixtures =~ "Generate a unique user email"
@@ -136,18 +132,20 @@ defmodule Mix.Corex.Gen.ContextTest do
   end
 
   test "copy_new_files/2 skips migration when migration? is false", %{tmp: tmp} do
-    schema = build_schema(migration?: false)
-    context = build_context(tmp) |> Map.put(:schema, schema)
+    context =
+      build_context(tmp)
+      |> Map.update!(:schema, &%{&1 | migration?: false})
 
-    GenContext.copy_new_files(context, context_binding(context))
+    copy_new_files(context)
 
     assert File.exists?(context.schema.file)
     refute File.exists?(Path.join(tmp, "migrations"))
   end
 
   test "print_shell_instructions/1 is silent without migration", %{tmp: tmp} do
-    schema = build_schema(migration?: false)
-    context = build_context(tmp) |> Map.put(:schema, schema)
+    context =
+      build_context(tmp)
+      |> Map.update!(:schema, &%{&1 | migration?: false})
 
     output =
       capture_io(fn ->
