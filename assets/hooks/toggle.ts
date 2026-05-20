@@ -14,7 +14,7 @@ type ToggleHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function pressedChangePayload(el: HTMLElement, pressed: boolean): Record<string, unknown> {
+export function pressedChangePayload(el: HTMLElement, pressed: boolean): Record<string, unknown> {
   return {
     id: el.id,
     pressed,
@@ -46,7 +46,7 @@ const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
           clientEventName: getString(el, "onPressedChangeClient"),
         });
       },
-    } as Props);
+    } as unknown as Props);
 
     zagToggle.init();
     this.zagToggle = zagToggle;
@@ -98,7 +98,7 @@ const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
         : { defaultPressed: defaultPressedFromDataset === true }),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el),
-    } as Partial<Props>);
+    } as unknown as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ToggleHookState) {

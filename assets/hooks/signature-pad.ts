@@ -8,7 +8,7 @@ import { idMatches, readPayloadId } from "../lib/respond-to";
 
 const PHX_HAS_FOCUSED = "phx-has-focused";
 
-function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
+export function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
   const raw = el.dataset[key];
   if (!raw) return [];
   return raw
@@ -23,7 +23,7 @@ function reapplyLiveViewValueInputUsage(input: HTMLInputElement) {
   p.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 
-function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
+export function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
   const o: Record<string, unknown> = {
     fill: getString(el, "drawingFill"),
     size: getNumber(el, "drawingSize"),

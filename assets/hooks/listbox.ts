@@ -20,7 +20,7 @@ import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collec
 
 type ListboxItem = ValueLabelItem;
 
-function buildCollection(items: ListboxItem[], hasGroups: boolean) {
+export function buildCollection(items: ListboxItem[], hasGroups: boolean) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
 

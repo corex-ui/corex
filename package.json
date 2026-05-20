@@ -62,11 +62,14 @@
   "scripts": {
     "lint": "eslint assets",
     "lint:fix": "eslint assets --fix",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write \"assets/**/*.{ts,js,json,css}\"",
     "format:check": "prettier --check \"assets/**/*.{ts,js,json,css}\"",
     "gen:components-dts": "node assets/scripts/gen-components-dts.mjs",
     "gen:components-dts:check": "node assets/scripts/gen-components-dts.mjs --check",
-    "check": "npm run gen:components-dts:check && npm run format:check && npm run lint"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run test && npm run typecheck && npm run gen:components-dts:check && npm run format:check && npm run lint"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -114,6 +117,8 @@
     "eslint-plugin-prettier": "^5.5.5",
     "match-sorter": "^8.3.0",
     "phoenix_live_view": "^1.1.30",
-    "prettier": "^3.8.3"
+    "prettier": "^3.8.3",
+    "happy-dom": "^20.0.10",
+    "vitest": "^3.2.4"
   }
 }

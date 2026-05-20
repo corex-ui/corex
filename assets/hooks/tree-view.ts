@@ -39,19 +39,19 @@ type TreeViewHookState = {
   previousExpanded?: string[];
 };
 
-function readExpandedAttr(el: HTMLElement): string {
+export function readExpandedAttr(el: HTMLElement): string {
   return getBoolean(el, "controlled")
     ? (el.getAttribute("data-expanded-value") ?? "")
     : (el.getAttribute("data-default-expanded-value") ?? "");
 }
 
-function readSelectedAttr(el: HTMLElement): string {
+export function readSelectedAttr(el: HTMLElement): string {
   return getBoolean(el, "controlled")
     ? (el.getAttribute("data-selected-value") ?? "")
     : (el.getAttribute("data-default-selected-value") ?? "");
 }
 
-function parseRootNode(el: HTMLElement): TreeNode {
+export function parseRootNode(el: HTMLElement): TreeNode {
   const raw = el.dataset.tree;
   if (raw == null || raw === "") {
     throw new Error("TreeView: missing data-tree");
@@ -61,7 +61,7 @@ function parseRootNode(el: HTMLElement): TreeNode {
 
 const BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
 
-function readTreeViewInteractionProps(el: HTMLElement) {
+export function readTreeViewInteractionProps(el: HTMLElement) {
   return {
     selectionMode: getString<"single" | "multiple">(el, "selectionMode") ?? "single",
     typeahead: el.dataset.typeahead !== "false",

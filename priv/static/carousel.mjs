@@ -1106,13 +1106,6 @@ var Carousel = class extends Component {
 };
 
 // hooks/carousel.ts
-function readInstant(detail) {
-  if (detail && typeof detail === "object" && "instant" in detail) {
-    const v = detail.instant;
-    return v === true || v === "true";
-  }
-  return false;
-}
 function toZagPage(page) {
   if (page == null) return void 0;
   return Math.max(0, page - 1);
@@ -1123,6 +1116,13 @@ function fromZagPage(page) {
 function readCorexPage(el, attr) {
   const dataKey = attr === "page" ? "page" : "defaultPage";
   return toZagPage(getNumber(el, dataKey));
+}
+function readInstant(detail) {
+  if (detail && typeof detail === "object" && "instant" in detail) {
+    const v = detail.instant;
+    return v === true || v === "true";
+  }
+  return false;
 }
 var CarouselHook = {
   mounted() {
@@ -1229,5 +1229,9 @@ var CarouselHook = {
   }
 };
 export {
-  CarouselHook as Carousel
+  CarouselHook as Carousel,
+  fromZagPage,
+  readCorexPage,
+  readInstant,
+  toZagPage
 };

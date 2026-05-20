@@ -25,7 +25,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 writes layouts, assets, and copies bundled design" do
-    MixHelper.in_tmp("generate bundled", fn ->
+    Corex.New.MixHelper.in_tmp("generate bundled", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       capture_io(fn ->
@@ -43,7 +43,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 with mode, theme, and lang writes plugs, locale, and hooks" do
-    MixHelper.in_tmp("generate flags", fn ->
+    Corex.New.MixHelper.in_tmp("generate flags", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -61,7 +61,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 with designex copies token tree under assets/corex/design" do
-    MixHelper.in_tmp("generate designex", fn ->
+    Corex.New.MixHelper.in_tmp("generate designex", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -75,7 +75,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 without design skips corex css imports and design tree" do
-    MixHelper.in_tmp("generate no design", fn ->
+    Corex.New.MixHelper.in_tmp("generate no design", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -90,7 +90,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 with --dev uses checkout design and relative corex.mjs import" do
-    MixHelper.in_tmp("generate dev", fn ->
+    Corex.New.MixHelper.in_tmp("generate dev", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
       corex_root = ScaffoldHelper.corex_repo_root()
       mjs = Path.join([corex_root, "priv/static/corex.mjs"])
@@ -117,7 +117,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 raises when dev path lacks corex.mjs" do
-    MixHelper.in_tmp("generate bad dev", fn ->
+    Corex.New.MixHelper.in_tmp("generate bad dev", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
       empty = Path.join(File.cwd!(), "empty_corex")
       File.mkdir_p!(empty)
@@ -137,7 +137,7 @@ defmodule Corex.New.GenerateTest do
     mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
 
     if File.dir?(corex_src) and File.exists?(mjs) do
-      MixHelper.in_tmp("generate dev checkout", fn ->
+      Corex.New.MixHelper.in_tmp("generate dev checkout", fn ->
         ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
         assert :ok ==
@@ -153,7 +153,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 removes stale assets/corex/design before copying designex sources" do
-    MixHelper.in_tmp("generate rm nested design", fn ->
+    Corex.New.MixHelper.in_tmp("generate rm nested design", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       File.mkdir_p!("assets/corex/design/stale")
@@ -171,7 +171,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 without dev option keeps npm corex import" do
-    MixHelper.in_tmp("generate default import", fn ->
+    Corex.New.MixHelper.in_tmp("generate default import", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok == Generate.run(File.cwd!(), ScaffoldHelper.base_generate_opts())
@@ -180,7 +180,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 with blank dev path keeps npm corex import" do
-    MixHelper.in_tmp("generate blank dev", fn ->
+    Corex.New.MixHelper.in_tmp("generate blank dev", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -202,7 +202,7 @@ defmodule Corex.New.GenerateTest do
       try do
         File.rename!(root, backup)
 
-        MixHelper.in_tmp("generate missing design", fn ->
+        Corex.New.MixHelper.in_tmp("generate missing design", fn ->
           ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
           assert_raise Mix.Error, ~r/design snapshot is missing/, fn ->
@@ -218,7 +218,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 with mcp false skips endpoint MCP plug patch side effects" do
-    MixHelper.in_tmp("generate no mcp", fn ->
+    Corex.New.MixHelper.in_tmp("generate no mcp", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -232,7 +232,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 honors custom themes list when theme is enabled" do
-    MixHelper.in_tmp("generate custom themes", fn ->
+    Corex.New.MixHelper.in_tmp("generate custom themes", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==
@@ -249,7 +249,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "run/2 omits home page when stock home template is absent" do
-    MixHelper.in_tmp("generate no home", fn ->
+    Corex.New.MixHelper.in_tmp("generate no home", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       home = Path.join("lib/my_app_web/controllers/page_html", "home.html.heex")
@@ -263,7 +263,7 @@ defmodule Corex.New.GenerateTest do
   end
 
   test "normalize_opts uses default theme list when theme is enabled" do
-    MixHelper.in_tmp("generate themes", fn ->
+    Corex.New.MixHelper.in_tmp("generate themes", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
       assert :ok ==

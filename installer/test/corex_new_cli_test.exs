@@ -43,7 +43,7 @@ defmodule Corex.New.CliTest do
     end
 
     test "returns a relative path when inside cwd" do
-      MixHelper.in_tmp("relative hint", fn ->
+      Corex.New.MixHelper.in_tmp("relative hint", fn ->
         File.mkdir_p!("nested")
         assert "nested" == Cli.relative_to_cwd_hint("nested")
       end)
@@ -97,7 +97,7 @@ defmodule Corex.New.CliTest do
 
   describe "confirm_install_path!/1" do
     test "continues when user accepts an existing directory" do
-      MixHelper.in_tmp("confirm accept", fn ->
+      Corex.New.MixHelper.in_tmp("confirm accept", fn ->
         File.mkdir_p!("exists")
         send(self(), {:mix_shell_input, :yes?, true})
 
@@ -106,7 +106,7 @@ defmodule Corex.New.CliTest do
     end
 
     test "raises when user declines an existing directory" do
-      MixHelper.in_tmp("confirm decline", fn ->
+      Corex.New.MixHelper.in_tmp("confirm decline", fn ->
         File.mkdir_p!("exists")
         send(self(), {:mix_shell_input, :yes?, false})
 

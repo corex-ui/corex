@@ -2,11 +2,68 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 
 import { createToastGroup, getToastStore } from "../components/toast";
+import type { ActionOptions } from "@zag-js/toast";
 import type { Placement } from "@zag-js/toast";
 import type { Options } from "@zag-js/toast";
 
+import type { RedirectContext } from "../lib/redirect";
 import { getString, getBoolean, getNumber, generateId } from "../lib/util";
-import { buildZagAction, parseActionSpec, type ToastHookRuntime } from "../lib/toast-action";
+
+type ToastActionSpec = {
+  label: string;
+  encoded: string;
+  className?: string;
+};
+
+type ToastHookRuntime = {
+  pushEvent: (event: string, payload?: Record<string, unknown>) => void;
+  execJs: (encoded: string) => void;
+  redirectCtx: RedirectContext;
+};
+
+function asRecord(v: unknown): Record<string, unknown> {
+  return v != null && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : {};
+}
+
+export function parseSingleExecJsEffect(raw: unknown): string | null {
+  const o = asRecord(raw);
+  if (o.kind !== "exec_js") return null;
+  const encoded = o.encoded;
+  if (typeof encoded !== "string" || encoded.length === 0) return null;
+  return encoded;
+}
+
+export function parseActionSpec(raw: unknown): ToastActionSpec | null {
+  const o = asRecord(raw);
+  const label = o.label;
+  if (typeof label !== "string" || label.length === 0) return null;
+  const effectsRaw = o.effects;
+  if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+  const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+  if (encoded == null) return null;
+  const spec: ToastActionSpec = { label, encoded };
+  const className = o.class;
+  if (typeof className === "string" && className.trim()) {
+    spec.className = className.trim();
+  }
+  return spec;
+}
+
+function buildZagAction(
+  spec: ToastActionSpec,
+  rt: ToastHookRuntime
+): ActionOptions & { className?: string } {
+  const action: ActionOptions & { className?: string } = {
+    label: spec.label,
+    onClick: () => {
+      rt.execJs(spec.encoded);
+    },
+  };
+  if (spec.className) action.className = spec.className;
+  return action;
+}
 
 type ToastCreatePayload = {
   title?: string;

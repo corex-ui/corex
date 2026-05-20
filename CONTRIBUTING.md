@@ -26,10 +26,10 @@ For large features (new components, API changes), open an issue first so we can 
 git clone https://github.com/corex-ui/corex.git
 cd corex
 mix deps.get
-npm install
+pnpm install
 mix assets.build
 mix test
-npm run check
+pnpm run check
 ```
 
 ### Test coverage
@@ -37,6 +37,7 @@ npm run check
 - **`:corex` (root):** 95% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
 - **`:corex_new` (installer):** 90% via `mix test --cover` in `installer/`.
 - **e2e / integration_test:** functional tests; not counted in root Coveralls.
+- **`assets/` (Vitest + TypeScript):** `pnpm test` runs unit tests; `pnpm run typecheck` runs `tsc --noEmit` (same checks the editor shows); `pnpm run lint` runs ESLint only (style and recommended TS rules, not full type checking). `pnpm run check` runs tests, typecheck, generated dts check, Prettier, and ESLint.
 
 Optional quality checks before a PR (same as `mix pre.publish`):
 
@@ -84,6 +85,9 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `lib/components/` | Phoenix components (`Corex.*`), moduledoc, `attr` / `slot` |
 | `lib/components/<name>/` | Connect, anatomy, translation modules |
 | `assets/hooks/` | LiveView hooks (TypeScript, Zag.js) |
+| `assets/lib/` | Shared TS helpers (`util`, `respond-to`, `read-props`, …); tests in `assets/lib/*.test.ts` |
+| `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
+| `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
 | `priv/design/corex/` | Corex Design tokens and component CSS (source of truth in the package) |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
@@ -108,7 +112,20 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) style when i
 | Change type | Suggested checks |
 | ----------- | ---------------- |
 | Elixir component / API | `mix test`, `mix compile`, `mix docs` |
-| TypeScript hook | `npm run check`, `mix assets.build`, relevant e2e tests |
+| TypeScript `assets/lib/` | `pnpm test` or `pnpm run check` |
+| TypeScript `assets/components/` or `assets/hooks/` | `pnpm test` + `mix assets.build` |
+| TypeScript hook (behavior in browser) | `pnpm run check`, `mix assets.build`, relevant e2e tests |
+
+### TypeScript test layout (`pnpm test`)
+
+| Path | Expectation |
+| ---- | ----------- |
+| `assets/lib/*.ts` | Colocated `assets/lib/<name>.test.ts` for every module except `core.ts` (abstract base) |
+| `assets/components/*.ts` | Tests under `assets/test/component/` (per-module + `components-contract.test.ts` + `components-smoke.test.ts`) |
+| `assets/hooks/*.ts` | Tests under `assets/test/hooks/` (per-hook lifecycle + parser tests + `hooks-contract.test.ts`) |
+| `assets/test/helpers/` | Shared DOM fixtures (`dom.ts`, `component-fixture.ts`, `component-smoke.ts`, `mock-live-socket.ts`, `expect-hook.ts`) |
+
+New shared helper → `assets/lib/<name>.test.ts`. New component or hook tests → `assets/test/component/<name>.test.ts` or `assets/test/hooks/<name>.test.ts`. Export small pure functions from hooks when logic is not otherwise testable.
 | Design CSS | `mix assets.build`, visual check in e2e styling pages |
 | Moduledoc only | `mix docs` (fix any warnings) |
 | Installer | `cd installer && mix test` |

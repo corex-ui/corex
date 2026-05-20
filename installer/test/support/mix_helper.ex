@@ -1,4 +1,4 @@
-defmodule MixHelper do
+defmodule Corex.New.MixHelper do
   @moduledoc false
   import ExUnit.Assertions
   import ExUnit.CaptureIO

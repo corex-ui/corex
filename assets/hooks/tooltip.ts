@@ -58,7 +58,7 @@ function createTooltipCallbacks(
   return { onOpenChange, onTriggerValueChange };
 }
 
-function getCloseDelay(el: HTMLElement): number | undefined {
+export function getCloseDelay(el: HTMLElement): number | undefined {
   const interactive = getBoolean(el, "interactive");
   const raw = getNumber(el, "closeDelay");
   if (interactive && (raw === undefined || raw === 0)) return 400;

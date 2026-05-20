@@ -1,8 +1,8 @@
 defmodule Corex.ConnectReadonlyContractTest do
   use ExUnit.Case, async: true
 
-  @components_root Path.expand("../../lib/components", __DIR__)
-  @design_root Path.expand("../../priv/design", __DIR__)
+  @components_root Path.join(Application.app_dir(:corex), "lib/components")
+  @design_root Application.app_dir(:corex, "priv/design")
 
   test "hook connect modules do not emit data-read-only on props" do
     for path <- Path.wildcard(Path.join(@components_root, "**/connect.ex")) do

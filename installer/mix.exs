@@ -16,7 +16,7 @@ defmodule Corex.New.MixProject do
     [
       app: :corex_new,
       elixirc_paths: elixirc_paths(Mix.env()),
-      test_coverage: [summary: [threshold: 90], ignore_modules: [MixHelper]],
+      test_coverage: [summary: [threshold: 90], ignore_modules: [Corex.New.MixHelper]],
       start_permanent: Mix.env() == :prod,
       version: @version,
       phoenix_version: @phoenix_version,

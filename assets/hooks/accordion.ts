@@ -40,7 +40,7 @@ const ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"
 const ITEM_SELECTOR = '[data-scope="accordion"][data-part="item"]';
 const resolveAccordionValue = closestPartValue(ITEM_SELECTOR);
 
-function readAccordionLayoutProps(el: HTMLElement) {
+export function readAccordionLayoutProps(el: HTMLElement) {
   return {
     id: el.id,
     collapsible: getBoolean(el, "collapsible"),

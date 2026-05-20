@@ -25,7 +25,7 @@ export function buildZagTagsInputTranslations(m: TagsInputMessageMap): ZagTagsIn
   return {
     deleteTagTriggerLabel: (value: string) => formatTagTemplate(deleteTemplate, value),
     tagEdited: (value: string) => formatTagTemplate(editTemplate, value),
-  };
+  } as ZagTagsInputTranslations;
 }
 
 export function resolveZagTagsInputTranslations(el: HTMLElement): {

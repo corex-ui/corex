@@ -26,7 +26,7 @@ type DialogHookState = {
 const DIALOG_SCALE_SELECTOR =
   '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
 
-function readDialogLayoutProps(el: HTMLElement) {
+export function readDialogLayoutProps(el: HTMLElement) {
   return {
     id: el.id,
     modal: getBoolean(el, "modal"),

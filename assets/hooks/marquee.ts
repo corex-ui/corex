@@ -13,7 +13,7 @@ type MarqueeHookState = {
   onTogglePause?: (event: Event) => void;
 };
 
-function readMarqueeProps(el: HTMLElement) {
+export function readMarqueeProps(el: HTMLElement) {
   return {
     id: el.id,
     translations: { root: getString(el, "ariaLabel") },

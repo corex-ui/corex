@@ -14,7 +14,7 @@ type MenuHookState = {
   onSubmenuItemClick?: (event: Event) => void;
 };
 
-function findImmediateParentMenuHookEl(nestedEl: HTMLElement): HTMLElement | null {
+export function findImmediateParentMenuHookEl(nestedEl: HTMLElement): HTMLElement | null {
   let node: HTMLElement | null = nestedEl.parentElement;
   while (node) {
     if (node.getAttribute("phx-hook") === "Menu") {

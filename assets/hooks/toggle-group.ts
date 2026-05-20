@@ -15,14 +15,14 @@ type ToggleGroupHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function valueChangePayload(el: HTMLElement, details: ValueChangeDetails): Record<string, unknown> {
+export function valueChangePayload(el: HTMLElement, details: ValueChangeDetails): Record<string, unknown> {
   return {
     id: el.id,
     value: details.value,
   };
 }
 
-function readPayloadValue(payload: unknown): string[] | undefined {
+export function readToggleGroupPayloadValue(payload: unknown): string[] | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const o = payload as Record<string, unknown>;
   const v = o.value ?? o["value"];
@@ -76,7 +76,7 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
 
     registry.add("toggle-group_set_value", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      const value = readPayloadValue(payload);
+      const value = readToggleGroupPayloadValue(payload);
       if (value) toggleGroup.api.setValue(value);
     });
 

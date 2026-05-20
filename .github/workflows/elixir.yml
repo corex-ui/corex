@@ -304,7 +304,13 @@ jobs:
         working-directory: installer
         run: |
           mix compile --force
-          mix test --cover --include integration
+          mix test --cover --exclude integration
+
+      - name: Run installer integration tests
+        working-directory: installer
+        run: |
+          mix compile --force
+          mix test --only integration
 
       - name: Verify corex_new archive embeds priv design snapshot
         working-directory: installer
@@ -386,7 +392,7 @@ jobs:
           MIX_ENV: test
         run: |
           mix compile --force
-          mix test --include integration
+          mix test --only integration
 
       - name: Run integration tests (no database tag)
         working-directory: integration_test

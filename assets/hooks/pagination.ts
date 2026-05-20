@@ -18,14 +18,14 @@ type PaginationHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function readPayloadPage(payload: unknown): number | undefined {
+export function readPayloadPage(payload: unknown): number | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const o = payload as Record<string, unknown>;
   const page = o.page ?? o["page"];
   return typeof page === "number" ? page : undefined;
 }
 
-function readPayloadPageSize(payload: unknown): number | undefined {
+export function readPayloadPageSize(payload: unknown): number | undefined {
   if (!payload || typeof payload !== "object") return undefined;
   const o = payload as Record<string, unknown>;
   const pageSize = o.page_size ?? o.pageSize ?? o["page_size"];

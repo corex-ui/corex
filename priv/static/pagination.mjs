@@ -668,5 +668,7 @@ var PaginationHook = {
   }
 };
 export {
-  PaginationHook as Pagination
+  PaginationHook as Pagination,
+  readPayloadPage,
+  readPayloadPageSize
 };

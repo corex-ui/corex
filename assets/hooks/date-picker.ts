@@ -14,7 +14,7 @@ import { getString, getBoolean, getStringList, getNumber, canPushEvent } from ".
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
 
-function valueToIsoString(d: unknown): string {
+export function valueToIsoString(d: unknown): string {
   if (d == null) return "";
   return String(d);
 }
@@ -34,7 +34,7 @@ function resolveZagDatePickerTranslations(
   }
 }
 
-function resolveCloseOnSelect(el: HTMLElement): boolean {
+export function resolveCloseOnSelect(el: HTMLElement): boolean {
   return getBoolean(el, "closeOnSelect");
 }
 

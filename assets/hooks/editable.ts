@@ -13,7 +13,7 @@ type EditableHookState = {
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
 };
 
-function dataDefaultValue(el: HTMLElement): string {
+export function dataDefaultValue(el: HTMLElement): string {
   return getString(el, "defaultValue") ?? "";
 }
 

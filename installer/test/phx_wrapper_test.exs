@@ -85,14 +85,14 @@ defmodule Corex.New.PhxWrapperTest do
 
   describe "port_cmd_stream!/2" do
     test "runs mix --version in the given directory" do
-      MixHelper.in_tmp("port mix version", fn ->
+      Corex.New.MixHelper.in_tmp("port mix version", fn ->
         assert :ok = PhxWrapper.port_cmd_stream!(["--version"], File.cwd!())
       end)
     end
 
     test "raises when mix exits with a non-zero status" do
-      MixHelper.in_tmp("port mix fail", fn ->
-        MixHelper.with_fake_mix!(fn ->
+      Corex.New.MixHelper.in_tmp("port mix fail", fn ->
+        Corex.New.MixHelper.with_fake_mix!(fn ->
           assert_raise Mix.Error, ~r/failed \(exit 2/, fn ->
             PhxWrapper.port_cmd_stream!(["anything"], File.cwd!())
           end
@@ -110,7 +110,7 @@ defmodule Corex.New.PhxWrapperTest do
     end
 
     test "raises when mix exits with an error" do
-      MixHelper.in_tmp("fake mix", fn ->
+      Corex.New.MixHelper.in_tmp("fake mix", fn ->
         bin = Path.join(File.cwd!(), "bin")
         File.mkdir_p!(bin)
         mix = Path.join(bin, "mix")
@@ -134,15 +134,15 @@ defmodule Corex.New.PhxWrapperTest do
 
   describe "pty_cmd_stream!/2" do
     test "runs mix via the pty shim" do
-      MixHelper.in_tmp("pty mix version", fn ->
-        MixHelper.write_minimal_mix!()
+      Corex.New.MixHelper.in_tmp("pty mix version", fn ->
+        Corex.New.MixHelper.write_minimal_mix!()
         assert :ok = PhxWrapper.pty_cmd_stream!(["--version"], File.cwd!())
       end)
     end
 
     test "raises when mix exits with a non-zero status" do
-      MixHelper.in_tmp("pty mix fail", fn ->
-        MixHelper.with_fake_mix!(fn ->
+      Corex.New.MixHelper.in_tmp("pty mix fail", fn ->
+        Corex.New.MixHelper.with_fake_mix!(fn ->
           assert_raise Mix.Error, ~r/failed \(exit 2/, fn ->
             PhxWrapper.pty_cmd_stream!(["anything"], File.cwd!())
           end
@@ -153,8 +153,8 @@ defmodule Corex.New.PhxWrapperTest do
 
   describe "run_deps_get!/1" do
     test "runs mix deps.get in the project directory" do
-      MixHelper.in_tmp("deps get", fn ->
-        MixHelper.write_minimal_mix!()
+      Corex.New.MixHelper.in_tmp("deps get", fn ->
+        Corex.New.MixHelper.write_minimal_mix!()
 
         assert :ok = PhxWrapper.run_deps_get!(File.cwd!())
       end)

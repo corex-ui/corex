@@ -15,7 +15,7 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getDir } from "../lib/util";
 
-function actionClassTokens(action: unknown): string[] {
+export function actionClassTokens(action: unknown): string[] {
   if (action == null || typeof action !== "object") return [];
   const cn = (action as { className?: unknown }).className;
   if (typeof cn !== "string") return [];

@@ -23,7 +23,7 @@ type NumberInputMachineState = {
   valueAsNumber: number;
 };
 
-function machineState(api: Api): NumberInputMachineState {
+export function machineState(api: Api): NumberInputMachineState {
   return {
     focused: api.focused,
     invalid: api.invalid,
@@ -39,7 +39,7 @@ type NumberInputHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function buildMachineProps(
+export function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean

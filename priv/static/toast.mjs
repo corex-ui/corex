@@ -1386,7 +1386,7 @@ function getToastStore(groupId) {
   return id ? toastStores.get(id) : void 0;
 }
 
-// lib/toast-action.ts
+// hooks/toast.ts
 function asRecord(v) {
   return v != null && typeof v === "object" && !Array.isArray(v) ? v : {};
 }
@@ -1422,8 +1422,6 @@ function buildZagAction(spec, rt) {
   if (spec.className) action.className = spec.className;
   return action;
 }
-
-// hooks/toast.ts
 var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
 function buildRuntime(self) {
   return {
@@ -1648,5 +1646,6 @@ var ToastHook = {
   }
 };
 export {
-  ToastHook as Toast
+  ToastHook as Toast,
+  parseActionSpec
 };

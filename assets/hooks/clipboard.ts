@@ -7,6 +7,10 @@ import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
+export function copyPayload(el: HTMLElement, value: string | undefined): Record<string, unknown> {
+  return { id: el.id, value };
+}
+
 type ClipboardHookState = {
   clipboard?: Clipboard;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
@@ -32,7 +36,7 @@ const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value },
+          payload: copyPayload(el, value),
           serverEventName: getString(el, "onCopy"),
           clientEventName: getString(el, "onCopyClient"),
         });

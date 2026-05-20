@@ -15,7 +15,7 @@ import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collec
 
 type SelectItem = ValueLabelItem;
 
-function buildCollection(items: SelectItem[], hasGroups: boolean) {
+export function buildCollection(items: SelectItem[], hasGroups: boolean) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
 

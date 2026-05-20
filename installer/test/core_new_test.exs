@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.Corex.NewTest do
   use ExUnit.Case, async: false
-  import MixHelper
+  import Corex.New.MixHelper
   import ExUnit.CaptureIO
 
   test "returns the version" do

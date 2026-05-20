@@ -39,7 +39,7 @@ type TimerHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function parseTimerTranslations(el: HTMLElement): Props["translations"] {
+export function parseTimerTranslations(el: HTMLElement): Props["translations"] {
   const raw = el.dataset.translation;
   if (!raw) return undefined;
   try {

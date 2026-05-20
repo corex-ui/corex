@@ -1,7 +1,7 @@
 defmodule Corex.New.PostGenerateTest do
   use ExUnit.Case, async: false
 
-  import MixHelper
+  import Corex.New.MixHelper
 
   alias Corex.New.PostGenerate
 
@@ -105,7 +105,7 @@ defmodule Corex.New.PostGenerateTest do
 
     test "runs deps.get when install is true" do
       in_tmp(:prompt_install, fn ->
-        MixHelper.write_minimal_mix!()
+        Corex.New.MixHelper.write_minimal_mix!()
 
         PostGenerate.prompt_install(File.cwd!(), File.cwd!(),
           install: true,

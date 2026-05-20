@@ -4532,5 +4532,7 @@ var DatePickerHook = {
   }
 };
 export {
-  DatePickerHook as DatePicker
+  DatePickerHook as DatePicker,
+  resolveCloseOnSelect,
+  valueToIsoString
 };

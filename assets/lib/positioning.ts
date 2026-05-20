@@ -30,9 +30,10 @@ export function readPositioningOptions(el: HTMLElement): PositioningOptions | un
   const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
   const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
   if (offsetMainAxis !== undefined || offsetCrossAxis !== undefined) {
-    options.offset = {};
-    if (offsetMainAxis !== undefined) options.offset.mainAxis = offsetMainAxis;
-    if (offsetCrossAxis !== undefined) options.offset.crossAxis = offsetCrossAxis;
+    const offset: NonNullable<PositioningOptions["offset"]> = {};
+    if (offsetMainAxis !== undefined) offset.mainAxis = offsetMainAxis;
+    if (offsetCrossAxis !== undefined) offset.crossAxis = offsetCrossAxis;
+    options.offset = offset;
   }
   const flip = readFlipAttr(el);
   if (flip !== undefined) options.flip = flip;

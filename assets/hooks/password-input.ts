@@ -7,6 +7,13 @@ import { notifyChange, idMatches, readPayloadId, readPayloadVisible } from "../l
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
+export function visibilityChangePayload(
+  el: HTMLElement,
+  details: VisibilityChangeDetails
+): Record<string, unknown> {
+  return { id: el.id, visible: details.visible };
+}
+
 type PasswordInputHookState = {
   passwordInput?: PasswordInput;
   handlers?: Array<CallbackRef>;
@@ -35,7 +42,7 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, visible: details.visible } as Record<string, unknown>,
+          payload: visibilityChangePayload(el, details),
           serverEventName: getString(el, "onVisibilityChange"),
           clientEventName: getString(el, "onVisibilityChangeClient"),
         });

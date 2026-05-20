@@ -1937,5 +1937,8 @@ var ComboboxHook = {
   }
 };
 export {
-  ComboboxHook as Combobox
+  ComboboxHook as Combobox,
+  comboboxValueBinding,
+  selectedItemLabel,
+  syncVisibleInputAttribute
 };

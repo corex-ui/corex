@@ -1680,5 +1680,8 @@ var TreeViewHook = {
   }
 };
 export {
-  TreeViewHook as TreeView
+  TreeViewHook as TreeView,
+  parseRootNode,
+  readExpandedAttr,
+  readSelectedAttr
 };

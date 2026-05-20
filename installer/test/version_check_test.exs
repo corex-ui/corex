@@ -1,7 +1,7 @@
 defmodule Corex.New.VersionCheckTest do
   use ExUnit.Case, async: false
 
-  import MixHelper
+  import Corex.New.MixHelper
 
   alias Corex.New.VersionCheck
 

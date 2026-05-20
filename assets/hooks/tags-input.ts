@@ -32,7 +32,7 @@ type TagsInputHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
+export function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
   const raw = el.dataset[key];
   if (!raw || raw.trim() === "") return [];
   try {
@@ -43,18 +43,18 @@ function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
   }
 }
 
-function blurBehavior(el: HTMLElement): "add" | "clear" | undefined {
+export function blurBehavior(el: HTMLElement): "add" | "clear" | undefined {
   return getString<"add" | "clear">(el, "blurBehavior", ["add", "clear"] as const);
 }
 
-function maxProp(el: HTMLElement): number | undefined {
+export function maxProp(el: HTMLElement): number | undefined {
   const n = getNumber(el, "max");
   if (n === undefined) return undefined;
   if (!Number.isFinite(n) || n <= 0) return undefined;
   return n;
 }
 
-function readPlaceholderFromMainInput(hookEl: HTMLElement): string | undefined {
+export function readPlaceholderFromMainInput(hookEl: HTMLElement): string | undefined {
   const input = hookEl.querySelector<HTMLInputElement>(
     '[data-scope="tags-input"][data-part="input"]'
   );

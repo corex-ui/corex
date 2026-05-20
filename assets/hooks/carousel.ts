@@ -13,26 +13,26 @@ type CarouselHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function readInstant(detail: unknown): boolean {
+export function toZagPage(page: number | undefined): number | undefined {
+  if (page == null) return undefined;
+  return Math.max(0, page - 1);
+}
+
+export function fromZagPage(page: number): number {
+  return page + 1;
+}
+
+export function readCorexPage(el: HTMLElement, attr: "page" | "defaultPage"): number | undefined {
+  const dataKey = attr === "page" ? "page" : "defaultPage";
+  return toZagPage(getNumber(el, dataKey));
+}
+
+export function readInstant(detail: unknown): boolean {
   if (detail && typeof detail === "object" && "instant" in detail) {
     const v = (detail as { instant?: unknown }).instant;
     return v === true || v === "true";
   }
   return false;
-}
-
-function toZagPage(page: number | undefined): number | undefined {
-  if (page == null) return undefined;
-  return Math.max(0, page - 1);
-}
-
-function fromZagPage(page: number): number {
-  return page + 1;
-}
-
-function readCorexPage(el: HTMLElement, attr: "page" | "defaultPage"): number | undefined {
-  const dataKey = attr === "page" ? "page" : "defaultPage";
-  return toZagPage(getNumber(el, dataKey));
 }
 
 const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {

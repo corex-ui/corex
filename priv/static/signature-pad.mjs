@@ -767,5 +767,7 @@ var SignaturePadHook = {
   }
 };
 export {
-  SignaturePadHook as SignaturePad
+  SignaturePadHook as SignaturePad,
+  buildDrawingOptions,
+  parsePathsFromDataset
 };

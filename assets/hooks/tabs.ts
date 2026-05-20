@@ -10,6 +10,20 @@ import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
+export function tabsValueChangePayload(
+  el: HTMLElement,
+  details: ValueChangeDetails
+): Record<string, unknown> {
+  return { id: el.id, value: details.value ?? null };
+}
+
+export function tabsFocusChangePayload(
+  el: HTMLElement,
+  details: FocusChangeDetails
+): Record<string, unknown> {
+  return { id: el.id, value: details.focusedValue ?? null };
+}
+
 type TabsHookState = {
   tabs?: Tabs;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
@@ -32,7 +46,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.value ?? null } as Record<string, unknown>,
+          payload: tabsValueChangePayload(el, details),
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient"),
         });
@@ -43,7 +57,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.focusedValue ?? null } as Record<string, unknown>,
+          payload: tabsFocusChangePayload(el, details),
           serverEventName: getString(el, "onFocusChange"),
           clientEventName: getString(el, "onFocusChangeClient"),
         });

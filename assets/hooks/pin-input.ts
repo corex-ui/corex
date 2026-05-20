@@ -14,17 +14,17 @@ import {
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
-function parseValueWithEmpties(raw: string): string[] {
+export function parseValueWithEmpties(raw: string): string[] {
   return raw.split(",").map((v) => v.trim());
 }
 
-function padToCount(arr: string[], count: number): string[] {
+export function padToCount(arr: string[], count: number): string[] {
   const copy = [...arr];
   while (copy.length < count) copy.push("");
   return copy.slice(0, count);
 }
 
-function readDefaultValueList(el: HTMLElement, count: number): string[] {
+export function readDefaultValueList(el: HTMLElement, count: number): string[] {
   const raw = el.dataset.defaultValue;
   if (raw === undefined || raw === "") {
     return [];

@@ -1491,5 +1491,8 @@ var TagsInputHook = {
   }
 };
 export {
-  TagsInputHook as TagsInput
+  TagsInputHook as TagsInput,
+  blurBehavior,
+  maxProp,
+  parseJsonTags
 };

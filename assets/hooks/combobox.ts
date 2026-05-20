@@ -21,7 +21,9 @@ type ComboboxHookState = {
   lastItemsJson?: string;
 };
 
-function comboboxValueBinding(el: HTMLElement): { value: string[] } | { defaultValue: string[] } {
+export function comboboxValueBinding(
+  el: HTMLElement
+): { value: string[] } | { defaultValue: string[] } {
   const controlled = getBoolean(el, "controlled");
   if (controlled) {
     return { value: getStringList(el, "value") ?? [] };
@@ -34,13 +36,13 @@ function comboboxValueBindingForUpdate(el: HTMLElement): { value?: string[] } {
   return { value: getStringList(el, "value") ?? [] };
 }
 
-function selectedItemLabel(items: ReadonlyArray<unknown>): string {
+export function selectedItemLabel(items: ReadonlyArray<unknown>): string {
   const first = items?.[0] as { label?: unknown } | undefined;
   if (!first) return "";
   return first.label != null ? String(first.label) : "";
 }
 
-function syncVisibleInputAttribute(el: HTMLElement, value: string): void {
+export function syncVisibleInputAttribute(el: HTMLElement, value: string): void {
   const visible = el.querySelector<HTMLInputElement>('[data-scope="combobox"][data-part="input"]');
   if (visible) visible.setAttribute("value", value);
 }

@@ -13,7 +13,7 @@ type CheckboxHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function checkedChangePayload(
+export function checkedChangePayload(
   el: HTMLElement,
   details: CheckedChangeDetails
 ): Record<string, unknown> {

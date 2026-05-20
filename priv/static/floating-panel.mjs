@@ -1422,7 +1422,7 @@ var FloatingPanel = class extends Component {
   }
 };
 
-// lib/floating-panel-anchor.ts
+// hooks/floating-panel.ts
 function anchorPointFromPositioning(positioning, details, panelSize, dir) {
   const boundaryRect = details.boundaryRect;
   if (!boundaryRect) return void 0;
@@ -1479,8 +1479,6 @@ function anchorPointFromPositioning(positioning, details, panelSize, dir) {
     y: yCenter + mainAxis
   };
 }
-
-// hooks/floating-panel.ts
 function parseSize(val) {
   if (!val) return void 0;
   try {
@@ -1617,5 +1615,8 @@ var FloatingPanelHook = {
   }
 };
 export {
-  FloatingPanelHook as FloatingPanel
+  FloatingPanelHook as FloatingPanel,
+  buildAnchorProps,
+  parsePoint,
+  parseSize
 };

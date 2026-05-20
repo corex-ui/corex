@@ -21,11 +21,11 @@ function toPhash(h: number, x: string): number {
   return h;
 }
 
-function zagFileId(value: string): string {
+export function zagFileId(value: string): string {
   return toName(toPhash(5381, value) >>> 0);
 }
 
-function fileKeyFor(file: File): string {
+export function fileKeyFor(file: File): string {
   return zagFileId(`${file.name}-${file.size}`);
 }
 

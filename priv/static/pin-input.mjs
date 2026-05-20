@@ -786,5 +786,8 @@ var PinInputHook = {
   }
 };
 export {
-  PinInputHook as PinInput
+  PinInputHook as PinInput,
+  padToCount,
+  parseValueWithEmpties,
+  readDefaultValueList
 };

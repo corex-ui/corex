@@ -31,7 +31,7 @@ function syncColorHiddenAndNotify(el: HTMLElement, valueAsString: string | undef
   }
 }
 
-function readValueProps(el: HTMLElement): Pick<Props, "defaultValue"> {
+export function readValueProps(el: HTMLElement): Pick<Props, "defaultValue"> {
   const defaultVal = getString(el, "defaultValue");
   return { defaultValue: defaultVal ? parse(defaultVal) : undefined };
 }

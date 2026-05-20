@@ -664,5 +664,6 @@ var TimerHook = {
   }
 };
 export {
-  TimerHook as Timer
+  TimerHook as Timer,
+  parseTimerTranslations
 };
