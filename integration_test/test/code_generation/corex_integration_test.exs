@@ -33,9 +33,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
-        assert response.body =~ "Corex"
+
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+            assert response.body =~ "Corex"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end
@@ -180,11 +186,17 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
 
-        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
-                 response.body =~ "theme"
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+
+            assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
+                     response.body =~ "theme"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end
@@ -238,11 +250,17 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
 
-        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
-                 response.body =~ "mode"
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+
+            assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
+                     response.body =~ "mode"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end

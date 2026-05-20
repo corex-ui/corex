@@ -26,25 +26,37 @@ defmodule Corex.New.VersionCheck do
 
   if Version.match?(System.version(), "~> 1.18") do
     def start_latest_version_task(package, installer_version) do
-      Task.async(fn -> fetch_latest_version(package, installer_version) end)
+      ensure_task_supervisor!()
+
+      Task.Supervisor.async_nolink(Corex.New.VersionCheck.Supervisor, fn ->
+        fetch_latest_version(package, installer_version)
+      end)
+    end
+
+    defp ensure_task_supervisor! do
+      case Process.whereis(Corex.New.VersionCheck.Supervisor) do
+        pid when is_pid(pid) ->
+          :ok
+
+        nil ->
+          case Task.Supervisor.start_link(name: Corex.New.VersionCheck.Supervisor) do
+            {:ok, _} -> :ok
+            {:error, {:already_started, _}} -> :ok
+            {:error, _} -> :ok
+          end
+      end
     end
 
     def fetch_latest_version(package, installer_version) do
-      try do
-        with {:ok, package} <- fetch_package(package, installer_version) do
-          versions =
-            for release <- package["releases"],
-                version = Version.parse!(release["version"]),
-                version.pre == [] do
-              version
-            end
+      with {:ok, package} <- fetch_package(package, installer_version) do
+        versions =
+          for release <- package["releases"],
+              version = Version.parse!(release["version"]),
+              version.pre == [] do
+            version
+          end
 
-          Enum.max(versions, Version)
-        end
-      rescue
-        e -> {:error, e}
-      catch
-        :exit, _ -> {:error, :exit}
+        Enum.max(versions, Version)
       end
     end
 
@@ -62,23 +74,30 @@ defmodule Corex.New.VersionCheck do
       ]
 
       options = [body_format: :binary]
+      url = String.to_charlist("https://hex.pm/api/packages/#{name}")
+      user_agent = String.to_charlist("Corex.New.VersionCheck/#{installer_version}")
 
-      case :httpc.request(
-             :get,
-             {~c"https://hex.pm/api/packages/#{name}",
-              [{~c"user-agent", ~c"Corex.New.VersionCheck/#{installer_version}"}]},
-             http_options,
-             options
-           ) do
-        {:ok, {{_, 200, _}, _headers, body}} ->
-          {:ok, Jason.decode!(body)}
+      :telemetry.span(
+        [:corex_new, :hex, :fetch],
+        %{package: name},
+        fn ->
+          case :httpc.request(
+                 :get,
+                 {url, [{~c"user-agent", user_agent}]},
+                 http_options,
+                 options
+               ) do
+            {:ok, {{_, 200, _}, _headers, body}} ->
+              {{:ok, Jason.decode!(body)}, %{status: 200}}
 
-        {:ok, {{_, status, _}, _, _}} ->
-          {:error, status}
+            {:ok, {{_, status, _}, _, _}} ->
+              {{:error, status}, %{status: status}}
 
-        {:error, reason} ->
-          {:error, reason}
-      end
+            {:error, reason} ->
+              {{:error, reason}, %{status: :error}}
+          end
+        end
+      )
     end
   else
     def start_latest_version_task(_package, _installer_version), do: nil

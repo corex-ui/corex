@@ -18,7 +18,7 @@ defmodule Corex.Integration.HttpSmoke do
   def request_with_retries(url, retries) do
     url = String.replace(url, "://localhost", "://127.0.0.1")
 
-    case url |> to_charlist() |> :httpc.request() do
+    case http_request(url) do
       {:ok, {{_, status_code, _}, raw_headers, body}} when status_code >= 500 ->
         if retries > 1 do
           Process.sleep(2_000)
@@ -49,5 +49,23 @@ defmodule Corex.Integration.HttpSmoke do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  defp http_request(url) do
+    :telemetry.span(
+      [:integration, :http, :request],
+      %{url: url},
+      fn ->
+        result = url |> to_charlist() |> :httpc.request()
+
+        metadata =
+          case result do
+            {:ok, {{_, status, _}, _, _}} -> %{status: status}
+            {:error, _} -> %{status: :error}
+          end
+
+        {result, metadata}
+      end
+    )
   end
 end

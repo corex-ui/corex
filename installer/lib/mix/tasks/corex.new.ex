@@ -99,10 +99,10 @@ defmodule Mix.Tasks.Corex.New do
     mcp: :boolean
   ]
 
-  @reserved_app_names ~w(server table)
+  @reserved_app_names ~W(server table)
 
   @impl true
-  def run([version]) when version in ~w(-v --version) do
+  def run([version]) when version in ~W(-v --version) do
     Mix.shell().info("Corex installer v#{@version}")
   end
 

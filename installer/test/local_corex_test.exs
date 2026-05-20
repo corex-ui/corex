@@ -1,5 +1,3 @@
-Code.require_file("mix_helper.exs", __DIR__)
-
 defmodule Mix.Tasks.Local.CorexTest do
   use ExUnit.Case, async: false
 

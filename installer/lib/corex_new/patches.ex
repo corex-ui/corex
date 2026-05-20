@@ -331,7 +331,7 @@ defmodule Corex.New.Patches do
           cd: Path.expand("../assets", __DIR__),
           dir: "corex",
           corex: [
-            build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
+            build_args: ~W(--dir=design --script=build.mjs --tokens=tokens)
           ]
 
         """
@@ -531,7 +531,7 @@ defmodule Corex.New.Patches do
       case Regex.run(pattern, content) do
         [full] ->
           locale_scope =
-            String.replace(full, ~s(scope "/",), ~s(scope "/:locale",), global: false)
+            String.replace(full, ~S(scope "/"), ~S(scope "/:locale",), global: false)
 
           String.replace(content, full, full <> "\n\n  " <> locale_scope, global: false)
 

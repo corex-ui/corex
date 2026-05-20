@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Corex.DesignTest do
+  @moduledoc false
   use ExUnit.Case, async: false
 
   setup do

@@ -73,6 +73,30 @@ jobs:
         env:
           MIX_ENV: test
 
+      - name: Install installer dependencies
+        working-directory: installer
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Lint installer
+        working-directory: installer
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Install integration test dependencies
+        working-directory: integration_test
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Lint integration test
+        working-directory: integration_test
+        run: mix lint
+        env:
+          MIX_ENV: test
+
   unit-tests:
     name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04

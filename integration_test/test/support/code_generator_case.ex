@@ -29,7 +29,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
       )
 
     Corex.Integration.CorexPathDep.inject(app_root_path, opts)
-    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(integration_root, app_root_path)
+
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(
+      integration_root,
+      app_root_path
+    )
+
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
     mix_run!(["format"], app_root_path)
@@ -69,7 +74,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
     end
 
     Corex.Integration.CorexPathDep.inject(app_root_path, opts)
-    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(integration_root, app_root_path)
+
+    Corex.Integration.ArtifactSync.copy_hex_artifacts_from_integration!(
+      integration_root,
+      app_root_path
+    )
+
     mix_run!(["deps.get"], app_root_path)
     mix_run!(["compile"], app_root_path)
     mix_run!(["format"], app_root_path)
@@ -142,7 +152,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_tests_pass(app_path) do
-    port = 45000 + :rand.uniform(5000)
+    port = 45_000 + :rand.uniform(5000)
 
     mix_run!(
       ~w(test --timeout 600000),
@@ -170,7 +180,13 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def with_installer_tmp(name, opts \\ [], function)
       when is_list(opts) and is_function(function, 1) do
     autoremove? = Keyword.get(opts, :autoremove?, true)
-    path = Path.join([Corex.Integration.Paths.installer_tmp_root(), random_string(10), to_string(name)])
+
+    path =
+      Path.join([
+        Corex.Integration.Paths.installer_tmp_root(),
+        random_string(10),
+        to_string(name)
+      ])
 
     try do
       File.rm_rf!(path)
@@ -224,12 +240,17 @@ defmodule Corex.Integration.CodeGeneratorCase do
       port ||
         case :gen_tcp.listen(0, []) do
           {:ok, socket} ->
-            {:ok, port} = :inet.port(socket)
+            listen_port =
+              case :inet.port(socket) do
+                {:ok, port} -> port
+                {:error, _} -> 45_000 + :rand.uniform(5000)
+              end
+
             :gen_tcp.close(socket)
-            port
+            listen_port
 
           {:error, _} ->
-            45000 + :rand.uniform(5000)
+            45_000 + :rand.uniform(5000)
         end
 
     port_str = to_string(port)

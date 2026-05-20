@@ -1,4 +1,5 @@
 defmodule Mix.Corex.Gen.ContextTest do
+  @moduledoc false
   use ExUnit.Case, async: false
 
   import ExUnit.CaptureIO
@@ -16,8 +17,7 @@ defmodule Mix.Corex.Gen.ContextTest do
   end
 
   test "files_to_be_generated/1 without schema includes only context files", %{tmp: tmp} do
-    schema = build_schema(generate?: false, migration?: false)
-    context = build_context(tmp, generate?: false) |> Map.put(:schema, schema)
+    context = build_context(tmp, generate?: false, migration?: false)
 
     files = GenContext.files_to_be_generated(context)
     paths = Enum.map(files, fn {_, _, path} -> path end)

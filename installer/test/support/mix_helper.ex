@@ -1,10 +1,9 @@
-# Get Mix output sent to the current
-# process to avoid polluting tests.
-Mix.shell(Mix.Shell.Process)
-
 defmodule MixHelper do
+  @moduledoc false
   import ExUnit.Assertions
   import ExUnit.CaptureIO
+
+  alias Mix.Project
 
   def tmp_path do
     Path.expand("../../tmp", __DIR__)
@@ -80,17 +79,17 @@ defmodule MixHelper do
   end
 
   def in_project(app, path, fun) do
-    %{name: name, file: file} = Mix.Project.pop()
+    %{name: name, file: file} = Project.pop()
 
     try do
       capture_io(:stderr, fn ->
-        Mix.Project.in_project(app, path, [prune_code_paths: false], fn mod ->
+        Project.in_project(app, path, [prune_code_paths: false], fn mod ->
           fun.(mod)
-          Mix.Project.clear_deps_cache()
+          Project.clear_deps_cache()
         end)
       end)
     after
-      Mix.Project.push(name, file)
+      Project.push(name, file)
     end
   end
 
