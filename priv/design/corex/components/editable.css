@@ -18,7 +18,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .editable [data-scope="editable"][data-part="root"][data-readonly],
+  .editable [data-scope="editable"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
   .editable [data-scope="editable"][data-part="control"] {

@@ -30,7 +30,7 @@
     flex-direction: column-reverse ;
   }
 
-  .checkbox [data-scope="checkbox"][data-part="root"][data-readonly],
+  .checkbox [data-scope="checkbox"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

@@ -229,7 +229,7 @@
     --marker-color: var(--color-alert);
   }
 
-  .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly],
+  .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

@@ -22,7 +22,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly],
+  .signature-pad [data-scope="signature-pad"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

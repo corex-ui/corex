@@ -495,6 +495,7 @@ defmodule Corex.New.PatchesTest do
         assert body =~ "use Localize.Routes"
         assert body =~ "Localize.Plug.PutLocale"
         assert body =~ ~s(scope "/:locale")
+        refute body =~ ~s(scope "/:locale",,)
       end)
     end
 

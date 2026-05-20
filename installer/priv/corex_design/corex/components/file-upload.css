@@ -44,7 +44,7 @@
     width: 100%;
   }
 
-  .file-upload [data-scope="file-upload"][data-part="root"][data-readonly],
+  .file-upload [data-scope="file-upload"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

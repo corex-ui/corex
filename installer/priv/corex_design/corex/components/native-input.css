@@ -21,7 +21,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .native-input [data-scope="native-input"][data-part="root"][data-readonly],
+  .native-input [data-scope="native-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

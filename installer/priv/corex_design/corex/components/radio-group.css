@@ -18,7 +18,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .radio-group [data-scope="radio-group"][data-part="root"][data-readonly],
+  .radio-group [data-scope="radio-group"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

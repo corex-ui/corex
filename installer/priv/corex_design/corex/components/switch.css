@@ -21,7 +21,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .switch [data-scope="switch"][data-part="root"][data-readonly],
+  .switch [data-scope="switch"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

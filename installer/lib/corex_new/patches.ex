@@ -531,7 +531,7 @@ defmodule Corex.New.Patches do
       case Regex.run(pattern, content) do
         [full] ->
           locale_scope =
-            String.replace(full, ~S(scope "/"), ~S(scope "/:locale",), global: false)
+            String.replace(full, ~S(scope "/"), ~S(scope "/:locale"), global: false)
 
           String.replace(content, full, full <> "\n\n  " <> locale_scope, global: false)
 
