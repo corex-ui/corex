@@ -26,8 +26,7 @@
     color: var(--color-alert, var(--color-ink));
   }
 
-  .tags-input [data-scope="tags-input"][data-part="root"][data-readonly],
-  .tags-input [data-scope="tags-input"][data-part="root"][data-read-only] {
+  .tags-input [data-scope="tags-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

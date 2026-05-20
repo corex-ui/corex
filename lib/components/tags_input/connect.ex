@@ -228,7 +228,8 @@ defmodule Corex.TagsInput.Connect do
     %{
       "data-scope" => "tags-input",
       "data-part" => "root",
-      "id" => "tags-input:#{assigns.id}"
+      "id" => "tags-input:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
     |> maybe_put_dir_from(assigns)
   end

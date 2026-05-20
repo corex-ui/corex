@@ -1113,6 +1113,17 @@ function readInstant(detail) {
   }
   return false;
 }
+function toZagPage(page) {
+  if (page == null) return void 0;
+  return Math.max(0, page - 1);
+}
+function fromZagPage(page) {
+  return page + 1;
+}
+function readCorexPage(el, attr) {
+  const dataKey = attr === "page" ? "page" : "defaultPage";
+  return toZagPage(getNumber(el, dataKey));
+}
 var CarouselHook = {
   mounted() {
     const el = this.el;
@@ -1126,7 +1137,7 @@ var CarouselHook = {
     const zag = new Carousel(el, {
       id: el.id,
       slideCount,
-      ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") },
+      ...controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") },
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -1146,7 +1157,7 @@ var CarouselHook = {
           pushEvent,
           payload: {
             id: el.id,
-            page: details.page,
+            page: fromZagPage(details.page),
             pageSnapPoint: details.pageSnapPoint
           },
           serverEventName: getString(el, "onPageChange"),
@@ -1196,7 +1207,7 @@ var CarouselHook = {
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") },
+      ...controlled ? { page: readCorexPage(this.el, "page") } : { defaultPage: readCorexPage(this.el, "defaultPage") },
       dir: getDir(this.el),
       orientation: getString(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),

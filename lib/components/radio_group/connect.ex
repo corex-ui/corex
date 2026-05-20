@@ -45,7 +45,8 @@ defmodule Corex.RadioGroup.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}",
-      "style" => "position:relative;"
+      "style" => "position:relative;",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
 
     if assigns.has_label do

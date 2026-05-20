@@ -606,21 +606,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def styling_size_code do
     ~S"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--size-sm">
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--size-sm</:content>
+        <:content>tooltip--sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-md">
+      <.tooltip class="tooltip tooltip--md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--size-md</:content>
+        <:content>tooltip--md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-lg">
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--size-lg</:content>
+        <:content>tooltip--lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-xl">
+      <.tooltip class="tooltip tooltip--xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--size-xl</:content>
+        <:content>tooltip--xl</:content>
       </.tooltip>
     </div>
     """
@@ -631,21 +631,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--size-sm">
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--size-sm</:content>
+        <:content>tooltip--sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-md">
+      <.tooltip class="tooltip tooltip--md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--size-md</:content>
+        <:content>tooltip--md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-lg">
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--size-lg</:content>
+        <:content>tooltip--lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-xl">
+      <.tooltip class="tooltip tooltip--xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--size-xl</:content>
+        <:content>tooltip--xl</:content>
       </.tooltip>
     </div>
     """

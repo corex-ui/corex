@@ -21,8 +21,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .native-input [data-scope="native-input"][data-part="root"][data-readonly],
-  .native-input [data-scope="native-input"][data-part="root"][data-read-only] {
+  .native-input [data-scope="native-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 
@@ -222,5 +221,27 @@
 
   .native-input [data-scope="native-input"][data-part="date-wrapper"]:focus-within [data-part="placeholder-overlay"] {
     visibility: hidden;
+  }
+}
+
+@utility native-input--* {
+  [data-scope="native-input"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
+  }
+
+  [data-scope="native-input"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="native-input"][data-part="input"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
+    border-color: --value(--color-border, [color]);
   }
 }

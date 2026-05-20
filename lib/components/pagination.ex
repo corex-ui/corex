@@ -2,7 +2,7 @@ defmodule Corex.Pagination do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Pagination](https://zagjs.com/components/react/pagination).
 
-  Pagination `page` is **1-based** (first page is `1`). [Carousel](`Corex.Carousel`) `page` is **0-based** — do not mix the two. Page numbers and ellipses are rendered on the server so the control is complete before the hook runs.
+  Pagination and [Carousel](`Corex.Carousel`) both use **1-based** `page` (first page is `1`). Page numbers and ellipses are rendered on the server so the control is complete before the hook runs.
 
   ## Anatomy
 

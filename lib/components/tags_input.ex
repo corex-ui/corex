@@ -363,8 +363,8 @@ defmodule Corex.TagsInput do
       })}
     >
       <div
-        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})}
-        {Connect.root(%Root{id: @id, dir: @dir})}
+        phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})}
+        {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}
       >
         <input
           :if={@name}

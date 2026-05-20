@@ -60,7 +60,8 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}",
       "htmlFor" => "checkbox:#{assigns.id}:input",
       "for" => "checkbox:#{assigns.id}:input",
-      "data-state" => state
+      "data-state" => state,
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
     |> maybe_put_dir(assigns.dir)
   end

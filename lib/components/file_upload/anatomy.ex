@@ -58,7 +58,7 @@ defmodule Corex.FileUpload.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
 

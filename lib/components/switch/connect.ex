@@ -51,7 +51,8 @@ defmodule Corex.Switch.Connect do
       "id" => "switch:#{assigns.id}",
       "htmlFor" => "switch:#{assigns.id}:input",
       "for" => "switch:#{assigns.id}:input",
-      "data-state" => state
+      "data-state" => state,
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
     |> maybe_put_dir(assigns.dir)
   end

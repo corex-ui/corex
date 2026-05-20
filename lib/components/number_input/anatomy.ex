@@ -48,7 +48,7 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, dir: "ltr", orientation: "horizontal"]
+    defstruct [:id, dir: "ltr", orientation: "horizontal", read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 

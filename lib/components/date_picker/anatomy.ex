@@ -82,11 +82,12 @@ defmodule Corex.DatePicker.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t()
+            dir: String.t(),
+            read_only: boolean()
           }
 
     @ignored_attrs ["id", "dir", "data-state", "data-open", "data-focus"]

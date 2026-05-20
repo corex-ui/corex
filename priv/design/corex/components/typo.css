@@ -398,3 +398,8 @@
     color: var(--color-ink-muted);
   }
 }
+
+@utility typo--* {
+  font-size: --value(--text-*, [length]);
+  line-height: --value(--text-*--line-height, [length]);
+}

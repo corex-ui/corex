@@ -8,7 +8,7 @@ defmodule Corex.Carousel.Utils do
       aria_label: nil,
       items: nil,
       item_count: nil,
-      page: 0,
+      page: 1,
       controlled: false,
       dir: "ltr",
       orientation: "horizontal",
@@ -36,7 +36,7 @@ defmodule Corex.Carousel.Utils do
     slide_count = resolved_slide_count(assigns, items)
     slides_per_page = Map.get(assigns, :slides_per_page) || 1
     total_pages = total_pages_for(slide_count, slides_per_page)
-    page = Map.get(assigns, :page) || 0
+    page = Map.get(assigns, :page) || 1
     loop = Map.get(assigns, :loop, false)
 
     prev_disabled = prev_nav_disabled?(loop, page)
@@ -58,10 +58,10 @@ defmodule Corex.Carousel.Utils do
     div(slide_count + slides_per_page - 1, slides_per_page)
   end
 
-  defp prev_nav_disabled?(loop, page), do: !loop and page <= 0
+  defp prev_nav_disabled?(loop, page), do: !loop and page <= 1
 
   defp next_nav_disabled?(loop, page, total_pages) do
-    !loop and (total_pages == 0 or page >= total_pages - 1)
+    !loop and (total_pages == 0 or page >= total_pages)
   end
 
   def item_slot?(assigns) when is_map(assigns) do

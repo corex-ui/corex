@@ -76,6 +76,35 @@ defmodule Corex.CarouselTest do
     end
   end
 
+  describe "Connect.indicator/1" do
+    test "marks first indicator current when page is 1" do
+      result =
+        Connect.indicator(%{
+          id: "test-carousel",
+          index: 0,
+          page: 1,
+          orientation: "horizontal",
+          dir: "ltr"
+        })
+
+      assert result["data-current"] == ""
+      assert result["data-index"] == "0"
+    end
+
+    test "marks second indicator current when page is 2" do
+      result =
+        Connect.indicator(%{
+          id: "test-carousel",
+          index: 1,
+          page: 2,
+          orientation: "horizontal",
+          dir: "ltr"
+        })
+
+      assert result["data-current"] == ""
+    end
+  end
+
   describe "Connect.control/1" do
     test "returns control attributes" do
       assigns = %{id: "test-carousel", orientation: "horizontal"}

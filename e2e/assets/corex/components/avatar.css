@@ -84,46 +84,6 @@
   .avatar.avatar--square [data-scope="avatar"][data-part="fallback"] {
     border-radius: var(--radius-md);
   }
-
-  .avatar.avatar--sm [data-scope="avatar"][data-part="root"] {
-    width: var(--spacing-size-sm);
-    height: var(--spacing-size-sm);
-  }
-
-  .avatar.avatar--sm [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-xs);
-    line-height: var(--text-xs--line-height);
-  }
-
-  .avatar.avatar--md [data-scope="avatar"][data-part="root"] {
-    width: var(--spacing-size);
-    height: var(--spacing-size);
-  }
-
-  .avatar.avatar--md [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-base);
-    line-height: var(--text-base--line-height);
-  }
-
-  .avatar.avatar--lg [data-scope="avatar"][data-part="root"] {
-    width: var(--spacing-size-lg);
-    height: var(--spacing-size-lg);
-  }
-
-  .avatar.avatar--lg [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-lg);
-    line-height: var(--text-lg--line-height);
-  }
-
-  .avatar.avatar--xl [data-scope="avatar"][data-part="root"] {
-    width: var(--spacing-size-xl);
-    height: var(--spacing-size-xl);
-  }
-
-  .avatar.avatar--xl [data-scope="avatar"][data-part="fallback"] {
-    font-size: var(--text-xl);
-    line-height: var(--text-xl--line-height);
-  }
 }
 
 @keyframes avatar-skeleton-loading {

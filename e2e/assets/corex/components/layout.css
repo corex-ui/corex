@@ -29,11 +29,6 @@
     align-items: center;
   }
 
-  .layout__header--compact {
-    height: auto;
-    
-  }
-
   .layout__header__content,
   .layout__footer__content,
   .layout__side__content {
@@ -238,5 +233,10 @@
       max-width: var(--breakpoint-lg);
     }
   }
+}
 
+@utility layout--compact {
+  .layout__header {
+    height: auto;
+  }
 }

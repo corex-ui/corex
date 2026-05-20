@@ -89,7 +89,8 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "root",
       "id" => "number-input:#{assigns.id}",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

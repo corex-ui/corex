@@ -120,7 +120,6 @@
     @apply ui-error;
   }
 
-  .combobox [data-scope="combobox"][data-part="root"][data-read-only],
   .combobox [data-scope="combobox"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }

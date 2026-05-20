@@ -63,6 +63,16 @@ defmodule Corex.NativeInput do
   </.form>
   ```
 
+  ## Read-only
+
+  Pass `read_only={true}` or `readonly` in global attributes. Both set `data-readonly` on the root for Corex CSS and the HTML `readonly` attribute on the input.
+
+  ```heex
+  <.native_input type="text" name="user[code]" read_only class="native-input">
+    <:label>Code</:label>
+  </.native_input>
+  ```
+
   ## Form
 
   Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
@@ -112,6 +122,12 @@ defmodule Corex.NativeInput do
   attr(:name, :string, required: false)
   attr(:value, :any)
   attr(:invalid, :boolean, default: false)
+
+  attr(:read_only, :boolean,
+    default: false,
+    doc: "Read-only state; also sets HTML readonly on the input"
+  )
+
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
@@ -159,6 +175,7 @@ defmodule Corex.NativeInput do
       if assigns.multiple, do: field.name <> "[]", else: field.name
     end)
     |> assign_new(:value, fn -> field.value end)
+    |> assign_read_only()
     |> native_input()
   end
 
@@ -167,13 +184,14 @@ defmodule Corex.NativeInput do
   def native_input(%{type: "checkbox"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:checked, fn ->
         Form.normalize_value("checkbox", assigns[:value])
       end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
       <div data-scope="native-input" data-part="control">
         <input
           type="hidden"
@@ -211,11 +229,12 @@ defmodule Corex.NativeInput do
   def native_input(%{type: "select"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
       <label :for={label <- @label} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
         {render_slot(label)}
       </label>
@@ -247,12 +266,13 @@ defmodule Corex.NativeInput do
   def native_input(%{type: "radio"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
       |> assign(:options, assigns[:options] || [])
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
     <label :for={label <- @label} data-scope="native-input" data-part="label">
     {render_slot(label)}
       </label>
@@ -286,13 +306,14 @@ defmodule Corex.NativeInput do
   def native_input(assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
       |> assign(:show_icon, show_icon?(assigns))
 
     ~H"""
     <div id={@id} class={@class} data-no-icon={if @show_icon, do: nil, else: ""} data-invalid={@invalid && ""}>
-      <div data-scope="native-input" data-part="root">
+      <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
         <label :for={label <- @label} class={Map.get(label, :class, nil)} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
           {render_slot(label)}
         </label>
@@ -331,6 +352,22 @@ defmodule Corex.NativeInput do
       </div>
     </div>
     """
+  end
+
+  defp assign_read_only(assigns) do
+    read_only =
+      assigns[:read_only] == true ||
+        assigns.rest[:readonly] == true ||
+        assigns.rest[:readonly] == "readonly"
+
+    rest =
+      if read_only do
+        Map.put(assigns.rest, :readonly, true)
+      else
+        assigns.rest
+      end
+
+    assign(assigns, read_only: read_only, rest: rest)
   end
 
   defp error_wrapper_class(error_slot) do

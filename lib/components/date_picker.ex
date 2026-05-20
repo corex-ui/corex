@@ -572,7 +572,7 @@ defmodule Corex.DatePicker do
         translation: @translation
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})}>
         <label
           :if={@label != []}
           phx-mounted={Connect.ignore_label(%Anatomy.Label{id: @id, dir: @dir})}

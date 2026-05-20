@@ -107,7 +107,8 @@ defmodule Corex.Editable.Connect do
       "data-part" => "root",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "id" => "editable:#{assigns.id}"
+      "id" => "editable:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

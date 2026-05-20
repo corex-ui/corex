@@ -348,7 +348,11 @@ defmodule Corex.Carousel do
       "When set, overrides the slide count used for the hook and compound context (use in compound mode without `items`)."
   )
 
-  attr(:page, :integer, default: 0)
+  attr(:page, :integer,
+    default: 1,
+    doc: "Active page (1-based, same as pagination; first page is 1)"
+  )
+
   attr(:controlled, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])

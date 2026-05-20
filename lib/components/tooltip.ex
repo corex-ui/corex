@@ -143,10 +143,10 @@ defmodule Corex.Tooltip do
 
   | Modifier | Classes |
   | -------- | ------- |
-  | SM | `tooltip tooltip--size-sm` |
-  | MD | `tooltip tooltip--size-md` |
-  | LG | `tooltip tooltip--size-lg` |
-  | XL | `tooltip tooltip--size-xl` |
+  | SM | `tooltip tooltip--sm` |
+  | MD | `tooltip tooltip--md` |
+  | LG | `tooltip tooltip--lg` |
+  | XL | `tooltip tooltip--xl` |
 
   ### Text
 

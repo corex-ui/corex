@@ -17,8 +17,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .select [data-scope="select"][data-part="root"][data-readonly],
-  .select [data-scope="select"][data-part="root"][data-read-only] {
+  .select [data-scope="select"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

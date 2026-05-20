@@ -339,7 +339,7 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
         <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
         <input
           phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}

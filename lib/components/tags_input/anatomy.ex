@@ -70,7 +70,7 @@ defmodule Corex.TagsInput.Anatomy do
   defmodule Root do
     @moduledoc false
 
-    defstruct [:id, dir: "ltr"]
+    defstruct [:id, dir: "ltr", read_only: false]
 
     @ignored_attrs [
       "data-focus",

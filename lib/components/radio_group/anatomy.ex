@@ -40,7 +40,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :orientation, :has_label]
+    defstruct [:id, :dir, :orientation, :has_label, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),

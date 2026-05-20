@@ -5248,6 +5248,17 @@ var Corex = (() => {
     }
     return false;
   }
+  function toZagPage(page) {
+    if (page == null) return void 0;
+    return Math.max(0, page - 1);
+  }
+  function fromZagPage(page) {
+    return page + 1;
+  }
+  function readCorexPage(el, attr) {
+    const dataKey = attr === "page" ? "page" : "defaultPage";
+    return toZagPage(getNumber(el, dataKey));
+  }
   var anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, getDirection, convert, uniq2, clamp2, DRIFT_THRESHOLD, machine4, Carousel, CarouselHook;
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
@@ -5912,7 +5923,7 @@ var Corex = (() => {
           const zag = new Carousel(el, __spreadProps(__spreadValues({
             id: el.id,
             slideCount
-          }, controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") }), {
+          }, controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") }), {
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -5932,7 +5943,7 @@ var Corex = (() => {
                 pushEvent,
                 payload: {
                   id: el.id,
-                  page: details.page,
+                  page: fromZagPage(details.page),
                   pageSnapPoint: details.pageSnapPoint
                 },
                 serverEventName: getString(el, "onPageChange"),
@@ -5983,7 +5994,7 @@ var Corex = (() => {
           (_a4 = this.carousel) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
             slideCount
-          }, controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") }), {
+          }, controlled ? { page: readCorexPage(this.el, "page") } : { defaultPage: readCorexPage(this.el, "defaultPage") }), {
             dir: getDir(this.el),
             orientation: getString(this.el, "orientation"),
             slidesPerPage: getNumber(this.el, "slidesPerPage"),

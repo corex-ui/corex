@@ -18,8 +18,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .color-picker [data-scope="color-picker"][data-part="root"][data-readonly],
-  .color-picker [data-scope="color-picker"][data-part="root"][data-read-only] {
+  .color-picker [data-scope="color-picker"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

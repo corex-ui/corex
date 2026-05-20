@@ -166,3 +166,24 @@
     user-select: auto !important;
   }
 }
+
+@utility floating-panel--* {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-part="title"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    padding: --value(--spacing-space-*, [length]);
+  }
+}

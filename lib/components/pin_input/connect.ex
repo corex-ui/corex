@@ -74,7 +74,8 @@ defmodule Corex.PinInput.Connect do
       "data-part" => "root",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "id" => "pin-input:#{assigns.id}"
+      "id" => "pin-input:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

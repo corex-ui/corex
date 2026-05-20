@@ -101,7 +101,8 @@ defmodule Corex.FileUpload.Connect do
       "data-scope" => "file-upload",
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
-      "id" => zid(assigns.id)
+      "id" => zid(assigns.id),
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

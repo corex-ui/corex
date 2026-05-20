@@ -50,7 +50,7 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, :dir, orientation: "horizontal", read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 

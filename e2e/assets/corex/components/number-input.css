@@ -18,8 +18,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .number-input [data-scope="number-input"][data-part="root"][data-readonly],
-  .number-input [data-scope="number-input"][data-part="root"][data-read-only] {
+  .number-input [data-scope="number-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

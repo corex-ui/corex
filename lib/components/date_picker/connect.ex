@@ -104,7 +104,8 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "root",
       "dir" => assigns.dir,
       "id" => "date-picker:#{assigns.id}",
-      "data-state" => "closed"
+      "data-state" => "closed",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

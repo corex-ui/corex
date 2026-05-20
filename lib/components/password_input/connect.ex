@@ -84,7 +84,8 @@ defmodule Corex.PasswordInput.Connect do
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
-      "id" => "password-input:#{assigns.id}"
+      "id" => "password-input:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

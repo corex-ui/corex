@@ -21,6 +21,20 @@ function readInstant(detail: unknown): boolean {
   return false;
 }
 
+function toZagPage(page: number | undefined): number | undefined {
+  if (page == null) return undefined;
+  return Math.max(0, page - 1);
+}
+
+function fromZagPage(page: number): number {
+  return page + 1;
+}
+
+function readCorexPage(el: HTMLElement, attr: "page" | "defaultPage"): number | undefined {
+  const dataKey = attr === "page" ? "page" : "defaultPage";
+  return toZagPage(getNumber(el, dataKey));
+}
+
 const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & CarouselHookState) {
     const el = this.el;
@@ -35,8 +49,8 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
       id: el.id,
       slideCount,
       ...(controlled
-        ? { page: getNumber(el, "page") }
-        : { defaultPage: getNumber(el, "defaultPage") }),
+        ? { page: readCorexPage(el, "page") }
+        : { defaultPage: readCorexPage(el, "defaultPage") }),
       dir: getDir(el),
       orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -57,7 +71,7 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
           pushEvent,
           payload: {
             id: el.id,
-            page: details.page,
+            page: fromZagPage(details.page),
             pageSnapPoint: details.pageSnapPoint,
           },
           serverEventName: getString(el, "onPageChange"),
@@ -111,8 +125,8 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
       id: this.el.id,
       slideCount,
       ...(controlled
-        ? { page: getNumber(this.el, "page") }
-        : { defaultPage: getNumber(this.el, "defaultPage") }),
+        ? { page: readCorexPage(this.el, "page") }
+        : { defaultPage: readCorexPage(this.el, "defaultPage") }),
       dir: getDir(this.el),
       orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),

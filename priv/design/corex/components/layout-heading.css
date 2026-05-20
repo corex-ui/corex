@@ -47,12 +47,20 @@
 }
 
 @utility layout-heading--* {
+  [data-scope="layout-heading"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+    padding: --value(--spacing-space-*, [length]);
+  }
 
   [data-scope="layout-heading"][data-part="title"] {
-    color: --value(--color-ink-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    color: --value(--color-ink, [color]);
   }
 
   [data-scope="layout-heading"][data-part="subtitle"] {
-    color: --value(--color-ink-*, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    color: --value(--color-ink-muted, [color]);
   }
 }

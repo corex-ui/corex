@@ -23,8 +23,7 @@
     pointer-events: none;
   }
 
-  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly],
-  .pin-input [data-scope="pin-input"][data-part="root"][data-read-only] {
+  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

@@ -372,7 +372,7 @@ defmodule Corex.FileUpload do
       >
         {render_slot(@close)}
       </template>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>

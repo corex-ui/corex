@@ -225,13 +225,13 @@ defmodule Corex.Carousel.Connect do
 
   @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
-    page = Map.get(assigns, :page, 0)
+    page = Map.get(assigns, :page, 1)
 
     %{
       "data-scope" => "carousel",
       "data-part" => "indicator",
       "data-index" => to_string(assigns.index),
-      "data-current" => get_boolean(assigns.index == page),
+      "data-current" => get_boolean(assigns.index + 1 == page),
       "data-orientation" => assigns.orientation || "horizontal",
       "type" => "button",
       "id" => "carousel:#{assigns.id}:indicator:#{assigns.index}"

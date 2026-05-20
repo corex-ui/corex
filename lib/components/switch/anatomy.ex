@@ -44,7 +44,7 @@ defmodule Corex.Switch.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "horizontal"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal", read_only: false]
 
     @ignored_attrs [
       "data-state",

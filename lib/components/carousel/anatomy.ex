@@ -8,7 +8,7 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [
       :id,
       slide_count: 0,
-      page: 0,
+      page: 1,
       controlled: false,
       dir: "ltr",
       orientation: "horizontal",

@@ -23,8 +23,7 @@
     padding-inline-end: var(--spacing-space);
   }
 
-  .date-picker [data-scope="date-picker"][data-part="root"][data-readonly],
-  .date-picker [data-scope="date-picker"][data-part="root"][data-read-only] {
+  .date-picker [data-scope="date-picker"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 

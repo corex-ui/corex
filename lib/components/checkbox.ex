@@ -942,7 +942,7 @@ defmodule Corex.Checkbox do
       })}
     >
 
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
 
       <input

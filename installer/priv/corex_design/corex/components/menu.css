@@ -202,3 +202,34 @@
     pointer-events: auto;
   }
 }
+
+@utility menu--* {
+  [data-scope="menu"][data-part="content"] {
+    background-color: --value(--color-*, [color]);
+    border-color: --value(--color-border, [color]);
+  }
+
+  [data-scope="menu"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="menu"][data-part="item"],
+  [data-scope="menu"][data-part="trigger-item"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="menu"][data-part="item-group-label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+}
