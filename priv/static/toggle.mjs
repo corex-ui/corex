@@ -209,5 +209,6 @@ var ToggleHook = {
   }
 };
 export {
-  ToggleHook as Toggle
+  ToggleHook as Toggle,
+  pressedChangePayload
 };

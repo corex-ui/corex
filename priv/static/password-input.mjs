@@ -274,6 +274,9 @@ var PasswordInput = class extends Component {
 };
 
 // hooks/password-input.ts
+function visibilityChangePayload(el, details) {
+  return { id: el.id, visible: details.visible };
+}
 var PasswordInputHook = {
   mounted() {
     const el = this.el;
@@ -295,7 +298,7 @@ var PasswordInputHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, visible: details.visible },
+          payload: visibilityChangePayload(el, details),
           serverEventName: getString(el, "onVisibilityChange"),
           clientEventName: getString(el, "onVisibilityChangeClient")
         });
@@ -357,5 +360,6 @@ var PasswordInputHook = {
   }
 };
 export {
-  PasswordInputHook as PasswordInput
+  PasswordInputHook as PasswordInput,
+  visibilityChangePayload
 };

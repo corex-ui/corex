@@ -290,6 +290,9 @@ var Clipboard = class extends Component {
 };
 
 // hooks/clipboard.ts
+function copyPayload(el, value) {
+  return { id: el.id, value };
+}
 var ClipboardHook = {
   mounted() {
     const el = this.el;
@@ -306,7 +309,7 @@ var ClipboardHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value },
+          payload: copyPayload(el, value),
           serverEventName: getString(el, "onCopy"),
           clientEventName: getString(el, "onCopyClient")
         });
@@ -351,5 +354,6 @@ var ClipboardHook = {
   }
 };
 export {
-  ClipboardHook as Clipboard
+  ClipboardHook as Clipboard,
+  copyPayload
 };

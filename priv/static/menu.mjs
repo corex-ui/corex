@@ -13,7 +13,7 @@ import {
 import "./chunks/chunk-QS5WHZEI.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VPEGVSVG.mjs";
+} from "./chunks/chunk-RONCOJLT.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -1919,5 +1919,6 @@ var MenuHook = {
   }
 };
 export {
-  MenuHook as Menu
+  MenuHook as Menu,
+  findImmediateParentMenuHookEl
 };

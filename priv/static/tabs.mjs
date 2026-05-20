@@ -607,6 +607,12 @@ var Tabs = class extends Component {
 };
 
 // hooks/tabs.ts
+function tabsValueChangePayload(el, details) {
+  return { id: el.id, value: details.value ?? null };
+}
+function tabsFocusChangePayload(el, details) {
+  return { id: el.id, value: details.focusedValue ?? null };
+}
 var TabsHook = {
   mounted() {
     const el = this.el;
@@ -622,7 +628,7 @@ var TabsHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.value ?? null },
+          payload: tabsValueChangePayload(el, details),
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
@@ -632,7 +638,7 @@ var TabsHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.focusedValue ?? null },
+          payload: tabsFocusChangePayload(el, details),
           serverEventName: getString(el, "onFocusChange"),
           clientEventName: getString(el, "onFocusChangeClient")
         });
@@ -683,5 +689,7 @@ var TabsHook = {
   }
 };
 export {
-  TabsHook as Tabs
+  TabsHook as Tabs,
+  tabsFocusChangePayload,
+  tabsValueChangePayload
 };

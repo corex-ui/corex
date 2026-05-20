@@ -1075,5 +1075,6 @@ var ListboxHook = {
   }
 };
 export {
-  ListboxHook as Listbox
+  ListboxHook as Listbox,
+  buildCollection
 };

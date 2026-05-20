@@ -1220,5 +1220,8 @@ var FileUploadHook = {
   }
 };
 export {
-  FileUploadHook as FileUpload
+  FileUploadHook as FileUpload,
+  fileAcceptPayload,
+  fileChangePayload,
+  fileRejectPayload
 };

@@ -642,5 +642,6 @@ var RadioGroupHook = {
   }
 };
 export {
-  RadioGroupHook as RadioGroup
+  RadioGroupHook as RadioGroup,
+  valueChangePayload
 };

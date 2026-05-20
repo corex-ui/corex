@@ -443,5 +443,6 @@ var CheckboxHook = {
   }
 };
 export {
-  CheckboxHook as Checkbox
+  CheckboxHook as Checkbox,
+  checkedChangePayload
 };

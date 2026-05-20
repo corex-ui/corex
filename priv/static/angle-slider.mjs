@@ -633,5 +633,6 @@ var AngleSliderHook = {
   }
 };
 export {
-  AngleSliderHook as AngleSlider
+  AngleSliderHook as AngleSlider,
+  valueChangePayload
 };

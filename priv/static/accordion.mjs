@@ -596,5 +596,6 @@ var AccordionHook = {
   }
 };
 export {
-  AccordionHook as Accordion
+  AccordionHook as Accordion,
+  readAccordionLayoutProps
 };

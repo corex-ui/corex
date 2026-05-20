@@ -3215,7 +3215,8 @@ var Corex = (() => {
   // ../priv/static/accordion.mjs
   var accordion_exports = {};
   __export(accordion_exports, {
-    Accordion: () => AccordionHook
+    Accordion: () => AccordionHook,
+    readAccordionLayoutProps: () => readAccordionLayoutProps
   });
   function connect(service, normalize) {
     const { send, context, prop, scope, computed } = service;
@@ -3911,7 +3912,8 @@ var Corex = (() => {
   // ../priv/static/angle-slider.mjs
   var angle_slider_exports = {};
   __export(angle_slider_exports, {
-    AngleSlider: () => AngleSliderHook
+    AngleSlider: () => AngleSliderHook,
+    valueChangePayload: () => valueChangePayload
   });
   function getPointAngle(rect, point, reference = rect.center) {
     const x2 = point.x - reference.x;
@@ -4528,7 +4530,8 @@ var Corex = (() => {
   // ../priv/static/avatar.mjs
   var avatar_exports = {};
   __export(avatar_exports, {
-    Avatar: () => AvatarHook
+    Avatar: () => AvatarHook,
+    statusPayload: () => statusPayload
   });
   function connect3(service, normalize) {
     const { state: state2, send, prop, scope } = service;
@@ -6196,7 +6199,8 @@ var Corex = (() => {
   // ../priv/static/checkbox.mjs
   var checkbox_exports = {};
   __export(checkbox_exports, {
-    Checkbox: () => CheckboxHook
+    Checkbox: () => CheckboxHook,
+    checkedChangePayload: () => checkedChangePayload
   });
   function connect5(service, normalize) {
     const { send, context, prop, computed, scope } = service;
@@ -6706,7 +6710,8 @@ var Corex = (() => {
   // ../priv/static/clipboard.mjs
   var clipboard_exports = {};
   __export(clipboard_exports, {
-    Clipboard: () => ClipboardHook
+    Clipboard: () => ClipboardHook,
+    copyPayload: () => copyPayload
   });
   function createNode(doc, text) {
     const node = doc.createElement("pre");
@@ -6812,6 +6817,9 @@ var Corex = (() => {
         }));
       }
     };
+  }
+  function copyPayload(el, value) {
+    return { id: el.id, value };
   }
   var anatomy6, parts6, getRootId6, getInputId, getLabelId3, getInputEl, writeToClipboard, machine6, Clipboard, ClipboardHook;
   var init_clipboard = __esm({
@@ -6995,7 +7003,7 @@ var Corex = (() => {
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value },
+                payload: copyPayload(el, value),
                 serverEventName: getString(el, "onCopy"),
                 clientEventName: getString(el, "onCopyClient")
               });
@@ -7049,7 +7057,8 @@ var Corex = (() => {
   // ../priv/static/collapsible.mjs
   var collapsible_exports = {};
   __export(collapsible_exports, {
-    Collapsible: () => CollapsibleHook
+    Collapsible: () => CollapsibleHook,
+    openChangePayload: () => openChangePayload
   });
   function connect7(service, normalize) {
     const { state: state2, send, context, scope, prop } = service;
@@ -10176,7 +10185,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-VPEGVSVG.mjs
+  // ../priv/static/chunks/chunk-RONCOJLT.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10202,9 +10211,10 @@ var Corex = (() => {
     const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
     const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
     if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
-      options.offset = {};
-      if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
-      if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+      const offset3 = {};
+      if (offsetMainAxis !== void 0) offset3.mainAxis = offsetMainAxis;
+      if (offsetCrossAxis !== void 0) offset3.crossAxis = offsetCrossAxis;
+      options.offset = offset3;
     }
     const flip3 = readFlipAttr(el);
     if (flip3 !== void 0) options.flip = flip3;
@@ -10220,8 +10230,8 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_VPEGVSVG = __esm({
-    "../priv/static/chunks/chunk-VPEGVSVG.mjs"() {
+  var init_chunk_RONCOJLT = __esm({
+    "../priv/static/chunks/chunk-RONCOJLT.mjs"() {
       "use strict";
       init_chunk_XGGASIX4();
     }
@@ -12235,7 +12245,7 @@ var Corex = (() => {
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_PWLG55J6();
       init_chunk_Q3YPKFFU();
       init_chunk_FOQSALVP();
@@ -13616,7 +13626,8 @@ var Corex = (() => {
   // ../priv/static/color-picker.mjs
   var color_picker_exports = {};
   __export(color_picker_exports, {
-    ColorPicker: () => ColorPickerHook
+    ColorPicker: () => ColorPickerHook,
+    readValueProps: () => readValueProps
   });
   function getColorAreaGradient(color, options) {
     const { xChannel, yChannel, dir: dirProp = "ltr" } = options;
@@ -14411,7 +14422,7 @@ var Corex = (() => {
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy9 = createAnatomy("color-picker", [
@@ -18349,7 +18360,7 @@ var Corex = (() => {
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
       anatomy10 = createAnatomy("date-picker").parts(
@@ -20596,7 +20607,8 @@ var Corex = (() => {
   // ../priv/static/dialog.mjs
   var dialog_exports = {};
   __export(dialog_exports, {
-    Dialog: () => DialogHook
+    Dialog: () => DialogHook,
+    readDialogLayoutProps: () => readDialogLayoutProps
   });
   function connect11(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
@@ -21973,7 +21985,8 @@ var Corex = (() => {
   // ../priv/static/editable.mjs
   var editable_exports = {};
   __export(editable_exports, {
-    Editable: () => EditableHook
+    Editable: () => EditableHook,
+    dataDefaultValue: () => dataDefaultValue
   });
   function connect12(service, normalize) {
     var _a4;
@@ -22632,7 +22645,10 @@ var Corex = (() => {
   // ../priv/static/file-upload.mjs
   var file_upload_exports = {};
   __export(file_upload_exports, {
-    FileUpload: () => FileUploadHook
+    FileUpload: () => FileUploadHook,
+    fileAcceptPayload: () => fileAcceptPayload,
+    fileChangePayload: () => fileChangePayload,
+    fileRejectPayload: () => fileRejectPayload
   });
   function isMIMEType(v2) {
     return v2 === "audio/*" || v2 === "video/*" || v2 === "image/*" || v2 === "text/*" || /\w+\/[-+.\w]+/g.test(v2);
@@ -24407,7 +24423,7 @@ ${err}`);
       "use strict";
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_77HPO22C();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -25420,7 +25436,8 @@ ${err}`);
   // ../priv/static/listbox.mjs
   var listbox_exports = {};
   __export(listbox_exports, {
-    Listbox: () => ListboxHook
+    Listbox: () => ListboxHook,
+    buildCollection: () => buildCollection
   });
   function connect15(service, normalize) {
     const { context, prop, scope, computed, send, refs } = service;
@@ -26462,7 +26479,8 @@ ${err}`);
   // ../priv/static/marquee.mjs
   var marquee_exports = {};
   __export(marquee_exports, {
-    Marquee: () => MarqueeHook
+    Marquee: () => MarqueeHook,
+    readMarqueeProps: () => readMarqueeProps
   });
   function connect16(service, normalize) {
     const { scope, send, context, computed, prop } = service;
@@ -27055,7 +27073,8 @@ ${err}`);
   // ../priv/static/menu.mjs
   var menu_exports = {};
   __export(menu_exports, {
-    Menu: () => MenuHook
+    Menu: () => MenuHook,
+    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl
   });
   function mergeProps(...args) {
     let result = {};
@@ -27658,7 +27677,7 @@ ${err}`);
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_FOQSALVP();
       init_chunk_VGZJOUNL();
       init_chunk_XGGASIX4();
@@ -28954,7 +28973,9 @@ ${err}`);
   // ../priv/static/number-input.mjs
   var number_input_exports = {};
   __export(number_input_exports, {
-    NumberInput: () => NumberInputHook
+    NumberInput: () => NumberInputHook,
+    buildMachineProps: () => buildMachineProps,
+    machineState: () => machineState
   });
   function recordCursor(inputEl, scope) {
     if (!inputEl || !scope.isActiveElement(inputEl)) return;
@@ -31126,7 +31147,8 @@ ${err}`);
   // ../priv/static/password-input.mjs
   var password_input_exports = {};
   __export(password_input_exports, {
-    PasswordInput: () => PasswordInputHook
+    PasswordInput: () => PasswordInputHook,
+    visibilityChangePayload: () => visibilityChangePayload
   });
   function connect20(service, normalize) {
     const { scope, prop, context } = service;
@@ -31223,6 +31245,9 @@ ${err}`);
         }));
       }
     };
+  }
+  function visibilityChangePayload(el, details) {
+    return { id: el.id, visible: details.visible };
   }
   var anatomy20, parts20, getInputId6, getInputEl5, passwordManagerProps, machine20, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
@@ -31395,7 +31420,7 @@ ${err}`);
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, visible: details.visible },
+                payload: visibilityChangePayload(el, details),
                 serverEventName: getString(el, "onVisibilityChange"),
                 clientEventName: getString(el, "onVisibilityChangeClient")
               });
@@ -32245,7 +32270,8 @@ ${err}`);
   // ../priv/static/radio-group.mjs
   var radio_group_exports = {};
   __export(radio_group_exports, {
-    RadioGroup: () => RadioGroupHook
+    RadioGroup: () => RadioGroupHook,
+    valueChangePayload: () => valueChangePayload2
   });
   function connect22(service, normalize) {
     const { context, send, computed, prop, scope } = service;
@@ -32883,7 +32909,8 @@ ${err}`);
   // ../priv/static/select.mjs
   var select_exports = {};
   __export(select_exports, {
-    Select: () => SelectHook
+    Select: () => SelectHook,
+    buildCollection: () => buildCollection2
   });
   function connect23(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
@@ -33363,7 +33390,7 @@ ${err}`);
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_PWLG55J6();
       init_chunk_Q3YPKFFU();
       init_chunk_FOQSALVP();
@@ -35116,7 +35143,8 @@ ${err}`);
   // ../priv/static/switch.mjs
   var switch_exports = {};
   __export(switch_exports, {
-    Switch: () => SwitchHook
+    Switch: () => SwitchHook,
+    checkedChangePayload: () => checkedChangePayload2
   });
   function connect25(service, normalize) {
     const { context, send, prop, scope } = service;
@@ -35544,7 +35572,8 @@ ${err}`);
     TagsInput: () => TagsInputHook,
     blurBehavior: () => blurBehavior,
     maxProp: () => maxProp,
-    parseJsonTags: () => parseJsonTags
+    parseJsonTags: () => parseJsonTags,
+    readPlaceholderFromMainInput: () => readPlaceholderFromMainInput
   });
   function connect26(service, normalize) {
     const { state: state2, send, computed, prop, scope, context } = service;
@@ -37016,7 +37045,9 @@ ${err}`);
   // ../priv/static/tabs.mjs
   var tabs_exports = {};
   __export(tabs_exports, {
-    Tabs: () => TabsHook
+    Tabs: () => TabsHook,
+    tabsFocusChangePayload: () => tabsFocusChangePayload,
+    tabsValueChangePayload: () => tabsValueChangePayload
   });
   function connect27(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
@@ -37214,6 +37245,14 @@ ${err}`);
       content: (value) => `tabs-${rootId}-content-${value}`,
       trigger: (value) => `tabs-${rootId}-trigger-${value}`
     };
+  }
+  function tabsValueChangePayload(el, details) {
+    var _a4;
+    return { id: el.id, value: (_a4 = details.value) != null ? _a4 : null };
+  }
+  function tabsFocusChangePayload(el, details) {
+    var _a4;
+    return { id: el.id, value: (_a4 = details.focusedValue) != null ? _a4 : null };
   }
   var anatomy27, parts27, getRootId22, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine27, Tabs, TabsHook;
   var init_tabs = __esm({
@@ -37619,23 +37658,21 @@ ${err}`);
             orientation: getString(el, "orientation"),
             dir: getString(el, "dir"),
             onValueChange: (details) => {
-              var _a4;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.value) != null ? _a4 : null },
+                payload: tabsValueChangePayload(el, details),
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
             },
             onFocusChange: (details) => {
-              var _a4;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.focusedValue) != null ? _a4 : null },
+                payload: tabsFocusChangePayload(el, details),
                 serverEventName: getString(el, "onFocusChange"),
                 clientEventName: getString(el, "onFocusChangeClient")
               });
@@ -38339,7 +38376,8 @@ ${err}`);
   var toast_exports = {};
   __export(toast_exports, {
     Toast: () => ToastHook,
-    parseActionSpec: () => parseActionSpec
+    parseActionSpec: () => parseActionSpec,
+    parseSingleExecJsEffect: () => parseSingleExecJsEffect
   });
   function getToastDuration(duration, type) {
     var _a4;
@@ -39963,7 +40001,8 @@ ${err}`);
   // ../priv/static/tooltip.mjs
   var tooltip_exports = {};
   __export(tooltip_exports, {
-    Tooltip: () => TooltipHook
+    Tooltip: () => TooltipHook,
+    getCloseDelay: () => getCloseDelay
   });
   function createStore(initialState, compare = Object.is) {
     let state2 = __spreadValues({}, initialState);
@@ -40193,7 +40232,7 @@ ${err}`);
     "../priv/static/tooltip.mjs"() {
       "use strict";
       init_chunk_KHWEM5PS();
-      init_chunk_VPEGVSVG();
+      init_chunk_RONCOJLT();
       init_chunk_VGZJOUNL();
       init_chunk_YECC7BC7();
       init_chunk_XGGASIX4();
@@ -40756,7 +40795,8 @@ ${err}`);
   // ../priv/static/toggle.mjs
   var toggle_exports = {};
   __export(toggle_exports, {
-    Toggle: () => ToggleHook
+    Toggle: () => ToggleHook,
+    pressedChangePayload: () => pressedChangePayload
   });
   function connect31(service, normalize) {
     const { context, prop, send } = service;
@@ -40951,7 +40991,9 @@ ${err}`);
   // ../priv/static/toggle-group.mjs
   var toggle_group_exports = {};
   __export(toggle_group_exports, {
-    ToggleGroup: () => ToggleGroupHook
+    ToggleGroup: () => ToggleGroupHook,
+    readToggleGroupPayloadValue: () => readToggleGroupPayloadValue,
+    valueChangePayload: () => valueChangePayload3
   });
   function connect32(service, normalize) {
     const { context, send, prop, scope } = service;
@@ -41084,7 +41126,7 @@ ${err}`);
       value: details.value
     };
   }
-  function readPayloadValue2(payload) {
+  function readToggleGroupPayloadValue(payload) {
     var _a4;
     if (!payload || typeof payload !== "object") return void 0;
     const o2 = payload;
@@ -41362,7 +41404,7 @@ ${err}`);
           this.handleRegistry = registry;
           registry.add("toggle-group_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            const value = readPayloadValue2(payload);
+            const value = readToggleGroupPayloadValue(payload);
             if (value) toggleGroup.api.setValue(value);
           });
           registry.add("toggle-group:value", (payload) => {
@@ -41402,7 +41444,8 @@ ${err}`);
     TreeView: () => TreeViewHook,
     parseRootNode: () => parseRootNode,
     readExpandedAttr: () => readExpandedAttr,
-    readSelectedAttr: () => readSelectedAttr
+    readSelectedAttr: () => readSelectedAttr,
+    readTreeViewInteractionProps: () => readTreeViewInteractionProps
   });
   function getCheckedState2(collection22, node, checkedValue) {
     const value = collection22.getNodeValue(node);

@@ -1647,5 +1647,6 @@ var ToastHook = {
 };
 export {
   ToastHook as Toast,
-  parseActionSpec
+  parseActionSpec,
+  parseSingleExecJsEffect
 };

@@ -1683,5 +1683,6 @@ export {
   TreeViewHook as TreeView,
   parseRootNode,
   readExpandedAttr,
-  readSelectedAttr
+  readSelectedAttr,
+  readTreeViewInteractionProps
 };

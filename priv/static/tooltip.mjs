@@ -4,7 +4,7 @@ import {
 } from "./chunks/chunk-KHWEM5PS.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VPEGVSVG.mjs";
+} from "./chunks/chunk-RONCOJLT.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
@@ -813,5 +813,6 @@ var TooltipHook = {
   }
 };
 export {
-  TooltipHook as Tooltip
+  TooltipHook as Tooltip,
+  getCloseDelay
 };

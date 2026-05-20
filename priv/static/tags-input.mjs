@@ -1494,5 +1494,6 @@ export {
   TagsInputHook as TagsInput,
   blurBehavior,
   maxProp,
-  parseJsonTags
+  parseJsonTags,
+  readPlaceholderFromMainInput
 };

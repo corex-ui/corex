@@ -444,5 +444,6 @@ var SwitchHook = {
   }
 };
 export {
-  SwitchHook as Switch
+  SwitchHook as Switch,
+  checkedChangePayload
 };

@@ -389,7 +389,7 @@ function valueChangePayload(el, details) {
     value: details.value
   };
 }
-function readPayloadValue(payload) {
+function readToggleGroupPayloadValue(payload) {
   if (!payload || typeof payload !== "object") return void 0;
   const o = payload;
   const v = o.value ?? o["value"];
@@ -435,7 +435,7 @@ var ToggleGroupHook = {
     this.handleRegistry = registry;
     registry.add("toggle-group_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      const value = readPayloadValue(payload);
+      const value = readToggleGroupPayloadValue(payload);
       if (value) toggleGroup.api.setValue(value);
     });
     registry.add("toggle-group:value", (payload) => {
@@ -466,5 +466,7 @@ var ToggleGroupHook = {
   }
 };
 export {
-  ToggleGroupHook as ToggleGroup
+  ToggleGroupHook as ToggleGroup,
+  readToggleGroupPayloadValue,
+  valueChangePayload
 };

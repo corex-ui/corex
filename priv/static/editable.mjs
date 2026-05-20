@@ -652,5 +652,6 @@ var EditableHook = {
   }
 };
 export {
-  EditableHook as Editable
+  EditableHook as Editable,
+  dataDefaultValue
 };

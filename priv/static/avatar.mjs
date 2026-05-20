@@ -293,5 +293,6 @@ var AvatarHook = {
   }
 };
 export {
-  AvatarHook as Avatar
+  AvatarHook as Avatar,
+  statusPayload
 };

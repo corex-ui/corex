@@ -1530,5 +1530,7 @@ var NumberInputHook = {
   }
 };
 export {
-  NumberInputHook as NumberInput
+  NumberInputHook as NumberInput,
+  buildMachineProps,
+  machineState
 };

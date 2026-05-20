@@ -1420,5 +1420,6 @@ var DialogHook = {
   }
 };
 export {
-  DialogHook as Dialog
+  DialogHook as Dialog,
+  readDialogLayoutProps
 };

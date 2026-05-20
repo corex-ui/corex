@@ -598,5 +598,6 @@ var MarqueeHook = {
   }
 };
 export {
-  MarqueeHook as Marquee
+  MarqueeHook as Marquee,
+  readMarqueeProps
 };

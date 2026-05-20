@@ -16,7 +16,7 @@ import {
 import "./chunks/chunk-QS5WHZEI.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-VPEGVSVG.mjs";
+} from "./chunks/chunk-RONCOJLT.mjs";
 import {
   idMatches,
   notifyChange,
@@ -2497,5 +2497,6 @@ var ColorPickerHook = {
   }
 };
 export {
-  ColorPickerHook as ColorPicker
+  ColorPickerHook as ColorPicker,
+  readValueProps
 };

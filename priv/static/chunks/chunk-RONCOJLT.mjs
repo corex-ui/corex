@@ -30,9 +30,10 @@ function readPositioningOptions(el) {
   const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
   const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
   if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
-    options.offset = {};
-    if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
-    if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+    const offset = {};
+    if (offsetMainAxis !== void 0) offset.mainAxis = offsetMainAxis;
+    if (offsetCrossAxis !== void 0) offset.crossAxis = offsetCrossAxis;
+    options.offset = offset;
   }
   const flip = readFlipAttr(el);
   if (flip !== void 0) options.flip = flip;

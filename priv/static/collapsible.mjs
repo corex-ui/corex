@@ -499,5 +499,6 @@ var CollapsibleHook = {
   }
 };
 export {
-  CollapsibleHook as Collapsible
+  CollapsibleHook as Collapsible,
+  openChangePayload
 };
