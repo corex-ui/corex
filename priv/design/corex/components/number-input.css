@@ -19,7 +19,6 @@
   }
 
   .number-input [data-scope="number-input"][data-part="root"][data-readonly],
-  .number-input [data-scope="number-input"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 90
+        threshold: 93
       ]
     ]
   end
@@ -160,6 +160,7 @@ defmodule Corex.MixProject do
         "guides/production.md",
         "guides/configuration.md",
         "guides/api_documentation.md",
+        "guides/stability.md",
         "guides/releasing.md"
       ],
       formatters: ["html", "epub"],
@@ -184,7 +185,8 @@ defmodule Corex.MixProject do
            "guides/theming.md",
            "guides/localize.md",
            "guides/production.md",
-           "guides/configuration.md"
+           "guides/configuration.md",
+           "guides/stability.md"
          ]},
         {:Maintainers,
          [

@@ -289,8 +289,9 @@ defmodule Corex.DatePicker do
   Renders a date picker component.
   """
   attr(:id, :string,
-    default: nil,
-    doc: "The unique identifier for the date picker. Set automatically when using the field attr."
+    required: false,
+    doc:
+      "The unique identifier for the date picker. Required; use field={} to derive from field.id."
   )
 
   attr(:value, :string,

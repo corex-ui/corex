@@ -292,8 +292,8 @@ defmodule Corex.ColorPicker do
 
     assigns =
       assigns
-      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:errors, fn -> [] end)
       |> assign(:translation, translation)
       |> assign(:dir, assigns.dir || "ltr")
 

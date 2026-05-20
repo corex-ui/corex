@@ -95,7 +95,7 @@ defmodule Corex.MenuTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Menu.menu items={Corex.Tree.new([%{label: "A", value: "a"}])}>
+            <Menu.menu id="test-menu" items={Corex.Tree.new([%{label: "A", value: "a"}])}>
               <:trigger>Menu</:trigger>
               <:indicator>▼</:indicator>
             </Menu.menu>
@@ -113,7 +113,7 @@ defmodule Corex.MenuTest do
         render_component(
           fn assigns ->
             ~H"""
-            <Menu.menu items={Corex.Tree.new([%{label: "Plain", value: "plain"}])}>
+            <Menu.menu id="test-menu" items={Corex.Tree.new([%{label: "Plain", value: "plain"}])}>
               <:trigger>Menu</:trigger>
               <:item :let={item}>
                 <span data-custom-item>{item.label}</span>

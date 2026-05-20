@@ -276,11 +276,19 @@ defmodule Mix.Corex do
   def web_path(ctx_app, rel_path \\ "") when is_atom(ctx_app) do
     this_app = otp_app()
 
-    if ctx_app == this_app do
-      Path.join(["lib", "#{this_app}_web", rel_path])
-    else
-      Path.join(["lib", to_string(this_app), rel_path])
-    end
+    base =
+      cond do
+        root = Application.get_env(this_app, :mix_test_output) ->
+          Path.join(root, "web")
+
+        ctx_app == this_app ->
+          Path.join("lib", "#{this_app}_web")
+
+        true ->
+          Path.join("lib", to_string(this_app))
+      end
+
+    Path.join([base, rel_path])
   end
 
   @doc """
@@ -334,11 +342,19 @@ defmodule Mix.Corex do
   def web_test_path(ctx_app, rel_path \\ "") when is_atom(ctx_app) do
     this_app = otp_app()
 
-    if ctx_app == this_app do
-      Path.join(["test", "#{this_app}_web", rel_path])
-    else
-      Path.join(["test", to_string(this_app), rel_path])
-    end
+    base =
+      cond do
+        root = Application.get_env(this_app, :mix_test_output) ->
+          Path.join(root, "test")
+
+        ctx_app == this_app ->
+          Path.join("test", "#{this_app}_web")
+
+        true ->
+          Path.join("test", to_string(this_app))
+      end
+
+    Path.join([base, rel_path])
   end
 
   defp fetch_context_app(this_otp_app) do
@@ -423,7 +439,9 @@ defmodule Mix.Corex do
         See the --web option to namespace similarly named resources
         """)
 
-        unless Mix.shell().yes?("Proceed with interactive overwrite?") do
+        if Mix.shell().yes?("Proceed with interactive overwrite?") do
+          :ok
+        else
           System.halt()
         end
     end

@@ -734,7 +734,7 @@ defmodule Corex.Accordion do
   attr(:id, :string,
     required: false,
     doc:
-      "DOM id on the accordion root. Required for `set_value`, `value`, `focused`, and `item_state`."
+      "DOM id on the accordion root. Used by `set_value`, `value`, `focused`, and `item_state`; auto-generated when omitted."
   )
 
   attr(:items, :list,

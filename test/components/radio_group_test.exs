@@ -6,7 +6,12 @@ defmodule Corex.RadioGroupTest do
 
   describe "radio_group/1" do
     test "renders" do
-      html = render_component(&RadioGroup.radio_group/1, items: [["a", "Option A"]])
+      html =
+        render_component(&RadioGroup.radio_group/1,
+          id: "test-radio-group",
+          items: [["a", "Option A"]]
+        )
+
       assert html =~ ~r/data-scope="radio-group"/
       assert html =~ ~r/data-part="root"/
     end
@@ -14,6 +19,7 @@ defmodule Corex.RadioGroupTest do
     test "renders with items as maps" do
       html =
         render_component(&RadioGroup.radio_group/1,
+          id: "test-radio-group",
           items: [%{value: "a", label: "A"}, %{value: "b", label: "B", disabled: true}]
         )
 

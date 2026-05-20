@@ -6,7 +6,9 @@ defmodule Corex.PasswordInputTest do
 
   describe "password_input/1" do
     test "renders" do
-      html = render_component(&PasswordInput.password_input/1, name: "pass")
+      html =
+        render_component(&PasswordInput.password_input/1, id: "test-password-input", name: "pass")
+
       assert html =~ ~r/data-scope="password-input"/
       assert html =~ ~r/data-part="root"/
     end
@@ -27,6 +29,7 @@ defmodule Corex.PasswordInputTest do
     test "rtl applies dir on root only not on input" do
       html =
         render_component(&PasswordInput.password_input/1,
+          id: "test-password-input",
           id: "rtl-markup-test",
           name: "secret",
           dir: "rtl"
@@ -177,6 +180,7 @@ defmodule Corex.PasswordInputTest do
     test "renders disabled and invalid attrs" do
       html =
         render_component(&PasswordInput.password_input/1,
+          id: "test-password-input",
           id: "pw-state",
           name: "secret",
           disabled: true,
@@ -190,6 +194,7 @@ defmodule Corex.PasswordInputTest do
     test "renders visible and read_only required attrs" do
       html =
         render_component(&PasswordInput.password_input/1,
+          id: "test-password-input",
           id: "pw-opts",
           name: "secret",
           visible: true,
@@ -200,7 +205,7 @@ defmodule Corex.PasswordInputTest do
         )
 
       assert html =~ "data-default-visible"
-      assert html =~ "data-read-only"
+      assert html =~ "data-readonly"
       assert html =~ "data-required"
     end
   end

@@ -268,7 +268,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
       id={@form.id}
     >
@@ -307,7 +307,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
       id={@form.id}
     >
@@ -348,7 +348,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
       id={@form.id}
     >
@@ -376,7 +376,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
       id={@form.id}
     >

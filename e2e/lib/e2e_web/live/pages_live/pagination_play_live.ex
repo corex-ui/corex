@@ -210,8 +210,7 @@ defmodule E2eWeb.PaginationPlayLive do
               sibling_count={@sibling_count}
               boundary_count={@boundary_count}
               dir={@controls.dir}
-              controlled
-              controlled_page_size
+              controlled={:all}
               type={:link}
               to={~p"/pagination/playground"}
               redirect={:patch}

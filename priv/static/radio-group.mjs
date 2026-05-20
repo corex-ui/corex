@@ -552,7 +552,7 @@ var RadioGroupHook = {
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       onValueChange: (details) => {
@@ -630,7 +630,7 @@ var RadioGroupHook = {
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
       orientation: getString(this.el, "orientation"),
       dir: getDir(this.el)
     });

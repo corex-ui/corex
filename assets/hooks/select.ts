@@ -36,7 +36,7 @@ function selectZagPropsBase(
     invalid: getBoolean(el, "invalid"),
     name: getString(el, "name"),
     form: getString(el, "form"),
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
     deselectable: getBoolean(el, "deselectable"),
     positioning: readPositioningOptions(el),

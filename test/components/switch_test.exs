@@ -6,28 +6,42 @@ defmodule Corex.SwitchTest do
 
   describe "switch/1" do
     test "renders" do
-      html = render_component(&Switch.switch/1, checked: false, name: "sw")
+      html = render_component(&Switch.switch/1, id: "test-switch", checked: false, name: "sw")
       assert html =~ ~r/data-scope="switch"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
     end
 
     test "renders controlled with checked true has data-checked and no data-default-checked" do
-      html = render_component(&Switch.switch/1, controlled: true, checked: true, name: "sw")
+      html =
+        render_component(&Switch.switch/1,
+          id: "test-switch",
+          controlled: true,
+          checked: true,
+          name: "sw"
+        )
+
       assert html =~ ~r/data-controlled/
       assert html =~ ~r/data-checked/
       refute html =~ ~r/data-default-checked/
     end
 
     test "renders uncontrolled with checked true has data-default-checked and no data-checked" do
-      html = render_component(&Switch.switch/1, controlled: false, checked: true, name: "sw")
+      html =
+        render_component(&Switch.switch/1,
+          id: "test-switch",
+          controlled: false,
+          checked: true,
+          name: "sw"
+        )
+
       assert html =~ ~r/data-default-checked/
       refute html =~ ~r/data-checked/
     end
 
     test "renders with field from form has correct hidden input name" do
       form = Phoenix.Component.to_form(%{"notifications" => false}, as: :user)
-      html = render_component(&Switch.switch/1, field: form[:notifications])
+      html = render_component(&Switch.switch/1, id: "test-switch", field: form[:notifications])
       assert html =~ ~r/name="user\[notifications\]"/
     end
   end

@@ -223,7 +223,7 @@ defmodule Corex.Avatar do
       <div :if={@loading != []}>
         {render_slot(@loading)}
       </div>
-      <.avatar_skeleton :if={@loading == []} {@rest} />
+      <.avatar_skeleton :if={@loading == []} id={@id} {@rest} />
     </div>
 
     <div

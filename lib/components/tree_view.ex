@@ -651,7 +651,7 @@ defmodule Corex.TreeView do
   end
 
   @doc type: :compound
-  attr(:id, :string, required: true)
+  attr(:id, :string, required: false)
   attr(:dir, :string, required: true)
   attr(:animation, :string, required: true)
   attr(:tree_item, :any, required: true)

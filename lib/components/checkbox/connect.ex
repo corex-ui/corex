@@ -39,7 +39,7 @@ defmodule Corex.Checkbox.Connect do
       "data-form" => assigns.form,
       "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-on-checked-change" => assigns.on_checked_change,

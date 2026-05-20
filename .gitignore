@@ -25,7 +25,14 @@ corex-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
+# Accidental mix corex.gen.* output in the library root (tests use :mix_test_output).
+/lib/corex_web/
+/test/corex_web/
+/priv/repo/
+
 /node_modules/
+
+/assets/corex/
 
 /playground/
 

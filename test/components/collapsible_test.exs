@@ -116,7 +116,12 @@ defmodule Corex.CollapsibleTest do
 
   describe "collapsible_skeleton/1" do
     test "renders skeleton markup" do
-      html = render_component(&Collapsible.collapsible_skeleton/1, class: "collapsible")
+      html =
+        render_component(&Collapsible.collapsible_skeleton/1,
+          id: "test-collapsible",
+          class: "collapsible"
+        )
+
       assert html =~ "data-loading"
       assert html =~ ~r/data-scope="collapsible"/
     end

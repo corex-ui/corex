@@ -230,7 +230,6 @@
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="root"][data-readonly],
-  .angle-slider [data-scope="angle-slider"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

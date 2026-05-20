@@ -777,8 +777,6 @@ defmodule Corex.Timer do
   attr(:rest, :global)
 
   def timer_skeleton(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
-
     ~H"""
     <div id={@id} {@rest}>
       <div {Connect.root(%Root{id: @id, dir: "ltr", orientation: "horizontal"})}>

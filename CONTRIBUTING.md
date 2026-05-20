@@ -32,6 +32,12 @@ mix test
 npm run check
 ```
 
+### Test coverage
+
+- **`:corex` (root):** 95% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
+- **`:corex_new` (installer):** 90% via `mix test --cover` in `installer/`.
+- **e2e / integration_test:** functional tests; not counted in root Coveralls.
+
 Optional quality checks before a PR (same as `mix pre.publish`):
 
 ```bash
@@ -78,14 +84,14 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `lib/components/` | Phoenix components (`Corex.*`), moduledoc, `attr` / `slot` |
 | `lib/components/<name>/` | Connect, anatomy, translation modules |
 | `assets/hooks/` | LiveView hooks (TypeScript, Zag.js) |
-| `priv/design/corex/` | Corex Design tokens and component CSS |
+| `priv/design/corex/` | Corex Design tokens and component CSS (source of truth in the package) |
 | `priv/static/` | Built JS bundles (generated; run `mix assets.build`) |
 | `e2e/` | Demo LiveViews, Playwright-style tests, `doc_examples.ex` |
 | `installer/` | `corex_new` Mix installer |
 | `guides/` | Hexdocs guides |
 | `test/` | Unit tests for the library |
 
-Design CSS is copied into the installer on `mix assets.build` (`installer/priv/corex_design/`).
+Design CSS is copied into the installer on `mix assets.build` (`installer/priv/corex_design/`). Consumer apps get a vendored copy via `mix corex.design` into `assets/corex/` (not checked into the `:corex` library repo).
 
 ## Pull requests
 

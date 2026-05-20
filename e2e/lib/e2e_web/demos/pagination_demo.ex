@@ -516,8 +516,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
       count={18}
       page={@page}
       page_size={4}
-      controlled
-      controlled_page_size
+      controlled={:all}
       type={:link}
       to="/pagination/patterns"
       redirect={:patch}
@@ -830,8 +829,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
         count={@count}
         page={@page}
         page_size={@page_size}
-        controlled
-        controlled_page_size
+        controlled={:all}
         type={:link}
         to={~p"/pagination/patterns"}
         redirect={:patch}

@@ -4430,7 +4430,7 @@ var Corex = (() => {
             id: el.id
           }, readNumberControlledZagProps(el)), {
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             dir: getDir(el),
@@ -4509,7 +4509,7 @@ var Corex = (() => {
             id: this.el.id
           }, readNumberControlledZagProps(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
+            readOnly: getBoolean(this.el, "readonly"),
             invalid: getBoolean(this.el, "invalid"),
             name: getString(this.el, "name"),
             dir: getDir(this.el)
@@ -6518,7 +6518,7 @@ var Corex = (() => {
             dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             onCheckedChange: (details) => {
               notifyChange({
                 el,
@@ -6589,7 +6589,7 @@ var Corex = (() => {
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly")
+            readOnly: getBoolean(this.el, "readonly")
           }));
         },
         destroyed() {
@@ -12131,7 +12131,7 @@ var Corex = (() => {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       positioning: readPositioningOptions(el),
       onOpenChange: (details) => {
@@ -15923,7 +15923,7 @@ var Corex = (() => {
             openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el),
@@ -16031,7 +16031,7 @@ var Corex = (() => {
             openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el)
@@ -20424,7 +20424,7 @@ var Corex = (() => {
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -20539,7 +20539,7 @@ var Corex = (() => {
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -22551,13 +22551,13 @@ var Corex = (() => {
             id: el.id,
             defaultValue: dataDefaultValue(el),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             form: getString(el, "form"),
             dir: getDir(el)
-          }, placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+          }, placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
             onValueChange: (details) => {
               notifyEditableValueChange(el, pushEvent, canPush, details.value);
             },
@@ -22591,13 +22591,13 @@ var Corex = (() => {
           (_a4 = this.editable) == null ? void 0 : _a4.updateProps(__spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             form: getString(el, "form"),
             dir: getDir(el)
-          }, getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
+          }, getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -23706,7 +23706,7 @@ ${err}`);
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             name: getString(el, "name"),
             dir: getDir(el),
@@ -23784,7 +23784,7 @@ ${err}`);
             id: this.el.id,
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readOnly"),
+            readOnly: getBoolean(this.el, "readonly"),
             required: getBoolean(this.el, "required"),
             name: getString(this.el, "name"),
             dir: getDir(this.el),
@@ -29411,7 +29411,7 @@ ${err}`);
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
@@ -30387,7 +30387,7 @@ ${err}`);
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             allowMouseWheel: getBoolean(el, "allowMouseWheel"),
@@ -30402,7 +30402,7 @@ ${err}`);
               '[data-scope="number-input"][data-part="input"]'
             );
             if (visible) {
-              if (!getBoolean(el, "readOnly")) {
+              if (!getBoolean(el, "readonly")) {
                 visible.readOnly = false;
                 visible.removeAttribute("readonly");
               }
@@ -31359,7 +31359,7 @@ ${err}`);
             defaultVisible: getBoolean(el, "defaultVisible"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
             name: getString(el, "name"),
@@ -31417,7 +31417,7 @@ ${err}`);
             id: this.el.id,
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readOnly"),
+            readOnly: getBoolean(this.el, "readonly"),
             required: getBoolean(this.el, "required"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -31704,7 +31704,7 @@ ${err}`);
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       mask: getBoolean(el, "mask"),
       otp: getBoolean(el, "otp"),
       blurOnComplete: getBoolean(el, "blurOnComplete"),
@@ -32192,7 +32192,7 @@ ${err}`);
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             mask: getBoolean(el, "mask"),
             otp: getBoolean(el, "otp"),
             blurOnComplete: getBoolean(el, "blurOnComplete"),
@@ -32758,7 +32758,7 @@ ${err}`);
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
@@ -32837,7 +32837,7 @@ ${err}`);
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
+            readOnly: getBoolean(this.el, "readonly"),
             orientation: getString(this.el, "orientation"),
             dir: getDir(this.el)
           }));
@@ -33290,7 +33290,7 @@ ${err}`);
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       form: getString(el, "form"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       deselectable: getBoolean(el, "deselectable"),
       positioning: readPositioningOptions(el),
@@ -35424,7 +35424,7 @@ ${err}`);
             dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             onCheckedChange: (details) => {
               notifyChange({
                 el,
@@ -35495,7 +35495,7 @@ ${err}`);
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly")
+            readOnly: getBoolean(this.el, "readonly")
           }));
         },
         destroyed() {
@@ -36844,7 +36844,7 @@ ${err}`);
             id: el.id
           }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") }), {
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             name: getString(el, "name"),
@@ -36956,7 +36956,7 @@ ${err}`);
             id: el.id
           }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : {}), {
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             name: getString(el, "name"),

@@ -14,8 +14,23 @@ defmodule Corex do
          accordion_skeleton: 1
        ]},
     action: {Corex.Action, [action: 1]},
-    angle_slider: {Corex.AngleSlider, [angle_slider: 1, angle_slider_skeleton: 1]},
-    avatar: {Corex.Avatar, [avatar: 1]},
+    angle_slider:
+      {Corex.AngleSlider,
+       [
+         angle_slider: 1,
+         angle_slider_root: 1,
+         angle_slider_label: 1,
+         angle_slider_control: 1,
+         angle_slider_thumb: 1,
+         angle_slider_value_text: 1,
+         angle_slider_value: 1,
+         angle_slider_text: 1,
+         angle_slider_marker_group: 1,
+         angle_slider_marker: 1,
+         angle_slider_hidden_input: 1,
+         angle_slider_skeleton: 1
+       ]},
+    avatar: {Corex.Avatar, [avatar: 1, avatar_skeleton: 1]},
     carousel:
       {Corex.Carousel,
        [
@@ -72,7 +87,7 @@ defmodule Corex do
          tabs_skeleton: 1
        ]},
     tags_input: {Corex.TagsInput, [tags_input: 1]},
-    timer: {Corex.Timer, [timer: 1]},
+    timer: {Corex.Timer, [timer: 1, timer_skeleton: 1]},
     tooltip: {Corex.Tooltip, [tooltip: 1]},
     toast:
       {Corex.Toast,

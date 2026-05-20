@@ -456,6 +456,25 @@ defmodule Corex.ToastTest do
       action = Payload.normalize_action(%{label: "Go", js: JS.push("go"), class: "   "})
       refute Map.has_key?(action, "class")
     end
+
+    test "update_detail accepts atom keys and drops invalid priority" do
+      updated = Payload.update_detail("t1", %{title: "Hi", type: :warning, priority: "nope"})
+      assert updated.title == "Hi"
+      assert updated.type == "warning"
+      refute Map.has_key?(updated, :priority)
+    end
+
+    test "normalize_action with ToastAction struct" do
+      action =
+        Payload.normalize_action(%Corex.Toast.Action{
+          label: "Go",
+          js: JS.push("go"),
+          class: "button"
+        })
+
+      assert action["label"] == "Go"
+      assert action["class"] == "button"
+    end
   end
 
   describe "Connect.group/1 and Connect.ignore_group/1" do

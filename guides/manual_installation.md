@@ -420,6 +420,16 @@ def handle_event("open_first", _params, socket) do
 end
 ```
 
+## Upgrading Corex
+
+With `{:corex, "~> 0.1.0"}`, `mix deps.update corex` stays on the 0.1.x line until you bump the requirement for 0.2.0.
+
+1. Update `{:corex, "~> 0.1.0"}` in `mix.exs` and run `mix deps.get && mix compile`.
+2. Refresh vendored design assets: `mix corex.design --force` (and `mix corex.design --designex --force` if you use Designex).
+3. Compare `assets/corex/VERSION` with your locked `:corex` version after `mix deps.update`.
+4. Review [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md) and [API stability](stability.html).
+5. Rebuild assets (`mix assets.build`) and confirm hook imports in `assets/js/app.js`.
+
 ## What's next
 
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:

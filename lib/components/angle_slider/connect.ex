@@ -53,7 +53,7 @@ defmodule Corex.AngleSlider.Connect do
       "data-controlled" => get_boolean(assigns.controlled),
       "data-step" => format_number(assigns.step),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-name" => assigns.name,
       "data-dir" => assigns.dir,

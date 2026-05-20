@@ -185,7 +185,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={nil} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={nil} />
             """
           end,
           %{}
@@ -199,7 +199,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={""} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={""} />
             """
           end,
           %{}
@@ -213,7 +213,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths=" \n " />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths=" \n " />
             """
           end,
           %{}
@@ -227,7 +227,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={%{not: "a list"}} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={%{not: "a list"}} />
             """
           end,
           %{}

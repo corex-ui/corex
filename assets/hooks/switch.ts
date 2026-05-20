@@ -41,7 +41,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
 
       onCheckedChange: (details: CheckedChangeDetails) => {
         notifyChange({
@@ -125,7 +125,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
     });
   },
 

@@ -93,7 +93,7 @@ defmodule Mix.Tasks.Corex.NewTest do
 
   @tag :integration
   test "integration: new project with archives" do
-    unless Mix.Task.get("phx.new") do
+    unless match?({_, 0}, System.cmd("mix", ["phx.new", "-v"], stderr_to_stdout: true)) do
       flunk("Install the phx_new archive to run this test. Then: mix test --include integration")
     end
 

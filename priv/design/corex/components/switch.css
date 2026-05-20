@@ -22,7 +22,6 @@
   }
 
   .switch [data-scope="switch"][data-part="root"][data-readonly],
-  .switch [data-scope="switch"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

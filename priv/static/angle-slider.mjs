@@ -542,7 +542,7 @@ var AngleSliderHook = {
       id: el.id,
       ...readNumberControlledZagProps(el),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       dir: getDir(el),
@@ -620,7 +620,7 @@ var AngleSliderHook = {
       id: this.el.id,
       ...readNumberControlledZagProps(this.el),
       disabled: getBoolean(this.el, "disabled"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
       invalid: getBoolean(this.el, "invalid"),
       name: getString(this.el, "name"),
       dir: getDir(this.el)

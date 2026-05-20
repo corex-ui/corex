@@ -58,7 +58,7 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       id: el.id,
       defaultValue: dataDefaultValue(el),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
@@ -67,7 +67,7 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       ...(placeholder !== undefined ? { placeholder } : {}),
       ...(activationMode !== undefined ? { activationMode } : {}),
       ...(selectOnFocus !== undefined ? { selectOnFocus } : {}),
-      ...(getBoolean(el, "controlledEdit")
+      ...(getBoolean(el, "controlled")
         ? { edit: getBoolean(el, "edit") }
         : { defaultEdit: getBoolean(el, "defaultEdit") }),
       onValueChange: (details: ValueChangeDetails) => {
@@ -106,13 +106,13 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
     this.editable?.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       dir: getDir(el),
-      ...(getBoolean(el, "controlledEdit")
+      ...(getBoolean(el, "controlled")
         ? { edit: getBoolean(el, "edit") }
         : { defaultEdit: getBoolean(el, "defaultEdit") }),
     } as Partial<Props>);

@@ -534,15 +534,15 @@ defmodule E2eWeb.Helpers do
         },
         %{
           label: "Signature pad",
-          id: "signature",
+          id: "signature-pad",
           pattern: false,
-          anatomy_to: ~p"/signature/anatomy",
-          playground_to: ~p"/signature/playground",
-          api_to: ~p"/signature/api",
-          events_to: ~p"/signature/events",
+          anatomy_to: ~p"/signature-pad/anatomy",
+          playground_to: ~p"/signature-pad/playground",
+          api_to: ~p"/signature-pad/api",
+          events_to: ~p"/signature-pad/events",
           forms: [
-            doc_form_menu_item("Controller Form", ~p"/signature/form"),
-            doc_form_menu_item("Live Form", ~p"/signature/live-form")
+            doc_form_menu_item("Controller Form", ~p"/signature-pad/form"),
+            doc_form_menu_item("Live Form", ~p"/signature-pad/live-form")
           ]
         },
         %{

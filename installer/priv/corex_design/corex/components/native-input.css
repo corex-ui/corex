@@ -22,7 +22,6 @@
   }
 
   .native-input [data-scope="native-input"][data-part="root"][data-readonly],
-  .native-input [data-scope="native-input"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

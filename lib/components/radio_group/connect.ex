@@ -28,7 +28,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,

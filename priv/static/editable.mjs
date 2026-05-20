@@ -595,7 +595,7 @@ var EditableHook = {
       id: el.id,
       defaultValue: dataDefaultValue(el),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
@@ -604,7 +604,7 @@ var EditableHook = {
       ...placeholder !== void 0 ? { placeholder } : {},
       ...activationMode !== void 0 ? { activationMode } : {},
       ...selectOnFocus !== void 0 ? { selectOnFocus } : {},
-      ...getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") },
+      ...getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") },
       onValueChange: (details) => {
         notifyEditableValueChange(el, pushEvent, canPush, details.value);
       },
@@ -636,13 +636,13 @@ var EditableHook = {
     this.editable?.updateProps({
       id: el.id,
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       dir: getDir(el),
-      ...getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }
+      ...getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }
     });
   },
   destroyed() {

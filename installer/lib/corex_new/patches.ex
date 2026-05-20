@@ -356,12 +356,17 @@ defmodule Corex.New.Patches do
         if trimmed != "" do
           ~s([path: "#{trimmed}", override: true])
         else
-          "\"~> 0.1.0\""
+          corex_dep_constraint()
         end
 
       _ ->
-        "\"~> 0.1.0\""
+        corex_dep_constraint()
     end
+  end
+
+  defp corex_dep_constraint do
+    version = Mix.Project.config()[:version] || "0.1.0"
+    "\"~> #{version}\""
   end
 
   defp insert_before_closing_deps(content, extra_line) do

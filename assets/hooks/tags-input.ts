@@ -80,7 +80,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
         ? { value: parseJsonTags(el, "tags") }
         : { defaultValue: parseJsonTags(el, "defaultTags") }),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       name: getString(el, "name"),
@@ -210,7 +210,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...resolveZagTagsInputTranslations(el),
       ...(controlled ? { value: parseJsonTags(el, "tags") } : {}),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       name: getString(el, "name"),

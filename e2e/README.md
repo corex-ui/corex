@@ -15,8 +15,8 @@ cd corex/e2e
 
 ## Requirements
 
-- Elixir ~> 1.15
-- Erlang/OTP compatible with Elixir 1.15
+- Elixir ~> 1.17
+- Erlang/OTP compatible with Elixir 1.17 (CI runs 1.17 / OTP 26 and 1.18 / OTP 27–28)
 - PostgreSQL (running locally)
 
 Make sure PostgreSQL is running before continuing.

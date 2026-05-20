@@ -2370,7 +2370,7 @@ var ColorPickerHook = {
       openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
       positioning: readPositioningOptions(el),
@@ -2478,7 +2478,7 @@ var ColorPickerHook = {
       openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
       positioning: readPositioningOptions(el)

@@ -45,7 +45,7 @@ defmodule Corex.Select.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }

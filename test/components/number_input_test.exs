@@ -32,7 +32,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
+            <Corex.NumberInput.number_input id="test-number-input" min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
               <:label>Number</:label>
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
@@ -55,7 +55,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input>
+            <Corex.NumberInput.number_input id="test-number-input">
               <:decrement_trigger>-</:decrement_trigger>
             </Corex.NumberInput.number_input>
             """
@@ -72,7 +72,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input>
+            <Corex.NumberInput.number_input id="test-number-input">
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
             """
@@ -94,7 +94,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input translation={@translation}>
+            <Corex.NumberInput.number_input id="test-number-input" translation={@translation}>
               <:increment_trigger>+</:increment_trigger>
               <:decrement_trigger>-</:decrement_trigger>
             </Corex.NumberInput.number_input>

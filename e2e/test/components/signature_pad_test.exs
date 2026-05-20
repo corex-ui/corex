@@ -1,11 +1,11 @@
-defmodule E2eWeb.SignatureTest do
+defmodule E2eWeb.SignaturePadTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
   alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.SignatureModel, as: Signature
 
-  @moduletag :signature
+  @moduletag :signature_pad
 
   setup do
     Localize.put_locale(:en)
@@ -17,7 +17,7 @@ defmodule E2eWeb.SignatureTest do
       host = "signature-events-server"
 
       session
-      |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :events)
+      |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :events)
       |> Signature.prepare_live_form()
       |> Signature.wait_host_signature_ready(host)
       |> Signature.draw_stroke_in_host(host)
@@ -28,7 +28,7 @@ defmodule E2eWeb.SignatureTest do
       host = "signature-events-server"
 
       session
-      |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :events)
+      |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :events)
       |> Signature.prepare_live_form()
       |> Signature.wait_host_signature_ready(host)
       |> Signature.draw_stroke_in_host(host)
@@ -44,7 +44,7 @@ defmodule E2eWeb.SignatureTest do
 
       session =
         session
-        |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :api)
+        |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :api)
         |> Signature.prepare_live_form()
         |> Signature.wait_host_signature_ready(host)
         |> Signature.draw_stroke_in_host(host)
@@ -60,7 +60,7 @@ defmodule E2eWeb.SignatureTest do
 
       session =
         session
-        |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :api)
+        |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :api)
         |> Signature.prepare_live_form()
         |> Signature.wait_host_signature_ready(host)
         |> Signature.draw_stroke_in_host(host)
@@ -76,7 +76,7 @@ defmodule E2eWeb.SignatureTest do
     feature "server  -  draw end appends log row", %{session: session} do
       session =
         session
-        |> ComponentBehaviorSpec.visit_ready(Signature, :signature, :events)
+        |> ComponentBehaviorSpec.visit_ready(Signature, :signature_pad, :events)
         |> Signature.prepare_live_form()
         |> Signature.wait_host_signature_ready("signature-events-server")
 

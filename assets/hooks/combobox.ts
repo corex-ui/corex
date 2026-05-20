@@ -67,7 +67,7 @@ function buildComboboxProps(
     invalid: getBoolean(el, "invalid"),
     allowCustomValue: false,
     selectionBehavior: "replace",
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
     positioning: readPositioningOptions(el),
     onOpenChange: (details: OpenChangeDetails) => {

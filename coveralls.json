@@ -1,16 +1,12 @@
 {
   "skip_files": [
-    "installer/.*",
     "test/support/.*",
-    "lib/mcp/.*",
-    "lib/mix/.*",
     "lib/corex/animation\\.ex",
-    "lib/corex/flash\\.ex",
-    "lib/corex/offset\\.ex",
     "lib/corex/toast/action\\.ex",
+    "lib/corex/flash\\.ex",
     "lib/components/marquee/anatomy\\.ex"
   ],
   "coverage_options": {
-    "minimum_coverage": 90
+    "minimum_coverage": 93
   }
 }

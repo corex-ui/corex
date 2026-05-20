@@ -405,7 +405,7 @@ defmodule Corex.ColorPickerTest do
       result = Connect.props(assigns)
       assert result["data-disabled"] == ""
       assert result["data-invalid"] == ""
-      assert result["data-read-only"] == ""
+      assert result["data-readonly"] == ""
       assert result["data-required"] == ""
       assert result["data-close-on-select"] == nil
     end

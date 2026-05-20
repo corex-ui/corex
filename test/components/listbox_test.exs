@@ -19,7 +19,7 @@ defmodule Corex.ListboxTest do
             _ = assigns
 
             ~H"""
-            <Corex.Listbox.listbox 
+            <Corex.Listbox.listbox id="test-listbox" 
               items={[%{value: "1", label: "One", disabled: true, group: "G"}, %{value: "2", label: "Two", group: "G"}]}
               controlled={true}
               disabled={true}
@@ -58,7 +58,7 @@ defmodule Corex.ListboxTest do
             _ = assigns
 
             ~H"""
-            <Corex.Listbox.listbox items={[]}>
+            <Corex.Listbox.listbox id="test-listbox" items={[]}>
               <:empty>Empty state</:empty>
             </Corex.Listbox.listbox>
             """

@@ -192,7 +192,7 @@ defmodule Corex.Pagination do
 
   ### Controlled
 
-  Bind `page` (and optionally `page_size`) with `controlled` / `controlled_page_size` and handle `on_page_change` so assigns stay the source of truth.
+  Bind `page` (and optionally `page_size`) with `controlled` (`true`, `:all`, `:page`, or `:page_size`) and handle `on_page_change` so assigns stay the source of truth.
 
   ```heex
   <.pagination
@@ -226,8 +226,7 @@ defmodule Corex.Pagination do
     count={18}
     page={@page}
     page_size={4}
-    controlled
-    controlled_page_size
+    controlled={:all}
     type={:link}
     to="/posts"
     redirect={:patch}
@@ -335,14 +334,14 @@ defmodule Corex.Pagination do
   attr(:sibling_count, :integer, default: 1, doc: "Pages beside the active page")
   attr(:boundary_count, :integer, default: 1, doc: "Pages at the start and end")
 
-  attr(:controlled, :boolean,
+  attr(:controlled, :any,
     default: false,
-    doc: "When true, `page` is server-driven; use with `on_page_change` in LiveView"
-  )
-
-  attr(:controlled_page_size, :boolean,
-    default: false,
-    doc: "When true, `page_size` is server-driven; use with `on_page_size_change`"
+    doc: """
+    false — uncontrolled (default).
+    true or :all — server drives both page and page_size.
+    :page — server drives page only; use with `on_page_change`.
+    :page_size — server drives page_size only; use with `on_page_size_change`.
+    """
   )
 
   attr(:type, :atom,
@@ -577,9 +576,11 @@ defmodule Corex.Pagination do
       Utils.pages(page, total_pages, assigns.sibling_count, assigns.boundary_count)
 
     translation = Translation.resolve(assigns.translation)
+    {controlled_page, controlled_page_size} = normalize_pagination_controlled(assigns.controlled)
 
     assigns
-    |> assign_new(:id, fn -> "pagination-#{System.unique_integer([:positive])}" end)
+    |> assign(:controlled, controlled_page)
+    |> assign(:controlled_page_size, controlled_page_size)
     |> assign_new(:dir, fn -> "ltr" end)
     |> assign_new(:translation, fn -> Translation.resolve(nil) end)
     |> assign(:translation, translation)
@@ -902,4 +903,10 @@ defmodule Corex.Pagination do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) do
     LiveView.push_event(socket, "pagination_go_to_last_page", %{id: pagination_id})
   end
+
+  defp normalize_pagination_controlled(false), do: {false, false}
+  defp normalize_pagination_controlled(true), do: {true, true}
+  defp normalize_pagination_controlled(:all), do: {true, true}
+  defp normalize_pagination_controlled(:page), do: {true, false}
+  defp normalize_pagination_controlled(:page_size), do: {false, true}
 end

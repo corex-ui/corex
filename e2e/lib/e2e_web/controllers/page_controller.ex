@@ -996,7 +996,7 @@ defmodule E2eWeb.PageController do
 
           conn
           |> put_flash(:info, "Submitted (changeset): signature=#{preview}")
-          |> redirect(to: ~p"/signature/form#signature-form-changeset")
+          |> redirect(to: ~p"/signature-pad/form#signature-form-changeset")
         else
           changeset = Map.put(changeset, :action, :insert)
 
@@ -1030,7 +1030,7 @@ defmodule E2eWeb.PageController do
 
           conn
           |> put_flash(:info, "Submitted (validated): signature=#{preview}")
-          |> redirect(to: ~p"/signature/form#signature-form-validate")
+          |> redirect(to: ~p"/signature-pad/form#signature-form-validate")
         else
           changeset = Map.put(changeset, :action, :insert)
 
@@ -1059,7 +1059,7 @@ defmodule E2eWeb.PageController do
 
         conn
         |> put_flash(:info, "Submitted: signature=#{preview}")
-        |> redirect(to: ~p"/signature/form")
+        |> redirect(to: ~p"/signature-pad/form")
     end
   end
 

@@ -402,9 +402,9 @@ defmodule Corex.SignaturePad do
   def signature_pad(assigns) do
     assigns =
       assigns
+      |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
 
     ~H"""

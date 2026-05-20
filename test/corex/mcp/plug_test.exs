@@ -1,5 +1,5 @@
 defmodule Corex.MCPTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   @moduletag capture_log: true
 
@@ -141,6 +141,22 @@ defmodule Corex.MCPTest do
 
       assert conn.status == 405
       assert conn.resp_body == "Method Not Allowed"
+    end
+
+    test "POST /corex/mcp handles JSON-RPC ping" do
+      opts = Corex.MCP.init([])
+
+      body = Corex.Json.encode!(%{"jsonrpc" => "2.0", "id" => 1, "method" => "ping"})
+
+      conn =
+        Plug.Test.conn(:post, "/corex/mcp", body)
+        |> Map.put(:remote_ip, {127, 0, 0, 1})
+        |> Plug.Conn.put_req_header("content-type", "application/json")
+        |> Corex.MCP.call(opts)
+
+      assert conn.status == 200
+      decoded = Corex.Json.decode!(conn.resp_body)
+      assert decoded["result"] == %{}
     end
 
     test "unknown path returns 404" do

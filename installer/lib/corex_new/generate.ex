@@ -219,11 +219,9 @@ defmodule Corex.New.Generate do
   end
 
   defp copy_priv_design_siblings!(install_dir, source_root, consumer_rel, designex_rel, opts) do
-    copy_design_subtree!(
-      source_root,
-      consumer_rel,
-      Path.join([install_dir, "assets", "corex"])
-    )
+    dest = Path.join([install_dir, "assets", "corex"])
+    copy_design_subtree!(source_root, consumer_rel, dest)
+    write_design_version!(dest)
 
     rm_assets_corex_design_if_present!(install_dir)
 
@@ -289,6 +287,16 @@ defmodule Corex.New.Generate do
 
     File.mkdir_p!(Path.dirname(dest))
     File.cp_r!(src, dest)
+  end
+
+  defp write_design_version!(dest) do
+    version =
+      case Mix.Project.config()[:version] do
+        nil -> "0.1.0"
+        v -> to_string(v)
+      end
+
+    File.write!(Path.join(dest, "VERSION"), version <> "\n")
   end
 
   defp template_assigns(install_dir, opts) do

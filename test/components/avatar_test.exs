@@ -17,6 +17,7 @@ defmodule Corex.AvatarTest do
     test "renders with src" do
       html =
         render_component(&Corex.Avatar.avatar/1,
+          id: "test-avatar",
           src: "image.png",
           fallback: [%{inner_block: fn _, _ -> "JD" end}]
         )

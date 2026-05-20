@@ -1365,7 +1365,7 @@ function buildMachineProps(el, pushEvent, canPush) {
     max: getNumber(el, "max"),
     step: getNumber(el, "step"),
     disabled: getBoolean(el, "disabled"),
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     invalid: getBoolean(el, "invalid"),
     required: getBoolean(el, "required"),
     allowMouseWheel: getBoolean(el, "allowMouseWheel"),
@@ -1489,7 +1489,7 @@ var NumberInputHook = {
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
@@ -1504,7 +1504,7 @@ var NumberInputHook = {
         '[data-scope="number-input"][data-part="input"]'
       );
       if (visible) {
-        if (!getBoolean(el, "readOnly")) {
+        if (!getBoolean(el, "readonly")) {
           visible.readOnly = false;
           visible.removeAttribute("readonly");
         }

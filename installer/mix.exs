@@ -15,7 +15,7 @@ defmodule Corex.New.MixProject do
   def project do
     [
       app: :corex_new,
-      test_coverage: [summary: [threshold: 84]],
+      test_coverage: [summary: [threshold: 90]],
       start_permanent: Mix.env() == :prod,
       version: @version,
       phoenix_version: @phoenix_version,

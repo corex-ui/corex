@@ -28,7 +28,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-default-visible" => get_boolean(assigns.visible),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
       "data-name" => assigns.name,

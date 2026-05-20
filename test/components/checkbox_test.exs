@@ -9,7 +9,7 @@ defmodule Corex.CheckboxTest do
 
   defp checkbox_with_indicator_slots(assigns) do
     ~H"""
-    <.checkbox name="cb">
+    <.checkbox id="test-checkbox"  name="cb">
       <:indicator><span id="ind-test">x</span></:indicator>
       <:indeterminate><span id="indet-test">y</span></:indeterminate>
     </.checkbox>
@@ -18,31 +18,56 @@ defmodule Corex.CheckboxTest do
 
   describe "checkbox/1" do
     test "renders" do
-      html = render_component(&Checkbox.checkbox/1, checked: false, name: "cb")
+      html =
+        render_component(&Checkbox.checkbox/1, id: "test-checkbox", checked: false, name: "cb")
+
       assert html =~ ~r/data-scope="checkbox"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
     end
 
     test "renders with checked true has data-state checked on root and control" do
-      html = render_component(&Checkbox.checkbox/1, checked: true, name: "cb")
+      html =
+        render_component(&Checkbox.checkbox/1, id: "test-checkbox", checked: true, name: "cb")
+
       assert html =~ ~r/data-state="checked"/
     end
 
     test "renders controlled with checked true has data-checked and no data-default-checked" do
-      html = render_component(&Checkbox.checkbox/1, controlled: true, checked: true, name: "cb")
+      html =
+        render_component(&Checkbox.checkbox/1,
+          id: "test-checkbox",
+          controlled: true,
+          checked: true,
+          name: "cb"
+        )
+
       assert html =~ ~r/data-controlled/
       assert html =~ ~r/data-checked="true"/
       refute html =~ ~r/data-default-checked/
     end
 
     test "renders controlled with checked false has data-checked false" do
-      html = render_component(&Checkbox.checkbox/1, controlled: true, checked: false, name: "cb")
+      html =
+        render_component(&Checkbox.checkbox/1,
+          id: "test-checkbox",
+          controlled: true,
+          checked: false,
+          name: "cb"
+        )
+
       assert html =~ ~r/data-checked="false"/
     end
 
     test "renders uncontrolled with checked true has data-default-checked and no data-checked" do
-      html = render_component(&Checkbox.checkbox/1, controlled: false, checked: true, name: "cb")
+      html =
+        render_component(&Checkbox.checkbox/1,
+          id: "test-checkbox",
+          controlled: false,
+          checked: true,
+          name: "cb"
+        )
+
       assert html =~ ~r/data-default-checked="true"/
       refute html =~ ~r/data-checked=/
     end
@@ -50,6 +75,7 @@ defmodule Corex.CheckboxTest do
     test "renders indeterminate visual state and default attr" do
       html =
         render_component(&Checkbox.checkbox/1,
+          id: "test-checkbox",
           controlled: false,
           checked: :indeterminate,
           name: "cb"
@@ -60,7 +86,7 @@ defmodule Corex.CheckboxTest do
     end
 
     test "omits indicator and indeterminate surfaces when slots are empty" do
-      html = render_component(&Checkbox.checkbox/1, name: "cb")
+      html = render_component(&Checkbox.checkbox/1, id: "test-checkbox", name: "cb")
       refute html =~ ~r/data-part="indicator"/
       refute html =~ ~r/data-part="indeterminate"/
     end
@@ -75,7 +101,13 @@ defmodule Corex.CheckboxTest do
     end
 
     test "renders with errors displays error container" do
-      html = render_component(&Checkbox.checkbox/1, name: "cb", errors: ["is required"])
+      html =
+        render_component(&Checkbox.checkbox/1,
+          id: "test-checkbox",
+          name: "cb",
+          errors: ["is required"]
+        )
+
       assert html =~ ~r/data-part="error"/
     end
 

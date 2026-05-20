@@ -167,7 +167,7 @@ defmodule Corex.TagsInput.Connect do
       "data-tags" => if(assigns.controlled, do: tags_json(value)),
       "data-default-tags" => if(!assigns.controlled, do: tags_json(value)),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-name" => assigns.name,

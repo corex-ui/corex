@@ -69,7 +69,7 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 
 ### Versioning (0.1.x)
 
-Pre-1.0: patch releases may include small fixes; minor releases may include breaking API or behavior changes until 1.0.
+With `{:corex, "~> 0.1.0"}`, Hex resolves **0.1.x** only. Patch and minor 0.1 releases are **additive** (bug fixes, new attrs or components). Breaking API or behavior changes ship in **0.2.0**, with deprecation notes in CHANGELOG when possible. See [API stability](guides/stability.html).
 
 **Migrating form `invalid` styling:** if you relied on changeset errors to style radio group, pin input, color picker, or editable automatically, pass `invalid` explicitly:
 

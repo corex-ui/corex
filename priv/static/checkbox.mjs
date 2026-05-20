@@ -363,7 +363,7 @@ var CheckboxHook = {
       dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       onCheckedChange: (details) => {
         notifyChange({
           el,
@@ -433,7 +433,7 @@ var CheckboxHook = {
       dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly")
+      readOnly: getBoolean(this.el, "readonly")
     });
   },
   destroyed() {

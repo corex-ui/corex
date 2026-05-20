@@ -390,7 +390,12 @@ defmodule Corex.Dialog do
 
   attr(:open, :boolean,
     default: false,
-    doc: "The initial open state of the dialog"
+    doc: "The initial open state or the controlled open state"
+  )
+
+  attr(:controlled, :boolean,
+    default: false,
+    doc: "Whether the dialog is controlled. In LiveView, pair with on_open_change when true"
   )
 
   attr(:modal, :boolean,
@@ -517,7 +522,7 @@ defmodule Corex.Dialog do
       {@rest}
       {Connect.props(%Props{
         id: @id,
-        controlled: false,
+        controlled: @controlled,
         open: @open,
         modal: @modal,
         close_on_interact_outside: @close_on_interact_outside,

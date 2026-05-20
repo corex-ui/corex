@@ -20,7 +20,7 @@ defmodule Corex.PinInput.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-mask" => get_boolean(assigns.mask),
       "data-otp" => get_boolean(assigns.otp),
       "data-blur-on-complete" => get_boolean(assigns.blur_on_complete),

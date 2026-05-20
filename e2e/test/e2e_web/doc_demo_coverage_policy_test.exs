@@ -50,28 +50,28 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
     checkbox: "checkbox_test.exs",
     clipboard: "clipboard_test.exs",
     collapsible: "collapsible_test.exs",
-    color_picker: "color-picker_test.exs",
+    color_picker: "color_picker_test.exs",
     combobox: "combobox_test.exs",
-    date_picker: "date-picker_test.exs",
+    date_picker: "date_picker_test.exs",
     dialog: "dialog_test.exs",
     editable: "editable_test.exs",
     file_upload: "file_upload_test.exs",
-    floating_panel: "floating-panel_test.exs",
+    floating_panel: "floating_panel_test.exs",
     listbox: "listbox_test.exs",
     marquee: "marquee_test.exs",
     menu: "menu_test.exs",
-    number_input: "number-input_test.exs",
-    password_input: "password-input_test.exs",
-    pin_input: "pin-input_test.exs",
+    number_input: "number_input_test.exs",
+    password_input: "password_input_test.exs",
+    pin_input: "pin_input_test.exs",
     radio_group: "radio_group_test.exs",
     select: "select_test.exs",
-    signature: "signature_test.exs",
+    signature_pad: "signature_pad_test.exs",
     switch: "switch_test.exs",
     tabs: "tabs_test.exs",
     tags_input: "tags_input_test.exs",
     timer: "timer_test.exs",
     toggle: "toggle_test.exs",
-    toggle_group: "toggle-group_test.exs",
+    toggle_group: "toggle_group_test.exs",
     tooltip: "tooltip_test.exs",
     tree_view: "tree_view_test.exs"
   }
@@ -104,13 +104,13 @@ defmodule E2eWeb.DocDemoCoveragePolicyTest do
   end
 
   defp cross_component_wallaby_path?(:file_upload, path) do
-    String.contains?(Path.basename(path), "file-upload-live")
+    String.contains?(Path.basename(path), "file_upload_live")
   end
 
   defp cross_component_wallaby_path?(:file_upload_live, path) do
     basename = Path.basename(path)
 
-    basename in ["file_upload_test.exs", "file-upload_test.exs"]
+    basename in ["file_upload_test.exs"]
   end
 
   defp cross_component_wallaby_path?(_, _), do: false

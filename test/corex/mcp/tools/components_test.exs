@@ -52,4 +52,33 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert {:error, :invalid_arguments} = Components.get_component(%{})
     assert {:error, :invalid_arguments} = Components.get_component(%{"id" => 1})
   end
+
+  test "get_component includes markdown docs and source metadata when available" do
+    for id <- ["accordion", "code", "marquee"] do
+      json = ok_json!(Components.get_component(%{"id" => id}))
+      decoded = Corex.Json.decode!(json)
+      assert decoded["id"] == id
+      assert is_binary(decoded["docs"])
+      assert decoded["docs"] =~ "# "
+      assert is_binary(decoded["source_path"])
+      assert is_integer(decoded["source_line"])
+    end
+  end
+
+  test "get_component returns spec for representative registry ids" do
+    ids = [:accordion, :toast, :tree_view, :menu, :date_picker, :select, :dialog]
+
+    for id <- ids do
+      json = ok_json!(Components.get_component(%{"id" => to_string(id)}))
+      decoded = Corex.Json.decode!(json)
+      assert decoded["id"] == to_string(id)
+      assert is_binary(decoded["module"])
+    end
+  end
+
+  defp ok_json!({:ok, json}), do: json
+
+  defp ok_json!(other) do
+    flunk("expected {:ok, json}, got #{inspect(other)}")
+  end
 end

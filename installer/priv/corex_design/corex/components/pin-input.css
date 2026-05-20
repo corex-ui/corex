@@ -24,7 +24,6 @@
   }
 
   .pin-input [data-scope="pin-input"][data-part="root"][data-readonly],
-  .pin-input [data-scope="pin-input"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

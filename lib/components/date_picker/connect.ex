@@ -43,7 +43,7 @@ defmodule Corex.DatePicker.Connect do
       "data-time-zone" => assigns.time_zone,
       "data-name" => assigns.name,
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-outside-day-selectable" => get_boolean(assigns.outside_day_selectable),

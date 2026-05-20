@@ -1,5 +1,5 @@
 defmodule E2eWeb.SignatureModel do
-  use E2eWeb.Model, component: "signature"
+  use E2eWeb.Model, component: "signature_pad"
 
   import Wallaby.Query
 
@@ -253,8 +253,8 @@ defmodule E2eWeb.SignatureModel do
   def goto_form(session, mode) do
     path =
       case mode do
-        :static -> "/en/signature/form"
-        :live -> "/en/signature/live-form"
+        :static -> "/en/signature-pad/form"
+        :live -> "/en/signature-pad/live-form"
       end
 
     session = visit_path(session, path)

@@ -676,8 +676,8 @@ defmodule Corex.Select do
 
     assigns =
       assigns
-      |> assign(:items, items)
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
+      |> assign(:items, items)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
 

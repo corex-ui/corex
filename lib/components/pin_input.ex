@@ -233,8 +233,8 @@ defmodule Corex.PinInput do
 
     assigns =
       assigns
-      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)

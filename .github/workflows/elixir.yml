@@ -130,6 +130,20 @@ jobs:
       - name: Check JavaScript (prettier + eslint)
         run: npm run check
 
+      - name: Verify version alignment
+        if: matrix.coveralls
+        run: |
+          COREX_V=$(grep '@version' mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          PKG_V=$(node -p "require('./package.json').version")
+          INST_V=$(grep '@version' installer/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V"
+
+      - name: Verify installer design snapshot
+        if: matrix.coveralls
+        run: |
+          mix assets.build
+          diff -rq priv/design/corex installer/priv/corex_design/corex
+
       - name: Run tests and post coverage to Coveralls
         if: matrix.coveralls
         run: mix coveralls.github
@@ -257,9 +271,9 @@ jobs:
         working-directory: installer
         run: mix deps.get
 
-      - name: Run installer tests
+      - name: Run installer tests with coverage
         working-directory: installer
-        run: mix test
+        run: mix test --cover
 
       - name: Verify corex_new archive embeds priv design snapshot
         working-directory: installer
@@ -331,6 +345,10 @@ jobs:
 
       - name: Install Mix archives for corex.new (phx_new)
         run: mix archive.install hex phx_new --force
+
+      - name: Run installer integration test
+        working-directory: installer
+        run: mix test --include integration
 
       - name: Run integration tests (no database tag)
         working-directory: integration_test

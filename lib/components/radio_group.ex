@@ -402,8 +402,8 @@ defmodule Corex.RadioGroup do
   def radio_group(assigns) do
     assigns =
       assigns
-      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "radio-group-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, normalize_items(assigns.items))
 

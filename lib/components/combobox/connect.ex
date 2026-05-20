@@ -53,7 +53,7 @@ defmodule Corex.Combobox.Connect do
       "data-multiple" => get_boolean(assigns.multiple),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,

@@ -31,7 +31,6 @@
   }
 
   .checkbox [data-scope="checkbox"][data-part="root"][data-readonly],
-  .checkbox [data-scope="checkbox"][data-part="root"][data-read-only] {
     @apply ui-readonly;
   }
 

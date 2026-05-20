@@ -33,7 +33,7 @@ defmodule Corex.FileUpload.Connect do
       "id" => assigns.id,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-name" => assigns.name,
       "data-form" => assigns.form,

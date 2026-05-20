@@ -35,7 +35,7 @@ defmodule Corex.NumberInput.Connect do
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-allow-mouse-wheel" => get_boolean(assigns.allow_mouse_wheel),

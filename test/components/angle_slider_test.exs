@@ -8,7 +8,13 @@ defmodule Corex.AngleSliderTest do
 
   describe "angle_slider/1" do
     test "renders" do
-      html = render_component(&AngleSlider.angle_slider/1, value: 0, name: "angle")
+      html =
+        render_component(&AngleSlider.angle_slider/1,
+          id: "test-angle-slider",
+          value: 0,
+          name: "angle"
+        )
+
       assert html =~ ~r/data-scope="angle-slider"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r/data-part="control"/
@@ -170,7 +176,7 @@ defmodule Corex.AngleSliderTest do
 
       assert m["data-step"] == "15"
       assert m["data-disabled"] == ""
-      assert m["data-read-only"] == ""
+      assert m["data-readonly"] == ""
       assert m["data-invalid"] == ""
       assert m["data-controlled"] == ""
       assert m["data-value"] == "30"

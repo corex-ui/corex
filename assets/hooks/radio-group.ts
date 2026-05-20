@@ -40,7 +40,7 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       dir: getDir(el),
       orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       onValueChange: (details: ValueChangeDetails) => {
@@ -130,7 +130,7 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
       orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
       dir: getDir(this.el),
     } as Partial<Props>);
