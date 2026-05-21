@@ -16,7 +16,7 @@ defmodule E2eWeb.MarkdownCodeBlocksTest do
     assert html =~ "<br"
     assert html =~ "import"
     assert html =~ "LiveSocket"
-    refute html =~ ~r/import \{ Socket \}.*import \{ LiveSocket \}/s
+    assert html =~ ~r/import \{ Socket \}.*<br\/?>.*import \{ LiveSocket \}/s
   end
 
   test "fenced heex uses HEEx lexer token classes" do

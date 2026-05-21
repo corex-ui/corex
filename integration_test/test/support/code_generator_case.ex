@@ -153,12 +153,15 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_tests_pass(app_path) do
-    port = 45_000 + :rand.uniform(5000)
+    env = test_env()
+
+    mix_run!(["ecto.create"], app_path, env: env)
+    mix_run!(["ecto.migrate"], app_path, env: env)
 
     mix_run!(
       ~w(test --timeout 600000),
       app_path,
-      env: [{"PORT", to_string(port)}]
+      env: env
     )
   end
 
@@ -175,7 +178,14 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def drop_test_database(app_path) when is_binary(app_path) do
-    mix_run!(["ecto.drop"], app_path, env: [{"MIX_ENV", "test"}])
+    mix_run!(["ecto.drop"], app_path, env: test_env())
+  end
+
+  defp test_env do
+    port = 45_000 + :rand.uniform(5000)
+
+    [{"PORT", to_string(port)}, {"MIX_ENV", "test"}]
+    |> Kernel.++(Corex.Integration.HttpSmoke.dev_database_env_from_system())
   end
 
   def with_installer_tmp(name, opts \\ [], function)

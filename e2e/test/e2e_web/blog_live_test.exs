@@ -8,9 +8,9 @@ defmodule E2eWeb.BlogLiveTest do
 
     assert html =~ "blog__grid"
     assert html =~ "Journal"
-    assert html =~ "State machines and Zag.js"
+    assert html =~ "Corex and State Machines"
     assert html =~ "badge"
-    assert has_element?(view, "a", "State machines and Zag.js")
+    assert has_element?(view, "a", "Corex and State Machines")
     refute has_element?(view, "a", "Getting started with Corex")
   end
 
@@ -21,7 +21,7 @@ defmodule E2eWeb.BlogLiveTest do
     assert html =~ "blog__post-hero"
     assert html =~ "blog__read-next"
     assert html =~ "Continue reading"
-    assert html =~ "State machines and Zag.js"
+    assert html =~ "Corex and State Machines"
     assert html =~ "How to render 9000+ items in a Combobox?"
     assert html =~ "blog__post-nav"
     assert html =~ "hero-chevron-left"
@@ -81,14 +81,14 @@ defmodule E2eWeb.BlogLiveTest do
     {:ok, _view, page2_html} = live(conn, ~p"/en/blog?page=2")
 
     assert page2_html =~ "blog-index-pagination"
-    refute page2_html =~ "State machines and Zag.js"
+    refute page2_html =~ "Corex and State Machines"
     assert page2_html =~ "Anatomy of a Corex component"
   end
 
   test "arabic blog index uses translated shell", %{conn: conn} do
     {:ok, _view, html} = live(conn, ~p"/ar/blog")
 
-    assert html =~ "المدونة"
-    assert html =~ "Anatomy of a Corex component"
+    assert html =~ "Journal"
+    assert html =~ "تشريح مكوّن Corex"
   end
 end

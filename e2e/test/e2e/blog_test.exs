@@ -71,7 +71,18 @@ defmodule E2e.BlogTest do
     assert post.html =~ "Contrast from day one"
   end
 
-  test "list_posts ar is empty until arabic posts exist" do
-    assert E2e.Blog.list_posts("ar") == []
+  test "list_posts includes arabic articles" do
+    posts = E2e.Blog.list_posts("ar")
+    assert length(posts) == 5
+
+    for slug <- [
+          "anatomy-of-a-corex-component",
+          "corex-design-a11y",
+          "combobox-thousands-of-items",
+          "vanilla-js",
+          "state-machines"
+        ] do
+      assert Enum.any?(posts, &(&1.slug == slug))
+    end
   end
 end
