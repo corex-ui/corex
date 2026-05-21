@@ -88,7 +88,9 @@ defmodule E2eWeb.BlogLiveTest do
   test "arabic blog index uses translated shell", %{conn: conn} do
     {:ok, _view, html} = live(conn, "/ar/blog")
 
+    assert html =~ "blog__grid"
     assert html =~ "Journal"
-    assert html =~ "تشريح مكوّن Corex"
+    assert html =~ "Corex وآلات الحالة"
+    refute html =~ "Corex and State Machines"
   end
 end
