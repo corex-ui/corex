@@ -3,8 +3,9 @@ defmodule Corex.DialogTest do
 
   alias Corex.Animation.Scale
   alias Corex.Dialog
-  alias Corex.Dialog.Anatomy.Props
+  alias Corex.Dialog.Anatomy.{CloseTrigger, Props}
   alias Corex.Dialog.Connect
+  alias Corex.Dialog.Translation, as: DialogTranslation
 
   describe "dialog/1" do
     test "renders" do
@@ -186,17 +187,22 @@ defmodule Corex.DialogTest do
     end
 
     test "embeds default dialog accessible name for client-side Zag props" do
-      m = Connect.props(%Props{id: "d3", animation: "instant"})
-      assert is_binary(m["data-dialog-default-label"])
-      assert m["data-dialog-default-label"] != ""
+      m =
+        Connect.props(%Props{
+          id: "d3",
+          animation: "instant",
+          label: DialogTranslation.resolve(nil).label
+        })
+
+      assert m["data-dialog-default-label"] == "Dialog"
     end
 
-    test "honours dialog_default_label in props when set" do
+    test "honours label in props when set" do
       m =
         Connect.props(%Props{
           id: "d4",
           animation: "instant",
-          dialog_default_label: "Custom"
+          label: "Custom"
         })
 
       assert m["data-dialog-default-label"] == "Custom"
@@ -223,11 +229,11 @@ defmodule Corex.DialogTest do
 
   describe "Connect.close_trigger/1" do
     test "returns close trigger attributes" do
-      assigns = %{id: "test-dialog", dir: "ltr"}
+      assigns = %CloseTrigger{id: "test-dialog", dir: "ltr", open: false, aria_label: "Close"}
       result = Connect.close_trigger(assigns)
       assert result["id"] == "dialog:test-dialog:close-trigger"
       assert result["data-part"] == "close-trigger"
-      assert result["aria-label"] == "Close dialog"
+      assert result["aria-label"] == "Close"
     end
   end
 

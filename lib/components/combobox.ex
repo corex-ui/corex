@@ -259,14 +259,10 @@ defmodule Corex.Combobox do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      normalize_items: 1,
-      has_groups?: 1,
-      normalize_groups: 1,
-      entry_value: 1
-    ]
+    only: [normalize_items: 1, has_groups?: 1, normalize_groups: 1, entry_value: 1]
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -334,11 +330,6 @@ defmodule Corex.Combobox do
   attr(:translation, Corex.Combobox.Translation,
     default: nil,
     doc: "Override translatable strings"
-  )
-
-  attr(:placeholder, :string,
-    default: nil,
-    doc: "Input placeholder; when nil, uses translation.placeholder"
   )
 
   attr(:always_submit_on_enter, :boolean,
@@ -477,7 +468,7 @@ defmodule Corex.Combobox do
 
   def combobox(assigns) do
     translation = Translation.resolve(assigns[:translation])
-    placeholder = assigns[:placeholder] || translation.placeholder
+    placeholder = translation.placeholder
     empty_text = translation.empty
 
     assigns =
@@ -729,8 +720,7 @@ defmodule Corex.Combobox do
   defp value_for_hidden_input(value_list, false), do: Elixir.List.first(value_list)
   defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selected value(s) from a control (`phx-click`). Pass a list, comma-separated string, or single value (normalized like the component).
 
   ```heex
@@ -756,17 +746,17 @@ defmodule Corex.Combobox do
     })
   );
   ```
-  """
+  """)
+
   def set_value(combobox_id, value) when is_binary(combobox_id) do
     JS.dispatch("corex:combobox:set-value",
       to: "##{combobox_id}",
-      detail: %{value: normalize_combobox_set_value!(value)},
+      detail: %{value: Corex.Helpers.normalize_string_list_value!(value)},
       bubbles: false
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selection from `handle_event`. Pushes `combobox_set_value`.
 
   ```heex
@@ -789,23 +779,13 @@ defmodule Corex.Combobox do
     {:noreply, Corex.Combobox.set_value(socket, "my-combobox", v)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, combobox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) do
     LiveView.push_event(socket, "combobox_set_value", %{
       id: combobox_id,
-      value: normalize_combobox_set_value!(value)
+      value: Corex.Helpers.normalize_string_list_value!(value)
     })
   end
-
-  defp normalize_combobox_set_value!(value) when is_list(value), do: validate_value!(value)
-
-  defp normalize_combobox_set_value!(value) when is_binary(value) do
-    case String.trim(value) do
-      "" -> []
-      trimmed -> trimmed |> String.split(",", trim: true) |> validate_value!()
-    end
-  end
-
-  defp normalize_combobox_set_value!(value), do: validate_value!(Elixir.List.wrap(value))
 end

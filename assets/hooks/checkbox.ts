@@ -3,7 +3,15 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Checkbox } from "../components/checkbox";
 import type { CheckedChangeDetails } from "@zag-js/checkbox";
 import { getString, getBoolean, getDir, getCheckedState, canPushEvent } from "../lib/util";
-import { idMatches, notifyChange, readPayloadId, readPayloadChecked } from "../lib/respond-to";
+import {
+  checkedChangePayload,
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId,
+  readPayloadChecked,
+} from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
@@ -13,15 +21,7 @@ type CheckboxHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-export function checkedChangePayload(
-  el: HTMLElement,
-  details: CheckedChangeDetails
-): Record<string, unknown> {
-  return {
-    id: el.id,
-    checked: details.checked,
-  };
-}
+export { checkedChangePayload };
 
 const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
@@ -84,31 +84,53 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       zagCheckbox.api.toggleChecked();
     });
 
+    const emitCheckedState = (
+      respondTo: ReturnType<typeof parseRespondTo>,
+      serverEventName: string,
+      domEventName: string,
+      value: unknown
+    ) => {
+      const detail = { id: el.id, value };
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName,
+        serverPayload: detail,
+        el,
+        domEventName,
+        domDetail: detail,
+      });
+    };
+
     registry.add("checkbox_checked", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_checked_response", {
-        id: el.id,
-        value: zagCheckbox.api.checked,
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_checked_response",
+        "corex:checkbox:checked",
+        zagCheckbox.api.checked
+      );
     });
 
     registry.add("checkbox_focused", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_focused_response", {
-        id: el.id,
-        value: zagCheckbox.api.focused,
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_focused_response",
+        "corex:checkbox:focused",
+        zagCheckbox.api.focused
+      );
     });
 
     registry.add("checkbox_disabled", (payload: unknown) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_disabled_response", {
-        id: el.id,
-        value: zagCheckbox.api.disabled,
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_disabled_response",
+        "corex:checkbox:disabled",
+        zagCheckbox.api.disabled
+      );
     });
   },
 

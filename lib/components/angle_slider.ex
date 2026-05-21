@@ -209,6 +209,8 @@ defmodule Corex.AngleSlider do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.AngleSlider.Anatomy.{
     Control,
     HiddenInput,
@@ -687,8 +689,7 @@ defmodule Corex.AngleSlider do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the angle from a control (`phx-click`). `value` is degrees (number).
 
   ```heex
@@ -704,7 +705,8 @@ defmodule Corex.AngleSlider do
     })
   );
   ```
-  """
+  """)
+
   def set_value(angle_slider_id, value) when is_binary(angle_slider_id) and is_number(value) do
     JS.dispatch("corex:angle-slider:set-value",
       to: "##{angle_slider_id}",
@@ -713,8 +715,7 @@ defmodule Corex.AngleSlider do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the angle from `handle_event`. Accepts a number or a numeric string.
 
   ```heex
@@ -727,7 +728,8 @@ defmodule Corex.AngleSlider do
     {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", v)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, angle_slider_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) do
     angle =
@@ -749,8 +751,7 @@ defmodule Corex.AngleSlider do
   @doc false
   def value(angle_slider_id) when is_binary(angle_slider_id), do: value(angle_slider_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read the current value from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
   ```heex
@@ -766,7 +767,8 @@ defmodule Corex.AngleSlider do
     })
   );
   ```
-  """
+  """)
+
   def value(angle_slider_id, opts) when is_binary(angle_slider_id) and is_list(opts) do
     JS.dispatch("corex:angle-slider:value",
       to: "##{angle_slider_id}",
@@ -775,8 +777,7 @@ defmodule Corex.AngleSlider do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read the value from `handle_event`. Same `respond_to` behavior as [`value/2`](#value/2).
 
   ```heex
@@ -789,7 +790,8 @@ defmodule Corex.AngleSlider do
     {:noreply, Corex.AngleSlider.value(socket, "my-angle-slider", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def value(socket, angle_slider_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(angle_slider_id) and
              is_list(opts) do

@@ -223,42 +223,10 @@ defmodule Corex.PasswordInput do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the password input.
-
-    Pass `translation={%Corex.PasswordInput.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `toggle_visibility` | Toggle password visibility | Visibility trigger `aria-label` |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:toggle_visibility]
-
-    @type t :: %__MODULE__{toggle_visibility: String.t()}
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{toggle_visibility: Gettext.gettext("Toggle password visibility")}
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        toggle_visibility:
-          Corex.Translation.take(partial.toggle_visibility, default.toggle_visibility)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.PasswordInput.Anatomy.{
     Control,
@@ -271,6 +239,7 @@ defmodule Corex.PasswordInput do
   }
 
   alias Corex.PasswordInput.Connect
+  alias Corex.PasswordInput.Translation
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -419,8 +388,7 @@ defmodule Corex.PasswordInput do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set whether the password is visible from a control (`phx-click`).
 
   ```heex
@@ -440,7 +408,8 @@ defmodule Corex.PasswordInput do
     })
   );
   ```
-  """
+  """)
+
   def set_visible(password_input_id, visible)
       when is_binary(password_input_id) and is_boolean(visible) do
     JS.dispatch("corex:password-input:set-visible",
@@ -450,8 +419,7 @@ defmodule Corex.PasswordInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set visibility from `handle_event`.
 
   ```heex
@@ -468,7 +436,8 @@ defmodule Corex.PasswordInput do
     {:noreply, Corex.PasswordInput.set_visible(socket, "my-password-input", true)}
   end
   ```
-  """
+  """)
+
   def set_visible(socket, password_input_id, visible)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) and
              is_boolean(visible) do
@@ -478,8 +447,7 @@ defmodule Corex.PasswordInput do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Toggle visibility from a control (`phx-click`).
 
   ```heex
@@ -496,7 +464,8 @@ defmodule Corex.PasswordInput do
     new CustomEvent("corex:password-input:toggle-visible", { bubbles: false })
   );
   ```
-  """
+  """)
+
   def toggle_visible(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:toggle-visible",
       to: "##{password_input_id}",
@@ -504,8 +473,7 @@ defmodule Corex.PasswordInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Toggle visibility from `handle_event`.
 
   ```heex
@@ -522,14 +490,14 @@ defmodule Corex.PasswordInput do
     {:noreply, Corex.PasswordInput.toggle_visible(socket, "my-password-input")}
   end
   ```
-  """
+  """)
+
   def toggle_visible(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_toggle_visible", %{"id" => password_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Focus the input from a control (`phx-click`).
 
   ```heex
@@ -546,13 +514,13 @@ defmodule Corex.PasswordInput do
     new CustomEvent("corex:password-input:focus", { bubbles: false })
   );
   ```
-  """
+  """)
+
   def focus(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:focus", to: "##{password_input_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Focus the input from `handle_event`.
 
   ```heex
@@ -569,7 +537,8 @@ defmodule Corex.PasswordInput do
     {:noreply, Corex.PasswordInput.focus(socket, "my-password-input")}
   end
   ```
-  """
+  """)
+
   def focus(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_focus", %{"id" => password_input_id})

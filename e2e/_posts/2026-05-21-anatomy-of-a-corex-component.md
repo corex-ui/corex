@@ -1,6 +1,6 @@
 ---
 title: "Anatomy of a Corex component"
-description: "Corex is Phoenix function components with a choice: how much HEEx you write while the library keeps the accordion, select, or checkbox working correctly."
+description: "Corex adds interactive Phoenix components with a fixed HTML shape and client hooks. Anatomy is how much HEEx you write for that shape; behavior lives in the hook."
 date: "2026-05-21 12:00:00 +0000"
 permalink: /en/blog/anatomy-of-a-corex-component/
 tags:
@@ -12,35 +12,31 @@ sitemap:
   changefreq: monthly
 ---
 
-A Corex component on the wire is two things at once.
+You use Corex inside a normal Phoenix app. Its pieces are [function components](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html): the same `<.accordion />` style calls you already write in HEEx. They help with interactive controls. Accordions, selects, and checkboxes are tedious to build by hand. Keys, focus, accessibility, and open/closed state are where mistakes pile up. Corex ships that behavior so you do not reinvent it on every screen.
 
-**HEEx** is the skeleton you declare: attrs, slots, `items`, BEM classes on the root. It prints a tree with `data-scope`, `data-part`, and `data-*` props the hook will read.
+This post is about one choice only. For the same component, how much HEEx do you still write yourself? That choice is what we call **Anatomy**. How the component behaves on the client is a separate topic: [state machines](/en/blog/state-machines/). How it looks is separate too: [Corex Design](/en/blog/corex-design-a11y/).
 
-**JavaScript** is the brain you do not write in templates: a Zag state machine started by a LiveView hook on that root. It owns open state, focus, keyboard navigation, and ARIA. It re-renders those attributes onto the parts whenever the machine moves or LiveView patches the root.
+If you already use LiveView, the data flow stays familiar. The LiveView holds **assigns**. Function components turn those assigns into HTML. The browser updates when the server sends a patch. The [Phoenix guides](https://hexdocs.pm/phoenix/overview.html) cover routing, controllers, and LiveView in full. We will not repeat that here. You still call Corex from HEEx, for example `<.accordion id="faq" items={@topics} />`, with `@topics` set in `mount/3` or `handle_event/3`. What Corex adds is a predictable HTML shape and a **client hook** on the root for the hard interaction work.
 
-**Anatomy** is only about the HEEx side: for the same `<.accordion>`, how much markup you still author yourself. Minimal means one call and a list. Custom Slots mean `:let` per row. Manual Slots and **compound** go further when the DOM shape demands it. None of that changes the machine; it changes the HTML the hook attaches to.
+That hook is standard Phoenix. See [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html). You pass a **`hooks`** map into **`LiveSocket`**. You mark the root with **`phx-hook`** and a unique **`id`**. LiveView calls **`mounted`**, **`updated`**, and the other lifecycle callbacks when the DOM changes. Corex provides those hooks. Inside them, a **Zag.js** state machine drives open panels, focus, and keyboard moves. Your HEEx supplies attrs, slots, `items`, and classes. The hook and machine handle what happens after render.
 
-The moduledoc **Anatomy** sections use the same labels everywhere. This post walks accordion in full, then select, tabs, and checkbox.
+**Anatomy** is only the HEEx half. Moduledocs use the same names on every component. **Minimal** is one call plus a list. **With slots** repeats one slot on every row. **Custom slots** use `:let` when each row looks different. **Manual Slots** and **compound** are for layouts that are not a simple list. The machine stays the same. Only the HTML it attaches to changes. Compare levels on the [accordion anatomy demo](/en/accordion/anatomy), and the same idea on [select](/en/select/anatomy), [tabs](/en/tabs/anatomy), and [checkbox](/en/checkbox/anatomy). Full snippets stay in the docs and on those pages. Here we focus on when to pick each level.
 
-## Function components and assigns
+## Assigns and change tracking
 
-Corex components are [**function components**](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html): Elixir functions that receive an **`assigns`** map and return a **`~H`** template. You call them like `<.accordion id="faq" items={@topics} />`. Declared **`attr`** and **`slot`** on the component define what you may pass; the compiler checks types and required keys.
+**Anatomy** attrs (`items`, slots, **`compound`**) are ordinary assigns from the caller’s perspective. The component may **`assign`** derived values (panel lists, `ctx` for `:let`) before it renders. How assigns flow through HEEx and how only dynamic regions re-render is defined in [Assigns and HEEx templates](https://hexdocs.pm/phoenix_live_view/assigns-eex.html); read that guide for **`attr`**, **`slot`**, and change tracking rather than repeating it here.
 
-LiveView keeps application data in the socket under **`assigns`**. In HEEx you read **`@topics`**, not `socket.assigns.topics`. When an assign changes, LiveView re-executes only the **dynamic** parts of the template that depend on it and sends a diff to the client. See [Assigns and HEEx templates](https://hexdocs.pm/phoenix_live_view/assigns-eex.html).
+Conventions that matter when a list feeds a hook-backed component:
 
-Practical rules that matter for Corex:
+- Build **`items`** in **`mount/3`** or **`handle_event/3`**, then pass **`items={@topics}`**. Do not load data inside the template.
+- Use **`assign/2`** and **`update/3`** in the LiveView. Avoid **`Map.put/3`** on assigns inside a function component.
+- Prefer explicit attrs over **`{assigns}`** into children so patches stay granular.
 
-- Load lists in **`mount/3`** or **`handle_event/3`**, then pass **`items={@topics}`**. Do not query inside the template; LiveView will not re-run that block when the database changes.
-- Use **`assign/2`** and **`update/3`** in the LiveView. Avoid **`Map.put/3`** on `assigns` inside a function component; change tracking will not see updates after the first render.
-- Prefer explicit attrs over **`{assigns}`** into children. Passing the whole assigns map disables fine-grained tracking and forces full child re-renders.
-
-Anatomy attrs (`items`, slots, `compound`) are all **assigns** from the caller’s perspective. The component may **`assign`** derived values (panel lists, `ctx` for `:let`) before rendering. What you choose in anatomy does not replace **`phx-hook`** or the Zag machine; it only shapes the HTML those layers attach to.
-
-Interactive attrs such as **`value`**, **`controlled`**, and **`on_value_change`** bridge to [bindings](https://hexdocs.pm/phoenix_live_view/bindings.html): the hook **`pushEvent`**s to **`handle_event/3`**, you return **`{:noreply, socket}`**, and the next patch updates `data-*` on the root. That pipeline is covered in the state machines and vanilla JS posts; here we stay on markup shape.
+Choosing an anatomy level does not replace **`phx-hook`** or the Zag machine; it only shapes the HTML those callbacks attach to. **`value`**, **`controlled`**, **`on_value_change`**, and **`pushEvent`** are [bindings](https://hexdocs.pm/phoenix_live_view/bindings.html) and hook APIs: see [state machines](/en/blog/state-machines/) and [vanilla JS](/en/blog/vanilla-js/), not this post.
 
 ## Setup
 
-Add `{:corex, "~> 0.1.0"}` to `mix.exs`, run `mix deps.get`, and register hooks in `assets/js/app.js`:
+Register Corex in the **`hooks`** option on **`LiveSocket`** as in [Client hooks via `phx-hook`](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook):
 
 ```javascript
 import corex from "corex"
@@ -505,12 +501,6 @@ end
 ```
 
 The `id` on `<.accordion id="faq" ...>` must match the first argument to `set_value`. Panel `value` strings come from `items` maps or manual slot `value` attributes. Under the hood that uses **`Phoenix.LiveView.push_event/3`** and the hook’s **`handleEvent`**, the same client/server path documented in [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html#handling-server-pushed-events).
-
-## LiveView hooks on the root
-
-Every interactive Corex component renders a root with **`phx-hook="ComponentName"`** and a unique **`id`**. After the first HTTP render, **`liveSocket.connect()`** runs the hook’s **`mounted`** callback. User input updates the Zag machine; optional **`on_*`** attrs **`pushEvent`** to **`handle_event/3`**. Server assign changes patch the root and run **`updated`**.
-
-You do not implement those callbacks in your LiveView. You declare **attrs** and **slots** in HEEx. The [vanilla JS](/en/blog/vanilla-js/) and [state machines](/en/blog/state-machines/) posts in this series cover **`LiveSocket`**, lifecycle, controlled mode, and **`push_event`** in full.
 
 ## Choosing anatomy on a call
 

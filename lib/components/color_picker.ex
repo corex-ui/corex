@@ -161,46 +161,12 @@ defmodule Corex.ColorPicker do
   <!-- tabs-close -->
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the color picker channel inputs.
-
-    Pass `translation={%Corex.ColorPicker.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `hex` | Hex color value | Hex channel input `aria-label` |
-    | `alpha` | Alpha (opacity) value | Alpha channel input `aria-label` |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:hex, :alpha]
-
-    @type t :: %__MODULE__{hex: String.t(), alpha: String.t()}
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        hex: Gettext.gettext("Hex color value"),
-        alpha: Gettext.gettext("Alpha (opacity) value")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        hex: Corex.Translation.take(partial.hex, default.hex),
-        alpha: Corex.Translation.take(partial.alpha, default.alpha)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
+
+  alias Corex.ColorPicker.Translation
 
   alias Corex.ColorPicker.Anatomy.{
     Area,
@@ -531,8 +497,7 @@ defmodule Corex.ColorPicker do
     String.downcase(preset_hex) == String.downcase(current)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the picker value from a control (`phx-click`). `value` is a color string (e.g. hex).
 
   ```heex
@@ -548,7 +513,8 @@ defmodule Corex.ColorPicker do
     })
   );
   ```
-  """
+  """)
+
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",
       to: "##{color_picker_id}",
@@ -557,8 +523,7 @@ defmodule Corex.ColorPicker do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the value from `handle_event`.
 
   ```heex
@@ -571,7 +536,8 @@ defmodule Corex.ColorPicker do
     {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", v)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, color_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
     LiveView.push_event(socket, "color_picker_set_value", %{

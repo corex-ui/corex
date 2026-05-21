@@ -10,7 +10,7 @@ import {
   notifyChange,
   readPayloadId,
   readPayloadValue
-} from "./chunks/chunk-YECC7BC7.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,

@@ -316,6 +316,8 @@ defmodule Corex.Carousel do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Carousel.Anatomy.{
     Control,
     Indicator,
@@ -705,8 +707,7 @@ defmodule Corex.Carousel do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Start or resume autoplay from the client. Dispatches `corex:carousel:play` on the carousel root.
 
   ```heex
@@ -732,13 +733,13 @@ defmodule Corex.Carousel do
     new CustomEvent("corex:carousel:play", { bubbles: false, detail: {} })
   );
   ```
-  """
+  """)
+
   def play(carousel_id) when is_binary(carousel_id) do
     JS.dispatch("corex:carousel:play", to: "##{carousel_id}", detail: %{}, bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Pause autoplay from the client. Dispatches `corex:carousel:pause` on the carousel root.
 
   ```heex
@@ -760,13 +761,13 @@ defmodule Corex.Carousel do
     new CustomEvent("corex:carousel:pause", { bubbles: false, detail: {} })
   );
   ```
-  """
+  """)
+
   def pause(carousel_id) when is_binary(carousel_id) do
     JS.dispatch("corex:carousel:pause", to: "##{carousel_id}", detail: %{}, bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Start or resume autoplay from the server. `push_event("carousel_play", %{"id" => carousel_id})`.
 
   ```heex
@@ -788,14 +789,14 @@ defmodule Corex.Carousel do
     {:noreply, Corex.Carousel.play(socket, "my-carousel")}
   end
   ```
-  """
+  """)
+
   def play(socket, carousel_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
     LiveView.push_event(socket, "carousel_play", %{"id" => carousel_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Pause autoplay from the server. `push_event("carousel_pause", %{"id" => carousel_id})`.
 
   ```heex
@@ -817,18 +818,17 @@ defmodule Corex.Carousel do
     {:noreply, Corex.Carousel.pause(socket, "my-carousel")}
   end
   ```
-  """
+  """)
+
   def pause(socket, carousel_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) do
     LiveView.push_event(socket, "carousel_pause", %{"id" => carousel_id})
   end
 
-  @doc type: :api
-  @doc "Same as [`scroll_next/2`](#scroll_next/2) with `instant: false`."
+  api_doc_short("Same as [`scroll_next/2`](#scroll_next/2) with `instant: false`.")
   def scroll_next(carousel_id) when is_binary(carousel_id), do: scroll_next(carousel_id, false)
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Scroll to the next page from the client. Dispatches `corex:carousel:scroll-next`.
   Pass `true` as the second argument for an instant jump (no animation).
 
@@ -854,7 +854,8 @@ defmodule Corex.Carousel do
     new CustomEvent("corex:carousel:scroll-next", { bubbles: false, detail: { instant: true } })
   );
   ```
-  """
+  """)
+
   def scroll_next(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
     JS.dispatch("corex:carousel:scroll-next",
       to: "##{carousel_id}",
@@ -868,8 +869,7 @@ defmodule Corex.Carousel do
     scroll_next(socket, carousel_id, false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Scroll to the next page from the server. `push_event("carousel_scroll_next", %{"id" => id, "instant" => boolean})`.
 
   ```heex
@@ -890,19 +890,18 @@ defmodule Corex.Carousel do
     {:noreply, Corex.Carousel.scroll_next(socket, "my-carousel")}
   end
   ```
-  """
+  """)
+
   def scroll_next(socket, carousel_id, instant)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) and
              is_boolean(instant) do
     LiveView.push_event(socket, "carousel_scroll_next", scroll_payload(carousel_id, instant))
   end
 
-  @doc type: :api
-  @doc "Same as [`scroll_prev/2`](#scroll_prev/2) with `instant: false`."
+  api_doc_short("Same as [`scroll_prev/2`](#scroll_prev/2) with `instant: false`.")
   def scroll_prev(carousel_id) when is_binary(carousel_id), do: scroll_prev(carousel_id, false)
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Scroll to the previous page from the client. Dispatches `corex:carousel:scroll-prev`.
   Pass `true` as the second argument for an instant jump (no animation).
 
@@ -928,7 +927,8 @@ defmodule Corex.Carousel do
     new CustomEvent("corex:carousel:scroll-prev", { bubbles: false, detail: {} })
   );
   ```
-  """
+  """)
+
   def scroll_prev(carousel_id, instant) when is_binary(carousel_id) and is_boolean(instant) do
     JS.dispatch("corex:carousel:scroll-prev",
       to: "##{carousel_id}",
@@ -942,8 +942,7 @@ defmodule Corex.Carousel do
     scroll_prev(socket, carousel_id, false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Scroll to the previous page from the server. `push_event("carousel_scroll_prev", %{"id" => id, "instant" => boolean})`.
 
   ```heex
@@ -964,7 +963,8 @@ defmodule Corex.Carousel do
     {:noreply, Corex.Carousel.scroll_prev(socket, "my-carousel")}
   end
   ```
-  """
+  """)
+
   def scroll_prev(socket, carousel_id, instant)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(carousel_id) and
              is_boolean(instant) do

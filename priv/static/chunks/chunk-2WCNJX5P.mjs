@@ -1,4 +1,10 @@
 // lib/respond-to.ts
+function checkedChangePayload(el, details) {
+  return {
+    id: el.id,
+    checked: details.checked
+  };
+}
 function parseRespondTo(source) {
   if (source && typeof source === "object") {
     const o = source;
@@ -78,6 +84,22 @@ function notifyChange(args) {
     );
   }
 }
+function createValueEmitter(hook, options) {
+  return (respondTo) => {
+    const value = options.getValue();
+    const payload = { id: hook.el.id, value };
+    emitResponse({
+      respondTo,
+      canPushServer: hook.canPushServer(),
+      pushEvent: hook.pushEvent,
+      serverEventName: options.serverEventName,
+      serverPayload: payload,
+      el: hook.el,
+      domEventName: options.domEventName,
+      domDetail: payload
+    });
+  };
+}
 function emitResponse(args) {
   const {
     respondTo,
@@ -103,6 +125,7 @@ function emitResponse(args) {
 }
 
 export {
+  checkedChangePayload,
   parseRespondTo,
   idMatches,
   readPayloadChecked,
@@ -112,5 +135,6 @@ export {
   readPayloadId,
   readPayloadValue,
   notifyChange,
+  createValueEmitter,
   emitResponse
 };

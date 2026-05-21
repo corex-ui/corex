@@ -125,58 +125,10 @@ defmodule Corex.Editable do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the editable field.
-
-    Pass `translation={%Corex.Editable.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `input` | editable input | Input `aria-label` while editing |
-    | `edit` | edit | Preview and edit trigger `aria-label` |
-    | `submit` | submit | Submit trigger `aria-label` |
-    | `cancel` | cancel | Cancel trigger `aria-label` |
-    """
-
-    alias Corex.Gettext
-    alias Corex.Translation, as: T
-
-    defstruct [:input, :edit, :submit, :cancel]
-
-    @type t :: %__MODULE__{
-            input: String.t(),
-            edit: String.t(),
-            submit: String.t(),
-            cancel: String.t()
-          }
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        input: Gettext.gettext("editable input"),
-        edit: Gettext.gettext("edit"),
-        submit: Gettext.gettext("submit"),
-        cancel: Gettext.gettext("cancel")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        input: T.take(partial.input, default.input),
-        edit: T.take(partial.edit, default.edit),
-        submit: T.take(partial.submit, default.submit),
-        cancel: T.take(partial.cancel, default.cancel)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Phoenix.HTML.Form
   alias Phoenix.LiveView
@@ -197,7 +149,7 @@ defmodule Corex.Editable do
   }
 
   alias Corex.Editable.Connect
-  alias Corex.Gettext
+  alias Corex.Editable.Translation
 
   attr(:id, :string, required: false, doc: "The id of the editable component")
 
@@ -368,8 +320,7 @@ defmodule Corex.Editable do
 
   defp value_to_string(v), do: to_string(v)
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the visible text value from a control (`phx-click`).
 
   ```heex
@@ -390,7 +341,8 @@ defmodule Corex.Editable do
     })
   );
   ```
-  """
+  """)
+
   def set_value(editable_id, value)
       when is_binary(editable_id) and is_binary(value) do
     JS.dispatch("corex:editable:set-value",
@@ -400,8 +352,7 @@ defmodule Corex.Editable do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the value from `handle_event`.
 
   ```heex
@@ -419,7 +370,8 @@ defmodule Corex.Editable do
     {:noreply, Corex.Editable.set_value(socket, "my-editable", v)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, editable_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(editable_id) and
              is_binary(value) do

@@ -314,6 +314,8 @@ defmodule Corex.Menu do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Menu.Anatomy.{
     Content,
     Group,
@@ -326,9 +328,9 @@ defmodule Corex.Menu do
     Trigger
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Menu.Connect
   alias Corex.Positioning
-  alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   @doc """
@@ -466,7 +468,7 @@ defmodule Corex.Menu do
     assigns =
       assigns
       |> assign_new(:id, fn -> "#{System.unique_integer([:positive])}" end)
-      |> validate_items()
+      |> Corex.Tree.validate_items_assigns!(component: "menu")
       |> assign_menu_entries()
 
     group_entries = Enum.filter(assigns.menu_entries, &match?({:group, _, _, _}, &1))
@@ -797,33 +799,6 @@ defmodule Corex.Menu do
     }
   end
 
-  defp validate_items(%{items: nil} = assigns), do: assigns
-
-  defp validate_items(%{items: items} = assigns) when is_list(items) do
-    Enum.each(items, fn item ->
-      unless is_struct(item, Corex.Tree.Item) do
-        raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.Tree.Item{} struct, got: #{inspect(item)}
-
-        Please use the Corex.Tree.Item struct:
-
-        %Corex.Tree.Item{
-          value: "unique-id",
-          label: "Label text",
-          children: [],
-          disabled: false,
-          group: nil,
-          meta: %{}
-        }
-        """
-      end
-    end)
-
-    assigns
-  end
-
-  defp validate_items(assigns), do: assigns
-
   defp assign_menu_entries(%{items: nil} = assigns) do
     assign(assigns, :menu_entries, [])
   end
@@ -847,8 +822,7 @@ defmodule Corex.Menu do
     entries ++ ungrouped
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set menu open state from a control (`phx-click`). Targets the root with id `menu:<id>`.
 
   ```heex
@@ -866,7 +840,8 @@ defmodule Corex.Menu do
     })
   );
   ```
-  """
+  """)
+
   def set_open(menu_id, open) when is_binary(menu_id) do
     JS.dispatch("corex:menu:set-open",
       to: "[id=\"menu:#{menu_id}\"]",
@@ -875,8 +850,7 @@ defmodule Corex.Menu do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`. Pushes `menu_set_open`.
 
   ```heex
@@ -891,12 +865,10 @@ defmodule Corex.Menu do
     {:noreply, Corex.Menu.set_open(socket, "my-menu", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, menu_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do
-    LiveView.push_event(socket, "menu_set_open", %{
-      menu_id: menu_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "menu_set_open", menu_id, open)
   end
 end

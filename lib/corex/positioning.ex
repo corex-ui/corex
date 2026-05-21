@@ -11,6 +11,8 @@ defmodule Corex.Positioning do
   on [`Corex.FloatingPanel`](Corex.FloatingPanel.html), not this struct.
   """
 
+  alias Corex.Dataset
+
   defstruct hide_when_detached: true,
             strategy: "fixed",
             placement: "bottom",
@@ -76,11 +78,11 @@ defmodule Corex.Positioning do
   defp maybe_put_axis_key(map, key, value) when is_number(value),
     do: Map.put(map, key, to_string(value))
 
+  defp encode_flip(value) when is_boolean(value), do: Dataset.bool_str(value)
+  defp encode_flip(value) when is_list(value), do: Enum.join(value, ",")
+  defp encode_flip(_), do: nil
+
   defp bool_str(true), do: "true"
   defp bool_str(false), do: "false"
   defp bool_str(_), do: nil
-
-  defp encode_flip(value) when is_boolean(value), do: bool_str(value)
-  defp encode_flip(value) when is_list(value), do: Enum.join(value, ",")
-  defp encode_flip(_), do: nil
 end

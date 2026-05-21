@@ -2,6 +2,7 @@ defmodule Corex.PasswordInputTest do
   use CorexTest.ComponentCase, async: true
 
   alias Corex.PasswordInput
+  alias Corex.PasswordInput.Anatomy.VisibilityTrigger
   alias Corex.PasswordInput.Connect
 
   describe "password_input/1" do
@@ -94,7 +95,11 @@ defmodule Corex.PasswordInputTest do
 
   describe "Connect.visibility_trigger/1" do
     test "returns visibility trigger attributes without dir" do
-      assigns = %{id: "test-password"}
+      assigns = %VisibilityTrigger{
+        id: "test-password",
+        aria_label: "Toggle password visibility"
+      }
+
       result = Connect.visibility_trigger(assigns)
       assert result["data-part"] == "visibility-trigger"
       assert result["aria-label"] == "Toggle password visibility"

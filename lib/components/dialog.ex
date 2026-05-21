@@ -330,39 +330,10 @@ defmodule Corex.Dialog do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the dialog.
-
-    Pass `translation={%Corex.Dialog.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `close` | Close | Close trigger `aria-label` |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:close]
-
-    @type t :: %__MODULE__{close: String.t()}
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{close: Gettext.gettext("Close")}
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{close: Corex.Translation.take(partial.close, default.close)}
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -375,9 +346,9 @@ defmodule Corex.Dialog do
     Trigger
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Dialog.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
+  alias Corex.Dialog.Translation
 
   @doc """
   Renders a dialog component.
@@ -457,12 +428,6 @@ defmodule Corex.Dialog do
 
   attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
 
-  attr(:aria_label, :string,
-    default: nil,
-    doc:
-      "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
-  )
-
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -534,7 +499,7 @@ defmodule Corex.Dialog do
         on_open_change_client: @on_open_change_client,
         animation: @animation,
         animation_options: @animation_options,
-        dialog_default_label: @aria_label
+        label: @translation.label
       })}
     >
       <button
@@ -631,19 +596,19 @@ defmodule Corex.Dialog do
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:aria_label, :string, default: nil)
+  attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
-    assigns = assign_new(assigns, :aria_label, fn -> Corex.Gettext.gettext("Close") end)
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assign(assigns, :close_trigger_struct, %CloseTrigger{
         id: assigns.id,
         dir: assigns.dir,
         open: false,
-        aria_label: assigns.aria_label
+        aria_label: translation.close
       })
 
     ~H"""
@@ -657,8 +622,7 @@ defmodule Corex.Dialog do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from a control (`phx-click`).
 
   ```heex
@@ -678,17 +642,13 @@ defmodule Corex.Dialog do
     })
   );
   ```
-  """
+  """)
+
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
-    JS.dispatch("corex:dialog:set-open",
-      to: "##{dialog_id}",
-      detail: %{open: open},
-      bubbles: false
-    )
+    RespondTo.dispatch_set_open(dialog_id, open, "corex:dialog:set-open")
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`.
 
   ```heex
@@ -705,13 +665,11 @@ defmodule Corex.Dialog do
     {:noreply, Corex.Dialog.set_open(socket, "my-dialog", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, dialog_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(dialog_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "dialog_set_open", %{
-      dialog_id: dialog_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "dialog_set_open", dialog_id, open)
   end
 end

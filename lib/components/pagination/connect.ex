@@ -46,7 +46,7 @@ defmodule Corex.Pagination.Connect do
         |> Map.new()
         |> then(fn
           m when map_size(m) == 0 -> nil
-          m -> Corex.Json.encode!(m)
+          m -> Corex.Dataset.encode_json(m)
         end)
 
       _ ->

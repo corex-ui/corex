@@ -28,12 +28,14 @@ defmodule Corex.Select.Connect do
   def props(assigns) do
     sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    joined = joined_csv_values(vlist)
-    {value_str, default_value_str} = controlled_dataset_values(assigns.controlled, joined)
+    joined = Corex.Helpers.joined_csv_values(vlist)
+
+    {value_str, default_value_str} =
+      Corex.Helpers.controlled_dataset_values(assigns.controlled, joined)
 
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(sorted_items),
+      "data-items" => Corex.Dataset.encode_json(sorted_items),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
@@ -55,16 +57,6 @@ defmodule Corex.Select.Connect do
     |> merge_optional_select_props(assigns)
     |> maybe_put_data_dir(assigns.dir)
   end
-
-  defp joined_csv_values([]), do: nil
-
-  defp joined_csv_values(vlist) do
-    Enum.map_join(vlist, ",", &to_string/1)
-  end
-
-  defp controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
-  defp controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
-  defp controlled_dataset_values(_controlled, _joined), do: {nil, nil}
 
   defp merge_optional_select_props(base, assigns) do
     base

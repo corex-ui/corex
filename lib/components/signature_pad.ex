@@ -260,6 +260,8 @@ defmodule Corex.SignaturePad do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.SignaturePad.Anatomy.{
     ClearTrigger,
     Control,
@@ -490,8 +492,7 @@ defmodule Corex.SignaturePad do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear all strokes from a control (`phx-click`).
 
   ```heex
@@ -510,7 +511,8 @@ defmodule Corex.SignaturePad do
     })
   );
   ```
-  """
+  """)
+
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
     JS.dispatch("corex:signature-pad:clear",
       to: "##{signature_pad_id}",
@@ -519,8 +521,7 @@ defmodule Corex.SignaturePad do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear strokes from `handle_event`.
 
   ```heex
@@ -536,7 +537,8 @@ defmodule Corex.SignaturePad do
     {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
   end
   ```
-  """
+  """)
+
   def clear(socket, signature_pad_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(signature_pad_id) do
     LiveView.push_event(socket, "signature_pad_clear", %{

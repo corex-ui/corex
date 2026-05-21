@@ -13,11 +13,10 @@ import {
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import {
   parseRespondTo,
-  emitResponse,
+  createValueEmitter,
   idMatches,
   readPayloadId,
   notifyChange,
-  type RespondTo,
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -178,33 +177,19 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
 
     prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
 
-    const emitSelectedValue = (respondTo: RespondTo) => {
-      const value = treeView.api.selectedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "tree-view-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
 
-    const emitExpandedValue = (respondTo: RespondTo) => {
-      const value = treeView.api.expandedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_expanded_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "tree-view-expanded-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const emitSelectedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.selectedValue,
+      serverEventName: "tree_view_value_response",
+      domEventName: "tree-view-value",
+    });
+
+    const emitExpandedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.expandedValue,
+      serverEventName: "tree_view_expanded_value_response",
+      domEventName: "tree-view-expanded-value",
+    });
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;

@@ -147,6 +147,8 @@ defmodule Corex.Clipboard do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Clipboard.Anatomy.{Control, Copied, Copy, Input, Label, Props, Root, Trigger}
   alias Corex.Clipboard.Connect
   alias Phoenix.LiveView
@@ -315,8 +317,7 @@ defmodule Corex.Clipboard do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Copy the component's current value from a control (`phx-click`).
 
   ```heex
@@ -333,7 +334,8 @@ defmodule Corex.Clipboard do
     new CustomEvent("corex:clipboard:copy", { bubbles: false })
   );
   ```
-  """
+  """)
+
   def copy(clipboard_id) when is_binary(clipboard_id) do
     JS.dispatch("corex:clipboard:copy",
       to: "##{clipboard_id}",
@@ -341,8 +343,7 @@ defmodule Corex.Clipboard do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Copy the current value from `handle_event`.
 
   ```heex
@@ -359,7 +360,8 @@ defmodule Corex.Clipboard do
     {:noreply, Corex.Clipboard.copy(socket, "my-clipboard")}
   end
   ```
-  """
+  """)
+
   def copy(socket, clipboard_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) do
     LiveView.push_event(socket, "clipboard_copy", %{
@@ -367,8 +369,7 @@ defmodule Corex.Clipboard do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the string to copy from a control (`phx-click`).
 
   ```heex
@@ -388,7 +389,8 @@ defmodule Corex.Clipboard do
     })
   );
   ```
-  """
+  """)
+
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
     JS.dispatch("corex:clipboard:set-value",
       to: "##{clipboard_id}",
@@ -397,8 +399,7 @@ defmodule Corex.Clipboard do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the value to copy from `handle_event`.
 
   ```heex
@@ -415,7 +416,8 @@ defmodule Corex.Clipboard do
     {:noreply, Corex.Clipboard.set_value(socket, "my-clipboard", value)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, clipboard_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) and
              is_binary(value) do

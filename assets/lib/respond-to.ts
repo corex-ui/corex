@@ -1,5 +1,15 @@
 export type RespondTo = "server" | "client" | "both";
 
+export function checkedChangePayload(
+  el: HTMLElement,
+  details: { checked: boolean | "indeterminate" }
+): Record<string, unknown> {
+  return {
+    id: el.id,
+    checked: details.checked,
+  };
+}
+
 export function parseRespondTo(source: unknown): RespondTo {
   if (source && typeof source === "object") {
     const o = source as Record<string, unknown>;
@@ -113,6 +123,39 @@ export function notifyChange<TPayload extends Record<string, unknown>>(
       })
     );
   }
+}
+
+type ValueEmitterHook = {
+  el: HTMLElement;
+  pushEvent: (name: string, payload: Record<string, unknown>) => void;
+  canPushServer: () => boolean;
+};
+
+type ValueEmitterOptions = {
+  getValue: () => unknown;
+  serverEventName: string;
+  domEventName: string;
+};
+
+export function createValueEmitter(
+  hook: ValueEmitterHook,
+  options: ValueEmitterOptions
+): (respondTo: RespondTo) => void {
+  return (respondTo: RespondTo) => {
+    const value = options.getValue();
+    const payload = { id: hook.el.id, value } as Record<string, unknown>;
+
+    emitResponse({
+      respondTo,
+      canPushServer: hook.canPushServer(),
+      pushEvent: hook.pushEvent,
+      serverEventName: options.serverEventName,
+      serverPayload: payload,
+      el: hook.el,
+      domEventName: options.domEventName,
+      domDetail: payload,
+    });
+  };
 }
 
 export function emitResponse<TPayload extends Record<string, unknown>>(

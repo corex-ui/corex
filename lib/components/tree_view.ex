@@ -432,6 +432,8 @@ defmodule Corex.TreeView do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Api.Imports, to: Corex.TreeView.Api
+
   alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
   alias Phoenix.LiveView
@@ -967,8 +969,7 @@ defmodule Corex.TreeView do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set expanded branches from `phx-click`. Dispatches `corex:tree-view:set-expanded-value`; `value` must be an expanded-path list accepted by Zag.
 
   ```heex
@@ -984,7 +985,8 @@ defmodule Corex.TreeView do
     })
   );
   ```
-  """
+  """)
+
   def set_expanded_value(tree_view_id, value) when is_binary(tree_view_id) do
     JS.dispatch("corex:tree-view:set-expanded-value",
       to: "##{tree_view_id}",
@@ -993,15 +995,15 @@ defmodule Corex.TreeView do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the selection from `phx-click`. Dispatches `corex:tree-view:set-selected-value` with `detail.value`.
 
   ```heex
   <.action phx-click={Corex.TreeView.set_selected_value("my-tree", ["readme"])}>Select readme</.action>
   <.tree_view id="my-tree" class="tree-view" items={Corex.Tree.new([%{label: "README.md", value: "readme"}])} />
   ```
-  """
+  """)
+
   def set_selected_value(tree_view_id, value) when is_binary(tree_view_id) do
     JS.dispatch("corex:tree-view:set-selected-value",
       to: "##{tree_view_id}",
@@ -1010,8 +1012,7 @@ defmodule Corex.TreeView do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set expanded branches from `handle_event` (`tree_view_set_expanded_value`). Payload uses `tree_view_id` matching the DOM `id`.
 
   ```elixir
@@ -1019,7 +1020,8 @@ defmodule Corex.TreeView do
     {:noreply, Corex.TreeView.set_expanded_value(socket, "my-tree", ["src"])}
   end
   ```
-  """
+  """)
+
   def set_expanded_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
     LiveView.push_event(socket, "tree_view_set_expanded_value", %{
@@ -1028,8 +1030,7 @@ defmodule Corex.TreeView do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the selection from `handle_event` (`tree_view_set_selected_value`).
 
   ```elixir
@@ -1037,7 +1038,8 @@ defmodule Corex.TreeView do
     {:noreply, Corex.TreeView.set_selected_value(socket, "my-tree", ["a"])}
   end
   ```
-  """
+  """)
+
   def set_selected_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
     LiveView.push_event(socket, "tree_view_set_selected_value", %{
@@ -1046,8 +1048,7 @@ defmodule Corex.TreeView do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read the selected paths from `phx-click`. Dispatches `corex:tree-view:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -1065,7 +1066,8 @@ defmodule Corex.TreeView do
     {:noreply, assign(socket, :sel, v)}
   end
   ```
-  """
+  """)
+
   def value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:value",
       to: "##{tree_view_id}",
@@ -1074,12 +1076,10 @@ defmodule Corex.TreeView do
     )
   end
 
-  @doc type: :api
-  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(tree_view_id) when is_binary(tree_view_id), do: value(tree_view_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read selection from `handle_event` (`tree_view_value`). Same replies as [`value/2`](#value/2).
 
   | Reply | Payload |
@@ -1091,7 +1091,8 @@ defmodule Corex.TreeView do
     {:noreply, Corex.TreeView.value(socket, "my-tree", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def value(socket, tree_view_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) and
              is_list(opts) do
@@ -1102,8 +1103,7 @@ defmodule Corex.TreeView do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read expanded paths from `phx-click`. Dispatches `corex:tree-view:expanded-value`.
 
   | | Reply | Payload |
@@ -1115,7 +1115,8 @@ defmodule Corex.TreeView do
   <.action phx-click={Corex.TreeView.expanded_value("my-tree")}>Expanded</.action>
   <.tree_view id="my-tree" class="tree-view" items={Corex.Tree.new([%{label: "A", value: "a"}])} />
   ```
-  """
+  """)
+
   def expanded_value(tree_view_id, opts) when is_binary(tree_view_id) and is_list(opts) do
     JS.dispatch("corex:tree-view:expanded-value",
       to: "##{tree_view_id}",
@@ -1124,13 +1125,12 @@ defmodule Corex.TreeView do
     )
   end
 
-  @doc type: :api
-  @doc "Same as [`expanded_value/2`](#expanded_value/2) with default `respond_to:`."
+  api_doc_short("Same as [`expanded_value/2`](#expanded_value/2) with default `respond_to:`.")
+
   def expanded_value(tree_view_id) when is_binary(tree_view_id),
     do: expanded_value(tree_view_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read expanded paths from `handle_event` (`tree_view_expanded_value`). Same replies as [`expanded_value/2`](#expanded_value/2).
 
   | Reply | Payload |
@@ -1142,7 +1142,8 @@ defmodule Corex.TreeView do
     {:noreply, Corex.TreeView.expanded_value(socket, "my-tree", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def expanded_value(socket, tree_view_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) and
              is_list(opts) do

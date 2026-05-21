@@ -66,8 +66,6 @@ defmodule Corex.Tree do
     Creates a single `Tree.Item` from a map, auto-generating a `:value` if not provided
     and recursively processing `:children`.
 
-    Map keys must not include `:id`; use `:value` for node identity.
-
     Raises `ArgumentError` if `attrs` is not a map or is missing required fields,
     or if a child is neither a map nor a `Tree.Item` struct.
     """
@@ -75,28 +73,15 @@ defmodule Corex.Tree do
     def new(%__MODULE__{} = item), do: item
 
     def new(attrs) when is_map(attrs) do
-      attrs =
-        attrs
-        |> normalize_attrs()
-        |> maybe_process_children()
+      attrs = maybe_process_children(attrs)
 
-      struct!(__MODULE__, attrs)
-    rescue
-      e in [KeyError, ArgumentError] ->
-        reraise ArgumentError,
-                """
-                Failed to create Tree.Item: #{Exception.message(e)}
-
-                Required fields: [:label]
-                Optional fields: [:value, :to, :children, :disabled, :group, :meta, :redirect, :new_tab]
-
-                Example:
-                  Corex.Tree.Item.new(%{label: "File", to: "/file", children: [
-                    %{label: "New"},
-                    %{label: "Open"}
-                  ]})
-                """,
-                __STACKTRACE__
+      Corex.ItemBuilder.build_item(__MODULE__, attrs,
+        id_prefix: "tree",
+        required_fields: [:label],
+        optional_fields: [:value, :to, :children, :disabled, :group, :meta, :redirect, :new_tab],
+        example:
+          "Corex.Tree.Item.new(%{label: \"File\", to: \"/file\", children: [%{label: \"New\"}, %{label: \"Open\"}]})"
+      )
     end
 
     def new(attrs) do
@@ -124,15 +109,6 @@ defmodule Corex.Tree do
 
       Children must be maps or Tree.Item structs.
       """
-    end
-
-    defp normalize_attrs(attrs) when is_map(attrs) do
-      if Map.has_key?(attrs, :id) do
-        raise ArgumentError,
-              "Tree.Item maps must not use :id. Use :value for node identity."
-      end
-
-      Map.put_new(attrs, :value, Corex.Tree.generate_id())
     end
   end
 
@@ -196,7 +172,67 @@ defmodule Corex.Tree do
   end
 
   @doc false
-  def generate_id do
-    "tree-#{System.unique_integer([:positive, :monotonic])}"
+  @spec validate_items_assigns!(map(), keyword()) :: map()
+  def validate_items_assigns!(assigns, opts) do
+    component = Keyword.fetch!(opts, :component)
+    required? = Keyword.get(opts, :required, false)
+    example = Keyword.get(opts, :example, default_tree_example(component))
+
+    case assigns do
+      %{items: nil} when required? ->
+        raise ArgumentError, """
+        #{component} requires :items to be a list of %Corex.Tree.Item{} structs.
+
+        Example:
+
+        #{example}
+        """
+
+      %{items: nil} = assigns ->
+        assigns
+
+      %{items: items} = assigns when is_list(items) ->
+        validate_item_structs!(items, example)
+        assigns
+
+      assigns ->
+        assigns
+    end
+  end
+
+  defp validate_item_structs!(items, example) do
+    Enum.each(items, fn item ->
+      unless is_struct(item, Item) do
+        raise ArgumentError, """
+        Invalid item in :items attribute. Expected %Corex.Tree.Item{} struct, got: #{inspect(item)}
+
+        Please use Corex.Tree.new/1:
+
+        #{example}
+        """
+      end
+    end)
+  end
+
+  defp default_tree_example("tree_view") do
+    """
+        items = Corex.Tree.new([
+          %{label: "Src", value: "src", children: [%{label: "index.ts", value: "src/index"}]},
+          %{label: "Readme", value: "readme"}
+        ])
+        <.tree_view id="my-tree" items={items} />
+    """
+  end
+
+  defp default_tree_example(_component) do
+    """
+        items = Corex.Tree.new([
+          %{label: "Edit", value: "edit"},
+          %{label: "Copy", value: "copy"}
+        ])
+        <.menu id="my-menu" items={items}>
+          <:trigger>Actions</:trigger>
+        </.menu>
+    """
   end
 end

@@ -163,6 +163,8 @@ defmodule Corex.Avatar do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
   alias Corex.Avatar.Connect
   alias Phoenix.LiveView
@@ -286,8 +288,7 @@ defmodule Corex.Avatar do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the image `src` from a control (`phx-click`).
 
   ```heex
@@ -303,7 +304,8 @@ defmodule Corex.Avatar do
     })
   );
   ```
-  """
+  """)
+
   def set_src(avatar_id, src) when is_binary(avatar_id) and is_binary(src) do
     JS.dispatch("corex:avatar:set-src",
       to: "##{avatar_id}",
@@ -312,8 +314,7 @@ defmodule Corex.Avatar do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set `src` from `handle_event`.
 
   ```heex
@@ -326,7 +327,8 @@ defmodule Corex.Avatar do
     {:noreply, Corex.Avatar.set_src(socket, "my-avatar", src)}
   end
   ```
-  """
+  """)
+
   def set_src(socket, avatar_id, src)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_binary(src) do
     LiveView.push_event(socket, "avatar_set_src", %{id: avatar_id, src: src})
@@ -335,8 +337,7 @@ defmodule Corex.Avatar do
   @doc false
   def loaded(avatar_id) when is_binary(avatar_id), do: loaded(avatar_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read image load status from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
   ```heex
@@ -352,7 +353,8 @@ defmodule Corex.Avatar do
     })
   );
   ```
-  """
+  """)
+
   def loaded(avatar_id, opts) when is_binary(avatar_id) and is_list(opts) do
     JS.dispatch("corex:avatar:loaded",
       to: "##{avatar_id}",
@@ -361,8 +363,7 @@ defmodule Corex.Avatar do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read load status from `handle_event`. Same `respond_to` behavior as [`loaded/2`](#loaded/2).
 
   ```heex
@@ -375,7 +376,8 @@ defmodule Corex.Avatar do
     {:noreply, Corex.Avatar.loaded(socket, "my-avatar", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def loaded(socket, avatar_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_list(opts) do
     attrs =

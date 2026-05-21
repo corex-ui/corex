@@ -18,12 +18,13 @@ import {
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
 import {
+  createValueEmitter,
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-YECC7BC7.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -472,32 +473,17 @@ var AccordionHook = {
     accordion.init();
     this.accordion = accordion;
     prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
-    const emitValue = (respondTo) => {
-      const value = accordion.api.value;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_value_response",
-        serverPayload: { id: el.id, value },
-        el,
-        domEventName: "accordion-value",
-        domDetail: { id: el.id, value }
-      });
-    };
-    const emitFocusedValue = (respondTo) => {
-      const value = accordion.api.focusedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_focused_response",
-        serverPayload: { id: el.id, value },
-        el,
-        domEventName: "accordion-focused",
-        domDetail: { id: el.id, value }
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
+    const emitValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.value,
+      serverEventName: "accordion_value_response",
+      domEventName: "accordion-value"
+    });
+    const emitFocusedValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.focusedValue,
+      serverEventName: "accordion_focused_response",
+      domEventName: "accordion-focused"
+    });
     const emitItemState = (itemValue, disabled, respondTo) => {
       const props = { value: itemValue, disabled };
       const state = accordion.api.getItemState(props);

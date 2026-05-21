@@ -14,14 +14,16 @@ defmodule Corex.RadioGroup.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, controlled_string_value: 2]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    {value_str, default_value_str} = controlled_string_value(assigns.controlled, assigns.value)
+
     %{
       "id" => assigns.id,
-      "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
-      "data-default-value" => if(assigns.controlled, do: nil, else: assigns.value),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-controlled" => get_boolean(assigns.controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,

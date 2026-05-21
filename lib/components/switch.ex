@@ -181,7 +181,9 @@ defmodule Corex.Switch do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Helpers
+  import Corex.Api.Doc
+
+  alias Corex.Checkable.Helpers, as: CheckableHelpers
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
   alias Corex.Switch.Connect
   alias Phoenix.HTML.Form
@@ -312,7 +314,7 @@ defmodule Corex.Switch do
       |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
+      |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
 
     ~H"""
     <div
@@ -382,8 +384,7 @@ defmodule Corex.Switch do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set checked state from a control (`phx-click`).
 
   ```heex
@@ -401,7 +402,8 @@ defmodule Corex.Switch do
     })
   );
   ```
-  """
+  """)
+
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
     JS.dispatch("corex:switch:set-checked",
       to: "##{switch_id}",
@@ -410,8 +412,7 @@ defmodule Corex.Switch do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set checked state from `handle_event`.
 
   ```heex
@@ -426,7 +427,8 @@ defmodule Corex.Switch do
     {:noreply, Corex.Switch.set_checked(socket, "my-switch", true)}
   end
   ```
-  """
+  """)
+
   def set_checked(socket, switch_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
@@ -436,8 +438,7 @@ defmodule Corex.Switch do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Toggle checked state from a control (`phx-click`).
 
   ```heex
@@ -452,7 +453,8 @@ defmodule Corex.Switch do
     new CustomEvent("corex:switch:toggle-checked", { bubbles: false })
   );
   ```
-  """
+  """)
+
   def toggle_checked(switch_id) when is_binary(switch_id) do
     JS.dispatch("corex:switch:toggle-checked",
       to: "##{switch_id}",
@@ -460,8 +462,7 @@ defmodule Corex.Switch do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Toggle checked state from `handle_event`.
 
   ```heex
@@ -476,7 +477,8 @@ defmodule Corex.Switch do
     {:noreply, Corex.Switch.toggle_checked(socket, "my-switch")}
   end
   ```
-  """
+  """)
+
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
     LiveView.push_event(socket, "switch_toggle_checked", %{

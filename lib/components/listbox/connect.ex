@@ -16,25 +16,26 @@ defmodule Corex.Listbox.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
+  import Corex.Helpers,
+    only: [
+      validate_value!: 1,
+      get_boolean: 1,
+      joined_csv_values: 1,
+      controlled_dataset_values: 2
+    ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    joined = (assigns.value || []) |> validate_value!() |> joined_csv_values()
+
+    {value_str, default_value_str} =
+      controlled_dataset_values(assigns.controlled, joined)
+
     %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(assigns.items),
-      "data-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
-        end,
-      "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
-        end,
+      "data-items" => Corex.Dataset.encode_json(assigns.items),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-dir" => Map.get(assigns, :dir),

@@ -165,6 +165,8 @@ defmodule Corex.Timer do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Timer.Anatomy.{
     ActionTrigger,
     Area,
@@ -558,8 +560,7 @@ defmodule Corex.Timer do
     end
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Start the timer from `phx-click`. Dispatches `corex:timer:start` on the timer root (`id` matches the DOM host).
 
   ```heex
@@ -570,13 +571,13 @@ defmodule Corex.Timer do
   ```javascript
   document.getElementById("my-timer")?.dispatchEvent(new CustomEvent("corex:timer:start", { bubbles: false }));
   ```
-  """
+  """)
+
   def start(timer_id) when is_binary(timer_id) do
     JS.dispatch("corex:timer:start", to: "##{timer_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Start the timer from `handle_event` via [`push_event/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#push_event/3) (`timer_start`).
 
   ```elixir
@@ -584,27 +585,27 @@ defmodule Corex.Timer do
     {:noreply, Corex.Timer.start(socket, "my-timer")}
   end
   ```
-  """
+  """)
+
   def start(socket, timer_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
     LiveView.push_event(socket, "timer_start", %{id: timer_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Pause the timer from `phx-click`. Dispatches `corex:timer:pause`.
 
   ```heex
   <.action phx-click={Corex.Timer.pause("my-timer")}>Pause</.action>
   <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
   ```
-  """
+  """)
+
   def pause(timer_id) when is_binary(timer_id) do
     JS.dispatch("corex:timer:pause", to: "##{timer_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Pause the timer from `handle_event` (`timer_pause`).
 
   ```elixir
@@ -612,27 +613,27 @@ defmodule Corex.Timer do
     {:noreply, Corex.Timer.pause(socket, "my-timer")}
   end
   ```
-  """
+  """)
+
   def pause(socket, timer_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
     LiveView.push_event(socket, "timer_pause", %{id: timer_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Resume the timer from `phx-click`. Dispatches `corex:timer:resume`.
 
   ```heex
   <.action phx-click={Corex.Timer.resume("my-timer")}>Resume</.action>
   <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
   ```
-  """
+  """)
+
   def resume(timer_id) when is_binary(timer_id) do
     JS.dispatch("corex:timer:resume", to: "##{timer_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Resume the timer from `handle_event` (`timer_resume`).
 
   ```elixir
@@ -640,27 +641,27 @@ defmodule Corex.Timer do
     {:noreply, Corex.Timer.resume(socket, "my-timer")}
   end
   ```
-  """
+  """)
+
   def resume(socket, timer_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
     LiveView.push_event(socket, "timer_resume", %{id: timer_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Reset the timer from `phx-click`. Dispatches `corex:timer:reset`.
 
   ```heex
   <.action phx-click={Corex.Timer.reset("my-timer")}>Reset</.action>
   <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
   ```
-  """
+  """)
+
   def reset(timer_id) when is_binary(timer_id) do
     JS.dispatch("corex:timer:reset", to: "##{timer_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Reset the timer from `handle_event` (`timer_reset`).
 
   ```elixir
@@ -668,27 +669,27 @@ defmodule Corex.Timer do
     {:noreply, Corex.Timer.reset(socket, "my-timer")}
   end
   ```
-  """
+  """)
+
   def reset(socket, timer_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
     LiveView.push_event(socket, "timer_reset", %{id: timer_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Restart the timer from `phx-click`. Dispatches `corex:timer:restart`.
 
   ```heex
   <.action phx-click={Corex.Timer.restart("my-timer")}>Restart</.action>
   <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
   ```
-  """
+  """)
+
   def restart(timer_id) when is_binary(timer_id) do
     JS.dispatch("corex:timer:restart", to: "##{timer_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Restart the timer from `handle_event` (`timer_restart`).
 
   ```elixir
@@ -696,14 +697,14 @@ defmodule Corex.Timer do
     {:noreply, Corex.Timer.restart(socket, "my-timer")}
   end
   ```
-  """
+  """)
+
   def restart(socket, timer_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
     LiveView.push_event(socket, "timer_restart", %{id: timer_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read machine state from `phx-click`. Dispatches `corex:timer:state`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -727,7 +728,8 @@ defmodule Corex.Timer do
     console.log(e.detail.running, e.detail.paused);
   });
   ```
-  """
+  """)
+
   def state(timer_id, opts) when is_binary(timer_id) and is_list(opts) do
     JS.dispatch("corex:timer:state",
       to: "##{timer_id}",
@@ -741,12 +743,10 @@ defmodule Corex.Timer do
     state(socket, timer_id, [])
   end
 
-  @doc type: :api
-  @doc "Same as [`state/2`](#state/2) with default `respond_to:`."
+  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
   def state(timer_id) when is_binary(timer_id), do: state(timer_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read machine state from `handle_event` (`timer_state`). Same replies as [`state/2`](#state/2); server-side only unless you also use [`state/2`](#state/2) for a client DOM reply.
 
   | Reply | Payload |
@@ -762,7 +762,8 @@ defmodule Corex.Timer do
     {:noreply, assign(socket, :running, running)}
   end
   ```
-  """
+  """)
+
   def state(socket, timer_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) and is_list(opts) do
     LiveView.push_event(

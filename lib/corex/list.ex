@@ -53,27 +53,7 @@ defmodule Corex.List do
 
     Raises `ArgumentError` if attrs is not a keyword list or map.
     """
-    def new(attrs) when is_list(attrs) or is_map(attrs) do
-      attrs =
-        attrs
-        |> Enum.into([])
-        |> Keyword.put_new(:value, Corex.List.generate_id())
-
-      struct!(__MODULE__, attrs)
-    rescue
-      e in [KeyError, ArgumentError] ->
-        reraise ArgumentError,
-                """
-                Failed to create List.Item: #{Exception.message(e)}
-
-                Required fields: [:label]
-                Optional fields: [:value, :to, :disabled, :group, :meta, :redirect, :new_tab]
-
-                Example:
-                  Corex.List.Item.new(label: "My Label")
-                """,
-                __STACKTRACE__
-    end
+    def new(attrs) when is_list(attrs) or is_map(attrs), do: new(attrs, [])
 
     def new(attrs) do
       raise ArgumentError, """
@@ -83,6 +63,19 @@ defmodule Corex.List do
         Corex.List.Item.new(label: "My Label")
         Corex.List.Item.new(%{label: "My Label"})
       """
+    end
+
+    def new(attrs, opts) when is_list(attrs) or is_map(attrs) do
+      Corex.ItemBuilder.build_item(
+        __MODULE__,
+        attrs,
+        Keyword.merge(opts,
+          id_prefix: "list",
+          required_fields: [:label],
+          optional_fields: [:value, :to, :disabled, :group, :meta, :redirect, :new_tab],
+          example: "Corex.List.Item.new(label: \"My Label\")"
+        )
+      )
     end
   end
 
@@ -103,12 +96,7 @@ defmodule Corex.List do
         item
 
       {item, index} when is_list(item) or is_map(item) ->
-        attrs =
-          item
-          |> Enum.into(%{})
-          |> Map.put_new(:value, "item-#{index}")
-
-        Item.new(attrs)
+        Item.new(item, index: index)
 
       {other, _index} ->
         raise ArgumentError, """
@@ -133,10 +121,5 @@ defmodule Corex.List do
         [label: "Option 2"]
       ])
     """
-  end
-
-  @doc false
-  def generate_id do
-    "list-#{System.unique_integer([:positive, :monotonic])}"
   end
 end

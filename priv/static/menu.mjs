@@ -24,6 +24,9 @@ import {
   trackFocusVisible
 } from "./chunks/chunk-VGZJOUNL.mjs";
 import {
+  notifyChange
+} from "./chunks/chunk-2WCNJX5P.mjs";
+import {
   Component,
   VanillaMachine,
   addDomEvent,
@@ -1705,9 +1708,14 @@ var Menu = class extends Component {
         );
         itemGroups.forEach((groupEl) => {
           if (!this.isOwnElement(groupEl)) return;
-          const groupId = groupEl.id;
-          if (groupId) {
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          const groupId = groupEl.dataset.id ?? "";
+          if (!groupId) return;
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          const labelEl = groupEl.querySelector(
+            '[data-scope="menu"][data-part="item-group-label"]'
+          );
+          if (labelEl) {
+            this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
           }
         });
         const separators = contentEl.querySelectorAll(
@@ -1782,25 +1790,17 @@ var MenuHook = {
         );
         performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
       }
-      const eventName = getString(el, "onSelect");
-      if (eventName && canPushEvent(liveSocket)) {
-        pushEvent(eventName, {
+      notifyChange({
+        el,
+        canPushServer: canPushEvent(liveSocket),
+        pushEvent,
+        payload: {
           id: el.id,
           value: details.value ?? null
-        });
-      }
-      const eventNameClient = getString(el, "onSelectClient");
-      if (eventNameClient) {
-        el.dispatchEvent(
-          new CustomEvent(eventNameClient, {
-            bubbles: true,
-            detail: {
-              id: el.id,
-              value: details.value ?? null
-            }
-          })
-        );
-      }
+        },
+        serverEventName: getString(el, "onSelect"),
+        clientEventName: getString(el, "onSelectClient")
+      });
     };
     const menu = new Menu(el, {
       id: el.id.replace(/^menu:/, ""),
@@ -1813,25 +1813,17 @@ var MenuHook = {
       positioning: readPositioningOptions(el),
       onSelect: buildOnSelect(),
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && canPushEvent(liveSocket)) {
-          pushEvent(eventName, {
+        notifyChange({
+          el,
+          canPushServer: canPushEvent(liveSocket),
+          pushEvent,
+          payload: {
             id: el.id,
             open: details.open ?? false
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open ?? false
-              }
-            })
-          );
-        }
+          },
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
       }
     });
     menu.init();

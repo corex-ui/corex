@@ -2,11 +2,12 @@ defmodule Corex.DataTable.Sort do
   import Phoenix.Component, only: [assign: 3]
 
   @moduledoc """
-  Helpers for sortable `.data_table` usage in LiveViews.
+  Helpers for sortable [`data_table/1`](Corex.DataTable.html#data_table/1) usage in LiveViews.
 
-  Use in mount to assign initial sort state and sorted rows, and in
-  handle_event("sort", ...) to update sort and re-sort the rows assign.
-  Keeps the LiveView minimal: no manual sort_by/sort_order or sort logic.
+  Use with [`Corex.DataTable`](Corex.DataTable.html): set `sort_by`, `sort_order`, `on_sort`, and
+  a `name` on each sortable column (see the **Sortable** pattern in
+  [`data_table/1`](Corex.DataTable.html#data_table/1) docs). In the LiveView, call
+  `assign_for_sort/3` in `mount/3`, then `handle_sort/3` from the `on_sort` event handler.
 
   ## Example
 
@@ -40,16 +41,16 @@ defmodule Corex.DataTable.Sort do
   """
 
   @doc """
-  Assigns sort state and sorts the given rows assign for initial render.
+  Assigns sort state and sorts the rows for a [`data_table/1`](Corex.DataTable.html#data_table/1) instance.
 
   Use in `mount/3` after assigning the list. Options:
 
-  - `:default_sort_by` – atom, column to sort by (e.g. `:id`)
+  - `:default_sort_by` – atom; column `name` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `:id`)
   - `:default_sort_order` – `:asc` or `:desc`, default `:asc`
 
-  The socket must already have an assign at `rows_assign` (e.g. `:users`)
-  with a list of maps. Adds or updates `:sort_by`, `:sort_order`, and
-  replaces the rows assign with the sorted list.
+  The socket must already have an assign at `rows_assign` (e.g. `:users`) with the same list
+  passed as `rows` to [`data_table/1`](Corex.DataTable.html#data_table/1). Adds `:sort_by`,
+  `:sort_order`, and replaces the rows assign with the sorted list.
   """
   def assign_for_sort(socket, rows_assign, opts \\ []) do
     sort_by = Keyword.get(opts, :default_sort_by)
@@ -63,13 +64,13 @@ defmodule Corex.DataTable.Sort do
   end
 
   @doc """
-  Handles the "sort" event and returns the updated socket.
+  Handles the `on_sort` event from [`data_table/1`](Corex.DataTable.html#data_table/1) and returns the updated socket.
 
-  Use in `handle_event("sort", params, socket)` and return
+  Use in `handle_event("sort", params, socket)` (same name as `on_sort`) and return
   `{:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}`.
 
-  `params` must contain `"sort_by"` (string, e.g. `"id"`). It is converted
-  to an atom. `rows_assign` is the assign key holding the list (e.g. `:users`).
+  `params` must contain `"sort_by"` (string, e.g. `"id"`). It is converted to an atom.
+  `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
   def handle_sort(socket, %{"sort_by" => sort_by_param}, rows_assign) do
     sort_by = String.to_existing_atom(sort_by_param)

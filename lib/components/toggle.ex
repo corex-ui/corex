@@ -201,6 +201,8 @@ defmodule Corex.Toggle do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Toggle.Anatomy.{Indicator, Props, Root}
   alias Corex.Toggle.Connect
   alias Phoenix.LiveView
@@ -274,8 +276,7 @@ defmodule Corex.Toggle do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set pressed state from a control (`phx-click`).
 
   ```heex
@@ -291,7 +292,8 @@ defmodule Corex.Toggle do
     })
   );
   ```
-  """
+  """)
+
   def set_pressed(toggle_id, pressed) when is_binary(toggle_id) and is_boolean(pressed) do
     JS.dispatch("corex:toggle:set-pressed",
       to: "##{toggle_id}",
@@ -300,8 +302,7 @@ defmodule Corex.Toggle do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set pressed state from `handle_event`.
 
   ```heex
@@ -314,7 +315,8 @@ defmodule Corex.Toggle do
     {:noreply, Corex.Toggle.set_pressed(socket, "my-toggle", true)}
   end
   ```
-  """
+  """)
+
   def set_pressed(socket, toggle_id, pressed)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) and
              is_boolean(pressed) do
@@ -324,8 +326,7 @@ defmodule Corex.Toggle do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Flip pressed state from a control (`phx-click`).
 
   ```heex
@@ -338,7 +339,8 @@ defmodule Corex.Toggle do
     new CustomEvent("corex:toggle:toggle-pressed", { bubbles: false })
   );
   ```
-  """
+  """)
+
   def toggle_pressed(toggle_id) when is_binary(toggle_id) do
     JS.dispatch("corex:toggle:toggle-pressed",
       to: "##{toggle_id}",
@@ -346,8 +348,7 @@ defmodule Corex.Toggle do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Flip pressed state from `handle_event`.
 
   ```heex
@@ -360,7 +361,8 @@ defmodule Corex.Toggle do
     {:noreply, Corex.Toggle.toggle_pressed(socket, "my-toggle")}
   end
   ```
-  """
+  """)
+
   def toggle_pressed(socket, toggle_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_id) do
     LiveView.push_event(socket, "toggle_toggle_pressed", %{id: toggle_id})

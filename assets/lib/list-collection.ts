@@ -1,3 +1,5 @@
+import { collection } from "@zag-js/listbox";
+
 export type ValueLabelItem = {
   value?: string;
   label: string;
@@ -25,4 +27,8 @@ export function zagListCollectionConfig<T extends ValueLabelItem>(items: T[], ha
     itemToString: (item: T) => item.label,
     isItemDisabled: (item: T) => !!item.disabled,
   };
+}
+
+export function buildCollection<T extends ValueLabelItem>(items: T[], hasGroups: boolean) {
+  return collection(zagListCollectionConfig(items, hasGroups));
 }

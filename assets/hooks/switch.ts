@@ -4,7 +4,13 @@ import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
 import { getString, getBoolean, getDir, getCheckedState, canPushEvent } from "../lib/util";
-import { idMatches, notifyChange, readPayloadId, readPayloadChecked } from "../lib/respond-to";
+import {
+  checkedChangePayload,
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadChecked,
+} from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
@@ -14,15 +20,7 @@ type SwitchHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-export function checkedChangePayload(
-  el: HTMLElement,
-  details: CheckedChangeDetails
-): Record<string, unknown> {
-  return {
-    id: el.id,
-    checked: details.checked,
-  };
-}
+export { checkedChangePayload };
 
 const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SwitchHookState) {

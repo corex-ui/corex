@@ -124,16 +124,48 @@ defmodule Corex.HelpersTest do
       end
     end
 
-    test "raises when map uses legacy :id" do
-      assert_raise ArgumentError, ~r/must not use :id/, fn ->
-        Helpers.normalize_items([%{id: "x", label: "L"}])
-      end
-    end
-
     test "raises for invalid item type" do
       assert_raise ArgumentError, ~r/Items must be Corex.List.Item/, fn ->
         Helpers.normalize_items(["bad"])
       end
+    end
+  end
+
+  describe "normalize_string_list_value!/1" do
+    test "parses csv string" do
+      assert Helpers.normalize_string_list_value!("a, b") == ["a", "b"]
+    end
+
+    test "graphemes option splits string without comma" do
+      assert Helpers.normalize_string_list_value!("12", graphemes: true) == ["1", "2"]
+    end
+  end
+
+  describe "controlled_string_value/2" do
+    test "controlled mode uses value only" do
+      assert Helpers.controlled_string_value(true, "a") == {"a", nil}
+    end
+
+    test "uncontrolled mode uses default value only" do
+      assert Helpers.controlled_string_value(false, "a") == {nil, "a"}
+    end
+
+    test "nil value yields nil pair" do
+      assert Helpers.controlled_string_value(true, nil) == {nil, nil}
+    end
+  end
+
+  describe "controlled_dataset_values/2" do
+    test "controlled mode uses value only" do
+      assert Helpers.controlled_dataset_values(true, "a,b") == {"a,b", nil}
+    end
+
+    test "uncontrolled mode uses default value only" do
+      assert Helpers.controlled_dataset_values(false, "a,b") == {nil, "a,b"}
+    end
+
+    test "nil joined yields nil pair" do
+      assert Helpers.controlled_dataset_values(true, nil) == {nil, nil}
     end
   end
 
@@ -144,26 +176,7 @@ defmodule Corex.HelpersTest do
     end
   end
 
-  describe "checkbox helpers" do
-    test "normalize and attr values" do
-      assert Helpers.normalize_checkbox_checked(true)
-      refute Helpers.normalize_checkbox_checked(false)
-      assert Helpers.normalize_checkbox_checked(:indeterminate) == :indeterminate
-      assert Helpers.normalize_checkbox_checked("indeterminate") == :indeterminate
-      assert Helpers.normalize_checkbox_checked("true")
-      refute Helpers.normalize_checkbox_checked("false")
-      assert Helpers.normalize_checkbox_checked(nil) == false
-      assert Helpers.normalize_checkbox_checked(:other) == false
-      assert Helpers.checkbox_checked_attr_value(:indeterminate) == "indeterminate"
-      assert Helpers.checkbox_checked_controlled_attr(true, true) == "true"
-      assert Helpers.checkbox_checked_controlled_attr(true, :indeterminate) == "indeterminate"
-      assert Helpers.checkbox_checked_default_attr(false, false) == nil
-      assert Helpers.checkbox_checked_default_attr(false, true) == "true"
-      refute Helpers.checkbox_checked_default_attr(true, false)
-      assert Helpers.checkbox_native_checked(true) == true
-      assert Helpers.checkbox_visual_state(:indeterminate) == "indeterminate"
-    end
-
+  describe "get_boolean helpers" do
     test "get_boolean and get_default_boolean" do
       assert Helpers.get_boolean(true) == ""
       refute Helpers.get_boolean(false)

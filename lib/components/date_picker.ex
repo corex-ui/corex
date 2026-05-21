@@ -268,7 +268,7 @@ defmodule Corex.DatePicker do
 
   <!-- tabs-close -->
 
-  In `selection_mode` `"range"`, the control shows two fields with optional `range_start_label` and `range_end_label` (overrides the `translation` map’s range labels, defaulting to **From** / **To** with gettext). In `"multiple"`, a single field shows a comma‑separated list of the formatted selected dates. Use `max_selected_dates` to cap how many days can be selected in multiple mode; omit for no cap.
+  In `selection_mode` `"range"`, the control shows two fields with side labels from `translation` (**From** / **To** by default, via gettext). In `"multiple"`, a single field shows a comma‑separated list of the formatted selected dates. Use `max_selected_dates` to cap how many days can be selected in multiple mode; omit for no cap.
 
   ## Localization and `translation`
 
@@ -278,6 +278,8 @@ defmodule Corex.DatePicker do
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
@@ -414,17 +416,6 @@ defmodule Corex.DatePicker do
     default: nil,
     doc:
       "Partial `Corex.DatePicker.Translation` struct; omitted fields use gettext defaults (see localization section)."
-  )
-
-  attr(:range_start_label, :string,
-    default: nil,
-    doc:
-      "When `selection_mode` is \"range\", overrides `translation.range_start` for the first field side label (default **From**)."
-  )
-
-  attr(:range_end_label, :string,
-    default: nil,
-    doc: "When `selection_mode` is \"range\", overrides `translation.range_end` (default **To**)."
   )
 
   attr(:max_selected_dates, :integer,
@@ -584,14 +575,14 @@ defmodule Corex.DatePicker do
           <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
           <%= if @selection_mode == "range" do %>
             <div class="date-picker__control-inputs date-picker__control-inputs--range">
-              <span class="date-picker__range-label" id={"#{@id}-range-start-label"}>{@range_start_label}</span>
+              <span class="date-picker__range-label" id={"#{@id}-range-start-label"}>{@translation.range_start}</span>
               <input
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 aria-labelledby={@id <> "-range-start-label"}
                 aria-label={@translation.input}
               />
-              <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@range_end_label}</span>
+              <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@translation.range_end}</span>
               <input
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
@@ -709,8 +700,7 @@ defmodule Corex.DatePicker do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the selected date from a control (`phx-click`). Pass an ISO-8601 date string or `Date`.
 
   ```heex
@@ -729,7 +719,8 @@ defmodule Corex.DatePicker do
     })
   );
   ```
-  """
+  """)
+
   def set_value(date_picker_id, value) when is_binary(date_picker_id) do
     case normalize_date_value(value) do
       nil ->
@@ -745,8 +736,7 @@ defmodule Corex.DatePicker do
     end
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the selected date from `handle_event`. Accepts ISO strings or `Date` (same as [`set_value/2`](#set_value/2)).
 
   ```heex
@@ -762,7 +752,8 @@ defmodule Corex.DatePicker do
     {:noreply, Corex.DatePicker.set_value(socket, "my-date-picker", iso)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, date_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) do
     case normalize_date_value(value) do
@@ -779,12 +770,7 @@ defmodule Corex.DatePicker do
   end
 
   defp merge_date_picker_assigns(%{} = assigns) do
-    t =
-      DatePickerTranslation.resolve(Map.get(assigns, :translation))
-
-    range_start = Map.get(assigns, :range_start_label) || t.range_start
-    range_end = Map.get(assigns, :range_end_label) || t.range_end
-    assign(assigns, translation: t, range_start_label: range_start, range_end_label: range_end)
+    assign(assigns, translation: DatePickerTranslation.resolve(Map.get(assigns, :translation)))
   end
 
   defp normalize_date_value(nil), do: nil

@@ -7,11 +7,12 @@ import {
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
 import {
+  checkedChangePayload,
   idMatches,
   notifyChange,
   readPayloadChecked,
   readPayloadId
-} from "./chunks/chunk-YECC7BC7.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -343,12 +344,6 @@ var Switch = class extends Component {
 };
 
 // hooks/switch.ts
-function checkedChangePayload(el, details) {
-  return {
-    id: el.id,
-    checked: details.checked
-  };
-}
 var SwitchHook = {
   mounted() {
     const el = this.el;

@@ -7,56 +7,10 @@ defmodule Corex.DataTable do
   Helpers: [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html), [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html).
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the data table.
-
-    Pass `translation={%Corex.DataTable.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `actions` | Actions | Actions column header |
-    | `select_all` | Select all | Select-all checkbox `aria-label` |
-    | `select_row` | Select row | Row checkbox `aria-label` |
-    """
-
-    alias Corex.Gettext
-    alias Corex.Translation, as: T
-
-    defstruct [:actions, :select_all, :select_row]
-
-    @type t :: %__MODULE__{
-            actions: String.t(),
-            select_all: String.t(),
-            select_row: String.t()
-          }
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        actions: Gettext.gettext("Actions"),
-        select_all: Gettext.gettext("Select all"),
-        select_row: Gettext.gettext("Select row")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        actions: T.take(partial.actions, default.actions),
-        select_all: T.take(partial.select_all, default.select_all),
-        select_row: T.take(partial.select_row, default.select_row)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Gettext
+  alias Corex.DataTable.Translation
 
   @doc ~S'''
    Renders a table with data.
@@ -139,7 +93,7 @@ defmodule Corex.DataTable do
 
    ### Sortable
 
-   Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. You still need `handle_event("sort", ...)` but delegate to the helper. LiveView minimum:
+   Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). LiveView minimum:
 
    ```elixir
    # mount
@@ -163,7 +117,7 @@ defmodule Corex.DataTable do
 
    ### Selectable
 
-   Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate to `Corex.DataTable.Selection` in mount and in the two events. LiveView minimum:
+   Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate selection to [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html). LiveView minimum:
 
    ```elixir
    # mount

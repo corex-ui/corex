@@ -188,6 +188,8 @@ defmodule Corex.TagsInput do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   import Corex.Helpers, only: [validate_value!: 1]
 
   alias Corex.TagsInput.Anatomy.{
@@ -512,8 +514,7 @@ defmodule Corex.TagsInput do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Replace all tags from `phx-click`. Dispatches `corex:tags-input:set-value` with `detail.value` as a string list.
 
   ```heex
@@ -532,7 +533,8 @@ defmodule Corex.TagsInput do
     })
   );
   ```
-  """
+  """)
+
   def set_value(tags_input_id, value) when is_binary(tags_input_id) and is_list(value) do
     v = Corex.Helpers.validate_value!(value)
 
@@ -543,8 +545,7 @@ defmodule Corex.TagsInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Replace all tags from `handle_event` (`tags_input_set_value`).
 
   ```elixir
@@ -552,7 +553,8 @@ defmodule Corex.TagsInput do
     {:noreply, Corex.TagsInput.set_value(socket, "my-tags", ["x"])}
   end
   ```
-  """
+  """)
+
   def set_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_list(value) do
     v = Corex.Helpers.validate_value!(value)
@@ -563,8 +565,7 @@ defmodule Corex.TagsInput do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear tags from `phx-click`. Dispatches `corex:tags-input:clear-value`.
 
   ```heex
@@ -574,7 +575,8 @@ defmodule Corex.TagsInput do
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
-  """
+  """)
+
   def clear_value(tags_input_id) when is_binary(tags_input_id) do
     JS.dispatch("corex:tags-input:clear-value",
       to: "##{tags_input_id}",
@@ -582,8 +584,7 @@ defmodule Corex.TagsInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear tags from `handle_event` (`tags_input_clear_value`).
 
   ```elixir
@@ -591,14 +592,14 @@ defmodule Corex.TagsInput do
     {:noreply, Corex.TagsInput.clear_value(socket, "my-tags")}
   end
   ```
-  """
+  """)
+
   def clear_value(socket, tags_input_id)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) do
     LiveView.push_event(socket, "tags_input_clear_value", %{id: tags_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Append one tag from `phx-click`. Dispatches `corex:tags-input:add-value` with `detail.value`.
 
   ```heex
@@ -608,7 +609,8 @@ defmodule Corex.TagsInput do
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
-  """
+  """)
+
   def add_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:add-value",
@@ -618,8 +620,7 @@ defmodule Corex.TagsInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Append one tag from `handle_event` (`tags_input_add_value`).
 
   ```elixir
@@ -627,15 +628,15 @@ defmodule Corex.TagsInput do
     {:noreply, Corex.TagsInput.add_value(socket, "my-tags", t)}
   end
   ```
-  """
+  """)
+
   def add_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do
     LiveView.push_event(socket, "tags_input_add_value", %{id: tags_input_id, value: value})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Remove one tag from `phx-click`. Dispatches `corex:tags-input:remove-value` with `detail.value`.
 
   ```heex
@@ -645,7 +646,8 @@ defmodule Corex.TagsInput do
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.tags_input>
   ```
-  """
+  """)
+
   def remove_value(tags_input_id, value)
       when is_binary(tags_input_id) and is_binary(value) and value != "" do
     JS.dispatch("corex:tags-input:remove-value",
@@ -655,8 +657,7 @@ defmodule Corex.TagsInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Remove one tag from `handle_event` (`tags_input_remove_value`).
 
   ```elixir
@@ -664,7 +665,8 @@ defmodule Corex.TagsInput do
     {:noreply, Corex.TagsInput.remove_value(socket, "my-tags", t)}
   end
   ```
-  """
+  """)
+
   def remove_value(socket, tags_input_id, value)
       when is_struct(socket, LiveView.Socket) and is_binary(tags_input_id) and is_binary(value) and
              value != "" do

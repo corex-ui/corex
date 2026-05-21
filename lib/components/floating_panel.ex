@@ -120,58 +120,10 @@ defmodule Corex.FloatingPanel do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the floating panel window controls.
-
-    Pass `translation={%Corex.FloatingPanel.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `minimize` | Minimize window | Minimize trigger `aria-label` |
-    | `maximize` | Maximize window | Maximize trigger `aria-label` |
-    | `restore` | Restore window | Restore trigger `aria-label` |
-    | `close` | Close window | Close trigger `aria-label` |
-    """
-
-    alias Corex.Gettext
-    alias Corex.Translation, as: T
-
-    defstruct [:minimize, :maximize, :restore, :close]
-
-    @type t :: %__MODULE__{
-            minimize: String.t(),
-            maximize: String.t(),
-            restore: String.t(),
-            close: String.t()
-          }
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        minimize: Gettext.gettext("Minimize window"),
-        maximize: Gettext.gettext("Maximize window"),
-        restore: Gettext.gettext("Restore window"),
-        close: Gettext.gettext("Close window")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        minimize: T.take(partial.minimize, default.minimize),
-        maximize: T.take(partial.maximize, default.maximize),
-        restore: T.take(partial.restore, default.restore),
-        close: T.take(partial.close, default.close)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.FloatingPanel.Anatomy.{
     Body,
@@ -190,7 +142,7 @@ defmodule Corex.FloatingPanel do
   }
 
   alias Corex.FloatingPanel.Connect
-  alias Corex.Gettext
+  alias Corex.FloatingPanel.Translation
   alias Corex.Point
   alias Corex.Positioning
   alias Phoenix.LiveView
@@ -368,8 +320,7 @@ defmodule Corex.FloatingPanel do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from a control (`phx-click`).
 
   ```heex
@@ -390,7 +341,8 @@ defmodule Corex.FloatingPanel do
     })
   );
   ```
-  """
+  """)
+
   def set_open(floating_panel_id, open)
       when is_binary(floating_panel_id) and is_boolean(open) do
     JS.dispatch("corex:floating-panel:set-open",
@@ -400,8 +352,7 @@ defmodule Corex.FloatingPanel do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`.
 
   ```heex
@@ -419,7 +370,8 @@ defmodule Corex.FloatingPanel do
     {:noreply, Corex.FloatingPanel.set_open(socket, "my-floating-panel", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, floating_panel_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(floating_panel_id) and
              is_boolean(open) do

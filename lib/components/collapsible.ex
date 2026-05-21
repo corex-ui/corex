@@ -246,10 +246,11 @@ defmodule Corex.Collapsible do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
+  alias Corex.Api.RespondTo
   alias Corex.Collapsible.Anatomy.{Closed, Content, Opened, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a collapsible component.
@@ -442,8 +443,7 @@ defmodule Corex.Collapsible do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set expanded or collapsed state from a control (`phx-click`).
 
   ```heex
@@ -462,17 +462,13 @@ defmodule Corex.Collapsible do
     })
   );
   ```
-  """
+  """)
+
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
-    JS.dispatch("corex:collapsible:set-open",
-      to: "##{collapsible_id}",
-      detail: %{open: open},
-      bubbles: false
-    )
+    RespondTo.dispatch_set_open(collapsible_id, open, "corex:collapsible:set-open")
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`.
 
   ```heex
@@ -488,13 +484,11 @@ defmodule Corex.Collapsible do
     {:noreply, Corex.Collapsible.set_open(socket, "my-collapsible", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, collapsible_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(collapsible_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "collapsible_set_open", %{
-      collapsible_id: collapsible_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "collapsible_set_open", collapsible_id, open)
   end
 end

@@ -48,11 +48,7 @@ defmodule Corex.Dialog.Connect do
         base
       end
 
-    Map.put(
-      merged,
-      "data-dialog-default-label",
-      assigns.dialog_default_label || Corex.Gettext.gettext("Dialog")
-    )
+    Map.put(merged, "data-dialog-default-label", assigns.label)
   end
 
   @spec trigger(Trigger.t()) :: map()
@@ -182,7 +178,7 @@ defmodule Corex.Dialog.Connect do
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:close-trigger",
-      "aria-label" => Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Close dialog")
+      "aria-label" => assigns.aria_label
     }
   end
 

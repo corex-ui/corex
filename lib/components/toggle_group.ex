@@ -216,6 +216,8 @@ defmodule Corex.ToggleGroup do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
   alias Corex.ToggleGroup.Connect
   alias Phoenix.LiveView
@@ -349,8 +351,7 @@ defmodule Corex.ToggleGroup do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selected values from a control (`phx-click`). Pass a list of item `value` strings (or compatible input validated by the component).
 
   ```heex
@@ -368,16 +369,16 @@ defmodule Corex.ToggleGroup do
     })
   );
   ```
-  """
+  """)
+
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
     JS.dispatch("corex:toggle-group:set-value",
       to: "##{toggle_group_id}",
-      detail: %{value: Connect.validate_value!(value)}
+      detail: %{value: Corex.Helpers.validate_value!(value)}
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selected values from `handle_event`.
 
   ```heex
@@ -393,12 +394,13 @@ defmodule Corex.ToggleGroup do
     {:noreply, Corex.ToggleGroup.set_value(socket, "my-toggle-group", ["a"])}
   end
   ```
-  """
+  """)
+
   def set_value(socket, toggle_group_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_group_id) do
     LiveView.push_event(socket, "toggle-group_set_value", %{
       id: toggle_group_id,
-      value: Connect.validate_value!(value)
+      value: Corex.Helpers.validate_value!(value)
     })
   end
 end

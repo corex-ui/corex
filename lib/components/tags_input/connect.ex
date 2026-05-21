@@ -145,7 +145,7 @@ defmodule Corex.TagsInput.Connect do
     )
   end
 
-  defp tags_json(tags) when is_list(tags), do: Jason.encode!(validate_value!(tags))
+  defp tags_json(tags) when is_list(tags), do: Corex.Dataset.encode_json(validate_value!(tags))
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -215,7 +215,7 @@ defmodule Corex.TagsInput.Connect do
         |> Map.new()
         |> then(fn
           m when map_size(m) == 0 -> nil
-          m -> Corex.Json.encode!(m)
+          m -> Corex.Dataset.encode_json(m)
         end)
 
       _ ->

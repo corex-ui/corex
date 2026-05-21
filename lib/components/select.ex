@@ -511,7 +511,8 @@ defmodule Corex.Select do
   @doc type: :component
   use Phoenix.Component
 
-  alias Phoenix.LiveView
+  import Corex.Api.Doc
+
   alias Phoenix.LiveView.JS
 
   alias Corex.Select.Anatomy.{
@@ -531,6 +532,7 @@ defmodule Corex.Select do
     ValueInput
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Select.Connect
   alias Corex.Select.Translation
 
@@ -791,8 +793,7 @@ defmodule Corex.Select do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selected value(s) from a control (`phx-click`). Pass one value or a list (wrapped internally).
 
   ```heex
@@ -817,7 +818,8 @@ defmodule Corex.Select do
     })
   );
   ```
-  """
+  """)
+
   def set_value(select_id, value) when is_binary(select_id) do
     JS.dispatch("corex:select:set-value",
       to: "##{select_id}",
@@ -826,8 +828,7 @@ defmodule Corex.Select do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set selected value(s) from `handle_event`. Pushes `select_set_value`.
 
   ```heex
@@ -849,17 +850,19 @@ defmodule Corex.Select do
     {:noreply, Corex.Select.set_value(socket, "my-select", v)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, select_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) do
-    LiveView.push_event(socket, "select_set_value", %{
-      id: select_id,
-      value: validate_value!(List.wrap(value))
-    })
+    RespondTo.push_set_value(
+      socket,
+      "select_set_value",
+      select_id,
+      validate_value!(List.wrap(value))
+    )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Open or close the listbox from a control (`phx-click`).
 
   ```heex
@@ -881,7 +884,8 @@ defmodule Corex.Select do
     })
   );
   ```
-  """
+  """)
+
   def set_open(select_id, open) when is_binary(select_id) and is_boolean(open) do
     JS.dispatch("corex:select:set-open",
       to: "##{select_id}",
@@ -890,8 +894,7 @@ defmodule Corex.Select do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`. Pushes `select_set_open`.
 
   ```heex
@@ -910,14 +913,12 @@ defmodule Corex.Select do
     {:noreply, Corex.Select.set_open(socket, "my-select", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, select_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "select_set_open", %{
-      id: select_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "select_set_open", select_id, open)
   end
 
   defp get_disabled_values(collection) do

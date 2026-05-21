@@ -298,6 +298,8 @@ defmodule Corex.Listbox do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -504,8 +506,7 @@ defmodule Corex.Listbox do
     end
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the listbox selection from `phx-click`. Dispatches `corex:listbox:set-value` with `detail.value` (string list, wrapped if a single scalar is passed internally).
 
   ```heex
@@ -528,7 +529,8 @@ defmodule Corex.Listbox do
     })
   );
   ```
-  """
+  """)
+
   def set_value(listbox_id, value) when is_binary(listbox_id) do
     JS.dispatch("corex:listbox:set-value",
       to: "##{listbox_id}",
@@ -537,8 +539,7 @@ defmodule Corex.Listbox do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the listbox selection from `handle_event` (`listbox_set_value`).
 
   ```elixir
@@ -546,7 +547,8 @@ defmodule Corex.Listbox do
     {:noreply, Corex.Listbox.set_value(socket, "my-listbox", [c])}
   end
   ```
-  """
+  """)
+
   def set_value(socket, listbox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
     LiveView.push_event(socket, "listbox_set_value", %{
@@ -555,8 +557,7 @@ defmodule Corex.Listbox do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read selected values from `phx-click`. Dispatches `corex:listbox:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -576,7 +577,8 @@ defmodule Corex.Listbox do
     {:noreply, assign(socket, :picked, v)}
   end
   ```
-  """
+  """)
+
   def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
     JS.dispatch("corex:listbox:value",
       to: "##{listbox_id}",
@@ -590,12 +592,10 @@ defmodule Corex.Listbox do
     value(socket, listbox_id, [])
   end
 
-  @doc type: :api
-  @doc "Same as [`value/2`](#value/2) with default `respond_to:`."
+  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
   def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read selected values from `handle_event` (`listbox_value`). Same replies as [`value/2`](#value/2).
 
   | Reply | Payload |
@@ -607,7 +607,8 @@ defmodule Corex.Listbox do
     {:noreply, Corex.Listbox.value(socket, "my-listbox", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def value(socket, listbox_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) and is_list(opts) do
     LiveView.push_event(

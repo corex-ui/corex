@@ -24,6 +24,7 @@ defmodule Mix.Corex.Gen.ContextTest do
 
     assert length(files) == 3
     assert Enum.all?(paths, &String.starts_with?(&1, tmp))
+    refute Enum.any?(paths, &String.ends_with?(&1, "user.ex"))
     refute Enum.any?(paths, &String.contains?(&1, "migrations"))
   end
 
@@ -108,6 +109,7 @@ defmodule Mix.Corex.Gen.ContextTest do
 
     assert File.exists?(context.file)
     refute File.exists?(context.schema.file)
+    assert File.read!(context.file) =~ ~S/raise "TODO"/
   end
 
   test "copy_new_files/2 generates unique fixture helpers for unique fields", %{tmp: tmp} do
@@ -146,6 +148,17 @@ defmodule Mix.Corex.Gen.ContextTest do
     context =
       build_context(tmp)
       |> Map.update!(:schema, &%{&1 | migration?: false})
+
+    output =
+      capture_io(fn ->
+        GenContext.print_shell_instructions(context)
+      end)
+
+    assert output == ""
+  end
+
+  test "print_shell_instructions/1 is silent without schema", %{tmp: tmp} do
+    context = build_context(tmp, generate?: false, migration?: false)
 
     output =
       capture_io(fn ->

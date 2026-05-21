@@ -1,6 +1,8 @@
 defmodule Corex.Toast.Payload do
   @moduledoc false
 
+  import Corex.Helpers, only: [maybe_put: 3]
+
   alias Corex.Toast.Action, as: ToastAction
   alias Phoenix.HTML.Safe
   alias Phoenix.LiveView.{JS, Rendered}
@@ -158,14 +160,11 @@ defmodule Corex.Toast.Payload do
 
   defp apply_create_opts(map, opts) do
     map
-    |> put_optional(:id, Keyword.get(opts, :id))
+    |> maybe_put(:id, Keyword.get(opts, :id))
     |> put_optional_true(:loading, Keyword.get(opts, :loading, false))
-    |> put_optional(:action, normalize_action(Keyword.get(opts, :action)))
-    |> put_optional(:priority, legal_priority(Keyword.get(opts, :priority)))
+    |> maybe_put(:action, normalize_action(Keyword.get(opts, :action)))
+    |> maybe_put(:priority, legal_priority(Keyword.get(opts, :priority)))
   end
-
-  defp put_optional(map, _k, nil), do: map
-  defp put_optional(map, k, v), do: Map.put(map, k, v)
 
   defp put_optional_true(map, :loading, true), do: Map.put(map, :loading, true)
   defp put_optional_true(map, :loading, _), do: map

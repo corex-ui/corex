@@ -73,7 +73,7 @@ defmodule Corex.ContentTest do
     end
 
     test "raises when row contains unknown :id" do
-      assert_raise ArgumentError, fn ->
+      assert_raise ArgumentError, ~r/Failed to create Corex.Content.Item/, fn ->
         Content.new([%{id: "x", label: "T1", content: "C1"}])
       end
     end
@@ -131,13 +131,13 @@ defmodule Corex.ContentTest do
     end
 
     test "raises when label missing" do
-      assert_raise ArgumentError, ~r/Failed to create Content\.Item/, fn ->
+      assert_raise ArgumentError, ~r/Failed to create Corex\.Content\.Item/, fn ->
         Item.new(%{value: "item-1", content: "C only"})
       end
     end
 
     test "raises when content missing" do
-      assert_raise ArgumentError, ~r/Failed to create Content\.Item/, fn ->
+      assert_raise ArgumentError, ~r/Failed to create Corex\.Content\.Item/, fn ->
         Item.new(%{value: "item-1", label: "T only"})
       end
     end
@@ -153,13 +153,11 @@ defmodule Corex.ContentTest do
     end
   end
 
-  describe "Content.generate_id/0" do
-    test "returns unique id string" do
-      id1 = Content.generate_id()
-      id2 = Content.generate_id()
-      assert is_binary(id1)
-      assert String.starts_with?(id1, "content-")
-      refute id1 == id2
-    end
+  test "Item.new generates unique content- prefixed values" do
+    item1 = Item.new(%{label: "A", content: "C"})
+    item2 = Item.new(%{label: "B", content: "D"})
+    assert String.starts_with?(item1.value, "content-")
+    assert String.starts_with?(item2.value, "content-")
+    refute item1.value == item2.value
   end
 end

@@ -18,6 +18,7 @@ import {
 } from "../lib/animation";
 import {
   parseRespondTo,
+  createValueEmitter,
   emitResponse,
   idMatches,
   readPayloadId,
@@ -115,33 +116,19 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
     prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
 
-    const emitValue = (respondTo: RespondTo) => {
-      const value = accordion.api.value;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "accordion-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
 
-    const emitFocusedValue = (respondTo: RespondTo) => {
-      const value = accordion.api.focusedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_focused_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "accordion-focused",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const emitValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.value,
+      serverEventName: "accordion_value_response",
+      domEventName: "accordion-value",
+    });
+
+    const emitFocusedValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.focusedValue,
+      serverEventName: "accordion_focused_response",
+      domEventName: "accordion-focused",
+    });
 
     const emitItemState = (itemValue: string, disabled: boolean, respondTo: RespondTo) => {
       const props: ItemProps = { value: itemValue, disabled };

@@ -199,6 +199,8 @@ defmodule Corex.Tabs do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
   alias Corex.Tabs.Connect
   alias Phoenix.LiveView
@@ -647,8 +649,7 @@ defmodule Corex.Tabs do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the active tab from a control (`phx-click`). `value` is the tab item value (same as items' `value`).
 
   ```heex
@@ -671,7 +672,8 @@ defmodule Corex.Tabs do
     })
   );
   ```
-  """
+  """)
+
   def set_value(tabs_id, value) when is_binary(tabs_id) do
     JS.dispatch("corex:tabs:set-value",
       to: "##{tabs_id}",
@@ -680,8 +682,7 @@ defmodule Corex.Tabs do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the active tab from `handle_event`.
 
   ```heex
@@ -701,7 +702,8 @@ defmodule Corex.Tabs do
     {:noreply, Corex.Tabs.set_value(socket, "my-tabs", value)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, tabs_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tabs_id) do
     LiveView.push_event(socket, "tabs_set_value", %{

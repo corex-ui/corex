@@ -21,12 +21,12 @@ import {
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
 import {
-  emitResponse,
+  createValueEmitter,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-YECC7BC7.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -1554,32 +1554,17 @@ var TreeViewHook = {
     treeView.init();
     this.treeView = treeView;
     prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
-    const emitSelectedValue = (respondTo) => {
-      const value = treeView.api.selectedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_value_response",
-        serverPayload: { id: el.id, value },
-        el,
-        domEventName: "tree-view-value",
-        domDetail: { id: el.id, value }
-      });
-    };
-    const emitExpandedValue = (respondTo) => {
-      const value = treeView.api.expandedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_expanded_value_response",
-        serverPayload: { id: el.id, value },
-        el,
-        domEventName: "tree-view-expanded-value",
-        domDetail: { id: el.id, value }
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
+    const emitSelectedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.selectedValue,
+      serverEventName: "tree_view_value_response",
+      domEventName: "tree-view-value"
+    });
+    const emitExpandedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.expandedValue,
+      serverEventName: "tree_view_expanded_value_response",
+      domEventName: "tree-view-expanded-value"
+    });
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add(

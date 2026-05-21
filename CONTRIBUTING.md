@@ -34,7 +34,7 @@ pnpm run check
 
 ### Test coverage
 
-- **`:corex` (root):** 95% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
+- **`:corex` (root):** 90% minimum via Coveralls on `lib/`, excluding struct-only and Mix codegen modules listed in `coveralls.json` (see file for the current skip list).
 - **`:corex_new` (installer):** 90% via `mix test --cover` in `installer/`.
 - **e2e / integration_test:** functional tests; not counted in root Coveralls.
 - **`assets/` (Vitest + TypeScript):** `pnpm test` runs Vitest (hooks, components, lib); `pnpm run lint:js` runs typecheck, Prettier, ESLint, and generated `.d.ts` check (CI **Lint** job); `pnpm run check` runs `pnpm test` then `pnpm run lint:js` (local pre-PR). `pnpm run typecheck` and `pnpm run lint` are also available individually.

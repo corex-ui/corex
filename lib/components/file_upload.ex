@@ -109,46 +109,10 @@ defmodule Corex.FileUpload do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the file upload.
-
-    Pass `translation={%Corex.FileUpload.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `dropzone` | Drag your file(s) here | Dropzone label when the slot is empty |
-    | `open` | Upload file(s) | Open picker button when the slot is empty |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:dropzone, :open]
-
-    @type t :: %__MODULE__{dropzone: String.t(), open: String.t()}
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        dropzone: Gettext.gettext("Drag your file(s) here"),
-        open: Gettext.gettext("Upload file(s)")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        dropzone: Corex.Translation.take(partial.dropzone, default.dropzone),
-        open: Corex.Translation.take(partial.open, default.open)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.FileUpload.Anatomy.{
     Dropzone,
@@ -162,6 +126,7 @@ defmodule Corex.FileUpload do
   }
 
   alias Corex.FileUpload.Connect
+  alias Corex.FileUpload.Translation
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -430,8 +395,7 @@ defmodule Corex.FileUpload do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Drop every accepted file entry from `phx-click`. Dispatches `corex:file-upload:clear-files`.
 
   ```heex
@@ -444,7 +408,8 @@ defmodule Corex.FileUpload do
   ```javascript
   document.getElementById("my-fu")?.dispatchEvent(new CustomEvent("corex:file-upload:clear-files", { bubbles: false }));
   ```
-  """
+  """)
+
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
       to: "##{file_upload_id}",
@@ -452,8 +417,7 @@ defmodule Corex.FileUpload do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear accepted files from `handle_event` (`file_upload_clear_files`).
 
   ```elixir
@@ -461,14 +425,14 @@ defmodule Corex.FileUpload do
     {:noreply, Corex.FileUpload.clear_files(socket, "my-fu")}
   end
   ```
-  """
+  """)
+
   def clear_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_files", %{"id" => file_upload_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Remove rejected entries from `phx-click`. Dispatches `corex:file-upload:clear-rejected`.
 
   ```heex
@@ -477,7 +441,8 @@ defmodule Corex.FileUpload do
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.file_upload>
   ```
-  """
+  """)
+
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
       to: "##{file_upload_id}",
@@ -485,8 +450,7 @@ defmodule Corex.FileUpload do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear rejected files from `handle_event` (`file_upload_clear_rejected`).
 
   ```elixir
@@ -494,14 +458,14 @@ defmodule Corex.FileUpload do
     {:noreply, Corex.FileUpload.clear_rejected_files(socket, "my-fu")}
   end
   ```
-  """
+  """)
+
   def clear_rejected_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_rejected", %{"id" => file_upload_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Open the OS file picker from `phx-click`. Dispatches `corex:file-upload:open`.
 
   ```heex
@@ -510,13 +474,13 @@ defmodule Corex.FileUpload do
     <:close><.heroicon name="hero-x-mark" /></:close>
   </.file_upload>
   ```
-  """
+  """)
+
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Open the OS file picker from `handle_event` (`file_upload_open`).
 
   ```elixir
@@ -524,7 +488,8 @@ defmodule Corex.FileUpload do
     {:noreply, Corex.FileUpload.open_file_picker(socket, "my-fu")}
   end
   ```
-  """
+  """)
+
   def open_file_picker(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_open", %{"id" => file_upload_id})

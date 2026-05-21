@@ -1,6 +1,6 @@
 defmodule Corex.Pagination.Translation do
   @moduledoc """
-  Strings for Zag pagination [`translations`](https://zagjs.com/components/react/pagination).
+  Translatable strings for [`Corex.Pagination`](Corex.Pagination.html).
 
   Pass `translation={%Corex.Pagination.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
@@ -13,60 +13,23 @@ defmodule Corex.Pagination.Translation do
 
   Partial override example:
 
-      translation={%Corex.Pagination.Translation{prev_trigger_label: Corex.Gettext.gettext("Previous page")}}
+      translation={%Corex.Pagination.Translation{
+        prev_trigger_label: Corex.Gettext.gettext("Previous page"),
+        next_trigger_label: Corex.Gettext.gettext("Next page")
+      }}
   """
 
-  alias Corex.Gettext
-  alias Corex.Translation, as: T
-
-  defstruct [
-    :root_label,
-    :prev_trigger_label,
-    :next_trigger_label,
-    :item_label
-  ]
-
-  @type t :: %__MODULE__{
-          root_label: String.t(),
-          prev_trigger_label: String.t(),
-          next_trigger_label: String.t(),
-          item_label: String.t()
-        }
-
-  @doc "Returns defaults when `translation` is nil, otherwise merges partial overrides."
-  def resolve(nil), do: default()
-
-  def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-  defp default do
-    %__MODULE__{
-      root_label: Gettext.gettext("Pagination"),
-      prev_trigger_label: Gettext.gettext("Previous page"),
-      next_trigger_label: Gettext.gettext("Next page"),
-      item_label:
-        Gettext.gettext("Page %{page} of %{total_pages}",
-          page: "%{page}",
-          total_pages: "%{total_pages}"
-        )
-    }
-  end
-
-  defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-    %__MODULE__{
-      root_label: T.take(partial.root_label, default.root_label),
-      prev_trigger_label: T.take(partial.prev_trigger_label, default.prev_trigger_label),
-      next_trigger_label: T.take(partial.next_trigger_label, default.next_trigger_label),
-      item_label: T.take(partial.item_label, default.item_label)
-    }
-  end
-
-  @doc "Encodes translation fields for Zag.js JSON props."
-  def to_camel_map(%__MODULE__{} = t) do
-    %{
-      "rootLabel" => t.root_label,
-      "prevTriggerLabel" => t.prev_trigger_label,
-      "nextTriggerLabel" => t.next_trigger_label,
-      "itemLabel" => t.item_label
-    }
-  end
+  use Corex.Translation,
+    camel_keys: [
+      root_label: "rootLabel",
+      prev_trigger_label: "prevTriggerLabel",
+      next_trigger_label: "nextTriggerLabel",
+      item_label: "itemLabel"
+    ],
+    fields: [
+      root_label: "Pagination",
+      prev_trigger_label: "Previous page",
+      next_trigger_label: "Next page",
+      item_label: "Page %{page} of %{total_pages}"
+    ]
 end

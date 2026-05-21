@@ -770,6 +770,10 @@ defmodule Corex.Checkbox do
   @doc type: :component
   use Phoenix.Component
 
+  use Corex.Api.Imports, to: Corex.Checkbox.Api
+
+  alias Corex.Checkable.Helpers, as: CheckableHelpers
+
   alias Corex.Checkbox.Anatomy.{
     Control,
     HiddenInput,
@@ -781,10 +785,7 @@ defmodule Corex.Checkbox do
   }
 
   alias Corex.Checkbox.Connect
-  alias Corex.Helpers
   alias Phoenix.HTML.Form
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a checkbox component.
@@ -914,7 +915,7 @@ defmodule Corex.Checkbox do
       |> assign_new(:id, fn -> "checkbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
+      |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
 
     ~H"""
     <div
@@ -1039,8 +1040,7 @@ defmodule Corex.Checkbox do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set checked state from a control (`phx-click`). Clears indeterminate when applied.
 
   ```heex
@@ -1058,17 +1058,11 @@ defmodule Corex.Checkbox do
     })
   );
   ```
-  """
-  def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
-    JS.dispatch("corex:checkbox:set-checked",
-      to: "##{checkbox_id}",
-      detail: %{checked: checked},
-      bubbles: false
-    )
-  end
+  """)
 
-  @doc type: :api
-  @doc ~S"""
+  defdelegate set_checked(checkbox_id, checked), to: Api
+
+  api_doc(~S"""
   Set checked state from `handle_event`. Pushes `checkbox_set_checked` (no reply event).
 
   ```heex
@@ -1083,18 +1077,11 @@ defmodule Corex.Checkbox do
     {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
   end
   ```
-  """
-  def set_checked(socket, checkbox_id, checked)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
-             is_boolean(checked) do
-    LiveView.push_event(socket, "checkbox_set_checked", %{
-      "id" => checkbox_id,
-      "checked" => checked
-    })
-  end
+  """)
 
-  @doc type: :api
-  @doc ~S"""
+  defdelegate set_checked(socket, checkbox_id, checked), to: Api
+
+  api_doc(~S"""
   Toggle checked state from a control (`phx-click`).
 
   ```heex
@@ -1109,16 +1096,11 @@ defmodule Corex.Checkbox do
     new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false })
   );
   ```
-  """
-  def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
-    JS.dispatch("corex:checkbox:toggle-checked",
-      to: "##{checkbox_id}",
-      bubbles: false
-    )
-  end
+  """)
 
-  @doc type: :api
-  @doc ~S"""
+  defdelegate toggle_checked(checkbox_id), to: Api
+
+  api_doc(~S"""
   Toggle checked from `handle_event`. Pushes `checkbox_toggle_checked` (no reply event).
 
   ```heex
@@ -1133,9 +1115,7 @@ defmodule Corex.Checkbox do
     {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
   end
   ```
-  """
-  def toggle_checked(socket, checkbox_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
-    LiveView.push_event(socket, "checkbox_toggle_checked", %{"id" => checkbox_id})
-  end
+  """)
+
+  defdelegate toggle_checked(socket, checkbox_id), to: Api
 end

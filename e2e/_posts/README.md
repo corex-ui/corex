@@ -93,7 +93,7 @@ Before publishing or expanding a post:
 | Check | Requirement |
 |-------|-------------|
 | Length | Pillar ≥2,500 words; deep dives ≥1,800; tutorials ≥1,200 |
-| Code | Snippets match HexDocs, `guides/`, and current `0.1.x` API ([stability guide](https://hexdocs.pm/corex/stability.html)) |
+| Code | Snippets match HexDocs, `guides/`, and current `0.1.x` API ([update guide](https://hexdocs.pm/corex/update.html)) |
 | Vanilla JS | Use `import corex from "corex"` and hook registration—do not document fictional `corex.combobox({...}).init()` factories |
 | Claims | Unique statements trace to repo source (guides, `lib/components/`, tests) |
 | Headings | Only `##` and below in the body; title lives in front matter |

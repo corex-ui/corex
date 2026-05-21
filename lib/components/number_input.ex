@@ -205,46 +205,10 @@ defmodule Corex.NumberInput do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translatable strings for the number input (Zag trigger `aria-label`s).
-
-    Pass `translation={%Corex.NumberInput.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `decrease` | Decrease value | Decrement trigger `aria-label` |
-    | `increase` | Increase value | Increment trigger `aria-label` |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:decrease, :increase]
-
-    @type t :: %__MODULE__{decrease: String.t(), increase: String.t()}
-
-    @doc "Merges partial fields with gettext defaults."
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        decrease: Gettext.gettext("Decrease value"),
-        increase: Gettext.gettext("Increase value")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        decrease: Corex.Translation.take(partial.decrease, default.decrease),
-        increase: Corex.Translation.take(partial.increase, default.increase)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Phoenix.HTML.Form
 
@@ -260,6 +224,7 @@ defmodule Corex.NumberInput do
   }
 
   alias Corex.NumberInput.Connect
+  alias Corex.NumberInput.Translation
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -414,8 +379,7 @@ defmodule Corex.NumberInput do
   defp value_to_string(nil), do: nil
   defp value_to_string(value), do: to_string(value)
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Replace the formatted value from `phx-click`. Dispatches `corex:number-input:set-value` with a numeric `value`.
 
   ```heex
@@ -434,7 +398,8 @@ defmodule Corex.NumberInput do
     })
   );
   ```
-  """
+  """)
+
   def set_value(number_input_id, value)
       when is_binary(number_input_id) and (is_number(value) or is_binary(value)) do
     JS.dispatch("corex:number-input:set-value",
@@ -444,8 +409,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Replace the formatted value from `handle_event` (`number_input_set_value`).
 
   ```elixir
@@ -453,7 +417,8 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.set_value(socket, "my-num", 7)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, number_input_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
              (is_number(value) or is_binary(value)) do
@@ -463,8 +428,7 @@ defmodule Corex.NumberInput do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear the value from `phx-click`. Dispatches `corex:number-input:clear-value`.
 
   ```heex
@@ -474,7 +438,8 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def clear_value(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:clear-value",
       to: "##{number_input_id}",
@@ -482,8 +447,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Clear the value from `handle_event` (`number_input_clear_value`).
 
   ```elixir
@@ -491,14 +455,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.clear_value(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def clear_value(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_clear_value", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Increment from `phx-click`. Dispatches `corex:number-input:increment`.
 
   ```heex
@@ -508,7 +472,8 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def increment(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:increment",
       to: "##{number_input_id}",
@@ -516,8 +481,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Increment from `handle_event` (`number_input_increment`).
 
   ```elixir
@@ -525,14 +489,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.increment(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def increment(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_increment", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Decrement from `phx-click`. Dispatches `corex:number-input:decrement`.
 
   ```heex
@@ -542,7 +506,8 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def decrement(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:decrement",
       to: "##{number_input_id}",
@@ -550,8 +515,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Decrement from `handle_event` (`number_input_decrement`).
 
   ```elixir
@@ -559,14 +523,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.decrement(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def decrement(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_decrement", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Snap to minimum from `phx-click`. Dispatches `corex:number-input:set-to-min`.
 
   ```heex
@@ -576,7 +540,8 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def set_to_min(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:set-to-min",
       to: "##{number_input_id}",
@@ -584,8 +549,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Snap to minimum from `handle_event` (`number_input_set_to_min`).
 
   ```elixir
@@ -593,14 +557,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.set_to_min(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def set_to_min(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_set_to_min", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Snap to maximum from `phx-click`. Dispatches `corex:number-input:set-to-max`.
 
   ```heex
@@ -610,7 +574,8 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def set_to_max(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:set-to-max",
       to: "##{number_input_id}",
@@ -618,8 +583,7 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Snap to maximum from `handle_event` (`number_input_set_to_max`).
 
   ```elixir
@@ -627,14 +591,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.set_to_max(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def set_to_max(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_set_to_max", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Focus the value field from `phx-click`. Dispatches `corex:number-input:focus`.
 
   ```heex
@@ -644,13 +608,13 @@ defmodule Corex.NumberInput do
     <:decrement_trigger><span>-</span></:decrement_trigger>
   </.number_input>
   ```
-  """
+  """)
+
   def focus(number_input_id) when is_binary(number_input_id) do
     JS.dispatch("corex:number-input:focus", to: "##{number_input_id}", bubbles: false)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Focus the value field from `handle_event` (`number_input_focus`).
 
   ```elixir
@@ -658,14 +622,14 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.focus(socket, "my-num")}
   end
   ```
-  """
+  """)
+
   def focus(socket, number_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
     LiveView.push_event(socket, "number_input_focus", %{id: number_input_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read machine state from `phx-click`. Dispatches `corex:number-input:state`. Optional `respond_to:` `:server`, `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -686,7 +650,8 @@ defmodule Corex.NumberInput do
     {:noreply, assign(socket, :n, n)}
   end
   ```
-  """
+  """)
+
   def state(number_input_id, opts) when is_binary(number_input_id) and is_list(opts) do
     JS.dispatch("corex:number-input:state",
       to: "##{number_input_id}",
@@ -695,12 +660,10 @@ defmodule Corex.NumberInput do
     )
   end
 
-  @doc type: :api
-  @doc "Same as [`state/2`](#state/2) with default `respond_to:`."
+  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
   def state(number_input_id) when is_binary(number_input_id), do: state(number_input_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read machine state from `handle_event` (`number_input_state`). Same replies as [`state/2`](#state/2); server-only unless you also use [`state/2`](#state/2) for a DOM reply.
 
   | Reply | Payload |
@@ -712,7 +675,8 @@ defmodule Corex.NumberInput do
     {:noreply, Corex.NumberInput.state(socket, "my-num", respond_to: :server)}
   end
   ```
-  """
+  """)
+
   def state(socket, number_input_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
              is_list(opts) do

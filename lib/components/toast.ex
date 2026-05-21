@@ -114,49 +114,14 @@ defmodule Corex.Toast do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Default titles for flash-driven toasts.
-
-    Pass `translation={%Corex.Toast.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
-
-    | Field | Default | Used for |
-    | ----- | ------- | -------- |
-    | `info` | Info | Default title for `:info` flash toasts |
-    | `error` | Error | Default title for `:error` flash toasts |
-    """
-
-    alias Corex.Gettext
-
-    defstruct [:info, :error]
-
-    @type t :: %__MODULE__{info: String.t(), error: String.t()}
-
-    @doc false
-    def resolve(nil), do: default()
-
-    def resolve(%__MODULE__{} = partial), do: merge(partial, default())
-
-    defp default do
-      %__MODULE__{
-        info: Gettext.gettext("Info"),
-        error: Gettext.gettext("Error")
-      }
-    end
-
-    defp merge(%__MODULE__{} = partial, %__MODULE__{} = default) do
-      %__MODULE__{
-        info: Corex.Translation.take(partial.info, default.info),
-        error: Corex.Translation.take(partial.error, default.error)
-      }
-    end
-  end
-
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Flash
   alias Corex.Toast.Payload, as: ToastPayload
+  alias Corex.Toast.Translation
   alias Phoenix.LiveView.JS
 
   defp toast_duration_dispatch_string(:infinity), do: "Infinity"
@@ -512,8 +477,7 @@ defmodule Corex.Toast do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Append a toast from `phx-click`. Dispatches `toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
 
   ```heex
@@ -529,15 +493,15 @@ defmodule Corex.Toast do
     })
   );
   ```
-  """
+  """)
+
   def create(toast_group_id, title, description, type, opts)
       when is_binary(toast_group_id) and is_list(opts) do
     detail = ToastPayload.create_detail(title, description, type, opts)
     JS.dispatch("toast:create", to: "##{toast_group_id}", detail: detail)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Append a toast from `handle_event` (`toast-create`). Payload includes `groupId` plus Zag fields assembled from the same arguments.
 
   ```elixir
@@ -545,7 +509,8 @@ defmodule Corex.Toast do
     {:noreply, Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success, duration: 3_000)}
   end
   ```
-  """
+  """)
+
   def create(socket, toast_group_id, title, description, type, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_list(opts) do
@@ -553,23 +518,22 @@ defmodule Corex.Toast do
     Phoenix.LiveView.push_event(socket, "toast-create", data)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Patch an existing toast from `phx-click`. Dispatches `toast:update` with `detail.id` and optional fields from `attrs` (map or keyword list).
 
   ```heex
   <.action phx-click={Corex.Toast.update("toast-group-id", @toast_id, title: "Uploading…", loading: true)}>Update</.action>
   <.toast_group id="toast-group-id" />
   ```
-  """
+  """)
+
   def update(toast_group_id, toast_id, attrs)
       when is_binary(toast_group_id) and is_binary(toast_id) and (is_map(attrs) or is_list(attrs)) do
     detail = ToastPayload.update_detail(toast_id, attrs)
     JS.dispatch("toast:update", to: "##{toast_group_id}", detail: detail)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Patch an existing toast from `handle_event` (`toast-update`).
 
   ```elixir
@@ -577,7 +541,8 @@ defmodule Corex.Toast do
     {:noreply, Corex.Toast.update(socket, "toast-group-id", id, %{title: "Finished", loading: false})}
   end
   ```
-  """
+  """)
+
   def update(socket, toast_group_id, toast_id, attrs)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) and
@@ -586,21 +551,20 @@ defmodule Corex.Toast do
     Phoenix.LiveView.push_event(socket, "toast-update", data)
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Remove a toast immediately from `phx-click`. Dispatches `toast:remove` with `detail.id`.
 
   ```heex
   <.action phx-click={Corex.Toast.remove("toast-group-id", @toast_id)}>Remove</.action>
   <.toast_group id="toast-group-id" />
   ```
-  """
+  """)
+
   def remove(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
     JS.dispatch("toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Remove a toast immediately from `handle_event` (`toast-remove`).
 
   ```elixir
@@ -608,28 +572,28 @@ defmodule Corex.Toast do
     {:noreply, Corex.Toast.remove(socket, "toast-group-id", id)}
   end
   ```
-  """
+  """)
+
   def remove(socket, toast_group_id, toast_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do
     Phoenix.LiveView.push_event(socket, "toast-remove", %{groupId: toast_group_id, id: toast_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Begin dismiss animation from `phx-click`. Dispatches `toast:dismiss` with `detail.id`.
 
   ```heex
   <.action phx-click={Corex.Toast.dismiss("toast-group-id", @toast_id)}>Dismiss</.action>
   <.toast_group id="toast-group-id" />
   ```
-  """
+  """)
+
   def dismiss(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
     JS.dispatch("toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Begin dismiss animation from `handle_event` (`toast-dismiss`).
 
   ```elixir
@@ -637,7 +601,8 @@ defmodule Corex.Toast do
     {:noreply, Corex.Toast.dismiss(socket, "toast-group-id", id)}
   end
   ```
-  """
+  """)
+
   def dismiss(socket, toast_group_id, toast_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_binary(toast_id) do

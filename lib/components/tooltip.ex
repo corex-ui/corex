@@ -162,6 +162,8 @@ defmodule Corex.Tooltip do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Positioning
   alias Corex.Tooltip.Anatomy.{Arrow, ArrowTip, Content, Positioner, Props, Trigger}
   alias Corex.Tooltip.Connect
@@ -380,8 +382,7 @@ defmodule Corex.Tooltip do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set tooltip open state from a control (`phx-click`).
 
   ```heex
@@ -400,7 +401,8 @@ defmodule Corex.Tooltip do
     })
   );
   ```
-  """
+  """)
+
   def set_open(tooltip_id, open) when is_binary(tooltip_id) and is_boolean(open) do
     JS.dispatch("corex:tooltip:set-open",
       to: "##{tooltip_id}",
@@ -409,8 +411,7 @@ defmodule Corex.Tooltip do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set open state from `handle_event`.
 
   ```heex
@@ -426,7 +427,8 @@ defmodule Corex.Tooltip do
     {:noreply, Corex.Tooltip.set_open(socket, "my-tooltip", true)}
   end
   ```
-  """
+  """)
+
   def set_open(socket, tooltip_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tooltip_id) and
              is_boolean(open) do

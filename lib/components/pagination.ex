@@ -320,6 +320,8 @@ defmodule Corex.Pagination do
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Pagination.Anatomy.{NextTrigger, PrevTrigger, Props, Root, SsrEllipsis, SsrPageItem}
   alias Corex.Pagination.Connect
   alias Corex.Pagination.Translation
@@ -691,8 +693,7 @@ defmodule Corex.Pagination do
     end
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the current **1-based** page from `phx-click`. Dispatches `corex:pagination:set-page` with `detail.page`.
 
   ```heex
@@ -712,7 +713,8 @@ defmodule Corex.Pagination do
     })
   );
   ```
-  """
+  """)
+
   def set_page(pagination_id, page) when is_binary(pagination_id) and is_integer(page) do
     JS.dispatch("corex:pagination:set-page",
       to: "##{pagination_id}",
@@ -720,8 +722,7 @@ defmodule Corex.Pagination do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Set the current page from `handle_event` (`pagination_set_page`).
 
   ```elixir
@@ -729,15 +730,15 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.set_page(socket, "my-pagination", String.to_integer(page))}
   end
   ```
-  """
+  """)
+
   def set_page(socket, pagination_id, page)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) and
              is_integer(page) do
     LiveView.push_event(socket, "pagination_set_page", %{id: pagination_id, page: page})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Change page size from `phx-click`. Dispatches `corex:pagination:set-page-size` with `detail.page_size`.
 
   ```heex
@@ -748,7 +749,8 @@ defmodule Corex.Pagination do
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
-  """
+  """)
+
   def set_page_size(pagination_id, page_size)
       when is_binary(pagination_id) and is_integer(page_size) do
     JS.dispatch("corex:pagination:set-page-size",
@@ -757,8 +759,7 @@ defmodule Corex.Pagination do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Change page size from `handle_event` (`pagination_set_page_size`).
 
   ```elixir
@@ -766,7 +767,8 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.set_page_size(socket, "my-pagination", 25)}
   end
   ```
-  """
+  """)
+
   def set_page_size(socket, pagination_id, page_size)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) and
              is_integer(page_size) do
@@ -776,8 +778,7 @@ defmodule Corex.Pagination do
     })
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to the next page from `phx-click`. Dispatches `corex:pagination:go-to-next-page`.
 
   ```heex
@@ -788,13 +789,13 @@ defmodule Corex.Pagination do
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
-  """
+  """)
+
   def go_to_next_page(pagination_id) when is_binary(pagination_id) do
     JS.dispatch("corex:pagination:go-to-next-page", to: "##{pagination_id}", detail: %{})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to the next page from `handle_event` (`pagination_go_to_next_page`).
 
   ```elixir
@@ -802,14 +803,14 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.go_to_next_page(socket, "my-pagination")}
   end
   ```
-  """
+  """)
+
   def go_to_next_page(socket, pagination_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) do
     LiveView.push_event(socket, "pagination_go_to_next_page", %{id: pagination_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to the previous page from `phx-click`. Dispatches `corex:pagination:go-to-prev-page`.
 
   ```heex
@@ -820,13 +821,13 @@ defmodule Corex.Pagination do
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
-  """
+  """)
+
   def go_to_prev_page(pagination_id) when is_binary(pagination_id) do
     JS.dispatch("corex:pagination:go-to-prev-page", to: "##{pagination_id}", detail: %{})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to the previous page from `handle_event` (`pagination_go_to_prev_page`).
 
   ```elixir
@@ -834,14 +835,14 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.go_to_prev_page(socket, "my-pagination")}
   end
   ```
-  """
+  """)
+
   def go_to_prev_page(socket, pagination_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) do
     LiveView.push_event(socket, "pagination_go_to_prev_page", %{id: pagination_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to page `1` from `phx-click`. Dispatches `corex:pagination:go-to-first-page`.
 
   ```heex
@@ -852,13 +853,13 @@ defmodule Corex.Pagination do
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
-  """
+  """)
+
   def go_to_first_page(pagination_id) when is_binary(pagination_id) do
     JS.dispatch("corex:pagination:go-to-first-page", to: "##{pagination_id}", detail: %{})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to first page from `handle_event` (`pagination_go_to_first_page`).
 
   ```elixir
@@ -866,14 +867,14 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.go_to_first_page(socket, "my-pagination")}
   end
   ```
-  """
+  """)
+
   def go_to_first_page(socket, pagination_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) do
     LiveView.push_event(socket, "pagination_go_to_first_page", %{id: pagination_id})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to the last page from `phx-click`. Dispatches `corex:pagination:go-to-last-page`.
 
   ```heex
@@ -884,13 +885,13 @@ defmodule Corex.Pagination do
     <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
   </.pagination>
   ```
-  """
+  """)
+
   def go_to_last_page(pagination_id) when is_binary(pagination_id) do
     JS.dispatch("corex:pagination:go-to-last-page", to: "##{pagination_id}", detail: %{})
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Go to last page from `handle_event` (`pagination_go_to_last_page`).
 
   ```elixir
@@ -898,7 +899,8 @@ defmodule Corex.Pagination do
     {:noreply, Corex.Pagination.go_to_last_page(socket, "my-pagination")}
   end
   ```
-  """
+  """)
+
   def go_to_last_page(socket, pagination_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pagination_id) do
     LiveView.push_event(socket, "pagination_go_to_last_page", %{id: pagination_id})

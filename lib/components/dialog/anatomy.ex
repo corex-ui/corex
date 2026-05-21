@@ -19,7 +19,7 @@ defmodule Corex.Dialog.Anatomy do
       on_open_change_client: nil,
       animation: "js",
       animation_options: %Corex.Animation.Scale{scale_start: 0.96, scale_end: 1.0},
-      dialog_default_label: nil
+      label: nil
     ]
 
     @type t :: %__MODULE__{
@@ -36,7 +36,7 @@ defmodule Corex.Dialog.Anatomy do
             on_open_change_client: String.t() | nil,
             animation: String.t(),
             animation_options: Corex.Animation.Scale.t(),
-            dialog_default_label: String.t() | nil
+            label: String.t() | nil
           }
   end
 

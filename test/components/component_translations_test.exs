@@ -3,10 +3,88 @@ defmodule Corex.ComponentTranslationsTest do
 
   alias Corex.Combobox.Translation, as: ComboboxTranslation
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+  alias Corex.Dialog.Translation, as: DialogTranslation
   alias Corex.Pagination.Translation, as: PaginationTranslation
+  alias Corex.PasswordInput.Translation, as: PasswordInputTranslation
+  alias Corex.PinInput.Translation, as: PinInputTranslation
   alias Corex.Select.Translation, as: SelectTranslation
   alias Corex.TagsInput.Translation, as: TagsInputTranslation
   alias Corex.Timer.Translation, as: TimerTranslation
+  alias Corex.Toast.Translation, as: ToastTranslation
+
+  describe "Dialog.Translation" do
+    test "resolve nil and partial" do
+      t = DialogTranslation.resolve(nil)
+      assert t.close == "Close"
+      assert t.label == "Dialog"
+
+      partial =
+        DialogTranslation.resolve(%DialogTranslation{
+          close: "Dismiss",
+          label: "Modal"
+        })
+
+      assert partial.close == "Dismiss"
+      assert partial.label == "Modal"
+    end
+  end
+
+  describe "Corex.Translation.resolve_with_overrides/3" do
+    test "merges attr overrides after defaults" do
+      t =
+        Corex.Translation.resolve_with_overrides(
+          DialogTranslation,
+          nil,
+          %{label: "Custom", close: nil}
+        )
+
+      assert t.label == "Custom"
+      assert t.close == "Close"
+    end
+
+    test "partial translation plus overrides" do
+      t =
+        Corex.Translation.resolve_with_overrides(
+          DialogTranslation,
+          %DialogTranslation{close: "Dismiss"},
+          %{label: "Modal"}
+        )
+
+      assert t.close == "Dismiss"
+      assert t.label == "Modal"
+    end
+  end
+
+  describe "Toast.Translation" do
+    test "resolve nil and partial" do
+      assert ToastTranslation.resolve(nil).info == "Info"
+      assert ToastTranslation.resolve(%ToastTranslation{error: "Failed"}).error == "Failed"
+    end
+  end
+
+  describe "PasswordInput.Translation" do
+    test "resolve nil and partial" do
+      t = PasswordInputTranslation.resolve(nil)
+      assert t.toggle_visibility =~ "visibility"
+
+      partial =
+        PasswordInputTranslation.resolve(%PasswordInputTranslation{
+          toggle_visibility: "Show"
+        })
+
+      assert partial.toggle_visibility == "Show"
+    end
+  end
+
+  describe "PinInput.Translation" do
+    test "resolve nil and partial" do
+      t = PinInputTranslation.resolve(nil)
+      assert t.digit =~ "%{digit}"
+
+      partial = PinInputTranslation.resolve(%PinInputTranslation{digit: "Cell %{digit}"})
+      assert partial.digit == "Cell %{digit}"
+    end
+  end
 
   describe "Combobox.Translation" do
     test "resolve nil returns defaults" do

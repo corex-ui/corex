@@ -17,10 +17,6 @@ defmodule Corex.PasswordInput.Connect do
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
-  defp aria_label_for_trigger(assigns) do
-    Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Toggle password visibility")
-  end
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
@@ -134,7 +130,7 @@ defmodule Corex.PasswordInput.Connect do
       "type" => "button",
       "id" => "password-input:#{assigns.id}:visibility-trigger",
       "data-orientation" => orientation(assigns),
-      "aria-label" => aria_label_for_trigger(assigns)
+      "aria-label" => assigns.aria_label
     }
   end
 

@@ -93,16 +93,6 @@ defmodule E2eWeb.BlogPage do
   def blog_index_hero(assigns) do
     ~H"""
     <header class="blog__hero" aria-labelledby="blog-index-heading">
-      <div class="blog__hero__rss">
-        <.navigate
-          class="button button--sm button--circle"
-          to="/feed.xml"
-          external
-          aria_label={~t"RSS feed"}
-        >
-          <.heroicon name="hero-rss" />
-        </.navigate>
-      </div>
       <div class="blog__head">
         <p class="blog__eyebrow">{~t"Journal"}</p>
         <h1 id="blog-index-heading" class="blog__display">
@@ -112,7 +102,17 @@ defmodule E2eWeb.BlogPage do
           {~t"Articles about Corex, Phoenix LiveView, accessibility, and UI development."}
         </p>
         <p :if={@post_count > 0} class="blog__meta">
-          {@post_count} {ngettext("article", "articles", @post_count)}
+          <span>
+            {@post_count} {ngettext("article", "articles", @post_count)}
+          </span>
+          <.navigate
+            class="button button--sm button--circle"
+            to="/feed.xml"
+            external
+            aria_label={~t"RSS feed"}
+          >
+            <.heroicon name="hero-rss" />
+          </.navigate>
         </p>
       </div>
     </header>

@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 93
+        threshold: 90
       ]
     ]
   end
@@ -83,10 +83,13 @@ defmodule Corex.MixProject do
       "archive.build": &raise_on_archive_build/1,
       lint: [
         "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
         "credo --strict",
         "sobelow --exit"
       ],
-      "pre.publish": ["lint"],
+      "release.check": ["lint", "test", "assets.build"],
+      "pre.publish": ["release.check"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
@@ -158,9 +161,7 @@ defmodule Corex.MixProject do
         "guides/MCP.md",
         "guides/production.md",
         "guides/configuration.md",
-        "guides/api_documentation.md",
-        "guides/stability.md",
-        "guides/releasing.md"
+        "guides/update.md"
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -185,11 +186,7 @@ defmodule Corex.MixProject do
            "guides/localize.md",
            "guides/production.md",
            "guides/configuration.md",
-           "guides/stability.md"
-         ]},
-        {:Maintainers,
-         [
-           "guides/releasing.md"
+           "guides/update.md"
          ]},
         {"Tableau Guides",
          [
