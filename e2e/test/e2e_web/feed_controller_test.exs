@@ -3,7 +3,7 @@ defmodule E2eWeb.FeedControllerTest do
 
   test "GET /feed.xml", %{conn: conn} do
     conn = get(conn, "/feed.xml")
-    body = html_response(conn, 200)
+    body = response(conn, 200)
 
     assert body =~ ~S(<?xml version="1.0" encoding="UTF-8"?>)
     assert body =~ "<rss version=\"2.0\""

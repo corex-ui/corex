@@ -3,7 +3,7 @@ defmodule E2eWeb.SitemapControllerTest do
 
   test "GET /sitemap.xml", %{conn: conn} do
     conn = get(conn, "/sitemap.xml")
-    body = html_response(conn, 200)
+    body = response(conn, 200)
 
     assert body =~ ~S(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">)
     assert body =~ "<loc>"
