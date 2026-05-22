@@ -55,6 +55,7 @@ defmodule E2eWeb.NumberInputEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="number-input-events-page"
         title={~t"Number Input · Event"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

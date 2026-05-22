@@ -18,6 +18,7 @@ defmodule E2eWeb.FileUploadApiLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="file-upload-api-page"
         title="File Upload · API"
         subtitle="Open the native file picker from bindings, LiveView, or a DOM event."

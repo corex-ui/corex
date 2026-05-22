@@ -47,6 +47,7 @@ defmodule E2eWeb.ClipboardEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="clipboard-events-page"
         title="Clipboard · Event"
         subtitle="Copy events (server + client)."

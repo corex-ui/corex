@@ -32,8 +32,6 @@ defmodule Corex.AngleSlider.Connect do
     end
   end
 
-  def format_number(v) when is_number(v), do: to_string(v)
-
   defp display_angle(value, assigns) do
     dir = Map.get(assigns, :dir)
 

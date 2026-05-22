@@ -38,6 +38,7 @@ defmodule E2eWeb.ColorPickerApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="color-picker-api-page"
         title="Color Picker · API"
         subtitle="Programmatic color: client `phx-click` binding, then the matching server push."

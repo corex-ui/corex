@@ -35,6 +35,7 @@ defmodule E2eWeb.DatePickerApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="date-picker-api-page"
         title="Date Picker · API"
         subtitle="Set the value from a LiveView binding, from JS, or from the server."

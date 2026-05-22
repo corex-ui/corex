@@ -60,6 +60,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="collapsible-events-page"
         title={~t"Collapsible · Event"}
         subtitle={~t"Subscribe to open changes from LiveView or the client."}

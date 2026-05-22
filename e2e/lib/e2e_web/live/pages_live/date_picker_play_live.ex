@@ -83,7 +83,7 @@ defmodule E2eWeb.DatePickerPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Date Picker · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Date Picker · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

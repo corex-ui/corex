@@ -43,7 +43,11 @@ defmodule E2eWeb.PasswordInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Password Input · Playground" heading_class="layout-heading">
+      <.demo_playground
+        path={@path}
+        title="Password Input · Playground"
+        heading_class="layout-heading"
+      >
         <:controls>
           <.playground_dir_toggle
             id="dir"

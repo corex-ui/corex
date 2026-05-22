@@ -30,6 +30,7 @@ defmodule E2eWeb.SwitchPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="switch-patterns-page"
         title="Switch · Pattern"
         subtitle="Controlled checked state synced with a LiveView assign."

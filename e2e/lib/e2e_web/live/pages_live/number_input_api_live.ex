@@ -114,6 +114,7 @@ defmodule E2eWeb.NumberInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="number-input-api-page"
         title="Number Input · API"
         subtitle="Machine API: set, clear, step, bounds, focus, and read state from LiveView or the client."

@@ -59,6 +59,7 @@ defmodule E2eWeb.PasswordInputEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="password-input-events-page"
         title={~t"Password Input · Event"}
         subtitle={~t"Subscribe to visibility changes from LiveView or the client."}

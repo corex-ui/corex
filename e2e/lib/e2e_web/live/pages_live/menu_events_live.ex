@@ -88,6 +88,7 @@ defmodule E2eWeb.MenuEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="menu-events-page"
         title={~t"Menu · Events"}
         subtitle={

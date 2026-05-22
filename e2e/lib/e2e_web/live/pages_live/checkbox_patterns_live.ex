@@ -48,6 +48,7 @@ defmodule E2eWeb.CheckboxPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-patterns-page"
         title={~t"Checkbox · Pattern"}
         subtitle={~t"Common ways to structure Checkbox state and data flows."}

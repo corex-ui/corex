@@ -204,6 +204,7 @@ defmodule E2eWeb.AccordionApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="accordion-api-page"
         title={~t"Accordion · API"}
         subtitle={~t"Control and interact with the accordion from LiveView or the client."}

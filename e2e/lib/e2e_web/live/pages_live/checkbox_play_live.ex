@@ -54,7 +54,7 @@ defmodule E2eWeb.CheckboxPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title={~t"Checkbox · Playground"} heading_class="layout-heading">
+      <.demo_playground path={@path} title={~t"Checkbox · Playground"} heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

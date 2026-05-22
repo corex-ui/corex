@@ -149,6 +149,7 @@ defmodule E2eWeb.SwitchFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="switch-form-live-page"
         title="Switch · Form"
         subtitle="Live View form"

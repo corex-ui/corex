@@ -83,6 +83,7 @@ defmodule E2eWeb.ColorPickerEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="color-picker-events-page"
         title="Color Picker · Event"
         subtitle="Server push events, then client-only custom events, each in its own block."

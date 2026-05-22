@@ -46,6 +46,7 @@ defmodule E2eWeb.PasswordInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="password-input-api-page"
         title="Password Input · API"
         subtitle="LiveView push, client DOM events, programmatic visibility, and a native radio form."

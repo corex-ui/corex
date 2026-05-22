@@ -40,6 +40,7 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="file-upload-live-anatomy-page"
         title="File Upload live · Anatomy"
         subtitle="LiveView uploads (allow_upload) and Corex.FileUploadLive."

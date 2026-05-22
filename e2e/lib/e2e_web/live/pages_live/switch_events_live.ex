@@ -66,6 +66,7 @@ defmodule E2eWeb.SwitchEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="switch-events-page"
         title={~t"Switch · Event"}
         subtitle={~t"Subscribe to checked changes from LiveView or the client."}

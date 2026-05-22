@@ -199,6 +199,7 @@ defmodule E2eWeb.RadioGroupFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="radio-group-form-live-page"
         title="Radio Group · Form"
         subtitle="Live View form"

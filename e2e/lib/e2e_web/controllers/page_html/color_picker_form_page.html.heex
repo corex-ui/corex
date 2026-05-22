@@ -6,6 +6,7 @@
 >
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="color-picker-form-page"
     title={~t"Color Picker form"}
     subtitle={~t"Phoenix to_form/2, stricter validation, and plain HTML"}

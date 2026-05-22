@@ -60,6 +60,15 @@ defmodule E2eWeb.Router do
       live("/blog", BlogIndexLive, :index)
       live("/blog/:slug", BlogPostLive, :show)
 
+      live("/showcases", ShowcasesIndexLive, :index)
+      live("/showcases/soonex", ShowcaseTemplateLive, :soonex)
+      live("/showcases/soonex-i18n", ShowcaseTemplateLive, :soonex_i18n)
+      live("/showcases/tetrex", TetrexIndexLive, :index)
+      live("/showcases/tetrex/new", TetrexLive, :new)
+      live("/showcases/tetrex/:id/replay", TetrexLive, :replay)
+      live("/showcases/tetrex/:id/watch", TetrexLive, :watch)
+      live("/showcases/tetrex/:id", TetrexLive, :show)
+
       live("/admins", AdminLive.Index, :index)
       live("/admins/new", AdminLive.Form, :new)
       live("/admins/:id", AdminLive.Show, :show)
@@ -246,6 +255,10 @@ defmodule E2eWeb.Router do
       live("/", HomeLive, :index)
     end
 
+    get("/templates", ShowcaseRedirectController, :to_showcases)
+    get("/games", ShowcaseRedirectController, :to_showcases)
+    get("/games/tetrex/*rest", ShowcaseRedirectController, :games_tetrex)
+
     get("/accordion/anatomy", PageController, :accordion_page)
     get("/accordion/style", PageController, :accordion_styling_page)
     get("/action/anatomy", PageController, :action_page)
@@ -359,8 +372,6 @@ defmodule E2eWeb.Router do
     get("/toast/anatomy", PageController, :toast_anatomy_page)
     get("/tooltip/anatomy", PageController, :tooltip_page)
     get("/tooltip/style", PageController, :tooltip_styling_page)
-    get("/templates", PageController, :templates_page)
-
     resources("/users", UserController)
   end
 

@@ -51,6 +51,7 @@ defmodule E2eWeb.AngleSliderApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-api-page"
         title="Angle Slider · API"
         subtitle="Programmatically control the Angle Slider via client or server events."

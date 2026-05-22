@@ -214,6 +214,7 @@ defmodule E2eWeb.AccordionPlayLive do
       theme={@theme}
     >
       <.demo_playground
+        path={@path}
         title="Accordion · Playground"
         heading_class="layout-heading"
       >

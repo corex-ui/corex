@@ -55,6 +55,7 @@ defmodule E2eWeb.EditableEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="editable-events-page"
         title={~t"Editable · Event"}
         subtitle={~t"Value change events (server + client)."}

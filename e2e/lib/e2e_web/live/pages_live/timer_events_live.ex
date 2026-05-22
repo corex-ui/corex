@@ -80,6 +80,7 @@ defmodule E2eWeb.TimerEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="timer-events-page"
         title="Timer · Events"
         subtitle="Subscribe to tick and complete from LiveView or the client."

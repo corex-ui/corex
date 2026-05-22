@@ -158,6 +158,7 @@ defmodule E2eWeb.PasswordInputFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="password-input-form-live-page"
         title="Password Input · Form"
         subtitle="Live View form"

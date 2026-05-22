@@ -19,7 +19,6 @@ defmodule Corex.SignaturePad.Connect do
   import Corex.Helpers, only: [get_boolean: 1]
 
   defp encode_paths([]), do: nil
-  defp encode_paths(nil), do: nil
 
   defp encode_paths(paths) when is_binary(paths) do
     if path_lines_for_connect(paths) == [] do

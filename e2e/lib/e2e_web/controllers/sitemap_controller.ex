@@ -5,8 +5,14 @@ defmodule E2eWeb.SitemapController do
     %{loc: "/", priority: 1.0, changefreq: "weekly"},
     %{loc: "/en/blog", priority: 0.8, changefreq: "weekly"},
     %{loc: "/ar/blog", priority: 0.8, changefreq: "weekly"},
-    %{loc: "/en/templates", priority: 0.7, changefreq: "monthly"},
-    %{loc: "/ar/templates", priority: 0.7, changefreq: "monthly"}
+    %{loc: "/en/showcases", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/ar/showcases", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/en/showcases/soonex", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/ar/showcases/soonex", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/en/showcases/soonex-i18n", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/ar/showcases/soonex-i18n", priority: 0.7, changefreq: "monthly"},
+    %{loc: "/en/showcases/tetrex", priority: 0.6, changefreq: "weekly"},
+    %{loc: "/ar/showcases/tetrex", priority: 0.6, changefreq: "weekly"}
   ]
 
   def index(conn, _params) do

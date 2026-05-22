@@ -61,6 +61,7 @@ defmodule E2eWeb.RadioGroupEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="radio-group-events-page"
         title={~t"Radio Group · Event"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

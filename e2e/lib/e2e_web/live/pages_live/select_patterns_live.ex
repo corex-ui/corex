@@ -63,6 +63,7 @@ defmodule E2eWeb.SelectPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="select-patterns-page"
         title="Select · Pattern"
         subtitle="Controlled selection and stream-driven items."

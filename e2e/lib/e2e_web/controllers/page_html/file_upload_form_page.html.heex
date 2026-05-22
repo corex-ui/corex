@@ -1,6 +1,7 @@
 <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="file-upload-form-page"
     title={~t"File Upload · Form"}
     subtitle={~t"Multipart forms and Plug.Upload"}

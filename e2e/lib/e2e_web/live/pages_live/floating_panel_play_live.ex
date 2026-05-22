@@ -37,6 +37,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="floating-panel-play-page"
         title="Floating Panel · Playground"
         heading_class="layout-heading"

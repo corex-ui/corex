@@ -6,6 +6,7 @@
 >
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="tags-input-form-page"
     title={~t"Tags Input · Form"}
     subtitle={~t"Phoenix to_form/2 and plain HTML."}

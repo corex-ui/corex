@@ -29,6 +29,7 @@ defmodule E2eWeb.TogglePatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="toggle-patterns-page"
         title="Toggle · Pattern"
         subtitle="Controlled pressed state synced with a LiveView assign."

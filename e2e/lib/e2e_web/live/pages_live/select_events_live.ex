@@ -62,6 +62,7 @@ defmodule E2eWeb.SelectEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="select-events-page"
         title={~t"Select · Event"}
         subtitle={

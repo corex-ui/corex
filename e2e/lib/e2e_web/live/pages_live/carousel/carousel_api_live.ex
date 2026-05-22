@@ -72,6 +72,7 @@ defmodule E2eWeb.CarouselApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="carousel-api-page"
         title="Carousel · API"
         subtitle="Drive autoplay and paging from LiveView or the client."

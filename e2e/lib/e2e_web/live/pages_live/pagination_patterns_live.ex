@@ -93,6 +93,7 @@ defmodule E2eWeb.PaginationPatternsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="pagination-patterns-page"
         title="Pagination · Patterns"
         subtitle="Controlled page, link patch, server events, and client-only updates."

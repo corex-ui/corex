@@ -40,6 +40,7 @@ defmodule E2eWeb.CollapsibleApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="collapsible-api-page"
         title="Collapsible · API"
         subtitle="Open and close from LiveView bindings, DOM events, or server push."

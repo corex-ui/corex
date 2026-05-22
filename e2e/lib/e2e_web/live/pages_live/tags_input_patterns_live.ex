@@ -40,6 +40,7 @@ defmodule E2eWeb.TagsInputPatternsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="tags-input-patterns-page"
         title="Tags Input · Patterns"
         subtitle="Controlled tag list and allow-list validation (both use controlled mode)."

@@ -158,6 +158,7 @@ defmodule E2eWeb.ToastPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="toast-playground"
         title="Toast · Playground"
         heading_class="layout-heading"

@@ -17,7 +17,7 @@ defmodule E2eWeb.TogglePlayLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_playground title="Toggle · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Toggle · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
             class="switch"

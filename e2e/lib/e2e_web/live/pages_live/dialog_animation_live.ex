@@ -82,11 +82,13 @@ defmodule E2eWeb.DialogAnimationLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="dialog-animation-page"
         title="Dialog · Animation"
         subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
       >
         <.demo_playground
+          path={@path}
           id="dialog-animation-playground-section"
           title="Playground"
           heading_class="layout-heading"

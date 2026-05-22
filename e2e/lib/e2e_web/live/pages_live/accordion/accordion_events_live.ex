@@ -79,6 +79,7 @@ defmodule E2eWeb.AccordionEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="accordion-events-page"
         title={~t"Accordion · Event"}
         subtitle={~t"Subscribe to open value changes from LiveView or the client."}

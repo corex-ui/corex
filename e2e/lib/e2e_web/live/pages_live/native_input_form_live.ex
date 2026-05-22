@@ -155,6 +155,7 @@ defmodule E2eWeb.NativeInputFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="native-input-form-live-page"
         title="Native Input · Form"
         subtitle="LiveView phx-change / phx-submit with grouped fields (changeset vs stricter validation)."

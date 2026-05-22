@@ -6,6 +6,7 @@
 >
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="checkbox-form-page"
     title={~t"Checkbox · Form"}
     subtitle={~t"Phoenix to_form/2, stricter validation, and plain HTML"}

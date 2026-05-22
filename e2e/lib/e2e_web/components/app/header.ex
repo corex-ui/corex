@@ -1,6 +1,7 @@
 defmodule E2eWeb.App.Header do
   use E2eWeb, :html
   import E2eWeb.App.Aside
+  import E2eWeb.App.MainNav
   import E2eWeb.{ModeToggle, ThemeToggle, Helpers}
 
   @doc """
@@ -69,21 +70,7 @@ defmodule E2eWeb.App.Header do
                 aria-label="Documentation navigation"
                 phx-hook="AsideNavScroll"
               >
-                <.tree_view
-                  id="doc-menu-dialog"
-                  class="tree-view tree-view--accent max-w-3xs w-full"
-                  redirect
-                  value={documentation_menu_selected_ids(@path)}
-                  items={documentation_menu_items()}
-                >
-                  <:label class="sr-only">{~t"Corex Links"}</:label>
-                  <:item :let={item}>
-                    <span class="w-full">{item.label}</span>
-                    <%= if item_new_tab?(item) do %>
-                      <.heroicon name="hero-arrow-top-right-on-square" class="icon shrink-0" />
-                    <% end %>
-                  </:item>
-                </.tree_view>
+                <.header_main_nav path={@path} orientation={:vertical} placement={:drawer} />
                 <.aside_nav_tree_views
                   path={@path}
                   form_menu={@form_menu}
@@ -122,48 +109,7 @@ defmodule E2eWeb.App.Header do
             Corex
           </.navigate>
 
-          <nav
-            class="hidden md:flex items-center gap-4 lg:gap-6 min-w-0"
-            aria-label={~t"Main"}
-          >
-            <.navigate
-              to={~p"/accordion/anatomy"}
-              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-              aria-current={header_nav_components_aria_current(@path)}
-            >
-              {~t"Components"}
-            </.navigate>
-            <.navigate
-              to={~p"/templates"}
-              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-              aria-current={header_nav_templates_aria_current(@path)}
-            >
-              {~t"Templates"}
-            </.navigate>
-            <.navigate
-              to={~p"/blog"}
-              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-              aria-current={header_nav_blog_aria_current(@path)}
-            >
-              {~t"Blog"}
-            </.navigate>
-            <.navigate
-              to="https://hexdocs.pm/corex"
-              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-              external
-            >
-              {~t"Documentation"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-            </.navigate>
-            <.navigate
-              to="https://hexdocs.pm/corex/mcp.html"
-              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
-              external
-            >
-              {~t"MCP"}
-              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
-            </.navigate>
-          </nav>
+          <.header_main_nav path={@path} orientation={:horizontal} placement={:header} />
         </div>
         <div class="hidden lg:flex layout__row gap-2 sm:gap-4 shrink-0">
           <.theme_toggle id="theme-select" theme={@theme} />
@@ -173,97 +119,4 @@ defmodule E2eWeb.App.Header do
     </header>
     """
   end
-
-  defp documentation_menu_items do
-    templates_path = E2eWeb.Path.with_current_locale("/templates")
-
-    Corex.Tree.new([
-      %{
-        value: "doc-installation",
-        label: ~t"Installation",
-        to: "https://hexdocs.pm/corex/installation.html",
-        redirect: :href,
-        new_tab: true
-      },
-      %{
-        value: "doc-localize",
-        label: ~t"Localize",
-        to: "https://hexdocs.pm/corex/localize.html",
-        redirect: :href,
-        new_tab: true
-      },
-      %{
-        value: "doc-theming",
-        label: ~t"Theming",
-        to: "https://hexdocs.pm/corex/theming.html",
-        redirect: :href,
-        new_tab: true
-      },
-      %{
-        value: "doc-dark-mode",
-        label: ~t"Dark Mode",
-        to: "https://hexdocs.pm/corex/dark_mode.html",
-        redirect: :href,
-        new_tab: true
-      },
-      %{
-        value: "doc-mcp",
-        label: ~t"MCP",
-        to: "https://hexdocs.pm/corex/mcp.html",
-        redirect: :href,
-        new_tab: true
-      },
-      %{
-        value: "doc-templates",
-        label: ~t"Templates",
-        to: templates_path,
-        redirect: :href,
-        new_tab: false
-      }
-    ])
-  end
-
-  defp item_new_tab?(%{new_tab: true}), do: true
-  defp item_new_tab?(_), do: false
-
-  defp documentation_menu_selected_ids("/templates"), do: ["doc-templates"]
-  defp documentation_menu_selected_ids(_), do: []
-
-  defp header_nav_templates_aria_current("/templates"), do: "page"
-  defp header_nav_templates_aria_current(_), do: nil
-
-  defp header_nav_blog_aria_current(path) when is_binary(path) do
-    if String.starts_with?(path, "/blog"), do: "page", else: nil
-  end
-
-  defp header_nav_blog_aria_current(_), do: nil
-
-  defp header_nav_components_aria_current(raw_path) do
-    path = normalize_header_path(raw_path)
-
-    cond do
-      path == "" or path == "/templates" -> nil
-      String.starts_with?(path, "/admins") -> nil
-      not doc_navigation_path?(path) -> nil
-      path == "/accordion/anatomy" -> "page"
-      true -> "location"
-    end
-  end
-
-  defp normalize_header_path(p) when p in [nil, ""], do: ""
-
-  defp normalize_header_path(p) when is_binary(p) do
-    p
-    |> String.trim()
-    |> String.trim_trailing("/")
-    |> then(fn s -> if s == "/", do: "", else: s end)
-  end
-
-  defp doc_navigation_path?(path) when is_binary(path) and path != "" do
-    Enum.any?(E2eWeb.Helpers.flat_navigation_list(), fn %{to: to} ->
-      E2eWeb.Path.strip_after_locale(to) == path
-    end)
-  end
-
-  defp doc_navigation_path?(_), do: false
 end

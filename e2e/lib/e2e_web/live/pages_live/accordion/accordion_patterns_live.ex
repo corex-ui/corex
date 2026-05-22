@@ -126,6 +126,7 @@ defmodule E2eWeb.AccordionPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="accordion-patterns-page"
         title={~t"Accordion · Pattern"}
         subtitle={~t"Async loading, controlled state, and streaming items."}

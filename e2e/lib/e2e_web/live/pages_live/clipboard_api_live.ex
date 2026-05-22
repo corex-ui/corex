@@ -41,6 +41,7 @@ defmodule E2eWeb.ClipboardApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="clipboard-api-page"
         title="Clipboard · API"
         subtitle="Client bindings, JS and server API."

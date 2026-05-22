@@ -114,6 +114,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="combobox-patterns-page"
         title={~t"Combobox · Patterns"}
         subtitle={~t"Server-driven filtering and controlled value."}

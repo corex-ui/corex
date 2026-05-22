@@ -62,6 +62,7 @@ defmodule E2eWeb.FloatingPanelEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="floating-panel-events-page"
         title="Floating Panel · Events"
         subtitle="Subscribe to open changes from LiveView or the client."

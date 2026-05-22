@@ -61,6 +61,7 @@ defmodule E2eWeb.TabsEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tabs-events-page"
         title={~t"Tabs · Events"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

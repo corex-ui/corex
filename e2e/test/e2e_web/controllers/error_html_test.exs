@@ -24,9 +24,14 @@ defmodule E2eWeb.ErrorHTMLTest do
     assert html =~ "Page Not Found"
   end
 
-  test "serves templates page under locale prefix", %{conn: conn} do
+  test "redirects templates to showcases", %{conn: conn} do
     conn = get(conn, "/en/templates")
-    assert html_response(conn, 200) =~ "Templates"
+    assert redirected_to(conn) == "/en/showcases"
+  end
+
+  test "serves showcases page under locale prefix", %{conn: conn} do
+    conn = get(conn, "/en/showcases")
+    assert html_response(conn, 200) =~ "Showcases"
   end
 
   test "renders 500.html" do

@@ -89,6 +89,7 @@ defmodule E2eWeb.TagsInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tags-input-api-page"
         title="Tags Input · API"
         subtitle="Set, add, and clear tags from LiveView, client bindings, or a DOM dispatch."

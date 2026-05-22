@@ -60,6 +60,7 @@ defmodule E2eWeb.ToggleGroupEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="toggle-group-events-page"
         title={~t"Toggle group · Events"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

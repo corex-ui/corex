@@ -37,6 +37,7 @@ defmodule E2eWeb.CollapsiblePatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="collapsible-patterns-page"
         title={~t"Collapsible · Pattern"}
         subtitle={~t"Common ways to structure Collapsible state and data flows."}

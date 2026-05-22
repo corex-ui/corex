@@ -106,6 +106,7 @@ defmodule E2eWeb.TagsInputEventsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="tags-input-events-page"
         title="Tags Input · Event"
         subtitle="Subscribe to value or validity changes from LiveView or a DOM listener."

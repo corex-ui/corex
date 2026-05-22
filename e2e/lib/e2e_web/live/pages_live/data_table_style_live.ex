@@ -93,6 +93,7 @@ defmodule E2eWeb.DataTableStyleLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="data-table-styling-page"
         title="Data Table · Style"
         subtitle="Semantic ink on column headers, size scale on headers and cells, and host max-width utilities. Tables include sort, selection, and actions."

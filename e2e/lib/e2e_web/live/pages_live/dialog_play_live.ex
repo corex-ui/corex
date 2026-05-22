@@ -45,7 +45,7 @@ defmodule E2eWeb.DialogPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Dialog · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Dialog · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dialog-playground-dir"

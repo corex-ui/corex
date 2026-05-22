@@ -48,6 +48,7 @@ defmodule E2eWeb.MenuPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="menu-playground-page"
         title="Menu · Playground"
         heading_class="layout-heading"

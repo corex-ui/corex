@@ -56,6 +56,7 @@ defmodule E2eWeb.MarqueeApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="marquee-api-page"
         title="Marquee · API"
         subtitle="Pause, resume, and toggle from LiveView bindings, client JS, or server push."

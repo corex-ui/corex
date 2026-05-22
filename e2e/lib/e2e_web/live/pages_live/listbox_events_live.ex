@@ -61,6 +61,7 @@ defmodule E2eWeb.ListboxEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="listbox-events-page"
         title={~t"Listbox · Event"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

@@ -117,6 +117,7 @@ defmodule E2eWeb.EditableFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="editable-form-live-page"
         title="Editable · Form"
         subtitle="Live View form"

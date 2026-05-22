@@ -285,7 +285,11 @@ defmodule Corex.Editable do
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
-      <label phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+      <label
+        class={Map.get(Enum.at(@label, 0), :class, nil)}
+        phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+      >
         {render_slot(@label)}
       </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>

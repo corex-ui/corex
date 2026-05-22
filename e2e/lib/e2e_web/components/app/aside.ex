@@ -1,5 +1,6 @@
 defmodule E2eWeb.App.Aside do
   use E2eWeb, :html
+  import E2eWeb.App.MainNav
   import E2eWeb.{Helpers}
 
   attr(:kind, :atom, required: true)
@@ -155,6 +156,8 @@ defmodule E2eWeb.App.Aside do
   end
 
   attr(:path, :string, required: true)
+  attr(:theme, :string, required: true)
+  attr(:mode, :string, required: true)
 
   def aside(assigns) do
     form_menu = form_menu_items()
@@ -172,6 +175,7 @@ defmodule E2eWeb.App.Aside do
       aria-label="Documentation navigation"
       phx-hook="AsideNavScroll"
     >
+      <.header_main_nav path={@path} orientation={:vertical} placement={:sidebar} />
       <.aside_nav_tree_views
         path={@path}
         form_menu={@form_menu}

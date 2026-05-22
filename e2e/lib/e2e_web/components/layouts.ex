@@ -40,7 +40,7 @@ defmodule E2eWeb.Layouts do
     ~H"""
     <.header path={@path} theme={@theme} mode={@mode} />
     <div class="layout__wrapper">
-      <.aside path={@path} />
+      <.aside path={@path} theme={@theme} mode={@mode} />
       <main id="main-content" class="layout__main">
         <.docs_pagination path={@path} />
         <div class="layout__content">

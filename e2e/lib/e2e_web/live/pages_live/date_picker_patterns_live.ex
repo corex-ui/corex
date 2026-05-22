@@ -43,6 +43,7 @@ defmodule E2eWeb.DatePickerPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="date-picker-patterns-page"
         title={~t"Date Picker · Pattern"}
         subtitle={~t"Controlled value with LiveView as source of truth."}

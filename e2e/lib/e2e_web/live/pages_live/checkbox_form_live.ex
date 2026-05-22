@@ -143,6 +143,7 @@ defmodule E2eWeb.CheckboxFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-form-live-page"
         title={~t"Checkbox · Form"}
         subtitle={~t"Live View form"}

@@ -35,6 +35,7 @@ defmodule E2eWeb.SelectApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="select-api-page"
         title="Select · API"
         subtitle="Value change events and programmatic value from client bindings, DOM dispatch, or LiveView push."

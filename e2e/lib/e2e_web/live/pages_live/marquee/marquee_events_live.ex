@@ -87,6 +87,7 @@ defmodule E2eWeb.MarqueeEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="marquee-events-page"
         title={~t"Marquee · Event"}
         subtitle={~t"Pause, loop, and completion from LiveView or DOM events."}

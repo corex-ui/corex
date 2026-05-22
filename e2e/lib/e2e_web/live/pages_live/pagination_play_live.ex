@@ -106,6 +106,7 @@ defmodule E2eWeb.PaginationPlayLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_playground
+        path={@path}
         id="pagination-playground-page"
         title="Pagination · Playground"
         subtitle="Blog list loads per URL (?page, ?page_size). Pagination uses link mode with LiveView patch."

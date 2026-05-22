@@ -32,6 +32,7 @@ defmodule E2eWeb.TabsPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tabs-patterns-page"
         title="Tabs · Pattern"
         subtitle="Controlled value synced with a LiveView assign."

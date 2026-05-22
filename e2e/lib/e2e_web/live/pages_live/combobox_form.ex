@@ -151,6 +151,7 @@ defmodule E2eWeb.ComboboxForm do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="combobox-form-live-page"
         title={~t"Combobox · Form"}
         subtitle={~t"LiveView form with hook-driven country field."}

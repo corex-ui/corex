@@ -53,6 +53,7 @@ defmodule E2eWeb.FileUploadFormLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="file-upload-form-live-page"
         title="File Upload live · Form"
         subtitle="Live View uploads (allow_upload)"

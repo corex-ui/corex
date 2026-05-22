@@ -66,6 +66,7 @@ defmodule E2eWeb.CheckboxEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-events-page"
         title={~t"Checkbox · Event"}
         subtitle={~t"Subscribe to checked changes from LiveView or the client."}

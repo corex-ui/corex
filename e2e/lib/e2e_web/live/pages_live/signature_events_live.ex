@@ -60,6 +60,7 @@ defmodule E2eWeb.SignatureEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="signature-events-page"
         title={~t"Signature Pad · Event"}
         subtitle={~t"Subscribe to draw end from LiveView or the client."}

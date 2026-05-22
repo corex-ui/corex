@@ -40,6 +40,7 @@ defmodule E2eWeb.ToggleGroupApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="toggle-group-api-page"
         title="Toggle group · API"
         subtitle="set_value via LiveView JS, DOM events on the hook root, or server push."

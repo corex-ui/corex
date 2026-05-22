@@ -57,6 +57,7 @@ defmodule E2eWeb.PinInputEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="pin-input-events-page"
         title={~t"Pin Input · Event"}
         subtitle={~t"Subscribe to value changes from the server or a DOM listener."}

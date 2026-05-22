@@ -220,6 +220,7 @@ defmodule E2eWeb.ColorPickerFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="color-picker-form-live-page"
         title={~t"Color Picker form"}
         subtitle={~t"Live View Form"}

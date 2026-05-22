@@ -58,6 +58,7 @@ defmodule E2eWeb.RadioGroupPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="radio-group-patterns-page"
         title="Radio Group · Pattern"
         subtitle="Controlled selection and stream-driven items."

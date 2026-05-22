@@ -99,6 +99,7 @@ defmodule E2eWeb.TagsInputFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tags-input-form-live-page"
         title="Tags Input · Live Form"
         subtitle="LiveView phx-change and phx-submit with a changeset-backed form."

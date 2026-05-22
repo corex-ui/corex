@@ -52,7 +52,7 @@ defmodule E2eWeb.ClipboardPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Clipboard · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Clipboard · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

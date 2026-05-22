@@ -16,6 +16,7 @@ defmodule E2eWeb.NativeInputEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="native-input-events-page"
         title="Native Input · Events"
         subtitle="Native inputs do not emit component events."

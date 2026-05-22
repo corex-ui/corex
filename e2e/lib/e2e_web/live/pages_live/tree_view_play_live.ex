@@ -59,7 +59,7 @@ defmodule E2eWeb.TreeViewPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Tree view · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Tree view · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

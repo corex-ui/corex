@@ -12,6 +12,11 @@ defmodule E2e.Application do
       E2e.Repo,
       {DNSCluster, query: Application.get_env(:corex_web, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: E2e.PubSub},
+      {Registry, keys: :unique, name: E2e.Tetrex.SessionRegistry},
+      {DynamicSupervisor, name: E2e.Tetrex.SessionSupervisor, strategy: :one_for_one},
+      E2e.Tetrex.Registry,
+      E2e.Tetrex.OwnershipStore,
+      E2eWeb.TetrexPresence,
       E2eWeb.Endpoint
     ]
 

@@ -77,6 +77,7 @@ defmodule E2eWeb.CarouselEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="carousel-events-page"
         title={~t"Carousel · Event"}
         subtitle={~t"Subscribe to page changes from LiveView or the client."}

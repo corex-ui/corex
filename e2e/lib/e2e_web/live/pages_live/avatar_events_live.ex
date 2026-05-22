@@ -40,6 +40,7 @@ defmodule E2eWeb.AvatarEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="avatar-events-page"
         title="Avatar · Event"
         subtitle="Status change events from the avatar hook."

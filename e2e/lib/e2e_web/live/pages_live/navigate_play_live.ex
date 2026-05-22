@@ -23,6 +23,7 @@ defmodule E2eWeb.NavigatePlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="navigate-playground-page"
         title="Navigate · Playground"
         heading_class="layout-heading"

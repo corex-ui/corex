@@ -52,6 +52,7 @@ defmodule E2eWeb.ListboxApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="listbox-api-page"
         title={~t"Listbox · API"}
         subtitle={

@@ -42,6 +42,7 @@ defmodule E2eWeb.TooltipEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tooltip-events-page"
         title="Tooltip · Events"
         subtitle="Open change events (server + client)."

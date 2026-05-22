@@ -102,6 +102,7 @@ defmodule E2eWeb.PinInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="pin-input-api-page"
         title="Pin Input · API"
         subtitle="Set, read, and clear the pin from LiveView, client bindings, or a (Client JS)."

@@ -43,6 +43,7 @@ defmodule E2eWeb.AngleSliderPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-patterns-page"
         title={~t"Angle Slider · Pattern"}
         subtitle={~t"Common ways to structure Angle Slider state and data flows."}

@@ -64,7 +64,7 @@ defmodule E2eWeb.RadioGroupPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Radio Group · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Radio Group · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

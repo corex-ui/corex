@@ -159,6 +159,7 @@ defmodule E2eWeb.NumberInputFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="number-input-form-live-page"
         title="Number Input · Form"
         subtitle="LiveView phx-change / phx-submit with basic vs stricter validation."

@@ -29,16 +29,16 @@ defmodule E2eWeb.DemoPage do
 
   ## Playground pages
 
-  - Use **`<.demo_playground>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component.
+  - Use **`<.demo_playground path={@path}>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component.
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
 
   ## Shell contract (page types)
   ## Shell contract (page types)
 
-  - **Anatomy**  -  `<.demo_page>` + one `<.demo_section>` per variant; stable `id` on each section.
+  - **Anatomy**  -  `<.demo_page path={@path}>>` + one `<.demo_section>` per variant; stable `id` on each section.
   - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout.
   - **Form**  -  static submit flow; real field names and assigns.
-  - **Playground**  -  `Layouts.app` + `<.demo_playground>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
+  - **Playground**  -  `Layouts.app` + `<.demo_playground path={@path}>>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
   - **API**  -  LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
   - **Events**  -  LiveView; `<.demo_event_log>`. For collections, prefer streams and `<.data_table>` like `AccordionEventsLive`.
   - **Patterns**  -  real async only (`<.async_result>`, `<.demo_pattern_async>`). No placeholder skeletons.
@@ -60,6 +60,7 @@ defmodule E2eWeb.DemoPage do
   attr :id, :string, required: true
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
+  attr :path, :string, default: nil
   attr :heading_class, :string, default: "layout-heading max-w-none"
   attr :class, :string, default: "w-full flex flex-col gap-size"
   attr :rest, :global
@@ -72,14 +73,37 @@ defmodule E2eWeb.DemoPage do
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>
+      <.component_source_bar :if={@path} path={@path} />
       {render_slot(@inner_block)}
     </article>
+    """
+  end
+
+  attr :path, :string, required: true
+
+  def component_source_bar(assigns) do
+    links = E2eWeb.ComponentSourceLinks.links_for_path(assigns.path)
+    assigns = assign(assigns, :links, links || [])
+
+    ~H"""
+    <div :if={@links != []} class="flex flex-wrap gap-space-sm">
+      <.navigate
+        :for={link <- @links}
+        to={link.to}
+        class="button button--sm button--ghost"
+        external
+      >
+        {link.label}
+        <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+      </.navigate>
+    </div>
     """
   end
 
   attr :id, :string, default: nil
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
+  attr :path, :string, default: nil
   attr :heading_class, :string, default: "layout-heading"
   attr :title_tag, :string, default: "h1"
   attr :subtitle_tag, :string, default: "p"
@@ -94,6 +118,7 @@ defmodule E2eWeb.DemoPage do
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>
+      <.component_source_bar :if={@path} path={@path} />
       <div class="preview">
         <div class="preview__frame">
           <div :if={@controls_strip} class="preview__sidebar preview__sidebar--wrap">

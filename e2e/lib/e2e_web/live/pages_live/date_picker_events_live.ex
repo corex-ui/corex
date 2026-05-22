@@ -79,6 +79,7 @@ defmodule E2eWeb.DatePickerEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="date-picker-events-page"
         title={~t"Date Picker · Event"}
         subtitle={

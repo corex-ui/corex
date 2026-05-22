@@ -44,6 +44,7 @@ defmodule E2eWeb.DataListPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="data-list-playground"
         title="Data List · Playground"
         heading_class="layout-heading"

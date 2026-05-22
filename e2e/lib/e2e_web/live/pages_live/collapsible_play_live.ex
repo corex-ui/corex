@@ -40,6 +40,7 @@ defmodule E2eWeb.CollapsiblePlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="collapsible-playground"
         title={~t"Collapsible · Playground"}
         heading_class="layout-heading"

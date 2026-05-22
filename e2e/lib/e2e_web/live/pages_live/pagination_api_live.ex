@@ -33,6 +33,7 @@ defmodule E2eWeb.PaginationApiLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="pagination-api-page"
         title="Pagination · API"
         subtitle="set_page via LiveView JS or server push. Page numbers are 1-based."

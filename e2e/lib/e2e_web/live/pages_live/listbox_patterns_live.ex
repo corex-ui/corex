@@ -109,6 +109,7 @@ defmodule E2eWeb.ListboxPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="listbox-patterns-page"
         title={~t"Listbox · Patterns"}
         subtitle={~t"Streaming items and server-controlled selection."}

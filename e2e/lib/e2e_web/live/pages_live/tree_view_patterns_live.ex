@@ -154,6 +154,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tree-view-patterns-page"
         title={~t"Tree view · Pattern"}
         subtitle={~t"Async loading, controlled state, and redirect navigation."}

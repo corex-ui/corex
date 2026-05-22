@@ -211,6 +211,7 @@ defmodule E2eWeb.AngleSliderFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-form-live-page"
         title={~t"Angle Slider form"}
         subtitle={~t"Live View Form"}

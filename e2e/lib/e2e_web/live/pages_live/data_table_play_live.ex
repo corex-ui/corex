@@ -37,6 +37,7 @@ defmodule E2eWeb.DataTablePlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="data-table-playground"
         title="Data Table · Playground"
         heading_class="layout-heading"

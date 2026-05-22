@@ -18,6 +18,7 @@ defmodule E2eWeb.DataTableEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="data-table-events-page"
         title="Data Table · Events"
         subtitle="Data table is render-only."

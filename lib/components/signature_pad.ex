@@ -556,7 +556,7 @@ defmodule Corex.SignaturePad do
   defp paths_from_paths_attr(_), do: []
 
   defp has_paths?([]), do: false
-  defp has_paths?(paths) when is_list(paths), do: paths != []
+  defp has_paths?(paths) when is_list(paths), do: true
   defp has_paths?(_), do: false
 
   defp hidden_input_value([]), do: ""

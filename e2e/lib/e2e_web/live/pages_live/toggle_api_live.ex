@@ -36,6 +36,7 @@ defmodule E2eWeb.ToggleApiLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="toggle-api-page"
         title="Toggle · API"
         subtitle="set_pressed via LiveView JS, DOM events on the hook root, or server push."

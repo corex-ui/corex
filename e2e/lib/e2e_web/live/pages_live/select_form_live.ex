@@ -193,6 +193,7 @@ defmodule E2eWeb.SelectFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="select-form-live-page"
         title="Select · Form"
         subtitle="Live View form"

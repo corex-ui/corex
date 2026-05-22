@@ -40,6 +40,7 @@ defmodule E2eWeb.DialogApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="dialog-api-page"
         title="Dialog · API"
         subtitle="Open and close from LiveView bindings, DOM events, or server push."

@@ -59,6 +59,7 @@ defmodule E2eWeb.TooltipPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tooltip-patterns-page"
         title="Tooltip · Pattern"
         subtitle="Multi-trigger with LiveView, per-row tooltips in a ul, and one tooltip with several link triggers."

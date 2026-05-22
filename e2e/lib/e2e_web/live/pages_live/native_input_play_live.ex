@@ -23,6 +23,7 @@ defmodule E2eWeb.NativeInputPlayLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="native-input-play-page"
         title="Native Input · Playground"
         subtitle="Toggle a few props."

@@ -74,6 +74,7 @@ defmodule E2eWeb.ToastApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="toast-api-page"
         title="Toast · API"
         subtitle="Create and update from client bindings, client JS, or the server. Fixed id `toast-api-update-demo` is used for update examples. Types are info, success, and error; use optional loading: true for the loading slot."

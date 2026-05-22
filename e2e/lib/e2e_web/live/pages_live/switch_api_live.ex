@@ -35,6 +35,7 @@ defmodule E2eWeb.SwitchApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="switch-api-page"
         title="Switch · API"
         subtitle="set_checked and toggle_checked via LiveView JS, DOM events on the hook root, or server push."

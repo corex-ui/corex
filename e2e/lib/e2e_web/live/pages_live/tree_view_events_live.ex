@@ -76,6 +76,7 @@ defmodule E2eWeb.TreeViewEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tree-view-events-page"
         title={~t"Tree view · Events"}
         subtitle={~t"Server on_expanded_change and on_selection_change, plus client DOM events."}

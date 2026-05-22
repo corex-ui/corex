@@ -26,7 +26,11 @@ defmodule E2e.Place.Helper do
           }
         end)
 
-      Repo.insert_all("cities", entries, on_conflict: :nothing, conflict_target: :id)
+      Repo.insert_all("cities", entries,
+        on_conflict: :nothing,
+        conflict_target: :id,
+        log: false
+      )
     end)
   end
 
@@ -53,7 +57,11 @@ defmodule E2e.Place.Helper do
           }
         end)
 
-      Repo.insert_all("airports", entries, on_conflict: :nothing, conflict_target: :id)
+      Repo.insert_all("airports", entries,
+        on_conflict: :nothing,
+        conflict_target: :id,
+        log: false
+      )
     end)
   end
 

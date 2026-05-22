@@ -130,6 +130,7 @@ defmodule E2eWeb.ListboxPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="listbox-playground-page"
         title="Listbox · Playground"
         heading_class="layout-heading"

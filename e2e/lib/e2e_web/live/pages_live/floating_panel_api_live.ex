@@ -40,6 +40,7 @@ defmodule E2eWeb.FloatingPanelApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="floating-panel-api-page"
         title="Floating Panel · API"
         subtitle="Imperative open and close with Corex.FloatingPanel.set_open/2 (client) and set_open/3 (server)."

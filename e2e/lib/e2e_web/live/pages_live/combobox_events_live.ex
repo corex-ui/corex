@@ -82,6 +82,7 @@ defmodule E2eWeb.ComboboxEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="combobox-events-page"
         title={~t"Combobox · Event"}
         subtitle={~t"Subscribe to value changes from LiveView or the client."}

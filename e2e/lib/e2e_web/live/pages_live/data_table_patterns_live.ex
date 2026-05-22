@@ -246,6 +246,7 @@ defmodule E2eWeb.DataTablePatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="data-table-patterns-page"
         title="Data Table · Pattern"
         subtitle="Stream, in-memory sort, selection, a database-backed table with pagination, and a combined table on one page."

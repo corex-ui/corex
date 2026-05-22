@@ -25,6 +25,7 @@ defmodule E2eWeb.ToggleGroupPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="toggle-group-patterns-page"
         title="Toggle group · Pattern"
         subtitle="Controlled value synced with a LiveView assign."

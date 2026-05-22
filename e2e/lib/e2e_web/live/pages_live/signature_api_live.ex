@@ -25,6 +25,7 @@ defmodule E2eWeb.SignatureApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="signature-api-page"
         title="Signature Pad · API"
         subtitle="Clear the canvas from client bindings, client JS, or a server event."

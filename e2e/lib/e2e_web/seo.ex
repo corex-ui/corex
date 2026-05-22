@@ -69,15 +69,36 @@ defmodule E2eWeb.SEO do
     )
   end
 
-  def templates do
+  def showcases do
     new(
-      title: "Templates",
-      description:
-        "Production-ready coming-soon sites: Tableau export, shared tokens, Markdown posts, and Corex components.",
-      canonical_path: "/en/templates",
-      hreflang_paths: %{en: "/en/templates", ar: "/ar/templates"}
+      title: "Showcases",
+      description: "Production-ready starters and interactive demos built with Corex components.",
+      canonical_path: "/en/showcases",
+      hreflang_paths: %{en: "/en/showcases", ar: "/ar/showcases"}
     )
   end
+
+  def showcase_template(:soonex) do
+    new(
+      title: "Soonex",
+      description:
+        "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets.",
+      canonical_path: "/en/showcases/soonex",
+      hreflang_paths: %{en: "/en/showcases/soonex", ar: "/ar/showcases/soonex"}
+    )
+  end
+
+  def showcase_template(:soonex_i18n) do
+    new(
+      title: "Soonex i18n",
+      description:
+        "Locales and RTL on the same stack: localized routes, Arabic typography, and Corex components.",
+      canonical_path: "/en/showcases/soonex-i18n",
+      hreflang_paths: %{en: "/en/showcases/soonex-i18n", ar: "/ar/showcases/soonex-i18n"}
+    )
+  end
+
+  def templates, do: showcases()
 
   def new(opts) when is_list(opts), do: struct!(__MODULE__, opts)
 
@@ -176,8 +197,11 @@ defmodule E2eWeb.SEO do
       String.starts_with?(path, "/blog") ->
         "Articles about Corex, Phoenix LiveView, accessibility, and UI development."
 
-      path in ["/templates", "/en/templates", "/ar/templates"] ->
-        templates().description
+      path in ["/showcases", "/en/showcases", "/ar/showcases"] ->
+        showcases().description
+
+      String.starts_with?(path, "/showcases/") ->
+        showcases().description
 
       true ->
         @default_description

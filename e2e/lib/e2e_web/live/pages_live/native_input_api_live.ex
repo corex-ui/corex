@@ -16,6 +16,7 @@ defmodule E2eWeb.NativeInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="native-input-api-page"
         title="Native Input · API"
         subtitle="Native inputs are plain HTML."

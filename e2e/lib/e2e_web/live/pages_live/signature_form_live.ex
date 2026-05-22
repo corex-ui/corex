@@ -122,6 +122,7 @@ defmodule E2eWeb.SignatureFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="signature-form-live-page"
         title="Signature · Form"
         subtitle="Live View form"

@@ -62,15 +62,65 @@
   .editable [data-part="triggers"] {
     display: inline-flex;
     align-items: center;
-    
-    flex: 1 1 auto;
-    gap: var(--spacing-space);
+    justify-content: center;
+    flex: 0 0 auto;
+    gap: var(--spacing-space-sm);
   }
 
   .editable [data-scope="editable"][data-part="edit-trigger"],
   .editable [data-scope="editable"][data-part="cancel-trigger"],
   .editable [data-scope="editable"][data-part="submit-trigger"] {
     @apply ui-trigger ui-trigger--square;
+  }
+
+  .editable [data-scope="editable"][data-part="edit-trigger"]:not([hidden]) {
+    @apply ui-trigger--sm;
+    flex: 0 0 auto;
+    margin-inline: auto;
+  }
+
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"]) {
+    align-items: stretch;
+  }
+
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"])
+    [data-part="triggers"] {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    align-self: stretch;
+    width: var(--spacing-size-md);
+    min-height: 100%;
+    gap: 0;
+  }
+
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"])
+    [data-scope="editable"][data-part="submit-trigger"],
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"])
+    [data-scope="editable"][data-part="cancel-trigger"] {
+    flex: 1 1 50%;
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"])
+    [data-scope="editable"][data-part="submit-trigger"] {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  .editable
+    [data-part="control"]:has([data-scope="editable"][data-part="area"][data-focus="true"])
+    [data-scope="editable"][data-part="cancel-trigger"] {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
   }
 
   .editable [data-scope="editable"][data-part="cancel-trigger"] {

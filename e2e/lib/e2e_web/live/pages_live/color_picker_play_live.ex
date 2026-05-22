@@ -57,7 +57,7 @@ defmodule E2eWeb.ColorPickerPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Color Picker · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Color Picker · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"

@@ -52,7 +52,7 @@ defmodule E2eWeb.SwitchPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Switch · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Switch · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="switch-playground-dir"

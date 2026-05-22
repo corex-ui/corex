@@ -46,6 +46,7 @@ defmodule E2eWeb.PaginationEventsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="pagination-events-page"
         title="Pagination · Events"
         subtitle="Subscribe to page changes from LiveView or the client."

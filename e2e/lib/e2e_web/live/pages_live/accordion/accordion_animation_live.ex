@@ -69,11 +69,13 @@ defmodule E2eWeb.AccordionAnimationLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="accordion-animation-page"
         title={~t"Accordion · Animation"}
         subtitle={~t"Built-in JS animation, instant mode, and custom Motion-driven transitions."}
       >
         <.demo_playground
+          path={@path}
           id="accordion-animation-playground"
           title={~t"Playground"}
           heading_class="layout-heading"

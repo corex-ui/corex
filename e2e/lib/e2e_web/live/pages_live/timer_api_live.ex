@@ -119,6 +119,7 @@ defmodule E2eWeb.TimerApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="timer-api-page"
         title="Timer · API"
         subtitle="Machine API: start, pause, resume, reset, restart, and read state from LiveView or the client."

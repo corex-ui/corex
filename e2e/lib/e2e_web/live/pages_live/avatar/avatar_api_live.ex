@@ -78,6 +78,7 @@ defmodule E2eWeb.AvatarApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="avatar-api-page"
         title={~t"Avatar · API"}
         subtitle={~t"Set the image URL or query load state from LiveView or the client."}

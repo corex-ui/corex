@@ -29,6 +29,7 @@ defmodule E2eWeb.RadioGroupApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="radio-group-api-page"
         title="Radio Group · API"
         subtitle="LiveView push, client DOM events, and controlled value from the server."

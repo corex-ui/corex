@@ -38,7 +38,7 @@ defmodule E2eWeb.PinInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Pin Input · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Pin Input · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
             class="switch"

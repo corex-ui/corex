@@ -38,6 +38,7 @@ defmodule E2eWeb.NumberInputPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="number-input-patterns-page"
         title="Number Input · Patterns"
         subtitle="Standalone controlled value: use on_value_change so the server assigns value on each change (required for +/- with controlled)."

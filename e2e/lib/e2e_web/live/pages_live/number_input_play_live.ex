@@ -38,7 +38,7 @@ defmodule E2eWeb.NumberInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Number Input · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Number Input · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
             class="switch"

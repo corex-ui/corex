@@ -27,12 +27,13 @@ import corex from "../../../"
 import topbar from "../vendor/topbar"
 import "./doc_animation_custom.js"
 import AsideNavScroll from "./aside_nav_scroll.js"
+import GameBoard from "./game_board.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...corex, AsideNavScroll}
+  hooks: {...colocatedHooks, ...corex, AsideNavScroll, GameBoard}
 })
 
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

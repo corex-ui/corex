@@ -56,6 +56,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="toggle-group-playground-page"
         title="Toggle group · Playground"
         heading_class="layout-heading"

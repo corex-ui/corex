@@ -62,6 +62,7 @@ defmodule E2eWeb.DialogEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="dialog-events-page"
         title="Dialog · Event"
         subtitle="Subscribe to open changes from LiveView or the client."

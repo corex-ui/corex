@@ -73,6 +73,7 @@ defmodule E2eWeb.DataListPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="data-list-patterns-page"
         title="Data List · Pattern"
         subtitle="Update items from a LiveView stream while the component reads a plain list assign."

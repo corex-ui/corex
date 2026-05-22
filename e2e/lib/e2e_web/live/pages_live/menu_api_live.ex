@@ -27,6 +27,7 @@ defmodule E2eWeb.MenuApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="menu-api-page"
         title="Menu · API"
         subtitle="Open and close imperatively: LiveView bindings, DOM events, or server push."

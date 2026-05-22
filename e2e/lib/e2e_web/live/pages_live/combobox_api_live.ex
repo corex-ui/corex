@@ -40,6 +40,7 @@ defmodule E2eWeb.ComboboxApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="combobox-api-page"
         title={~t"Combobox · API"}
         subtitle={~t"Programmatic selection from LiveView or the client."}

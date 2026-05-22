@@ -60,6 +60,7 @@ defmodule E2eWeb.AngleSliderEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-events-page"
         title={~t"Angle Slider · Event"}
         subtitle={~t"Subscribe to value changes and change-end events from LiveView or the client."}

@@ -2,6 +2,10 @@ defmodule Corex.SampleTranslation do
   use Corex.Translation, fields: [title: "Title", hint: "Hint"]
 end
 
+defmodule Corex.PlaceholderTranslation do
+  use Corex.Translation, fields: [label: "Delete tag %{tag}"]
+end
+
 defmodule Corex.TranslationTest do
   use ExUnit.Case, async: true
 
@@ -21,6 +25,13 @@ defmodule Corex.TranslationTest do
 
       assert t.title == "A"
       assert t.hint == "Hint"
+    end
+  end
+
+  describe "placeholder defaults" do
+    test "gettext receives literal placeholder bindings" do
+      t = Corex.PlaceholderTranslation.resolve(nil)
+      assert t.label == "Delete tag %{tag}"
     end
   end
 

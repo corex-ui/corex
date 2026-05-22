@@ -87,6 +87,7 @@ defmodule E2eWeb.TreeViewApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tree-view-api-page"
         title="Tree view · API"
         subtitle="Control and interact with the tree view from LiveView or the client."

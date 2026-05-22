@@ -64,6 +64,7 @@ defmodule E2eWeb.ToggleEventsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="toggle-events-page"
         title="Toggle · Event"
         subtitle="lorem, duis, donec: pressed changes from LiveView or the client."

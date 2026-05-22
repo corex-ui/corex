@@ -96,7 +96,7 @@ defmodule E2eWeb.SelectPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Select · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Select · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="select-playground-dir"

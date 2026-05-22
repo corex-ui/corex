@@ -199,6 +199,7 @@ defmodule E2eWeb.DatePickerFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="date-picker-form-live-page"
         title={~t"Date Picker form"}
         subtitle={~t"Live View Form"}

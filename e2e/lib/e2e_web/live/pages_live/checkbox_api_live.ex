@@ -41,6 +41,7 @@ defmodule E2eWeb.CheckboxApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-api-page"
         title={~t"Checkbox · API"}
         subtitle={~t"Programmatically set the checked state from the server or client bindings."}
