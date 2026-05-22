@@ -1,6 +1,6 @@
 ---
 title: "تشريح مكوّن Corex"
-description: "Corex هي مكوّنات Phoenix الدالة مع خيار: كم HEEx تكتب بينما تبقي المكتبة على الأكورديون أو select أو checkbox يعملان بشكل صحيح."
+description: "تضيف Corex مكوّنات Phoenix تفاعلية بشكل HTML ثابت وخطافات عميل. التشريح هو مقدار HEEx الذي تكتبه لهذا الشكل؛ السلوك يعيش في الـ hook."
 date: "2026-05-21 12:00:00 +0000"
 permalink: /ar/blog/anatomy-of-a-corex-component/
 tags:
@@ -12,35 +12,31 @@ sitemap:
   changefreq: monthly
 ---
 
-مكوّن Corex على الشبكة شيئان معاً.
+تستخدم Corex داخل تطبيق Phoenix عادي. أجزاؤها [function components](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html): نفس استدعاءات `<.accordion />` التي تكتبها أصلاً في HEEx. تساعد على عناصر التحكم التفاعلية. بناء الأكورديون وselect وcheckbox يدوياً مملّ؛ الأخطاء تتراكم عند المفاتيح والتركيز وإمكانية الوصول وحالة الفتح/الإغلاق. Corex يوفّر ذلك السلوك حتى لا تعيد اختراعه في كل شاشة.
 
-**HEEx** هو الهيكل الذي تعلنه: attrs، slots، `items`، فئات BEM على الجذر. يطبع شجرة مع `data-scope` و`data-part` وخصائص `data-*` التي يقرأها الـ hook.
+هذا المنشور عن خيار واحد فقط. لنفس المكوّن، كم HEEx ما زلت تكتبه بنفسك؟ هذا الاختيار هو ما نسميه **Anatomy**. كيف يتصرّف المكوّن على العميل موضوع منفصل: [آلات الحالة](/ar/blog/state-machines/). المظهر منفصل أيضاً: [تصميم Corex](/ar/blog/corex-design-a11y/).
 
-**JavaScript** هو العقل الذي لا تكتبه في القوالب: آلة حالة Zag تبدأها خطافة LiveView على ذلك الجذر. تملك حالة الفتح، التركيز، التنقل بلوحة المفاتيح، وARIA. تعيد رسم تلك الخصائص على الأجزاء كلما تحركت الآلة أو أصلح LiveView الجذر.
+إن كنت تستخدم LiveView أصلاً، يبقى تدفق البيانات مألوفاً. LiveView يحتفظ بـ **assigns**. Function components تحوّل تلك assigns إلى HTML. المتصفح يتحدّث عندما يرسل الخادم patch. [دليل Phoenix](https://hexdocs.pm/phoenix/overview.html) يغطي التوجيه والcontrollers وLiveView بالكامل؛ لن نكرّره هنا. ما زلت تستدعي Corex من HEEx، مثلاً `<.accordion id="faq" items={@topics} />`، مع `@topics` في `mount/3` أو `handle_event/3`. ما تضيفه Corex شكل HTML متوقّع و**client hook** على الجذر للعمل التفاعلي الصعب.
 
-**Anatomy** يخص جانب HEEx فقط: لنفس `<.accordion>`، كم ترميزاً ما زلت تؤلفه بنفسك. **Minimal** يعني استدعاء واحد وقائمة. **Custom Slots** تعني `:let` لكل صف. **Manual Slots** و**compound** يذهبان أبعد عندما يفرض شكل DOM ذلك. لا شيء من ذلك يغيّر الآلة؛ يغيّر HTML الذي يتصل به الـ hook.
+ذلك الـ hook هو Phoenix القياسي. راجع [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html). تمرّر خريطة **`hooks`** إلى **`LiveSocket`**. تعلّم الجذر بـ **`phx-hook`** و**`id`** فريد. LiveView يستدعي **`mounted`** و**`updated`** وباقي دورة الحياة عند تغيّر DOM. Corex يوفّر تلك الـ hooks. بداخلها، **آلة حالة Zag.js** تدير اللوحات المفتوحة والتركيز وحركة لوحة المفاتيح. HEEx يوفّر attrs وslots و`items` والفئات؛ الـ hook والآلة يديران ما بعد الرسم.
 
-أقسام **Anatomy** في moduledoc تستخدم نفس التسميات في كل مكان. هذا المنشور يشرح الأكورديون بالكامل، ثم select وtabs وcheckbox.
+**Anatomy** هو نصف HEEx فقط. moduledocs تستخدم نفس الأسماء في كل مكوّن. **Minimal** استدعاء واحد وقائمة. **With slots** يكرّر slot واحداً على كل صف. **Custom Slots** تستخدم `:let` عندما يختلف شكل كل صف. **Manual Slots** و**compound** للتخطيطات التي ليست قائمة بسيطة. الآلة تبقى كما هي؛ يتغيّر فقط HTML الذي تتصل بها. قارن المستويات في [عرض تشريح الأكورديون](/ar/accordion/anatomy)، ونفس الفكرة في [select](/ar/select/anatomy) و[tabs](/ar/tabs/anatomy) و[checkbox](/ar/checkbox/anatomy). المقتطفات الكاملة في الوثائق وتلك الصفحات؛ هنا نركّز على متى تختار كل مستوى.
 
-## مكوّنات الدالة و assigns
+## Assigns وتتبع التغيير
 
-مكوّنات Corex هي [**function components**](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html): دوال Elixir تستقبل خريطة **`assigns`** وتعيد قالب **`~H`**. تستدعيها مثل `<.accordion id="faq" items={@topics} />`. **`attr`** و**`slot`** المعلَنان على المكوّن يحددان ما يمكنك تمريره؛ المترجم يتحقق من الأنواع والمفاتيح المطلوبة.
+attrs التشريح (`items`، slots، **`compound`**) هي assigns عادية من منظور المستدعي. قد **`assign`** المكوّن قيماً مشتقة (قوائم اللوحات، `ctx` لـ `:let`) قبل الرسم. كيف تتدفق assigns عبر HEEx وكيف تُعاد رسم المناطق الديناميكية فقط موثّق في [Assigns and HEEx templates](https://hexdocs.pm/phoenix_live_view/assigns-eex.html#assigns-and-heex-templates); اقرأ ذلك الدليل لـ **`attr`** و**`slot`** وتتبع التغيير بدلاً من تكراره هنا.
 
-LiveView يحتفظ ببيانات التطبيق في الـ socket ضمن **`assigns`**. في HEEx تقرأ **`@topics`**، وليس `socket.assigns.topics`. عند تغيّر assign، يعيد LiveView تنفيذ الأجزاء **الديناميكية** فقط من القالب التي تعتمد عليه ويرسل diff إلى العميل. راجع [Assigns and HEEx templates](https://hexdocs.pm/phoenix_live_view/assigns-eex.html).
+اتفاقيات مهمة عندما تغذّي قائمة مكوّناً مربوطاً بـ hook:
 
-قواعد عملية مهمة لـ Corex:
+- ابنِ **`items`** في **`mount/3`** أو **`handle_event/3`**، ثم مرّر **`items={@topics}`**. لا تحمّل البيانات داخل القالب.
+- استخدم **`assign/2`** و**`update/3`** في LiveView. تجنّب **`Map.put/3`** على assigns داخل function component.
+- فضّل attrs صريحة على **`{assigns}`** إلى الأبناء حتى تبقى التصحيحات دقيقة.
 
-- حمّل القوائم في **`mount/3`** أو **`handle_event/3`**، ثم مرّر **`items={@topics}`**. لا تستعلم داخل القالب؛ LiveView لن يعيد تشغيل ذلك الكتلة عندما تتغيّر قاعدة البيانات.
-- استخدم **`assign/2`** و**`update/3`** في LiveView. تجنّب **`Map.put/3`** على `assigns` داخل function component؛ تتبع التغيير لن يرى التحديثات بعد أول رسم.
-- فضّل attrs صريحة على **`{assigns}`** إلى الأبناء. تمرير خريطة assigns كاملة يعطّل التتبع الدقيق ويجبر إعادة رسم الأبناء بالكامل.
-
-خصائص anatomy (`items`، slots، `compound`) كلها **assigns** من منظور المستدعي. قد **`assign`** المكوّن قيماً مشتقة (قوائم اللوحات، `ctx` لـ `:let`) قبل الرسم. ما تختاره في anatomy لا يستبدل **`phx-hook`** أو آلة Zag؛ يشكّل فقط HTML الذي تتصل به تلك الطبقات.
-
-خصائص تفاعلية مثل **`value`** و**`controlled`** و**`on_value_change`** تربط إلى [bindings](https://hexdocs.pm/phoenix_live_view/bindings.html): الـ hook ي **`pushEvent`** إلى **`handle_event/3`**، وتعيد **`{:noreply, socket}`**، والتصحيح التالي يحدّث `data-*` على الجذر. ذلك المسار مغطى في منشورات آلات الحالة و vanilla JS؛ هنا نبقى على شكل الترميز.
+اختيار مستوى تشريح لا يستبدل **`phx-hook`** أو آلة Zag؛ يشكّل فقط HTML الذي تتصل بها تلك الـ callbacks. **`value`** و**`controlled`** و**`on_value_change`** و**`pushEvent`** هي [bindings](https://hexdocs.pm/phoenix_live_view/bindings.html) وواجهات الـ hook: راجع [آلات الحالة](/ar/blog/state-machines/) و[vanilla JS](/ar/blog/vanilla-js/)، وليس هذا المنشور.
 
 ## الإعداد
 
-أضف `{:corex, "~> 0.1.0"}` إلى `mix.exs`، شغّل `mix deps.get`، وسجّل الـ hooks في `assets/js/app.js`:
+سجّل Corex في خيار **`hooks`** على **`LiveSocket`** كما في [Client hooks via `phx-hook`](https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook):
 
 ```javascript
 import corex from "corex"
@@ -81,9 +77,9 @@ liveSocket.connect()
 />
 ```
 
-Corex يرسم مُشغّلاً من كل `label` ولوحة من كل `content`. تحصل على دعم لوحة المفاتيح، سلوك الفتح الافتراضي، وشجرة `data-scope` / `data-part` للـ hook. أضف فئات BEM على الجذر، مثلاً `class="accordion accordion--accent"`. Anatomy لا يغيّر attrs؛ يغيّر عدد العقد الابنة التي تعلنها.
+Corex يرسم مُشغّلاً من كل `label` ولوحة من كل `content`. تحصل على دعم لوحة المفاتيح، سلوك الفتح الافتراضي، وشجرة `data-scope` / `data-part` للـ hook. أضف فئات BEM على الجذر، مثلاً `class="accordion accordion--accent"`. التشريح لا يغيّر attrs؛ يغيّر عدد العقد الابنة التي تعلنها.
 
-من قاعدة البيانات، ابنِ القائمة في LiveView ومرّرها. الخاصية دائماً **`items`**، وليست assign خاصاً في socket ما لم تضع القائمة في assigns بنفسك:
+من قاعدة البيانات، ابنِ القائمة في LiveView ومرّرها. الخاصية دائماً **`items`**:
 
 ```elixir
 items =
@@ -105,7 +101,7 @@ items =
 
 ## slot مشترك على كل صف
 
-احتفظ بنفس قائمة `items` وأضف slot واحداً `<:indicator>`. Corex يكرره لكل عنصر. سلوك الفتح ولوحة المفاتيح دون تغيير. moduledocs تسمي هذا anatomy **With Indicator**.
+احتفظ بنفس قائمة `items` وأضف slot واحداً `<:indicator>`. Corex يكرره لكل عنصر. سلوك الفتح ولوحة المفاتيح دون تغيير. moduledocs تسمي هذا **With Indicator**.
 
 ```heex
 <.accordion
@@ -136,7 +132,7 @@ items =
 
 ## Custom Slots: `:let` لكل صف
 
-عندما يحتاج كل صف ترميزاً مختلفاً، احتفظ بـ `items` واستخدم `:let={item}` على الـ slots التي تستبدلها. ضع بيانات كل صف في **`meta`**. هذا anatomy **Custom Slots**.
+عندما يحتاج كل صف ترميزاً مختلفاً، احتفظ بـ `items` واستخدم `:let={item}` على الـ slots التي تستبدلها. ضع بيانات كل صف في **`meta`**. هذا تشريح **Custom Slots**.
 
 ```heex
 <.accordion
@@ -222,7 +218,7 @@ items =
 </.accordion>
 ```
 
-استخدم `items` لصفوف كثيرة موحّدة من البيانات؛ استخدم **Manual Slots** عندما شكل القائمة خاطئ. كل `value` في slot يربط المُشغّل باللوحة، مثل `value` في خريطة `items`.
+استخدم `items` لصفوف كثيرة موحّدة من البيانات؛ استخدم **Manual Slots** عندما شكل القائمة لا يناسب. كل `value` في slot يربط المُشغّل باللوحة، مثل `value` في خريطة `items`.
 
 ## compound
 
@@ -392,7 +388,7 @@ select **Minimal**: قائمة مع سهم في slot المُشغّل:
 
 ## Tabs: نفس `items`، أجزاء مختلفة
 
-`<.tabs>` يستخدم `Corex.Content.new/1` مثل الأكورديون. anatomy **Minimal** هو `items` فقط:
+`<.tabs>` يستخدم `Corex.Content.new/1` مثل الأكورديون. تشريح **Minimal** هو `items` فقط:
 
 ```heex
 <.tabs
@@ -491,7 +487,7 @@ select **Minimal**: قائمة مع سهم في slot المُشغّل:
 
 **Core Components** في Phoenix ملفات تعدّلها. Corex يأتي من Hex: خصّص بـ attrs وslots، لا تنسخ الوحدة وتلف الجذر. الـ hook يتوقع شجرة ثابتة.
 
-في LiveView واحد يمكنك خلط anatomy لكل استدعاء. لا يوجد وضع عام للتطبيق.
+في LiveView واحد يمكنك خلط التشريح لكل استدعاء. لا يوجد وضع عام للتطبيق.
 
 ## حالة الفتح من خارج المكوّن
 
@@ -504,15 +500,9 @@ def handle_event("open-faq", _params, socket) do
 end
 ```
 
-`id` على `<.accordion id="faq" ...>` يجب أن يطابق الوسيط الأول لـ `set_value`. سلاسل `value` للوحات تأتي من خرائط `items` أو خصائص `value` في Manual Slots. تحت الغطاء ذلك يستخدم **`Phoenix.LiveView.push_event/3`** و**`handleEvent`** في الـ hook، نفس مسار العميل/الخادم الموثّق في [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html#handling-server-pushed-events).
+`id` على `<.accordion id="faq" ...>` يجب أن يطابق الوسيط الأول لـ `set_value`. سلاسل `value` للوحات تأتي من خرائط `items` أو خصائص `value` في Manual Slots. تحت الغطاء ذلك يستخدم **`Phoenix.LiveView.push_event/3`** و**`handleEvent`** في الـ hook، نفس مسار العميل/الخادم في [JavaScript interoperability](https://hexdocs.pm/phoenix_live_view/js-interop.html#handling-server-pushed-events).
 
-## خطافات LiveView على الجذر
-
-كل مكوّن Corex تفاعلي يرسم جذراً مع **`phx-hook="ComponentName"`** و**`id`** فريد. بعد أول رسم HTTP، **`liveSocket.connect()`** يشغّل callback **`mounted`** في الـ hook. إدخال المستخدم يحدّث آلة Zag؛ خصائص **`on_*`** اختيارية **`pushEvent`** إلى **`handle_event/3`**. تغييرات assigns على الخادم تصحّح الجذر وتشغّل **`updated`**.
-
-لا تنفّذ تلك الـ callbacks في LiveView. تعلن **attrs** و**slots** في HEEx. منشورات [vanilla JS](/ar/blog/vanilla-js/) و[آلات الحالة](/ar/blog/state-machines/) في هذه السلسلة تغطي **`LiveSocket`** ودورة الحياة والوضع controlled و**`push_event`** بالكامل.
-
-## اختيار anatomy في كل استدعاء
+## اختيار التشريح في كل استدعاء
 
 استخدم أخف خيار يطابق بياناتك وترميزك:
 
@@ -524,19 +514,19 @@ end
 
 الأكورديون وtabs يستخدمان `Corex.Content.new` لأن كل صف له `label` و`content`. Select وcombobox يستخدمان `Corex.List.new` لأن كل صف خيار (`label` + `value`). Checkbox بلا قائمة: مكوّن واحد، slots منطقة فقط.
 
-يمكنك استخدام anatomy مختلف في استدعاءات مختلفة في نفس LiveView. لا يوجد إعداد على مستوى التطبيق. الـ hook وواجهة attrs تبقى كما هي؛ فقط HEEx الذي تكتبه يتغيّر.
+يمكنك استخدام تشريح مختلف في استدعاءات مختلفة في نفس LiveView. لا يوجد إعداد على مستوى التطبيق. الـ hook وواجهة attrs تبقى كما هي؛ فقط HEEx الذي تكتبه يتغيّر.
 
 ابدأ بـ **Minimal** في كل شاشة جديدة. انتقل إلى **Custom Slots** عندما يحتاج صف واحد أيقونة أو تخطيط لوحة مختلف. احتفظ بـ **Manual Slots** و**compound** للكتل التسويقية أو التخطيطات حيث خرائط `items` تصارع التصميم. العروض تحت `/ar/<component>/anatomy` على هذا الموقع تعرض كل مستوى جنباً إلى جنب؛ قارن حجم HTML وقابلية الصيانة قبل الالتزام بـ compound للتطبيق كاملاً.
 
-## الاستيعابات و`:key` وanatomy المدفوع بقائمة
+## الاستيعابات و`:key` والتشريح المدفوع بقائمة
 
 عندما ترسم صفوفاً كثيرة متشابهة بـ **`:for`**، يمكن لـ LiveView تتبع المدخلات بالفهرس أو بـ **`:key`**. **`items`** المدفوعة بقائمة في Corex تتوسع إلى بنية داخلية ثابتة؛ لحلقات slots مخصّصة تؤلفها بنفسك، اتبع [إرشادات الاستيعابات](https://hexdocs.pm/phoenix_live_view/assigns-eex.html#comprehensions): استخدم **`:key={item.value}`** عندما يمكن إعادة ترتيب الصفوف أو إدراجها حتى تبقى التصحيحات صغيرة.
 
 **Manual Slots** و**compound** عندما لا يكون DOM قائمة موحّدة. تستبدل assign **`items`** واحداً بمحتوى slots صريح. الآلة ما زالت تتوقع شجرة **`data-part`** الموثّقة في **Anatomy** في moduledoc.
 
-## ما لا يشمله anatomy
+## ما لا يشمله التشريح
 
-Anatomy هو شكل القالب عند أول رسم. لا يستبدل:
+التشريح هو شكل القالب عند أول رسم. لا يستبدل:
 
 - `value` controlled و`on_value_change`
 - `Corex.Accordion.set_value/2` من عنصر تحكم آخر
@@ -549,4 +539,4 @@ Anatomy هو شكل القالب عند أول رسم. لا يستبدل:
 
 ابدأ بـ `items` و`Corex.Content.new` أو `Corex.List.new`. أضف slots عندما لا يكفي الترميز الافتراضي. استخدم **Manual Slots** أو **compound** فقط عندما لا تستطيع `items` و`:let` مطابقة التخطيط.
 
-المنشورات التالية في هذه السلسلة تغطي [آلات الحالة](/ar/blog/state-machines/) (assigns والوضع controlled)، [vanilla JS](/ar/blog/vanilla-js/) (`LiveSocket` والـ hooks)، [التصميم](/ar/blog/corex-design-a11y/) (الرموز على `data-part`)، و[حجم combobox](/ar/blog/combobox-thousands-of-items/) (قوائم من الخادم). Anatomy هو الأساس: اجعل شجرة HEEx صحيحة ويكون للـ hook شيء موثوق لتحسينه.
+المنشورات التالية في هذه السلسلة تغطي [آلات الحالة](/ar/blog/state-machines/) (assigns والوضع controlled)، [vanilla JS](/ar/blog/vanilla-js/) (`LiveSocket` والـ hooks)، [التصميم](/ar/blog/corex-design-a11y/) (الرموز على `data-part`)، و[حجم combobox](/ar/blog/combobox-thousands-of-items/) (قوائم من الخادم). التشريح هو الأساس: اجعل شجرة HEEx صحيحة ويكون للـ hook شيء موثوق لتحسينه.
