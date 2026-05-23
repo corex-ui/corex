@@ -71,7 +71,7 @@ defmodule E2eWeb.SEO do
 
   def showcases do
     new(
-      title: "Showcases",
+      title: "Showcase",
       description: "Production-ready starters and interactive demos built with Corex components.",
       canonical_path: "/en/showcases",
       hreflang_paths: %{en: "/en/showcases", ar: "/ar/showcases"}

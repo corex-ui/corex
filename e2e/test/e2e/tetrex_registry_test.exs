@@ -1,15 +1,11 @@
 defmodule E2e.Tetrex.RegistryTest do
-  use ExUnit.Case, async: false
+  use E2e.DataCase, async: false
 
   alias E2e.Tetrex.Registry
   alias E2e.Tetrex.Session
 
   setup do
-    for %{id: id} <- Registry.list_active() do
-      Session.kill(id)
-      Registry.unregister(id)
-    end
-
+    E2e.DataCase.cleanup_tetrex_sessions()
     :ok
   end
 

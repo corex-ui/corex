@@ -148,6 +148,8 @@ defmodule E2e.MixProject do
       ],
       lint: [
         "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
         "credo --strict"
       ],
       precommit: [

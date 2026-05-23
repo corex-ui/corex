@@ -32,16 +32,20 @@ defmodule E2eWeb.ListingPage do
   attr(:github_to, :string, default: nil)
   attr(:play_to, :string, default: nil)
   attr(:play_label, :string, default: nil)
+  attr(:site_to, :string, default: nil)
+  attr(:site_label, :string, default: nil)
   attr(:tags, :list, default: [])
 
   def listing_card(assigns) do
     template_card? = is_binary(assigns.demo_to) and is_binary(assigns.github_to)
     play_card? = is_binary(assigns.play_to)
+    site_card? = is_binary(assigns.site_to)
 
     assigns =
       assigns
       |> assign(:template_card?, template_card?)
       |> assign(:play_card?, play_card?)
+      |> assign(:site_card?, site_card?)
 
     ~H"""
     <article class="blog__card">
@@ -66,6 +70,12 @@ defmodule E2eWeb.ListingPage do
         <.navigate to={@play_to} class="button button--sm button--brand">
           {@play_label || ~t"Play"}
           <.heroicon name="hero-arrow-right" class="icon" />
+        </.navigate>
+      </div>
+      <div :if={@site_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
+        <.navigate to={@site_to} class="button button--sm button--brand" external>
+          {@site_label || ~t"View Site"}
+          <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
         </.navigate>
       </div>
     </article>

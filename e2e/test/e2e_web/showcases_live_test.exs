@@ -15,6 +15,8 @@ defmodule E2eWeb.ShowcasesLiveTest do
     E2e.DataCase.cleanup_tetrex_sessions()
     Repo.delete_all(Game)
 
+    on_exit(fn -> E2e.DataCase.cleanup_tetrex_sessions() end)
+
     :ok
   end
 
@@ -56,9 +58,17 @@ defmodule E2eWeb.ShowcasesLiveTest do
   test "showcases index mounts with blog layout" do
     {_view, html} = live_ok!(build_conn(), "/en/showcases")
     assert html =~ ~S(id="showcases-page")
+    assert html =~ "Landex"
     assert html =~ "Tetrex"
     assert html =~ ~S(class="blog")
     refute html =~ "Leaderboard"
+  end
+
+  test "showcases index has View Site for landex" do
+    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    assert html =~ "Landex"
+    assert html =~ "View Site"
+    assert html =~ "https://oranje-patrimoine.fr/"
   end
 
   test "showcases index has Play for tetrex" do
@@ -274,10 +284,11 @@ defmodule E2eWeb.ShowcasesLiveTest do
 
   test "tetrex index lists leaderboard with replay link" do
     save_top_game("top1", 9000)
+    assert %Game{id: "top1", score: 9000} = Store.get("top1")
 
     {_view, html} = live_ok!(build_conn(), "/en/showcases/tetrex")
     assert html =~ "Leaderboard"
-    assert html =~ "top1"
+    assert html =~ "009000"
     assert html =~ ~S(/showcases/tetrex/top1/replay)
     assert html =~ ~S(id="tetrex-leaderboard")
   end

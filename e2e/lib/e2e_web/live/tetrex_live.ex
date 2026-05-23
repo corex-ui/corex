@@ -368,7 +368,12 @@ defmodule E2eWeb.TetrexLive do
   @impl true
   def terminate(_reason, socket) do
     if player_session?(socket) and is_binary(socket.assigns.game_id) do
-      Session.stop(socket.assigns.game_id)
+      if sql_sandbox?() do
+        Session.kill(socket.assigns.game_id)
+        Registry.unregister(socket.assigns.game_id)
+      else
+        Session.stop(socket.assigns.game_id)
+      end
     end
 
     :ok
@@ -536,6 +541,8 @@ defmodule E2eWeb.TetrexLive do
     socket.assigns[:source] == :session and socket.assigns.live_action in [:show, :new]
   end
 
+  defp sql_sandbox?, do: Application.get_env(:corex_web, :sql_sandbox, false)
+
   defp board_mode(%{source: nil}), do: "view"
   defp board_mode(%{live_action: :replay}), do: "replay"
   defp board_mode(%{live_action: :watch}), do: "watch"
@@ -579,12 +586,14 @@ defmodule E2eWeb.TetrexLive do
 
     ~H"""
     <Layouts.blog flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <article
-        id="tetrex-page"
-        tabindex="0"
-        dir="ltr"
-        class="w-full max-w-5xl mx-auto flex flex-col gap-space-sm outline-none min-h-0 focus:outline-none focus:ring-0"
-      >
+      <div class="blog w-full">
+        <div class="blog__inner w-full">
+          <article
+            id="tetrex-page"
+            tabindex="0"
+            dir="ltr"
+            class="w-full max-w-5xl mx-auto flex flex-col gap-space-sm outline-none min-h-0 focus:outline-none focus:ring-0"
+          >
         <header class="flex items-center justify-between gap-space-sm shrink-0">
           <div class="flex items-center gap-space-sm min-w-0">
             <h1 class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</h1>
@@ -710,6 +719,8 @@ defmodule E2eWeb.TetrexLive do
           </aside>
         </div>
       </article>
+        </div>
+      </div>
     </Layouts.blog>
     """
   end

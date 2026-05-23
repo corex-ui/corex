@@ -42,7 +42,7 @@ defmodule E2eWeb.App.MainNav do
         class={@link_class}
         aria-current={nav_showcases_aria_current(@path)}
       >
-        {~t"Showcases"}
+        {~t"Showcase"}
       </.navigate>
       <.navigate
         to={~p"/blog"}

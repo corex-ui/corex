@@ -22,6 +22,14 @@ defmodule E2eWeb.ShowcaseCatalog do
         tags: ["Locales", "RTL"]
       },
       %{
+        id: "landex",
+        title: "Landex",
+        description:
+          "A landing page built with Corex, Tableau, and Motion. Contact form using a Cloudflare Worker and the Resend API.",
+        site_to: "https://oranje-patrimoine.fr/",
+        tags: ["Landing", "Tableau", "Motion"]
+      },
+      %{
         id: "tetrex",
         title: "Tetrex",
         description:

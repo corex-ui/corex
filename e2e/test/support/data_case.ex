@@ -37,8 +37,11 @@ defmodule E2e.DataCase do
   """
   def setup_sandbox(tags) do
     pid = Ecto.Adapters.SQL.Sandbox.start_owner!(E2e.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
-    on_exit(fn -> cleanup_tetrex_sessions() end)
+
+    on_exit(fn ->
+      cleanup_tetrex_sessions()
+      Ecto.Adapters.SQL.Sandbox.stop_owner(pid)
+    end)
   end
 
   def cleanup_tetrex_sessions do

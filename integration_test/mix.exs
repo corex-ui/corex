@@ -80,6 +80,8 @@ defmodule Corex.Integration.MixProject do
     [
       lint: [
         "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
         "credo --strict",
         "sobelow --exit"
       ]

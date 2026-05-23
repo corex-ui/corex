@@ -350,7 +350,7 @@ defmodule E2e.Tetrex.Session do
       :exit, _ -> :skipped
     end
   rescue
-    e in DBConnection.OwnershipError -> :skipped
-    e in DBConnection.ConnectionError -> :skipped
+    _ in DBConnection.OwnershipError -> :skipped
+    _ in DBConnection.ConnectionError -> :skipped
   end
 end

@@ -31,7 +31,7 @@ defmodule E2eWeb.ErrorHTMLTest do
 
   test "serves showcases page under locale prefix", %{conn: conn} do
     conn = get(conn, "/en/showcases")
-    assert html_response(conn, 200) =~ "Showcases"
+    assert html_response(conn, 200) =~ "Showcase"
   end
 
   test "renders 500.html" do

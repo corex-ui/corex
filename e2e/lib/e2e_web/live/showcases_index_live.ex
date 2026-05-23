@@ -13,7 +13,7 @@ defmodule E2eWeb.ShowcasesIndexLive do
 
     {:ok,
      socket
-     |> assign(:page_title, ~t"Showcases")
+     |> assign(:page_title, ~t"Showcase")
      |> assign(:seo, E2eWeb.SEO.showcases())
      |> assign(:showcases, showcases)}
   end
@@ -27,7 +27,7 @@ defmodule E2eWeb.ShowcasesIndexLive do
           <.listing_index_hero
             eyebrow={~t"Examples"}
             title={~t"Corex "}
-            accent={~t"showcases"}
+            accent={~t"showcase"}
             lede={~t"Production-ready starters and interactive demos built with Corex components."}
             meta={
               ngettext("1 showcase", "%{count} showcases", length(@showcases),
@@ -38,7 +38,7 @@ defmodule E2eWeb.ShowcasesIndexLive do
           />
         </div>
 
-        <section class="blog__listing" aria-label={~t"Showcases"}>
+        <section class="blog__listing" aria-label={~t"Showcase"}>
           <div class="blog__inner">
             <div class="blog__grid">
               <.listing_card
@@ -49,6 +49,8 @@ defmodule E2eWeb.ShowcasesIndexLive do
                 github_to={Map.get(showcase, :github_to)}
                 play_to={Map.get(showcase, :play_to)}
                 play_label={Map.get(showcase, :play_label)}
+                site_to={Map.get(showcase, :site_to)}
+                site_label={Map.get(showcase, :site_label)}
                 tags={showcase.tags}
               />
             </div>
