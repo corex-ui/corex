@@ -42,6 +42,8 @@ defmodule E2eWeb do
 
       use GettextSigils, backend: E2eWeb.Gettext
 
+      plug(E2eWeb.Plugs.DemoAuth)
+
       import Plug.Conn
 
       unquote(verified_routes())

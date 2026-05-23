@@ -52,6 +52,16 @@ defmodule E2eWeb.ConnCase do
       def unwrap_live_redirect!(other) do
         flunk("expected follow_redirect/2 to succeed, got: #{inspect(other)}")
       end
+
+      def session_ok!(:ok), do: :ok
+
+      def session_ok!({:error, reason}) do
+        flunk("expected session ok, got error: #{inspect(reason)}")
+      end
+
+      def session_ok!(other) do
+        flunk("expected session :ok, got: #{inspect(other)}")
+      end
     end
   end
 

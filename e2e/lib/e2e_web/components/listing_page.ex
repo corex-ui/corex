@@ -28,7 +28,6 @@ defmodule E2eWeb.ListingPage do
 
   attr(:title, :string, required: true)
   attr(:description, :string, default: nil)
-  attr(:detail_to, :string, default: nil)
   attr(:demo_to, :string, default: nil)
   attr(:github_to, :string, default: nil)
   attr(:play_to, :string, default: nil)
@@ -46,15 +45,7 @@ defmodule E2eWeb.ListingPage do
 
     ~H"""
     <article class="blog__card">
-      <h2 class="blog__card__title">
-        <%= if @template_card? and @detail_to do %>
-          <.navigate to={@detail_to} class="blog__card__link">
-            {@title}
-          </.navigate>
-        <% else %>
-          {@title}
-        <% end %>
-      </h2>
+      <h2 class="blog__card__title">{@title}</h2>
       <p :if={@description} class="blog__card__excerpt">{@description}</p>
       <ul :if={@tags != []} class="m-0 flex list-none flex-wrap gap-space-sm p-0 blog__card__tags">
         <li :for={tag <- @tags}>

@@ -236,7 +236,8 @@
           # Telemetry & Observability
           {OeditusCredo.Check.Warning.MissingTelemetryInObanWorker, []},
           {OeditusCredo.Check.Warning.TelemetryInRecursiveFunction, []},
-          {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug, []},
+          {OeditusCredo.Check.Warning.MissingTelemetryInAuthPlug,
+           [files: %{excluded: ["lib/e2e_web/plugs/demo_auth.ex"]}]},
           {OeditusCredo.Check.Warning.MissingTelemetryForExternalHttp, []},
           # Security - Injection
           {OeditusCredo.Check.Security.SQLInjection, []},

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Security fixes are provided for the latest release on the `main` branch and the most recent tagged release on Hex and npm.
+Security fixes are provided for the latest release on the `main` branch and the most recent tagged release on Hex.
 
 ## Reporting a Vulnerability
 

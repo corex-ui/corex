@@ -60,7 +60,7 @@ defmodule E2eWeb.App.MainNav do
   defp nav_aria_label(:drawer), do: ~t"Menu navigation"
 
   defp nav_showcases_aria_current(path) when is_binary(path) do
-    if String.starts_with?(path, "/showcases"), do: "page", else: nil
+    if normalize_path(path) == "/showcases", do: "page", else: nil
   end
 
   defp nav_showcases_aria_current(_), do: nil

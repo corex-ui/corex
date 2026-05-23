@@ -91,7 +91,7 @@ defmodule E2eWeb.TetrexIndexLive do
                   {~t"Play on the board, watch live games, or replay top scores from the leaderboard."}
                 </p>
               </div>
-              <.navigate to={~p"/showcases/tetrex/new"} class="button shrink-0">
+              <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent shrink-0">
                 {~t"New game"}
               </.navigate>
             </div>

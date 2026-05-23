@@ -7,10 +7,6 @@ defmodule E2eWeb.SitemapController do
     %{loc: "/ar/blog", priority: 0.8, changefreq: "weekly"},
     %{loc: "/en/showcases", priority: 0.7, changefreq: "monthly"},
     %{loc: "/ar/showcases", priority: 0.7, changefreq: "monthly"},
-    %{loc: "/en/showcases/soonex", priority: 0.7, changefreq: "monthly"},
-    %{loc: "/ar/showcases/soonex", priority: 0.7, changefreq: "monthly"},
-    %{loc: "/en/showcases/soonex-i18n", priority: 0.7, changefreq: "monthly"},
-    %{loc: "/ar/showcases/soonex-i18n", priority: 0.7, changefreq: "monthly"},
     %{loc: "/en/showcases/tetrex", priority: 0.6, changefreq: "weekly"},
     %{loc: "/ar/showcases/tetrex", priority: 0.6, changefreq: "weekly"}
   ]
@@ -22,7 +18,7 @@ defmodule E2eWeb.SitemapController do
     body =
       [
         ~S(<?xml version="1.0" encoding="UTF-8"?>),
-        ~S(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">),
+        E2eWeb.Sitemap.urlset_open_tag(),
         Enum.map(urls, &url_entry(base, &1)),
         ~S(</urlset>)
       ]

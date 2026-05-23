@@ -10,6 +10,7 @@ import Config
 config :corex_web,
   ecto_repos: [E2e.Repo],
   generators: [timestamp_type: :utc_datetime],
+  sitemap_urlset_xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
   mdex: [
     extension: [
       table: true,

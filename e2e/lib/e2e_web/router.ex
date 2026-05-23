@@ -24,10 +24,6 @@ defmodule E2eWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :api do
-    plug(:accepts, ["json"])
-  end
-
   scope "/", E2eWeb do
     pipe_through(:browser)
 
@@ -61,8 +57,6 @@ defmodule E2eWeb.Router do
       live("/blog/:slug", BlogPostLive, :show)
 
       live("/showcases", ShowcasesIndexLive, :index)
-      live("/showcases/soonex", ShowcaseTemplateLive, :soonex)
-      live("/showcases/soonex-i18n", ShowcaseTemplateLive, :soonex_i18n)
       live("/showcases/tetrex", TetrexIndexLive, :index)
       live("/showcases/tetrex/new", TetrexLive, :new)
       live("/showcases/tetrex/:id/replay", TetrexLive, :replay)
@@ -258,6 +252,8 @@ defmodule E2eWeb.Router do
     get("/templates", ShowcaseRedirectController, :to_showcases)
     get("/games", ShowcaseRedirectController, :to_showcases)
     get("/games/tetrex/*rest", ShowcaseRedirectController, :games_tetrex)
+    get("/showcases/soonex", ShowcaseRedirectController, :to_showcases)
+    get("/showcases/soonex-i18n", ShowcaseRedirectController, :to_showcases)
 
     get("/accordion/anatomy", PageController, :accordion_page)
     get("/accordion/style", PageController, :accordion_styling_page)

@@ -67,10 +67,17 @@ defmodule E2eWeb.UserController do
 
   def delete(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
-    {:ok, _user} = Accounts.delete_user(user)
 
-    conn
-    |> put_flash(:info, "User deleted successfully.")
-    |> redirect(to: ~p"/users")
+    case Accounts.delete_user(user) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "User deleted successfully.")
+        |> redirect(to: ~p"/users")
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Could not delete user.")
+        |> redirect(to: ~p"/users")
+    end
   end
 end

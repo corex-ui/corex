@@ -87,21 +87,25 @@ defmodule E2eWeb.TetrexLive do
       |> assign_empty_board()
 
     if connected?(socket) do
-      :ok = Session.ensure_started(id)
+      case Session.ensure_started(id) do
+        :ok ->
+          socket =
+            case Session.get_state(id) do
+              {:ok, %{game: game, client: client}} ->
+                socket
+                |> apply_game_assigns(game, :session, started: false, client: client)
+                |> assign(:board_ready, true)
+                |> TetrexOwnership.claim(id)
 
-      socket =
-        case Session.get_state(id) do
-          {:ok, %{game: game, client: client}} ->
-            socket
-            |> apply_game_assigns(game, :session, started: false, client: client)
-            |> assign(:board_ready, true)
-            |> TetrexOwnership.claim(id)
+              {:error, :not_found} ->
+                socket
+            end
 
-          {:error, :not_found} ->
-            socket
-        end
+          {:noreply, push_patch(socket, to: ~p"/showcases/tetrex/#{id}")}
 
-      {:noreply, push_patch(socket, to: ~p"/showcases/tetrex/#{id}")}
+        {:error, _reason} ->
+          {:noreply, put_flash(socket, :error, "Could not start game.")}
+      end
     else
       {:noreply, socket}
     end
@@ -757,7 +761,7 @@ defmodule E2eWeb.TetrexLive do
     >
       <p class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</p>
       <p class="text-ink-muted text-xs m-0">{~t"Clear rows. Beat your score."}</p>
-      <.action phx-click="start_game" class="button">
+      <.action phx-click="start_game" class="button button--accent">
         {~t"Start"}
       </.action>
     </div>
@@ -798,7 +802,7 @@ defmodule E2eWeb.TetrexLive do
       >
         {~t"Watch replay"}
       </.navigate>
-      <.navigate to={~p"/showcases/tetrex/new"} class="button w-full max-w-xs">
+      <.navigate to={~p"/showcases/tetrex/new"} class="button button--accent w-full max-w-xs">
         {~t"New game"}
       </.navigate>
     </div>
@@ -829,13 +833,15 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-replay-end-overlay"
-      class="absolute inset-0 z-20 hidden flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-20 hidden"
       aria-live="polite"
       aria-hidden="true"
     >
-      <.action data-replay-action="watch-again" class="button w-full max-w-xs">
-        {~t"Watch again"}
-      </.action>
+      <div class="flex h-full flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center">
+        <.action data-replay-action="watch-again" class="button w-full max-w-xs">
+          {~t"Watch again"}
+        </.action>
+      </div>
     </div>
     """
   end

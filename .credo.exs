@@ -31,7 +31,7 @@
           "apps/*/test/",
           "apps/*/web/"
         ],
-        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/"]
+        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/", "e2e/"]
       },
       #
       # Load and configure plugins here:
@@ -253,7 +253,15 @@
           {OeditusCredo.Check.Security.UnrestrictedFileUpload, []},
           # Security - Web
           {OeditusCredo.Check.Security.MissingCSRFProtection,
-           [files: %{excluded: ["lib/mcp/router.ex"]}]},
+           [
+             files: %{
+               excluded: [
+                 "lib/mcp/router.ex",
+                 ~r"/e2e_web/router\.ex$",
+                 ~r"/e2e_web/seo\.ex$"
+               ]
+             }
+           ]},
           {OeditusCredo.Check.Security.SSRFVulnerability, []},
           # Security - Race Conditions
           {OeditusCredo.Check.Security.TOCTOU, []}
