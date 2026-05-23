@@ -55,3 +55,10 @@ corex-*.tar
 /.claude/
 
 /e2e/docs/
+
+
+/.expert/
+
+/.cursor/
+
+/.vscode/
