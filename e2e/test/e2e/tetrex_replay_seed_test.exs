@@ -20,6 +20,7 @@ defmodule E2e.TetrexReplaySeedTest do
 
   test "final frame matches client state" do
     %{frames: frames, client: client} = ReplaySeed.build(5_000, 1)
-    assert List.last(frames) == client
+    final_frame = Enum.reduce(frames, fn frame, _ -> frame end)
+    assert final_frame == client
   end
 end
