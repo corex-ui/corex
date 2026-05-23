@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 alias E2e.Place.Helper
 alias E2e.Place
-alias E2e.Tetrex
+alias E2e.Tetrex.ReplaySeed
 alias E2e.Tetrex.Store
 
 IO.puts("Seeding cities and airports…")
@@ -24,12 +24,24 @@ airports = Enum.count(Place.list_airports())
 
 IO.puts("Seeding Tetrex leaderboard…")
 
-for {score, index} <- Enum.with_index([50, 45, 40, 35, 30, 25, 20, 15, 12, 10], 1) do
-  id = "seed-top-#{index}"
-  game = %{Tetrex.new() | score: score, status: :game_over}
-  client = Tetrex.to_client(game)
+tetrex_seed_scores = [
+  50_000,
+  45_000,
+  40_000,
+  35_000,
+  30_000,
+  25_000,
+  20_000,
+  15_000,
+  10_000,
+  5_000
+]
 
-  Store.finalize(id, score, [client], client)
+for {target_score, index} <- Enum.with_index(tetrex_seed_scores, 1) do
+  id = "seed-top-#{index}"
+  %{frames: frames, client: client, score: score} = ReplaySeed.build(target_score, index)
+
+  Store.finalize(id, score, frames, client)
 end
 
 tetrex_count = length(Store.list_top(10))

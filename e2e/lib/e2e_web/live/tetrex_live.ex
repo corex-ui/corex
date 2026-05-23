@@ -594,131 +594,131 @@ defmodule E2eWeb.TetrexLive do
             dir="ltr"
             class="w-full max-w-5xl mx-auto flex flex-col gap-space-sm outline-none min-h-0 focus:outline-none focus:ring-0"
           >
-        <header class="flex items-center justify-between gap-space-sm shrink-0">
-          <div class="flex items-center gap-space-sm min-w-0">
-            <h1 class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</h1>
-            <span :if={@live_action == :watch && @source == :session} class="badge badge--alert">
-              {~t"LIVE"}
-            </span>
-            <span
-              :if={@source == :session && is_binary(@game_id)}
-              class="badge badge--ghost"
-              aria-live="polite"
-            >
-              {watchers_label(@watchers_count)}
-            </span>
-            <span :if={@live_action == :replay} class="badge badge--ghost">{~t"Replay"}</span>
-          </div>
-          <.navigate to={~p"/showcases/tetrex"} class="link link--accent text-sm shrink-0">
-            {~t"Home"}
-          </.navigate>
-        </header>
+            <header class="flex items-center justify-between gap-space-sm shrink-0">
+              <div class="flex items-center gap-space-sm min-w-0">
+                <h1 class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</h1>
+                <span :if={@live_action == :watch && @source == :session} class="badge badge--alert">
+                  {~t"LIVE"}
+                </span>
+                <span
+                  :if={@source == :session && is_binary(@game_id)}
+                  class="badge badge--ghost"
+                  aria-live="polite"
+                >
+                  {watchers_label(@watchers_count)}
+                </span>
+                <span :if={@live_action == :replay} class="badge badge--ghost">{~t"Replay"}</span>
+              </div>
+              <.navigate to={~p"/showcases/tetrex"} class="link link--accent text-sm shrink-0">
+                {~t"Home"}
+              </.navigate>
+            </header>
 
-        <div
-          id="tetrex-cabinet"
-          class="flex flex-col sm:flex-row gap-space items-stretch min-h-0"
-        >
-          <div class="flex-1 min-w-0 flex justify-center items-start w-full">
             <div
-              id="tetrex-board-stage"
-              phx-hook="GameBoard"
-              data-mode={board_mode(assigns)}
-              data-board-ready={to_string(@board_ready)}
-              data-tick-ms={@tick_ms}
-              data-client={@client_json}
-              class="relative shrink-0 max-w-full"
-              style={"height: #{@board_h}; width: #{@board_w};"}
+              id="tetrex-cabinet"
+              class="flex flex-col sm:flex-row gap-space items-stretch min-h-0"
             >
-              <div
-                :if={show_board?(assigns)}
-                id="tetrex-board"
-                class="pointer-events-none absolute inset-0 border-2 border-border rounded-md p-0 bg-root overflow-hidden grid gap-0"
-                style={
-                  "grid-template-columns: repeat(#{@cols}, minmax(0, 1fr)); grid-template-rows: repeat(#{@rows}, minmax(0, 1fr));"
-                }
-                role="grid"
-                aria-label={~t"Game board"}
-              >
-                <.cell_checkbox
-                  :for={{col, row} <- @cell_coords}
-                  col={col}
-                  row={row}
-                  board_cells={@board_cells}
-                />
-              </div>
-
-              <.board_overlay
-                :if={@overlay}
-                overlay={@overlay}
-                score={@score}
-                game_id={@game_id}
-                live_action={@live_action}
-                source={@source}
-                leaderboard_saved={@leaderboard_saved}
-                show_replay_link={show_replay_link?(assigns)}
-                can_edit_name={@can_edit_name}
-                player_name={@player_name}
-              />
-
-              <.replay_end_overlay :if={@live_action == :replay && @source == :store} />
-            </div>
-          </div>
-
-          <aside class="flex flex-col gap-space-sm w-full sm:min-w-56 sm:w-56 shrink-0 justify-between min-h-0">
-            <div class="flex flex-col gap-space-sm w-full min-w-0">
-              <div class="grid grid-cols-2 gap-space-sm">
-                <div>
-                  <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Score"}</p>
-                  <p
-                    id="tetrex-score"
-                    class="font-display text-xl tabular-nums text-ink-accent m-0 leading-tight"
-                  >
-                    {String.pad_leading(Integer.to_string(@score), 6, "0")}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Level"}</p>
-                  <p
-                    id="tetrex-level"
-                    class="font-display text-xl tabular-nums text-ink m-0 leading-tight"
-                  >
-                    {@level}
-                  </p>
-                </div>
-                <div class="col-span-2">
-                  <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Lines"}</p>
-                  <p
-                    id="tetrex-lines"
-                    class="font-display text-lg tabular-nums text-ink m-0 leading-tight"
-                  >
-                    {@lines}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Next"}</p>
+              <div class="flex-1 min-w-0 flex justify-center items-start w-full">
                 <div
-                  id="tetrex-next"
-                  class="border border-border rounded-md bg-root p-1 w-16 mt-1"
-                  aria-label={~t"Next piece"}
+                  id="tetrex-board-stage"
+                  phx-hook="GameBoard"
+                  data-mode={board_mode(assigns)}
+                  data-board-ready={to_string(@board_ready)}
+                  data-tick-ms={@tick_ms}
+                  data-client={@client_json}
+                  class="relative shrink-0 max-w-full"
+                  style={"height: #{@board_h}; width: #{@board_w};"}
                 >
                   <div
-                    class="grid gap-px w-full"
-                    style="grid-template-columns: repeat(4, minmax(0, 1fr));"
+                    :if={show_board?(assigns)}
+                    id="tetrex-board"
+                    class="pointer-events-none absolute inset-0 border-2 border-border rounded-md p-0 bg-root overflow-hidden grid gap-0"
+                    style={
+                  "grid-template-columns: repeat(#{@cols}, minmax(0, 1fr)); grid-template-rows: repeat(#{@rows}, minmax(0, 1fr));"
+                }
+                    role="grid"
+                    aria-label={~t"Game board"}
                   >
-                    <.preview_tile :for={cell <- @preview_cells} cell={cell} />
+                    <.cell_checkbox
+                      :for={{col, row} <- @cell_coords}
+                      col={col}
+                      row={row}
+                      board_cells={@board_cells}
+                    />
                   </div>
+
+                  <.board_overlay
+                    :if={@overlay}
+                    overlay={@overlay}
+                    score={@score}
+                    game_id={@game_id}
+                    live_action={@live_action}
+                    source={@source}
+                    leaderboard_saved={@leaderboard_saved}
+                    show_replay_link={show_replay_link?(assigns)}
+                    can_edit_name={@can_edit_name}
+                    player_name={@player_name}
+                  />
+
+                  <.replay_end_overlay :if={@live_action == :replay && @source == :store} />
                 </div>
               </div>
+
+              <aside class="flex flex-col gap-space-sm w-full sm:min-w-56 sm:w-56 shrink-0 justify-between min-h-0">
+                <div class="flex flex-col gap-space-sm w-full min-w-0">
+                  <div class="grid grid-cols-2 gap-space-sm">
+                    <div>
+                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Score"}</p>
+                      <p
+                        id="tetrex-score"
+                        class="font-display text-xl tabular-nums text-ink-accent m-0 leading-tight"
+                      >
+                        {String.pad_leading(Integer.to_string(@score), 6, "0")}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Level"}</p>
+                      <p
+                        id="tetrex-level"
+                        class="font-display text-xl tabular-nums text-ink m-0 leading-tight"
+                      >
+                        {@level}
+                      </p>
+                    </div>
+                    <div class="col-span-2">
+                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Lines"}</p>
+                      <p
+                        id="tetrex-lines"
+                        class="font-display text-lg tabular-nums text-ink m-0 leading-tight"
+                      >
+                        {@lines}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Next"}</p>
+                    <div
+                      id="tetrex-next"
+                      class="border border-border rounded-md bg-root p-1 w-16 mt-1"
+                      aria-label={~t"Next piece"}
+                    >
+                      <div
+                        class="grid gap-px w-full"
+                        style="grid-template-columns: repeat(4, minmax(0, 1fr));"
+                      >
+                        <.preview_tile :for={cell <- @preview_cells} cell={cell} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <.keyboard_controls :if={@show_keyboard} />
+
+                <.replay_controls :if={@live_action == :replay && @source == :store} />
+              </aside>
             </div>
-
-            <.keyboard_controls :if={@show_keyboard} />
-
-            <.replay_controls :if={@live_action == :replay && @source == :store} />
-          </aside>
-        </div>
-      </article>
+          </article>
         </div>
       </div>
     </Layouts.blog>
@@ -867,7 +867,7 @@ defmodule E2eWeb.TetrexLive do
       data-preview={"#{@cell.col}-#{@cell.row}"}
       class={[
         @tile_class,
-        @cell.filled && @cell.theme && "checkbox--#{@cell.theme}"
+        @cell.filled && @cell.theme && "checkbox--#{Tetrex.theme_name(@cell.theme)}"
       ]}
     >
       <div
@@ -959,13 +959,12 @@ defmodule E2eWeb.TetrexLive do
 
   defp cell_checkbox(assigns) do
     cell = Map.get(assigns.board_cells, {assigns.col, assigns.row}, %{checked: false, theme: nil})
-    theme = cell.theme && to_string(cell.theme)
 
     assigns =
       assigns
       |> assign(:cell_id, Tetrex.cell_id(assigns.col, assigns.row))
       |> assign(:checked, cell.checked)
-      |> assign(:cell_class, cell_checkbox_class(cell.checked, theme))
+      |> assign(:cell_class, cell_checkbox_class(cell.checked, cell.theme))
 
     ~H"""
     <.checkbox
@@ -980,5 +979,8 @@ defmodule E2eWeb.TetrexLive do
 
   defp cell_checkbox_class(false, _), do: @tile_base
   defp cell_checkbox_class(true, nil), do: @tile_base
-  defp cell_checkbox_class(true, theme), do: @tile_base <> " checkbox--#{theme}"
+
+  defp cell_checkbox_class(true, theme) when not is_nil(theme) do
+    @tile_base <> " checkbox--#{Tetrex.theme_name(theme)}"
+  end
 end

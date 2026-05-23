@@ -127,7 +127,7 @@ defmodule E2e.Tetrex do
         col <- 0..(@cols - 1) do
       cell = at(merged, col, row)
       checked = cell != nil
-      theme = if cell, do: Atom.to_string(cell.theme), else: nil
+      theme = if cell, do: theme_name(cell.theme), else: nil
       id = cell_id(col, row)
 
       %{
@@ -183,6 +183,18 @@ defmodule E2e.Tetrex do
   def theme_for_type("o"), do: :brand
   def theme_for_type("t"), do: :alert
   def theme_for_type("l"), do: :success
+
+  def theme_name(nil), do: nil
+
+  def theme_name(theme) when is_atom(theme) do
+    theme |> Atom.to_string() |> strip_ink_prefix()
+  end
+
+  def theme_name(theme) when is_binary(theme), do: strip_ink_prefix(theme)
+
+  defp strip_ink_prefix("ink_" <> name), do: String.replace(name, "_", "-")
+  defp strip_ink_prefix("ink-" <> name), do: name
+  defp strip_ink_prefix(name), do: String.replace(name, "_", "-")
 
   @preview_cols 4
   @preview_rows 4
@@ -276,8 +288,16 @@ defmodule E2e.Tetrex do
     end)
   end
 
-  defp decode_theme(theme) when is_atom(theme), do: theme
+  defp decode_theme(theme) when is_atom(theme), do: decode_theme(Atom.to_string(theme))
 
+  defp decode_theme("ink-accent"), do: :accent
+  defp decode_theme("ink_accent"), do: :accent
+  defp decode_theme("ink-brand"), do: :brand
+  defp decode_theme("ink_brand"), do: :brand
+  defp decode_theme("ink-alert"), do: :alert
+  defp decode_theme("ink_alert"), do: :alert
+  defp decode_theme("ink-success"), do: :success
+  defp decode_theme("ink_success"), do: :success
   defp decode_theme("accent"), do: :accent
   defp decode_theme("brand"), do: :brand
   defp decode_theme("alert"), do: :alert
