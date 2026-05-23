@@ -7,8 +7,12 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "moduleResolution": "Node",
-    "ignoreDeprecations": "6.0",
+    "moduleResolution": "bundler",
+    "paths": {
+      "phoenix_live_view/assets/js/types/view_hook": [
+        "./node_modules/phoenix_live_view/assets/js/types/view_hook.d.ts"
+      ]
+    },
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
