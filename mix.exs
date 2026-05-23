@@ -131,7 +131,10 @@ defmodule Corex.MixProject do
   end
 
   defp package do
-    files = ~w(lib priv mix.exs package.json README.md CHANGELOG.md .formatter.exs)
+    files = ~w(
+      lib priv mix.exs package.json README.md CHANGELOG.md .formatter.exs
+      usage-rules.md usage-rules
+    )
 
     [
       maintainers: ["Karim Semmoud"],
@@ -159,6 +162,7 @@ defmodule Corex.MixProject do
         "guides/theming.md",
         "guides/localize.md",
         "guides/MCP.md",
+        "guides/usage_rules.md",
         "guides/production.md",
         "guides/configuration.md",
         "guides/update.md"
@@ -181,6 +185,7 @@ defmodule Corex.MixProject do
         {:Guides,
          [
            "guides/MCP.md",
+           "guides/usage_rules.md",
            "guides/dark_mode.md",
            "guides/theming.md",
            "guides/localize.md",
