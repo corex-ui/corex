@@ -1,7 +1,7 @@
 defmodule E2eWeb.AccordionPlayLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, playground_dir_toggle: 1]
 
   alias Corex.Accordion
 
@@ -213,120 +213,122 @@ defmodule E2eWeb.AccordionPlayLive do
       mode={@mode}
       theme={@theme}
     >
-      <.demo_playground
+      <.demo_page
         path={@path}
+        id="accordion-play-page"
         title="Accordion · Playground"
-        heading_class="layout-heading"
       >
-        <:controls>
-          <.playground_dir_toggle
-            id="dir"
-            on_value_change="control_changed"
-            value={[@controls.dir]}
-          />
+        <.demo_playground id="accordion-playground">
+          <:controls>
+            <.playground_dir_toggle
+              id="dir"
+              on_value_change="control_changed"
+              value={[@controls.dir]}
+            />
 
-          <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
-            id="orientation"
-            on_value_change="control_changed"
-            multiple={false}
-            deselectable={false}
-            value={[@controls.orientation]}
-          >
-            <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
-            </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
-            </:item>
-          </.toggle_group>
+            <.toggle_group
+              class="toggle-group toggle-group--sm max-w-7xs"
+              id="orientation"
+              on_value_change="control_changed"
+              multiple={false}
+              deselectable={false}
+              value={[@controls.orientation]}
+            >
+              <:item value="vertical" aria_label="Vertical orientation">
+                <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              </:item>
+              <:item value="horizontal" aria_label="Horizontal orientation">
+                <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              </:item>
+            </.toggle_group>
 
-          <.select
-            id="playground-disabled-items"
-            class="select select--accent w-4xs"
-            multiple
-            deselectable={true}
-            close_on_select={false}
-            value={@controls.disabled_items}
-            items={@disabled_select_items}
-            on_value_change="disabled_items_changed"
-            translation={%Corex.Select.Translation{placeholder: "Select items"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Disabled items</:label>
-          </.select>
+            <.select
+              id="playground-disabled-items"
+              class="select select--accent w-4xs"
+              multiple
+              deselectable={true}
+              close_on_select={false}
+              value={@controls.disabled_items}
+              items={@disabled_select_items}
+              on_value_change="disabled_items_changed"
+              translation={%Corex.Select.Translation{placeholder: "Select items"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Disabled items</:label>
+            </.select>
 
-          <.switch
-            class="switch"
-            id={"playground-collapsible-#{@controls.multiple}"}
-            checked={@controls.collapsible}
-            on_checked_change="control_changed"
-          >
-            <:label>Collapsible</:label>
-          </.switch>
+            <.switch
+              class="switch"
+              id={"playground-collapsible-#{@controls.multiple}"}
+              checked={@controls.collapsible}
+              on_checked_change="control_changed"
+            >
+              <:label>Collapsible</:label>
+            </.switch>
 
-          <.switch
-            class="switch"
-            id="multiple"
-            checked={@controls.multiple}
-            on_checked_change="control_changed"
-          >
-            <:label>Multiple</:label>
-          </.switch>
+            <.switch
+              class="switch"
+              id="multiple"
+              checked={@controls.multiple}
+              on_checked_change="control_changed"
+            >
+              <:label>Multiple</:label>
+            </.switch>
 
-          <.select
-            id="accordion-color"
-            class="select select--accent  w-4xs"
-            value={[@controls.color]}
-            deselectable={false}
-            items={@accordion_color_items}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "Color"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Color</:label>
-          </.select>
+            <.select
+              id="accordion-color"
+              class="select select--accent  w-4xs"
+              value={[@controls.color]}
+              deselectable={false}
+              items={@accordion_color_items}
+              on_value_change="control_changed"
+              translation={%Corex.Select.Translation{placeholder: "Color"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Color</:label>
+            </.select>
 
-          <.select
-            id="accordion-size"
-            class="select select--accent w-4xs"
-            value={[@controls.size]}
-            deselectable={false}
-            items={@accordion_size_items}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "Size"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Size</:label>
-          </.select>
-        </:controls>
-        <:canvas>
-          <.accordion
-            id="my-accordion"
-            class={[
-              "accordion",
-              @controls.color != "default" && "accordion--#{@controls.color}",
-              "accordion--#{@controls.size}"
-            ]}
-            value={~W(lorem duis donec)}
-            items={@items}
-            collapsible={@controls.multiple or @controls.collapsible}
-            multiple={@controls.multiple}
-            orientation={@controls.orientation}
-            dir={@controls.dir}
-          >
-            <:content :let={item}>
-              <p class="break-words">{item.content}</p>
-            </:content>
-            <:indicator>
-              <.heroicon name="hero-chevron-right" />
-            </:indicator>
-          </.accordion>
-        </:canvas>
-      </.demo_playground>
+            <.select
+              id="accordion-size"
+              class="select select--accent w-4xs"
+              value={[@controls.size]}
+              deselectable={false}
+              items={@accordion_size_items}
+              on_value_change="control_changed"
+              translation={%Corex.Select.Translation{placeholder: "Size"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Size</:label>
+            </.select>
+          </:controls>
+          <:canvas>
+            <.accordion
+              id="my-accordion"
+              class={[
+                "accordion",
+                @controls.color != "default" && "accordion--#{@controls.color}",
+                "accordion--#{@controls.size}"
+              ]}
+              value={~W(lorem duis donec)}
+              items={@items}
+              collapsible={@controls.multiple or @controls.collapsible}
+              multiple={@controls.multiple}
+              orientation={@controls.orientation}
+              dir={@controls.dir}
+            >
+              <:content :let={item}>
+                <p class="break-words">{item.content}</p>
+              </:content>
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.accordion>
+          </:canvas>
+        </.demo_playground>
+      </.demo_page>
     </Layouts.app>
     """
   end

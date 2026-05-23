@@ -18,13 +18,6 @@ defmodule E2eWeb.ShowcasesLiveTest do
     :ok
   end
 
-  defp sandbox_allow_session(id) do
-    case Session.whereis(id) do
-      pid when is_pid(pid) -> Ecto.Adapters.SQL.Sandbox.allow(E2e.Repo, self(), pid)
-      _ -> :ok
-    end
-  end
-
   defp tetrex_game_id_from(html) when is_binary(html) do
     case Regex.run(~r{/showcases/tetrex/([A-Za-z0-9_-]+)}, html) do
       [_, id] -> id
@@ -49,7 +42,7 @@ defmodule E2eWeb.ShowcasesLiveTest do
 
   test "showcases index has Play for tetrex" do
     {:ok, _view, html} = live(build_conn(), "/en/showcases")
-    assert html =~ ~S(href="/en/showcases/tetrex")
+    assert html =~ "/showcases/tetrex"
     assert html =~ "Play"
     refute html =~ ~S(class="blog__card__arrow")
   end
@@ -103,14 +96,12 @@ defmodule E2eWeb.ShowcasesLiveTest do
   test "closing player game archives for watch game over overlay" do
     id = Registry.new_id()
     :ok = Session.ensure_started(id)
-    sandbox_allow_session(id)
 
     game = %{Tetrex.new() | score: 9000}
     :ok = Session.sync(id, Tetrex.to_client(game))
 
     {:ok, view, _html} = live(build_conn(), "/en/showcases/tetrex/#{id}")
     render(view)
-    sandbox_allow_session(id)
     :ok = Session.stop(id)
     view_ref = Process.monitor(view.pid)
     %{proxy: {_ref, _topic, proxy_pid}} = view

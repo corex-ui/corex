@@ -423,6 +423,10 @@ defmodule E2eWeb.TetrexLive do
       else
         OwnershipStore.set_pending_name(game_id, name)
 
+        if socket.assigns.leaderboard_saved do
+          Store.update_player_name(game_id, name)
+        end
+
         {:noreply, assign(socket, :player_name, name)}
       end
     else

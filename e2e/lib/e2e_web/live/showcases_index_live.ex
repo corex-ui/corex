@@ -7,7 +7,9 @@ defmodule E2eWeb.ShowcasesIndexLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    showcases = ShowcaseCatalog.index_entries()
+    showcases =
+      ShowcaseCatalog.index_entries()
+      |> Enum.map(&localize_showcase/1)
 
     {:ok,
      socket
@@ -46,7 +48,8 @@ defmodule E2eWeb.ShowcasesIndexLive do
                 detail_to={showcase_detail_to(showcase)}
                 demo_to={Map.get(showcase, :demo_to)}
                 github_to={Map.get(showcase, :github_to)}
-                play_to={showcase_play_to(showcase)}
+                play_to={Map.get(showcase, :play_to)}
+                play_label={Map.get(showcase, :play_label)}
                 tags={showcase.tags}
               />
             </div>
@@ -61,6 +64,8 @@ defmodule E2eWeb.ShowcasesIndexLive do
   defp showcase_detail_to(%{id: "soonex-i18n"}), do: ~p"/showcases/soonex-i18n"
   defp showcase_detail_to(_), do: nil
 
-  defp showcase_play_to(%{id: "tetrex"}), do: ~p"/showcases/tetrex"
-  defp showcase_play_to(_), do: nil
+  defp localize_showcase(%{play_to: "/showcases/tetrex"} = entry),
+    do: Map.put(entry, :play_to, ~p"/showcases/tetrex")
+
+  defp localize_showcase(entry), do: entry
 end

@@ -4,6 +4,11 @@ defmodule E2eWeb.ComponentSourceLinks do
   @github_base "https://github.com/corex-ui/corex/blob/main"
   @hex_base "https://hexdocs.pm/corex"
 
+  @icon_hex "/images/tech/hex.svg"
+  @icon_typescript "/images/tech/typescript.svg"
+  @icon_phoenix "/images/tech/phoenix.svg"
+  @icon_tailwind "/images/tech/tailwind.svg"
+
   @skip_segments ~W(showcases blog admins)
 
   @slug_to_registry %{
@@ -75,20 +80,20 @@ defmodule E2eWeb.ComponentSourceLinks do
   defp build_links(registry_id, slug) do
     links = []
 
-    links = links ++ [%{label: "Hex doc", to: hex_url(registry_id)}]
+    links = links ++ [%{label: "Hex doc", to: hex_url(registry_id), icon: @icon_hex}]
 
     links =
       case typescript_url(registry_id, slug) do
         nil -> links
-        url -> links ++ [%{label: "TypeScript", to: url}]
+        url -> links ++ [%{label: "TypeScript", to: url, icon: @icon_typescript}]
       end
 
-    links = links ++ [%{label: "Phoenix", to: phoenix_url(registry_id)}]
+    links = links ++ [%{label: "Phoenix", to: phoenix_url(registry_id), icon: @icon_phoenix}]
 
     links =
       case design_url(slug) do
         nil -> links
-        url -> links ++ [%{label: "Design", to: url}]
+        url -> links ++ [%{label: "Design", to: url, icon: @icon_tailwind}]
       end
 
     if links == [], do: nil, else: links

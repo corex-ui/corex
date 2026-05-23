@@ -32,6 +32,7 @@ defmodule E2eWeb.ListingPage do
   attr(:demo_to, :string, default: nil)
   attr(:github_to, :string, default: nil)
   attr(:play_to, :string, default: nil)
+  attr(:play_label, :string, default: nil)
   attr(:tags, :list, default: [])
 
   def listing_card(assigns) do
@@ -72,7 +73,7 @@ defmodule E2eWeb.ListingPage do
       </div>
       <div :if={@play_card?} class="mt-auto flex flex-wrap gap-space-sm pt-space-sm">
         <.navigate to={@play_to} class="button button--sm button--brand">
-          {~t"Play"}
+          {@play_label || ~t"Play"}
           <.heroicon name="hero-arrow-right" class="icon" />
         </.navigate>
       </div>

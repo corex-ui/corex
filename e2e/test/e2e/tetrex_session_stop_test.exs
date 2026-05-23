@@ -35,7 +35,6 @@ defmodule E2e.Tetrex.SessionStopTest do
   test "stop/1 abandons game to game_over in store when score qualifies" do
     id = "abandon-#{System.unique_integer([:positive])}"
     :ok = Session.ensure_started(id)
-    Ecto.Adapters.SQL.Sandbox.allow(E2e.Repo, self(), Session.whereis(id))
 
     game = %{Tetrex.new() | score: 9000}
     :ok = Session.sync(id, Tetrex.to_client(game))

@@ -96,20 +96,21 @@ defmodule Corex.Translation do
   end
 
   defp gettext_ast({:gettext, _, [text]}), do: gettext_ast(text)
+
   defp gettext_ast(text) when is_binary(text) do
     bindings = placeholder_bindings(text)
 
-    if bindings == [] do
+    if bindings == %{} do
       quote(do: Corex.Gettext.gettext(unquote(text)))
     else
-      quote(do: Corex.Gettext.gettext(unquote(text), unquote(bindings)))
+      quote(do: Corex.Gettext.gettext(unquote(text), unquote(Macro.escape(bindings))))
     end
   end
 
   defp placeholder_bindings(text) when is_binary(text) do
     ~r/%\{([a-zA-Z0-9_]+)\}/
     |> Regex.scan(text)
-    |> Enum.map(fn [_, name] -> {String.to_atom(name), "%{" <> name <> "}"} end)
+    |> Map.new(fn [_, name] -> {name, "%{" <> name <> "}"} end)
   end
 
   def take(nil, default), do: default

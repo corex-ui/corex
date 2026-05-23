@@ -60,9 +60,10 @@ defmodule E2e.Tetrex.Store do
   end
 
   def list_top(limit \\ @top) do
-    Game
-    |> order_by([g], desc: g.score, asc: g.ended_at)
-    |> limit(^limit)
+    from(g in Game,
+      order_by: [desc: g.score, asc: g.ended_at],
+      limit: ^limit
+    )
     |> Repo.all()
   end
 
@@ -70,6 +71,9 @@ defmodule E2e.Tetrex.Store do
     name = sanitize_name(name)
 
     case get(id) do
+      %Game{player_name: ^name} ->
+        :ok
+
       %Game{} = game ->
         game
         |> Ecto.Changeset.change(%{player_name: name})
@@ -105,10 +109,11 @@ defmodule E2e.Tetrex.Store do
 
   defp trim_to_top do
     keep_ids =
-      Game
-      |> order_by([g], desc: g.score, asc: g.ended_at)
-      |> limit(^@top)
-      |> select([g], g.id)
+      from(g in Game,
+        order_by: [desc: g.score, asc: g.ended_at],
+        limit: ^@top,
+        select: g.id
+      )
       |> Repo.all()
 
     from(g in Game, where: g.id not in ^keep_ids)

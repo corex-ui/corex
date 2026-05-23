@@ -29,7 +29,7 @@ defmodule E2eWeb.DemoPage do
 
   ## Playground pages
 
-  - Use **`<.demo_playground path={@path}>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component.
+  - Use **`<.demo_playground>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component. Source links live on **`demo_page`** only, not in the playground block.
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
 
   ## Shell contract (page types)
@@ -38,7 +38,7 @@ defmodule E2eWeb.DemoPage do
   - **Anatomy**  -  `<.demo_page path={@path}>>` + one `<.demo_section>` per variant; stable `id` on each section.
   - **Style**  -  same structure as anatomy; focus on CSS modifier classes and layout.
   - **Form**  -  static submit flow; real field names and assigns.
-  - **Playground**  -  `Layouts.app` + `<.demo_playground path={@path}>>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
+  - **Playground**  -  `Layouts.app` + `<.demo_playground>>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
   - **API**  -  LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
   - **Events**  -  LiveView; `<.demo_event_log>`. For collections, prefer streams and `<.data_table>` like `AccordionEventsLive`.
   - **Patterns**  -  real async only (`<.async_result>`, `<.demo_pattern_async>`). No placeholder skeletons.
@@ -93,6 +93,7 @@ defmodule E2eWeb.DemoPage do
         class="button button--sm button--ghost"
         external
       >
+        <img :if={link.icon} src={link.icon} alt="" class="icon object-contain shrink-0" />
         {link.label}
         <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
       </.navigate>
@@ -101,7 +102,7 @@ defmodule E2eWeb.DemoPage do
   end
 
   attr :id, :string, default: nil
-  attr :title, :string, required: true
+  attr :title, :string, default: nil
   attr :subtitle, :any, default: nil
   attr :path, :string, default: nil
   attr :heading_class, :string, default: "layout-heading"
@@ -114,11 +115,15 @@ defmodule E2eWeb.DemoPage do
   def demo_playground(assigns) do
     ~H"""
     <div id={@id} class="w-full flex flex-col">
-      <.layout_heading class={@heading_class} title_tag={@title_tag} subtitle_tag={@subtitle_tag}>
+      <.layout_heading
+        :if={is_binary(@title)}
+        class={@heading_class}
+        title_tag={@title_tag}
+        subtitle_tag={@subtitle_tag}
+      >
         <:title>{@title}</:title>
         <:subtitle :if={is_binary(@subtitle)}>{@subtitle}</:subtitle>
       </.layout_heading>
-      <.component_source_bar :if={@path} path={@path} />
       <div class="preview">
         <div class="preview__frame">
           <div :if={@controls_strip} class="preview__sidebar preview__sidebar--wrap">

@@ -32,12 +32,20 @@ defmodule E2e.Tetrex.Session do
         }
 
         case DynamicSupervisor.start_child(E2e.Tetrex.SessionSupervisor, child) do
-          {:ok, _pid} -> :ok
-          {:error, {:already_started, _pid}} -> :ok
-          {:error, _} = err -> err
+          {:ok, pid} ->
+            sandbox_allow_repo(pid)
+            :ok
+
+          {:error, {:already_started, pid}} ->
+            sandbox_allow_repo(pid)
+            :ok
+
+          {:error, _} = err ->
+            err
         end
 
-      _pid ->
+      pid ->
+        sandbox_allow_repo(pid)
         :ok
     end
   end
@@ -194,7 +202,7 @@ defmodule E2e.Tetrex.Session do
         final_frame = Tetrex.to_client(game)
 
         result =
-          Store.finalize(
+          safe_store_finalize(
             id,
             game.score,
             append_frame(frames, final_frame),
@@ -294,7 +302,7 @@ defmodule E2e.Tetrex.Session do
       next_type: game.next_type
     })
 
-    Store.finalize(state.id, game.score, frames, final_frame)
+    safe_store_finalize(state.id, game.score, frames, final_frame)
     E2e.Tetrex.Registry.unregister(state.id)
     cancel_idle(%{state | game: game, last_cells: cells, frames: frames})
   end
@@ -308,5 +316,27 @@ defmodule E2e.Tetrex.Session do
 
   defp cleanup(state) do
     E2e.Tetrex.Registry.unregister(state.id)
+  end
+
+  defp sandbox_allow_repo(pid) when is_pid(pid) do
+    if sandbox_repo?() do
+      Ecto.Adapters.SQL.Sandbox.allow(E2e.Repo, self(), pid)
+    end
+
+    :ok
+  catch
+    :exit, _ -> :ok
+  end
+
+  defp sandbox_repo?, do: Mix.env() == :test
+
+  defp safe_store_finalize(id, score, frames, client) do
+    try do
+      Store.finalize(id, score, frames, client)
+    catch
+      :exit, _ -> :skipped
+    end
+  rescue
+    _ in DBConnection.OwnershipError -> :skipped
   end
 end

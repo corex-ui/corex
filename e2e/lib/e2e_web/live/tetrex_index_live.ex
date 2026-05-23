@@ -3,6 +3,7 @@ defmodule E2eWeb.TetrexIndexLive do
 
   import E2eWeb.ListingPage
 
+  alias E2e.Tetrex.Game
   alias E2e.Tetrex.Names
   alias E2e.Tetrex.Registry
   alias E2e.Tetrex.Store
@@ -63,8 +64,10 @@ defmodule E2eWeb.TetrexIndexLive do
       if name == "" do
         {:noreply, socket}
       else
-        Store.update_player_name(game_id, name)
-        {:noreply, socket}
+        case Store.update_player_name(game_id, name) do
+          :ok -> {:noreply, apply_player_name(socket, game_id, name)}
+          :error -> {:noreply, socket}
+        end
       end
     else
       {:noreply, socket}
@@ -208,6 +211,18 @@ defmodule E2eWeb.TetrexIndexLive do
     ~H"""
     <span class="font-medium text-ink">{@row.player_name}</span>
     """
+  end
+
+  defp apply_player_name(socket, game_id, name) do
+    leaderboard =
+      Enum.map(socket.assigns.leaderboard, fn
+        %Game{id: ^game_id} = entry -> %{entry | player_name: name}
+        entry -> entry
+      end)
+
+    socket
+    |> assign(:leaderboard, leaderboard)
+    |> assign(:leaderboard_rows, leaderboard_rows(leaderboard, socket.assigns.owned_game_ids))
   end
 
   defp leaderboard_rows(entries, owned) do

@@ -6,8 +6,12 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const tokensBasePath = path.resolve(__dirname, "./");
-const outputBasePath = path.resolve(tokensBasePath, '..', 'tokens');
+const tokensBasePath = process.env.DESIGNEX_TOKENS_DIR
+  ? path.resolve(process.env.DESIGNEX_TOKENS_DIR)
+  : path.resolve(__dirname, "./");
+const outputBasePath = process.env.DESIGNEX_OUTPUT_DIR
+  ? path.resolve(process.env.DESIGNEX_OUTPUT_DIR)
+  : path.resolve(tokensBasePath, '..', 'tokens');
 const buildPath = outputBasePath + path.sep;
 
 const semanticReferenceTheme = "neo";

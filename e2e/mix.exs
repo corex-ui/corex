@@ -21,7 +21,7 @@ defmodule E2e.MixProject do
   def application do
     [
       mod: {E2e.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ecto, :ecto_sql]
     ]
   end
 

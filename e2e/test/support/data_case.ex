@@ -43,10 +43,20 @@ defmodule E2e.DataCase do
 
   def cleanup_tetrex_sessions do
     for %{id: id} <- E2e.Tetrex.Registry.list_active() do
+      allow_tetrex_session(id)
       E2e.Tetrex.Session.stop(id)
     end
 
     :ok
+  end
+
+  def allow_tetrex_session(game_id) when is_binary(game_id) do
+    case E2e.Tetrex.Session.whereis(game_id) do
+      pid when is_pid(pid) -> Ecto.Adapters.SQL.Sandbox.allow(E2e.Repo, self(), pid)
+      _ -> :ok
+    end
+  catch
+    :exit, _ -> :ok
   end
 
   @doc """

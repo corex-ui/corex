@@ -28,25 +28,46 @@ defmodule E2e.DesignPalette do
           end
       end
 
-    tokens_base = Path.join(design_dir, "tokens")
-    E2e.DesignPalette.Metadata.write!(design_dir, config)
+    write_tokens!(design_dir, config, quiet: quiet)
+    :ok
+  end
 
-    all_names =
-      Enum.reduce(config["themes"], MapSet.new(), fn {theme_id, theme}, acc ->
+  def generate_token_files(config) when is_map(config) do
+    {theme_files, all_names} =
+      Enum.reduce(config["themes"], {%{}, MapSet.new()}, fn {theme_id, theme}, {files, acc} ->
         out_rel = theme["output"]
-        out_abs = Path.join(design_dir, out_rel)
         {sd, names} = build_style_dictionary(config, theme_id, theme)
-        File.mkdir_p!(Path.dirname(out_abs))
-        File.write!(out_abs, Jason.encode!(sd, pretty: true) <> "\n")
-        info_line(quiet, [theme_id, " -> ", out_abs])
-        MapSet.union(acc, MapSet.new(names))
+        {Map.put(files, out_rel, sd), MapSet.union(acc, MapSet.new(names))}
       end)
 
     sem = semantic_aliases(all_names)
-    sem_path = Path.join(tokens_base, "semantic/color.json")
-    File.mkdir_p!(Path.dirname(sem_path))
-    File.write!(sem_path, Jason.encode!(sem, pretty: true) <> "\n")
-    info_line(quiet, ["semantic -> ", sem_path])
+
+    %{
+      theme_files: theme_files,
+      semantic: sem,
+      semantic_path: "tokens/semantic/color.json"
+    }
+  end
+
+  def write_tokens!(design_dir, config, opts \\ []) when is_map(config) do
+    quiet = Keyword.get(opts, :quiet, false)
+
+    %{theme_files: theme_files, semantic: sem, semantic_path: sem_path} =
+      generate_token_files(config)
+
+    E2e.DesignPalette.Metadata.write!(design_dir, config)
+
+    Enum.each(theme_files, fn {out_rel, sd} ->
+      out_abs = Path.join(design_dir, out_rel)
+      File.mkdir_p!(Path.dirname(out_abs))
+      File.write!(out_abs, Jason.encode!(sd, pretty: true) <> "\n")
+      info_line(quiet, [out_rel, " -> ", out_abs])
+    end)
+
+    sem_abs = Path.join(design_dir, sem_path)
+    File.mkdir_p!(Path.dirname(sem_abs))
+    File.write!(sem_abs, Jason.encode!(sem, pretty: true) <> "\n")
+    info_line(quiet, ["semantic -> ", sem_abs])
     :ok
   end
 
