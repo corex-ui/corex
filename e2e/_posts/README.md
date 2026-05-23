@@ -75,10 +75,11 @@ The layout `<head>` includes `<link rel="alternate" type="application/rss+xml" �
 | Order | Slug | Topic |
 |-------|------|--------|
 | 1 | [anatomy-of-a-corex-component](/en/blog/anatomy-of-a-corex-component/) | Items, slots, `:let`, manual slots, compound |
-| 2 | [state-machines](/en/blog/state-machines/) | Assigns, bindings, controlled mode, Zag machines |
-| 3 | [vanilla-js](/en/blog/vanilla-js/) | `LiveSocket` hooks, lifecycle, `push_event` |
-| 4 | [corex-design-a11y](/en/blog/corex-design-a11y/) | Tokens, utilities, contrast |
-| 5 | [combobox-thousands-of-items](/en/blog/combobox-thousands-of-items/) | Server-fed `items`, `filter={false}` |
+| 2 | [two-brains-liveview-assigns-and-zag-machines](/en/blog/two-brains-liveview-assigns-and-zag-machines/) | Assigns, bindings, controlled mode, Zag machines |
+| 3 | [the-vanilla-js-machine-that-doesnt-need-a-framework](/en/blog/the-vanilla-js-machine-that-doesnt-need-a-framework/) | `LiveSocket` hooks, lifecycle, `push_event` |
+| 4 | [paint-the-parts-the-machine-already-owns](/en/blog/paint-the-parts-the-machine-already-owns/) | Tokens, utilities, contrast |
+| 5 | [nine-thousand-airports-one-hundred-rows](/en/blog/nine-thousand-airports-one-hundred-rows/) | Server-fed `items`, `filter={false}` |
+| 6 | [how-fast-is-the-checkbox-api-play-tetrex-and-find-out](/en/blog/how-fast-is-the-checkbox-api-play-tetrex-and-find-out/) | Checkbox API at scale, client play, Presence, leaderboard replays |
 
 Arabic editions live in `_posts/ar/*.md` with `permalink: /ar/blog/<slug>/` (same slugs as English).
 
@@ -92,9 +93,9 @@ Before publishing or expanding a post:
 
 | Check | Requirement |
 |-------|-------------|
-| Length | Pillar ≥2,500 words; deep dives ≥1,800; tutorials ≥1,200 |
+| Length | Match the topic: prefer clarity and narrative density over padding |
 | Code | Snippets match HexDocs, `guides/`, and current `0.1.x` API ([update guide](https://hexdocs.pm/corex/update.html)) |
-| Vanilla JS | Use `import corex from "corex"` and hook registration—do not document fictional `corex.combobox({...}).init()` factories |
+| Vanilla JS | Use `import corex from "corex"` and hook registration. Do not document fictional `corex.combobox({...}).init()` factories |
 | Claims | Unique statements trace to repo source (guides, `lib/components/`, tests) |
 | Headings | Only `##` and below in the body; title lives in front matter |
 | Voice | Philosophy first; terminology aligned with [LiveView guides](https://hexdocs.pm/phoenix_live_view/welcome.html) (assigns, bindings, hooks); fewer purposeful examples; no fiction |

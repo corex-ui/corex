@@ -1,17 +1,20 @@
 defmodule E2e.BlogTest do
   use ExUnit.Case, async: true
 
+  @en_slugs [
+    "how-fast-is-the-checkbox-api-play-tetrex-and-find-out",
+    "two-brains-liveview-assigns-and-zag-machines",
+    "the-vanilla-js-machine-that-doesnt-need-a-framework",
+    "nine-thousand-airports-one-hundred-rows",
+    "paint-the-parts-the-machine-already-owns",
+    "anatomy-of-a-corex-component"
+  ]
+
   test "list_posts includes english articles" do
     posts = E2e.Blog.list_posts("en")
-    assert length(posts) == 5
+    assert length(posts) == 6
 
-    for slug <- [
-          "anatomy-of-a-corex-component",
-          "corex-design-a11y",
-          "combobox-thousands-of-items",
-          "vanilla-js",
-          "state-machines"
-        ] do
+    for slug <- @en_slugs do
       assert Enum.any?(posts, &(&1.slug == slug))
     end
   end
@@ -24,9 +27,9 @@ defmodule E2e.BlogTest do
   test "anatomy post html includes structure terms" do
     post = E2e.Blog.get_by_slug("anatomy-of-a-corex-component", "en")
     assert post.html =~ "Corex.Content.new"
-    assert post.html =~ "Corex.List.new"
+    assert post.html =~ "Corex.List"
     assert post.html =~ "compound"
-    assert post.html =~ "Manual Slots"
+    assert post.html =~ "Manual slots"
   end
 
   test "post html includes highlighted code" do
@@ -41,7 +44,7 @@ defmodule E2e.BlogTest do
     assert Enum.any?(entries, &String.starts_with?(&1.loc, "/ar/blog/"))
 
     assert Enum.any?(entries, &(&1.loc == "/en/blog/anatomy-of-a-corex-component/"))
-    assert Enum.any?(entries, &(&1.loc == "/en/blog/corex-design-a11y/"))
+    assert Enum.any?(entries, &(&1.loc == "/en/blog/paint-the-parts-the-machine-already-owns/"))
   end
 
   test "suggested_reads ranks by shared tags then recency" do
@@ -50,38 +53,34 @@ defmodule E2e.BlogTest do
 
     assert length(reads) == 4
     refute "anatomy-of-a-corex-component" in slugs
-    assert "corex-design-a11y" in slugs
+    assert "paint-the-parts-the-machine-already-owns" in slugs
   end
 
   test "prev_next_post follows list order" do
-    %{prev: prev, next: next} = E2e.Blog.prev_next_post("vanilla-js", "en")
+    %{prev: prev, next: next} =
+      E2e.Blog.prev_next_post("the-vanilla-js-machine-that-doesnt-need-a-framework", "en")
 
-    assert %{slug: "state-machines", label: _} = prev
-    assert %{slug: "combobox-thousands-of-items", label: _} = next
+    assert %{slug: "two-brains-liveview-assigns-and-zag-machines", label: _} = prev
+    assert %{slug: "nine-thousand-airports-one-hundred-rows", label: _} = next
 
-    assert %{prev: nil, next: _} = E2e.Blog.prev_next_post("state-machines", "en")
+    assert %{prev: %{slug: "how-fast-is-the-checkbox-api-play-tetrex-and-find-out"}, next: _} =
+             E2e.Blog.prev_next_post("two-brains-liveview-assigns-and-zag-machines", "en")
 
-    assert %{prev: %{slug: "corex-design-a11y"}, next: nil} =
+    assert %{prev: %{slug: "paint-the-parts-the-machine-already-owns"}, next: nil} =
              E2e.Blog.prev_next_post("anatomy-of-a-corex-component", "en")
   end
 
   test "post html includes corex callout when used" do
-    post = E2e.Blog.get_by_slug("corex-design-a11y", "en")
+    post = E2e.Blog.get_by_slug("paint-the-parts-the-machine-already-owns", "en")
     assert post.html =~ "corex-callout"
     assert post.html =~ "Contrast from day one"
   end
 
   test "list_posts includes arabic articles" do
     posts = E2e.Blog.list_posts("ar")
-    assert length(posts) == 5
+    assert length(posts) == 6
 
-    for slug <- [
-          "anatomy-of-a-corex-component",
-          "corex-design-a11y",
-          "combobox-thousands-of-items",
-          "vanilla-js",
-          "state-machines"
-        ] do
+    for slug <- @en_slugs do
       assert Enum.any?(posts, &(&1.slug == slug))
     end
   end

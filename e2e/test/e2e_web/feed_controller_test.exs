@@ -10,7 +10,7 @@ defmodule E2eWeb.FeedControllerTest do
     assert body =~ "<title>Corex Blog</title>"
     assert body =~ "/feed.xml"
     assert body =~ "/en/blog/anatomy-of-a-corex-component/"
-    assert body =~ "Anatomy of a Corex component"
+    assert body =~ "Anatomy of a Corex Component"
     refute body =~ "getting-started-with-corex"
     refute body =~ "Getting started with Corex"
   end

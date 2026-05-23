@@ -8,21 +8,21 @@ defmodule E2eWeb.BlogLiveTest do
 
     assert html =~ "blog__grid"
     assert html =~ "Journal"
-    assert html =~ "Corex and State Machines"
+    assert html =~ "How Fast Is the Checkbox API?"
     assert html =~ "badge"
-    assert has_element?(view, "a", "Corex and State Machines")
+    assert has_element?(view, "a", "How Fast Is the Checkbox API?")
     refute has_element?(view, "a", "Getting started with Corex")
   end
 
   test "blog post shows continue reading and adjacent navigation", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/blog/vanilla-js")
+    {:ok, _view, html} = live(conn, ~p"/blog/the-vanilla-js-machine-that-doesnt-need-a-framework")
 
     assert html =~ "All articles"
     assert html =~ "blog__post-hero"
     assert html =~ "blog__read-next"
     assert html =~ "Continue reading"
-    assert html =~ "Corex and State Machines"
-    assert html =~ "How to render 9000+ items in a Combobox?"
+    assert html =~ "Two Brains"
+    assert html =~ "Nine Thousand Airports"
     assert html =~ "blog__post-nav"
     assert html =~ "hero-chevron-left"
     assert html =~ "hero-chevron-right"
@@ -33,18 +33,21 @@ defmodule E2eWeb.BlogLiveTest do
   test "anatomy article renders focused content", %{conn: conn} do
     {:ok, _view, html} = live(conn, ~p"/blog/anatomy-of-a-corex-component")
 
-    assert html =~ "Anatomy of a Corex component"
+    assert html =~ "Anatomy of a Corex Component"
     assert html =~ "Corex.Content.new"
-    assert html =~ "Corex.List.new"
+    assert html =~ "Corex.List"
     assert html =~ "compound"
-    assert html =~ "Manual Slots"
-    refute html =~ "VanillaMachine"
+    assert html =~ "Manual slots"
+    assert html =~ "VanillaMachine"
     refute html =~ "mix corex.new"
   end
 
   test "stub posts link to anatomy article", %{conn: conn} do
-    {:ok, _view, vanilla_html} = live(conn, ~p"/blog/vanilla-js")
-    {:ok, _view, machines_html} = live(conn, ~p"/blog/state-machines")
+    {:ok, _view, vanilla_html} =
+      live(conn, ~p"/blog/the-vanilla-js-machine-that-doesnt-need-a-framework")
+
+    {:ok, _view, machines_html} =
+      live(conn, ~p"/blog/two-brains-liveview-assigns-and-zag-machines")
 
     assert vanilla_html =~ "anatomy-of-a-corex-component"
     assert machines_html =~ "anatomy-of-a-corex-component"
@@ -53,7 +56,7 @@ defmodule E2eWeb.BlogLiveTest do
   test "blog post page renders markdown body", %{conn: conn} do
     {:ok, _view, html} = live(conn, ~p"/blog/anatomy-of-a-corex-component")
 
-    assert html =~ "Anatomy of a Corex component"
+    assert html =~ "Anatomy of a Corex Component"
     assert html =~ "clipboard"
     assert html =~ "Corex.Content.new"
     assert html =~ "blog__article-shell"
@@ -61,7 +64,7 @@ defmodule E2eWeb.BlogLiveTest do
   end
 
   test "blog post renders corex callout", %{conn: conn} do
-    {:ok, _view, html} = live(conn, ~p"/blog/corex-design-a11y")
+    {:ok, _view, html} = live(conn, ~p"/blog/paint-the-parts-the-machine-already-owns")
 
     assert html =~ "corex-callout"
     assert html =~ "Contrast from day one"
@@ -81,8 +84,8 @@ defmodule E2eWeb.BlogLiveTest do
     {:ok, _view, page2_html} = live(conn, ~p"/blog?page=2")
 
     assert page2_html =~ "blog-index-pagination"
-    refute page2_html =~ "Corex and State Machines"
-    assert page2_html =~ "Anatomy of a Corex component"
+    refute page2_html =~ "How Fast Is the Checkbox API?"
+    assert page2_html =~ "Anatomy of a Corex Component"
   end
 
   test "arabic blog index uses translated shell", %{conn: conn} do
@@ -90,7 +93,7 @@ defmodule E2eWeb.BlogLiveTest do
 
     assert html =~ "blog__grid"
     assert html =~ "Journal"
-    assert html =~ "Corex وآلات الحالة"
-    refute html =~ "Corex and State Machines"
+    assert html =~ "ما سرعة واجهة Checkbox"
+    refute html =~ "How Fast Is the Checkbox API?"
   end
 end
