@@ -342,24 +342,6 @@ defmodule Corex.Checkbox do
       </.checkbox>
   ```
 
-  ### Tile (flush grid)
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | Tile | `checkbox checkbox--tile` |
-
-  No gap, border, or radius — for dense checkbox grids (e.g. Tetrex).
-
-  ### Rounded
-
-  | Modifier | Classes |
-  | -------- | ------- |
-  | None | `checkbox checkbox--rounded-none` |
-  | SM | `checkbox checkbox--rounded-sm` |
-  | MD | `checkbox checkbox--rounded-md` |
-  | LG | `checkbox checkbox--rounded-lg` |
-  | XL | `checkbox checkbox--rounded-xl` |
-
   ### Size
 
   | Modifier | Classes |

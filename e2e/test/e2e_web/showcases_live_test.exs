@@ -12,12 +12,8 @@ defmodule E2eWeb.ShowcasesLiveTest do
   alias E2eWeb.TetrexPresence
 
   setup do
+    E2e.DataCase.cleanup_tetrex_sessions()
     Repo.delete_all(Game)
-
-    for %{id: id} <- Registry.list_active() do
-      Session.kill(id)
-      Registry.unregister(id)
-    end
 
     :ok
   end

@@ -42,9 +42,22 @@ defmodule E2e.DataCase do
   end
 
   def cleanup_tetrex_sessions do
-    for %{id: id} <- E2e.Tetrex.Registry.list_active() do
-      allow_tetrex_session(id)
-      E2e.Tetrex.Session.stop(id)
+    pids =
+      for %{id: id} <- E2e.Tetrex.Registry.list_active(), is_binary(id) do
+        pid = E2e.Tetrex.Session.whereis(id)
+        E2e.Tetrex.Session.kill(id)
+        E2e.Tetrex.Registry.unregister(id)
+        pid
+      end
+
+    for pid <- pids, is_pid(pid) do
+      ref = Process.monitor(pid)
+
+      receive do
+        {:DOWN, ^ref, _, _, _} -> :ok
+      after
+        1000 -> :ok
+      end
     end
 
     :ok

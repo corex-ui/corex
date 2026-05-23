@@ -161,7 +161,7 @@ defmodule E2e.Tetrex.Session do
 
   @impl true
   def handle_info(:request_abandon, state) do
-    {:stop, :normal, abandon_state(state)}
+    {:stop, :normal, drop_session(state)}
   end
 
   @impl true
@@ -172,7 +172,7 @@ defmodule E2e.Tetrex.Session do
 
   @impl true
   def handle_info(:idle_timeout, state) do
-    {:stop, :normal, abandon_state(state)}
+    {:stop, :normal, drop_session(state)}
   end
 
   defp publish(%{id: id, last_cells: _last_cells, frames: frames} = state, game) do
@@ -277,7 +277,11 @@ defmodule E2e.Tetrex.Session do
   end
 
   defp schedule_idle(_state) do
-    Process.send_after(self(), :idle_timeout, @idle_ttl_ms)
+    if sandbox_repo?() do
+      nil
+    else
+      Process.send_after(self(), :idle_timeout, @idle_ttl_ms)
+    end
   end
 
   @impl true
@@ -305,6 +309,15 @@ defmodule E2e.Tetrex.Session do
     safe_store_finalize(state.id, game.score, frames, final_frame)
     E2e.Tetrex.Registry.unregister(state.id)
     cancel_idle(%{state | game: game, last_cells: cells, frames: frames})
+  end
+
+  defp drop_session(state) do
+    if sandbox_repo?() do
+      E2e.Tetrex.Registry.unregister(state.id)
+      cancel_idle(state)
+    else
+      abandon_state(state)
+    end
   end
 
   defp cancel_idle(%{idle_timer: ref} = state) when is_reference(ref) do
@@ -337,6 +350,7 @@ defmodule E2e.Tetrex.Session do
       :exit, _ -> :skipped
     end
   rescue
-    _ in DBConnection.OwnershipError -> :skipped
+    e in DBConnection.OwnershipError -> :skipped
+    e in DBConnection.ConnectionError -> :skipped
   end
 end

@@ -9,9 +9,9 @@ const KEY_COMMANDS = {
 }
 
 const TILE_CLASS =
-  "checkbox checkbox--tile checkbox--rounded-none w-full h-full min-h-0"
+  "checkbox w-full h-full min-h-0"
 const PREVIEW_TILE =
-  "checkbox checkbox--tile w-full aspect-square min-w-0 pointer-events-none"
+  "checkbox w-full aspect-square min-w-0 pointer-events-none"
 const DEFAULT_REPLAY_STEP_MS = 280
 const REPLAY_SPEEDS = [2, 5, 10, 1]
 const CLEAR_ANIM_MS = 420

@@ -66,6 +66,7 @@
 @import "./card.css";
 @import "./home.css";
 @import "./blog.css";
+@import "./tetrex.css";
 
 
 .layout__aside-tree [data-scope="tree-view"][data-part="branch-text"],

@@ -12,8 +12,8 @@ defmodule E2eWeb.TetrexLive do
 
   @tick_ms 700
   @replay_step_ms 280
-  @tile_base "checkbox checkbox--tile checkbox--rounded-none w-full min-w-0 h-full min-h-0"
-  @preview_tile "checkbox checkbox--tile w-full aspect-square min-w-0 pointer-events-none"
+  @tile_base "checkbox w-full min-w-0 h-full min-h-0"
+  @preview_tile "checkbox w-full aspect-square min-w-0 pointer-events-none"
 
   @impl true
   def mount(_params, session, socket) do
