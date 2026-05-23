@@ -186,6 +186,7 @@ defmodule E2eWeb.ShowcasesLiveTest do
     assert html =~ ~S(id="tetrex-cabinet")
     assert html =~ "game-0-0"
     assert html =~ ~S(>Keyboard<)
+    assert html =~ ~S(id="tetrex-touch-controls")
     assert html =~ "Start"
   end
 
@@ -212,6 +213,7 @@ defmodule E2eWeb.ShowcasesLiveTest do
     {_view, html} = live_ok!(build_conn(), "/en/showcases/tetrex/#{id}/watch")
     assert html =~ "LIVE"
     refute html =~ ~S(>Keyboard<)
+    refute html =~ ~S(id="tetrex-touch-controls")
   end
 
   test "archived ended game in top 10 shows congratulations and replay link" do

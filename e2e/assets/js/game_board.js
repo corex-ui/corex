@@ -73,6 +73,7 @@ const GameBoard = {
     if (this.play) {
       this.onKeyDown = (event) => this.handleKeyDown(event)
       window.addEventListener("keydown", this.onKeyDown)
+      this.wireTouchControls()
       this.initPlayEngineIfReady()
     }
 
@@ -127,8 +128,31 @@ const GameBoard = {
     if (this.tickTimer) clearInterval(this.tickTimer)
     if (this.replayTimer) clearInterval(this.replayTimer)
     if (this.onKeyDown) window.removeEventListener("keydown", this.onKeyDown)
+    this.teardownTouchControls()
     this.teardownReplayControls()
     this.teardownReplayEndOverlay()
+  },
+
+  wireTouchControls() {
+    const root = document.getElementById("tetrex-touch-controls")
+    if (!root || root.dataset.wired === "true") return
+    root.dataset.wired = "true"
+
+    this.onTouchControl = (event) => {
+      const btn = event.target.closest("[data-tetrex-cmd]")
+      if (!btn) return
+      event.preventDefault()
+      this.runCommand(btn.dataset.tetrexCmd)
+    }
+
+    root.addEventListener("pointerdown", this.onTouchControl)
+    this.touchControlsRoot = root
+  },
+
+  teardownTouchControls() {
+    if (this.touchControlsRoot && this.onTouchControl) {
+      this.touchControlsRoot.removeEventListener("pointerdown", this.onTouchControl)
+    }
   },
 
   wireReplayControls() {

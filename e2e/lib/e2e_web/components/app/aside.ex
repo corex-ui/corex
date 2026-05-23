@@ -1,6 +1,5 @@
 defmodule E2eWeb.App.Aside do
   use E2eWeb, :html
-  import E2eWeb.App.MainNav
   import E2eWeb.{Helpers}
 
   attr(:kind, :atom, required: true)
@@ -98,6 +97,39 @@ defmodule E2eWeb.App.Aside do
   end
 
   attr(:path, :string, required: true)
+  attr(:site_nav_tree_id, :string, default: "site-nav-menu")
+  attr(:tree_class, :string, default: "tree-view tree-view--accent max-w-3xs")
+
+  def drawer_site_nav_tree(assigns) do
+    assigns =
+      assigns
+      |> assign(:full_path, E2eWeb.Path.with_current_locale(assigns.path))
+      |> assign(:items, site_nav_menu_items())
+
+    ~H"""
+    <.tree_view
+      id={@site_nav_tree_id}
+      class={@tree_class}
+      redirect
+      value={[@full_path]}
+      expanded_value={[]}
+      items={@items}
+    >
+      <:item :let={item}>
+        <span class="flex min-w-0 items-center gap-1.5">
+          <span class="min-w-0 truncate">{item.label}</span>
+          <.heroicon
+            :if={item.new_tab}
+            name="hero-arrow-top-right-on-square"
+            class="icon shrink-0"
+          />
+        </span>
+      </:item>
+    </.tree_view>
+    """
+  end
+
+  attr(:path, :string, required: true)
   attr(:form_menu, :list, required: true)
   attr(:components_menu, :list, required: true)
   attr(:form_tree_id, :string, required: true)
@@ -175,7 +207,6 @@ defmodule E2eWeb.App.Aside do
       aria-label="Documentation navigation"
       phx-hook="AsideNavScroll"
     >
-      <.header_main_nav path={@path} orientation={:vertical} placement={:sidebar} />
       <.aside_nav_tree_views
         path={@path}
         form_menu={@form_menu}

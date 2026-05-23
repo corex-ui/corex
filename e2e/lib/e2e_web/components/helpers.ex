@@ -679,4 +679,16 @@ defmodule E2eWeb.Helpers do
       menu_item(~t"Live View", ~p"/admins", ~p"/admins")
     ])
   end
+
+  @hexdocs_url "https://hexdocs.pm/corex"
+
+  def hexdocs_url, do: @hexdocs_url
+
+  def site_nav_menu_items do
+    Corex.Tree.new([
+      menu_item(~t"Showcase", ~p"/showcases", ~p"/showcases"),
+      menu_item(~t"Blog", ~p"/blog", ~p"/blog"),
+      menu_item(~t"Hex Doc", @hexdocs_url, @hexdocs_url, new_tab: true, redirect: :href)
+    ])
+  end
 end

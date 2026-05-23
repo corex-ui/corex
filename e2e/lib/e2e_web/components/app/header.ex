@@ -70,7 +70,7 @@ defmodule E2eWeb.App.Header do
                 aria-label="Documentation navigation"
                 phx-hook="AsideNavScroll"
               >
-                <.header_main_nav path={@path} orientation={:vertical} placement={:drawer} />
+                <.drawer_site_nav_tree path={@path} site_nav_tree_id="site-nav-menu" />
                 <.aside_nav_tree_views
                   path={@path}
                   form_menu={@form_menu}

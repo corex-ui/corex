@@ -574,14 +574,9 @@ defmodule E2eWeb.TetrexLive do
 
   @impl true
   def render(assigns) do
-    board_h = "min(58dvh, 26rem)"
-    board_w = "calc(#{board_h} * #{assigns.cols} / #{assigns.rows})"
-
     assigns =
       assigns
       |> assign(:overlay, overlay_kind(assigns))
-      |> assign(:board_h, board_h)
-      |> assign(:board_w, board_w)
       |> assign(:show_keyboard, show_keyboard?(assigns))
 
     ~H"""
@@ -592,7 +587,7 @@ defmodule E2eWeb.TetrexLive do
             id="tetrex-page"
             tabindex="0"
             dir="ltr"
-            class="w-full max-w-5xl mx-auto flex flex-col gap-space-sm outline-none min-h-0 focus:outline-none focus:ring-0"
+            class="w-full max-w-5xl mx-auto flex flex-col gap-space-sm outline-none min-h-0 flex-1 focus:outline-none focus:ring-0"
           >
             <header class="flex items-center justify-between gap-space-sm shrink-0">
               <div class="flex items-center gap-space-sm min-w-0">
@@ -616,9 +611,12 @@ defmodule E2eWeb.TetrexLive do
 
             <div
               id="tetrex-cabinet"
-              class="flex flex-col sm:flex-row gap-space items-stretch min-h-0"
+              class="flex flex-col md:flex-row gap-space-sm md:gap-space items-stretch min-h-0 flex-1"
             >
-              <div class="flex-1 min-w-0 flex justify-center items-start w-full">
+              <div
+                id="tetrex-board-wrap"
+                class="flex-1 min-h-0 flex justify-center items-center w-full"
+              >
                 <div
                   id="tetrex-board-stage"
                   phx-hook="GameBoard"
@@ -626,8 +624,7 @@ defmodule E2eWeb.TetrexLive do
                   data-board-ready={to_string(@board_ready)}
                   data-tick-ms={@tick_ms}
                   data-client={@client_json}
-                  class="relative shrink-0 max-w-full"
-                  style={"height: #{@board_h}; width: #{@board_w};"}
+                  class="relative shrink-0 max-w-full max-h-full"
                 >
                   <div
                     :if={show_board?(assigns)}
@@ -664,54 +661,15 @@ defmodule E2eWeb.TetrexLive do
                 </div>
               </div>
 
-              <aside class="flex flex-col gap-space-sm w-full sm:min-w-56 sm:w-56 shrink-0 justify-between min-h-0">
-                <div class="flex flex-col gap-space-sm w-full min-w-0">
-                  <div class="grid grid-cols-2 gap-space-sm">
-                    <div>
-                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Score"}</p>
-                      <p
-                        id="tetrex-score"
-                        class="font-display text-xl tabular-nums text-ink-accent m-0 leading-tight"
-                      >
-                        {String.pad_leading(Integer.to_string(@score), 6, "0")}
-                      </p>
-                    </div>
-                    <div>
-                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Level"}</p>
-                      <p
-                        id="tetrex-level"
-                        class="font-display text-xl tabular-nums text-ink m-0 leading-tight"
-                      >
-                        {@level}
-                      </p>
-                    </div>
-                    <div class="col-span-2">
-                      <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Lines"}</p>
-                      <p
-                        id="tetrex-lines"
-                        class="font-display text-lg tabular-nums text-ink m-0 leading-tight"
-                      >
-                        {@lines}
-                      </p>
-                    </div>
-                  </div>
+              <aside class="flex flex-col gap-1 md:gap-space-sm w-full md:min-w-56 md:w-56 shrink-0 min-h-0">
+                <.tetrex_hud
+                  score={@score}
+                  level={@level}
+                  lines={@lines}
+                  preview_cells={@preview_cells}
+                />
 
-                  <div>
-                    <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Next"}</p>
-                    <div
-                      id="tetrex-next"
-                      class="border border-border rounded-md bg-root p-1 w-16 mt-1"
-                      aria-label={~t"Next piece"}
-                    >
-                      <div
-                        class="grid gap-px w-full"
-                        style="grid-template-columns: repeat(4, minmax(0, 1fr));"
-                      >
-                        <.preview_tile :for={cell <- @preview_cells} cell={cell} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <.touch_controls :if={@show_keyboard} />
 
                 <.keyboard_controls :if={@show_keyboard} />
 
@@ -739,7 +697,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-overlay"
-      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
       aria-busy="true"
     >
@@ -753,7 +711,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-overlay"
-      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
       aria-busy="true"
     >
@@ -767,7 +725,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-overlay"
-      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-ink m-0">Tetrex</p>
@@ -783,7 +741,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-overlay"
-      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-alert m-0">{~t"Game over"}</p>
@@ -791,7 +749,7 @@ defmodule E2eWeb.TetrexLive do
         {String.pad_leading(Integer.to_string(@score), 6, "0")}
       </p>
       <p :if={@show_replay_link} class="text-ink-muted text-sm m-0 max-w-xs">
-        {~t"Congratulations — you are on the leaderboard!"}
+        {~t"Congratulations! You are on the leaderboard."}
       </p>
       <.editable
         :if={@show_replay_link && @can_edit_name}
@@ -824,7 +782,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-overlay"
-      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
+      class="absolute inset-0 z-[1] flex flex-col items-center justify-center gap-space rounded-md bg-root/92 p-space text-center"
       aria-live="polite"
     >
       <p class="font-display text-lg uppercase tracking-widest text-ink m-0">
@@ -844,7 +802,7 @@ defmodule E2eWeb.TetrexLive do
     ~H"""
     <div
       id="tetrex-replay-end-overlay"
-      class="absolute inset-0 z-20 hidden"
+      class="absolute inset-0 z-[2] hidden"
       aria-live="polite"
       aria-hidden="true"
     >
@@ -925,9 +883,116 @@ defmodule E2eWeb.TetrexLive do
     """
   end
 
+  attr(:score, :integer, required: true)
+  attr(:level, :integer, required: true)
+  attr(:lines, :integer, required: true)
+  attr(:preview_cells, :list, required: true)
+
+  defp tetrex_hud(assigns) do
+    ~H"""
+    <div class="flex flex-row md:flex-col items-center md:items-stretch justify-between gap-2 md:gap-space-sm w-full min-w-0 shrink-0">
+      <div class="grid grid-cols-3 gap-x-2 gap-y-0 flex-1 min-w-0 md:grid-cols-2 md:gap-space-sm">
+        <div>
+          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+            {~t"Score"}
+          </p>
+          <p
+            id="tetrex-score"
+            class="font-display text-base md:text-xl tabular-nums text-ink-accent m-0 leading-none md:leading-tight"
+          >
+            {String.pad_leading(Integer.to_string(@score), 6, "0")}
+          </p>
+        </div>
+        <div>
+          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+            {~t"Level"}
+          </p>
+          <p
+            id="tetrex-level"
+            class="font-display text-base md:text-xl tabular-nums text-ink m-0 leading-none md:leading-tight"
+          >
+            {@level}
+          </p>
+        </div>
+        <div class="md:col-span-2">
+          <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0">
+            {~t"Lines"}
+          </p>
+          <p
+            id="tetrex-lines"
+            class="font-display text-sm md:text-lg tabular-nums text-ink m-0 leading-none md:leading-tight"
+          >
+            {@lines}
+          </p>
+        </div>
+      </div>
+
+      <div class="shrink-0">
+        <p class="text-ink-muted text-[0.65rem] md:text-xs uppercase tracking-wider m-0 text-end md:text-start">
+          {~t"Next"}
+        </p>
+        <div
+          id="tetrex-next"
+          class="border border-border rounded-md bg-root p-0.5 w-12 md:w-16 mt-0.5 ms-auto md:ms-0"
+          aria-label={~t"Next piece"}
+        >
+          <div class="grid gap-px w-full" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+            <.preview_tile :for={cell <- @preview_cells} cell={cell} />
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp touch_controls(assigns) do
+    ~H"""
+    <div
+      id="tetrex-touch-controls"
+      class="md:hidden flex flex-col gap-1 touch-manipulation select-none shrink-0 pb-[max(0px,env(safe-area-inset-bottom))]"
+    >
+      <p class="sr-only">{~t"Controls"}</p>
+      <div class="grid grid-cols-3 gap-1.5 max-w-[10.5rem] mx-auto w-full">
+        <.action
+          type="button"
+          data-tetrex-cmd="rotate"
+          class="button button--square button--md col-start-2"
+          aria_label={~t"Rotate"}
+        >
+          <.heroicon name="hero-arrow-path" />
+        </.action>
+        <.action
+          type="button"
+          data-tetrex-cmd="left"
+          class="button button--square button--md col-start-1 row-start-2"
+          aria_label={~t"Move left"}
+        >
+          <.heroicon name="hero-arrow-left" />
+        </.action>
+        <.action
+          type="button"
+          data-tetrex-cmd="down"
+          class="button button--square button--md col-start-2 row-start-2"
+          aria_label={~t"Soft drop"}
+        >
+          <.heroicon name="hero-arrow-down" />
+        </.action>
+        <.action
+          type="button"
+          data-tetrex-cmd="right"
+          class="button button--square button--md col-start-3 row-start-2"
+          aria_label={~t"Move right"}
+        >
+          <.heroicon name="hero-arrow-right" />
+        </.action>
+      </div>
+    </div>
+    """
+  end
+
   defp keyboard_controls(assigns) do
     ~H"""
-    <div class="flex flex-col gap-space-sm border-t border-border pt-space-sm">
+    <div class="hidden md:flex flex-col gap-space-sm border-t border-border pt-space-sm">
       <p class="text-ink-muted text-xs uppercase tracking-wider m-0">{~t"Keyboard"}</p>
       <ul class="flex flex-col gap-1 m-0 p-0 list-none">
         <.keyboard_row keys={["←", "→"]} label={~t"Move"} />
