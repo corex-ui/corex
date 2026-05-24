@@ -74,6 +74,21 @@ defmodule E2eWeb.TreeViewModel do
     session
   end
 
+  def wait_branch_content_open_in_host(session, host_dom_id, branch_value, opts \\ []) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-content"][data-value="#{branch_value}"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
+
+    session
+  end
+
   def wait_any_branch_content_open_in_host(session, host_dom_id, opts \\ []) do
     wait_for_has(
       session,

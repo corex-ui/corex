@@ -7,7 +7,6 @@ import {
   contentDatasetValue,
   isJsAnimation,
   prepareJsHeightInitialState,
-  runHeightOpenToValues,
   runHeightOpenTransition,
 } from "../lib/animation";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
@@ -164,10 +163,11 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
           clientEventName: getString(el, "onExpandedChangeClient"),
         });
 
-        runHeightOpenToValues({
+        runHeightOpenTransition({
           el,
           selector: BRANCH_CONTENT_SELECTOR,
-          openValues: next,
+          prevOpen: previousExpandedValue,
+          nextOpen: next,
           resolveValue: contentDatasetValue,
         });
       },

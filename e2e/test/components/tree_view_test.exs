@@ -48,7 +48,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_in_section("tree-view-api-set-expanded-client", "Expand lib")
-      |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
+      |> TreeView.wait_branch_content_open_in_host(host, "repo-lib", timeout: 8_000)
     end
 
     feature "set expanded (server)  -  Expand lib opens branch", %{session: session} do
@@ -62,7 +62,7 @@ defmodule E2eWeb.TreeViewTest do
 
       session
       |> TreeView.click_in_section("tree-view-api-set-expanded-server", "Expand lib")
-      |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
+      |> TreeView.wait_branch_content_open_in_host(host, "repo-lib", timeout: 8_000)
     end
   end
 

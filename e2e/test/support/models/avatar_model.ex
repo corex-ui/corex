@@ -114,7 +114,7 @@ defmodule E2eWeb.AvatarModel do
         session,
         """
         (function () {
-          var el = document.getElementById("avatar-events-src");
+          var el = document.getElementById("avatar-events-src-input");
           if (!el) return "not found";
           el.value = '#{escaped}';
           el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -130,7 +130,10 @@ defmodule E2eWeb.AvatarModel do
   def wait_events_src_applied(session, url, opts \\ []) when is_binary(url) do
     wait_for_has(
       session,
-      css(~s|#avatar-events img[src*="#{url}"]|, visible: :any),
+      css(
+        ~s|#avatar-events [data-scope="avatar"][data-part="image"][src*="#{url}"]|,
+        visible: :any
+      ),
       opts
     )
 

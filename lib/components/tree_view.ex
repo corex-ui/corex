@@ -401,6 +401,7 @@ defmodule Corex.TreeView do
 
   alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
+  alias Corex.Api.RespondTo
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
@@ -983,10 +984,12 @@ defmodule Corex.TreeView do
 
   def set_expanded_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    LiveView.push_event(socket, "tree_view_set_expanded_value", %{
-      tree_view_id: tree_view_id,
-      value: validate_value!(value)
-    })
+    RespondTo.push_set_value(
+      socket,
+      "tree_view_set_expanded_value",
+      tree_view_id,
+      validate_value!(value)
+    )
   end
 
   api_doc(~S"""
@@ -1001,10 +1004,12 @@ defmodule Corex.TreeView do
 
   def set_selected_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    LiveView.push_event(socket, "tree_view_set_selected_value", %{
-      tree_view_id: tree_view_id,
-      value: validate_value!(value)
-    })
+    RespondTo.push_set_value(
+      socket,
+      "tree_view_set_selected_value",
+      tree_view_id,
+      validate_value!(value)
+    )
   end
 
   api_doc(~S"""

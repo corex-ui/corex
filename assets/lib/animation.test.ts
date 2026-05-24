@@ -209,4 +209,30 @@ describe("runHeightOpenTransition", () => {
       })
     ).not.toThrow();
   });
+
+  it("opens when data-state is already open but prevOpen was empty", () => {
+    const root = animEl();
+    root.dataset.animation = "js";
+    const panel = document.createElement("div");
+    panel.dataset.value = "a";
+    panel.dataset.state = "open";
+    panel.style.height = "0px";
+    panel.style.opacity = "0";
+    panel.style.overflow = "hidden";
+    root.appendChild(panel);
+
+    const animate = vi.fn(() => ({ onfinish: null, oncancel: null, cancel: vi.fn() }));
+    panel.animate = animate as typeof panel.animate;
+    panel.getAnimations = vi.fn(() => []) as typeof panel.getAnimations;
+
+    runHeightOpenTransition({
+      el: root,
+      selector: "div",
+      prevOpen: [],
+      nextOpen: ["a"],
+      resolveValue: contentDatasetValue,
+    });
+
+    expect(animate).toHaveBeenCalled();
+  });
 });

@@ -42,11 +42,11 @@ defmodule E2eWeb.TreeViewApiLive do
   end
 
   def handle_event("tree_api_get_expanded", _params, socket) do
-    {:noreply, push_event(socket, "tree_view_expanded_value", %{})}
+    {:noreply, Corex.TreeView.expanded_value(socket, @id_get_exp_server, respond_to: :server)}
   end
 
   def handle_event("tree_api_get_selected", _params, socket) do
-    {:noreply, push_event(socket, "tree_view_selected_value", %{})}
+    {:noreply, Corex.TreeView.value(socket, @id_get_sel_server, respond_to: :server)}
   end
 
   def handle_event("tree_view_expanded_value_response", %{"value" => value}, socket) do
@@ -63,14 +63,14 @@ defmodule E2eWeb.TreeViewApiLive do
      )}
   end
 
-  def handle_event("tree_view_selected_value_response", %{"value" => value}, socket) do
+  def handle_event("tree_view_value_response", %{"value" => value}, socket) do
     desc = "#{@id_get_sel_server}\n#{inspect(value)}"
 
     {:noreply,
      Corex.Toast.create(
        socket,
        "layout-toast",
-       "tree_view_selected_value_response",
+       "tree_view_value_response",
        desc,
        :info,
        duration: 5000
