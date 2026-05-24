@@ -534,7 +534,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1130,7 +1129,12 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       method="post"
       id={@form.id}
     >
-      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+      <.combobox
+        field={f[:country]}
+        class="combobox"
+        placeholder="Country"
+        items={Corex.List.new(items_minimal())}
+      >
         <:label>Country</:label>
         <:empty>No results</:empty>
         <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
@@ -1171,6 +1175,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     </.form>
     """
   end
+
   def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_validate_heex()
@@ -1291,6 +1296,4 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     end
     """
   end
-
-
 end

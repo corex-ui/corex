@@ -44,10 +44,15 @@ defmodule E2eWeb.RadioGroupFormLive do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "choice=#{inspect(choice)}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "choice=#{inspect(choice)}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"choice" => choice}, as: :radio_group_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"choice" => choice},
+         as: :radio_group_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -62,7 +67,11 @@ defmodule E2eWeb.RadioGroupFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :radio_group_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :radio_group_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -90,7 +99,11 @@ defmodule E2eWeb.RadioGroupFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :radio_group_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :radio_group_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end

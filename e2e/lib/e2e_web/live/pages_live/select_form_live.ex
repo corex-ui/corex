@@ -47,7 +47,10 @@ defmodule E2eWeb.SelectFormLive do
      |> Toast.create("layout-toast", "Submitted", "country=#{country}", :info, duration: 5000)
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"country" => country}, as: :select_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"country" => country},
+         as: :select_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -70,7 +73,9 @@ defmodule E2eWeb.SelectFormLive do
 
         {:noreply,
          socket
-         |> Toast.create("layout-toast", "Submitted", "country=#{data.country}", :info, duration: 5000)
+         |> Toast.create("layout-toast", "Submitted", "country=#{data.country}", :info,
+           duration: 5000
+         )
          |> assign(
            :ecto_form,
            Phoenix.Component.to_form(
@@ -85,7 +90,11 @@ defmodule E2eWeb.SelectFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :select_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :select_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end
@@ -100,7 +109,11 @@ defmodule E2eWeb.SelectFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :select_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :select_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 

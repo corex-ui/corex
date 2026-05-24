@@ -126,7 +126,10 @@ defmodule E2eWeb.AdminLiveTest do
     test "deletes admin in listing", %{conn: conn, admin: admin} do
       {index_live, _html} = live_ok!(conn, ~p"/admins")
 
-      assert index_live |> element("#admins-#{admin.id} [aria-label^='Delete']") |> render_click()
+      index_live
+      |> element("#admin-delete-#{admin.id}-confirm")
+      |> render_click()
+
       refute has_element?(index_live, "#admins-#{admin.id}")
     end
   end

@@ -885,4 +885,60 @@ defmodule E2eWeb.Demos.DialogDemo do
     end
     '''
   end
+
+  def patterns_alert_heex do
+    ~S"""
+    <.dialog
+      id="patterns-dialog-alert"
+      class="dialog"
+      role="alertdialog"
+      modal
+      close_on_interact_outside={false}
+      initial_focus="patterns-dialog-alert-cancel"
+      final_focus="dialog:patterns-dialog-alert:trigger"
+    >
+      <:trigger>Delete item</:trigger>
+      <:title>Delete this item?</:title>
+      <:description>This action cannot be undone.</:description>
+      <:content>
+        <div class="flex flex-wrap justify-end gap-2 mt-4">
+          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--ghost">
+            Cancel
+          </.action>
+          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--alert">
+            Delete
+          </.action>
+        </div>
+      </:content>
+    </.dialog>
+    """
+  end
+
+  def patterns_alert_elixir do
+    ~S'''
+    <.dialog
+      id="patterns-dialog-alert"
+      class="dialog"
+      role="alertdialog"
+      modal
+      close_on_interact_outside={false}
+      initial_focus="patterns-dialog-alert-cancel"
+      final_focus="dialog:patterns-dialog-alert:trigger"
+    >
+      <:trigger>Delete item</:trigger>
+      <:title>Delete this item?</:title>
+      <:description>This action cannot be undone.</:description>
+      <:content>
+        <div class="flex flex-wrap justify-end gap-2 mt-4">
+          <.action id="patterns-dialog-alert-cancel" phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--ghost">
+            Cancel
+          </.action>
+          <.action phx-click={Corex.Dialog.set_open("patterns-dialog-alert", false)} class="button button--sm button--alert">
+            Delete
+          </.action>
+        </div>
+      </:content>
+    </.dialog>
+    '''
+  end
 end

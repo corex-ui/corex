@@ -120,7 +120,7 @@ defmodule Corex.DialogTest do
 
   describe "Connect.content/2" do
     test "returns content attributes when open (instant)" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      assigns = %{id: "test-dialog", dir: "ltr", open: true, role: "dialog"}
       result = Connect.content(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:content"
       assert result["role"] == "dialog"
@@ -128,8 +128,14 @@ defmodule Corex.DialogTest do
       refute Map.has_key?(result, "hidden")
     end
 
+    test "returns alertdialog role when set" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true, role: "alertdialog"}
+      result = Connect.content(assigns, "instant")
+      assert result["role"] == "alertdialog"
+    end
+
     test "returns content with hidden when closed and animation is instant" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, role: "dialog"}
       result = Connect.content(assigns, "instant")
       assert result["hidden"] == ""
       assert result["data-state"] == "closed"
@@ -206,6 +212,20 @@ defmodule Corex.DialogTest do
         })
 
       assert m["data-dialog-default-label"] == "Custom"
+    end
+
+    test "emits role and initial_focus data attributes" do
+      m =
+        Connect.props(%Props{
+          id: "d5",
+          role: "alertdialog",
+          initial_focus: "cancel-btn",
+          final_focus: "dialog:d5:trigger"
+        })
+
+      assert m["data-role"] == "alertdialog"
+      assert m["data-initial-focus"] == "cancel-btn"
+      assert m["data-final-focus"] == "dialog:d5:trigger"
     end
   end
 

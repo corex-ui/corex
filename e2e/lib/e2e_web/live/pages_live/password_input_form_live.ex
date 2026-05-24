@@ -26,7 +26,10 @@ defmodule E2eWeb.PasswordInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"password" => ""}, as: :password_input_phoenix, id: @phoenix_form_id)
+      Phoenix.Component.to_form(%{"password" => ""},
+        as: :password_input_phoenix,
+        id: @phoenix_form_id
+      )
 
     ecto_form =
       %PasswordInputForm{}
@@ -47,7 +50,10 @@ defmodule E2eWeb.PasswordInputFormLive do
      |> Toast.create("layout-toast", "Submitted", "password=***", :info, duration: 5000)
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"password" => password}, as: :password_input_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"password" => password},
+         as: :password_input_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -62,7 +68,11 @@ defmodule E2eWeb.PasswordInputFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :password_input_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :password_input_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -89,7 +99,11 @@ defmodule E2eWeb.PasswordInputFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :password_input_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :password_input_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end

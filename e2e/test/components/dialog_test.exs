@@ -82,5 +82,37 @@ defmodule E2eWeb.DialogTest do
       session = Dialog.open_dialog_by_host_id(session, host)
       Dialog.wait_dialog_open_by_host_id(session, host, timeout: 8_000)
     end
+
+    feature "alert  -  cancel receives initial focus", %{session: session} do
+      host = "patterns-dialog-alert"
+      cancel_id = "patterns-dialog-alert-cancel"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :patterns)
+        |> Dialog.wait_root_dialog_ready(host)
+        |> Dialog.open_dialog_by_host_id(host)
+        |> Dialog.wait_dialog_open_by_host_id(host, timeout: 8_000)
+
+      Dialog.assert_active_element_id(session, cancel_id)
+    end
+
+    feature "alert  -  trigger receives final focus after close", %{session: session} do
+      host = "patterns-dialog-alert"
+      cancel_id = "patterns-dialog-alert-cancel"
+      trigger_id = "dialog:patterns-dialog-alert:trigger"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :patterns)
+        |> Dialog.wait_root_dialog_ready(host)
+        |> Dialog.open_dialog_by_host_id(host)
+        |> Dialog.wait_dialog_open_by_host_id(host, timeout: 8_000)
+
+      session
+      |> click(css("##{cancel_id}"))
+      |> Dialog.wait_dialog_closed_by_host_id(host, timeout: 8_000)
+      |> Dialog.assert_active_element_id(trigger_id)
+    end
   end
 end

@@ -218,7 +218,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   def form_changeset_elixir, do: form_doc_controller_changeset_elixir()
   def form_native_heex, do: form_doc_native_heex()
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1314,6 +1313,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_changeset_heex()
   def form_ecto_elixir, do: form_doc_controller_changeset_elixir()
+
   def form_doc_live_ecto_heex do
     ~S"""
     <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
@@ -1440,6 +1440,4 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     end
     """
   end
-
-
 end

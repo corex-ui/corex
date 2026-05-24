@@ -1206,7 +1206,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     >
       <.date_picker
         field={f[:date]}
-        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date</:label>
@@ -1239,7 +1245,13 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
       <.date_picker
         field={@form[:date]}
-        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        translation={
+          %Corex.DatePicker.Translation{
+            open_calendar: "Select date",
+            close_calendar: "Select date",
+            input: "Select date"
+          }
+        }
         class="date-picker"
       >
         <:label>Date</:label>
@@ -1259,5 +1271,4 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   end
 
   def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
-
 end

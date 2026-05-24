@@ -50,14 +50,45 @@ defmodule E2eWeb.AdminLive.Index do
           </.navigate>
         </:action>
         <:action :let={{_id, admin}}>
-          <.action
-            phx-click={JS.push("delete", value: %{id: admin.id})}
-            data-confirm="Are you sure?"
-            class="button button--sm button--alert button--square"
-            aria-label={"Delete #{admin.name}"}
+          <.dialog
+            id={"admin-delete-#{admin.id}"}
+            class="dialog"
+            role="alertdialog"
+            modal
+            close_on_interact_outside={false}
+            initial_focus={"admin-delete-#{admin.id}-cancel"}
+            final_focus={"dialog:admin-delete-#{admin.id}:trigger"}
           >
-            <.heroicon name="hero-trash" />
-          </.action>
+            <:trigger
+              class="button button--sm button--alert button--square"
+              aria_label={"Delete #{admin.name}"}
+            >
+              <.heroicon name="hero-trash" />
+            </:trigger>
+            <:title>Delete admin?</:title>
+            <:description>This action cannot be undone.</:description>
+            <:content>
+              <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.action
+                  id={"admin-delete-#{admin.id}-cancel"}
+                  phx-click={Corex.Dialog.set_open("admin-delete-#{admin.id}", false)}
+                  class="button button--sm button--ghost"
+                >
+                  Cancel
+                </.action>
+                <.action
+                  id={"admin-delete-#{admin.id}-confirm"}
+                  phx-click={
+                    Corex.Dialog.set_open("admin-delete-#{admin.id}", false)
+                    |> JS.push("delete", value: %{id: admin.id})
+                  }
+                  class="button button--sm button--alert"
+                >
+                  Delete
+                </.action>
+              </div>
+            </:content>
+          </.dialog>
         </:action>
       </.data_table>
     </Layouts.app>

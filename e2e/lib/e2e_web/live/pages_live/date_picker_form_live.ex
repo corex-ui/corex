@@ -49,7 +49,9 @@ defmodule E2eWeb.DatePickerFormLive do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "Submitted: date=#{date}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "Submitted: date=#{date}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
        Phoenix.Component.to_form(%{"date" => date},

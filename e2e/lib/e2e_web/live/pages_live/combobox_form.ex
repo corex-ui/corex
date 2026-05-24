@@ -44,10 +44,15 @@ defmodule E2eWeb.ComboboxForm do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "country=#{inspect(country)}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "country=#{inspect(country)}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"country" => country}, as: :combobox_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"country" => country},
+         as: :combobox_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -62,7 +67,11 @@ defmodule E2eWeb.ComboboxForm do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :combobox_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :combobox_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -90,7 +99,11 @@ defmodule E2eWeb.ComboboxForm do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :combobox_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :combobox_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end

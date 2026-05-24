@@ -26,7 +26,10 @@ defmodule E2eWeb.NumberInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"value" => "1234"}, as: :number_input_phoenix, id: @phoenix_form_id)
+      Phoenix.Component.to_form(%{"value" => "1234"},
+        as: :number_input_phoenix,
+        id: @phoenix_form_id
+      )
 
     ecto_form =
       %NumberInputForm{}
@@ -44,10 +47,15 @@ defmodule E2eWeb.NumberInputFormLive do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "value=#{inspect(value)}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "value=#{inspect(value)}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"value" => value}, as: :number_input_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"value" => value},
+         as: :number_input_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -62,7 +70,11 @@ defmodule E2eWeb.NumberInputFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :number_input_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :number_input_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -90,7 +102,11 @@ defmodule E2eWeb.NumberInputFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :number_input_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :number_input_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end

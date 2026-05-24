@@ -122,7 +122,8 @@ defmodule E2eWeb.NumberInputTest do
       |> NumberInput.click_increment_in_section("number-input-patterns-initial-doc")
       |> NumberInput.wait(300)
 
-      assert NumberInput.hidden_value_at_host(session, "number-input-patterns-initial-field") == "11"
+      assert NumberInput.hidden_value_at_host(session, "number-input-patterns-initial-field") ==
+               "11"
     end
   end
 end

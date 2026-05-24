@@ -165,7 +165,6 @@ defmodule E2eWeb.ComboboxPatternsLive do
             </.combobox>
           </:preview>
         </.demo_section>
-
       </.demo_page>
     </Layouts.app>
     """
@@ -327,6 +326,4 @@ defmodule E2eWeb.ComboboxPatternsLive do
     end
     """
   end
-
-
 end

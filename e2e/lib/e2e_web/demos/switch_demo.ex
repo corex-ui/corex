@@ -980,7 +980,12 @@ defmodule E2eWeb.Demos.SwitchDemo do
       method="post"
       id={@form.id}
     >
-      <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []} id="switch-form-ecto-notifications">
+      <.switch
+        field={f[:notifications]}
+        class="switch"
+        invalid={f[:notifications].errors != []}
+        id="switch-form-ecto-notifications"
+      >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -999,7 +1004,12 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.switch field={@form[:notifications]} class="switch" controlled id="switch-live-form-phoenix-notifications">
+      <.switch
+        field={@form[:notifications]}
+        class="switch"
+        controlled
+        id="switch-live-form-phoenix-notifications"
+      >
         <:label>Enable notifications</:label>
       </.switch>
       <.action type="submit" id="switch-live-form-phoenix-submit" class="button button--accent">
@@ -1014,7 +1024,12 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_preview_live_ecto(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
-      <.switch field={@form[:notifications]} class="switch" controlled id="switch-live-form-ecto-notifications">
+      <.switch
+        field={@form[:notifications]}
+        class="switch"
+        controlled
+        id="switch-live-form-ecto-notifications"
+      >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />

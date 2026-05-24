@@ -429,7 +429,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -918,7 +917,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       phx-change="validate"
       phx-submit="save"
     >
-      <.password_input field={@form[:password]} class="password-input" id="password-input-live-form-ecto-password">
+      <.password_input
+        field={@form[:password]}
+        class="password-input"
+        id="password-input-live-form-ecto-password"
+      >
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -974,12 +977,20 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.password_input field={@form[:password]} class="password-input" id="password-input-live-form-phoenix-password">
+      <.password_input
+        field={@form[:password]}
+        class="password-input"
+        id="password-input-live-form-phoenix-password"
+      >
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
       </.password_input>
-      <.action type="submit" id="password-input-live-form-phoenix-submit" class="button button--accent">
+      <.action
+        type="submit"
+        id="password-input-live-form-phoenix-submit"
+        class="button button--accent"
+      >
         Submit
       </.action>
     </.form>
@@ -1078,6 +1089,4 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     end
     """
   end
-
-
 end

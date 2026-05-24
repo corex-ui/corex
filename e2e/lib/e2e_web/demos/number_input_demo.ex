@@ -694,7 +694,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1204,7 +1203,11 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.number_input field={@form[:value]} class="number-input" id="number-input-live-form-phoenix-field">
+      <.number_input
+        field={@form[:value]}
+        class="number-input"
+        id="number-input-live-form-phoenix-field"
+      >
         <:label>Value</:label>
         <:decrement_trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
@@ -1312,6 +1315,4 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     end
     """
   end
-
-
 end

@@ -254,9 +254,51 @@ defmodule Corex.Dialog do
 
   <!-- tabs-close -->
 
+  ## Alert dialog
+
+  Use `role="alertdialog"` with explicit modal and dismiss behavior. Set `initial_focus` to the id of the least destructive action.
+
+  <!-- tabs-open -->
+
+  ```heex
+  <.dialog
+    id="delete-item-alert"
+    class="dialog"
+    role="alertdialog"
+    modal
+    close_on_interact_outside={false}
+    initial_focus="delete-item-alert-cancel"
+    final_focus="dialog:delete-item-alert:trigger"
+  >
+    <:trigger>Delete item</:trigger>
+    <:title>Delete this item?</:title>
+    <:description>This action cannot be undone.</:description>
+    <:content>
+      <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--ghost">
+          Cancel
+        </.action>
+        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--alert">
+          Delete
+        </.action>
+      </div>
+    </:content>
+  </.dialog>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Focus
+
+  `initial_focus` is the `id` of a focusable element inside the dialog (for example a cancel `.action`). When omitted, Zag focuses the first focusable element in the content.
+
+  `final_focus` is the `id` of the element to receive focus when the dialog closes (for example the trigger: `dialog:my-dialog:trigger`). When omitted, Zag restores focus to the element that had focus before the dialog opened.
+
   ## Style
 
   Stack modifiers on the host (`class` on `<.dialog>`).
+
+  When `prevent_scroll` is enabled, Zag sets `--scrollbar-width` on the document root. Fixed or sticky app chrome can compensate with `calc(... + var(--scrollbar-width, 0px))` at the app level; Corex does not apply this globally.
 
   <!-- tabs-open -->
 
@@ -394,6 +436,24 @@ defmodule Corex.Dialog do
     doc: "Whether to restore focus when dialog closes"
   )
 
+  attr(:role, :string,
+    default: "dialog",
+    values: [nil, "dialog", "alertdialog"],
+    doc: "ARIA role for the dialog content (`dialog` or `alertdialog`)"
+  )
+
+  attr(:initial_focus, :string,
+    default: nil,
+    doc:
+      "Id of a focusable element inside the dialog to receive focus when opened (for alerts, use the least destructive action)"
+  )
+
+  attr(:final_focus, :string,
+    default: nil,
+    doc:
+      "Id of the element to receive focus when the dialog closes (for example the trigger id `dialog:my-dialog:trigger`)"
+  )
+
   attr(:dir, :string,
     default: nil,
     values: [nil, "ltr", "rtl"],
@@ -468,7 +528,7 @@ defmodule Corex.Dialog do
       |> assign(:trigger_struct, %Trigger{id: id, dir: dir, open: open})
       |> assign(:backdrop_struct, %Backdrop{id: id, dir: dir, open: open})
       |> assign(:positioner_struct, %Positioner{id: id, dir: dir, open: open})
-      |> assign(:content_struct, %Content{id: id, dir: dir, open: open})
+      |> assign(:content_struct, %Content{id: id, dir: dir, open: open, role: assigns.role})
       |> assign(:title_struct, %Title{id: id, dir: dir, open: open})
       |> assign(:description_struct, %Description{id: id, dir: dir, open: open})
       |> assign(:close_trigger_struct, %CloseTrigger{
@@ -494,6 +554,9 @@ defmodule Corex.Dialog do
         close_on_escape: @close_on_escape,
         prevent_scroll: @prevent_scroll,
         restore_focus: @restore_focus,
+        role: @role,
+        initial_focus: @initial_focus,
+        final_focus: @final_focus,
         dir: @dir,
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,

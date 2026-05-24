@@ -140,4 +140,19 @@ defmodule E2eWeb.DialogModel do
   def dialog_events_log_has_row?(session) do
     has?(session, css("#dialog-events-log tr[data-part='row']"))
   end
+
+  def assert_active_element_id(session, dom_id) when is_binary(dom_id) do
+    if not (String.match?(dom_id, ~r/^[a-zA-Z0-9_:-]+$/) and String.length(dom_id) > 0) do
+      raise ArgumentError, "only safe id strings for assert_active_element_id/2"
+    end
+
+    execute_script(
+      session,
+      "return document.activeElement?.id",
+      [],
+      fn id -> assert id == dom_id end
+    )
+
+    session
+  end
 end

@@ -42,6 +42,7 @@
 
     max-width: var(--container-md);
     padding: var(--spacing-space);
+    text-align: start;
   }
 
   .dialog [data-scope="dialog"][data-part="positioner"][data-state="closed"] {
@@ -75,6 +76,7 @@
   .dialog [data-scope="dialog"][data-part="title"],
   .dialog [data-scope="dialog"][data-part="description"] {
     margin-block: 0;
+    text-align: start;
   }
 
   .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
@@ -93,6 +95,19 @@
     align-items: stretch;
     justify-content: flex-start;
     height: 100vh;
+  }
+
+  .dialog [data-scope="dialog"][data-part="content"][data-has-nested] {
+    transform: scale(calc(1 - var(--nested-layer-count) * 0.05));
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .dialog [data-scope="dialog"][data-part="content"][data-nested] {
+    border: 2px solid var(--color-border-accent);
+  }
+
+  .dialog [data-scope="dialog"][data-part="backdrop"][data-has-nested] {
+    opacity: calc(0.4 + var(--nested-layer-count) * 0.1);
   }
 }
 

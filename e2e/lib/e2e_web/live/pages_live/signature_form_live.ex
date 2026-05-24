@@ -26,7 +26,10 @@ defmodule E2eWeb.SignatureFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: @phoenix_form_id)
+      Phoenix.Component.to_form(%{"signature" => ""},
+        as: :signature_phoenix,
+        id: @phoenix_form_id
+      )
 
     ecto_form =
       %SignatureForm{}
@@ -47,7 +50,10 @@ defmodule E2eWeb.SignatureFormLive do
      |> Toast.create("layout-toast", "Submitted", "signature saved", :info, duration: 5000)
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"signature" => sig}, as: :signature_phoenix, id: @phoenix_form_id)
+       Phoenix.Component.to_form(%{"signature" => sig},
+         as: :signature_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -64,7 +70,11 @@ defmodule E2eWeb.SignatureFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :signature_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -91,7 +101,9 @@ defmodule E2eWeb.SignatureFormLive do
 
         {:noreply,
          socket
-         |> Toast.create("layout-toast", "Submitted", "signature=#{sig_preview}", :info, duration: 5000)
+         |> Toast.create("layout-toast", "Submitted", "signature=#{sig_preview}", :info,
+           duration: 5000
+         )
          |> assign(
            :ecto_form,
            Phoenix.Component.to_form(
@@ -106,7 +118,11 @@ defmodule E2eWeb.SignatureFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :signature_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :signature_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end
@@ -121,7 +137,11 @@ defmodule E2eWeb.SignatureFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :signature_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 

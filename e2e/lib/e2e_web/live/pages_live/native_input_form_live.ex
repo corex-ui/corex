@@ -47,7 +47,9 @@ defmodule E2eWeb.NativeInputFormLive do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "Submitted: email=#{email}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "Submitted: email=#{email}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
        Phoenix.Component.to_form(%{"email" => email},

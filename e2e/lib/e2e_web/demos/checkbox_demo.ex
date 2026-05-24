@@ -765,7 +765,12 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       id={@form.id}
       phx-submit="save_phoenix"
     >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-live-form-phoenix-terms">
+      <.checkbox
+        field={@form[:terms]}
+        class="checkbox"
+        controlled
+        id="checkbox-live-form-phoenix-terms"
+      >
         <:label>Accept terms</:label>
       </.checkbox>
       <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">

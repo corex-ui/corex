@@ -479,13 +479,22 @@ defmodule E2eWeb.Demos.EditableDemo do
       method="post"
       id={@form.id}
     >
-      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-phoenix-text">
+      <.editable
+        field={f[:text]}
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+        id="editable-form-phoenix-text"
+      >
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
     </.form>
     """
   end
@@ -501,7 +510,14 @@ defmodule E2eWeb.Demos.EditableDemo do
       method="post"
       id={@form.id}
     >
-      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-ecto-text">
+      <.editable
+        field={f[:text]}
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+        id="editable-form-ecto-text"
+      >
         <:label>Text</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -511,7 +527,9 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
     </.form>
     """
   end
@@ -522,13 +540,23 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~H"""
     <form action={~p"/editable/form"} method="post" id="editable-form-native">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-native-text">
+      <.editable
+        name="editable[text]"
+        value=""
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+        id="editable-form-native-text"
+      >
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-native-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" id="editable-form-native-submit" class="button button--accent">
+        Submit
+      </.action>
     </form>
     """
   end
@@ -538,13 +566,22 @@ defmodule E2eWeb.Demos.EditableDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-phoenix-text">
+      <.editable
+        field={@form[:text]}
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+        id="editable-live-form-phoenix-text"
+      >
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
     </.form>
     """
   end
@@ -554,7 +591,15 @@ defmodule E2eWeb.Demos.EditableDemo do
   def form_preview_live_ecto(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
-      <.editable field={@form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-ecto-text">
+      <.editable
+        field={@form[:text]}
+        on_value_change="value_changed"
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+        id="editable-live-form-ecto-text"
+      >
         <:label>Text</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -564,7 +609,9 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
     </.form>
     """
   end

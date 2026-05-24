@@ -59,7 +59,10 @@ defmodule E2eWeb.PageController do
 
   def combobox_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"country" => ""}, as: :combobox_phoenix, id: "combobox-form-phoenix")
+      Phoenix.Component.to_form(%{"country" => ""},
+        as: :combobox_phoenix,
+        id: "combobox-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.Combobox{}
@@ -109,7 +112,10 @@ defmodule E2eWeb.PageController do
             Phoenix.Component.to_form(changeset, as: :combobox_ecto, id: "combobox-form-ecto")
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"country" => ""}, as: :combobox_phoenix, id: "combobox-form-phoenix")
+            Phoenix.Component.to_form(%{"country" => ""},
+              as: :combobox_phoenix,
+              id: "combobox-form-phoenix"
+            )
 
           conn
           |> assign_combobox_form_docs("combobox-form-ecto")
@@ -251,7 +257,8 @@ defmodule E2eWeb.PageController do
   def switch_form_submit(conn, params) do
     cond do
       is_map(params["preferences_phoenix"]) ->
-        notifications = params["preferences_phoenix"]["notifications"] in [true, "true", "on", "1", 1]
+        notifications =
+          params["preferences_phoenix"]["notifications"] in [true, "true", "on", "1", 1]
 
         conn
         |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
@@ -315,7 +322,10 @@ defmodule E2eWeb.PageController do
 
   def select_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"country" => ""}, as: :select_phoenix, id: "select-form-phoenix")
+      Phoenix.Component.to_form(%{"country" => ""},
+        as: :select_phoenix,
+        id: "select-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.SelectForm{}
@@ -350,10 +360,14 @@ defmodule E2eWeb.PageController do
         else
           changeset = Map.put(changeset, :action, :insert)
 
-          ecto_form = Phoenix.Component.to_form(changeset, as: :select_ecto, id: "select-form-ecto")
+          ecto_form =
+            Phoenix.Component.to_form(changeset, as: :select_ecto, id: "select-form-ecto")
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"country" => ""}, as: :select_phoenix, id: "select-form-phoenix")
+            Phoenix.Component.to_form(%{"country" => ""},
+              as: :select_phoenix,
+              id: "select-form-phoenix"
+            )
 
           conn
           |> assign_select_form_docs("select-form-ecto")
@@ -440,7 +454,10 @@ defmodule E2eWeb.PageController do
 
   def angle_slider_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-form-phoenix")
+      Phoenix.Component.to_form(%{"angle" => "0"},
+        as: :angle_slider_phoenix,
+        id: "angle-slider-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.AngleSliderForm{}
@@ -476,10 +493,16 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :angle_slider_ecto, id: "angle-slider-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :angle_slider_ecto,
+              id: "angle-slider-form-ecto"
+            )
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-form-phoenix")
+            Phoenix.Component.to_form(%{"angle" => "0"},
+              as: :angle_slider_phoenix,
+              id: "angle-slider-form-phoenix"
+            )
 
           conn
           |> assign_angle_slider_form_docs("angle-slider-form-ecto")
@@ -547,7 +570,10 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :color_picker_ecto, id: "color-picker-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :color_picker_ecto,
+              id: "color-picker-form-ecto"
+            )
 
           phoenix_form =
             Phoenix.Component.to_form(%{"color" => "#3b82f6"},
@@ -586,7 +612,10 @@ defmodule E2eWeb.PageController do
 
   def date_picker_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"date" => ""}, as: :date_picker_phoenix, id: "date-picker-form-phoenix")
+      Phoenix.Component.to_form(%{"date" => ""},
+        as: :date_picker_phoenix,
+        id: "date-picker-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.DatePickerForm{}
@@ -622,10 +651,16 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :date_picker_ecto, id: "date-picker-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :date_picker_ecto,
+              id: "date-picker-form-ecto"
+            )
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"date" => ""}, as: :date_picker_phoenix, id: "date-picker-form-phoenix")
+            Phoenix.Component.to_form(%{"date" => ""},
+              as: :date_picker_phoenix,
+              id: "date-picker-form-phoenix"
+            )
 
           conn
           |> assign_date_picker_form_docs("date-picker-form-ecto")
@@ -658,7 +693,10 @@ defmodule E2eWeb.PageController do
 
   def signature_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-form-phoenix")
+      Phoenix.Component.to_form(%{"signature" => ""},
+        as: :signature_phoenix,
+        id: "signature-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.SignatureForm{}
@@ -699,7 +737,10 @@ defmodule E2eWeb.PageController do
             Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-form-phoenix")
+            Phoenix.Component.to_form(%{"signature" => ""},
+              as: :signature_phoenix,
+              id: "signature-form-phoenix"
+            )
 
           conn
           |> assign_signature_form_docs("signature-form-ecto")
@@ -799,7 +840,10 @@ defmodule E2eWeb.PageController do
 
   def editable_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"text" => ""}, as: :editable_phoenix, id: "editable-form-phoenix")
+      Phoenix.Component.to_form(%{"text" => ""},
+        as: :editable_phoenix,
+        id: "editable-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.EditableForm{}
@@ -930,14 +974,20 @@ defmodule E2eWeb.PageController do
             data = Ecto.Changeset.apply_changes(changeset)
 
             conn
-            |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(data)}")
+            |> put_flash(
+              :info,
+              "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(data)}"
+            )
             |> redirect(to: ~p"/native-input/form#native-input-form-ecto")
 
           changeset ->
             changeset = Map.put(changeset, :action, :insert)
 
             ecto_form =
-              Phoenix.Component.to_form(changeset, as: :profile_ecto, id: "native-input-form-ecto")
+              Phoenix.Component.to_form(changeset,
+                as: :profile_ecto,
+                id: "native-input-form-ecto"
+              )
 
             phoenix_form =
               Phoenix.Component.to_form(native_input_phoenix_defaults(),
@@ -1032,7 +1082,10 @@ defmodule E2eWeb.PageController do
             changeset = Map.put(changeset, :action, :insert)
 
             ecto_form =
-              Phoenix.Component.to_form(changeset, as: :number_input_ecto, id: "number-input-form-ecto")
+              Phoenix.Component.to_form(changeset,
+                as: :number_input_ecto,
+                id: "number-input-form-ecto"
+              )
 
             phoenix_form =
               Phoenix.Component.to_form(%{"value" => "1234"},
@@ -1118,7 +1171,10 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :file_upload_ecto, id: "file-upload-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :file_upload_ecto,
+              id: "file-upload-form-ecto"
+            )
 
           phoenix_form =
             Phoenix.Component.to_form(%{"attachment" => nil},
@@ -1208,7 +1264,10 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :password_input_ecto, id: "password-input-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :password_input_ecto,
+              id: "password-input-form-ecto"
+            )
 
           phoenix_form =
             Phoenix.Component.to_form(%{"password" => ""},
@@ -1361,7 +1420,10 @@ defmodule E2eWeb.PageController do
             changeset = Map.put(changeset, :action, :insert)
 
             ecto_form =
-              Phoenix.Component.to_form(changeset, as: :tags_input_ecto, id: "tags-input-form-ecto")
+              Phoenix.Component.to_form(changeset,
+                as: :tags_input_ecto,
+                id: "tags-input-form-ecto"
+              )
 
             phoenix_form =
               Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
@@ -1409,7 +1471,10 @@ defmodule E2eWeb.PageController do
 
   def radio_group_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"choice" => ""}, as: :radio_group_phoenix, id: "radio-group-form-phoenix")
+      Phoenix.Component.to_form(%{"choice" => ""},
+        as: :radio_group_phoenix,
+        id: "radio-group-form-phoenix"
+      )
 
     ecto_form =
       %E2e.Form.RadioGroupForm{}
@@ -1445,10 +1510,16 @@ defmodule E2eWeb.PageController do
           changeset = Map.put(changeset, :action, :insert)
 
           ecto_form =
-            Phoenix.Component.to_form(changeset, as: :radio_group_ecto, id: "radio-group-form-ecto")
+            Phoenix.Component.to_form(changeset,
+              as: :radio_group_ecto,
+              id: "radio-group-form-ecto"
+            )
 
           phoenix_form =
-            Phoenix.Component.to_form(%{"choice" => ""}, as: :radio_group_phoenix, id: "radio-group-form-phoenix")
+            Phoenix.Component.to_form(%{"choice" => ""},
+              as: :radio_group_phoenix,
+              id: "radio-group-form-phoenix"
+            )
 
           conn
           |> assign_radio_group_form_docs("radio-group-form-ecto")

@@ -14,6 +14,9 @@ defmodule Corex.Dialog.Anatomy do
       close_on_escape: true,
       prevent_scroll: false,
       restore_focus: true,
+      role: "dialog",
+      initial_focus: nil,
+      final_focus: nil,
       dir: "ltr",
       on_open_change: nil,
       on_open_change_client: nil,
@@ -31,6 +34,9 @@ defmodule Corex.Dialog.Anatomy do
             close_on_escape: boolean(),
             prevent_scroll: boolean(),
             restore_focus: boolean(),
+            role: String.t(),
+            initial_focus: String.t() | nil,
+            final_focus: String.t() | nil,
             dir: String.t(),
             on_open_change: String.t() | nil,
             on_open_change_client: String.t() | nil,
@@ -113,12 +119,13 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :open, role: "dialog"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            open: boolean(),
+            role: String.t()
           }
 
     @ignored_attrs [

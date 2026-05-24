@@ -162,7 +162,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form for={@phoenix_form} action={~p"/file-upload/form"} method="post" id={@phoenix_form.id} multipart>
@@ -755,6 +754,4 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     end
     """
   end
-
-
 end

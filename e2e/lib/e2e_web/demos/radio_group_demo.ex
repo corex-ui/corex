@@ -688,7 +688,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1525,11 +1524,17 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       method="post"
       id={@form.id}
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new([
-        %{label: "Option A", value: "a"},
-        %{label: "Option B", value: "b"},
-        %{label: "Option C", value: "c"}
-      ])}>
+      <.radio_group
+        field={f[:choice]}
+        class="radio-group"
+        items={
+          Corex.List.new([
+            %{label: "Option A", value: "a"},
+            %{label: "Option B", value: "b"},
+            %{label: "Option C", value: "c"}
+          ])
+        }
+      >
         <:label>Choice</:label>
       </.radio_group>
       <.action type="submit" class="button button--accent">
@@ -1551,11 +1556,17 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new([
-        %{label: "Option A", value: "a"},
-        %{label: "Option B", value: "b"},
-        %{label: "Option C", value: "c"}
-      ])}>
+      <.radio_group
+        field={@form[:choice]}
+        class="radio-group"
+        items={
+          Corex.List.new([
+            %{label: "Option A", value: "a"},
+            %{label: "Option B", value: "b"},
+            %{label: "Option C", value: "c"}
+          ])
+        }
+      >
         <:label>Choice</:label>
       </.radio_group>
       <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
@@ -1657,6 +1668,4 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     end
     """
   end
-
-
 end

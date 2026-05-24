@@ -21683,15 +21683,30 @@ var Corex = (() => {
       contentEl.removeAttribute("aria-describedby");
     }
   }
+  function resolveFocusElement(root, id) {
+    if (!id) return null;
+    const scoped = root.querySelector(`#${CSS.escape(id)}`);
+    if (scoped) return scoped;
+    const byId = document.getElementById(id);
+    if (byId && root.contains(byId)) return byId;
+    return null;
+  }
   function readDialogLayoutProps(el) {
+    var _a4;
+    const role = (_a4 = getString(el, "role", ["dialog", "alertdialog"])) != null ? _a4 : "dialog";
+    const initialFocusId = getString(el, "initialFocus");
+    const finalFocusId = getString(el, "finalFocus");
     return {
       id: el.id,
+      role,
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getDir(el)
+      dir: getDir(el),
+      initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : void 0,
+      finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : void 0
     };
   }
   function runDialogScaleTransitions(el, isOpen) {
@@ -22764,8 +22779,11 @@ var Corex = (() => {
             "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
               var _a4;
-              const previousOpen = (_a4 = self2.lastOpen) != null ? _a4 : false;
-              self2.lastOpen = details.open;
+              const controlled = getBoolean(el, "controlled");
+              const previousOpen = controlled ? readControlledOrDefaultBoolean(el, "open", "defaultOpen") : (_a4 = self2.lastOpen) != null ? _a4 : false;
+              if (!controlled) {
+                self2.lastOpen = details.open;
+              }
               const payload = {
                 id: el.id,
                 open: details.open,
@@ -22812,8 +22830,14 @@ var Corex = (() => {
             });
           });
         },
+        beforeUpdate() {
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousOpen = getBoolean(el, "open");
+          }
+        },
         updated() {
-          var _a4, _b, _c, _d;
+          var _a4, _b, _c, _d, _e;
           const { el } = this;
           const layout = readDialogLayoutProps(el);
           if (!getBoolean(el, "controlled")) {
@@ -22821,12 +22845,13 @@ var Corex = (() => {
             return;
           }
           const nextOpen = (_b = getBoolean(el, "open")) != null ? _b : false;
-          const prevOpen = (_c = this.lastOpen) != null ? _c : false;
+          const prevOpen = (_d = (_c = this.previousOpen) != null ? _c : this.lastOpen) != null ? _d : false;
+          this.previousOpen = void 0;
           this.lastOpen = nextOpen;
+          (_e = this.dialog) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
           if (nextOpen !== prevOpen) {
             runDialogScaleIfJs(el, nextOpen);
           }
-          (_d = this.dialog) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
         },
         destroyed() {
           var _a4, _b, _c, _d;

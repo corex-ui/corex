@@ -416,7 +416,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1937,7 +1936,12 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.native_input field={@form[:email]} type="email" placeholder="you@example.com" class="native-input">
+      <.native_input
+        field={@form[:email]}
+        type="email"
+        placeholder="you@example.com"
+        class="native-input"
+      >
         <:label>Email</:label>
       </.native_input>
       <.action type="submit" class="button button--accent">
@@ -2039,6 +2043,4 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     end
     """
   end
-
-
 end

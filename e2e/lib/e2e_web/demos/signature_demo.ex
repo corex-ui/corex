@@ -263,7 +263,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -705,6 +704,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     </form>
     """
   end
+
   def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_ecto_heex()
@@ -715,7 +715,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-submit="save_phoenix">
-      <.signature_pad field={@form[:signature]} class="signature-pad" id="signature-live-form-phoenix-pad">
+      <.signature_pad
+        field={@form[:signature]}
+        class="signature-pad"
+        id="signature-live-form-phoenix-pad"
+      >
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -733,7 +737,12 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_preview_live_ecto(assigns) do
     ~H"""
     <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
-      <.signature_pad field={@form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
+      <.signature_pad
+        field={@form[:signature]}
+        class="signature-pad"
+        id="signature-live-form-ecto-pad"
+        on_draw_end="signature_drawn"
+      >
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -749,5 +758,4 @@ defmodule E2eWeb.Demos.SignatureDemo do
     </.form>
     """
   end
-
 end

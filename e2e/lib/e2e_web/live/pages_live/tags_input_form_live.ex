@@ -26,7 +26,10 @@ defmodule E2eWeb.TagsInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"tags" => "alpha,beta"}, as: :tags_input_phoenix, id: @phoenix_form_id)
+      Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
+        as: :tags_input_phoenix,
+        id: @phoenix_form_id
+      )
 
     ecto_form =
       %TagsInputForm{}
@@ -62,7 +65,11 @@ defmodule E2eWeb.TagsInputFormLive do
      assign(
        socket,
        :ecto_form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :tags_input_ecto, id: @ecto_form_id)
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :tags_input_ecto,
+         id: @ecto_form_id
+       )
      )}
   end
 
@@ -90,7 +97,11 @@ defmodule E2eWeb.TagsInputFormLive do
          assign(
            socket,
            :ecto_form,
-           Phoenix.Component.to_form(changeset, action: :insert, as: :tags_input_ecto, id: @ecto_form_id)
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :tags_input_ecto,
+             id: @ecto_form_id
+           )
          )}
     end
   end

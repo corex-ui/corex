@@ -78,9 +78,9 @@ defmodule E2eWeb.FormDemoContractTest do
     path = Path.join(@demo_dir, file)
     contents = File.read!(path)
 
-  for {line, snippet} <- form_doc_snippets(contents),
-      {pattern, label} <- @forbidden_patterns,
-      matches?(snippet, pattern) do
+    for {line, snippet} <- form_doc_snippets(contents),
+        {pattern, label} <- @forbidden_patterns,
+        matches?(snippet, pattern) do
       "#{file}:#{line}: #{label} in form doc snippet"
     end
   end

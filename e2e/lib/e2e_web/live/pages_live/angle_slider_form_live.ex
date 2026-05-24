@@ -49,7 +49,9 @@ defmodule E2eWeb.AngleSliderFormLive do
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "Submitted: angle=#{angle}", :info, duration: 5000)
+     |> Toast.create("layout-toast", "Submitted", "Submitted: angle=#{angle}", :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
        Phoenix.Component.to_form(%{"angle" => angle},
@@ -217,8 +219,12 @@ defmodule E2eWeb.AngleSliderFormLive do
         Ecto.Changeset.get_field(form.source, :angle)
 
     case raw do
-      nil -> 0.0
-      "" -> 0.0
+      nil ->
+        0.0
+
+      "" ->
+        0.0
+
       val when is_binary(val) ->
         case Float.parse(val) do
           {num, _} -> num

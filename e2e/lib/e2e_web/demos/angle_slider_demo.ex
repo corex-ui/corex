@@ -701,7 +701,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     """
   end
 
-
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
@@ -1414,6 +1413,4 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     end
     """
   end
-
-
 end
