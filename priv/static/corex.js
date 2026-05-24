@@ -7550,6 +7550,32 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-V5KQ7TD7.mjs
+  function reapplyLiveViewValueInputUsage(input) {
+    const p2 = input;
+    if (!p2.phxPrivate) p2.phxPrivate = {};
+    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  }
+  function queueLiveViewFormInputSync(input, getValue, onTouched) {
+    queueMicrotask(() => {
+      const v2 = getValue();
+      if (String(input.value) !== String(v2)) {
+        input.value = v2;
+      }
+      onTouched == null ? void 0 : onTouched();
+      reapplyLiveViewValueInputUsage(input);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  var PHX_HAS_FOCUSED;
+  var init_chunk_V5KQ7TD7 = __esm({
+    "../priv/static/chunks/chunk-V5KQ7TD7.mjs"() {
+      "use strict";
+      PHX_HAS_FOCUSED = "phx-has-focused";
+    }
+  });
+
   // ../priv/static/chunks/chunk-7BZGUIUZ.mjs
   function createLiveRegion(opts = {}) {
     var _a4;
@@ -12573,7 +12599,9 @@ var Corex = (() => {
   __export(combobox_exports, {
     Combobox: () => ComboboxHook,
     comboboxValueBinding: () => comboboxValueBinding,
+    formatComboboxHiddenValue: () => formatComboboxHiddenValue,
     selectedItemLabel: () => selectedItemLabel,
+    syncComboboxHiddenInputForPhoenix: () => syncComboboxHiddenInputForPhoenix,
     syncVisibleInputAttribute: () => syncVisibleInputAttribute
   });
   function connect9(service, normalize) {
@@ -12978,6 +13006,24 @@ var Corex = (() => {
   function getOpenChangeReason(event) {
     return (event.previousEvent || event).src;
   }
+  function formatComboboxHiddenValue(el, values) {
+    var _a4;
+    const list = values.map((v2) => String(v2));
+    return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
+  }
+  function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
+    const hidden = el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (!hidden) return;
+    queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+  }
+  function reapplyComboboxHiddenInputUsage(el) {
+    const hidden = el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (hidden) reapplyLiveViewValueInputUsage(hidden);
+  }
   function comboboxValueBinding(el) {
     var _a4, _b;
     const controlled = getBoolean(el, "controlled");
@@ -13000,7 +13046,7 @@ var Corex = (() => {
     const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
     if (visible) visible.setAttribute("value", value);
   }
-  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
+  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -13051,7 +13097,7 @@ var Corex = (() => {
         });
       },
       onValueChange: (details) => {
-        var _a4, _b;
+        var _a4;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (redirectOn && firstValue) {
           const itemEl = el.querySelector(
@@ -13059,18 +13105,8 @@ var Corex = (() => {
           );
           performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
-        {
-          const hidden = el.querySelector(
-            '[data-scope="combobox"][data-part="hidden-input"]'
-          );
-          if (hidden) {
-            const list = details.value.map((v2) => String(v2));
-            hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
-            hidden.dispatchEvent(new Event("input", { bubbles: true }));
-            hidden.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        (_b = getCombobox()) == null ? void 0 : _b.restoreFilteredOptions();
+        syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
+        (_a4 = getCombobox()) == null ? void 0 : _a4.restoreFilteredOptions();
         syncVisibleInputAttribute(el, selectedItemLabel(details.items));
         notifyChange({
           el,
@@ -13087,8 +13123,8 @@ var Corex = (() => {
       }
     };
   }
-  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
-    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox));
+  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
+    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched));
     delete rest.onOpenChange;
     delete rest.onInputValueChange;
     delete rest.onValueChange;
@@ -13098,6 +13134,7 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
+      init_chunk_V5KQ7TD7();
       init_chunk_7BZGUIUZ();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
@@ -14420,15 +14457,25 @@ var Corex = (() => {
       };
       ComboboxHook = {
         mounted() {
-          var _a4;
+          var _a4, _b;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          const hook = this;
+          hook.fieldTouched = false;
+          const markFieldTouched = () => {
+            hook.fieldTouched = true;
+          };
           const itemsJson = (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
           const allItems = JSON.parse(itemsJson);
           const hasGroups = allItems.some((item) => Boolean(item.group));
+          const defaultValues = (_b = getStringList(el, "defaultValue")) != null ? _b : [];
+          if (defaultValues.length > 0) {
+            hook.fieldTouched = true;
+            queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+          }
           let comboboxRef;
-          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef)), comboboxValueBinding(el));
+          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef, markFieldTouched)), comboboxValueBinding(el));
           const combobox = new Combobox(el, props, allItems, hasGroups);
           comboboxRef = combobox;
           combobox.init();
@@ -14464,11 +14511,25 @@ var Corex = (() => {
             pushEvent,
             canPush,
             this.liveSocket,
-            () => this.combobox
+            () => this.combobox,
+            () => {
+              this.fieldTouched = true;
+            }
           )), comboboxValueBindingForUpdate(this.el)));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
+          if (!this.fieldTouched) return;
+          queueMicrotask(() => {
+            if (!this.combobox) return;
+            const hidden = this.el.querySelector(
+              '[data-scope="combobox"][data-part="hidden-input"]'
+            );
+            if (!hidden) return;
+            const v2 = formatComboboxHiddenValue(this.el, this.combobox.api.value);
+            if (hidden.value !== v2) hidden.value = v2;
+            reapplyLiveViewValueInputUsage(hidden);
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -32947,7 +33008,9 @@ ${err}`);
   var select_exports = {};
   __export(select_exports, {
     Select: () => SelectHook,
-    buildCollection: () => buildCollection2
+    buildCollection: () => buildCollection2,
+    formatSelectHiddenValue: () => formatSelectHiddenValue,
+    syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix
   });
   function connect23(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
@@ -33367,10 +33430,22 @@ ${err}`);
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a4 = event.previousEvent) == null ? void 0 : _a4.restoreFocus;
     return v2 == null || !!v2;
   }
+  function formatSelectHiddenValue(el, values) {
+    var _a4;
+    const list = values.map((v2) => String(v2));
+    return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
+  }
+  function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+    const valueInput = el.querySelector(
+      '[data-scope="select"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+  }
   function buildCollection2(items, hasGroups) {
     return collection3(zagListCollectionConfig(items, hasGroups));
   }
-  function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+  function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -33387,7 +33462,6 @@ ${err}`);
       deselectable: getBoolean(el, "deselectable"),
       positioning: readPositioningOptions(el),
       onValueChange: (details) => {
-        var _a4;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (getBoolean(el, "redirect") && firstValue) {
           const itemEl = el.querySelector(
@@ -33395,15 +33469,7 @@ ${err}`);
           );
           performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
-        const valueInput = el.querySelector(
-          '[data-scope="select"][data-part="value-input"]'
-        );
-        if (valueInput) {
-          const list = details.value.map((v2) => String(v2));
-          valueInput.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -33419,11 +33485,17 @@ ${err}`);
       }
     };
   }
+  function selectValueBindingForUpdate(el) {
+    var _a4;
+    if (!getBoolean(el, "controlled")) return {};
+    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
+  }
   var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
       init_chunk_UUEU3QDP();
+      init_chunk_V5KQ7TD7();
       init_chunk_KHWEM5PS();
       init_chunk_YGX3OCBP();
       init_chunk_QS5WHZEI();
@@ -34356,12 +34428,28 @@ ${err}`);
       };
       SelectHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          const hook = this;
+          hook.fieldTouched = false;
+          const markFieldTouched = () => {
+            hook.fieldTouched = true;
+          };
+          const defaultValues = (_a4 = getStringList(el, "defaultValue")) != null ? _a4 : [];
+          if (defaultValues.length > 0) {
+            hook.fieldTouched = true;
+            queueMicrotask(() => {
+              const valueInput = el.querySelector(
+                '[data-scope="select"][data-part="value-input"]'
+              );
+              if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
+            });
+          }
           const allItems = JSON.parse(el.dataset.items || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush)), {
+          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched)), {
             collection: buildCollection2(allItems, hasGroups)
           }), readStringListControlledZagProps(el, "value", "defaultValue")));
           selectComponent.hasGroups = hasGroups;
@@ -34397,9 +34485,22 @@ ${err}`);
           this.select.setOptions(newItems);
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush)), {
+          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
+            this.fieldTouched = true;
+          })), {
             collection: this.select.getCollection()
-          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
+          }), selectValueBindingForUpdate(this.el)));
+          if (!this.fieldTouched) return;
+          queueMicrotask(() => {
+            if (!this.select) return;
+            const valueInput = this.el.querySelector(
+              '[data-scope="select"][data-part="value-input"]'
+            );
+            if (!valueInput) return;
+            const v2 = formatSelectHiddenValue(this.el, this.select.api.value);
+            if (valueInput.value !== v2) valueInput.value = v2;
+            reapplyLiveViewValueInputUsage(valueInput);
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -34743,11 +34844,6 @@ ${err}`);
     if (!raw) return [];
     return raw.split("\n").map((line) => line.trim()).filter(Boolean);
   }
-  function reapplyLiveViewValueInputUsage(input) {
-    const p2 = input;
-    if (!p2.phxPrivate) p2.phxPrivate = {};
-    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
-  }
   function buildDrawingOptions(el) {
     const o2 = {
       fill: getString(el, "drawingFill"),
@@ -34762,27 +34858,17 @@ ${err}`);
     return o2;
   }
   function queueFormBubblingInputForPhoenix2(el, getValue, opts) {
-    queueMicrotask(() => {
-      const input = el.querySelector(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (!input) {
-        return;
-      }
-      const v2 = getValue();
-      if (String(input.value) !== String(v2)) {
-        input.value = v2;
-      }
-      opts.onPadTouched();
-      reapplyLiveViewValueInputUsage(input);
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+    const input = el.querySelector(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    queueLiveViewFormInputSync(input, getValue, opts.onPadTouched);
   }
-  var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, PHX_HAS_FOCUSED, SignaturePadHook;
+  var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
+      init_chunk_V5KQ7TD7();
       init_chunk_2WCNJX5P();
       init_chunk_XGGASIX4();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -35055,7 +35141,6 @@ ${err}`);
           this.syncPaths();
         }
       };
-      PHX_HAS_FOCUSED = "phx-has-focused";
       SignaturePadHook = {
         mounted() {
           var _a4;

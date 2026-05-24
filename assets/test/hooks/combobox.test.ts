@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { el } from "../helpers/dom";
 import {
   comboboxValueBinding,
+  formatComboboxHiddenValue,
   selectedItemLabel,
   syncVisibleInputAttribute,
 } from "../../hooks/combobox";
+import { el } from "../helpers/dom";
 
 describe("comboboxValueBinding", () => {
   it("returns value when controlled", () => {
@@ -25,6 +26,20 @@ describe("selectedItemLabel", () => {
 
   it("returns empty when no items", () => {
     expect(selectedItemLabel([])).toBe("");
+  });
+});
+
+describe("formatComboboxHiddenValue", () => {
+  it("returns single value", () => {
+    expect(formatComboboxHiddenValue(el({}), ["eur"])).toBe("eur");
+  });
+
+  it("returns comma joined values when multiple", () => {
+    expect(formatComboboxHiddenValue(el({ multiple: true }), ["a", "b"])).toBe("a,b");
+  });
+
+  it("returns empty string when no values", () => {
+    expect(formatComboboxHiddenValue(el({}), [])).toBe("");
   });
 });
 

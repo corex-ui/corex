@@ -517,7 +517,11 @@ defmodule Corex.Combobox do
       disabled: @disabled, filter: @filter
     })}>
       <input
-        type="hidden"
+        type="text"
+        hidden
+        aria-hidden="true"
+        autocomplete="off"
+        tabindex="-1"
         id={"#{@id}-hidden-value"}
         name={@name}
         form={@form}

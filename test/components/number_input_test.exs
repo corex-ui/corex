@@ -126,7 +126,7 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ "data-controlled"
-      refute html =~ "data-default-value"
+      refute html =~ ~r/data-default-value="/
     end
 
     test "value sets data-default-value" do
@@ -194,6 +194,35 @@ defmodule Corex.NumberInputTest do
       refute html =~ "data-controlled"
       assert html =~ ~S(data-default-value="99")
       assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
+    end
+
+    test "hidden form input ignores LiveView patches to value and uses text type for used_input tracking" do
+      changeset =
+        {%{}, %{amount: :string}}
+        |> Ecto.Changeset.cast(%{"amount" => "42"}, [:amount])
+
+      form = to_form(changeset, as: :item, id: "item-form")
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input field={@form[:amount]}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="item\[amount\]")(?=[^>]*\bvalue="42")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
     end
 
     test "visible input renders server-side value attribute to survive morphdom patches" do

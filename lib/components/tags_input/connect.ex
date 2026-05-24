@@ -318,7 +318,11 @@ defmodule Corex.TagsInput.Connect do
     %{
       "data-scope" => "tags-input",
       "data-part" => "value-input",
-      "type" => "hidden",
+      "type" => "text",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "autocomplete" => "off",
+      "tabindex" => "-1",
       "id" => "tags-input:#{assigns.id}:value-input"
     }
     |> maybe_put_dir_from(assigns)

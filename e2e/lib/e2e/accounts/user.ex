@@ -14,6 +14,7 @@ defmodule E2e.Accounts.User do
     field :terms, :boolean, default: false
     field :level, :integer, default: 1
     field :currency, :string
+    field :tags, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -21,8 +22,8 @@ defmodule E2e.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :signature, :country, :birth_date, :terms, :level, :currency])
-    |> validate_required([:name, :signature, :country, :birth_date, :terms, :level, :currency])
+    |> cast(attrs, [:name, :signature, :country, :birth_date, :terms, :level, :currency, :tags])
+    |> validate_required([:name, :signature, :country, :birth_date, :terms, :level, :currency, :tags])
     |> validate_acceptance(:terms)
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)
     |> validate_inclusion(:currency, @currencies)

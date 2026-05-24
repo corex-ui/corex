@@ -200,6 +200,7 @@ defmodule Corex.NumberInput do
 
   alias Corex.NumberInput.Connect
   alias Corex.NumberInput.Translation
+  alias Corex.Selectors
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -279,7 +280,7 @@ defmodule Corex.NumberInput do
       id={@id}
       phx-hook="NumberInput"
       data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      phx-mounted={JS.ignore_attributes(["data-loading", "data-default-value"])}
       {Connect.props(%Props{
         id: @id,
         value: @value,
@@ -303,12 +304,17 @@ defmodule Corex.NumberInput do
       <input
         :if={@name}
         id={"number-input:#{@id}:value-input"}
-        type="hidden"
+        type="text"
+        hidden
+        aria-hidden="true"
+        autocomplete="off"
+        tabindex="-1"
         name={@name}
         form={@form}
         value={@value || ""}
         data-scope="number-input"
         data-part="value-input"
+        phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("number-input:#{@id}:value-input"))}
       />
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>

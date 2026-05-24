@@ -199,7 +199,7 @@ defmodule Corex.ComboboxTest do
         )
 
       assert html =~
-               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="user\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
 
       assert html =~
                ~r/<input\b(?=[^>]*\bdata-part="hidden-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/

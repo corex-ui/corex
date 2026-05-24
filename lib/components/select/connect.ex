@@ -237,7 +237,11 @@ defmodule Corex.Select.Connect do
     orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
-      "type" => "hidden",
+      "type" => "text",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "autocomplete" => "off",
+      "tabindex" => "-1",
       "data-scope" => "select",
       "data-part" => "value-input",
       "dir" => assigns.dir,

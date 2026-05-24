@@ -112,7 +112,8 @@ defmodule Corex.TagsInputTest do
 
       assert html =~ ~r/name="kw"/
       assert html =~ ~r/data-part="value-input"/
-      assert html =~ ~r/type="hidden"/
+      assert html =~ ~r/data-part="value-input"[^>]*type="text"/
+      assert html =~ ~r/data-part="value-input"[^>]*hidden="true"/
       assert html =~ ~r/data-part="hidden-input"/
     end
   end
@@ -167,6 +168,29 @@ defmodule Corex.TagsInputTest do
         """)
 
       refute html =~ "data-test=\"err\""
+    end
+
+    test "hidden form input ignores LiveView patches to value and uses text type for used_input tracking" do
+      form = to_form(%{"tags" => "alpha,beta"}, as: :user, id: "user")
+      assigns = %{field: form[:tags]}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.TagsInput.tags_input field={@field}>
+              <:close><.heroicon name="hero-x-mark" /></:close>
+            </Corex.TagsInput.tags_input>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[tags\]")(?=[^>]*\bvalue="alpha,beta")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
     end
   end
 

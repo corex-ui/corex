@@ -721,7 +721,7 @@ defmodule Corex.Select do
     id={@id} 
     phx-hook="Select"
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])} 
     {@rest}
     {Connect.props(%Props{
       id: @id, items: @items, controlled: @controlled, placeholder: @translation.placeholder, value: @value,

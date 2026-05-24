@@ -191,6 +191,10 @@ defmodule Corex.TagsInput.Anatomy do
       "form",
       "value",
       "defaultValue",
+      "hidden",
+      "aria-hidden",
+      "autocomplete",
+      "tabindex",
       "data-focus",
       "data-hover"
     ]

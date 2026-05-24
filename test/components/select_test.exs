@@ -1,5 +1,6 @@
 defmodule Corex.SelectTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Select.Connect
   alias Test.Support.ConnectProps
@@ -233,6 +234,39 @@ defmodule Corex.SelectTest do
     test "renders with grouped collection" do
       html = render_component(&CorexTest.ComponentHelpers.render_select_grouped/1, [])
       assert html =~ ~r/data-scope="select"/
+    end
+
+    test "hidden form input ignores LiveView patches to value and uses text type for used_input tracking" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "fra",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Select.select field={@field} items={[%{label: "France", value: "fra"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Select.select>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[country\]")(?=[^>]*\bvalue="fra")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
     end
   end
 end

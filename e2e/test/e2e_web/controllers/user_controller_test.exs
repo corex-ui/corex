@@ -10,7 +10,8 @@ defmodule E2eWeb.UserControllerTest do
     signature: "/path/to/signature.png",
     terms: true,
     level: 5,
-    currency: "eur"
+    currency: "eur",
+    tags: "alpha,beta"
   }
   @update_attrs %{
     name: "some updated name",
@@ -19,7 +20,8 @@ defmodule E2eWeb.UserControllerTest do
     signature: "/path/to/updated-signature.png",
     terms: true,
     level: 3,
-    currency: "usd"
+    currency: "usd",
+    tags: "gamma,delta"
   }
   @invalid_attrs %{
     name: nil,
@@ -28,7 +30,8 @@ defmodule E2eWeb.UserControllerTest do
     signature: nil,
     terms: nil,
     level: nil,
-    currency: nil
+    currency: nil,
+    tags: nil
   }
 
   describe "index" do

@@ -17,7 +17,8 @@ defmodule E2e.AccountsFixtures do
         signature: "M0,0L1,1Z",
         terms: true,
         level: 5,
-        currency: "eur"
+        currency: "eur",
+        tags: "alpha,beta"
       })
       |> E2e.Accounts.create_user()
 
@@ -37,7 +38,8 @@ defmodule E2e.AccountsFixtures do
         signature: "M0,0L1,1Z",
         terms: true,
         level: 5,
-        currency: "eur"
+        currency: "eur",
+        tags: "alpha,beta"
       })
       |> E2e.Accounts.create_admin()
 

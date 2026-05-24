@@ -121,6 +121,17 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.combobox>
 
+        <.tags_input field={@form[:tags]} class="tags-input max-w-none">
+          <:label>Tags</:label>
+          <:close>
+            <.heroicon name="hero-x-mark" />
+          </:close>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.tags_input>
+
         <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
           <:label>Select a date</:label>
           <:trigger>
@@ -166,7 +177,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.number_input>
-        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+        <.checkbox field={@form[:terms]} class="checkbox">
           <:label>
             Accept the terms
           </:label>

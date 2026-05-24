@@ -1,4 +1,8 @@
 import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-V5KQ7TD7.mjs";
+import {
   idMatches,
   readPayloadId
 } from "./chunks/chunk-2WCNJX5P.mjs";
@@ -609,16 +613,10 @@ var SignaturePad = class extends Component {
 };
 
 // hooks/signature-pad.ts
-var PHX_HAS_FOCUSED = "phx-has-focused";
 function parsePathsFromDataset(el, key) {
   const raw = el.dataset[key];
   if (!raw) return [];
   return raw.split("\n").map((line) => line.trim()).filter(Boolean);
-}
-function reapplyLiveViewValueInputUsage(input) {
-  const p2 = input;
-  if (!p2.phxPrivate) p2.phxPrivate = {};
-  p2.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 function buildDrawingOptions(el) {
   const o2 = {
@@ -634,22 +632,11 @@ function buildDrawingOptions(el) {
   return o2;
 }
 function queueFormBubblingInputForPhoenix(el, getValue, opts) {
-  queueMicrotask(() => {
-    const input = el.querySelector(
-      '[data-scope="signature-pad"][data-part="hidden-input"]'
-    );
-    if (!input) {
-      return;
-    }
-    const v2 = getValue();
-    if (String(input.value) !== String(v2)) {
-      input.value = v2;
-    }
-    opts.onPadTouched();
-    reapplyLiveViewValueInputUsage(input);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  });
+  const input = el.querySelector(
+    '[data-scope="signature-pad"][data-part="hidden-input"]'
+  );
+  if (!input) return;
+  queueLiveViewFormInputSync(input, getValue, opts.onPadTouched);
 }
 var SignaturePadHook = {
   mounted() {

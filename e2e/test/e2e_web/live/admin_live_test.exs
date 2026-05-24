@@ -12,7 +12,8 @@ defmodule E2eWeb.AdminLiveTest do
     signature: @valid_signature_path,
     terms: true,
     level: 5,
-    currency: "eur"
+    currency: "eur",
+    tags: "alpha,beta"
   }
   @update_attrs %{
     name: "some updated name",
@@ -20,7 +21,8 @@ defmodule E2eWeb.AdminLiveTest do
     birth_date: "1995-06-20",
     terms: true,
     level: 3,
-    currency: "usd"
+    currency: "usd",
+    tags: "gamma,delta"
   }
   @invalid_attrs %{
     name: "",
@@ -29,7 +31,8 @@ defmodule E2eWeb.AdminLiveTest do
     signature: "",
     terms: false,
     level: 1,
-    currency: ""
+    currency: "",
+    tags: ""
   }
   @invalid_attrs_edit %{
     name: "",
@@ -37,7 +40,8 @@ defmodule E2eWeb.AdminLiveTest do
     birth_date: "1990-01-15",
     terms: false,
     level: 5,
-    currency: "eur"
+    currency: "eur",
+    tags: "alpha,beta"
   }
 
   defp create_admin(_) do
@@ -210,12 +214,87 @@ defmodule E2eWeb.AdminLiveTest do
         "signature" => @valid_signature_path,
         "terms" => "false",
         "level" => "42",
-        "currency" => "eur"
+        "currency" => "eur",
+        "tags" => "alpha,beta"
       }
 
       html = render_change(form_live, "validate", %{"admin" => attrs})
 
       assert html =~ ~r/<input\b[^>]*\bvalue="42"[^>]*\bdata-part="input"/
+    end
+  end
+
+  describe "hidden-input used_input regression" do
+    test "validate on name only does not show errors on untouched select combobox or tags", %{
+      conn: conn
+    } do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/new")
+
+      html =
+        render_change(form_live, "validate", %{
+          "admin" => %{
+            "name" => "h",
+            "country" => "",
+            "currency" => "",
+            "tags" => "",
+            "birth_date" => "",
+            "signature" => "",
+            "terms" => "false",
+            "level" => "1",
+            "_unused_country" => "",
+            "_unused_currency" => "",
+            "_unused_tags" => "",
+            "_unused_birth_date" => "",
+            "_unused_signature" => "",
+            "_unused_terms" => ""
+          }
+        })
+
+      refute html =~ "can&#39;t be blank"
+    end
+
+    test "select and combobox values survive sibling field validation", %{conn: conn} do
+      {form_live, _} = live_ok!(conn, ~p"/admins/new")
+
+      attrs = %{
+        "name" => "updated",
+        "country" => "fra",
+        "currency" => "eur",
+        "tags" => "alpha,beta",
+        "birth_date" => "",
+        "signature" => "",
+        "terms" => "false",
+        "level" => "1",
+        "_unused_birth_date" => "",
+        "_unused_signature" => "",
+        "_unused_terms" => ""
+      }
+
+      html = render_change(form_live, "validate", %{"admin" => attrs})
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bname="admin\[country\]")(?=[^>]*\bvalue="fra")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bname="admin\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
+
+      refute html =~ "can&#39;t be blank"
+    end
+
+    test "form value inputs use text type so LiveView can track unused fields", %{conn: conn} do
+      {_form_live, html} = live_ok!(conn, ~p"/admins/new")
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[country\]")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[currency\]")[^>]*\bdata-part="hidden-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[tags\]")[^>]*\bdata-part="value-input"/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[(country|currency|tags)\]")/
     end
   end
 end

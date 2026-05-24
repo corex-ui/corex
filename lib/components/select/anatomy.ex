@@ -278,6 +278,12 @@ defmodule Corex.Select.Anatomy do
       "dir",
       "name",
       "form",
+      "value",
+      "type",
+      "hidden",
+      "aria-hidden",
+      "autocomplete",
+      "tabindex",
       "data-focus",
       "data-focus-visible"
     ]

@@ -5,8 +5,10 @@ import type { Props } from "@zag-js/signature-pad";
 
 import { getBoolean, getNumber, getString } from "../lib/util";
 import { idMatches, readPayloadId } from "../lib/respond-to";
-
-const PHX_HAS_FOCUSED = "phx-has-focused";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage,
+} from "../lib/live-view-form-input";
 
 export function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
   const raw = el.dataset[key];
@@ -15,12 +17,6 @@ export function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "pa
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
-}
-
-function reapplyLiveViewValueInputUsage(input: HTMLInputElement) {
-  const p = input as HTMLInputElement & { phxPrivate?: Record<string, boolean> };
-  if (!p.phxPrivate) p.phxPrivate = {};
-  p.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 
 export function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
@@ -42,22 +38,11 @@ function queueFormBubblingInputForPhoenix(
   getValue: () => string,
   opts: { onPadTouched: () => void }
 ): void {
-  queueMicrotask(() => {
-    const input = el.querySelector<HTMLInputElement>(
-      '[data-scope="signature-pad"][data-part="hidden-input"]'
-    );
-    if (!input) {
-      return;
-    }
-    const v = getValue();
-    if (String(input.value) !== String(v)) {
-      input.value = v;
-    }
-    opts.onPadTouched();
-    reapplyLiveViewValueInputUsage(input);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  });
+  const input = el.querySelector<HTMLInputElement>(
+    '[data-scope="signature-pad"][data-part="hidden-input"]'
+  );
+  if (!input) return;
+  queueLiveViewFormInputSync(input, getValue, opts.onPadTouched);
 }
 
 type SignaturePadHookState = {

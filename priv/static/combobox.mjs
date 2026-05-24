@@ -1,4 +1,8 @@
 import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-V5KQ7TD7.mjs";
+import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
@@ -1762,6 +1766,23 @@ var Combobox = class extends Component {
 };
 
 // hooks/combobox.ts
+function formatComboboxHiddenValue(el, values) {
+  const list = values.map((v) => String(v));
+  return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
+}
+function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
+  const hidden = el.querySelector(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (!hidden) return;
+  queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+}
+function reapplyComboboxHiddenInputUsage(el) {
+  const hidden = el.querySelector(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (hidden) reapplyLiveViewValueInputUsage(hidden);
+}
 function comboboxValueBinding(el) {
   const controlled = getBoolean(el, "controlled");
   if (controlled) {
@@ -1782,7 +1803,7 @@ function syncVisibleInputAttribute(el, value) {
   const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
   if (visible) visible.setAttribute("value", value);
 }
-function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
+function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -1839,17 +1860,7 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
         );
         performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
-      {
-        const hidden = el.querySelector(
-          '[data-scope="combobox"][data-part="hidden-input"]'
-        );
-        if (hidden) {
-          const list = details.value.map((v) => String(v));
-          hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
-          hidden.dispatchEvent(new Event("input", { bubbles: true }));
-          hidden.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-      }
+      syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
       getCombobox()?.restoreFilteredOptions();
       syncVisibleInputAttribute(el, selectedItemLabel(details.items));
       notifyChange({
@@ -1867,8 +1878,8 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
     }
   };
 }
-function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
-  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) };
+function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
+  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) };
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
@@ -1879,12 +1890,22 @@ var ComboboxHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const hook = this;
+    hook.fieldTouched = false;
+    const markFieldTouched = () => {
+      hook.fieldTouched = true;
+    };
     const itemsJson = el.getAttribute("data-items") ?? "[]";
     const allItems = JSON.parse(itemsJson);
     const hasGroups = allItems.some((item) => Boolean(item.group));
+    const defaultValues = getStringList(el, "defaultValue") ?? [];
+    if (defaultValues.length > 0) {
+      hook.fieldTouched = true;
+      queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+    }
     let comboboxRef;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef),
+      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef, markFieldTouched),
       ...comboboxValueBinding(el)
     };
     const combobox = new Combobox(el, props, allItems, hasGroups);
@@ -1922,13 +1943,27 @@ var ComboboxHook = {
         pushEvent,
         canPush,
         this.liveSocket,
-        () => this.combobox
+        () => this.combobox,
+        () => {
+          this.fieldTouched = true;
+        }
       ),
       ...comboboxValueBindingForUpdate(this.el)
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
+    if (!this.fieldTouched) return;
+    queueMicrotask(() => {
+      if (!this.combobox) return;
+      const hidden = this.el.querySelector(
+        '[data-scope="combobox"][data-part="hidden-input"]'
+      );
+      if (!hidden) return;
+      const v = formatComboboxHiddenValue(this.el, this.combobox.api.value);
+      if (hidden.value !== v) hidden.value = v;
+      reapplyLiveViewValueInputUsage(hidden);
+    });
   },
   destroyed() {
     this.domRegistry?.teardown();
@@ -1939,6 +1974,8 @@ var ComboboxHook = {
 export {
   ComboboxHook as Combobox,
   comboboxValueBinding,
+  formatComboboxHiddenValue,
   selectedItemLabel,
+  syncComboboxHiddenInputForPhoenix,
   syncVisibleInputAttribute
 };

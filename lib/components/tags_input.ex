@@ -332,7 +332,7 @@ defmodule Corex.TagsInput do
       id={@id}
       phx-hook="TagsInput"
       data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-tags"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,

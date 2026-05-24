@@ -29,7 +29,8 @@ user_attrs = %{
   signature: signature,
   terms: true,
   level: 5,
-  currency: "eur"
+  currency: "eur",
+  tags: "alpha,beta"
 }
 
 admin_attrs = %{
@@ -39,7 +40,8 @@ admin_attrs = %{
   signature: signature,
   terms: true,
   level: 5,
-  currency: "eur"
+  currency: "eur",
+  tags: "alpha,beta"
 }
 
 {:ok, _} = Accounts.create_user(user_attrs)

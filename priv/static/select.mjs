@@ -2,6 +2,10 @@ import {
   readStringListControlledZagProps
 } from "./chunks/chunk-UUEU3QDP.mjs";
 import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-V5KQ7TD7.mjs";
+import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-KHWEM5PS.mjs";
@@ -60,6 +64,7 @@ import {
   getInitialFocus,
   getNativeEvent,
   getString,
+  getStringList,
   isEditableElement,
   isEqual,
   isInternalChangeEvent,
@@ -1369,10 +1374,21 @@ var Select = class extends Component {
 };
 
 // hooks/select.ts
+function formatSelectHiddenValue(el, values) {
+  const list = values.map((v) => String(v));
+  return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
+}
+function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+  const valueInput = el.querySelector(
+    '[data-scope="select"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+}
 function buildCollection(items, hasGroups) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
-function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched) {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -1396,15 +1412,7 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
         );
         performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
-      const valueInput = el.querySelector(
-        '[data-scope="select"][data-part="value-input"]'
-      );
-      if (valueInput) {
-        const list = details.value.map((v) => String(v));
-        valueInput.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
-        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+      syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1420,15 +1428,34 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
     }
   };
 }
+function selectValueBindingForUpdate(el) {
+  if (!getBoolean(el, "controlled")) return {};
+  return { value: getStringList(el, "value") ?? [] };
+}
 var SelectHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const hook = this;
+    hook.fieldTouched = false;
+    const markFieldTouched = () => {
+      hook.fieldTouched = true;
+    };
+    const defaultValues = getStringList(el, "defaultValue") ?? [];
+    if (defaultValues.length > 0) {
+      hook.fieldTouched = true;
+      queueMicrotask(() => {
+        const valueInput = el.querySelector(
+          '[data-scope="select"][data-part="value-input"]'
+        );
+        if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
+      });
+    }
     const allItems = JSON.parse(el.dataset.items || "[]");
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const selectComponent = new Select(el, {
-      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
       collection: buildCollection(allItems, hasGroups),
       ...readStringListControlledZagProps(el, "value", "defaultValue")
     });
@@ -1466,9 +1493,22 @@ var SelectHook = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     this.select.updateProps({
-      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
+        this.fieldTouched = true;
+      }),
       collection: this.select.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue")
+      ...selectValueBindingForUpdate(this.el)
+    });
+    if (!this.fieldTouched) return;
+    queueMicrotask(() => {
+      if (!this.select) return;
+      const valueInput = this.el.querySelector(
+        '[data-scope="select"][data-part="value-input"]'
+      );
+      if (!valueInput) return;
+      const v = formatSelectHiddenValue(this.el, this.select.api.value);
+      if (valueInput.value !== v) valueInput.value = v;
+      reapplyLiveViewValueInputUsage(valueInput);
     });
   },
   destroyed() {
@@ -1484,5 +1524,7 @@ var SelectHook = {
 };
 export {
   SelectHook as Select,
-  buildCollection
+  buildCollection,
+  formatSelectHiddenValue,
+  syncSelectHiddenInputForPhoenix
 };

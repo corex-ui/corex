@@ -56,6 +56,16 @@
       {msg}
     </:error>
   </.combobox>
+  <.tags_input field={f[:tags]} class="tags-input max-w-none">
+    <:label>Tags</:label>
+    <:close>
+      <.heroicon name="hero-x-mark" />
+    </:close>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.tags_input>
   <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
     <:label>Select a date</:label>
     <:trigger>
