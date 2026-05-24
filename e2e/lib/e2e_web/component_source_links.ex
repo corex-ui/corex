@@ -40,6 +40,11 @@ defmodule E2eWeb.ComponentSourceLinks do
     "layout_heading" => "lib/components/layout/heading.ex"
   }
 
+  @registry_to_design_slug %{
+    "action" => "button",
+    "navigate" => "link"
+  }
+
   def links_for_path(path) when is_binary(path) do
     with slug when is_binary(slug) <- slug_from_path(path),
          registry_id when is_binary(registry_id) <- registry_id(slug),
@@ -91,7 +96,7 @@ defmodule E2eWeb.ComponentSourceLinks do
     links = links ++ [%{label: "Phoenix", to: phoenix_url(registry_id), icon: @icon_phoenix}]
 
     links =
-      case design_url(slug) do
+      case design_url_for(registry_id, slug) do
         nil -> links
         url -> links ++ [%{label: "Design", to: url, icon: @icon_tailwind}]
       end
@@ -118,6 +123,11 @@ defmodule E2eWeb.ComponentSourceLinks do
       Map.get(@registry_to_phoenix_path, registry_id, "lib/components/#{registry_id}.ex")
 
     "#{@github_base}/#{rel}"
+  end
+
+  defp design_url_for(registry_id, slug) do
+    design_slug = Map.get(@registry_to_design_slug, registry_id, slug)
+    design_url(design_slug)
   end
 
   defp design_url(slug) do

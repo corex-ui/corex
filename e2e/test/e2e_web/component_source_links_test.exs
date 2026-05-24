@@ -32,6 +32,20 @@ defmodule E2eWeb.ComponentSourceLinksTest do
 
     refute "TypeScript" in labels
     assert "Phoenix" in labels
+
+    design = Enum.find(links, &(&1.label == "Design"))
+    assert design.to =~ "button.css"
+  end
+
+  test "links_for_path/1 for navigate includes link design" do
+    links = ComponentSourceLinks.links_for_path("/navigate/anatomy")
+    labels = Enum.map(links, & &1.label)
+
+    refute "TypeScript" in labels
+    assert "Phoenix" in labels
+
+    design = Enum.find(links, &(&1.label == "Design"))
+    assert design.to =~ "link.css"
   end
 
   test "links_for_path/1 returns nil for showcases" do
