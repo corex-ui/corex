@@ -1517,9 +1517,7 @@ var TagsInputHook = {
     });
     this.tagsInput?.render();
     if (this.tagsInput) {
-      queueMicrotask(
-        () => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value)
-      );
+      queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value));
     }
   },
   destroyed() {

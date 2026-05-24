@@ -37277,9 +37277,7 @@ ${err}`);
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
           (_b = this.tagsInput) == null ? void 0 : _b.render();
           if (this.tagsInput) {
-            queueMicrotask(
-              () => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value)
-            );
+            queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value));
           }
         },
         destroyed() {
