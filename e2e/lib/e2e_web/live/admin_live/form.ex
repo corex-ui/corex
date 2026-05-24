@@ -20,6 +20,46 @@ defmodule E2eWeb.AdminLive.Form do
           <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button button--sm">
             <.heroicon name="hero-arrow-left" class="icon" /> Cancel
           </.navigate>
+          <.dialog
+            :if={@live_action == :edit}
+            id={"admin-delete-#{@admin.id}"}
+            class="dialog"
+            role="alertdialog"
+            modal
+            close_on_interact_outside={false}
+            initial_focus={"admin-delete-#{@admin.id}-cancel"}
+            final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
+          >
+            <:trigger
+              class="button button--sm button--alert button--square"
+              aria_label="Delete admin"
+            >
+              <.heroicon name="hero-trash" />
+            </:trigger>
+            <:title>Delete admin?</:title>
+            <:description>This action cannot be undone.</:description>
+            <:content>
+              <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.action
+                  id={"admin-delete-#{@admin.id}-cancel"}
+                  phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
+                  class="button button--sm button--ghost"
+                >
+                  Cancel
+                </.action>
+                <.action
+                  id={"admin-delete-#{@admin.id}-confirm"}
+                  phx-click={
+                    Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
+                    |> JS.push("delete", value: %{id: @admin.id})
+                  }
+                  class="button button--sm button--alert"
+                >
+                  Delete
+                </.action>
+              </div>
+            </:content>
+          </.dialog>
         </:actions>
       </.layout_heading>
 
@@ -189,6 +229,21 @@ defmodule E2eWeb.AdminLive.Form do
 
   def handle_event("save", %{"admin" => admin_params}, socket) do
     save_admin(socket, socket.assigns.live_action, admin_params)
+  end
+
+  def handle_event("delete", %{"id" => id}, socket) do
+    admin = Accounts.get_admin!(id)
+
+    case Accounts.delete_admin(admin) do
+      {:ok, _admin} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Admin deleted successfully")
+         |> push_navigate(to: ~p"/admins")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Could not delete admin.")}
+    end
   end
 
   defp save_admin(socket, :edit, admin_params) do

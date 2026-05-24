@@ -107,9 +107,14 @@ defmodule E2eWeb.AdminLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     admin = Accounts.get_admin!(id)
-    {:ok, _} = Accounts.delete_admin(admin)
 
-    {:noreply, stream_delete(socket, :admins, admin)}
+    case Accounts.delete_admin(admin) do
+      {:ok, _admin} ->
+        {:noreply, stream_delete(socket, :admins, admin)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Could not delete admin.")}
+    end
   end
 
   defp list_admins do

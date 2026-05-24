@@ -132,6 +132,16 @@ defmodule E2eWeb.AdminLiveTest do
 
       refute has_element?(index_live, "#admins-#{admin.id}")
     end
+
+    test "deletes admin from edit page", %{conn: conn, admin: admin} do
+      {form_live, _html} = live_ok!(conn, ~p"/admins/#{admin}/edit")
+
+      form_live
+      |> element("#admin-delete-#{admin.id}-confirm")
+      |> render_click()
+
+      assert_redirect(form_live, ~p"/admins")
+    end
   end
 
   describe "Show" do
@@ -176,6 +186,16 @@ defmodule E2eWeb.AdminLiveTest do
       html = render(show_live)
       assert html =~ "Admin updated successfully"
       assert html =~ "some updated name"
+    end
+
+    test "deletes admin from show page", %{conn: conn, admin: admin} do
+      {show_live, _html} = live_ok!(conn, ~p"/admins/#{admin}")
+
+      show_live
+      |> element("#admin-delete-#{admin.id}-confirm")
+      |> render_click()
+
+      assert_redirect(show_live, ~p"/admins")
     end
   end
 

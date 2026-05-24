@@ -46,14 +46,45 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.link>
         </:action>
         <:action :let={{_id, <%= schema.singular %>}}>
-          <.action
-            phx-click={JS.push("delete", value: %{<%= primary_key %>: <%= schema.singular %>.<%= primary_key %>})}
-            data-confirm="Are you sure?"
-            class="button button--sm button--alert"
-            aria-label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+          <.dialog
+            id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}"}
+            class="dialog"
+            role="alertdialog"
+            modal
+            close_on_interact_outside={false}
+            initial_focus={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
+            final_focus={"dialog:<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}:trigger"}
           >
-            <.heroicon name="hero-trash" />
-          </.action>
+            <:trigger
+              class="button button--sm button--alert button--square"
+              aria_label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+            >
+              <.heroicon name="hero-trash" />
+            </:trigger>
+            <:title>Delete <%= schema.singular %>?</:title>
+            <:description>This action cannot be undone.</:description>
+            <:content>
+              <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.action
+                  id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
+                  phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)}
+                  class="button button--sm button--ghost"
+                >
+                  Cancel
+                </.action>
+                <.action
+                  id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-confirm"}
+                  phx-click={
+                    Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)
+                    |> JS.push("delete", value: %{<%= primary_key %>: <%= schema.singular %>.<%= primary_key %>})
+                  }
+                  class="button button--sm button--alert"
+                >
+                  Delete
+                </.action>
+              </div>
+            </:content>
+          </.dialog>
         </:action>
       </.data_table>
     </Layouts.app>

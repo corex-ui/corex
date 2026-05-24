@@ -42,15 +42,43 @@
       </.link>
     </:action>
     <:action :let={<%= schema.singular %>}>
-      <.link
-        href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}
-        method="delete"
-        data-confirm="Are you sure?"
-        class="button button--sm button--alert"
-        aria-label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+      <.dialog
+        id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}"}
+        class="dialog"
+        role="alertdialog"
+        modal
+        close_on_interact_outside={false}
+        initial_focus={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
+        final_focus={"dialog:<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}:trigger"}
       >
-        <.heroicon name="hero-trash" />
-      </.link>
+        <:trigger
+          class="button button--sm button--alert button--square"
+          aria_label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+        >
+          <.heroicon name="hero-trash" />
+        </:trigger>
+        <:title>Delete <%= schema.singular %>?</:title>
+        <:description>This action cannot be undone.</:description>
+        <:content>
+          <div class="flex flex-wrap justify-end gap-2 mt-4">
+            <.action
+              id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-cancel"}
+              phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}", false)}
+              class="button button--sm button--ghost"
+            >
+              Cancel
+            </.action>
+            <.navigate
+              id={"<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-confirm"}
+              to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+              method="delete"
+              class="button button--sm button--alert"
+            >
+              Delete
+            </.navigate>
+          </div>
+        </:content>
+      </.dialog>
     </:action>
   </.data_table>
 </Layouts.app>

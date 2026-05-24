@@ -25,7 +25,7 @@ defmodule E2eWeb.FormDemoContractTest do
         reasons =
           []
           |> maybe_add(contents, "action=\"//", "action=\"//\"")
-          |> maybe_add(contents, "stricter", ~s("stricter"))
+          |> maybe_add(contents, "stricter", ~S("stricter"))
 
         {file, reasons}
       end

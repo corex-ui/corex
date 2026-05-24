@@ -1,4 +1,6 @@
 defmodule Corex.ComponentEventsContractTest do
+  @moduledoc false
+  
   use ExUnit.Case, async: true
 
   @components_root Path.expand("../../lib/components", __DIR__)

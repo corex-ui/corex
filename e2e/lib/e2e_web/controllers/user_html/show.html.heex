@@ -23,6 +23,43 @@
       >
         <.heroicon name="hero-pencil-square" /> Edit user
       </.navigate>
+      <.dialog
+        id={"user-delete-#{@user.id}"}
+        class="dialog"
+        role="alertdialog"
+        modal
+        close_on_interact_outside={false}
+        initial_focus={"user-delete-#{@user.id}-cancel"}
+        final_focus={"dialog:user-delete-#{@user.id}:trigger"}
+      >
+        <:trigger
+          class="button button--sm button--alert button--square"
+          aria_label="Delete user"
+        >
+          <.heroicon name="hero-trash" />
+        </:trigger>
+        <:title>Delete user?</:title>
+        <:description>This action cannot be undone.</:description>
+        <:content>
+          <div class="flex flex-wrap justify-end gap-2 mt-4">
+            <.action
+              id={"user-delete-#{@user.id}-cancel"}
+              phx-click={Corex.Dialog.set_open("user-delete-#{@user.id}", false)}
+              class="button button--sm button--ghost"
+            >
+              Cancel
+            </.action>
+            <.navigate
+              id={"user-delete-#{@user.id}-confirm"}
+              to={~p"/users/#{@user}"}
+              method="delete"
+              class="button button--sm button--alert"
+            >
+              Delete
+            </.navigate>
+          </div>
+        </:content>
+      </.dialog>
     </:actions>
   </.layout_heading>
 

@@ -112,7 +112,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "deletes <%= schema.singular %> in listing", %{conn: conn, <%= schema.singular %>: <%= schema.singular %><%= test_context_scope %>} do
       {:ok, index_live, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
-      assert index_live |> element("#<%= schema.collection %>-#{<%= schema.singular %>.<%= primary_key %>} [aria-label*='Delete']") |> render_click()
+      assert index_live |> element("#<%= schema.singular %>-delete-#{<%= schema.singular %>.<%= primary_key %>}-confirm") |> render_click()
       refute has_element?(index_live, "#<%= schema.collection %>-#{<%= schema.singular %>.<%= primary_key %>}")
     end
   end
