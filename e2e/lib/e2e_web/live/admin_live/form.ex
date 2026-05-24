@@ -65,6 +65,7 @@ defmodule E2eWeb.AdminLive.Form do
 
       <.form
         for={@form}
+        id={@form.id}
         phx-change="validate"
         phx-submit="save"
       >

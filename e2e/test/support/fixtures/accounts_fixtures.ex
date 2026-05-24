@@ -18,7 +18,7 @@ defmodule E2e.AccountsFixtures do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: "alpha,beta"
+        tags: ["alpha", "beta"]
       })
       |> E2e.Accounts.create_user()
 
@@ -39,7 +39,7 @@ defmodule E2e.AccountsFixtures do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: "alpha,beta"
+        tags: ["alpha", "beta"]
       })
       |> E2e.Accounts.create_admin()
 

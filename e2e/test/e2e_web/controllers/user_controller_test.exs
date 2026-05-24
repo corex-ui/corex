@@ -11,7 +11,7 @@ defmodule E2eWeb.UserControllerTest do
     terms: true,
     level: 5,
     currency: "eur",
-    tags: "alpha,beta"
+    tags: ["alpha", "beta"]
   }
   @update_attrs %{
     name: "some updated name",
@@ -21,7 +21,7 @@ defmodule E2eWeb.UserControllerTest do
     terms: true,
     level: 3,
     currency: "usd",
-    tags: "gamma,delta"
+    tags: ["gamma", "delta"]
   }
   @invalid_attrs %{
     name: nil,

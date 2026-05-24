@@ -13,7 +13,7 @@ defmodule E2eWeb.AdminLiveTest do
     terms: true,
     level: 5,
     currency: "eur",
-    tags: "alpha,beta"
+    tags: ["alpha", "beta"]
   }
   @update_attrs %{
     name: "some updated name",
@@ -22,7 +22,7 @@ defmodule E2eWeb.AdminLiveTest do
     terms: true,
     level: 3,
     currency: "usd",
-    tags: "gamma,delta"
+    tags: ["gamma", "delta"]
   }
   @invalid_attrs %{
     name: "",
@@ -32,7 +32,7 @@ defmodule E2eWeb.AdminLiveTest do
     terms: false,
     level: 1,
     currency: "",
-    tags: ""
+    tags: [""]
   }
   @invalid_attrs_edit %{
     name: "",
@@ -41,7 +41,7 @@ defmodule E2eWeb.AdminLiveTest do
     terms: false,
     level: 5,
     currency: "eur",
-    tags: "alpha,beta"
+    tags: ["alpha", "beta"]
   }
 
   defp create_admin(_) do
@@ -215,7 +215,7 @@ defmodule E2eWeb.AdminLiveTest do
         "terms" => "false",
         "level" => "42",
         "currency" => "eur",
-        "tags" => "alpha,beta"
+        "tags" => ["alpha", "beta"]
       }
 
       html = render_change(form_live, "validate", %{"admin" => attrs})
@@ -236,7 +236,7 @@ defmodule E2eWeb.AdminLiveTest do
             "name" => "h",
             "country" => "",
             "currency" => "",
-            "tags" => "",
+            "tags" => [""],
             "birth_date" => "",
             "signature" => "",
             "terms" => "false",
@@ -260,7 +260,7 @@ defmodule E2eWeb.AdminLiveTest do
         "name" => "updated",
         "country" => "fra",
         "currency" => "eur",
-        "tags" => "alpha,beta",
+        "tags" => ["alpha", "beta"],
         "birth_date" => "",
         "signature" => "",
         "terms" => "false",
@@ -291,10 +291,10 @@ defmodule E2eWeb.AdminLiveTest do
                ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[currency\]")[^>]*\bdata-part="hidden-input"/
 
       assert html =~
-               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="admin\[tags\]")[^>]*\bdata-part="value-input"/
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[tags\]\[\]")[^>]*\bdata-part="array-input"/
 
       refute html =~
-               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[(country|currency|tags)\]")/
+               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="admin\[(country|currency)\]")/
     end
   end
 end

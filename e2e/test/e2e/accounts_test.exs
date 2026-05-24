@@ -38,7 +38,7 @@ defmodule E2e.AccountsTest do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: "alpha,beta"
+        tags: ["alpha", "beta"]
       }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
@@ -48,7 +48,7 @@ defmodule E2e.AccountsTest do
       assert user.terms == true
       assert user.level == 5
       assert user.currency == "eur"
-      assert user.tags == "alpha,beta"
+      assert user.tags == ["alpha", "beta"]
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -159,7 +159,7 @@ defmodule E2e.AccountsTest do
         terms: true,
         level: 5,
         currency: "eur",
-        tags: "alpha,beta"
+        tags: ["alpha", "beta"]
       }
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(valid_attrs)
@@ -169,7 +169,7 @@ defmodule E2e.AccountsTest do
       assert admin.terms == true
       assert admin.level == 5
       assert admin.currency == "eur"
-      assert admin.tags == "alpha,beta"
+      assert admin.tags == ["alpha", "beta"]
     end
 
     test "create_admin/1 with invalid data returns error changeset" do
