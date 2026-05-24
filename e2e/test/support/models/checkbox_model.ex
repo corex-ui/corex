@@ -112,7 +112,7 @@ defmodule E2eWeb.CheckboxModel do
 
     wait_for_has(
       session,
-      css(~s|[id="checkbox:checkbox-api-server:control"][data-state="checked"]|, visible: :any),
+      css(~S|[id="checkbox:checkbox-api-server:control"][data-state="checked"]|, visible: :any),
       timeout: 10_000
     )
   end
