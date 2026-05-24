@@ -54,15 +54,7 @@ defmodule E2eWeb.FormDemoContractTest do
   test "phoenix preview helpers are not aliased to changeset or validate previews" do
     violations =
       demo_files()
-      |> Enum.flat_map(fn file ->
-        path = Path.join(@demo_dir, file)
-        contents = File.read!(path)
-
-        for {pattern, label} <- @forbidden_preview_aliases,
-            Regex.match?(pattern, contents) do
-          "#{file}: #{label}"
-        end
-      end)
+      |> Enum.flat_map(&phoenix_preview_alias_violations/1)
 
     assert violations == [],
            "phoenix preview alias violations:\n#{Enum.join(violations, "\n")}"
@@ -72,6 +64,16 @@ defmodule E2eWeb.FormDemoContractTest do
     @demo_dir
     |> File.ls!()
     |> Enum.filter(&String.ends_with?(&1, "_demo.ex"))
+  end
+
+  defp phoenix_preview_alias_violations(file) do
+    path = Path.join(@demo_dir, file)
+    contents = File.read!(path)
+
+    for {pattern, label} <- @forbidden_preview_aliases,
+        Regex.match?(pattern, contents) do
+      "#{file}: #{label}"
+    end
   end
 
   defp form_doc_violations(file) do
