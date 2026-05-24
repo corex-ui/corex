@@ -20,105 +20,83 @@ defmodule Mix.Corex.Gen.Inputs do
   def display_expr(record, key, type, %Schema{} = schema, mode \\ :index) do
     field = "#{record}.#{key}"
 
-    cond do
-      mode == :show and key in schema.redacts ->
-        "\"••••••••\""
-
-      type == :boolean ->
-        "if(#{field}, do: \"Yes\", else: \"No\")"
-
-      type == :date ->
-        "#{field} && Calendar.strftime(#{field}, \"%Y-%m-%d\")"
-
-      type in [:time, :time_usec] ->
-        "#{field} && Calendar.strftime(#{field}, \"%H:%M:%S\")"
-
-      type in [:naive_datetime, :naive_datetime_usec] ->
-        "#{field} && Calendar.strftime(#{field}, \"%Y-%m-%d %H:%M\")"
-
-      type in [:utc_datetime, :utc_datetime_usec] ->
-        "#{field} && Calendar.strftime(#{field}, \"%Y-%m-%d %H:%M\")"
-
-      type == :decimal ->
-        "#{field} && Decimal.to_string(#{field})"
-
-      match?({:enum, _}, type) ->
-        "#{field} && Phoenix.Naming.humanize(to_string(#{field}))"
-
-      type == {:array, :string} ->
-        "Enum.join(#{field} || [], \", \")"
-
-      type == {:array, :integer} ->
-        "Enum.join(Enum.map(#{field} || [], &to_string/1), \", \")"
-
-      match?({:array, _}, type) ->
-        "inspect(#{field})"
-
-      true ->
-        field
+    if mode == :show and key in schema.redacts do
+      "\"••••••••\""
+    else
+      type_display_expr(field, type)
     end
   end
 
-  defp input_block(schema, field_prefix, key, type) do
-    case type do
-      :integer ->
-        number_input_block(field_prefix, key, nil)
+  defp type_display_expr(field, :boolean), do: "if(#{field}, do: \"Yes\", else: \"No\")"
 
-      :float ->
-        number_input_block(field_prefix, key, 0.1)
+  defp type_display_expr(field, :date),
+    do: "#{field} && Calendar.strftime(#{field}, \"%Y-%m-%d\")"
 
-      :decimal ->
-        number_input_block(field_prefix, key, 0.1)
+  defp type_display_expr(field, type) when type in [:time, :time_usec],
+    do: "#{field} && Calendar.strftime(#{field}, \"%H:%M:%S\")"
 
-      :boolean ->
-        checkbox_block(field_prefix, key)
+  defp type_display_expr(field, type)
+       when type in [:naive_datetime, :naive_datetime_usec, :utc_datetime, :utc_datetime_usec],
+       do: "#{field} && Calendar.strftime(#{field}, \"%Y-%m-%d %H:%M\")"
 
-      :text ->
-        native_input_block(field_prefix, "textarea", key, error_slot: true)
+  defp type_display_expr(field, :decimal),
+    do: "#{field} && Decimal.to_string(#{field})"
 
-      :string ->
-        native_input_block(field_prefix, "text", key, error_slot: true)
+  defp type_display_expr(field, {:enum, _}),
+    do: "#{field} && Phoenix.Naming.humanize(to_string(#{field}))"
 
-      :uuid ->
-        native_input_block(field_prefix, "text", key, error_slot: true)
+  defp type_display_expr(field, {:array, :string}),
+    do: "Enum.join(#{field} || [], \", \")"
 
-      :binary ->
-        native_input_block(field_prefix, "text", key, error_slot: true)
+  defp type_display_expr(field, {:array, :integer}),
+    do: "Enum.join(Enum.map(#{field} || [], &to_string/1), \", \")"
 
-      :date ->
-        date_picker_block(field_prefix, key)
+  defp type_display_expr(field, {:array, _}), do: "inspect(#{field})"
+  defp type_display_expr(field, _type), do: field
 
-      :time ->
-        native_input_block(field_prefix, "time", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, :integer),
+    do: number_input_block(field_prefix, key, nil)
 
-      :time_usec ->
-        native_input_block(field_prefix, "time", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, :float),
+    do: number_input_block(field_prefix, key, 0.1)
 
-      :utc_datetime ->
-        native_input_block(field_prefix, "datetime-local", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, :decimal),
+    do: number_input_block(field_prefix, key, 0.1)
 
-      :naive_datetime ->
-        native_input_block(field_prefix, "datetime-local", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, :boolean),
+    do: checkbox_block(field_prefix, key)
 
-      :utc_datetime_usec ->
-        native_input_block(field_prefix, "datetime-local", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, :text),
+    do: native_input_block(field_prefix, "textarea", key, error_slot: true)
 
-      :naive_datetime_usec ->
-        native_input_block(field_prefix, "datetime-local", key, error_slot: true)
+  defp input_block(_schema, field_prefix, key, type)
+       when type in [:string, :uuid, :binary],
+       do: native_input_block(field_prefix, "text", key, error_slot: true)
 
-      {:array, _} = array_type ->
-        select_array_block(field_prefix, key, array_type)
+  defp input_block(_schema, field_prefix, key, :date),
+    do: date_picker_block(field_prefix, key)
 
-      {:enum, _} ->
-        select_enum_block(schema, field_prefix, key)
+  defp input_block(_schema, field_prefix, key, :time),
+    do: native_input_block(field_prefix, "time", key, error_slot: true)
 
-      {:references, _} ->
-        number_input_block(field_prefix, key, nil)
+  defp input_block(_schema, field_prefix, key, :time_usec),
+    do: native_input_block(field_prefix, "time", key, error_slot: true)
 
-      _ ->
-        native_input_block(field_prefix, "text", key, error_slot: true)
-    end
-  end
+  defp input_block(_schema, field_prefix, key, type)
+       when type in [:utc_datetime, :naive_datetime, :utc_datetime_usec, :naive_datetime_usec],
+       do: native_input_block(field_prefix, "datetime-local", key, error_slot: true)
+
+  defp input_block(_schema, field_prefix, key, {:array, _} = array_type),
+    do: select_array_block(field_prefix, key, array_type)
+
+  defp input_block(schema, field_prefix, key, {:enum, _}),
+    do: select_enum_block(schema, field_prefix, key)
+
+  defp input_block(_schema, field_prefix, key, {:references, _}),
+    do: number_input_block(field_prefix, key, nil)
+
+  defp input_block(_schema, field_prefix, key, _type),
+    do: native_input_block(field_prefix, "text", key, error_slot: true)
 
   defp number_input_block(field_prefix, key, step) do
     step_attr = if step, do: " step={0.1}", else: ""

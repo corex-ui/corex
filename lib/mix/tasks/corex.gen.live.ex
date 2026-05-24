@@ -125,6 +125,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   """
   use Mix.Task
 
+  alias Mix.Corex, as: Corex
+  alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
@@ -254,10 +256,10 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
-    layout_opts = Mix.Corex.layout_generators_opts()
-    locale_scoped = Mix.Corex.locale_scoped_routes?(context.web_module, layout_opts)
+    layout_opts = Corex.layout_generators_opts()
+    locale_scoped = Corex.locale_scoped_routes?(context.web_module, layout_opts)
     prefix = Module.concat(context.web_module, schema.web_namespace)
-    web_path = Mix.Corex.web_path(ctx_app)
+    web_path = Corex.web_path(ctx_app)
 
     scope_instruction =
       if locale_scoped do
@@ -370,6 +372,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
   def inputs(%Schema{} = schema) do
-    Mix.Corex.Gen.Inputs.inputs(schema, "@form")
+    Inputs.inputs(schema, "@form")
   end
 end

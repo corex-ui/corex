@@ -126,6 +126,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   """
   use Mix.Task
 
+  alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
@@ -316,7 +317,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.html templates."
   def inputs(%Schema{} = schema) do
-    Mix.Corex.Gen.Inputs.inputs(schema, "f")
+    Inputs.inputs(schema, "f")
   end
 
   @doc "Pads generated input snippets when emitted into generator templates."
