@@ -38,7 +38,7 @@ export function syncTagsArrayInputsForPhoenix(
     container.appendChild(empty);
     notifyInput = empty;
   } else {
-    values.forEach((value, index) => {
+    values.forEach((value) => {
       const input = document.createElement("input");
       input.type = "hidden";
       input.setAttribute("data-scope", "tags-input");

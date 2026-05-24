@@ -26,7 +26,7 @@ defmodule E2eWeb.TagsInputFormPageTest do
       })
 
     assert redirected_to(conn) =~ "/tags-input/form#tags-input-form-phoenix"
-    assert get_flash(conn, :info) =~ "Submitted: tags=[\"alpha\", \"beta\"]"
+    assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Submitted: tags=[\"alpha\", \"beta\"]"
   end
 
   test "POST ecto form with tags list", %{conn: conn} do
@@ -44,6 +44,6 @@ defmodule E2eWeb.TagsInputFormPageTest do
       })
 
     assert redirected_to(conn) =~ "/tags-input/form#tags-input-form-ecto"
-    assert get_flash(conn, :info) =~ "Submitted: tags=[\"alpha\", \"beta\"]"
+    assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Submitted: tags=[\"alpha\", \"beta\"]"
   end
 end
