@@ -408,6 +408,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
       assert c =~ "gettext: :sigils"
       assert c =~ "layout: [locale: true]"
     end)
+
     assert_file(Path.join(base, "lib/#{web}.ex"), "GettextSigils")
     assert_file(Path.join(base, "lib/#{web}/gettext.ex"), "locales: ~w(en fr ar)")
 
