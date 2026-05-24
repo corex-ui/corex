@@ -33028,6 +33028,7 @@ ${err}`);
     Select: () => SelectHook,
     buildCollection: () => buildCollection2,
     formatSelectHiddenValue: () => formatSelectHiddenValue,
+    reapplySelectInteractiveState: () => reapplySelectInteractiveState,
     syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix
   });
   function connect23(service, normalize) {
@@ -33507,6 +33508,14 @@ ${err}`);
     var _a4;
     if (!getBoolean(el, "controlled")) return {};
     return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
+  }
+  function reapplySelectInteractiveState(el) {
+    el.removeAttribute("data-loading");
+    if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+    const trigger = el.querySelector('[data-scope="select"][data-part="trigger"]');
+    if (!trigger || getBoolean(trigger, "disabled")) return;
+    trigger.disabled = false;
+    trigger.removeAttribute("disabled");
   }
   var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
   var init_select = __esm({
@@ -34508,9 +34517,9 @@ ${err}`);
           })), {
             collection: this.select.getCollection()
           }), selectValueBindingForUpdate(this.el)));
-          if (!this.fieldTouched) return;
           queueMicrotask(() => {
-            if (!this.select) return;
+            reapplySelectInteractiveState(this.el);
+            if (!this.fieldTouched || !this.select) return;
             const valueInput = this.el.querySelector(
               '[data-scope="select"][data-part="value-input"]'
             );
@@ -43062,10 +43071,11 @@ ${err}`);
                 serverEventName: getString(el, "onExpandedChange"),
                 clientEventName: getString(el, "onExpandedChangeClient")
               });
-              runHeightOpenToValues({
+              runHeightOpenTransition({
                 el,
                 selector: BRANCH_CONTENT_SELECTOR,
-                openValues: next2,
+                prevOpen: previousExpandedValue,
+                nextOpen: next2,
                 resolveValue: contentDatasetValue
               });
             }

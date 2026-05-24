@@ -95,6 +95,18 @@ function selectValueBindingForUpdate(el: HTMLElement): { value?: string[] } {
   return { value: getStringList(el, "value") ?? [] };
 }
 
+export function reapplySelectInteractiveState(el: HTMLElement): void {
+  el.removeAttribute("data-loading");
+
+  if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+
+  const trigger = el.querySelector<HTMLButtonElement>('[data-scope="select"][data-part="trigger"]');
+  if (!trigger || getBoolean(trigger, "disabled")) return;
+
+  trigger.disabled = false;
+  trigger.removeAttribute("disabled");
+}
+
 type SelectHookState = {
   select?: Select;
   handlers?: Array<CallbackRef>;
@@ -188,10 +200,11 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
       ...selectValueBindingForUpdate(this.el),
     } as Props);
 
-    if (!this.fieldTouched) return;
-
     queueMicrotask(() => {
-      if (!this.select) return;
+      reapplySelectInteractiveState(this.el);
+
+      if (!this.fieldTouched || !this.select) return;
+
       const valueInput = this.el.querySelector<HTMLInputElement>(
         '[data-scope="select"][data-part="value-input"]'
       );

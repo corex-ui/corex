@@ -1432,6 +1432,14 @@ function selectValueBindingForUpdate(el) {
   if (!getBoolean(el, "controlled")) return {};
   return { value: getStringList(el, "value") ?? [] };
 }
+function reapplySelectInteractiveState(el) {
+  el.removeAttribute("data-loading");
+  if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+  const trigger = el.querySelector('[data-scope="select"][data-part="trigger"]');
+  if (!trigger || getBoolean(trigger, "disabled")) return;
+  trigger.disabled = false;
+  trigger.removeAttribute("disabled");
+}
 var SelectHook = {
   mounted() {
     const el = this.el;
@@ -1499,9 +1507,9 @@ var SelectHook = {
       collection: this.select.getCollection(),
       ...selectValueBindingForUpdate(this.el)
     });
-    if (!this.fieldTouched) return;
     queueMicrotask(() => {
-      if (!this.select) return;
+      reapplySelectInteractiveState(this.el);
+      if (!this.fieldTouched || !this.select) return;
       const valueInput = this.el.querySelector(
         '[data-scope="select"][data-part="value-input"]'
       );
@@ -1526,5 +1534,6 @@ export {
   SelectHook as Select,
   buildCollection,
   formatSelectHiddenValue,
+  reapplySelectInteractiveState,
   syncSelectHiddenInputForPhoenix
 };

@@ -255,6 +255,7 @@ defmodule Corex.Select.Anatomy do
       "form",
       "aria-hidden",
       "tabindex",
+      "disabled",
       "data-state",
       "data-focus",
       "data-focus-visible"

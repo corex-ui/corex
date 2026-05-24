@@ -5,7 +5,6 @@ import {
   contentDatasetValue,
   isJsAnimation,
   prepareJsHeightInitialState,
-  runHeightOpenToValues,
   runHeightOpenTransition,
   stripHiddenFromProps
 } from "./chunks/chunk-VBYH4ZIZ.mjs";
@@ -1543,10 +1542,11 @@ var TreeViewHook = {
           serverEventName: getString(el, "onExpandedChange"),
           clientEventName: getString(el, "onExpandedChangeClient")
         });
-        runHeightOpenToValues({
+        runHeightOpenTransition({
           el,
           selector: BRANCH_CONTENT_SELECTOR,
-          openValues: next,
+          prevOpen: previousExpandedValue,
+          nextOpen: next,
           resolveValue: contentDatasetValue
         });
       }
