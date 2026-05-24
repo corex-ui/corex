@@ -83,16 +83,14 @@ defmodule E2eWeb.AccordionPlayLive do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: value})
-     |> sync_items()
-     |> push_playground_accordion_value()}
+     |> sync_items()}
   end
 
   def handle_event("disabled_items_changed", _params, socket) do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: []})
-     |> sync_items()
-     |> push_playground_accordion_value()}
+     |> sync_items()}
   end
 
   defp update_control(socket, "orientation", value) do
@@ -152,17 +150,10 @@ defmodule E2eWeb.AccordionPlayLive do
   end
 
   defp playground_accordion_reset_value(controls) do
-    order = item_values()
-    disabled = Map.get(controls, :disabled_items, [])
-    enabled = Enum.filter(order, &(&1 not in disabled))
-
     if controls.multiple do
-      enabled
+      item_values()
     else
-      case enabled do
-        [] -> []
-        [first | _] -> [first]
-      end
+      [hd(item_values())]
     end
   end
 

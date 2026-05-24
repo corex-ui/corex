@@ -13,277 +13,277 @@ defmodule Corex.DataTable do
   alias Corex.DataTable.Translation
 
   @doc ~S'''
-   Renders a table with data.
+  Renders a table with data.
 
-   ## Anatomy
+  ## Anatomy
 
-   <!-- tabs-open -->
+  <!-- tabs-open -->
 
-   ### Basic
+  ### Basic
 
-   ```heex
-   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
-     <:col :let={row} label="ID">{row.id}</:col>
-     <:col :let={row} label="Name">{row.name}</:col>
-     <:col :let={row} label="Role">{row.role}</:col>
-     <:col :let={row} label="Email">{row.email}</:col>
-   </.data_table>
-   ```
+  ```heex
+  <.data_table id="basic-table" class="data-table" rows={@list_rows}>
+    <:col :let={row} label="ID">{row.id}</:col>
+    <:col :let={row} label="Name">{row.name}</:col>
+    <:col :let={row} label="Role">{row.role}</:col>
+    <:col :let={row} label="Email">{row.email}</:col>
+  </.data_table>
+  ```
 
-   ### Actions
+  ### Actions
 
-   Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
+  Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
 
-   ```heex
-   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
-     <:col :let={row} label="ID">{row.id}</:col>
-     <:col :let={row} label="Name">{row.name}</:col>
-     <:col :let={row} label="Role">{row.role}</:col>
-     <:col :let={row} label="Email">{row.email}</:col>
-     <:action :let={row}>
-       <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
-       <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
-     </:action>
-   </.data_table>
-   ```
+  ```heex
+  <.data_table id="basic-table" class="data-table" rows={@list_rows}>
+    <:col :let={row} label="ID">{row.id}</:col>
+    <:col :let={row} label="Name">{row.name}</:col>
+    <:col :let={row} label="Role">{row.role}</:col>
+    <:col :let={row} label="Email">{row.email}</:col>
+    <:action :let={row}>
+      <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
+      <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
+    </:action>
+  </.data_table>
+  ```
 
-   ### Streaming
+  ### Streaming
 
-   Pass the stream to `rows`. Column slot receives `{id, item}`. Items need an `:id` field (or use `stream_configure/3` with `:dom_id`). Add rows with `stream_insert/3`.
+  Pass the stream to `rows`. Column slot receives `{id, item}`. Items need an `:id` field (or use `stream_configure/3` with `:dom_id`). Add rows with `stream_insert/3`.
 
-   ```elixir
-   # mount
-   socket |> stream(:items, []) |> assign(:next_id, 1)
-   ```
+  ```elixir
+  # mount
+  socket |> stream(:items, []) |> assign(:next_id, 1)
+  ```
 
-   ```heex
-   <.data_table id="my-table" class="data-table" rows={@streams.items}>
-     <:col :let={{_id, item}} label="Name">{item.name}</:col>
-   </.data_table>
-   ```
+  ```heex
+  <.data_table id="my-table" class="data-table" rows={@streams.items}>
+    <:col :let={{_id, item}} label="Name">{item.name}</:col>
+  </.data_table>
+  ```
 
-   Add a row: `stream_insert(socket, :items, %{id: id, name: "New"})` from `handle_event` or `handle_info`.
+  Add a row: `stream_insert(socket, :items, %{id: id, name: "New"})` from `handle_event` or `handle_info`.
 
-   With the `:empty` slot, the empty row stays in the DOM and is hidden by the `data-table` stylesheet whenever the tbody has data rows (same idea as [stream empty state siblings](https://elixirforum.com/t/stream-empty-state-is-there-a-way-to-check-when-a-stream-is-empty/57219/20); avoids counting stream items on the server).
+  With the `:empty` slot, the empty row stays in the DOM and is hidden by the `data-table` stylesheet whenever the tbody has data rows (same idea as [stream empty state siblings](https://elixirforum.com/t/stream-empty-state-is-there-a-way-to-check-when-a-stream-is-empty/57219/20); avoids counting stream items on the server).
 
-   ### Row click
+  ### Row click
 
-   Pass `row_click` to handle clicks on data cells (not the action column). Use `JS.push/2` to update LiveView state without navigating.
+  Pass `row_click` to handle clicks on data cells (not the action column). Use `JS.push/2` to update LiveView state without navigating.
 
-   ```heex
-   <p :if={@row_clicked}>Row clicked: {@row_clicked}</p>
-   <.data_table
-     id="users-table"
-     class="data-table"
-     rows={@users}
-     row_click={fn user -> JS.push("row_click", value: %{id: user.id, name: user.name}) end}
-   >
-     <:col :let={user} label="Name">{user.name}</:col>
-     <:action :let={user}>
-       <.action class="button button--sm">Edit</.action>
-     </:action>
-   </.data_table>
-   ```
+  ```heex
+  <p :if={@row_clicked}>Row clicked: {@row_clicked}</p>
+  <.data_table
+    id="users-table"
+    class="data-table"
+    rows={@users}
+    row_click={fn user -> JS.push("row_click", value: %{id: user.id, name: user.name}) end}
+  >
+    <:col :let={user} label="Name">{user.name}</:col>
+    <:action :let={user}>
+      <.action class="button button--sm">Edit</.action>
+    </:action>
+  </.data_table>
+  ```
 
-   ```elixir
-   def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
-     {:noreply, assign(socket, :row_clicked, "#{name} (##{id})")}
-   end
-   ```
+  ```elixir
+  def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
+    {:noreply, assign(socket, :row_clicked, "#{name} (##{id})")}
+  end
+  ```
 
-   ### Sortable
+  ### Sortable
 
-   Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). LiveView minimum:
+  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). LiveView minimum:
 
-   ```elixir
-   # mount
+  ```elixir
+  # mount
+  socket
+  |> assign(:users, users)
+  |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+  # handle_event("sort", params, socket)
+  {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}
+  ```
+
+  ```heex
+  <.data_table id="users-sortable" class="data-table" rows={@users} sort_by={@sort_by} sort_order={@sort_order} on_sort="sort">
+    <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+    <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+    <:sort_icon :let={%{direction: direction}}>
+      <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
+    </:sort_icon>
+  </.data_table>
+  ```
+
+  ### Selectable
+
+  Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate selection to [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html). LiveView minimum:
+
+  ```elixir
+  # mount
+  socket
+  |> assign(:users, users)
+  |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
+
+  def handle_event("select", params, socket) do
+    {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}
+  end
+
+  def handle_event("select_all", params, socket) do
+    {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}
+  end
+  ```
+
+  ```heex
+  <.data_table
+    id="users-table"
+    class="data-table"
+    rows={@users}
+    row_id={&"user-#{&1.id}"}
+    selectable={true}
+    selected={@selected}
+    on_select="select"
+    on_select_all="select_all"
+    checkbox_class="checkbox"
+  >
+    <:checkbox_indicator>
+      <.heroicon name="hero-check" />
+    </:checkbox_indicator>
+    <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+    <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+    <:col :let={user} label="Email" name={:email}>{user.email}</:col>
+  </.data_table>
+  ```
+
+  ### With database
+
+  Sort and paginate in your context (`order_by`, `limit`, `offset`), then pass each page to `<.data_table>` and `<.pagination>`. Re-fetch on `on_sort` and `on_page_change`.
+
+  ```elixir
+  # mount
+  {rows, total} = MyApp.list_cities(page: 1, page_size: 10, order_by: :name, order_dir: :asc)
+
+  {:ok,
    socket
-   |> assign(:users, users)
-   |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+   |> assign(:cities, rows)
+   |> assign(:page, 1)
+   |> assign(:page_size, 10)
+   |> assign(:sort_by, :name)
+   |> assign(:sort_order, :asc)
+   |> assign(:total, total)}
+  ```
 
-   # handle_event("sort", params, socket)
-   {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}
-   ```
+  ```heex
+  <.data_table
+    id="cities-table"
+    class="data-table"
+    rows={@cities}
+    sort_by={@sort_by}
+    sort_order={@sort_order}
+    on_sort="sort"
+  >
+    <:col :let={city} label="Name" name={:name}>{city.name}</:col>
+  </.data_table>
+  <.pagination
+    id="cities-pagination"
+    class="pagination"
+    count={@total}
+    page={@page}
+    page_size={@page_size}
+    controlled
+    on_page_change="page"
+  />
+  ```
 
-   ```heex
-   <.data_table id="users-sortable" class="data-table" rows={@users} sort_by={@sort_by} sort_order={@sort_order} on_sort="sort">
-     <:col :let={user} label="ID" name={:id}>{user.id}</:col>
-     <:col :let={user} label="Name" name={:name}>{user.name}</:col>
-     <:sort_icon :let={%{direction: direction}}>
-       <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
-     </:sort_icon>
-   </.data_table>
-   ```
+  ```elixir
+  def handle_event("sort", %{"sort_by" => sort_by}, socket) do
+    sort_by = String.to_existing_atom(sort_by)
+    order =
+      if socket.assigns.sort_by == sort_by do
+        if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+      else
+        :asc
+      end
 
-   ### Selectable
+    {rows, total} =
+      MyApp.list_cities(
+        page: 1,
+        page_size: socket.assigns.page_size,
+        order_by: sort_by,
+        order_dir: order
+      )
 
-   Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate selection to [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html). LiveView minimum:
+    {:noreply,
+     socket
+     |> assign(:cities, rows)
+     |> assign(:page, 1)
+     |> assign(:sort_by, sort_by)
+     |> assign(:sort_order, order)
+     |> assign(:total, total)}
+  end
 
-   ```elixir
-   # mount
-   socket
-   |> assign(:users, users)
-   |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
+  def handle_event("page", %{"page" => page}, socket) do
+    page = String.to_integer(page)
 
-   def handle_event("select", params, socket) do
-     {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}
-   end
+    {rows, total} =
+      MyApp.list_cities(
+        page: page,
+        page_size: socket.assigns.page_size,
+        order_by: socket.assigns.sort_by,
+        order_dir: socket.assigns.sort_order
+      )
 
-   def handle_event("select_all", params, socket) do
-     {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}
-   end
-   ```
+    {:noreply,
+     socket
+     |> assign(:cities, rows)
+     |> assign(:page, page)
+     |> assign(:total, total)}
+  end
+  ```
 
-   ```heex
-   <.data_table
-     id="users-table"
-     class="data-table"
-     rows={@users}
-     row_id={&"user-#{&1.id}"}
-     selectable={true}
-     selected={@selected}
-     on_select="select"
-     on_select_all="select_all"
-     checkbox_class="checkbox"
-   >
-     <:checkbox_indicator>
-       <.heroicon name="hero-check" />
-     </:checkbox_indicator>
-     <:col :let={user} label="ID" name={:id}>{user.id}</:col>
-     <:col :let={user} label="Name" name={:name}>{user.name}</:col>
-     <:col :let={user} label="Email" name={:email}>{user.email}</:col>
-   </.data_table>
-   ```
+  <!-- tabs-close -->
 
-   ### With database
+  ## Style
 
-   Sort and paginate in your context (`order_by`, `limit`, `offset`), then pass each page to `<.data_table>` and `<.pagination>`. Re-fetch on `on_sort` and `on_page_change`.
+  Use data attributes to target elements:
 
-   ```elixir
-   # mount
-   {rows, total} = MyApp.list_cities(page: 1, page_size: 10, order_by: :name, order_dir: :asc)
+  ```css
+  [data-scope="data-table"][data-part="root"] {}
+  [data-scope="data-table"][data-part="thead"] {}
+  [data-scope="data-table"][data-part="tbody"] {}
+  [data-scope="data-table"][data-part="row"] {}
+  [data-scope="data-table"][data-part="cell"] {}
+  [data-scope="data-table"][data-part="sort-header"] {}
+  [data-scope="data-table"][data-part="sort-text"] {}
+  [data-scope="data-table"][data-part="sort-icon-container"] {}
+  [data-scope="data-table"][data-part="sort-trigger"] {}
+  [data-scope="data-table"][data-part="selection-header"] {}
+  [data-scope="data-table"][data-part="selection-cell"] {}
+  [data-scope="data-table"][data-part="action-header"] {}
+  [data-scope="data-table"][data-part="action-cell"] {}
+  [data-scope="data-table"][data-part="actions"] {}
+  [data-scope="data-table"][data-part="empty-row"] {}
+  [data-scope="data-table"][data-part="empty-cell"] {}
+  [data-scope="data-table"][data-part="empty"] {}
+  ```
 
-   {:ok,
-    socket
-    |> assign(:cities, rows)
-    |> assign(:page, 1)
-    |> assign(:page_size, 10)
-    |> assign(:sort_by, :name)
-    |> assign(:sort_order, :asc)
-    |> assign(:total, total)}
-   ```
+  With the `data-table` class, the stylesheet hides `[data-part="empty-row"]` when it is not the only row in the tbody so list and stream tables can use `<:empty>` without server-side row counts.
 
-   ```heex
-   <.data_table
-     id="cities-table"
-     class="data-table"
-     rows={@cities}
-     sort_by={@sort_by}
-     sort_order={@sort_order}
-     on_sort="sort"
-   >
-     <:col :let={city} label="Name" name={:name}>{city.name}</:col>
-   </.data_table>
-   <.pagination
-     id="cities-pagination"
-     class="pagination"
-     count={@total}
-     page={@page}
-     page_size={@page_size}
-     controlled
-     on_page_change="page"
-   />
-   ```
+  If you wish to use the default Corex styling, use the class `data-table` on the component.
 
-   ```elixir
-   def handle_event("sort", %{"sort_by" => sort_by}, socket) do
-     sort_by = String.to_existing_atom(sort_by)
-     order =
-       if socket.assigns.sort_by == sort_by do
-         if socket.assigns.sort_order == :asc, do: :desc, else: :asc
-       else
-         :asc
-       end
+  Modifier classes on the root:
 
-     {rows, total} =
-       MyApp.list_cities(
-         page: 1,
-         page_size: socket.assigns.page_size,
-         order_by: sort_by,
-         order_dir: order
-       )
+  - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
+  - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
 
-     {:noreply,
-      socket
-      |> assign(:cities, rows)
-      |> assign(:page, 1)
-      |> assign(:sort_by, sort_by)
-      |> assign(:sort_order, order)
-      |> assign(:total, total)}
-   end
+  Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
-   def handle_event("page", %{"page" => page}, socket) do
-     page = String.to_integer(page)
-
-     {rows, total} =
-       MyApp.list_cities(
-         page: page,
-         page_size: socket.assigns.page_size,
-         order_by: socket.assigns.sort_by,
-         order_dir: socket.assigns.sort_order
-       )
-
-     {:noreply,
-      socket
-      |> assign(:cities, rows)
-      |> assign(:page, page)
-      |> assign(:total, total)}
-   end
-   ```
-
-   <!-- tabs-close -->
-
-   ## Style
-
-   Use data attributes to target elements:
-
-   ```css
-   [data-scope="data-table"][data-part="root"] {}
-   [data-scope="data-table"][data-part="thead"] {}
-   [data-scope="data-table"][data-part="tbody"] {}
-   [data-scope="data-table"][data-part="row"] {}
-   [data-scope="data-table"][data-part="cell"] {}
-   [data-scope="data-table"][data-part="sort-header"] {}
-   [data-scope="data-table"][data-part="sort-text"] {}
-   [data-scope="data-table"][data-part="sort-icon-container"] {}
-   [data-scope="data-table"][data-part="sort-trigger"] {}
-   [data-scope="data-table"][data-part="selection-header"] {}
-   [data-scope="data-table"][data-part="selection-cell"] {}
-   [data-scope="data-table"][data-part="action-header"] {}
-   [data-scope="data-table"][data-part="action-cell"] {}
-   [data-scope="data-table"][data-part="actions"] {}
-   [data-scope="data-table"][data-part="empty-row"] {}
-   [data-scope="data-table"][data-part="empty-cell"] {}
-   [data-scope="data-table"][data-part="empty"] {}
-   ```
-
-   With the `data-table` class, the stylesheet hides `[data-part="empty-row"]` when it is not the only row in the tbody so list and stream tables can use `<:empty>` without server-side row counts.
-
-   If you wish to use the default Corex styling, use the class `data-table` on the component.
-
-   Modifier classes on the root:
-
-   - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
-   - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
-
-   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
-   This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-   ```css
-   @import "../corex/main.css";
-   @import "../corex/tokens/themes/neo/light.css";
-   @import "../corex/components/data-table.css";
-   ```
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/data-table.css";
+  ```
   '''
 
   attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")

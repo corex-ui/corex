@@ -415,6 +415,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def form_validate_heex, do: form_doc_controller_validate_heex()
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
 
   def form_doc_controller_phoenix_heex do
     ~S"""
@@ -761,6 +762,16 @@ defmodule E2eWeb.Demos.NativeInputDemo do
         Submit
       </.action>
     </form>
+    """
+  end
+
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def native_input_form_submit(conn, %{"profile" => profile}) do
+      conn
+      |> put_flash(:info, "Submitted: profile=#{inspect(profile)}")
+      |> redirect(to: ~p"/native-input/form#native-input-form-native")
+    end
     """
   end
 

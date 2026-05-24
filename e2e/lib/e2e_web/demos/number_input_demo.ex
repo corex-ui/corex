@@ -886,6 +886,18 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def number_input_form_submit(conn, %{"value" => value}) do
+      conn
+      |> put_flash(:info, "Submitted: value=#{value}")
+      |> redirect(to: ~p"/number-input/form#number-input-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_preview_controller_changeset(assigns) do
     ~H"""
     <.form

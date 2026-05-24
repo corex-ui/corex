@@ -710,6 +710,18 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def combobox_form_submit(conn, %{"combobox_native" => %{"country" => country}}) do
+      conn
+      |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+      |> redirect(to: ~p"/combobox/form#combobox-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

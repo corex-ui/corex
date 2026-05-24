@@ -23,7 +23,16 @@ defmodule E2e.Accounts.Admin do
   def changeset(admin, attrs) do
     admin
     |> cast(attrs, [:name, :signature, :country, :birth_date, :terms, :level, :currency, :tags])
-    |> validate_required([:name, :signature, :country, :birth_date, :terms, :level, :currency, :tags])
+    |> validate_required([
+      :name,
+      :signature,
+      :country,
+      :birth_date,
+      :terms,
+      :level,
+      :currency,
+      :tags
+    ])
     |> validate_acceptance(:terms)
     |> validate_inclusion(:country, Ecto.Enum.values(E2e.Accounts.Admin, :country))
     |> validate_number(:level, greater_than_or_equal_to: 1, less_than_or_equal_to: 5)

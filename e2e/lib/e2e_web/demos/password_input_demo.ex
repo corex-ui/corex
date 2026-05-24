@@ -631,6 +631,21 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def password_input_form_submit(conn, %{"user" => %{"password" => password}}) do
+      message =
+        if password == "", do: "Submitted: password=", else: "Submitted: password=***"
+
+      conn
+      |> put_flash(:info, message)
+      |> redirect(to: ~p"/password-input/form#password-input-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

@@ -83,59 +83,54 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.ComboboxDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.ComboboxDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.ComboboxDemo.form_doc_controller_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.ComboboxDemo.form_native_elixir())
   end
 
-  def combobox_form_submit(conn, params) do
-    cond do
-      is_map(params["combobox_phoenix"]) ->
-        country = params["combobox_phoenix"]["country"] || ""
+  def combobox_form_submit(conn, %{"combobox_phoenix" => %{"country" => country}}) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/combobox/form#combobox-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
-        |> redirect(to: ~p"/combobox/form#combobox-form-phoenix")
+  def combobox_form_submit(conn, %{"combobox_ecto" => combobox_params}) do
+    changeset =
+      %E2e.Form.Combobox{}
+      |> E2e.Form.Combobox.changeset_validate(combobox_params)
 
-      is_map(params["combobox_ecto"]) ->
-        changeset =
-          %E2e.Form.Combobox{}
-          |> E2e.Form.Combobox.changeset_validate(params["combobox_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: country=#{inspect(data.country)}")
+      |> redirect(to: ~p"/combobox/form#combobox-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: country=#{inspect(data.country)}")
-          |> redirect(to: ~p"/combobox/form#combobox-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :combobox_ecto, id: "combobox-form-ecto")
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :combobox_ecto, id: "combobox-form-ecto")
+      phoenix_form =
+        Phoenix.Component.to_form(%{"country" => ""},
+          as: :combobox_phoenix,
+          id: "combobox-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"country" => ""},
-              as: :combobox_phoenix,
-              id: "combobox-form-phoenix"
-            )
-
-          conn
-          |> assign_combobox_form_docs("combobox-form-ecto")
-          |> render(:combobox_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      is_map(params["combobox_native"]) ->
-        country = get_in(params, ["combobox_native", "country"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
-        |> redirect(to: ~p"/combobox/form#combobox-form-native")
-
-      true ->
-        country = get_in(params, ["combobox", "country"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
-        |> redirect(to: ~p"/combobox/form#combobox-form-native")
+      conn
+      |> assign_combobox_form_docs("combobox-form-ecto")
+      |> render(:combobox_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def combobox_form_submit(conn, %{"combobox_native" => %{"country" => country}}) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/combobox/form#combobox-form-native")
+  end
+
+  def combobox_form_submit(conn, %{"combobox" => %{"country" => country}}) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/combobox/form#combobox-form-native")
   end
 
   def color_picker_page(conn, _params) do
@@ -159,6 +154,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.CheckboxDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.CheckboxDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.CheckboxDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.CheckboxDemo.form_native_elixir())
   end
 
   def checkbox_form_page(conn, _params) do
@@ -178,52 +174,53 @@ defmodule E2eWeb.PageController do
     |> render(:checkbox_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def checkbox_form_submit(conn, params) do
-    cond do
-      is_map(params["terms_phoenix"]) ->
-        terms = params["terms_phoenix"]["terms"] in [true, "true", "on", "1", 1]
+  def checkbox_form_submit(conn, %{"terms_phoenix" => phoenix_params}) do
+    terms = form_checkbox_checked?(phoenix_params["terms"])
 
-        conn
-        |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
-        |> redirect(to: ~p"/checkbox/form#checkbox-form-phoenix")
+    conn
+    |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+    |> redirect(to: ~p"/checkbox/form#checkbox-form-phoenix")
+  end
 
-      is_map(params["terms_ecto"]) ->
-        changeset =
-          %E2e.Form.Terms{}
-          |> E2e.Form.Terms.changeset_validate(params["terms_ecto"] || %{})
+  def checkbox_form_submit(conn, %{"terms_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.Terms{}
+      |> E2e.Form.Terms.changeset_validate(ecto_params)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-          conn
-          |> put_flash(:info, "Submitted: terms=#{inspect(data.terms)}")
-          |> redirect(to: ~p"/checkbox/form#checkbox-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      conn
+      |> put_flash(:info, "Submitted: terms=#{inspect(data.terms)}")
+      |> redirect(to: ~p"/checkbox/form#checkbox-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :terms_ecto, id: "checkbox-form-ecto")
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :terms_ecto, id: "checkbox-form-ecto")
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"terms" => false},
-              as: :terms_phoenix,
-              id: "checkbox-form-phoenix"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"terms" => false},
+          as: :terms_phoenix,
+          id: "checkbox-form-phoenix"
+        )
 
-          conn
-          |> assign_checkbox_form_docs("checkbox-form-ecto")
-          |> render(:checkbox_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        terms =
-          get_in(params, ["terms", "terms"]) || params["terms"] ||
-            get_in(params, ["user", "terms"])
-
-        conn
-        |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
-        |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
+      conn
+      |> assign_checkbox_form_docs("checkbox-form-ecto")
+      |> render(:checkbox_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def checkbox_form_submit(conn, %{"terms" => %{"terms" => terms}}) do
+    conn
+    |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+    |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
+  end
+
+  def checkbox_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: terms=#{inspect(false)}")
+    |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
   end
 
   defp assign_switch_form_docs(conn, scroll_to) do
@@ -235,6 +232,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.SwitchDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.SwitchDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.SwitchDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.SwitchDemo.form_native_elixir())
   end
 
   def switch_form_page(conn, _params) do
@@ -254,51 +252,53 @@ defmodule E2eWeb.PageController do
     |> render(:switch_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def switch_form_submit(conn, params) do
-    cond do
-      is_map(params["preferences_phoenix"]) ->
-        notifications =
-          params["preferences_phoenix"]["notifications"] in [true, "true", "on", "1", 1]
+  def switch_form_submit(conn, %{"preferences_phoenix" => phoenix_params}) do
+    notifications = form_checkbox_checked?(phoenix_params["notifications"])
 
-        conn
-        |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
-        |> redirect(to: ~p"/switch/form#switch-form-phoenix")
+    conn
+    |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
+    |> redirect(to: ~p"/switch/form#switch-form-phoenix")
+  end
 
-      is_map(params["preferences_ecto"]) ->
-        changeset =
-          %E2e.Form.Preferences{}
-          |> E2e.Form.Preferences.changeset_validate(params["preferences_ecto"] || %{})
+  def switch_form_submit(conn, %{"preferences_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.Preferences{}
+      |> E2e.Form.Preferences.changeset_validate(ecto_params)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-          conn
-          |> put_flash(:info, "Submitted: notifications=#{inspect(data.notifications)}")
-          |> redirect(to: ~p"/switch/form#switch-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      conn
+      |> put_flash(:info, "Submitted: notifications=#{inspect(data.notifications)}")
+      |> redirect(to: ~p"/switch/form#switch-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :preferences_ecto, id: "switch-form-ecto")
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :preferences_ecto, id: "switch-form-ecto")
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"notifications" => false},
-              as: :preferences_phoenix,
-              id: "switch-form-phoenix"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"notifications" => false},
+          as: :preferences_phoenix,
+          id: "switch-form-phoenix"
+        )
 
-          conn
-          |> assign_switch_form_docs("switch-form-ecto")
-          |> render(:switch_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        notifications = get_in(params, ["user", "notifications"])
-
-        conn
-        |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
-        |> redirect(to: ~p"/switch/form#switch-form-native")
+      conn
+      |> assign_switch_form_docs("switch-form-ecto")
+      |> render(:switch_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def switch_form_submit(conn, %{"user" => %{"notifications" => notifications}}) do
+    conn
+    |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
+    |> redirect(to: ~p"/switch/form#switch-form-native")
+  end
+
+  def switch_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: notifications=nil")
+    |> redirect(to: ~p"/switch/form#switch-form-native")
   end
 
   def select_page(conn, _params) do
@@ -318,6 +318,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.SelectDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.SelectDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.SelectDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.SelectDemo.form_native_elixir())
   end
 
   def select_form_page(conn, _params) do
@@ -337,50 +338,45 @@ defmodule E2eWeb.PageController do
     |> render(:select_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def select_form_submit(conn, params) do
-    cond do
-      is_map(params["select_phoenix"]) ->
-        country = params["select_phoenix"]["country"] || ""
+  def select_form_submit(conn, %{"select_phoenix" => %{"country" => country}}) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/select/form#select-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
-        |> redirect(to: ~p"/select/form#select-form-phoenix")
+  def select_form_submit(conn, %{"select_ecto" => select_params}) do
+    changeset =
+      %E2e.Form.SelectForm{}
+      |> E2e.Form.SelectForm.changeset_validate(select_params)
 
-      is_map(params["select_ecto"]) ->
-        changeset =
-          %E2e.Form.SelectForm{}
-          |> E2e.Form.SelectForm.changeset_validate(params["select_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: country=#{inspect(data.country)}")
+      |> redirect(to: ~p"/select/form#select-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: country=#{inspect(data.country)}")
-          |> redirect(to: ~p"/select/form#select-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :select_ecto, id: "select-form-ecto")
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :select_ecto, id: "select-form-ecto")
+      phoenix_form =
+        Phoenix.Component.to_form(%{"country" => ""},
+          as: :select_phoenix,
+          id: "select-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"country" => ""},
-              as: :select_phoenix,
-              id: "select-form-phoenix"
-            )
-
-          conn
-          |> assign_select_form_docs("select-form-ecto")
-          |> render(:select_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        country = get_in(params, ["user", "country"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
-        |> redirect(to: ~p"/select/form#select-form-native")
+      conn
+      |> assign_select_form_docs("select-form-ecto")
+      |> render(:select_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def select_form_submit(conn, %{"user" => %{"country" => country}}) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/select/form#select-form-native")
   end
 
   def tabs_page(conn, _params) do
@@ -450,6 +446,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.AngleSliderDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.AngleSliderDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.AngleSliderDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.AngleSliderDemo.form_native_elixir())
   end
 
   def angle_slider_form_page(conn, _params) do
@@ -469,53 +466,48 @@ defmodule E2eWeb.PageController do
     |> render(:angle_slider_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def angle_slider_form_submit(conn, params) do
-    cond do
-      is_map(params["angle_slider_phoenix"]) ->
-        angle = params["angle_slider_phoenix"]["angle"] || "0"
+  def angle_slider_form_submit(conn, %{"angle_slider_phoenix" => %{"angle" => angle}}) do
+    conn
+    |> put_flash(:info, "Submitted: angle=#{angle}")
+    |> redirect(to: ~p"/angle-slider/form#angle-slider-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: angle=#{angle}")
-        |> redirect(to: ~p"/angle-slider/form#angle-slider-form-phoenix")
+  def angle_slider_form_submit(conn, %{"angle_slider_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.AngleSliderForm{}
+      |> E2e.Form.AngleSliderForm.changeset_validate(ecto_params)
 
-      is_map(params["angle_slider_ecto"]) ->
-        changeset =
-          %E2e.Form.AngleSliderForm{}
-          |> E2e.Form.AngleSliderForm.changeset_validate(params["angle_slider_ecto"] || %{})
+    if changeset.valid? do
+      angle = ecto_params["angle"] || "0"
 
-        if changeset.valid? do
-          angle = get_in(params, ["angle_slider_ecto", "angle"]) || "0"
+      conn
+      |> put_flash(:info, "Submitted: angle=#{angle}")
+      |> redirect(to: ~p"/angle-slider/form#angle-slider-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: angle=#{angle}")
-          |> redirect(to: ~p"/angle-slider/form#angle-slider-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :angle_slider_ecto,
+          id: "angle-slider-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :angle_slider_ecto,
-              id: "angle-slider-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"angle" => "0"},
+          as: :angle_slider_phoenix,
+          id: "angle-slider-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"angle" => "0"},
-              as: :angle_slider_phoenix,
-              id: "angle-slider-form-phoenix"
-            )
-
-          conn
-          |> assign_angle_slider_form_docs("angle-slider-form-ecto")
-          |> render(:angle_slider_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        angle = get_in(params, ["angle_slider_form", "angle"]) || "0"
-
-        conn
-        |> put_flash(:info, "Submitted: angle=#{angle}")
-        |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
+      conn
+      |> assign_angle_slider_form_docs("angle-slider-form-ecto")
+      |> render(:angle_slider_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def angle_slider_form_submit(conn, %{"angle_slider_form" => %{"angle" => angle}}) do
+    conn
+    |> put_flash(:info, "Submitted: angle=#{angle}")
+    |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
   end
 
   defp assign_color_picker_form_docs(conn, scroll_to) do
@@ -527,6 +519,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.ColorPickerDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.ColorPickerDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.ColorPickerDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.ColorPickerDemo.form_native_elixir())
   end
 
   def color_picker_form_page(conn, _params) do
@@ -546,53 +539,48 @@ defmodule E2eWeb.PageController do
     |> render(:color_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def color_picker_form_submit(conn, params) do
-    cond do
-      is_map(params["color_picker_phoenix"]) ->
-        color = params["color_picker_phoenix"]["color"] || "#3b82f6"
+  def color_picker_form_submit(conn, %{"color_picker_phoenix" => %{"color" => color}}) do
+    conn
+    |> put_flash(:info, "Submitted: color=#{color}")
+    |> redirect(to: ~p"/color-picker/form#color-picker-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: color=#{color}")
-        |> redirect(to: ~p"/color-picker/form#color-picker-form-phoenix")
+  def color_picker_form_submit(conn, %{"color_picker_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.ColorPickerForm{}
+      |> E2e.Form.ColorPickerForm.changeset_validate(ecto_params)
 
-      is_map(params["color_picker_ecto"]) ->
-        changeset =
-          %E2e.Form.ColorPickerForm{}
-          |> E2e.Form.ColorPickerForm.changeset_validate(params["color_picker_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: color=#{data.color}")
+      |> redirect(to: ~p"/color-picker/form#color-picker-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: color=#{data.color}")
-          |> redirect(to: ~p"/color-picker/form#color-picker-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :color_picker_ecto,
+          id: "color-picker-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :color_picker_ecto,
-              id: "color-picker-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+          as: :color_picker_phoenix,
+          id: "color-picker-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"color" => "#3b82f6"},
-              as: :color_picker_phoenix,
-              id: "color-picker-form-phoenix"
-            )
-
-          conn
-          |> assign_color_picker_form_docs("color-picker-form-ecto")
-          |> render(:color_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        color = get_in(params, ["color_picker_form", "color"]) || "#3b82f6"
-
-        conn
-        |> put_flash(:info, "Submitted: color=#{color}")
-        |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
+      conn
+      |> assign_color_picker_form_docs("color-picker-form-ecto")
+      |> render(:color_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+    conn
+    |> put_flash(:info, "Submitted: color=#{color}")
+    |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
   end
 
   def date_picker_page(conn, _params) do
@@ -608,6 +596,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.DatePickerDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.DatePickerDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.DatePickerDemo.form_doc_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.DatePickerDemo.form_native_elixir())
   end
 
   def date_picker_form_page(conn, _params) do
@@ -627,53 +616,48 @@ defmodule E2eWeb.PageController do
     |> render(:date_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def date_picker_form_submit(conn, params) do
-    cond do
-      is_map(params["date_picker_phoenix"]) ->
-        date = params["date_picker_phoenix"]["date"] || ""
+  def date_picker_form_submit(conn, %{"date_picker_phoenix" => %{"date" => date}}) do
+    conn
+    |> put_flash(:info, "Submitted: date=#{date}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: date=#{date}")
-        |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix")
+  def date_picker_form_submit(conn, %{"date_picker_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.DatePickerForm{}
+      |> E2e.Form.DatePickerForm.changeset_validate(ecto_params)
 
-      is_map(params["date_picker_ecto"]) ->
-        changeset =
-          %E2e.Form.DatePickerForm{}
-          |> E2e.Form.DatePickerForm.changeset_validate(params["date_picker_ecto"] || %{})
+    if changeset.valid? do
+      date = ecto_params["date"] || ""
 
-        if changeset.valid? do
-          date = get_in(params, ["date_picker_ecto", "date"]) || ""
+      conn
+      |> put_flash(:info, "Submitted: date=#{date}")
+      |> redirect(to: ~p"/date-picker/form#date-picker-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: date=#{date}")
-          |> redirect(to: ~p"/date-picker/form#date-picker-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :date_picker_ecto,
+          id: "date-picker-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :date_picker_ecto,
-              id: "date-picker-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"date" => ""},
+          as: :date_picker_phoenix,
+          id: "date-picker-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"date" => ""},
-              as: :date_picker_phoenix,
-              id: "date-picker-form-phoenix"
-            )
-
-          conn
-          |> assign_date_picker_form_docs("date-picker-form-ecto")
-          |> render(:date_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        date = get_in(params, ["date_picker_form", "date"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: date=#{date}")
-        |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
+      conn
+      |> assign_date_picker_form_docs("date-picker-form-ecto")
+      |> render(:date_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def date_picker_form_submit(conn, %{"date_picker_form" => %{"date" => date}}) do
+    conn
+    |> put_flash(:info, "Submitted: date=#{date}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
   end
 
   def signature_page(conn, _params) do
@@ -689,6 +673,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.SignatureDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.SignatureDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.SignatureDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.SignatureDemo.form_native_elixir())
   end
 
   def signature_form_page(conn, _params) do
@@ -708,53 +693,50 @@ defmodule E2eWeb.PageController do
     |> render(:signature_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def signature_form_submit(conn, params) do
-    cond do
-      is_map(params["signature_phoenix"]) ->
-        sig = params["signature_phoenix"]["signature"] || ""
-        preview = preview_sig(sig)
+  def signature_form_submit(conn, %{"signature_phoenix" => %{"signature" => sig}}) do
+    preview = preview_sig(sig)
 
-        conn
-        |> put_flash(:info, "Submitted: signature=#{preview}")
-        |> redirect(to: ~p"/signature-pad/form#signature-form-phoenix")
+    conn
+    |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> redirect(to: ~p"/signature-pad/form#signature-form-phoenix")
+  end
 
-      is_map(params["signature_ecto"]) ->
-        changeset =
-          %E2e.Form.SignatureForm{}
-          |> E2e.Form.SignatureForm.changeset_validate(params["signature_ecto"] || %{})
+  def signature_form_submit(conn, %{"signature_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.SignatureForm{}
+      |> E2e.Form.SignatureForm.changeset_validate(ecto_params)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
-          preview = preview_sig(data.signature)
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
+      preview = preview_sig(data.signature)
 
-          conn
-          |> put_flash(:info, "Submitted: signature=#{preview}")
-          |> redirect(to: ~p"/signature-pad/form#signature-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      conn
+      |> put_flash(:info, "Submitted: signature=#{preview}")
+      |> redirect(to: ~p"/signature-pad/form#signature-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"signature" => ""},
-              as: :signature_phoenix,
-              id: "signature-form-phoenix"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"signature" => ""},
+          as: :signature_phoenix,
+          id: "signature-form-phoenix"
+        )
 
-          conn
-          |> assign_signature_form_docs("signature-form-ecto")
-          |> render(:signature_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        sig = get_in(params, ["user", "signature"]) || ""
-        preview = preview_sig(sig)
-
-        conn
-        |> put_flash(:info, "Submitted: signature=#{preview}")
-        |> redirect(to: ~p"/signature-pad/form#signature-form-native")
+      conn
+      |> assign_signature_form_docs("signature-form-ecto")
+      |> render(:signature_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def signature_form_submit(conn, %{"user" => %{"signature" => sig}}) do
+    preview = preview_sig(sig)
+
+    conn
+    |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> redirect(to: ~p"/signature-pad/form#signature-form-native")
   end
 
   defp preview_sig(sig) when is_binary(sig) and sig != "" do
@@ -836,6 +818,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.EditableDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.EditableDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.EditableDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.EditableDemo.form_native_elixir())
   end
 
   def editable_form_page(conn, _params) do
@@ -855,50 +838,45 @@ defmodule E2eWeb.PageController do
     |> render(:editable_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def editable_form_submit(conn, params) do
-    cond do
-      is_map(params["editable_phoenix"]) ->
-        text = params["editable_phoenix"]["text"] || ""
+  def editable_form_submit(conn, %{"editable_phoenix" => %{"text" => text}}) do
+    conn
+    |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+    |> redirect(to: ~p"/editable/form#editable-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: text=#{inspect(text)}")
-        |> redirect(to: ~p"/editable/form#editable-form-phoenix")
+  def editable_form_submit(conn, %{"editable_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.EditableForm{}
+      |> E2e.Form.EditableForm.changeset(ecto_params)
 
-      is_map(params["editable_ecto"]) ->
-        changeset =
-          %E2e.Form.EditableForm{}
-          |> E2e.Form.EditableForm.changeset(params["editable_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: text=#{inspect(data.text)}")
+      |> redirect(to: ~p"/editable/form#editable-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: text=#{inspect(data.text)}")
-          |> redirect(to: ~p"/editable/form#editable-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :editable_ecto, id: "editable-form-ecto")
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :editable_ecto, id: "editable-form-ecto")
+      phoenix_form =
+        Phoenix.Component.to_form(%{"text" => ""},
+          as: :editable_phoenix,
+          id: "editable-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"text" => ""},
-              as: :editable_phoenix,
-              id: "editable-form-phoenix"
-            )
-
-          conn
-          |> assign_editable_form_docs("editable-form-ecto")
-          |> render(:editable_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        text = get_in(params, ["editable", "text"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: text=#{inspect(text)}")
-        |> redirect(to: ~p"/editable/form#editable-form-native")
+      conn
+      |> assign_editable_form_docs("editable-form-ecto")
+      |> render(:editable_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def editable_form_submit(conn, %{"editable" => %{"text" => text}}) do
+    conn
+    |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+    |> redirect(to: ~p"/editable/form#editable-form-native")
   end
 
   def native_input_page(conn, _params) do
@@ -914,6 +892,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.NativeInputDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.NativeInputDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.NativeInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.NativeInputDemo.form_native_elixir())
   end
 
   defp native_input_phoenix_defaults do
@@ -956,57 +935,49 @@ defmodule E2eWeb.PageController do
     |> render(:native_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def native_input_form_submit(conn, params) do
-    cond do
-      is_map(params["profile_phoenix"]) ->
-        profile = params["profile_phoenix"] || %{}
+  def native_input_form_submit(conn, %{"profile_phoenix" => profile}) do
+    conn
+    |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(profile)}")
+    |> redirect(to: ~p"/native-input/form#native-input-form-phoenix")
+  end
+
+  def native_input_form_submit(conn, %{"profile_ecto" => profile_params}) do
+    case E2e.Form.NativeInputProfile.changeset_validate(
+           %E2e.Form.NativeInputProfile{},
+           profile_params
+         ) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
 
         conn
-        |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(profile)}")
-        |> redirect(to: ~p"/native-input/form#native-input-form-phoenix")
+        |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(data)}")
+        |> redirect(to: ~p"/native-input/form#native-input-form-ecto")
 
-      is_map(params["profile_ecto"]) ->
-        case E2e.Form.NativeInputProfile.changeset_validate(
-               %E2e.Form.NativeInputProfile{},
-               params["profile_ecto"] || %{}
-             ) do
-          %Ecto.Changeset{valid?: true} = changeset ->
-            data = Ecto.Changeset.apply_changes(changeset)
+      changeset ->
+        changeset = Map.put(changeset, :action, :insert)
 
-            conn
-            |> put_flash(
-              :info,
-              "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(data)}"
-            )
-            |> redirect(to: ~p"/native-input/form#native-input-form-ecto")
+        ecto_form =
+          Phoenix.Component.to_form(changeset,
+            as: :profile_ecto,
+            id: "native-input-form-ecto"
+          )
 
-          changeset ->
-            changeset = Map.put(changeset, :action, :insert)
-
-            ecto_form =
-              Phoenix.Component.to_form(changeset,
-                as: :profile_ecto,
-                id: "native-input-form-ecto"
-              )
-
-            phoenix_form =
-              Phoenix.Component.to_form(native_input_phoenix_defaults(),
-                as: :profile_phoenix,
-                id: "native-input-form-phoenix"
-              )
-
-            conn
-            |> assign_native_input_form_docs("native-input-form-ecto")
-            |> render(:native_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        profile = params["profile"] || %{}
+        phoenix_form =
+          Phoenix.Component.to_form(native_input_phoenix_defaults(),
+            as: :profile_phoenix,
+            id: "native-input-form-phoenix"
+          )
 
         conn
-        |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(profile)}")
-        |> redirect(to: ~p"/native-input/form#native-input-form-native")
+        |> assign_native_input_form_docs("native-input-form-ecto")
+        |> render(:native_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def native_input_form_submit(conn, %{"profile" => profile}) do
+    conn
+    |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(profile)}")
+    |> redirect(to: ~p"/native-input/form#native-input-form-native")
   end
 
   def floating_panel_page(conn, _params) do
@@ -1038,6 +1009,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.NumberInputDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.NumberInputDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.NumberInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.NumberInputDemo.form_native_elixir())
   end
 
   def number_input_form_page(conn, _params) do
@@ -1057,61 +1029,55 @@ defmodule E2eWeb.PageController do
     |> render(:number_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def number_input_form_submit(conn, params) do
-    cond do
-      is_map(params["number_input_phoenix"]) ->
-        value = params["number_input_phoenix"]["value"] || "0"
+  def number_input_form_submit(conn, %{"number_input_phoenix" => %{"value" => value}}) do
+    conn
+    |> put_flash(:info, "Submitted: value=#{value}")
+    |> redirect(to: ~p"/number-input/form#number-input-form-phoenix")
+  end
+
+  def number_input_form_submit(conn, %{"number_input_ecto" => ecto_params}) do
+    case E2e.Form.NumberInputForm.changeset_validate(
+           %E2e.Form.NumberInputForm{},
+           ecto_params
+         ) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
 
         conn
-        |> put_flash(:info, "Submitted: value=#{value}")
-        |> redirect(to: ~p"/number-input/form#number-input-form-phoenix")
+        |> put_flash(:info, "Submitted: #{E2e.Form.NumberInputForm.format_for_toast(data)}")
+        |> redirect(to: ~p"/number-input/form#number-input-form-ecto")
 
-      is_map(params["number_input_ecto"]) ->
-        case E2e.Form.NumberInputForm.changeset_validate(
-               %E2e.Form.NumberInputForm{},
-               params["number_input_ecto"] || %{}
-             ) do
-          %Ecto.Changeset{valid?: true} = changeset ->
-            data = Ecto.Changeset.apply_changes(changeset)
+      changeset ->
+        changeset = Map.put(changeset, :action, :insert)
 
-            conn
-            |> put_flash(:info, "Submitted: #{E2e.Form.NumberInputForm.format_for_toast(data)}")
-            |> redirect(to: ~p"/number-input/form#number-input-form-ecto")
+        ecto_form =
+          Phoenix.Component.to_form(changeset,
+            as: :number_input_ecto,
+            id: "number-input-form-ecto"
+          )
 
-          changeset ->
-            changeset = Map.put(changeset, :action, :insert)
-
-            ecto_form =
-              Phoenix.Component.to_form(changeset,
-                as: :number_input_ecto,
-                id: "number-input-form-ecto"
-              )
-
-            phoenix_form =
-              Phoenix.Component.to_form(%{"value" => "1234"},
-                as: :number_input_phoenix,
-                id: "number-input-form-phoenix"
-              )
-
-            conn
-            |> assign_number_input_form_docs("number-input-form-ecto")
-            |> render(:number_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      is_map(params["number_input_form"]) ->
-        value = get_in(params, ["number_input_form", "value"]) || "0"
+        phoenix_form =
+          Phoenix.Component.to_form(%{"value" => "1234"},
+            as: :number_input_phoenix,
+            id: "number-input-form-phoenix"
+          )
 
         conn
-        |> put_flash(:info, "Submitted: value=#{value}")
-        |> redirect(to: ~p"/number-input/form#number-input-form-native")
-
-      true ->
-        value = params["value"] || "0"
-
-        conn
-        |> put_flash(:info, "Submitted: value=#{value}")
-        |> redirect(to: ~p"/number-input/form#number-input-form-native")
+        |> assign_number_input_form_docs("number-input-form-ecto")
+        |> render(:number_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def number_input_form_submit(conn, %{"number_input_form" => %{"value" => value}}) do
+    conn
+    |> put_flash(:info, "Submitted: value=#{value}")
+    |> redirect(to: ~p"/number-input/form#number-input-form-native")
+  end
+
+  def number_input_form_submit(conn, %{"value" => value}) do
+    conn
+    |> put_flash(:info, "Submitted: value=#{value}")
+    |> redirect(to: ~p"/number-input/form#number-input-form-native")
   end
 
   def file_upload_page(conn, _params) do
@@ -1127,6 +1093,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.FileUploadDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.FileUploadDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.FileUploadDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.FileUploadDemo.form_native_elixir())
   end
 
   def file_upload_form_page(conn, _params) do
@@ -1146,59 +1113,54 @@ defmodule E2eWeb.PageController do
     |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def file_upload_form_submit(conn, params) do
-    cond do
-      is_map(params["file_upload_phoenix"]) ->
-        upload = get_in(params, ["file_upload_phoenix", "attachment"])
+  def file_upload_form_submit(conn, %{"file_upload_phoenix" => %{"attachment" => upload}}) do
+    conn
+    |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
+    |> redirect(to: ~p"/file-upload/form#file-upload-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
-        |> redirect(to: ~p"/file-upload/form#file-upload-form-phoenix")
+  def file_upload_form_submit(conn, %{"file_upload_ecto" => ecto_params}) do
+    upload = ecto_params["attachment"]
 
-      is_map(params["file_upload_ecto"]) ->
-        nested = params["file_upload_ecto"] || %{}
-        upload = nested["attachment"]
+    changeset =
+      %E2e.Form.FileUploadForm{}
+      |> E2e.Form.FileUploadForm.changeset_validate(ecto_params)
 
-        changeset =
-          %E2e.Form.FileUploadForm{}
-          |> E2e.Form.FileUploadForm.changeset_validate(nested)
+    if changeset.valid? do
+      conn
+      |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
+      |> redirect(to: ~p"/file-upload/form#file-upload-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-        if changeset.valid? do
-          conn
-          |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
-          |> redirect(to: ~p"/file-upload/form#file-upload-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :file_upload_ecto,
+          id: "file-upload-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :file_upload_ecto,
-              id: "file-upload-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"attachment" => nil},
+          as: :file_upload_phoenix,
+          id: "file-upload-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"attachment" => nil},
-              as: :file_upload_phoenix,
-              id: "file-upload-form-phoenix"
-            )
-
-          conn
-          |> assign_file_upload_form_docs("file-upload-form-ecto")
-          |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      is_map(params["user"]) ->
-        upload = get_in(params, ["user", "avatar"])
-
-        conn
-        |> put_flash(:info, "Submitted: avatar=#{file_upload_attachment_label(upload)}")
-        |> redirect(to: ~p"/file-upload/form#file-upload-form-native")
-
-      true ->
-        conn
-        |> put_flash(:error, "Unexpected form payload")
-        |> redirect(to: ~p"/file-upload/form")
+      conn
+      |> assign_file_upload_form_docs("file-upload-form-ecto")
+      |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def file_upload_form_submit(conn, %{"user" => %{"avatar" => upload}}) do
+    conn
+    |> put_flash(:info, "Submitted: avatar=#{file_upload_attachment_label(upload)}")
+    |> redirect(to: ~p"/file-upload/form#file-upload-form-native")
+  end
+
+  def file_upload_form_submit(conn, _params) do
+    conn
+    |> put_flash(:error, "Unexpected form payload")
+    |> redirect(to: ~p"/file-upload/form")
   end
 
   defp file_upload_attachment_label(%Plug.Upload{filename: name})
@@ -1206,6 +1168,8 @@ defmodule E2eWeb.PageController do
        do: name
 
   defp file_upload_attachment_label(_), do: "(none)"
+
+  defp form_checkbox_checked?(value), do: value in [true, "true", "on", "1", 1]
 
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
@@ -1220,6 +1184,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.PasswordInputDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.PasswordInputDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.PasswordInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.PasswordInputDemo.form_native_elixir())
   end
 
   def password_input_form_page(conn, _params) do
@@ -1239,57 +1204,52 @@ defmodule E2eWeb.PageController do
     |> render(:password_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def password_input_form_submit(conn, params) do
-    cond do
-      is_map(params["password_input_phoenix"]) ->
-        password = params["password_input_phoenix"]["password"] || ""
+  def password_input_form_submit(conn, %{"password_input_phoenix" => %{"password" => password}}) do
+    message =
+      if password == "", do: "Submitted: password=", else: "Submitted: password=***"
 
-        message =
-          if password == "", do: "Submitted: password=", else: "Submitted: password=***"
+    conn
+    |> put_flash(:info, message)
+    |> redirect(to: ~p"/password-input/form#password-input-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, message)
-        |> redirect(to: ~p"/password-input/form#password-input-form-phoenix")
+  def password_input_form_submit(conn, %{"password_input_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.PasswordInputForm{}
+      |> E2e.Form.PasswordInputForm.changeset_validate(ecto_params)
 
-      is_map(params["password_input_ecto"]) ->
-        changeset =
-          %E2e.Form.PasswordInputForm{}
-          |> E2e.Form.PasswordInputForm.changeset_validate(params["password_input_ecto"] || %{})
+    if changeset.valid? do
+      conn
+      |> put_flash(:info, "Submitted: password=***")
+      |> redirect(to: ~p"/password-input/form#password-input-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-        if changeset.valid? do
-          conn
-          |> put_flash(:info, "Submitted: password=***")
-          |> redirect(to: ~p"/password-input/form#password-input-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :password_input_ecto,
+          id: "password-input-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :password_input_ecto,
-              id: "password-input-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"password" => ""},
+          as: :password_input_phoenix,
+          id: "password-input-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"password" => ""},
-              as: :password_input_phoenix,
-              id: "password-input-form-phoenix"
-            )
-
-          conn
-          |> assign_password_input_form_docs("password-input-form-ecto")
-          |> render(:password_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        password = get_in(params, ["user", "password"]) || ""
-
-        message =
-          if password == "", do: "Submitted: password=", else: "Submitted: password=***"
-
-        conn
-        |> put_flash(:info, message)
-        |> redirect(to: ~p"/password-input/form#password-input-form-native")
+      conn
+      |> assign_password_input_form_docs("password-input-form-ecto")
+      |> render(:password_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def password_input_form_submit(conn, %{"user" => %{"password" => password}}) do
+    message =
+      if password == "", do: "Submitted: password=", else: "Submitted: password=***"
+
+    conn
+    |> put_flash(:info, message)
+    |> redirect(to: ~p"/password-input/form#password-input-form-native")
   end
 
   def pin_input_page(conn, _params) do
@@ -1305,6 +1265,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.PinInputDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.PinInputDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.PinInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.PinInputDemo.form_native_elixir())
   end
 
   def pin_input_form_page(conn, _params) do
@@ -1321,50 +1282,45 @@ defmodule E2eWeb.PageController do
     |> render(:pin_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def pin_input_form_submit(conn, params) do
-    cond do
-      is_map(params["pin_phoenix"]) ->
-        pin = params["pin_phoenix"]["pin"] || ""
+  def pin_input_form_submit(conn, %{"pin_phoenix" => %{"pin" => pin}}) do
+    conn
+    |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+    |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
-        |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
+  def pin_input_form_submit(conn, %{"pin_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.PinInputForm{}
+      |> E2e.Form.PinInputForm.changeset_validate(ecto_params)
 
-      is_map(params["pin_ecto"]) ->
-        changeset =
-          %E2e.Form.PinInputForm{}
-          |> E2e.Form.PinInputForm.changeset_validate(params["pin_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: pin=#{inspect(data.pin)}")
+      |> redirect(to: ~p"/pin-input/form#pin-input-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: pin=#{inspect(data.pin)}")
-          |> redirect(to: ~p"/pin-input/form#pin-input-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset, as: :pin_ecto, id: "pin-input-form-ecto")
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset, as: :pin_ecto, id: "pin-input-form-ecto")
+      phoenix_form =
+        Phoenix.Component.to_form(%{"pin" => ""},
+          as: :pin_phoenix,
+          id: "pin-input-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"pin" => ""},
-              as: :pin_phoenix,
-              id: "pin-input-form-phoenix"
-            )
-
-          conn
-          |> assign_pin_input_form_docs("pin-input-form-ecto")
-          |> render(:pin_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        pin = get_in(params, ["pin_input", "pin"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
-        |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
+      conn
+      |> assign_pin_input_form_docs("pin-input-form-ecto")
+      |> render(:pin_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def pin_input_form_submit(conn, %{"pin_input" => %{"pin" => pin}}) do
+    conn
+    |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+    |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
   end
 
   defp assign_tags_input_form_docs(conn, scroll_to) do
@@ -1376,6 +1332,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.TagsInputDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.TagsInputDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.TagsInputDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.TagsInputDemo.form_native_elixir())
   end
 
   def tags_input_form_page(conn, _params) do
@@ -1395,59 +1352,55 @@ defmodule E2eWeb.PageController do
     |> render(:tags_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def tags_input_form_submit(conn, params) do
-    cond do
-      is_map(params["tags_input_phoenix"]) ->
-        tags = params["tags_input_phoenix"]["tags"] || ""
+  def tags_input_form_submit(conn, %{"tags_input_phoenix" => %{"tags" => tags}}) do
+    conn
+    |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
+    |> redirect(to: ~p"/tags-input/form#tags-input-form-phoenix")
+  end
+
+  def tags_input_form_submit(conn, %{"tags_input_ecto" => ecto_params}) do
+    case E2e.Form.TagsInputForm.changeset_validate(
+           %E2e.Form.TagsInputForm{},
+           ecto_params
+         ) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
 
         conn
-        |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
-        |> redirect(to: ~p"/tags-input/form#tags-input-form-phoenix")
+        |> put_flash(:info, "Submitted: tags=#{inspect(data.tags)}")
+        |> redirect(to: ~p"/tags-input/form#tags-input-form-ecto")
 
-      is_map(params["tags_input_ecto"]) ->
-        case E2e.Form.TagsInputForm.changeset_validate(
-               %E2e.Form.TagsInputForm{},
-               params["tags_input_ecto"] || %{}
-             ) do
-          %Ecto.Changeset{valid?: true} = changeset ->
-            data = Ecto.Changeset.apply_changes(changeset)
+      changeset ->
+        changeset = Map.put(changeset, :action, :insert)
 
-            conn
-            |> put_flash(:info, "Submitted: tags=#{inspect(data.tags)}")
-            |> redirect(to: ~p"/tags-input/form#tags-input-form-ecto")
+        ecto_form =
+          Phoenix.Component.to_form(changeset,
+            as: :tags_input_ecto,
+            id: "tags-input-form-ecto"
+          )
 
-          changeset ->
-            changeset = Map.put(changeset, :action, :insert)
-
-            ecto_form =
-              Phoenix.Component.to_form(changeset,
-                as: :tags_input_ecto,
-                id: "tags-input-form-ecto"
-              )
-
-            phoenix_form =
-              Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
-                as: :tags_input_phoenix,
-                id: "tags-input-form-phoenix"
-              )
-
-            conn
-            |> assign_tags_input_form_docs("tags-input-form-ecto")
-            |> render(:tags_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      is_map(params["tags_native"]) ->
-        tags = get_in(params, ["tags_native", "tags"]) || ""
+        phoenix_form =
+          Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
+            as: :tags_input_phoenix,
+            id: "tags-input-form-phoenix"
+          )
 
         conn
-        |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
-        |> redirect(to: ~p"/tags-input/form#tags-input-form-native")
-
-      true ->
-        conn
-        |> put_flash(:error, "Unknown form submission")
-        |> redirect(to: ~p"/tags-input/form")
+        |> assign_tags_input_form_docs("tags-input-form-ecto")
+        |> render(:tags_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def tags_input_form_submit(conn, %{"tags_native" => %{"tags" => tags}}) do
+    conn
+    |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
+    |> redirect(to: ~p"/tags-input/form#tags-input-form-native")
+  end
+
+  def tags_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:error, "Unknown form submission")
+    |> redirect(to: ~p"/tags-input/form")
   end
 
   def radio_group_page(conn, _params) do
@@ -1467,6 +1420,7 @@ defmodule E2eWeb.PageController do
     |> assign(:ecto_heex, E2eWeb.Demos.RadioGroupDemo.form_ecto_heex())
     |> assign(:ecto_elixir, E2eWeb.Demos.RadioGroupDemo.form_ecto_elixir())
     |> assign(:native_heex, E2eWeb.Demos.RadioGroupDemo.form_native_heex())
+    |> assign(:native_elixir, E2eWeb.Demos.RadioGroupDemo.form_native_elixir())
   end
 
   def radio_group_form_page(conn, _params) do
@@ -1486,53 +1440,48 @@ defmodule E2eWeb.PageController do
     |> render(:radio_group_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def radio_group_form_submit(conn, params) do
-    cond do
-      is_map(params["radio_group_phoenix"]) ->
-        choice = params["radio_group_phoenix"]["choice"] || ""
+  def radio_group_form_submit(conn, %{"radio_group_phoenix" => %{"choice" => choice}}) do
+    conn
+    |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+    |> redirect(to: ~p"/radio-group/form#radio-group-form-phoenix")
+  end
 
-        conn
-        |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
-        |> redirect(to: ~p"/radio-group/form#radio-group-form-phoenix")
+  def radio_group_form_submit(conn, %{"radio_group_ecto" => ecto_params}) do
+    changeset =
+      %E2e.Form.RadioGroupForm{}
+      |> E2e.Form.RadioGroupForm.changeset_validate(ecto_params)
 
-      is_map(params["radio_group_ecto"]) ->
-        changeset =
-          %E2e.Form.RadioGroupForm{}
-          |> E2e.Form.RadioGroupForm.changeset_validate(params["radio_group_ecto"] || %{})
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Submitted: choice=#{inspect(data.choice)}")
+      |> redirect(to: ~p"/radio-group/form#radio-group-form-ecto")
+    else
+      changeset = Map.put(changeset, :action, :insert)
 
-          conn
-          |> put_flash(:info, "Submitted: choice=#{inspect(data.choice)}")
-          |> redirect(to: ~p"/radio-group/form#radio-group-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
+      ecto_form =
+        Phoenix.Component.to_form(changeset,
+          as: :radio_group_ecto,
+          id: "radio-group-form-ecto"
+        )
 
-          ecto_form =
-            Phoenix.Component.to_form(changeset,
-              as: :radio_group_ecto,
-              id: "radio-group-form-ecto"
-            )
+      phoenix_form =
+        Phoenix.Component.to_form(%{"choice" => ""},
+          as: :radio_group_phoenix,
+          id: "radio-group-form-phoenix"
+        )
 
-          phoenix_form =
-            Phoenix.Component.to_form(%{"choice" => ""},
-              as: :radio_group_phoenix,
-              id: "radio-group-form-phoenix"
-            )
-
-          conn
-          |> assign_radio_group_form_docs("radio-group-form-ecto")
-          |> render(:radio_group_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-        end
-
-      true ->
-        choice = get_in(params, ["user", "choice"]) || ""
-
-        conn
-        |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
-        |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
+      conn
+      |> assign_radio_group_form_docs("radio-group-form-ecto")
+      |> render(:radio_group_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
+  end
+
+  def radio_group_form_submit(conn, %{"user" => %{"choice" => choice}}) do
+    conn
+    |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+    |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
   end
 
   def timer_page(conn, _params) do

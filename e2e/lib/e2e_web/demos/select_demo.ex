@@ -998,6 +998,18 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def select_form_submit(conn, %{"user" => %{"country" => country}}) do
+      conn
+      |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+      |> redirect(to: ~p"/select/form#select-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

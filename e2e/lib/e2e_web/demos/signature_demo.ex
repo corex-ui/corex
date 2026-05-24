@@ -705,6 +705,21 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def signature_form_submit(conn, %{"user" => %{"signature" => sig}}) do
+      conn
+      |> put_flash(:info, "Submitted: signature=#{preview_sig(sig)}")
+      |> redirect(to: ~p"/signature-pad/form#signature-form-native")
+    end
+
+    defp preview_sig(""), do: "(empty)"
+    defp preview_sig(sig), do: sig
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_ecto_heex()

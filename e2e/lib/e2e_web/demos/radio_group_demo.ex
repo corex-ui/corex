@@ -914,6 +914,18 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def radio_group_form_submit(conn, %{"user" => %{"choice" => choice}}) do
+      conn
+      |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+      |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

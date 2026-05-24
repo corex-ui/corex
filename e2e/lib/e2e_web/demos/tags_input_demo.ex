@@ -353,6 +353,18 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def tags_input_form_submit(conn, %{"tags_native" => %{"tags" => tags}}) do
+      conn
+      |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
+      |> redirect(to: ~p"/tags-input/form#tags-input-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   attr(:form, :any, required: true)
 
   def form_preview_controller_changeset(assigns) do

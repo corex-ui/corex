@@ -436,6 +436,18 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def editable_form_submit(conn, %{"editable" => %{"text" => text}}) do
+      conn
+      |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+      |> redirect(to: ~p"/editable/form#editable-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">

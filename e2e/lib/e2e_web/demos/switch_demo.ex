@@ -577,7 +577,18 @@ defmodule E2eWeb.Demos.SwitchDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def switch_form_submit(conn, %{"user" => %{"notifications" => notifications}}) do
+      conn
+      |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
+      |> redirect(to: ~p"/switch/form#switch-form-native")
+    end
+    """
+  end
+
   def form_native_heex, do: form_doc_native_heex()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
 
   def form_doc_live_changeset_heex do
     ~S"""

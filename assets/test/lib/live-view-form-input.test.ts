@@ -9,7 +9,9 @@ describe("reapplyLiveViewValueInputUsage", () => {
   it("sets phx-has-focused on phxPrivate", () => {
     const input = document.createElement("input");
     reapplyLiveViewValueInputUsage(input);
-    expect((input as HTMLInputElement & { phxPrivate?: Record<string, boolean> }).phxPrivate).toEqual({
+    expect(
+      (input as HTMLInputElement & { phxPrivate?: Record<string, boolean> }).phxPrivate
+    ).toEqual({
       [PHX_HAS_FOCUSED]: true,
     });
   });

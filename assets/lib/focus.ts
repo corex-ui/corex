@@ -1,7 +1,4 @@
-export function resolveFocusElement(
-  root: HTMLElement,
-  id: string | undefined
-): HTMLElement | null {
+export function resolveFocusElement(root: HTMLElement, id: string | undefined): HTMLElement | null {
   if (!id) return null;
 
   const scoped = root.querySelector<HTMLElement>(`#${CSS.escape(id)}`);

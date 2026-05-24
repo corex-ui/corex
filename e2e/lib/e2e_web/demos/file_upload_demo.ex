@@ -276,6 +276,21 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def file_upload_form_submit(conn, %{"user" => %{"avatar" => upload}}) do
+      conn
+      |> put_flash(:info, "Submitted: avatar=#{file_upload_attachment_label(upload)}")
+      |> redirect(to: ~p"/file-upload/form#file-upload-form-native")
+    end
+
+    defp file_upload_attachment_label(%Plug.Upload{filename: name}) when name != "", do: name
+    defp file_upload_attachment_label(_), do: "(none)"
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   attr(:form, :any, required: true)
 
   def form_preview_controller_changeset(assigns) do

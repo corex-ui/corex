@@ -20,6 +20,7 @@ defmodule E2eWeb.DatePickerFormLive do
      |> assign(:live_ecto_heex, DatePickerDemo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, DatePickerDemo.form_doc_live_ecto_elixir())
      |> assign(:native_heex, DatePickerDemo.form_doc_native_heex())
+     |> assign(:native_elixir, DatePickerDemo.form_native_elixir())
      |> assign_forms()}
   end
 
@@ -184,7 +185,8 @@ defmodule E2eWeb.DatePickerFormLive do
           id="date-picker-live-form-native"
           title={~t"Native HTML Form"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @native_elixir}
           ]}
         >
           <:preview>

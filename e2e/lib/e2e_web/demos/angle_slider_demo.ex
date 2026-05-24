@@ -1098,6 +1098,16 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def angle_slider_form_submit(conn, %{"angle_slider_form" => %{"angle" => angle}}) do
+      conn
+      |> put_flash(:info, "Submitted: angle=#{angle}")
+      |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
+    end
+    """
+  end
+
   attr(:form, Phoenix.HTML.Form, required: true)
 
   def form_preview_controller_changeset(assigns) do
@@ -1273,6 +1283,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_validate_heex, do: form_doc_controller_validate_heex()
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
 
   attr(:form, :any, required: true)
 

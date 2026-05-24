@@ -717,6 +717,16 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def checkbox_form_submit(conn, %{"terms" => %{"terms" => terms}}) do
+      conn
+      |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+      |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
+    end
+    """
+  end
+
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form
@@ -965,4 +975,5 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
   def form_ecto_heex, do: form_doc_controller_ecto_heex()
   def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
 end

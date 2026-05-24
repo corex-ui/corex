@@ -663,6 +663,18 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def date_picker_form_submit(conn, %{"date_picker_form" => %{"date" => date}}) do
+      conn
+      |> put_flash(:info, "Submitted: date=#{date}")
+      |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

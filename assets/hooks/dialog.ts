@@ -42,9 +42,7 @@ export function readDialogLayoutProps(el: HTMLElement) {
     preventScroll: getBoolean(el, "preventScroll"),
     restoreFocus: getBoolean(el, "restoreFocus"),
     dir: getDir(el),
-    initialFocusEl: initialFocusId
-      ? () => resolveFocusElement(el, initialFocusId)
-      : undefined,
+    initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : undefined,
     finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : undefined,
   };
 }

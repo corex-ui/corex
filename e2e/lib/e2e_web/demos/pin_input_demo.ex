@@ -218,6 +218,18 @@ defmodule E2eWeb.Demos.PinInputDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def pin_input_form_submit(conn, %{"pin_input" => %{"pin" => pin}}) do
+      conn
+      |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+      |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">

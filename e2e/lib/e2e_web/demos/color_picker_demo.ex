@@ -504,6 +504,18 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+      conn
+      |> put_flash(:info, "Submitted: color=#{color}")
+      |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form

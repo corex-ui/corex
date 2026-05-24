@@ -26,10 +26,7 @@ type ComboboxHookState = {
   fieldTouched?: boolean;
 };
 
-export function formatComboboxHiddenValue(
-  el: HTMLElement,
-  values: ReadonlyArray<string>
-): string {
+export function formatComboboxHiddenValue(el: HTMLElement, values: ReadonlyArray<string>): string {
   const list = values.map((v) => String(v));
   return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
 }
@@ -170,10 +167,9 @@ function comboboxMachineDomPropsForUpdate(
   getCombobox: () => Combobox | undefined,
   markFieldTouched: () => void
 ): Partial<Props> {
-  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) } as Record<
-    string,
-    unknown
-  >;
+  const rest = {
+    ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched),
+  } as Record<string, unknown>;
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
@@ -203,7 +199,14 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
     let comboboxRef: Combobox | undefined;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef, markFieldTouched),
+      ...buildComboboxProps(
+        el,
+        pushEvent,
+        canPush,
+        this.liveSocket,
+        () => comboboxRef,
+        markFieldTouched
+      ),
       ...comboboxValueBinding(el),
     } as Props;
 
