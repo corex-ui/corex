@@ -116,7 +116,10 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def mix_run(args, app_path, opts \\ [])
       when is_list(args) and is_binary(app_path) and is_list(opts) do
-    System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path)] ++ opts)
+    env = opts |> Keyword.get(:env, []) |> merge_hex_home_env()
+
+    System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path), env: env] ++
+                              Keyword.delete(opts, :env))
   end
 
   def assert_dir(path) do
@@ -204,11 +207,20 @@ defmodule Corex.Integration.CodeGeneratorCase do
         to_string(name)
       ])
 
+    hex_home = Path.join(path, ".hex")
+    previous_hex_home = Process.get(:corex_integration_hex_home)
+
     try do
       File.rm_rf!(path)
-      File.mkdir_p!(path)
+      File.mkdir_p!(hex_home)
+      Process.put(:corex_integration_hex_home, hex_home)
       function.(path)
     after
+      case previous_hex_home do
+        nil -> Process.delete(:corex_integration_hex_home)
+        prev -> Process.put(:corex_integration_hex_home, prev)
+      end
+
       if autoremove?, do: File.rm_rf!(path)
     end
   end
@@ -247,6 +259,13 @@ defmodule Corex.Integration.CodeGeneratorCase do
     Path.expand(app_root_dir, tmp_dir)
   end
 
+  defp merge_hex_home_env(env) do
+    case Process.get(:corex_integration_hex_home) do
+      hex when is_binary(hex) -> [{"HEX_HOME", hex} | env]
+      _ -> env
+    end
+  end
+
   defp random_string(len) do
     len |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, len)
   end
@@ -275,7 +294,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
     mix_run!(["ecto.create"], app_root_path, env: dev_env)
     mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
 
-    server_env = [{"PORT", port_str} | dev_env]
+    server_env =
+      [{"PORT", port_str} | dev_env]
+      |> merge_hex_home_env()
 
     _pid =
       spawn_link(fn ->
