@@ -378,7 +378,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
     web = "#{app_name}_web"
-    web_module = web |> Macro.camelize() |> Kernel.<>("Web")
+    web_module = Macro.camelize(web)
     router = Path.join([base, "lib", web, "router.ex"])
     web_ex = Path.join([base, "lib", web <> ".ex"])
 
