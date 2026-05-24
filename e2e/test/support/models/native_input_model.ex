@@ -1,9 +1,6 @@
 defmodule E2eWeb.NativeInputModel do
   use E2eWeb.Model, component: "native-input"
 
-  @static_native_form "native-input-form-native"
-  @live_ecto_form "native-input-live-strict-form"
-
   def goto_form(session, mode, section \\ :phoenix) do
     path =
       case {mode, section} do

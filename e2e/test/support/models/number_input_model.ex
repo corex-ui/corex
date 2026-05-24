@@ -235,8 +235,6 @@ defmodule E2eWeb.NumberInputModel do
     end
   end
 
-  defp wait_number_input_hidden_value(session, form_id, :live), do: session
-
   defp wait_number_input_hidden_value(session, form_id, _mode) do
     deadline = System.monotonic_time(:millisecond) + 8_000
     busy_wait_hidden_value(session, form_id, deadline)
@@ -281,7 +279,7 @@ defmodule E2eWeb.NumberInputModel do
     session
   end
 
-  def see_flash(session, flash_text, opts \\ []) do
+  def see_flash(session, flash_text, _opts \\ []) do
     assert_toast(session, flash_text)
   end
 end
