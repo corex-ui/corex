@@ -86,7 +86,9 @@ defmodule E2eWeb.PageController do
     |> assign(:native_elixir, E2eWeb.Demos.ComboboxDemo.form_native_elixir())
   end
 
-  def combobox_form_submit(conn, %{"combobox_phoenix" => %{"country" => country}}) do
+  def combobox_form_submit(conn, %{"combobox_phoenix" => phoenix_params}) do
+    country = Map.get(phoenix_params, "country", "")
+
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
     |> redirect(to: ~p"/combobox/form#combobox-form-phoenix")
@@ -121,15 +123,25 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def combobox_form_submit(conn, %{"combobox_native" => %{"country" => country}}) do
+  def combobox_form_submit(conn, %{"combobox_native" => native_params}) do
+    country = Map.get(native_params, "country", "")
+
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
     |> redirect(to: ~p"/combobox/form#combobox-form-native")
   end
 
-  def combobox_form_submit(conn, %{"combobox" => %{"country" => country}}) do
+  def combobox_form_submit(conn, %{"combobox" => combobox_params}) do
+    country = Map.get(combobox_params, "country", "")
+
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/combobox/form#combobox-form-native")
+  end
+
+  def combobox_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect("")}")
     |> redirect(to: ~p"/combobox/form#combobox-form-native")
   end
 
@@ -373,9 +385,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def select_form_submit(conn, %{"user" => %{"country" => country}}) do
+  def select_form_submit(conn, %{"user" => user_params}) do
+    country = Map.get(user_params, "country", "")
+
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/select/form#select-form-native")
+  end
+
+  def select_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect("")}")
     |> redirect(to: ~p"/select/form#select-form-native")
   end
 
@@ -504,9 +524,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def angle_slider_form_submit(conn, %{"angle_slider_form" => %{"angle" => angle}}) do
+  def angle_slider_form_submit(conn, %{"angle_slider_form" => form_params}) do
+    angle = Map.get(form_params, "angle", "0")
+
     conn
     |> put_flash(:info, "Submitted: angle=#{angle}")
+    |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
+  end
+
+  def angle_slider_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: angle=0")
     |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
   end
 
@@ -577,9 +605,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+  def color_picker_form_submit(conn, %{"color_picker_form" => form_params}) do
+    color = Map.get(form_params, "color", "#3b82f6")
+
     conn
     |> put_flash(:info, "Submitted: color=#{color}")
+    |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
+  end
+
+  def color_picker_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: color=#3b82f6")
     |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
   end
 
@@ -654,9 +690,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def date_picker_form_submit(conn, %{"date_picker_form" => %{"date" => date}}) do
+  def date_picker_form_submit(conn, %{"date_picker_form" => form_params}) do
+    date = Map.get(form_params, "date", "")
+
     conn
     |> put_flash(:info, "Submitted: date=#{date}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
+  end
+
+  def date_picker_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: date=")
     |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
   end
 
@@ -731,11 +775,18 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def signature_form_submit(conn, %{"user" => %{"signature" => sig}}) do
+  def signature_form_submit(conn, %{"user" => user_params}) do
+    sig = Map.get(user_params, "signature", "")
     preview = preview_sig(sig)
 
     conn
     |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> redirect(to: ~p"/signature-pad/form#signature-form-native")
+  end
+
+  def signature_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: signature=(empty)")
     |> redirect(to: ~p"/signature-pad/form#signature-form-native")
   end
 
@@ -873,9 +924,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def editable_form_submit(conn, %{"editable" => %{"text" => text}}) do
+  def editable_form_submit(conn, %{"editable" => editable_params}) do
+    text = Map.get(editable_params, "text", "")
+
     conn
     |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+    |> redirect(to: ~p"/editable/form#editable-form-native")
+  end
+
+  def editable_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: text=#{inspect("")}")
     |> redirect(to: ~p"/editable/form#editable-form-native")
   end
 
@@ -980,6 +1039,12 @@ defmodule E2eWeb.PageController do
     |> redirect(to: ~p"/native-input/form#native-input-form-native")
   end
 
+  def native_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(%{})}")
+    |> redirect(to: ~p"/native-input/form#native-input-form-native")
+  end
+
   def floating_panel_page(conn, _params) do
     render(conn, :floating_panel_page)
   end
@@ -1077,6 +1142,12 @@ defmodule E2eWeb.PageController do
   def number_input_form_submit(conn, %{"value" => value}) do
     conn
     |> put_flash(:info, "Submitted: value=#{value}")
+    |> redirect(to: ~p"/number-input/form#number-input-form-native")
+  end
+
+  def number_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: value=0")
     |> redirect(to: ~p"/number-input/form#number-input-form-native")
   end
 
@@ -1243,12 +1314,20 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def password_input_form_submit(conn, %{"user" => %{"password" => password}}) do
+  def password_input_form_submit(conn, %{"user" => user_params}) do
+    password = Map.get(user_params, "password", "")
+
     message =
       if password == "", do: "Submitted: password=", else: "Submitted: password=***"
 
     conn
     |> put_flash(:info, message)
+    |> redirect(to: ~p"/password-input/form#password-input-form-native")
+  end
+
+  def password_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: password=")
     |> redirect(to: ~p"/password-input/form#password-input-form-native")
   end
 
@@ -1317,9 +1396,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def pin_input_form_submit(conn, %{"pin_input" => %{"pin" => pin}}) do
+  def pin_input_form_submit(conn, %{"pin_input" => pin_params}) do
+    pin = Map.get(pin_params, "pin", "")
+
     conn
     |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+    |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
+  end
+
+  def pin_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: pin=#{inspect("")}")
     |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
   end
 
@@ -1391,7 +1478,9 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def tags_input_form_submit(conn, %{"tags_native" => %{"tags" => tags}}) do
+  def tags_input_form_submit(conn, %{"tags_native" => native_params}) do
+    tags = Map.get(native_params, "tags", "")
+
     conn
     |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
     |> redirect(to: ~p"/tags-input/form#tags-input-form-native")
@@ -1478,9 +1567,17 @@ defmodule E2eWeb.PageController do
     end
   end
 
-  def radio_group_form_submit(conn, %{"user" => %{"choice" => choice}}) do
+  def radio_group_form_submit(conn, %{"user" => user_params}) do
+    choice = Map.get(user_params, "choice", "")
+
     conn
     |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+    |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
+  end
+
+  def radio_group_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: choice=#{inspect("")}")
     |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
   end
 

@@ -1741,10 +1741,26 @@ var Combobox = class extends Component {
       }
     });
   }
+  hiddenInputValue() {
+    let values = (this.api.value ?? []).map(String);
+    if (values.length === 0) {
+      const fallback = this.el.dataset.defaultValue;
+      if (fallback) values = fallback.split(",").filter(Boolean);
+    }
+    const multiple = this.el.hasAttribute("data-multiple");
+    return values.length === 0 ? "" : multiple ? values.join(",") : values[0] ?? "";
+  }
   render() {
     const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
+    const hiddenInput = this.el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (hiddenInput) {
+      const valueStr = this.hiddenInputValue();
+      if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+    }
     [
       "label",
       "control",
@@ -1879,7 +1895,9 @@ function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, mar
   };
 }
 function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
-  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) };
+  const rest = {
+    ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched)
+  };
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
@@ -1905,7 +1923,14 @@ var ComboboxHook = {
     }
     let comboboxRef;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef, markFieldTouched),
+      ...buildComboboxProps(
+        el,
+        pushEvent,
+        canPush,
+        this.liveSocket,
+        () => comboboxRef,
+        markFieldTouched
+      ),
       ...comboboxValueBinding(el)
     };
     const combobox = new Combobox(el, props, allItems, hasGroups);
@@ -1953,17 +1978,11 @@ var ComboboxHook = {
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
-    if (!this.fieldTouched) return;
-    queueMicrotask(() => {
-      if (!this.combobox) return;
-      const hidden = this.el.querySelector(
-        '[data-scope="combobox"][data-part="hidden-input"]'
-      );
-      if (!hidden) return;
-      const v = formatComboboxHiddenValue(this.el, this.combobox.api.value);
-      if (hidden.value !== v) hidden.value = v;
-      reapplyLiveViewValueInputUsage(hidden);
-    });
+    const hidden = this.el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (!hidden || !this.fieldTouched && hidden.value === "") return;
+    reapplyLiveViewValueInputUsage(hidden);
   },
   destroyed() {
     this.domRegistry?.teardown();

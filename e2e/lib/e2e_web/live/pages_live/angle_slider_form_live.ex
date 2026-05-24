@@ -19,8 +19,6 @@ defmodule E2eWeb.AngleSliderFormLive do
      |> assign(:live_phoenix_elixir, AngleSliderDemo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, AngleSliderDemo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, AngleSliderDemo.form_doc_live_ecto_elixir())
-     |> assign(:native_heex, AngleSliderDemo.form_native_heex())
-     |> assign(:native_elixir, AngleSliderDemo.form_native_elixir())
      |> assign_forms()}
   end
 
@@ -194,19 +192,6 @@ defmodule E2eWeb.AngleSliderFormLive do
               form={@validate_form}
               angle_value={@validate_angle_value}
             />
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="angle-slider-live-form-native"
-          title={~t"Native HTML Form"}
-          code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @native_elixir}
-          ]}
-        >
-          <:preview>
-            <AngleSliderDemo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

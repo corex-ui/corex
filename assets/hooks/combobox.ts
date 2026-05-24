@@ -266,18 +266,12 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       this.combobox.api.reposition();
     }
 
-    if (!this.fieldTouched) return;
+    const hidden = this.el.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (!hidden || (!this.fieldTouched && hidden.value === "")) return;
 
-    queueMicrotask(() => {
-      if (!this.combobox) return;
-      const hidden = this.el.querySelector<HTMLInputElement>(
-        '[data-scope="combobox"][data-part="hidden-input"]'
-      );
-      if (!hidden) return;
-      const v = formatComboboxHiddenValue(this.el, this.combobox.api.value);
-      if (hidden.value !== v) hidden.value = v;
-      reapplyLiveViewValueInputUsage(hidden);
-    });
+    reapplyLiveViewValueInputUsage(hidden);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {

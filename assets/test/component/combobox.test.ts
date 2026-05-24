@@ -28,6 +28,29 @@ describe("Combobox", () => {
     expect(c.getCollection().size).toBe(1);
   });
 
+  it("render syncs hidden input from api value", () => {
+    const root = comboboxTree();
+    const c = new Combobox(root, { id: "cb", defaultValue: ["b"] }, items, false);
+    c.init();
+    const hidden = root.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    expect(hidden?.value).toBe("b");
+    c.destroy();
+  });
+
+  it("render falls back to data-default-value when api value is empty", () => {
+    const root = comboboxTree();
+    root.dataset.defaultValue = "a";
+    const c = new Combobox(root, { id: "cb" }, items, false);
+    c.init();
+    const hidden = root.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    expect(hidden?.value).toBe("a");
+    c.destroy();
+  });
+
   it("tracks hasGroups from constructor", () => {
     const grouped = [
       { label: "A", value: "a", group: "g1" },

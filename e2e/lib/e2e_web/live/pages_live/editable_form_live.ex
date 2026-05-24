@@ -20,8 +20,6 @@ defmodule E2eWeb.EditableFormLive do
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
-     |> assign(:native_heex, Demo.form_native_heex())
-     |> assign(:native_elixir, Demo.form_native_elixir())
      |> assign_forms()}
   end
 
@@ -170,19 +168,6 @@ defmodule E2eWeb.EditableFormLive do
         >
           <:preview>
             <Demo.form_preview_live_ecto form={@ecto_form} />
-          </:preview>
-        </.demo_section>
-
-        <.demo_section
-          id="editable-live-form-native"
-          title={~t"Native HTML Form"}
-          code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @native_elixir}
-          ]}
-        >
-          <:preview>
-            <Demo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

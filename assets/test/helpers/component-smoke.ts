@@ -91,7 +91,7 @@ export function colorPickerTree(): HTMLElement {
 }
 
 export function comboboxTree(): HTMLElement {
-  return withId(
+  const el = withId(
     scopeTree("combobox", [
       {
         part: "root",
@@ -99,6 +99,11 @@ export function comboboxTree(): HTMLElement {
       },
     ])
   );
+  const hidden = document.createElement("input");
+  hidden.dataset.scope = "combobox";
+  hidden.dataset.part = "hidden-input";
+  el.prepend(hidden);
+  return el;
 }
 
 export function selectTree(): HTMLElement {
