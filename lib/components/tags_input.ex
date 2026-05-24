@@ -126,7 +126,7 @@ defmodule Corex.TagsInput do
 
   ## Form
 
-  Use `field={f[:tags]}` inside `<.form>`. The hidden field submits a delimiter-joined string for Phoenix.
+  Use `field={f[:tags]}` inside `<.form>`. Each tag submits as a separate `name[]` param for Ecto `{:array, :string}` (or similar list fields).
 
   ```heex
   <.form for={@form} id={@form.id} phx-change="validate">
@@ -203,8 +203,7 @@ defmodule Corex.TagsInput do
     SsrItemDeleteTrigger,
     SsrItemInput,
     SsrItemPreview,
-    SsrItemText,
-    ValueInput
+    SsrItemText
   }
 
   alias Corex.TagsInput.Connect
@@ -307,7 +306,7 @@ defmodule Corex.TagsInput do
       end
 
     value = Form.input_value(field.form, field.field)
-    tags = tags_from_field_string(value)
+    tags = tags_from_field_value(value)
 
     assigns
     |> assign(:field, nil)
@@ -326,6 +325,12 @@ defmodule Corex.TagsInput do
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value_list, validate_value!(assigns.value))
       |> normalize_tags_input_translation()
+
+    form_submit = is_binary(assigns[:name])
+
+    assigns =
+      assigns
+      |> assign(:submit_name, if(form_submit, do: assigns.name <> "[]", else: nil))
 
     ~H"""
     <div
@@ -361,21 +366,31 @@ defmodule Corex.TagsInput do
         on_highlight_change_client: @on_highlight_change_client,
         on_value_invalid: @on_value_invalid,
         on_value_invalid_client: @on_value_invalid_client,
-        translation: @translation
+        translation: @translation,
+        submit_name: @submit_name
       })}
     >
       <div
         phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})}
         {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}
       >
-        <input
-          :if={@name}
-          phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir})}
-          {Connect.value_input(%ValueInput{id: @id, dir: @dir})}
-          name={@name}
-          form={@form}
-          value={tags_to_form_string(@value_list, @delimiter)}
-        />
+        <div
+          :if={@submit_name}
+          data-scope="tags-input"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"tags-input:#{@id}:array-inputs"}
+        >
+          <input
+            :for={tag <- @value_list}
+            type="hidden"
+            data-scope="tags-input"
+            data-part="array-input"
+            name={@submit_name}
+            form={@form}
+            value={tag}
+          />
+        </div>
         <label
           :if={@label != []}
           class={Map.get(Enum.at(@label, 0), :class)}
@@ -673,13 +688,8 @@ defmodule Corex.TagsInput do
     LiveView.push_event(socket, "tags_input_remove_value", %{id: tags_input_id, value: value})
   end
 
-  defp tags_from_field_string(v) when is_binary(v), do: String.split(v, ",", trim: true)
-  defp tags_from_field_string(_), do: []
-
-  defp tags_to_form_string(tags_list, delimiter) when is_binary(delimiter) and delimiter != "",
-    do: Enum.join(tags_list, delimiter)
-
-  defp tags_to_form_string(tags_list, _), do: Enum.join(tags_list, ",")
+  defp tags_from_field_value(tags) when is_list(tags), do: Enum.map(tags, &to_string/1)
+  defp tags_from_field_value(_), do: []
 
   defp normalize_tags_input_translation(assigns) do
     merged = TagsInputTranslation.resolve(assigns.translation)

@@ -1,7 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/tags-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { templatesContentRoot } from "../lib/util";
+import { getString, templatesContentRoot } from "../lib/util";
+import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
 
 type ZagTagsInputTranslations = NonNullable<Props["translations"]>;
 
@@ -173,18 +174,8 @@ export class TagsInput extends Component<Props, Api> {
     );
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
 
-    const valueInput = this.el.querySelector<HTMLInputElement>(
-      '[data-scope="tags-input"][data-part="value-input"]'
-    );
-    if (valueInput) {
-      const rawDelim = this.el.dataset.delimiter;
-      const delim = rawDelim !== undefined && rawDelim !== "" ? rawDelim : ",";
-      const v = (this.api.value ?? []).join(delim);
-      if (valueInput.value !== v) {
-        valueInput.value = v;
-        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+    if (getString(this.el, "submitName")) {
+      syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);
     }
 
     const hiddenEl = this.el.querySelector<HTMLElement>(

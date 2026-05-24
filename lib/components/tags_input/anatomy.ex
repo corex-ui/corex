@@ -33,7 +33,8 @@ defmodule Corex.TagsInput.Anatomy do
       on_highlight_change_client: nil,
       on_value_invalid: nil,
       on_value_invalid_client: nil,
-      translation: nil
+      translation: nil,
+      submit_name: nil
     ]
 
     @type t :: %__MODULE__{
@@ -63,7 +64,8 @@ defmodule Corex.TagsInput.Anatomy do
             on_highlight_change_client: String.t() | nil,
             on_value_invalid: String.t() | nil,
             on_value_invalid_client: String.t() | nil,
-            translation: Corex.TagsInput.Translation.t() | nil
+            translation: Corex.TagsInput.Translation.t() | nil,
+            submit_name: String.t() | nil
           }
   end
 

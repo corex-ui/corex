@@ -706,6 +706,8 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
+    array_form_submit = assigns.multiple && not is_nil(assigns[:form])
+
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
@@ -715,6 +717,9 @@ defmodule Corex.Select do
       |> assign(:selected_for_options, selected_for_options)
       |> assign(:disabled_values, get_disabled_values(items))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+      |> assign(:array_form_submit, array_form_submit)
+      |> assign(:hidden_select_name, if(array_form_submit, do: assigns.name <> "[]", else: nil))
+      |> assign(:value_input_name, if(array_form_submit, do: nil, else: assigns.name))
 
     ~H"""
     <div 
@@ -731,13 +736,26 @@ defmodule Corex.Select do
       redirect: @redirect,
       positioning: @positioning,
       deselectable: @deselectable,
-      update_trigger: @update_trigger
+      update_trigger: @update_trigger,
+      hidden_select_name: @hidden_select_name
     })}>
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
-      <input phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} name={@name} form={@form} value={@value_for_hidden_input} />
+      <input
+        phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        name={@value_input_name}
+        form={if(@value_input_name, do: @form)}
+        value={@value_for_hidden_input}
+      />
 
-      <select phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} multiple={@multiple}>
+      <select
+        phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
+        name={@hidden_select_name}
+        form={if(@hidden_select_name, do: @form)}
+        multiple={@multiple}
+      >
         {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}
       </select>
 

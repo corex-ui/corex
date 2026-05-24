@@ -268,5 +268,41 @@ defmodule Corex.SelectTest do
       assert html =~
                ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
     end
+
+    test "multiple field form uses hidden select name[] and omits value-input name" do
+      form = %Phoenix.HTML.Form{id: "post", name: "post", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :tags,
+        id: "post_tags",
+        name: "post[tags]",
+        value: ["option1"],
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Select.select
+              field={@field}
+              multiple
+              items={[%{label: "Option 1", value: "option1"}, %{label: "Option 2", value: "option2"}]}
+            >
+              <:trigger>Tags</:trigger>
+            </Corex.Select.select>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/name="post\[tags\]\[\]"/
+      assert html =~ ~r/data-hidden-select-name="post\[tags\]\[\]"/
+      assert html =~ ~r/data-part="hidden-select"/
+      refute html =~ ~r/data-part="value-input"[^>]*name="post\[tags\]"/
+    end
   end
 end

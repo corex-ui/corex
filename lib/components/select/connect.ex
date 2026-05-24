@@ -64,6 +64,7 @@ defmodule Corex.Select.Connect do
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
     |> maybe_put("data-deselectable", get_boolean(Map.get(assigns, :deselectable)))
+    |> maybe_put("data-hidden-select-name", Map.get(assigns, :hidden_select_name))
     |> maybe_put(
       "data-update-trigger",
       if(Map.get(assigns, :update_trigger, true), do: nil, else: "false")

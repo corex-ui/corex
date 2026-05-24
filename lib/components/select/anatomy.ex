@@ -29,7 +29,8 @@ defmodule Corex.Select.Anatomy do
       redirect: false,
       positioning: nil,
       deselectable: false,
-      update_trigger: true
+      update_trigger: true,
+      hidden_select_name: nil
     ]
 
     @type t :: %__MODULE__{
@@ -54,7 +55,8 @@ defmodule Corex.Select.Anatomy do
             redirect: boolean(),
             positioning: Corex.Positioning.t() | nil,
             deselectable: boolean(),
-            update_trigger: boolean()
+            update_trigger: boolean(),
+            hidden_select_name: String.t() | nil
           }
   end
 

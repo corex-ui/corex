@@ -1154,6 +1154,44 @@ var machine = createMachine({
   }
 });
 
+// lib/tags-input-form.ts
+function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
+  const submitName = getString(el, "submitName");
+  if (!submitName) return;
+  const form = getString(el, "form");
+  let container = el.querySelector(
+    '[data-scope="tags-input"][data-part="array-inputs"]'
+  );
+  if (!container) {
+    const root = el.querySelector('[data-scope="tags-input"][data-part="root"]') ?? el;
+    container = document.createElement("div");
+    container.setAttribute("data-scope", "tags-input");
+    container.setAttribute("data-part", "array-inputs");
+    container.setAttribute("phx-update", "ignore");
+    container.id = `tags-input:${el.id}:array-inputs`;
+    root.prepend(container);
+  }
+  container.replaceChildren();
+  values.forEach((value) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.setAttribute("data-scope", "tags-input");
+    input.setAttribute("data-part", "array-input");
+    input.name = submitName;
+    if (form) input.setAttribute("form", form);
+    input.value = String(value);
+    container.appendChild(input);
+  });
+  queueMicrotask(() => {
+    onTouched?.();
+    container.dispatchEvent(new Event("input", { bubbles: true }));
+    container.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+function syncTagsInputFormForPhoenix(el, values, onTouched) {
+  syncTagsArrayInputsForPhoenix(el, values, onTouched);
+}
+
 // components/tags-input.ts
 var TAG_PLACEHOLDER = "%{tag}";
 var DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
@@ -1288,18 +1326,8 @@ var TagsInput = class extends Component {
       '[data-scope="tags-input"][data-part="input"]'
     );
     if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
-    const valueInput = this.el.querySelector(
-      '[data-scope="tags-input"][data-part="value-input"]'
-    );
-    if (valueInput) {
-      const rawDelim = this.el.dataset.delimiter;
-      const delim = rawDelim !== void 0 && rawDelim !== "" ? rawDelim : ",";
-      const v = (this.api.value ?? []).join(delim);
-      if (valueInput.value !== v) {
-        valueInput.value = v;
-        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+    if (getString(this.el, "submitName")) {
+      syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);
     }
     const hiddenEl = this.el.querySelector(
       '[data-scope="tags-input"][data-part="hidden-input"]'
@@ -1370,6 +1398,7 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {},
       onValueChange: (details) => {
+        syncTagsInputFormForPhoenix(el, details.value);
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -1412,6 +1441,10 @@ var TagsInputHook = {
     });
     zag.init();
     this.tagsInput = zag;
+    const defaultTags = parseJsonTags(el, "defaultTags");
+    if (defaultTags.length > 0) {
+      queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
+    }
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:tags-input:set-value", (event) => {
@@ -1483,6 +1516,11 @@ var TagsInputHook = {
       ...placeholder !== void 0 ? { placeholder } : {}
     });
     this.tagsInput?.render();
+    if (this.tagsInput) {
+      queueMicrotask(
+        () => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value)
+      );
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

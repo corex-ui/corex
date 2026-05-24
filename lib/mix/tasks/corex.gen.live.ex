@@ -172,7 +172,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_themes: layout_themes?(layout_opts),
       layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
       inputs: inputs(schema),
       socket_scope: socket_scope,
@@ -355,25 +354,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
-
-  defp layout_themes?(opts) do
-    layout_theme?(opts) and app_has_themes?()
-  end
-
-  defp app_has_themes? do
-    app = Mix.Project.config()[:app]
-    str = to_string(app)
-
-    root_app =
-      if String.ends_with?(str, "_web") do
-        String.to_atom(String.replace_suffix(str, "_web", ""))
-      else
-        app
-      end
-
-    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
-    is_list(themes)
-  end
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
   def inputs(%Schema{} = schema) do

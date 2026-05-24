@@ -100,8 +100,8 @@ defmodule Corex.TagsInputTest do
       assert html =~ "&quot;x&quot;"
     end
 
-    test "renders hidden input when name is set" do
-      assigns = assign(%{__changed__: %{}}, id: "ti", value: [], name: "kw")
+    test "renders array form inputs when name is set" do
+      assigns = assign(%{__changed__: %{}}, id: "ti", value: ["a"], name: "kw")
 
       html =
         rendered_to_string(~H"""
@@ -110,11 +110,11 @@ defmodule Corex.TagsInputTest do
         </.tags_input>
         """)
 
-      assert html =~ ~r/name="kw"/
-      assert html =~ ~r/data-part="value-input"/
-      assert html =~ ~r/data-part="value-input"[^>]*type="text"/
-      assert html =~ ~r/data-part="value-input"[^>]*hidden="true"/
+      assert html =~ ~r/data-submit-name="kw\[\]"/
+      assert html =~ ~r/data-part="array-inputs"/
+      assert html =~ ~r/name="kw\[\]"[^>]*value="a"/
       assert html =~ ~r/data-part="hidden-input"/
+      refute html =~ ~r/data-part="value-input"/
     end
   end
 
@@ -170,8 +170,14 @@ defmodule Corex.TagsInputTest do
       refute html =~ "data-test=\"err\""
     end
 
-    test "hidden form input ignores LiveView patches to value and uses text type for used_input tracking" do
-      form = to_form(%{"tags" => "alpha,beta"}, as: :user, id: "user")
+    test "form field submits list params via hidden array inputs" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{tags: {:array, :string}}}
+        |> cast(%{"tags" => ["alpha"]}, [:tags])
+
+      form = to_form(cs, as: :post, id: "post-form")
       assigns = %{field: form[:tags]}
 
       html =
@@ -186,11 +192,36 @@ defmodule Corex.TagsInputTest do
           assigns
         )
 
-      assert html =~
-               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[tags\]")(?=[^>]*\bvalue="alpha,beta")[^>]*\bdata-part="value-input"/
+      assert html =~ ~r/data-submit-name="post\[tags\]\[\]"/
+      assert html =~ ~r/data-part="array-inputs"/
+      assert html =~ ~r/name="post\[tags\]\[\]"[^>]*value="alpha"/
+      refute html =~ ~r/data-part="value-input"/
+    end
 
-      assert html =~
-               ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
+    test "form field loads list values from field" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{tags: {:array, :string}}}
+        |> cast(%{"tags" => ["alpha", "beta"]}, [:tags])
+
+      form = to_form(cs, as: :post, id: "post-form")
+      assigns = %{field: form[:tags]}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.TagsInput.tags_input field={@field}>
+              <:close><.heroicon name="hero-x-mark" /></:close>
+            </Corex.TagsInput.tags_input>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/value="alpha"/
+      assert html =~ ~r/value="beta"/
     end
   end
 

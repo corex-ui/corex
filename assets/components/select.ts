@@ -111,7 +111,9 @@ export class Select extends Component<Props, Api> {
     const valueInput = this.el.querySelector<HTMLInputElement>(
       '[data-scope="select"][data-part="value-input"]'
     );
-    if (valueInput) {
+    const formArrayName = getString(this.el, "hiddenSelectName");
+
+    if (valueInput?.name && !formArrayName) {
       const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
       valueInput.value = valueStr;
     }
@@ -121,8 +123,38 @@ export class Select extends Component<Props, Api> {
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
-      hiddenSelect.disabled = true;
-      hiddenSelect.removeAttribute("name");
+
+      if (formArrayName) {
+        hiddenSelect.name = formArrayName;
+        hiddenSelect.disabled = false;
+
+        const valueSet = new Set((this.api.value ?? []).map(String));
+
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+
+          option.selected = valueSet.has(option.value);
+        });
+
+        if (valueInput) valueInput.removeAttribute("name");
+      } else if (hiddenSelect.name) {
+        const valueSet = new Set((this.api.value ?? []).map(String));
+
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+
+          option.selected = valueSet.has(option.value);
+        });
+      } else {
+        hiddenSelect.disabled = true;
+        hiddenSelect.removeAttribute("name");
+      }
     }
 
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {

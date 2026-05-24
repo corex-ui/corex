@@ -1330,7 +1330,8 @@ var Select = class extends Component {
     const valueInput = this.el.querySelector(
       '[data-scope="select"][data-part="value-input"]'
     );
-    if (valueInput) {
+    const formArrayName = getString(this.el, "hiddenSelectName");
+    if (valueInput?.name && !formArrayName) {
       const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
       valueInput.value = valueStr;
     }
@@ -1339,8 +1340,31 @@ var Select = class extends Component {
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
-      hiddenSelect.disabled = true;
-      hiddenSelect.removeAttribute("name");
+      if (formArrayName) {
+        hiddenSelect.name = formArrayName;
+        hiddenSelect.disabled = false;
+        const valueSet = new Set((this.api.value ?? []).map(String));
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+          option.selected = valueSet.has(option.value);
+        });
+        if (valueInput) valueInput.removeAttribute("name");
+      } else if (hiddenSelect.name) {
+        const valueSet = new Set((this.api.value ?? []).map(String));
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+          option.selected = valueSet.has(option.value);
+        });
+      } else {
+        hiddenSelect.disabled = true;
+        hiddenSelect.removeAttribute("name");
+      }
     }
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -1374,11 +1398,45 @@ var Select = class extends Component {
 };
 
 // hooks/select.ts
+function selectHiddenSelectForForm(el) {
+  const hiddenSelect = el.querySelector(
+    '[data-scope="select"][data-part="hidden-select"]'
+  );
+  if (!hiddenSelect) return null;
+  const formArrayName = getString(el, "hiddenSelectName");
+  if (formArrayName) {
+    hiddenSelect.name = formArrayName;
+    hiddenSelect.disabled = false;
+    return hiddenSelect;
+  }
+  if (!hiddenSelect.name) return null;
+  return hiddenSelect;
+}
 function formatSelectHiddenValue(el, values) {
   const list = values.map((v) => String(v));
   return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
 }
+function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
+  const valueSet = new Set(values.map(String));
+  Array.from(hiddenSelect.options).forEach((option) => {
+    if (option.value === "") {
+      option.selected = false;
+      return;
+    }
+    option.selected = valueSet.has(option.value);
+  });
+  queueMicrotask(() => {
+    onTouched?.();
+    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
 function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+  const hiddenSelect = selectHiddenSelectForForm(el);
+  if (hiddenSelect && getBoolean(el, "multiple")) {
+    syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+    return;
+  }
   const valueInput = el.querySelector(
     '[data-scope="select"][data-part="value-input"]'
   );
@@ -1454,6 +1512,11 @@ var SelectHook = {
     if (defaultValues.length > 0) {
       hook.fieldTouched = true;
       queueMicrotask(() => {
+        const hiddenSelect = selectHiddenSelectForForm(el);
+        if (hiddenSelect && getBoolean(el, "multiple")) {
+          syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+          return;
+        }
         const valueInput = el.querySelector(
           '[data-scope="select"][data-part="value-input"]'
         );
@@ -1510,11 +1573,17 @@ var SelectHook = {
     queueMicrotask(() => {
       reapplySelectInteractiveState(this.el);
       if (!this.fieldTouched || !this.select) return;
+      const values = this.select.api.value;
+      const hiddenSelect = selectHiddenSelectForForm(this.el);
+      if (hiddenSelect && getBoolean(this.el, "multiple")) {
+        syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+        return;
+      }
       const valueInput = this.el.querySelector(
         '[data-scope="select"][data-part="value-input"]'
       );
       if (!valueInput) return;
-      const v = formatSelectHiddenValue(this.el, this.select.api.value);
+      const v = formatSelectHiddenValue(this.el, values);
       if (valueInput.value !== v) valueInput.value = v;
       reapplyLiveViewValueInputUsage(valueInput);
     });
@@ -1535,5 +1604,6 @@ export {
   buildCollection,
   formatSelectHiddenValue,
   reapplySelectInteractiveState,
-  syncSelectHiddenInputForPhoenix
+  syncSelectHiddenInputForPhoenix,
+  syncSelectHiddenSelectForPhoenix
 };

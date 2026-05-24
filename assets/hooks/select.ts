@@ -19,9 +19,49 @@ import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collec
 
 type SelectItem = ValueLabelItem;
 
+function selectHiddenSelectForForm(el: HTMLElement): HTMLSelectElement | null {
+  const hiddenSelect = el.querySelector<HTMLSelectElement>(
+    '[data-scope="select"][data-part="hidden-select"]'
+  );
+  if (!hiddenSelect) return null;
+
+  const formArrayName = getString(el, "hiddenSelectName");
+  if (formArrayName) {
+    hiddenSelect.name = formArrayName;
+    hiddenSelect.disabled = false;
+    return hiddenSelect;
+  }
+
+  if (!hiddenSelect.name) return null;
+  return hiddenSelect;
+}
+
 export function formatSelectHiddenValue(el: HTMLElement, values: ReadonlyArray<string>): string {
   const list = values.map((v) => String(v));
   return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
+}
+
+export function syncSelectHiddenSelectForPhoenix(
+  hiddenSelect: HTMLSelectElement,
+  values: ReadonlyArray<string>,
+  onTouched?: () => void
+): void {
+  const valueSet = new Set(values.map(String));
+
+  Array.from(hiddenSelect.options).forEach((option) => {
+    if (option.value === "") {
+      option.selected = false;
+      return;
+    }
+
+    option.selected = valueSet.has(option.value);
+  });
+
+  queueMicrotask(() => {
+    onTouched?.();
+    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 }
 
 export function syncSelectHiddenInputForPhoenix(
@@ -29,6 +69,13 @@ export function syncSelectHiddenInputForPhoenix(
   values: ReadonlyArray<string>,
   onTouched?: () => void
 ): void {
+  const hiddenSelect = selectHiddenSelectForForm(el);
+
+  if (hiddenSelect && getBoolean(el, "multiple")) {
+    syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+    return;
+  }
+
   const valueInput = el.querySelector<HTMLInputElement>(
     '[data-scope="select"][data-part="value-input"]'
   );
@@ -131,6 +178,12 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     if (defaultValues.length > 0) {
       hook.fieldTouched = true;
       queueMicrotask(() => {
+        const hiddenSelect = selectHiddenSelectForForm(el);
+        if (hiddenSelect && getBoolean(el, "multiple")) {
+          syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+          return;
+        }
+
         const valueInput = el.querySelector<HTMLInputElement>(
           '[data-scope="select"][data-part="value-input"]'
         );
@@ -205,11 +258,19 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
 
       if (!this.fieldTouched || !this.select) return;
 
+      const values = this.select.api.value;
+      const hiddenSelect = selectHiddenSelectForForm(this.el);
+
+      if (hiddenSelect && getBoolean(this.el, "multiple")) {
+        syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+        return;
+      }
+
       const valueInput = this.el.querySelector<HTMLInputElement>(
         '[data-scope="select"][data-part="value-input"]'
       );
       if (!valueInput) return;
-      const v = formatSelectHiddenValue(this.el, this.select.api.value);
+      const v = formatSelectHiddenValue(this.el, values);
       if (valueInput.value !== v) valueInput.value = v;
       reapplyLiveViewValueInputUsage(valueInput);
     });

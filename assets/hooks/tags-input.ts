@@ -25,6 +25,7 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
 
 type TagsInputHookState = {
   tagsInput?: TagsInput;
@@ -98,6 +99,8 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
       onValueChange: (details: ValueChangeDetails) => {
+        syncTagsInputFormForPhoenix(el, details.value);
+
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -144,6 +147,11 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
     zag.init();
     this.tagsInput = zag;
+
+    const defaultTags = parseJsonTags(el, "defaultTags");
+    if (defaultTags.length > 0) {
+      queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
+    }
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -229,6 +237,10 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(placeholder !== undefined ? { placeholder } : {}),
     } as Partial<Props>);
     this.tagsInput?.render();
+
+    if (this.tagsInput) {
+      queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput!.api.value as string[]));
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TagsInputHookState) {

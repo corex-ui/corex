@@ -20,7 +20,13 @@ defmodule Corex.TagsInput.Connect do
   }
 
   import Corex.Helpers,
-    only: [get_boolean: 1, validate_value!: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
+    only: [
+      get_boolean: 1,
+      validate_value!: 1,
+      maybe_put: 3,
+      maybe_put_data_dir_from: 2,
+      maybe_put_dir_from: 2
+    ]
 
   alias Phoenix.LiveView.JS
 
@@ -153,6 +159,7 @@ defmodule Corex.TagsInput.Connect do
 
     assigns
     |> base_hook_props(value)
+    |> maybe_put("data-submit-name", Map.get(assigns, :submit_name))
     |> put_data_max(assigns.max)
     |> put_data_delimiter(assigns.delimiter)
     |> put_data_blur_behavior(assigns.blur_behavior)

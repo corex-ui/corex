@@ -228,12 +228,35 @@ defmodule MyAppWeb.Locale do
     loc = to_string(loc)
 
     case Localize.Locale.display_name(loc, locale: loc) do
-      {:ok, name} -> name
+      {:ok, name} -> format_language_select_label(name)
       _ -> String.upcase(loc)
     end
   end
 
   def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
+
+  defp format_language_select_label(name) when is_binary(name) do
+    trimmed = String.trim(name)
+
+    if trimmed == "" do
+      trimmed
+    else
+      if String.match?(trimmed, ~r/^\p{Latin}/u) do
+        trimmed
+        |> String.split(~r/\s+/u, trim: true)
+        |> Enum.map_join(" ", &titlecase_word/1)
+      else
+        trimmed
+      end
+    end
+  end
+
+  defp titlecase_word(word) do
+    case String.next_grapheme(String.downcase(word)) do
+      {first, rest} -> String.upcase(first) <> rest
+      nil -> word
+    end
+  end
 
   def lang do
     Localize.get_locale()

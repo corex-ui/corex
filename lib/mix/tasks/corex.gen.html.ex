@@ -104,7 +104,9 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   files to match your style; they use the same bindings as the originals.
 
   Array fields (`tags:array:string`) generate a multi-select `Corex.Select` with
-  placeholder options. Swap to `Corex.TagsInput` when values are free-form tags.
+  placeholder options. The hidden select submits `name[]` list params compatible
+  with Ecto `{:array, :string}`. Swap to `Corex.TagsInput` for free-form tags
+  (also submits `name[]` list params when bound with `field={f[:tags]}`).
 
   ## Customizing the context, schema, tables and migrations
 
@@ -173,7 +175,6 @@ defmodule Mix.Tasks.Corex.Gen.Html do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_themes: layout_themes?(layout_opts),
       layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
       inputs: inputs(schema),
       conn_scope: conn_scope,
@@ -304,25 +305,6 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
-
-  defp layout_themes?(opts) do
-    layout_theme?(opts) and app_has_themes?()
-  end
-
-  defp app_has_themes? do
-    app = Mix.Project.config()[:app]
-    str = to_string(app)
-
-    root_app =
-      if String.ends_with?(str, "_web") do
-        String.to_atom(String.replace_suffix(str, "_web", ""))
-      else
-        app
-      end
-
-    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
-    is_list(themes)
-  end
 
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen.html templates."
   def inputs(%Schema{} = schema) do

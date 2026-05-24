@@ -6,11 +6,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <%= if layout_mode || layout_theme || layout_themes || layout_locale || scope do %><Layouts.app
+    <%= if layout_mode || layout_theme || layout_locale || scope do %><Layouts.app
       flash={@flash}<%= if layout_mode do %>
       mode={@mode}<% end %><%= if layout_theme do %>
-      theme={@theme}<% end %><%= if layout_themes do %>
-      themes={@themes}<% end %><%= if layout_locale do %>
+      theme={@theme}<% end %><%= if layout_locale do %>
       locale={@locale}
       current_path={@current_path}<% end %><%= if scope do %>
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>

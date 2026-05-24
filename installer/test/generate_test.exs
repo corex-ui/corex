@@ -62,6 +62,8 @@ defmodule Corex.New.GenerateTest do
 
       locale_ex = File.read!(Path.join("lib/my_app_web", "locale.ex"))
       assert locale_ex =~ "def current do"
+      assert locale_ex =~ "format_language_select_label"
+      assert locale_ex =~ "titlecase_word"
     end)
   end
 

@@ -33029,7 +33029,8 @@ ${err}`);
     buildCollection: () => buildCollection2,
     formatSelectHiddenValue: () => formatSelectHiddenValue,
     reapplySelectInteractiveState: () => reapplySelectInteractiveState,
-    syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix
+    syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix,
+    syncSelectHiddenSelectForPhoenix: () => syncSelectHiddenSelectForPhoenix
   });
   function connect23(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
@@ -33449,12 +33450,46 @@ ${err}`);
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a4 = event.previousEvent) == null ? void 0 : _a4.restoreFocus;
     return v2 == null || !!v2;
   }
+  function selectHiddenSelectForForm(el) {
+    const hiddenSelect = el.querySelector(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
+    if (!hiddenSelect) return null;
+    const formArrayName = getString(el, "hiddenSelectName");
+    if (formArrayName) {
+      hiddenSelect.name = formArrayName;
+      hiddenSelect.disabled = false;
+      return hiddenSelect;
+    }
+    if (!hiddenSelect.name) return null;
+    return hiddenSelect;
+  }
   function formatSelectHiddenValue(el, values) {
     var _a4;
     const list = values.map((v2) => String(v2));
     return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
   }
+  function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
+    const valueSet = new Set(values.map(String));
+    Array.from(hiddenSelect.options).forEach((option) => {
+      if (option.value === "") {
+        option.selected = false;
+        return;
+      }
+      option.selected = valueSet.has(option.value);
+    });
+    queueMicrotask(() => {
+      onTouched == null ? void 0 : onTouched();
+      hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+      hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
   function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+    const hiddenSelect = selectHiddenSelectForForm(el);
+    if (hiddenSelect && getBoolean(el, "multiple")) {
+      syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+      return;
+    }
     const valueInput = el.querySelector(
       '[data-scope="select"][data-part="value-input"]'
     );
@@ -34405,13 +34440,14 @@ ${err}`);
           });
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d;
           const root = (_a4 = this.el.querySelector('[data-scope="select"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(root, this.api.getRootProps());
           const valueInput = this.el.querySelector(
             '[data-scope="select"][data-part="value-input"]'
           );
-          if (valueInput) {
+          const formArrayName = getString(this.el, "hiddenSelectName");
+          if ((valueInput == null ? void 0 : valueInput.name) && !formArrayName) {
             const valueStr = ((_b = this.api.value) == null ? void 0 : _b.length) ? this.api.value.map(String).join(",") : "";
             valueInput.value = valueStr;
           }
@@ -34420,8 +34456,31 @@ ${err}`);
           );
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
-            hiddenSelect.disabled = true;
-            hiddenSelect.removeAttribute("name");
+            if (formArrayName) {
+              hiddenSelect.name = formArrayName;
+              hiddenSelect.disabled = false;
+              const valueSet = new Set(((_c = this.api.value) != null ? _c : []).map(String));
+              Array.from(hiddenSelect.options).forEach((option) => {
+                if (option.value === "") {
+                  option.selected = false;
+                  return;
+                }
+                option.selected = valueSet.has(option.value);
+              });
+              if (valueInput) valueInput.removeAttribute("name");
+            } else if (hiddenSelect.name) {
+              const valueSet = new Set(((_d = this.api.value) != null ? _d : []).map(String));
+              Array.from(hiddenSelect.options).forEach((option) => {
+                if (option.value === "") {
+                  option.selected = false;
+                  return;
+                }
+                option.selected = valueSet.has(option.value);
+              });
+            } else {
+              hiddenSelect.disabled = true;
+              hiddenSelect.removeAttribute("name");
+            }
           }
           ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -34468,6 +34527,11 @@ ${err}`);
           if (defaultValues.length > 0) {
             hook.fieldTouched = true;
             queueMicrotask(() => {
+              const hiddenSelect = selectHiddenSelectForForm(el);
+              if (hiddenSelect && getBoolean(el, "multiple")) {
+                syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+                return;
+              }
               const valueInput = el.querySelector(
                 '[data-scope="select"][data-part="value-input"]'
               );
@@ -34520,11 +34584,17 @@ ${err}`);
           queueMicrotask(() => {
             reapplySelectInteractiveState(this.el);
             if (!this.fieldTouched || !this.select) return;
+            const values = this.select.api.value;
+            const hiddenSelect = selectHiddenSelectForForm(this.el);
+            if (hiddenSelect && getBoolean(this.el, "multiple")) {
+              syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+              return;
+            }
             const valueInput = this.el.querySelector(
               '[data-scope="select"][data-part="value-input"]'
             );
             if (!valueInput) return;
-            const v2 = formatSelectHiddenValue(this.el, this.select.api.value);
+            const v2 = formatSelectHiddenValue(this.el, values);
             if (valueInput.value !== v2) valueInput.value = v2;
             reapplyLiveViewValueInputUsage(valueInput);
           });
@@ -36073,6 +36143,43 @@ ${err}`);
       input == null ? void 0 : input.removeEventListener("change", resize);
     };
   }
+  function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
+    var _a4;
+    const submitName = getString(el, "submitName");
+    if (!submitName) return;
+    const form = getString(el, "form");
+    let container = el.querySelector(
+      '[data-scope="tags-input"][data-part="array-inputs"]'
+    );
+    if (!container) {
+      const root = (_a4 = el.querySelector('[data-scope="tags-input"][data-part="root"]')) != null ? _a4 : el;
+      container = document.createElement("div");
+      container.setAttribute("data-scope", "tags-input");
+      container.setAttribute("data-part", "array-inputs");
+      container.setAttribute("phx-update", "ignore");
+      container.id = `tags-input:${el.id}:array-inputs`;
+      root.prepend(container);
+    }
+    container.replaceChildren();
+    values.forEach((value) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.setAttribute("data-scope", "tags-input");
+      input.setAttribute("data-part", "array-input");
+      input.name = submitName;
+      if (form) input.setAttribute("form", form);
+      input.value = String(value);
+      container.appendChild(input);
+    });
+    queueMicrotask(() => {
+      onTouched == null ? void 0 : onTouched();
+      container.dispatchEvent(new Event("input", { bubbles: true }));
+      container.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  function syncTagsInputFormForPhoenix(el, values, onTouched) {
+    syncTagsArrayInputsForPhoenix(el, values, onTouched);
+  }
   function formatTagTemplate(template, tag) {
     return template.split(TAG_PLACEHOLDER).join(tag);
   }
@@ -37012,18 +37119,8 @@ ${err}`);
             '[data-scope="tags-input"][data-part="input"]'
           );
           if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
-          const valueInput = this.el.querySelector(
-            '[data-scope="tags-input"][data-part="value-input"]'
-          );
-          if (valueInput) {
-            const rawDelim = this.el.dataset.delimiter;
-            const delim = rawDelim !== void 0 && rawDelim !== "" ? rawDelim : ",";
-            const v2 = ((_a4 = this.api.value) != null ? _a4 : []).join(delim);
-            if (valueInput.value !== v2) {
-              valueInput.value = v2;
-              valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-              valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-            }
+          if (getString(this.el, "submitName")) {
+            syncTagsInputFormForPhoenix(this.el, (_a4 = this.api.value) != null ? _a4 : []);
           }
           const hiddenEl = this.el.querySelector(
             '[data-scope="tags-input"][data-part="hidden-input"]'
@@ -37062,6 +37159,7 @@ ${err}`);
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), {
             onValueChange: (details) => {
+              syncTagsInputFormForPhoenix(el, details.value);
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -37104,6 +37202,10 @@ ${err}`);
           }));
           zag.init();
           this.tagsInput = zag;
+          const defaultTags = parseJsonTags(el, "defaultTags");
+          if (defaultTags.length > 0) {
+            queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
+          }
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:tags-input:set-value", (event) => {
@@ -37174,6 +37276,11 @@ ${err}`);
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
           (_b = this.tagsInput) == null ? void 0 : _b.render();
+          if (this.tagsInput) {
+            queueMicrotask(
+              () => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value)
+            );
+          }
         },
         destroyed() {
           var _a4, _b, _c;
