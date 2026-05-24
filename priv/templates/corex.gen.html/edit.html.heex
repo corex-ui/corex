@@ -8,6 +8,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
+  <article class="layout__article">
   <.layout_heading class="layout-heading">
     <:title>Edit <%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -29,7 +30,7 @@
         final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
       >
         <:trigger
-          class="button button--sm button--alert button--square"
+          class="button button--alert button--square"
           aria_label={"Delete <%= schema.human_singular %>"}
         >
           <.heroicon name="hero-trash" />
@@ -64,4 +65,5 @@
     action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}"}
     return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
   />
+  </article>
 </Layouts.app>

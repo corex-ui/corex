@@ -166,6 +166,8 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "@import \"../corex/components/checkbox.css\""
       assert out =~ "@import \"../corex/components/native-input.css\""
       assert out =~ "@import \"../corex/components/select.css\""
+      assert out =~ "@import \"../corex/components/dialog.css\""
+      assert out =~ "@import \"../corex/components/password-input.css\""
     end
 
     test "includes toggle import when mode without theme or lang" do

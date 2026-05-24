@@ -67,7 +67,7 @@ defmodule Mix.Tasks.Corex.New do
   """
   use Mix.Task
 
-  alias Corex.New.{Cli, Generate, PhxWrapper, PostGenerate, VersionCheck}
+  alias Corex.New.{Cli, Generate, PhxWrapper, PostGenerate}
 
   @version Mix.Project.config()[:version]
   @shortdoc "Creates a new Phoenix app and installs Corex"
@@ -124,10 +124,10 @@ defmodule Mix.Tasks.Corex.New do
     Cli.validate_phx_new_flags!(opts)
 
     version_task =
-      if opts[:no_version_check] == true or argv == [] do
+      if opts[:no_version_check] == true or argv == [] or opts[:dev] do
         nil
       else
-        VersionCheck.start_latest_version_task("corex_new", @version)
+        get_latest_version("corex_new")
       end
 
     result =
@@ -139,7 +139,16 @@ defmodule Mix.Tasks.Corex.New do
           run_with_path(base_path, opts)
       end
 
-    VersionCheck.await_and_warn(@version, version_task)
+    if version_task do
+      try do
+        %Version{} = latest_version = Task.await(version_task, 3_000)
+        maybe_warn_outdated(latest_version)
+      rescue
+        _ -> :ok
+      catch
+        :exit, _ -> :ok
+      end
+    end
 
     result
   end
@@ -199,6 +208,7 @@ defmodule Mix.Tasks.Corex.New do
     Generate.run(install_dir, generate_opts)
 
     PostGenerate.copy_cached_build(phx_root)
+
     PostGenerate.init_git(phx_root)
     PostGenerate.prompt_install(phx_root, install_dir, opts)
   end
@@ -263,5 +273,84 @@ defmodule Mix.Tasks.Corex.New do
         [name | acc]
       end
     end)
+  end
+
+  defp maybe_warn_outdated(latest_version) do
+    if Version.compare(@version, latest_version) == :lt do
+      Mix.shell().info([
+        :yellow,
+        "A new version of corex.new is available:",
+        :green,
+        " v#{latest_version}",
+        :reset,
+        ".",
+        "\n",
+        "You are currently running ",
+        :red,
+        "v#{@version}",
+        :reset,
+        ".\n",
+        "To update, run:\n\n",
+        "    $ mix local.corex\n"
+      ])
+    end
+  end
+
+  if Version.match?(System.version(), "~> 1.18") do
+    defp get_latest_version(package) do
+      Task.async(fn ->
+        try do
+          with {:ok, package} <- get_package(package) do
+            versions =
+              for release <- package["releases"],
+                  version = Version.parse!(release["version"]),
+                  version.pre == [] do
+                version
+              end
+
+            Enum.max(versions, Version)
+          end
+        rescue
+          _ -> {:error, :rescue}
+        catch
+          :exit, _ -> {:error, :exit}
+        end
+      end)
+    end
+
+    defp get_package(name) do
+      http_options = [
+        ssl: [
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          depth: 2,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ],
+          versions: [:"tlsv1.2", :"tlsv1.3"]
+        ]
+      ]
+
+      options = [body_format: :binary]
+
+      case :httpc.request(
+             :get,
+             {~c"https://hex.pm/api/packages/#{name}",
+              [{~c"user-agent", ~c"Mix.Tasks.Corex.New/#{@version}"}]},
+             http_options,
+             options
+           ) do
+        {:ok, {{_, 200, _}, _headers, body}} ->
+          {:ok, JSON.decode!(body)}
+
+        {:ok, {{_, status, _}, _, _}} ->
+          {:error, status}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+    end
+  else
+    defp get_latest_version(_package), do: nil
   end
 end

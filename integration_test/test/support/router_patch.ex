@@ -17,23 +17,28 @@ defmodule Corex.Integration.RouterPatch do
     content = File.read!(router_path)
 
     new_content =
-      if Keyword.get(opts, :locale_scope) do
-        cond do
-          String.contains?(content, @home_route_anchor) ->
-            String.replace(content, @home_route_anchor, @home_route_anchor <> live_routes,
-              global: true
-            )
+      cond do
+        Keyword.get(opts, :locale_scope) and Keyword.get(opts, :locale_only) ->
+          inject_after_home_in_locale_scope(content, live_routes)
 
-          String.contains?(content, @example_live_line) ->
-            String.replace(content, @example_live_line, @example_live_line <> live_routes,
-              global: false
-            )
+        Keyword.get(opts, :locale_scope) ->
+          cond do
+            String.contains?(content, @home_route_anchor) ->
+              String.replace(content, @home_route_anchor, @home_route_anchor <> live_routes,
+                global: true
+              )
 
-          true ->
-            inject_before_final_end(content, live_routes)
-        end
-      else
-        inject_before_final_end(content, live_routes)
+            String.contains?(content, @example_live_line) ->
+              String.replace(content, @example_live_line, @example_live_line <> live_routes,
+                global: false
+              )
+
+            true ->
+              inject_before_final_end(content, live_routes)
+          end
+
+        true ->
+          inject_before_final_end(content, live_routes)
       end
 
     File.write!(router_path, new_content)
@@ -43,34 +48,42 @@ defmodule Corex.Integration.RouterPatch do
     content = File.read!(router_path)
 
     new_content =
-      if Keyword.get(opts, :locale_scope) do
-        if String.contains?(content, @home_route_anchor) do
-          String.replace(content, @home_route_anchor, @home_route_anchor <> resources_routes,
-            global: true
-          )
-        else
-          parts = String.split(content, ~r/scope "\/:locale"/, parts: 2)
+      cond do
+        Keyword.get(opts, :locale_scope) and Keyword.get(opts, :locale_only) ->
+          inject_after_home_in_locale_scope(content, resources_routes)
 
-          if length(parts) == 2 do
-            [head, locale_block] = parts
-            get_pattern = @home_route_anchor
-            locale_parts = String.split(locale_block, get_pattern, parts: 2)
-
-            if length(locale_parts) == 2 do
-              [before_get, after_get] = locale_parts
-              new_locale_block = before_get <> get_pattern <> resources_routes <> after_get
-              head <> "scope \"/:locale\"" <> new_locale_block
-            else
-              inject_before_final_end(content, resources_routes)
-            end
+        Keyword.get(opts, :locale_scope) ->
+          if String.contains?(content, @home_route_anchor) do
+            String.replace(content, @home_route_anchor, @home_route_anchor <> resources_routes,
+              global: true
+            )
           else
-            inject_before_final_end(content, resources_routes)
+            inject_after_home_in_locale_scope(content, resources_routes)
           end
-        end
-      else
-        inject_before_final_end(content, resources_routes)
+
+        true ->
+          inject_before_final_end(content, resources_routes)
       end
 
     File.write!(router_path, new_content)
+  end
+
+  defp inject_after_home_in_locale_scope(content, routes_to_inject) do
+    parts = String.split(content, ~r/scope "\/:locale"/, parts: 2)
+
+    if length(parts) == 2 do
+      [head, locale_block] = parts
+      locale_parts = String.split(locale_block, @home_route_anchor, parts: 2)
+
+      if length(locale_parts) == 2 do
+        [before_get, after_get] = locale_parts
+        new_locale_block = before_get <> @home_route_anchor <> routes_to_inject <> after_get
+        head <> "scope \"/:locale\"" <> new_locale_block
+      else
+        inject_before_final_end(content, routes_to_inject)
+      end
+    else
+      inject_before_final_end(content, routes_to_inject)
+    end
   end
 end

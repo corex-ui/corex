@@ -514,4 +514,41 @@ defmodule Mix.Corex do
       message
     end
   end
+
+  @doc false
+  def layout_generators_opts do
+    Application.get_env(:corex, :generators, [])[:layout] || []
+  end
+
+  @doc false
+  def verified_routes_path_prefixes?(web_module) when is_atom(web_module) do
+    web_module
+    |> web_ex_path()
+    |> read_web_ex()
+    |> String.contains?("path_prefixes:")
+  end
+
+  @doc false
+  def locale_scoped_routes?(web_module, layout_opts)
+      when is_atom(web_module) and is_list(layout_opts) do
+    verified_routes_path_prefixes?(web_module) or Keyword.has_key?(layout_opts, :locale)
+  end
+
+  @doc false
+  def layout_locale_paths?(web_module, layout_opts)
+      when is_atom(web_module) and is_list(layout_opts) do
+    Keyword.has_key?(layout_opts, :locale) and not verified_routes_path_prefixes?(web_module)
+  end
+
+  defp web_ex_path(web_module) do
+    web_module
+    |> Module.split()
+    |> List.last()
+    |> Macro.underscore()
+    |> then(&Path.join("lib", &1 <> ".ex"))
+  end
+
+  defp read_web_ex(path) do
+    if File.exists?(path), do: File.read!(path), else: ""
+  end
 end

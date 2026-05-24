@@ -28,7 +28,7 @@ defmodule Corex.New.Generate do
     write_app_css(install_dir, opts)
 
     Patches.patch_mix_exs(install_dir, opts)
-    Patches.patch_web_module(install_dir, opts[:web_module])
+    Patches.patch_web_module(install_dir, opts[:web_module], opts)
     Patches.patch_live_view_for_lang(install_dir, opts[:web_module], opts)
     Patches.patch_router(install_dir, opts[:web_module], opts)
     Patches.patch_endpoint(install_dir, opts[:web_module], opts)
@@ -38,6 +38,10 @@ defmodule Corex.New.Generate do
 
     if opts[:design] do
       copy_design_tree(install_dir, opts)
+    end
+
+    if opts[:lang] do
+      Patches.patch_verified_routes_path_prefixes!(install_dir, opts[:web_module], opts)
     end
 
     :ok
@@ -376,8 +380,7 @@ defmodule Corex.New.Generate do
   defp drop_common_prefix([h | ta], [h | tb]), do: drop_common_prefix(ta, tb)
   defp drop_common_prefix(a, b), do: {a, b}
 
-  defp web_underscore(opts),
-    do: opts[:web_module] |> inspect() |> Macro.underscore()
+  defp web_underscore(opts), do: Atom.to_string(Keyword.fetch!(opts, :otp_app)) <> "_web"
 
   defp write!(path, contents) do
     File.mkdir_p!(Path.dirname(path))

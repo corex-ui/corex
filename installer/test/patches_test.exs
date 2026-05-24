@@ -57,6 +57,15 @@ defmodule Corex.New.PatchesTest do
         unquote(verified_routes())
       end
     end
+
+    defp verified_routes do
+      quote do
+        use Phoenix.VerifiedRoutes,
+          endpoint: MyAppWeb.Endpoint,
+          router: MyAppWeb.Router,
+          statics: MyAppWeb.static_paths()
+      end
+    end
   end
   """
 
@@ -463,7 +472,42 @@ defmodule Corex.New.PatchesTest do
     end
   end
 
-  describe "patch_web_module/2" do
+  describe "patch_verified_routes_path_prefixes!/3" do
+    test "adds path_prefixes" do
+      in_tmp(:patch_verified_routes_lang, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb,
+          lang: true,
+          otp_app: :my_app
+        )
+
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
+      end)
+    end
+
+    test "is idempotent" do
+      in_tmp(:patch_verified_routes_idempotent, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        opts = [lang: true, otp_app: :my_app]
+
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb, opts)
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb, opts)
+
+        body = File.read!("lib/my_app_web.ex")
+        assert [_, _] = String.split(body, "path_prefixes:", parts: 2)
+      end)
+    end
+  end
+
+  describe "patch_web_module/3" do
     test "adds `use Corex` in html_helpers once" do
       in_tmp(:patch_web_module, fn ->
         File.mkdir_p!("lib")
@@ -476,6 +520,20 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_web_module(File.cwd!(), MyAppWeb)
         body2 = File.read!("lib/my_app_web.ex")
         assert length(String.split(body2, "use Corex")) == 2
+      end)
+    end
+
+    test "adds path_prefixes when lang is enabled" do
+      in_tmp(:patch_web_module_lang, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        Patches.patch_web_module(File.cwd!(), MyAppWeb, lang: true, otp_app: :my_app)
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "use Corex"
+        assert body =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
       end)
     end
   end

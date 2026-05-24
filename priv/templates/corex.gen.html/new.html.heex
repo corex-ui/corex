@@ -8,6 +8,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
+  <article class="layout__article">
   <.layout_heading class="layout-heading">
     <:title>New <%= schema.human_singular %></:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -18,4 +19,5 @@
     action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
     return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
   />
+  </article>
 </Layouts.app>

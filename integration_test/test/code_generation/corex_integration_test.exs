@@ -219,6 +219,8 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           assert content =~ ~s(@import "../corex/components/toggle.css";)
           refute content =~ "toggle-group.css"
           assert content =~ ~s(@import "../corex/components/select.css";)
+          assert content =~ ~s(@import "../corex/components/dialog.css";)
+          assert content =~ ~s(@import "../corex/components/password-input.css";)
           assert content =~ ~s(@import "../corex/components/data-table.css";)
           assert content =~ ~s(@import "../corex/components/data-list.css";)
           assert content =~ ~s(@import "../corex/components/scrollbar.css";)

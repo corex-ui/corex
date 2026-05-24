@@ -128,6 +128,12 @@ defmodule Mix.Tasks.Corex.NewTest do
         assert [_ | _] = Path.wildcard(Path.join([name, "lib", "*_web", "plugs", "mode.ex"]))
         assert File.regular?(Path.join(name, "mix.exs"))
         assert [_ | _] = Path.wildcard(Path.join([name, "lib", "**", "layouts.ex"]))
+
+        [web_ex_path] = Path.wildcard(Path.join([name, "lib", "*_web.ex"]))
+        web_ex = File.read!(web_ex_path)
+
+        assert web_ex =~ "path_prefixes: [{"
+        assert web_ex =~ ".Locale, :current, []}]"
       end)
     end
   end

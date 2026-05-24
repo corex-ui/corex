@@ -63,7 +63,8 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ ~S(type="select") and &1 =~ ~S(multiple) and &1 =~ ~S(<:label>Roles</:label>))
+             &(&1 =~ "<.select" and &1 =~ "multiple" and &1 =~ "deselectable" and
+                 &1 =~ "close_on_select={false}" and &1 =~ ~S(<:label>Roles</:label>))
            )
 
     assert Enum.any?(
@@ -132,14 +133,38 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
     assert Enum.any?(paths, &String.contains?(&1, "controllers/admin"))
   end
 
-  test "inputs/1 renders references as text field" do
+  test "inputs/1 renders references as number_input" do
     schema = %Schema{
       attrs: [author_id: {:references, :authors}],
       module: MyApp.Author
     }
 
     inputs = Html.inputs(schema)
-    assert Enum.any?(inputs, &(&1 =~ ~S(type="text") and &1 =~ "Author"))
+    assert Enum.any?(inputs, &(&1 =~ "number_input" and &1 =~ "Author"))
+    refute Enum.any?(inputs, &(&1 =~ ~S(type="text") and &1 =~ "Author"))
+  end
+
+  test "inputs/1 renders redact fields as password_input" do
+    schema = %Schema{
+      attrs: [secret: :string],
+      redacts: [:secret],
+      module: MyApp.User
+    }
+
+    inputs = Html.inputs(schema)
+    assert Enum.any?(inputs, &(&1 =~ "password_input" and &1 =~ "Secret"))
+  end
+
+  test "display_expr/5 formats array fields" do
+    schema = %Schema{attrs: [tags: {:array, :string}], module: MyApp.User, redacts: []}
+
+    assert Mix.Corex.Gen.Inputs.display_expr("user", :tags, {:array, :string}, schema) =~
+             "Enum.join(user.tags"
+
+    redact_schema = %Schema{attrs: [secret: :string], redacts: [:secret], module: MyApp.User}
+
+    assert Mix.Corex.Gen.Inputs.display_expr("@user", :secret, :string, redact_schema, :show) ==
+             "\"••••••••\""
   end
 
   test "run/1 raises without attributes" do

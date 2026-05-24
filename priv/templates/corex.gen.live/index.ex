@@ -16,6 +16,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
+      <article class="layout__article">
       <.layout_heading class="layout-heading">
         <:title>Listing <%= schema.human_plural %></:title>
         <:subtitle>Add and manage <%= schema.singular %> records</:subtitle>
@@ -28,11 +29,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       <.data_table
         id="<%= schema.plural %>"
-        class="data-table"
+        class="data-table max-w-none"
         rows={@streams.<%= schema.collection %>}
         row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
-      ><%= for {k, _} <- schema.attrs do %>
-        <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
+      >
+        <:empty>No <%= schema.human_plural %> yet.</:empty><%= for {k, type} <- schema.attrs do %>
+        <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= Mix.Corex.Gen.Inputs.display_expr(schema.singular, k, type, schema) %>}</:col><% end %>
         <:action :let={{_id, <%= schema.singular %>}}>
           <div class="sr-only">
             <.link navigate={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} class="link">Show</.link>
@@ -87,6 +89,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.dialog>
         </:action>
       </.data_table>
+      </article>
     </Layouts.app>
     """
   end

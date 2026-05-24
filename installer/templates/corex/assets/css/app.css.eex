@@ -22,6 +22,8 @@
 @import "../corex/components/icon.css";
 @import "../corex/components/link.css";
 @import "../corex/components/button.css";
+@import "../corex/components/dialog.css";
+@import "../corex/components/password-input.css";
 @import "../corex/components/scrollbar.css";
 @import "../corex/components/checkbox.css";
 @import "../corex/components/data-list.css";

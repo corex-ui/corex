@@ -46,17 +46,22 @@ defmodule Corex.New.GenerateTest do
     Corex.New.MixHelper.in_tmp("generate flags", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
 
-      assert :ok ==
-               Generate.run(
-                 File.cwd!(),
-                 ScaffoldHelper.base_generate_opts(mode: true, theme: true, lang: true)
-               )
+      opts = ScaffoldHelper.base_generate_opts(mode: true, theme: true, lang: true)
+
+      assert :ok == Generate.run(File.cwd!(), opts)
 
       assert File.exists?(Path.join("lib/my_app_web/plugs", "mode.ex"))
       assert File.exists?(Path.join("lib/my_app_web/plugs", "theme.ex"))
       assert File.exists?(Path.join("lib/my_app_web", "locale.ex"))
       assert File.exists?(Path.join("lib/my_app_web/hooks", "layout.ex"))
       assert File.read!(Path.join("lib/my_app_web/components", "layouts.ex")) =~ "mode_toggle"
+
+      web_ex = File.read!(Path.join("lib", "my_app_web.ex"))
+
+      assert web_ex =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
+
+      locale_ex = File.read!(Path.join("lib/my_app_web", "locale.ex"))
+      assert locale_ex =~ "def current do"
     end)
   end
 

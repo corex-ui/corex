@@ -378,11 +378,17 @@ defmodule Corex.Integration.CodeGeneratorCase do
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)
     web = "#{app_name}_web"
+    web_module = web |> Macro.camelize() |> Kernel.<>("Web")
     router = Path.join([base, "lib", web, "router.ex"])
+    web_ex = Path.join([base, "lib", web <> ".ex"])
 
     assert_file(router, fn c ->
       assert c =~ "Localize.Plug.PutLocale"
       assert c =~ ~s(scope "/:locale")
+    end)
+
+    assert_file(web_ex, fn c ->
+      assert c =~ "path_prefixes: [{#{web_module}.Locale, :current, []}]"
     end)
 
     assert_file(Path.join([base, "lib", web, "locale.ex"]))

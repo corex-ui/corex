@@ -8,6 +8,7 @@
   <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
 >
 <% else %><Layouts.app flash={@flash}><% end %>
+  <article class="layout__article">
   <.layout_heading class="layout-heading">
     <:title>Listing <%= schema.human_plural %></:title>
     <:subtitle>Add and manage <%= schema.singular %> records</:subtitle>
@@ -24,11 +25,12 @@
 
   <.data_table
     id="<%= schema.plural %>"
-    class="data-table"
+    class="data-table max-w-none"
     rows={@<%= schema.collection %>}
     row_click={&JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}
-  ><%= for {k, _} <- schema.attrs do %>
-    <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
+  >
+    <:empty>No <%= schema.human_plural %> yet.</:empty><%= for {k, type} <- schema.attrs do %>
+    <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= Mix.Corex.Gen.Inputs.display_expr(schema.singular, k, type, schema) %>}</:col><% end %>
     <:action :let={<%= schema.singular %>}>
       <div class="sr-only">
         <.link href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} class="link">Show</.link>
@@ -81,4 +83,5 @@
       </.dialog>
     </:action>
   </.data_table>
+  </article>
 </Layouts.app>

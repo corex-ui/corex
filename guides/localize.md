@@ -125,13 +125,25 @@ Files are written under the app’s build output (for example `_build/dev/lib/lo
 
 You can hook the task into setup-style pipelines - for example **`mix setup`** - alongside asset tooling so new clones get CLDR data without an extra manual step.
 
-## 3. Phoenix verified routes (default vs optional path_prefixes)
+## 3. Phoenix verified routes and `path_prefixes`
 
-[`mix corex.new --lang`](installation.html) keeps the stock **`Phoenix.VerifiedRoutes`** setup: **`endpoint`**, **`router`**, and **`statics`** only  -  **no** [`path_prefixes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html#module-localized-routes-and-path-prefixes). Static assets and route helpers behave like a typical Phoenix app; localized page URLs still come from your router (**`localize do … end`**) and plugs.
+[`mix corex.new --lang`](installation.html) configures [`path_prefixes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html#module-localized-routes-and-path-prefixes) on **`Phoenix.VerifiedRoutes`** in **`lib/my_app_web.ex`**
 
-### Optional: prefix verified routes with the active locale
+```elixir
+use Phoenix.VerifiedRoutes,
+  endpoint: MyAppWeb.Endpoint,
+  router: MyAppWeb.Router,
+  statics: MyAppWeb.static_paths(),
+  path_prefixes: [{MyAppWeb.Locale, :current, []}]
+```
 
-If you want **`~p"/foo"`** to expand to paths that include the leading locale segment, add a **`path_prefixes`** entry whose MFA returns the active locale segment (derived from **`Localize.get_locale()`** with a Gettext fallback). Implement a small module function that matches what your app considers the segment (for example mirroring the first segment of **`Locale.swap_path/2`** logic). Confirm against [`Phoenix.VerifiedRoutes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+**`MyAppWeb.Locale.current/0`** returns the active locale segment (from **`Localize.get_locale()`** with a Gettext fallback). At runtime, **`~p"/users"`** expands to **`/en/users`** (or the current locale) while your router defines resources under **`scope "/:locale", …`** only.
+
+**`mix corex.gen.live`** and **`mix corex.gen.html`** emit plain **`~p"/…"`** paths when **`path_prefixes`** is present. The generator shell instructions tell you to add routes inside the **`/:locale`** scope.
+
+### Without `path_prefixes` (advanced)
+
+If you omit **`path_prefixes`**, **`~p`** expects paths **without** a leading locale segment (for example **`~p"/users/#{user}"`**). Routes must then exist under **`scope "/", …`** as well as under **`scope "/:locale", …`**, or you must add manual **`/#{@locale}`** segments in templates. Confirm behavior with [**Phoenix.VerifiedRoutes**](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
 
 ## 4. Router: Localize.Routes, plugs, and localize block
 
@@ -190,7 +202,7 @@ end
 
 **`mix corex.new --lang`** also duplicates the **`scope "/"`** block into **`scope "/:locale"`** so helpers and scopes match localized URLs  -  inspect your generated **`router.ex`** for the exact pattern.
 
-With the default **`Phoenix.VerifiedRoutes`** setup (no locale **`path_prefixes`**; see **Scoped routes** earlier in this guide), **`~p`** expects paths **without** a leading locale segment (for example **`~p"/users/#{user}"`**). Routes must therefore exist under **`scope "/", …`** as well as under **`scope "/:locale", …`**. After **`mix corex.gen.live`**, **`mix corex.gen.html`**, or any manual **`router.ex`** edit, add **`live`**, **`resources`**, and other browser routes in **both** scopes so **`/:locale/...`** URLs and verified paths stay aligned. If you adopt **`path_prefixes`** so **`~p`** includes the locale, you can consolidate on a single localized scope instead  -  confirm behavior with [**Phoenix.VerifiedRoutes**](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+After **`mix corex.gen.live`**, **`mix corex.gen.html`**, or any manual **`router.ex`** edit, add **`live`**, **`resources`**, and other browser routes inside the **`scope "/:locale"`** block (not only under **`scope "/"`**). **`path_prefixes`** keeps **`~p`** helpers aligned with those localized routes.
 
 Visiting **`/`** redirects to **`/en`** (or whichever locale the resolver picked). To localize more routes, put them inside the same **`localize do … end`** block, or open additional ones inside their scopes.
 

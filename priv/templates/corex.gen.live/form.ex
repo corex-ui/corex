@@ -17,6 +17,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
+      <article class="layout__article">
       <.layout_heading class="layout-heading">
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
@@ -31,7 +32,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button button--alert button--square"
               aria_label={"Delete <%= schema.human_singular %>"}
             >
               <.heroicon name="hero-trash" />
@@ -79,6 +80,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           </.action>
         </div>
       </.form>
+      </article>
     </Layouts.app>
     """
   end

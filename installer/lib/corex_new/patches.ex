@@ -23,12 +23,17 @@ defmodule Corex.New.Patches do
 
   @doc """
   Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`.
-  Idempotent.
+  When `:lang` is true, also adds `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
   """
-  def patch_web_module(install_dir, web_module) do
-    path = web_module_path(install_dir, web_module)
+  def patch_web_module(install_dir, web_module, opts \\ []) do
+    path = web_module_path(install_dir, web_module, opts)
     content = File.read!(path)
-    updated = ensure_use_corex_in_html_helpers(content)
+
+    updated =
+      content
+      |> ensure_use_corex_in_html_helpers()
+      |> maybe_patch_verified_routes_for_lang(web_module, opts)
+
     write_if_changed!(path, content, updated)
   end
 
@@ -38,7 +43,7 @@ defmodule Corex.New.Patches do
   """
   def patch_live_view_for_lang(install_dir, web_module, opts) do
     if Keyword.get(opts, :lang, false) do
-      path = web_module_path(install_dir, web_module)
+      path = web_module_path(install_dir, web_module, opts)
       content = File.read!(path)
       updated = maybe_insert_hooks_layout_on_mount(content, web_module)
       write_if_changed!(path, content, updated)
@@ -48,11 +53,59 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  Adds `path_prefixes: [{Web.Locale, :current, []}]` to `Phoenix.VerifiedRoutes` in
+  `<web_module>.ex`. Idempotent. Raises when the patch cannot be applied.
+  """
+  def patch_verified_routes_path_prefixes!(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path = web_module_path(install_dir, web_module, opts)
+      content = File.read!(path)
+      web_str = inspect(web_module)
+      needle = "path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+      if String.contains?(content, needle) do
+        :ok
+      else
+        updated = maybe_insert_verified_routes_path_prefixes(content, web_module)
+
+        if updated == content do
+          Mix.raise("""
+          Could not add path_prefixes to #{path}.
+
+          Expected a verified_routes/0 block with statics: #{web_str}.static_paths().
+          Re-run after updating corex_new: cd corex/installer && mix local.corex --force
+          """)
+        else
+          Mix.shell().info([
+            :green,
+            "* adding path_prefixes to ",
+            :reset,
+            Path.relative_to_cwd(path)
+          ])
+
+          File.write!(path, updated)
+          :ok
+        end
+      end
+    else
+      :ok
+    end
+  end
+
+  defp maybe_patch_verified_routes_for_lang(content, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      maybe_insert_verified_routes_path_prefixes(content, web_module)
+    else
+      content
+    end
+  end
+
+  @doc """
   Inserts Corex plugs into the `:browser` pipeline in `router.ex`,
   plus (when lang?) `use Localize.Routes` and a locale scope. Idempotent.
   """
   def patch_router(install_dir, web_module, opts) do
-    path = router_path(install_dir, web_module)
+    path = router_path(install_dir, web_module, opts)
     content = File.read!(path)
 
     updated =
@@ -71,7 +124,7 @@ defmodule Corex.New.Patches do
   Idempotent.
   """
   def patch_endpoint(install_dir, web_module, opts) do
-    path = endpoint_path(install_dir, web_module)
+    path = endpoint_path(install_dir, web_module, opts)
     content = File.read!(path)
     updated = maybe_insert_corex_mcp_plug(content, opts)
     write_if_changed!(path, content, updated)
@@ -661,17 +714,86 @@ defmodule Corex.New.Patches do
     :ok
   end
 
-  defp web_module_path(install_dir, web_module) do
-    web_ex_basename = underscore(web_module)
-    Path.join([install_dir, "lib", web_ex_basename <> ".ex"])
+  defp maybe_insert_verified_routes_path_prefixes(content, web_module) do
+    web_str = inspect(web_module)
+    needle = "path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+    if String.contains?(content, needle) do
+      content
+    else
+      statics = "statics: #{web_str}.static_paths()"
+      suffix = ",\n        path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+      updated =
+        if String.contains?(content, statics) do
+          String.replace(content, statics, statics <> suffix, global: false)
+        else
+          content
+        end
+
+      if updated != content do
+        updated
+      else
+        insertion = ",\n          path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+        regex_updated =
+          Regex.replace(
+            ~r/(statics:\s+#{Regex.escape(web_str)}\.static_paths\(\))(\s*\n\s*end)/u,
+            content,
+            "\\1#{insertion}\\2",
+            global: false
+          )
+
+        if regex_updated != content do
+          regex_updated
+        else
+          replace_verified_routes_def(content, web_module)
+        end
+      end
+    end
   end
 
-  defp router_path(install_dir, web_module) do
-    Path.join([install_dir, "lib", underscore(web_module), "router.ex"])
+  defp web_lib_dir(web_module, opts) do
+    case Keyword.fetch(opts, :otp_app) do
+      {:ok, app} -> Atom.to_string(app) <> "_web"
+      :error -> web_module |> inspect() |> Macro.underscore()
+    end
   end
 
-  defp endpoint_path(install_dir, web_module) do
-    Path.join([install_dir, "lib", underscore(web_module), "endpoint.ex"])
+  defp replace_verified_routes_def(content, web_module) do
+    web_str = inspect(web_module)
+
+    verified_routes_def = """
+      def verified_routes do
+        quote do
+          use Phoenix.VerifiedRoutes,
+            endpoint: #{web_str}.Endpoint,
+            router: #{web_str}.Router,
+            statics: #{web_str}.static_paths(),
+            path_prefixes: [{#{web_str}.Locale, :current, []}]
+        end
+      end
+    """
+
+    pattern =
+      ~r/\n  def(?:p)? verified_routes do\n    quote do\n      use Phoenix\.VerifiedRoutes,[\s\S]*?\n    end\n  end/u
+
+    case Regex.run(pattern, content) do
+      [_match] -> Regex.replace(pattern, content, "\n" <> verified_routes_def)
+      _ -> content
+    end
+  end
+
+  defp web_module_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts) <> ".ex"])
+  end
+
+  defp router_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts), "router.ex"])
+  end
+
+  defp endpoint_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts), "endpoint.ex"])
   end
 
   defp maybe_insert_corex_mcp_plug(content, opts) do

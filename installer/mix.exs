@@ -48,14 +48,12 @@ defmodule Corex.New.MixProject do
 
   def application do
     [
-      extra_applications: [:eex, :crypto, :public_key, :ssl, :inets, :telemetry]
+      extra_applications: [:eex, :crypto, :public_key, :ssl, :inets]
     ]
   end
 
   def deps do
     [
-      {:jason, "~> 1.0"},
-      {:telemetry, "~> 1.0"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},

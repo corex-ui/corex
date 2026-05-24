@@ -16,6 +16,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
     <% else %><Layouts.app flash={@flash}><% end %>
+      <article class="layout__article">
       <.layout_heading class="layout-heading">
         <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
         <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
@@ -45,7 +46,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button button--alert button--square"
               aria_label={"Delete <%= schema.human_singular %>"}
             >
               <.heroicon name="hero-trash" />
@@ -77,10 +78,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         </:actions>
       </.layout_heading>
 
-      <.data_list class="data-list"><%= for {k, _} <- schema.attrs do %>
+      <.data_list class="data-list"><%= for {k, type} <- schema.attrs do %>
         <:label value="<%= Atom.to_string(k) %>"><%= Phoenix.Naming.humanize(Atom.to_string(k)) %></:label>
-        <:content value="<%= Atom.to_string(k) %>">{@<%= schema.singular %>.<%= k %>}</:content><% end %>
+        <:content value="<%= Atom.to_string(k) %>">{<%= Mix.Corex.Gen.Inputs.display_expr("@#{schema.singular}", k, type, schema, :show) %>}</:content><% end %>
       </.data_list>
+      </article>
     </Layouts.app>
     """
   end

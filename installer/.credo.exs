@@ -235,7 +235,7 @@
           # Security - Data Protection
           {OeditusCredo.Check.Security.SensitiveDataExposure, []},
           {OeditusCredo.Check.Security.HardcodedCredentials,
-           [files: %{excluded: ["lib/components/", "lib/corex_new/version_check.ex"]}]},
+           [files: %{excluded: ["lib/components/"]}]},
           {OeditusCredo.Check.Security.UnsafeDeserialization, []},
           # Security - Input & File Handling
           {OeditusCredo.Check.Security.ImproperInputValidation, []},
