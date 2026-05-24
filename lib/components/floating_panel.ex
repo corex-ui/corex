@@ -75,6 +75,9 @@ defmodule Corex.FloatingPanel do
   | Event | When | `event.detail` |
   | ----- | ---- | -------------- |
   | `on_open_change_client="panel-open-changed"` | Open state changes | `id`, `open` |
+  | `on_position_change_client="panel-position-changed"` | Position changes | `id`, ... |
+  | `on_size_change_client="panel-size-changed"` | Size changes | `id`, ... |
+  | `on_stage_change_client="panel-stage-changed"` | Stage changes | `id`, ... |
 
   ## Style
 
@@ -194,6 +197,18 @@ defmodule Corex.FloatingPanel do
     doc: "Server event when stage (minimized/maximized) changes"
   )
 
+  attr(:on_position_change_client, :string,
+    default: nil,
+    doc: "Client event when position changes"
+  )
+
+  attr(:on_size_change_client, :string, default: nil, doc: "Client event when size changes")
+
+  attr(:on_stage_change_client, :string,
+    default: nil,
+    doc: "Client event when stage (minimized/maximized) changes"
+  )
+
   attr(:translation, Corex.FloatingPanel.Translation,
     default: nil,
     doc: "Override translatable strings"
@@ -269,8 +284,11 @@ defmodule Corex.FloatingPanel do
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         on_position_change: @on_position_change,
+        on_position_change_client: @on_position_change_client,
         on_size_change: @on_size_change,
-        on_stage_change: @on_stage_change
+        on_size_change_client: @on_size_change_client,
+        on_stage_change: @on_stage_change,
+        on_stage_change_client: @on_stage_change_client
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>

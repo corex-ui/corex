@@ -7,24 +7,28 @@ defmodule E2eWeb.ColorPickerFormLive do
   alias E2e.Form.ColorPickerForm
   alias E2eWeb.Demos.ColorPickerDemo
 
+  @phoenix_form_id "color-picker-live-form-phoenix"
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Color Picker form")
+     |> assign(:page_title, "Color Picker · Form")
      |> assign(:form_ecto, ColorPickerDemo.form_ecto())
-     |> assign(:live_basic_heex, ColorPickerDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, ColorPickerDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, ColorPickerDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, ColorPickerDemo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, ColorPickerDemo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, ColorPickerDemo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, ColorPickerDemo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, ColorPickerDemo.form_doc_live_ecto_elixir())
+     |> assign(:native_heex, ColorPickerDemo.form_native_heex())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    basic_form =
-      %ColorPickerForm{}
-      |> ColorPickerForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :color_picker_basic, id: "color-picker-basic-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+        as: :color_picker_phoenix,
+        id: @phoenix_form_id
+      )
 
     validate_form =
       %ColorPickerForm{}
@@ -35,88 +39,24 @@ defmodule E2eWeb.ColorPickerFormLive do
       )
 
     socket
-    |> assign(:basic_form, basic_form)
+    |> assign(:phoenix_form, phoenix_form)
     |> assign(:validate_form, validate_form)
   end
 
   @impl true
-  def handle_event("validate_basic", event_params, socket) do
-    incoming = Map.get(event_params, "color_picker_basic", %{})
-    prior = socket.assigns.basic_form.params || %{}
-    params = Map.merge(prior, incoming)
-
-    changeset =
-      %ColorPickerForm{}
-      |> ColorPickerForm.changeset(params)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"color_picker_phoenix" => params}, socket) do
+    color = params["color"] || "#3b82f6"
 
     {:noreply,
      socket
+     |> Toast.create("layout-toast", "Submitted", "Submitted: color=#{color}", :info, duration: 5000)
      |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :color_picker_basic,
-         id: "color-picker-basic-form"
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"color" => color},
+         as: :color_picker_phoenix,
+         id: @phoenix_form_id
        )
      )}
-  end
-
-  @impl true
-  def handle_event("color_changed_basic", %{"valueAsString" => value}, socket) do
-    params = %{"color" => value}
-
-    changeset =
-      %ColorPickerForm{}
-      |> ColorPickerForm.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :color_picker_basic,
-         id: "color-picker-basic-form"
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save_basic", event_params, socket) do
-    incoming = Map.get(event_params, "color_picker_basic", %{})
-    prior = socket.assigns.basic_form.params || %{}
-    params = Map.merge(prior, incoming)
-
-    case ColorPickerForm.changeset(%ColorPickerForm{}, params) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: color=#{data.color}"
-
-        {:noreply,
-         socket
-         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(ColorPickerForm.changeset(%ColorPickerForm{}, params),
-             as: :color_picker_basic,
-             id: "color-picker-basic-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         socket
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :color_picker_basic,
-             id: "color-picker-basic-form"
-           )
-         )}
-    end
   end
 
   @impl true
@@ -169,7 +109,6 @@ defmodule E2eWeb.ColorPickerFormLive do
     prior = socket.assigns.validate_form.params || %{}
     params = Map.merge(prior, incoming)
 
-    # Ignore empty submissions (second fire from channel inputs)
     if params["color"] in [nil, ""] do
       {:noreply, socket}
     else
@@ -207,10 +146,7 @@ defmodule E2eWeb.ColorPickerFormLive do
 
   @impl true
   def render(assigns) do
-    assigns =
-      assigns
-      |> assign(:basic_color, get_color_from_form(assigns.basic_form))
-      |> assign(:validate_color, get_color_from_form(assigns.validate_form))
+    assigns = assign(assigns, :validate_color, get_color_from_form(assigns.validate_form))
 
     ~H"""
     <Layouts.app
@@ -223,31 +159,26 @@ defmodule E2eWeb.ColorPickerFormLive do
         path={@path}
         id="color-picker-form-live-page"
         title={~t"Color Picker form"}
-        subtitle={~t"Live View Form"}
       >
         <.demo_section
-          id="color-picker-live-form-changeset"
-          title={~t"Phoenix form (changeset)"}
+          id="color-picker-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <ColorPickerDemo.form_preview_live_basic
-              form={@basic_form}
-              color={@basic_color}
-            />
+            <ColorPickerDemo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="color-picker-live-form-validate"
-          title={~t"Ecto changeset (validation)"}
+          id="color-picker-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_validate_elixir},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
             %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
@@ -256,6 +187,18 @@ defmodule E2eWeb.ColorPickerFormLive do
               form={@validate_form}
               color={@validate_color}
             />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="color-picker-live-form-native"
+          title={~t"Native HTML Form"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex}
+          ]}
+        >
+          <:preview>
+            <ColorPickerDemo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

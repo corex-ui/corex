@@ -16,7 +16,7 @@ defmodule E2eWeb.DocPageMatrix do
     data_list: [:anatomy, :style, :patterns, :playground],
     data_table: [:anatomy, :style, :patterns, :playground],
     date_picker: [:anatomy, :api, :events, :patterns],
-    dialog: [:anatomy, :api, :events],
+    dialog: [:anatomy, :api, :events, :patterns],
     editable: [:anatomy, :api, :events],
     file_upload: [:anatomy, :api, :events],
     file_upload_live: [:anatomy, :form, :playground],

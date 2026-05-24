@@ -109,7 +109,7 @@ defmodule Corex.NumberInputTest do
       assert html =~ "-"
     end
 
-    test "does not emit data-controlled when uncontrolled" do
+    test "does not emit data-controlled without value" do
       html =
         render_component(
           fn assigns ->
@@ -129,7 +129,7 @@ defmodule Corex.NumberInputTest do
       refute html =~ "data-default-value"
     end
 
-    test "uncontrolled value sets data-default-value" do
+    test "value sets data-default-value" do
       html =
         render_component(
           fn assigns ->
@@ -149,7 +149,7 @@ defmodule Corex.NumberInputTest do
       refute html =~ "data-value="
     end
 
-    test "uncontrolled value sets data-default-value and visible input" do
+    test "value sets data-default-value and visible input" do
       html =
         render_component(
           fn assigns ->
@@ -169,28 +169,7 @@ defmodule Corex.NumberInputTest do
       assert html =~ ~r/<input\b[^>]*\bvalue="5"[^>]*\bdata-part="input"/
     end
 
-    test "controlled emits data-controlled and data-value" do
-      html =
-        render_component(
-          fn assigns ->
-            _ = assigns
-
-            ~H"""
-            <Corex.NumberInput.number_input id="x" value="42" controlled>
-              <:decrement_trigger>-</:decrement_trigger>
-              <:increment_trigger>+</:increment_trigger>
-            </Corex.NumberInput.number_input>
-            """
-          end,
-          %{}
-        )
-
-      assert html =~ "data-controlled"
-      assert html =~ ~S(data-value="42")
-      refute html =~ ~S(data-default-value="42")
-    end
-
-    test "field forces uncontrolled even when controlled is passed" do
+    test "field sets data-default-value from form value" do
       changeset =
         {%{}, %{value: :string}}
         |> Ecto.Changeset.cast(%{"value" => "99"}, [:value])
@@ -203,7 +182,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input field={@form[:value]} controlled>
+            <Corex.NumberInput.number_input field={@form[:value]}>
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>

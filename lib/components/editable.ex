@@ -163,14 +163,7 @@ defmodule Corex.Editable do
   attr(:form, :string, default: nil, doc: "The id of the form this input belongs to")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
-  attr(:edit, :boolean, default: false, doc: "Controlled edit state when controlled is true")
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc: "Whether edit state is controlled externally"
-  )
-
-  attr(:default_edit, :boolean, default: false, doc: "Initial edit state when uncontrolled")
+  attr(:default_edit, :boolean, default: false, doc: "Initial edit state")
   attr(:placeholder, :string, default: nil, doc: "Placeholder text when value is empty")
 
   attr(:activation_mode, :string,
@@ -274,8 +267,6 @@ defmodule Corex.Editable do
         form: @form,
         dir: @dir,
         orientation: @orientation,
-        edit: @edit,
-        controlled: @controlled,
         default_edit: @default_edit,
         placeholder: @placeholder,
         activation_mode: @activation_mode,

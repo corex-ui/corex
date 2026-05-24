@@ -81,8 +81,8 @@
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="control"] {
-    --size: var(--spacing-size-lg);
-    --thumb-size: calc(var(--spacing-size-lg) * 0.5);
+    --size: var(--spacing-size);
+    --thumb-size: calc(var(--spacing-size) * 0.5);
     --thumb-indicator-size: min(var(--thumb-size), calc(var(--size) / 2));
 
     width: var(--size);
@@ -116,10 +116,10 @@
   .angle-slider [data-scope="angle-slider"][data-part="thumb"]::before {
     content: "";
     position: absolute;
-    right: -1px;
-    top: -1px;
+    right: -2px;
+    top: -2px;
     height: var(--thumb-indicator-size);
-    width: var(--spacing-space-sm);
+    width: calc(var(--spacing-space) * 0.4);
     background-color: var(--color-ink);
     border-radius: var(--radius-md);
   }
@@ -356,6 +356,7 @@
 
   [data-scope="angle-slider"][data-part="thumb"]::before {
     background-color: --value(--color-ink, [color]);
+    width: calc(--value(--spacing-space, [length]) * 0.4);
   }
 
   [data-scope="angle-slider"][data-part="marker"] {

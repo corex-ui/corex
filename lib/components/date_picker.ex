@@ -193,6 +193,9 @@ defmodule Corex.DatePicker do
   | ----- | ---- | -------------- |
   | `on_value_change_client="date-changed"` | Selection changes | `id`, `value` |
   | `on_open_change_client="open-changed"` | Popover opens/closes | `id`, `open` |
+  | `on_focus_change_client="focus-changed"` | Focus moves | `id`, `value` |
+  | `on_view_change_client="view-changed"` | Visible month changes | `id`, ... |
+  | `on_visible_range_change_client="range-changed"` | Visible range changes | `id`, ... |
 
   ## Patterns
 
@@ -470,6 +473,21 @@ defmodule Corex.DatePicker do
       "Fires a window-bubbling CustomEvent with this name when the calendar opens or closes (optional; use with on_open_change for both)"
   )
 
+  attr(:on_focus_change_client, :string,
+    default: nil,
+    doc: "The client event name when focus changes"
+  )
+
+  attr(:on_view_change_client, :string,
+    default: nil,
+    doc: "The client event name when the view changes"
+  )
+
+  attr(:on_visible_range_change_client, :string,
+    default: nil,
+    doc: "The client event name when the visible range changes"
+  )
+
   attr(:errors, :list,
     default: [],
     doc: "List of error messages to display"
@@ -558,6 +576,9 @@ defmodule Corex.DatePicker do
         on_visible_range_change: @on_visible_range_change,
         on_open_change: @on_open_change,
         on_value_change_client: @on_value_change_client,
+        on_focus_change_client: @on_focus_change_client,
+        on_view_change_client: @on_view_change_client,
+        on_visible_range_change_client: @on_visible_range_change_client,
         on_open_change_client: @on_open_change_client,
         max_selected_dates: @max_selected_dates,
         translation: @translation

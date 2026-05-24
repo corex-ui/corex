@@ -27,20 +27,16 @@ defmodule Corex.Combobox.Connect do
     only: [
       get_boolean: 1,
       validate_value!: 1,
-      joined_csv_values: 1,
-      controlled_dataset_values: 2
+      joined_csv_values: 1
     ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    joined = joined_csv_values(validate_value!(assigns.value))
-    {value_str, default_value_str} = controlled_dataset_values(assigns.controlled, joined)
+    default_value_str = joined_csv_values(validate_value!(assigns.value))
 
     base = %{
       "data-items" => Corex.Dataset.encode_json(assigns.items),
-      "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-controlled" => get_boolean(assigns.controlled),
       "data-placeholder" => assigns.placeholder,
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
@@ -57,6 +53,7 @@ defmodule Corex.Combobox.Connect do
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-input-value-change" => assigns.on_input_value_change,
+      "data-on-input-value-change-client" => assigns.on_input_value_change_client,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-filter" => get_boolean(assigns.filter),

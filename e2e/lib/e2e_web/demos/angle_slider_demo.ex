@@ -701,12 +701,70 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/angle-slider/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.angle_slider
+        field={f[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def angle_slider_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-form-phoenix")
+
+      render(conn, :angle_slider_form_page, phoenix_form: phoenix_form)
+    end
+
+    def angle_slider_form_submit(conn, params) do
+      if is_map(params["angle_slider_phoenix"]) do
+        angle = params["angle_slider_phoenix"]["angle"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: angle=#{inspect(angle)}")
+        |> redirect(to: ~p"/angle-slider/form#angle-slider-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.angle_slider
+        field={@phoenix_form[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
       :let={f}
       for={@form}
-      action="//products"
+      action={~p"/angle-slider/form"}
       method="post"
       id={@form.id}
           >
@@ -747,7 +805,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved angle=#{data.angle}")
-          |> redirect(to: "//products")
+          |> redirect(to: ~p"/products")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -769,7 +827,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.form
       :let={f}
       for={@form}
-      action="//products"
+      action={~p"/angle-slider/form"}
       method="post"
       id={@form.id}
           >
@@ -811,7 +869,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved angle=#{data.angle}")
-          |> redirect(to: "//products")
+          |> redirect(to: ~p"/products")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -1024,7 +1082,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_doc_native_heex do
     ~S"""
     <form
-      action="//products"
+      action={~p"/angle-slider/form"}
       method="post"
           >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -1216,4 +1274,146 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_validate_heex, do: form_doc_controller_validate_heex()
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/angle-slider/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.angle_slider
+        field={f[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.angle_slider
+        field={@form[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"angle_slider_phoenix" => params}, socket) do
+        angle = params["angle"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"angle" => angle}, as: :angle_slider_phoenix, id: "angle-slider-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.AngleSlider{}
+          |> MyApp.Forms.AngleSlider.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :angle_slider_ecto, id: "angle-slider-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"angle_slider_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.AngleSlider{}
+          |> MyApp.Forms.AngleSlider.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :angle_slider_ecto,
+             id: "angle-slider-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"angle_slider_ecto" => params}, socket) do
+        case MyApp.Forms.AngleSlider.changeset_validate(%MyApp.Forms.AngleSlider{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.AngleSlider.changeset_validate(%MyApp.Forms.AngleSlider{}, params),
+                 as: :angle_slider_ecto,
+                 id: "angle-slider-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :angle_slider_ecto,
+                 id: "angle-slider-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

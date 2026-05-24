@@ -85,13 +85,35 @@ defmodule Corex.PinInputTest do
           placeholder: "○",
           on_value_change: "vc",
           on_value_change_client: "vcc",
-          on_value_complete: "done"
+          on_value_complete: "done",
+          on_value_complete_client: "done-client"
         })
 
       assert result["data-default-value"] == "1,2"
       assert result["data-orientation"] == "vertical"
       assert result["data-dir"] == "rtl"
       assert result["data-on-value-change"] == "vc"
+      assert result["data-on-value-complete"] == "done"
+      assert result["data-on-value-complete-client"] == "done-client"
+    end
+
+    test "renders on_value_complete_client on host" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <PinInput.pin_input
+              id="pin-complete-client"
+              count={4}
+              class="pin-input"
+              on_value_complete_client="pin-complete"
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-on-value-complete-client="pin-complete")
     end
   end
 

@@ -263,6 +263,253 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/signature-pad/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.signature_pad field={f[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def signature_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-form-phoenix")
+
+      render(conn, :signature_form_page, phoenix_form: phoenix_form)
+    end
+
+    def signature_form_submit(conn, params) do
+      if is_map(params["signature_phoenix"]) do
+        signature = params["signature_phoenix"]["signature"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: signature saved")
+        |> redirect(to: ~p"/signature-pad/form#signature-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_ecto_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@ecto_form}
+      action={~p"/signature-pad/form"}
+      method="post"
+      id={@ecto_form.id}
+    >
+      <.signature_pad field={f[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_ecto_elixir do
+    ~S"""
+    def signature_form_page(conn, _params) do
+      ecto_form =
+        %MyApp.Forms.SignatureForm{}
+        |> MyApp.Forms.SignatureForm.changeset_validate(%{})
+        |> Phoenix.Component.to_form(as: :signature_ecto, id: "signature-form-ecto")
+
+      render(conn, :signature_form_page, ecto_form: ecto_form)
+    end
+
+    def signature_form_submit(conn, params) do
+      if is_map(params["signature_ecto"]) do
+        case MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, params["signature_ecto"]) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted: signature saved")
+            |> redirect(to: ~p"/signature-pad/form#signature-form-ecto")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+            ecto_form = Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
+            render(conn, :signature_form_page, ecto_form: ecto_form)
+        end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.signature_pad field={@phoenix_form[:signature]} class="signature-pad" id="signature-live-form-phoenix-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.SignatureFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"signature_phoenix" => params}, socket) do
+        signature = params["signature"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"signature" => signature}, as: :signature_phoenix, id: "signature-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_heex do
+    ~S"""
+    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+      <.signature_pad field={@ecto_form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.SignatureFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :signature_ecto, id: "signature-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", params, socket) do
+        sparams = Map.get(params, "signature_ecto", %{})
+
+        changeset =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(sparams)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: "signature-live-form-ecto")
+         )}
+      end
+
+      def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
+        value =
+          if is_list(paths) and paths != [],
+            do: Enum.join(paths, "\n"),
+            else: Map.get(payload, "url", "") || ""
+
+        validate_ecto(socket, %{"signature" => value})
+      end
+
+      def handle_event("save", params, socket) do
+        sparams = Map.get(params, "signature_ecto", %{})
+
+        case MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, sparams) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, sparams),
+                 as: :signature_ecto,
+                 id: "signature-live-form-ecto"
+               )
+             )}
+
+          %Ecto.Changeset{} = changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset, action: :insert, as: :signature_ecto, id: "signature-live-form-ecto")
+             )}
+        end
+      end
+
+      defp validate_ecto(socket, params) do
+        changeset =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: "signature-live-form-ecto")
+         )}
+      end
+    end
+    """
+  end
+
   def form_changeset_heex do
     ~S"""
     <.form
@@ -312,7 +559,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
-        <:label>Sign here (stricter)</:label>
+        <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
@@ -381,7 +628,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
-        <:label>Sign here (stricter)</:label>
+        <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
@@ -396,4 +643,111 @@ defmodule E2eWeb.Demos.SignatureDemo do
     </.form>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/signature-pad/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.signature_pad field={f[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form action={~p"/signature-pad/form"} method="post" id="signature-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.signature_pad name="user[signature]" class="signature-pad" id="signature-form-native-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-form-native-submit" class="button button--accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/signature-pad/form"} method="post" id="signature-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.signature_pad name="user[signature]" class="signature-pad" id="signature-form-native-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-form-native-submit" class="button button--accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_ecto_heex()
+  def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.signature_pad field={@form[:signature]} class="signature-pad" id="signature-live-form-phoenix-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+      <.signature_pad field={@form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
 end

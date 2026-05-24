@@ -25,7 +25,8 @@ defmodule Corex.PinInput.Anatomy do
       placeholder: "○",
       on_value_change: nil,
       on_value_change_client: nil,
-      on_value_complete: nil
+      on_value_complete: nil,
+      on_value_complete_client: nil
     ]
 
     @type t :: %__MODULE__{
@@ -48,7 +49,8 @@ defmodule Corex.PinInput.Anatomy do
             placeholder: String.t(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil,
-            on_value_complete: String.t() | nil
+            on_value_complete: String.t() | nil,
+            on_value_complete_client: String.t() | nil
           }
   end
 

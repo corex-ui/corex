@@ -348,7 +348,7 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/dialog/playground",
           api_to: ~p"/dialog/api",
           events_to: ~p"/dialog/events",
-          pattern: false,
+          patterns_to: ~p"/dialog/patterns",
           animation: true,
           animation_to: ~p"/dialog/animation",
           style: true,

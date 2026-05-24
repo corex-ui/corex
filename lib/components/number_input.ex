@@ -38,7 +38,7 @@ defmodule Corex.NumberInput do
 
   ## API
 
-  Requires a stable `id` on `<.number_input>`. For forms, `field` and controlled mode remain the usual path; use the API for imperative updates and reading machine state.
+  Requires a stable `id` on `<.number_input>`. For forms, use `field`; use the API for imperative updates and reading machine state.
 
   | Function | Action | Returns |
   | -------- | ------ | ------- |
@@ -113,32 +113,7 @@ defmodule Corex.NumberInput do
 
   ## Patterns
 
-  <!-- tabs-open -->
-
-  ### Controlled
-
-  Without `field`, set `controlled`, bind `value`, and handle `on_value_change`.
-
-  ```heex
-  <.number_input
-    class="number-input"
-    controlled
-    value={@quantity}
-    on_value_change="quantity_changed"
-  >
-    <:label>Quantity</:label>
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-  </.number_input>
-  ```
-
-  ```elixir
-  def handle_event("quantity_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :quantity, value)}
-  end
-  ```
-
-  <!-- tabs-close -->
+  Use `value` for the initial number on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
 
   ## Form
 
@@ -241,12 +216,6 @@ defmodule Corex.NumberInput do
   attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
 
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Server-driven value; use with value and on_value_change. Ignored when field is set (forms stay uncontrolled for working steppers)."
-  )
-
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
@@ -289,7 +258,6 @@ defmodule Corex.NumberInput do
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
-    |> assign(:controlled, false)
     |> number_input()
   end
 
@@ -314,7 +282,6 @@ defmodule Corex.NumberInput do
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
-        controlled: @controlled,
         value: @value,
         min: @min,
         max: @max,

@@ -28,6 +28,10 @@ defmodule Corex.Tooltip.Connect do
     |> maybe_put("data-open-delay", assigns.open_delay)
     |> maybe_put("data-close-delay", assigns.close_delay)
     |> maybe_put("data-on-trigger-value-change", Map.get(assigns, :on_trigger_value_change))
+    |> maybe_put(
+      "data-on-trigger-value-change-client",
+      Map.get(assigns, :on_trigger_value_change_client)
+    )
     |> Map.merge(Corex.Positioning.to_dataset(positioning))
   end
 

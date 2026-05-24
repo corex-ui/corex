@@ -38,6 +38,9 @@ defmodule Corex.DatePicker.Anatomy do
       on_visible_range_change: nil,
       on_open_change: nil,
       on_value_change_client: nil,
+      on_focus_change_client: nil,
+      on_view_change_client: nil,
+      on_visible_range_change_client: nil,
       on_open_change_client: nil,
       max_selected_dates: nil,
       translation: nil
@@ -74,6 +77,9 @@ defmodule Corex.DatePicker.Anatomy do
             on_visible_range_change: String.t() | nil,
             on_open_change: String.t() | nil,
             on_value_change_client: String.t() | nil,
+            on_focus_change_client: String.t() | nil,
+            on_view_change_client: String.t() | nil,
+            on_visible_range_change_client: String.t() | nil,
             on_open_change_client: String.t() | nil,
             max_selected_dates: pos_integer() | nil,
             translation: DatePickerTranslation.t() | nil

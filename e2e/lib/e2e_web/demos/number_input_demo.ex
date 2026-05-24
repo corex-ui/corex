@@ -694,6 +694,72 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/number-input/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.number_input field={f[:value]} class="number-input">
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def number_input_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"value" => "1234"}, as: :number_input_phoenix, id: "number-input-form-phoenix")
+
+      render(conn, :number_input_form_page, phoenix_form: phoenix_form)
+    end
+
+    def number_input_form_submit(conn, params) do
+      if is_map(params["number_input_phoenix"]) do
+        value = params["number_input_phoenix"]["value"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: value=#{inspect(value)}")
+        |> redirect(to: ~p"/number-input/form#number-input-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.number_input field={@phoenix_form[:value]} class="number-input" id="number-input-live-form-phoenix-field">
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.action type="submit" id="number-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
@@ -744,7 +810,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: "/number-input/form#number-input-form-changeset")
+          |> redirect(to: ~p"/number-input/form#number-input-changeset-form")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -778,7 +844,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved (strict)")
-          |> redirect(to: "/number-input/form#number-input-form-validate")
+          |> redirect(to: ~p"/number-input/form#number-input-validate-form")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -1072,8 +1138,8 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     <.form
       for={@form}
       id={@form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
+      phx-change="validate"
+      phx-submit="save"
     >
       <.number_input
         field={@form[:value]}
@@ -1098,4 +1164,154 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     </.form>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/number-input/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.number_input field={f[:value]} class="number-input">
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.number_input field={@form[:value]} class="number-input" id="number-input-live-form-phoenix-field">
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.action type="submit" id="number-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.NumberInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"value" => "1234"}, as: :number_input_phoenix, id: "number-input-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"number_input_phoenix" => params}, socket) do
+        value = params["value"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"value" => value}, as: :number_input_phoenix, id: "number-input-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.NumberInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.NumberInputForm{}
+          |> MyApp.Forms.NumberInputForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :number_input_ecto, id: "number-input-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"number_input_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.NumberInputForm{}
+          |> MyApp.Forms.NumberInputForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :number_input_ecto,
+             id: "number-input-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"number_input_ecto" => params}, socket) do
+        case MyApp.Forms.NumberInputForm.changeset_validate(%MyApp.Forms.NumberInputForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.NumberInputForm.changeset_validate(%MyApp.Forms.NumberInputForm{}, params),
+                 as: :number_input_ecto,
+                 id: "number-input-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :number_input_ecto,
+                 id: "number-input-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

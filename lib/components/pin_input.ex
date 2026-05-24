@@ -14,7 +14,7 @@ defmodule Corex.PinInput do
 
   ## API
 
-  Requires a stable `id` on `<.pin_input>`.
+  Set a stable `id` when using imperative API helpers or `on_*` events. With `field={@form[:code]}`, the field id is used automatically.
 
   | Function | Action | Returns |
   | -------- | ------ | ------- |
@@ -159,6 +159,7 @@ defmodule Corex.PinInput do
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:on_value_complete, :string, default: nil)
+  attr(:on_value_complete_client, :string, default: nil)
 
   attr(:translation, Corex.PinInput.Translation,
     default: nil,
@@ -241,7 +242,8 @@ defmodule Corex.PinInput do
         placeholder: @placeholder,
         on_value_change: @on_value_change,
         on_value_change_client: @on_value_change_client,
-        on_value_complete: @on_value_complete
+        on_value_complete: @on_value_complete,
+        on_value_complete_client: @on_value_complete_client
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>

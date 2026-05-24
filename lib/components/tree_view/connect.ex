@@ -26,8 +26,7 @@ defmodule Corex.TreeView.Connect do
     only: [
       validate_value!: 1,
       get_boolean: 1,
-      joined_csv_values: 1,
-      controlled_dataset_values: 2
+      joined_csv_values: 1
     ]
 
   defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
@@ -57,16 +56,10 @@ defmodule Corex.TreeView.Connect do
     animation = Map.get(assigns, :animation, "js")
     animation_options = Map.get(assigns, :animation_options, %Height{})
 
-    expanded_joined =
+    default_expanded_str =
       (assigns.expanded_value || []) |> validate_value!() |> joined_csv_values()
 
-    {expanded_str, default_expanded_str} =
-      controlled_dataset_values(assigns.controlled, expanded_joined)
-
-    selected_joined = (assigns.value || []) |> validate_value!() |> joined_csv_values()
-
-    {selected_str, default_selected_str} =
-      controlled_dataset_values(assigns.controlled, selected_joined)
+    default_selected_str = (assigns.value || []) |> validate_value!() |> joined_csv_values()
 
     base = %{
       "id" => assigns.id,
@@ -74,10 +67,7 @@ defmodule Corex.TreeView.Connect do
       "data-animation" => animation,
       "data-redirect" => get_boolean(assigns.redirect),
       "data-default-expanded-value" => default_expanded_str,
-      "data-expanded-value" => expanded_str,
       "data-default-selected-value" => default_selected_str,
-      "data-selected-value" => selected_str,
-      "data-controlled" => get_boolean(assigns.controlled),
       "data-selection-mode" => assigns.selection_mode,
       "data-typeahead" => if(Map.get(assigns, :typeahead, true), do: "true", else: "false"),
       "data-dir" => assigns.dir,

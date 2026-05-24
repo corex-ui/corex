@@ -67,6 +67,7 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 - **Form `invalid` is opt-in** — `field={}` no longer sets `invalid` from changeset errors on radio group, pin input, color picker, or editable (same as checkbox, switch, select). Pass `invalid` explicitly when you want invalid styling.
 - **Radio group** — Size and color modifier utilities in CSS; full Zag API surface (`set_value`, `clear_value`, `focus`, `value`); form docs show the `:error` slot; e2e style page and pattern stream examples.
 - **Carousel `page` is 1-based** — Same as pagination (`page={1}` is the first slide). The client hook translates to Zag’s 0-based snap index.
+- **`controlled` removed** from carousel, combobox, editable, number input, and tree view. Use default-value assigns and events; controlled mode remains on accordion, angle slider, checkbox, collapsible, date picker, dialog, listbox, pagination, radio group, select, switch, tabs, tags input, toggle, and toggle group.
 
 ### Versioning (0.1.x)
 

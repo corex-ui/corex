@@ -2,36 +2,20 @@ defmodule E2eWeb.NativeInputFormLiveTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "validate shows required error when name blank", %{conn: conn} do
-    {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
-
-    html =
-      view
-      |> form("#native-input-live-profile-form")
-      |> render_change(%{"profile" => %{"name" => "", "email" => "u@x.com", "agree" => "false"}})
-
-    assert html =~ "can&#39;t be blank"
-  end
-
-  test "save with required profile fields pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits email and pushes toast-create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/native-input/live-form")
     %{proxy: {ref, _, _}} = view
 
     view
-    |> form("#native-input-live-profile-form")
-    |> render_submit(%{
-      "profile" => %{"name" => "Ada", "email" => "ada@ex.com", "agree" => "true"}
-    })
+    |> form("#native-input-live-form-phoenix")
+    |> render_submit(%{"native_input_phoenix" => %{"email" => "ada@ex.com"}})
 
     assert_receive {^ref, {:push_event, "toast-create", payload}}, 200
     assert payload.title == "Submitted"
     assert payload.type == "info"
     assert payload.groupId == "layout-toast"
     assert payload.duration == 5000
-    desc = payload.description
-    assert desc =~ "name=\"Ada\""
-    assert desc =~ "email=\"ada@ex.com\""
-    assert desc =~ "agree=true"
+    assert payload.description == "Submitted: email=ada@ex.com"
   end
 
   test "validate_strict shows email format error", %{conn: conn} do

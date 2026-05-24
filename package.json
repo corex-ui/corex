@@ -53,6 +53,7 @@
   },
   "files": [
     "CHANGELOG.md",
+    "LICENSE",
     "README.md",
     "package.json",
     "priv/static/**",

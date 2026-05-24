@@ -688,6 +688,68 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/radio-group/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new([
+        %{label: "Option A", value: "a"},
+        %{label: "Option B", value: "b"},
+        %{label: "Option C", value: "c"}
+      ])}>
+        <:label>Choice</:label>
+      </.radio_group>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def radio_group_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"choice" => ""}, as: :radio_group_phoenix, id: "radio-group-form-phoenix")
+
+      render(conn, :radio_group_form_page, phoenix_form: phoenix_form)
+    end
+
+    def radio_group_form_submit(conn, params) do
+      if is_map(params["radio_group_phoenix"]) do
+        choice = params["radio_group_phoenix"]["choice"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+        |> redirect(to: ~p"/radio-group/form#radio-group-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.radio_group field={@phoenix_form[:choice]} class="radio-group" items={Corex.List.new([
+        %{label: "Option A", value: "a"},
+        %{label: "Option B", value: "b"},
+        %{label: "Option C", value: "c"}
+      ])}>
+        <:label>Choice</:label>
+      </.radio_group>
+      <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
@@ -776,7 +838,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
           %{value: "donec", label: "Donec condimentum ex mi"}
         ]}
       >
-        <:label>Choose one (stricter messages)</:label>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -985,7 +1047,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         ]}
         on_value_change="choice_changed_strict"
       >
-        <:label>Choose one (stricter validation)</:label>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -1128,7 +1190,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       id={@form.id}
     >
       <.radio_group field={f[:choice]} class="radio-group" items={items()}>
-        <:label>Choose one (stricter messages)</:label>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -1218,17 +1280,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     <.form
       for={@form}
       id={@form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
+      phx-change="validate"
+      phx-submit="save"
     >
       <.radio_group
         field={@form[:choice]}
         controlled
         class="radio-group"
         items={items()}
-        on_value_change="choice_changed_strict"
       >
-        <:label>Choose one (stricter validation)</:label>
+        <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -1452,4 +1513,150 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     </.radio_group>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/radio-group/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new([
+        %{label: "Option A", value: "a"},
+        %{label: "Option B", value: "b"},
+        %{label: "Option C", value: "c"}
+      ])}>
+        <:label>Choice</:label>
+      </.radio_group>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new([
+        %{label: "Option A", value: "a"},
+        %{label: "Option B", value: "b"},
+        %{label: "Option C", value: "c"}
+      ])}>
+        <:label>Choice</:label>
+      </.radio_group>
+      <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.RadioGroupFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"choice" => ""}, as: :radio_group_phoenix, id: "radio-group-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"radio_group_phoenix" => params}, socket) do
+        choice = params["choice"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"choice" => choice}, as: :radio_group_phoenix, id: "radio-group-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.RadioGroupFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.RadioChoiceForm{}
+          |> MyApp.Forms.RadioChoiceForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :radio_group_ecto, id: "radio-group-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"radio_group_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.RadioChoiceForm{}
+          |> MyApp.Forms.RadioChoiceForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :radio_group_ecto,
+             id: "radio-group-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"radio_group_ecto" => params}, socket) do
+        case MyApp.Forms.RadioChoiceForm.changeset_validate(%MyApp.Forms.RadioChoiceForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.RadioChoiceForm.changeset_validate(%MyApp.Forms.RadioChoiceForm{}, params),
+                 as: :radio_group_ecto,
+                 id: "radio-group-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :radio_group_ecto,
+                 id: "radio-group-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

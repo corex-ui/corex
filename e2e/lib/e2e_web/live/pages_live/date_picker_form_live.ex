@@ -7,24 +7,28 @@ defmodule E2eWeb.DatePickerFormLive do
   alias E2e.Form.DatePickerForm
   alias E2eWeb.Demos.DatePickerDemo
 
+  @phoenix_form_id "date-picker-live-form-phoenix"
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Date Picker form")
+     |> assign(:page_title, "Date Picker · Form")
      |> assign(:form_ecto, DatePickerDemo.form_ecto())
-     |> assign(:live_basic_heex, DatePickerDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, DatePickerDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, DatePickerDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, DatePickerDemo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, DatePickerDemo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, DatePickerDemo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, DatePickerDemo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, DatePickerDemo.form_doc_live_ecto_elixir())
+     |> assign(:native_heex, DatePickerDemo.form_doc_native_heex())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    basic_form =
-      %DatePickerForm{}
-      |> DatePickerForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :date_picker_basic, id: "date-picker-basic-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"date" => ""},
+        as: :date_picker_phoenix,
+        id: @phoenix_form_id
+      )
 
     validate_form =
       %DatePickerForm{}
@@ -35,80 +39,24 @@ defmodule E2eWeb.DatePickerFormLive do
       )
 
     socket
-    |> assign(:basic_form, basic_form)
+    |> assign(:phoenix_form, phoenix_form)
     |> assign(:validate_form, validate_form)
   end
 
   @impl true
-  def handle_event("validate_basic", %{"date_picker_basic" => params}, socket) do
-    changeset =
-      %DatePickerForm{}
-      |> DatePickerForm.changeset(params)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"date_picker_phoenix" => params}, socket) do
+    date = params["date"] || ""
 
     {:noreply,
      socket
+     |> Toast.create("layout-toast", "Submitted", "Submitted: date=#{date}", :info, duration: 5000)
      |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :date_picker_basic,
-         id: "date-picker-basic-form"
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"date" => date},
+         as: :date_picker_phoenix,
+         id: @phoenix_form_id
        )
      )}
-  end
-
-  @impl true
-  def handle_event("date_changed_basic", %{"value" => value}, socket) do
-    params = %{"date" => value}
-
-    changeset =
-      %DatePickerForm{}
-      |> DatePickerForm.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :date_picker_basic,
-         id: "date-picker-basic-form"
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save_basic", %{"date_picker_basic" => params}, socket) do
-    case DatePickerForm.changeset(%DatePickerForm{}, params) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: date=#{data.date}"
-
-        {:noreply,
-         socket
-         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(DatePickerForm.changeset(%DatePickerForm{}, params),
-             as: :date_picker_basic,
-             id: "date-picker-basic-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         socket
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :date_picker_basic,
-             id: "date-picker-basic-form"
-           )
-         )}
-    end
   end
 
   @impl true
@@ -186,10 +134,7 @@ defmodule E2eWeb.DatePickerFormLive do
 
   @impl true
   def render(assigns) do
-    assigns =
-      assigns
-      |> assign(:basic_date_value, date_display_list(assigns.basic_form))
-      |> assign(:validate_date_value, date_display_list(assigns.validate_form))
+    assigns = assign(assigns, :validate_date_value, date_display_list(assigns.validate_form))
 
     ~H"""
     <Layouts.app
@@ -202,31 +147,26 @@ defmodule E2eWeb.DatePickerFormLive do
         path={@path}
         id="date-picker-form-live-page"
         title={~t"Date Picker form"}
-        subtitle={~t"Live View Form"}
       >
         <.demo_section
-          id="date-picker-live-form-changeset"
-          title={~t"Phoenix Form (changeset)"}
+          id="date-picker-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <DatePickerDemo.form_preview_live_changeset
-              form={@basic_form}
-              date_display={@basic_date_value}
-            />
+            <DatePickerDemo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="date-picker-live-form-validate"
-          title={~t"Ecto Changeset (validation)"}
+          id="date-picker-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_validate_elixir},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
             %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
@@ -235,6 +175,18 @@ defmodule E2eWeb.DatePickerFormLive do
               form={@validate_form}
               date_display={@validate_date_value}
             />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="date-picker-live-form-native"
+          title={~t"Native HTML Form"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex}
+          ]}
+        >
+          <:preview>
+            <DatePickerDemo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

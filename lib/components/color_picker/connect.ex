@@ -488,9 +488,19 @@ defmodule Corex.ColorPicker.Connect do
       |> maybe_put("data-on-open-change", get_event(assigns, :on_open_change))
       |> maybe_put("data-on-open-change-client", get_event(assigns, :on_open_change_client))
       |> maybe_put("data-on-format-change", get_event(assigns, :on_format_change))
+      |> maybe_put("data-on-format-change-client", get_event(assigns, :on_format_change_client))
       |> maybe_put("data-on-pointer-down-outside", get_event(assigns, :on_pointer_down_outside))
+      |> maybe_put(
+        "data-on-pointer-down-outside-client",
+        get_event(assigns, :on_pointer_down_outside_client)
+      )
       |> maybe_put("data-on-focus-outside", get_event(assigns, :on_focus_outside))
+      |> maybe_put("data-on-focus-outside-client", get_event(assigns, :on_focus_outside_client))
       |> maybe_put("data-on-interact-outside", get_event(assigns, :on_interact_outside))
+      |> maybe_put(
+        "data-on-interact-outside-client",
+        get_event(assigns, :on_interact_outside_client)
+      )
       |> Map.new()
 
     base =

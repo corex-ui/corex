@@ -2,12 +2,12 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "basic save with angle param pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits angle and pushes toast-create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     view
-    |> form("#angle-slider-basic-form")
-    |> render_submit(%{"angle_slider_basic" => %{"angle" => "12.5"}})
+    |> form("#angle-slider-live-form-phoenix")
+    |> render_submit(%{"angle_slider_phoenix" => %{"angle" => "12.5"}})
 
     assert_push_event(view, "toast-create", %{
       description: "Submitted: angle=12.5",
@@ -18,18 +18,7 @@ defmodule E2eWeb.AngleSliderFormLiveTest do
     })
   end
 
-  test "basic validate shows cast error for non-float angle", %{conn: conn} do
-    {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
-
-    html =
-      view
-      |> form("#angle-slider-basic-form")
-      |> render_change(%{"angle_slider_basic" => %{"angle" => "x"}})
-
-    assert html =~ "is invalid"
-  end
-
-  test "validate validate reflects out of range on change", %{conn: conn} do
+  test "validate_validate reflects out of range on change", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/angle-slider/live-form")
 
     html =

@@ -88,10 +88,7 @@ defmodule Corex.Editable.Connect do
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-edit" => if(assigns.controlled, do: get_boolean(assigns.edit), else: nil),
-      "data-default-edit" =>
-        if(assigns.controlled, do: nil, else: get_boolean(assigns.default_edit)),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-edit" => get_boolean(assigns.default_edit),
       "data-placeholder" => assigns.placeholder,
       "data-activation-mode" => assigns.activation_mode,
       "data-select-on-focus" => get_boolean(assigns.select_on_focus),

@@ -188,4 +188,20 @@ defmodule Corex.FloatingPanelTest do
       assert result["data-state"] == "closed"
     end
   end
+
+  describe "Connect.props/1" do
+    test "includes client event attribute names when set" do
+      result =
+        Connect.props(%Corex.FloatingPanel.Anatomy.Props{
+          id: "panel-events",
+          on_position_change_client: "pos_client",
+          on_size_change_client: "size_client",
+          on_stage_change_client: "stage_client"
+        })
+
+      assert result["data-on-position-change-client"] == "pos_client"
+      assert result["data-on-size-change-client"] == "size_client"
+      assert result["data-on-stage-change-client"] == "stage_client"
+    end
+  end
 end

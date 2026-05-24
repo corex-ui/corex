@@ -63,7 +63,7 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/Required/
     end
 
-    test "renders open controlled combobox" do
+    test "renders open combobox" do
       html =
         render_component(
           fn assigns ->
@@ -71,7 +71,6 @@ defmodule Corex.ComboboxTest do
             <Corex.Combobox.combobox
               id="cb-open"
               open
-              controlled
               value="a"
               items={Corex.List.new([%{label: "A", value: "a"}, %{label: "B", value: "b"}])}
             >
@@ -335,47 +334,18 @@ defmodule Corex.ComboboxTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when uncontrolled" do
-      assigns = %{
-        id: "test-combobox",
-        items: [%{value: "a", label: "A"}],
-        controlled: false,
-        value: [],
-        dir: "ltr"
-      }
-
-      result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      refute Map.has_key?(result, "id")
-      assert result["data-items"]
-    end
-
     test "returns props with data-default-value for selection" do
       assigns = %{
         id: "test-combobox",
         items: [%{value: "a", label: "A"}],
-        controlled: false,
         value: ["a"],
         dir: "ltr"
       }
 
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
       assert result["data-default-value"] == "a"
-      assert result["data-value"] == nil
-    end
-
-    test "returns props with data-value when controlled" do
-      assigns = %{
-        id: "test-combobox",
-        items: [%{value: "a", label: "A"}],
-        controlled: true,
-        value: ["a"],
-        dir: "ltr"
-      }
-
-      result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      assert result["data-value"] == "a"
-      assert result["data-default-value"] == nil
-      assert result["data-controlled"] == ""
+      refute Map.has_key?(result, "data-value")
+      refute Map.has_key?(result, "data-controlled")
     end
   end
 end

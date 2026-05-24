@@ -28,9 +28,7 @@ defmodule Corex.NumberInput.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-value" => if(assigns.controlled, do: value_str(assigns.value), else: nil),
-      "data-default-value" => if(assigns.controlled, do: nil, else: value_str(assigns.value)),
+      "data-default-value" => value_str(assigns.value),
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),

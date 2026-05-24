@@ -20,7 +20,8 @@ defmodule Corex.Tooltip.Anatomy do
       interactive: false,
       on_open_change: nil,
       on_open_change_client: nil,
-      on_trigger_value_change: nil
+      on_trigger_value_change: nil,
+      on_trigger_value_change_client: nil
     ]
 
     @type t :: %__MODULE__{
@@ -38,7 +39,8 @@ defmodule Corex.Tooltip.Anatomy do
             interactive: boolean(),
             on_open_change: String.t() | nil,
             on_open_change_client: String.t() | nil,
-            on_trigger_value_change: String.t() | nil
+            on_trigger_value_change: String.t() | nil,
+            on_trigger_value_change_client: String.t() | nil
           }
   end
 

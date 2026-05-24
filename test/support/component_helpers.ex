@@ -705,12 +705,11 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
-  def render_tree_view_controlled(assigns) do
+  def render_tree_view_with_defaults(assigns) do
     ~H"""
     <.tree_view
-      id="tree-ctrl"
+      id="tree-defaults"
       items={Corex.Tree.new([%{label: "Item", value: "1"}])}
-      controlled
       expanded_value={[]}
       value={[]}
     />

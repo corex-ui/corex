@@ -623,11 +623,10 @@ defmodule Corex.TreeViewTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when uncontrolled" do
+    test "returns props with default expanded and selected values" do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: ["node-1"],
         value: ["node-2"],
         selection_mode: "single",
@@ -641,31 +640,9 @@ defmodule Corex.TreeViewTest do
       assert result["data-tree"] == Json.encode!(@zag_root)
       assert result["data-default-expanded-value"] == "node-1"
       assert result["data-default-selected-value"] == "node-2"
-      assert result["data-expanded-value"] == nil
-      assert result["data-selected-value"] == nil
-      assert result["data-typeahead"] == "true"
-    end
-
-    test "returns props when controlled" do
-      assigns = %{
-        id: "test-tree",
-        tree: @zag_root,
-        controlled: true,
-        expanded_value: ["node-1"],
-        value: ["node-2"],
-        selection_mode: "single",
-        dir: "ltr",
-        on_selection_change: nil,
-        on_expanded_change: nil,
-        redirect: true
-      }
-
-      result = Connect.props(assigns)
-      assert result["data-tree"] == Json.encode!(@zag_root)
-      assert result["data-default-expanded-value"] == nil
-      assert result["data-default-selected-value"] == nil
-      assert result["data-expanded-value"] == "node-1"
-      assert result["data-selected-value"] == "node-2"
+      refute Map.has_key?(result, "data-expanded-value")
+      refute Map.has_key?(result, "data-selected-value")
+      refute Map.has_key?(result, "data-controlled")
       assert result["data-typeahead"] == "true"
     end
 
@@ -673,7 +650,6 @@ defmodule Corex.TreeViewTest do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -693,7 +669,6 @@ defmodule Corex.TreeViewTest do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -714,7 +689,6 @@ defmodule Corex.TreeViewTest do
         tree: @zag_root,
         animation: "custom",
         animation_options: %Corex.Animation.Height{duration: 0.9},
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -738,10 +712,12 @@ defmodule Corex.TreeViewTest do
       assert html =~ ~r/Child/
     end
 
-    test "renders with controlled" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_controlled/1, [])
+    test "renders with initial selection and expansion" do
+      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_with_defaults/1, [])
       assert html =~ ~r/data-scope="tree-view"/
-      assert html =~ ~r/data-controlled/
+      refute html =~ "data-controlled"
+      refute html =~ "data-expanded-value"
+      refute html =~ "data-selected-value"
     end
 
     test "tree_view_skeleton renders loading markup" do

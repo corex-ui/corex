@@ -223,20 +223,6 @@ defmodule E2eWeb.ComboboxModel do
     session
   end
 
-  def wait_patterns_state_contains(session, substring, opts \\ []) when is_binary(substring) do
-    if String.contains?(substring, "'") do
-      raise ArgumentError, "substring must not contain single quote"
-    end
-
-    wait_for_has(
-      session,
-      xpath("//*[@id='combobox-patterns-controlled-state' and contains(., '#{substring}')]"),
-      opts
-    )
-
-    session
-  end
-
   def click_button_in_section(session, section_id, label) when is_binary(label) do
     if String.contains?(label, "'") or String.contains?(label, "\"") do
       raise ArgumentError, "click_button_in_section: label must not include quotes"
@@ -248,10 +234,5 @@ defmodule E2eWeb.ComboboxModel do
     )
 
     session
-  end
-
-  def controlled_patterns_state_text(session) do
-    el = find(session, css("#combobox-patterns-controlled-state"))
-    Wallaby.Element.text(el)
   end
 end

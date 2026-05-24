@@ -829,4 +829,60 @@ defmodule E2eWeb.Demos.DialogDemo do
     })
     """
   end
+
+  def patterns_controlled_heex do
+    ~S"""
+    <.dialog
+      id="patterns-dialog-controlled"
+      class="dialog"
+      controlled
+      open={@open}
+      on_open_change="patterns_dialog_open_changed"
+    >
+      <:trigger>Open</:trigger>
+      <:content>
+        <p>LiveView owns open state.</p>
+      </:content>
+      <:close_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:close_trigger>
+    </.dialog>
+    """
+  end
+
+  def patterns_controlled_elixir do
+    ~S'''
+    defmodule MyAppWeb.DialogPatternsLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        {:ok, assign(socket, :open, false)}
+      end
+
+      def handle_event("patterns_dialog_open_changed", %{"open" => open}, socket) do
+        {:noreply, assign(socket, :open, open)}
+      end
+
+      def render(assigns) do
+        ~H"""
+        <.dialog
+          id="patterns-dialog-controlled"
+          class="dialog"
+          controlled
+          open={@open}
+          on_open_change="patterns_dialog_open_changed"
+        >
+          <:trigger>Open</:trigger>
+          <:content>
+            <p>LiveView owns open state.</p>
+          </:content>
+          <:close_trigger>
+            <.heroicon name="hero-x-mark" />
+          </:close_trigger>
+        </.dialog>
+        """
+      end
+    end
+    '''
+  end
 end

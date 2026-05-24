@@ -132,7 +132,7 @@ defmodule Corex.MixProject do
 
   defp package do
     files = ~w(
-      lib priv mix.exs package.json README.md CHANGELOG.md .formatter.exs
+      lib priv mix.exs package.json README.md CHANGELOG.md LICENSE .formatter.exs
       usage-rules.md usage-rules
     )
 

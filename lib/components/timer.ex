@@ -378,6 +378,8 @@ defmodule Corex.Timer do
     <div
       id={@id}
       phx-hook="Timer"
+      data-loading
+      phx-mounted={JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(@props_struct)}
     >

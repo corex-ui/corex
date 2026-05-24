@@ -65,6 +65,9 @@ defmodule Corex.DatePicker.Connect do
       "data-on-visible-range-change" => assigns.on_visible_range_change,
       "data-on-open-change" => assigns.on_open_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-on-focus-change-client" => assigns.on_focus_change_client,
+      "data-on-view-change-client" => assigns.on_view_change_client,
+      "data-on-visible-range-change-client" => assigns.on_visible_range_change_client,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-translation" => translation_json(assigns),
       "data-max-selected-dates" =>

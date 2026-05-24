@@ -200,15 +200,14 @@ defmodule Corex.SignaturePad do
 
   <!-- tabs-open -->
 
-  ### Controlled
+  ### LiveView sync
 
-  Bind `value` and handle `on_draw_end` so LiveView owns the serialized paths.
+  Pass `paths` from a LiveView assign and handle `on_draw_end` so the server owns stroke data.
 
   ```heex
   <.signature_pad
     class="signature-pad"
-    controlled
-    value={@signature_paths}
+    paths={@signature_paths}
     on_draw_end="signature_drawn"
   >
     <:label>Sign here</:label>

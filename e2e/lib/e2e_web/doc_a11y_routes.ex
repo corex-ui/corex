@@ -89,6 +89,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/dialog/anatomy", "#dialog-anatomy-page"},
     {"/en/dialog/api", "#dialog-api-page"},
     {"/en/dialog/events", "#dialog-events-page"},
+    {"/en/dialog/patterns", "#dialog-patterns-page"},
     {"/en/dialog/animation", "#dialog-animation-page"},
     {"/en/dialog/style", "#dialog-styling-page"},
     {"/en/editable/playground", "#editable-playground"},

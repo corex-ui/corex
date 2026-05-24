@@ -5,27 +5,7 @@ defmodule E2eWeb.NumberInputPatternsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:patterns_controlled_value, "10")
-     |> assign(:patterns_value_as_number, 10)}
-  end
-
-  @impl true
-  def handle_event("number_input_patterns_value", payload, socket) do
-    id = payload["id"]
-
-    if id == "number-input-patterns-controlled-field" do
-      v = payload["value"] || ""
-      n = payload["valueAsNumber"]
-
-      {:noreply,
-       socket
-       |> assign(:patterns_controlled_value, v)
-       |> assign(:patterns_value_as_number, n)}
-    else
-      {:noreply, socket}
-    end
+    {:ok, socket}
   end
 
   @impl true
@@ -41,26 +21,24 @@ defmodule E2eWeb.NumberInputPatternsLive do
         path={@path}
         id="number-input-patterns-page"
         title="Number Input · Patterns"
-        subtitle="Standalone controlled value: use on_value_change so the server assigns value on each change (required for +/- with controlled)."
+        subtitle="Initial value on mount; the machine owns stepper changes after that."
       >
         <.demo_section
-          id="number-input-patterns-controlled-doc"
-          title="Controlled (value)"
+          id="number-input-patterns-initial-doc"
+          title="Initial value"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: patterns_controlled_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_controlled_elixir()}
+            %{value: "heex", label: "Heex", language: :heex, code: patterns_initial_heex()},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_initial_elixir()}
           ]}
         >
           <:preview>
             <div class="flex max-w-md flex-col gap-3">
               <.number_input
-                id="number-input-patterns-controlled-field"
+                id="number-input-patterns-initial-field"
                 class="number-input w-full"
-                controlled
-                value={@patterns_controlled_value}
+                value="10"
                 min={0.0}
                 step={1.0}
-                on_value_change="number_input_patterns_value"
               >
                 <:label>Quantity</:label>
                 <:decrement_trigger>
@@ -70,10 +48,6 @@ defmodule E2eWeb.NumberInputPatternsLive do
                   <.heroicon name="hero-chevron-up" class="icon" />
                 </:increment_trigger>
               </.number_input>
-              <p class="font-mono text-sm text-ink-muted" id="number-input-patterns-controlled-state">
-                value: {inspect(@patterns_controlled_value)} · valueAsNumber:{" "}
-                {inspect(@patterns_value_as_number)}
-              </p>
             </div>
           </:preview>
         </.demo_section>
@@ -82,16 +56,14 @@ defmodule E2eWeb.NumberInputPatternsLive do
     """
   end
 
-  defp patterns_controlled_heex do
+  defp patterns_initial_heex do
     ~S"""
     <.number_input
-      id="number-input-patterns-controlled-field"
+      id="number-input-patterns-initial-field"
       class="number-input w-full"
-      controlled
-      value={@patterns_controlled_value}
+      value="10"
       min={0.0}
       step={1.0}
-      on_value_change="number_input_patterns_value"
     >
       <:label>Quantity</:label>
       <:decrement_trigger>
@@ -104,29 +76,13 @@ defmodule E2eWeb.NumberInputPatternsLive do
     """
   end
 
-  defp patterns_controlled_elixir do
+  defp patterns_initial_elixir do
     ~S"""
-    def mount(_params, _session, socket) do
-      {:ok,
-       socket
-       |> assign(:patterns_controlled_value, "10")
-       |> assign(:patterns_value_as_number, 10)}
-    end
-
-    def handle_event("number_input_patterns_value", payload, socket) do
-      case payload do
-        %{"id" => "number-input-patterns-controlled-field", "value" => v} ->
-          n = payload["valueAsNumber"]
-
-          {:noreply,
-           socket
-           |> assign(:patterns_controlled_value, v || "")
-           |> assign(:patterns_value_as_number, n)}
-
-        _ ->
-          {:noreply, socket}
-      end
-    end
+    <.number_input id="qty" class="number-input" value="10" min={0.0} step={1.0}>
+      <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    </.number_input>
     """
   end
 end

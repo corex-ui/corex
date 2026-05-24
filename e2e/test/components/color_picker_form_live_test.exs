@@ -13,12 +13,12 @@ defmodule E2eWeb.ColorPickerFormLiveTest do
     assert html =~ "maximum alpha allowed is 50%"
   end
 
-  test "save_basic submits hex color and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits hex color and pushes toast-create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/color-picker/live-form")
 
     view
-    |> form("#color-picker-basic-form")
-    |> render_submit(%{"color_picker_basic" => %{"color" => "#ef4444"}})
+    |> form("#color-picker-live-form-phoenix")
+    |> render_submit(%{"color_picker_phoenix" => %{"color" => "#ef4444"}})
 
     assert_push_event(view, "toast-create", %{
       description: "Submitted: color=#ef4444",

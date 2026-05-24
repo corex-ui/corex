@@ -79,6 +79,7 @@ defmodule Corex.Tooltip do
   | Event | When | `event.detail` |
   | ----- | ---- | -------------- |
   | `on_open_change_client="tooltip-open-changed"` | Open state changes | `id`, `open` |
+  | `on_trigger_value_change_client="tooltip-trigger-changed"` | Active trigger changes | `id`, `value` |
 
   ## Patterns
 
@@ -245,6 +246,11 @@ defmodule Corex.Tooltip do
       "LiveView event when the active trigger value changes (multi-trigger). Params include id (tooltip root) and value (trigger value string)."
   )
 
+  attr(:on_trigger_value_change_client, :string,
+    default: nil,
+    doc: "The client event name when the active trigger value changes"
+  )
+
   attr(:show_arrow, :boolean,
     default: true,
     doc: "Whether to show an arrow pointing to the trigger"
@@ -303,7 +309,8 @@ defmodule Corex.Tooltip do
         interactive: @interactive,
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
-        on_trigger_value_change: @on_trigger_value_change
+        on_trigger_value_change: @on_trigger_value_change,
+        on_trigger_value_change_client: @on_trigger_value_change_client
       })}
     >
       <%= for t <- @trigger do %>

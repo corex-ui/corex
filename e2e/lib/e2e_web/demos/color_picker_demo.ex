@@ -305,6 +305,65 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      for={@phoenix_form}
+      action={~p"/color-picker/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.color_picker
+        name={@phoenix_form[:color].name}
+        value={@phoenix_form[:color].value || "#3b82f6"}
+        label="Color"
+        class="color-picker"
+      />
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def color_picker_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"color" => "#3b82f6"}, as: :color_picker_phoenix, id: "color-picker-form-phoenix")
+
+      render(conn, :color_picker_form_page, phoenix_form: phoenix_form)
+    end
+
+    def color_picker_form_submit(conn, params) do
+      if is_map(params["color_picker_phoenix"]) do
+        color = params["color_picker_phoenix"]["color"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: color=#{inspect(color)}")
+        |> redirect(to: ~p"/color-picker/form#color-picker-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.color_picker
+        name={@phoenix_form[:color].name}
+        value={@phoenix_form[:color].value || "#3b82f6"}
+        label="Color"
+        class="color-picker"
+      />
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_changeset_heex do
     ~S"""
     <.form
@@ -331,13 +390,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     def color_picker_form_page(conn, _params) do
       form =
-        %E2e.Form.ColorPickerForm{}
-        |> E2e.Form.ColorPickerForm.changeset(%{})
+        %MyApp.Form.ColorPickerForm{}
+        |> MyApp.Form.ColorPickerForm.changeset(%{})
         |> Phoenix.Component.to_form(as: :color_picker_changeset, id: "color-picker-changeset-form")
 
       validate_form =
-        %E2e.Form.ColorPickerForm{}
-        |> E2e.Form.ColorPickerForm.changeset_validate(%{})
+        %MyApp.Form.ColorPickerForm{}
+        |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
         |> Phoenix.Component.to_form(
           as: :color_picker_validate,
           id: "color-picker-validate-form"
@@ -347,12 +406,12 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     end
 
     def color_picker_form_create(conn, %{"color_picker_changeset" => params}) do
-      case E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: "//settings")
+          |> redirect(to: ~p"/settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -361,8 +420,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
             Phoenix.Component.to_form(changeset, as: :color_picker_changeset, id: "color-picker-changeset-form")
 
           validate_form =
-            %E2e.Form.ColorPickerForm{}
-            |> E2e.Form.ColorPickerForm.changeset_validate(%{})
+            %MyApp.Form.ColorPickerForm{}
+            |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
             |> Phoenix.Component.to_form(
               as: :color_picker_validate,
               id: "color-picker-validate-form"
@@ -399,12 +458,12 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_validate_elixir do
     ~S"""
     def color_picker_form_validate_create(conn, %{"color_picker_validate" => params}) do
-      case E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: "//settings")
+          |> redirect(to: ~p"/settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -413,8 +472,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
             Phoenix.Component.to_form(changeset, as: :color_picker_validate, id: "color-picker-validate-form")
 
           form =
-            %E2e.Form.ColorPickerForm{}
-            |> E2e.Form.ColorPickerForm.changeset(%{})
+            %MyApp.Form.ColorPickerForm{}
+            |> MyApp.Form.ColorPickerForm.changeset(%{})
             |> Phoenix.Component.to_form(
               as: :color_picker_changeset,
               id: "color-picker-changeset-form"
@@ -472,10 +531,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_live_changeset_elixir do
     ~S"""
     def handle_event("save_basic", %{"color_picker_basic" => params}, socket) do
-      case E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           _data = Ecto.Changeset.apply_changes(changeset)
-          new_form = Phoenix.Component.to_form(E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params),
+          new_form = Phoenix.Component.to_form(MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params),
             as: :color_picker_basic,
             id: "color-picker-basic-form"
           )
@@ -520,11 +579,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_live_validate_elixir do
     ~S"""
     def handle_event("save_validate", %{"color_picker_validate" => params}, socket) do
-      case E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           new_form =
             Phoenix.Component.to_form(
-              E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params),
+              MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params),
               as: :color_picker_validate,
               id: "color-picker-validate-form-live"
             )
@@ -713,4 +772,148 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     </.form>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/color-picker/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.color_picker
+        name={@form[:color].name}
+        value={@form[:color].value || "#3b82f6"}
+        label="Color"
+        class="color-picker"
+      />
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.color_picker
+        name={@form[:color].name}
+        value={@form[:color].value || "#3b82f6"}
+        label="Color"
+        class="color-picker"
+      />
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.ColorPickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"color" => "#ff0000"}, as: :color_picker_phoenix, id: "color-picker-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"color_picker_phoenix" => params}, socket) do
+        color = params["color"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"color" => color}, as: :color_picker_phoenix, id: "color-picker-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.ColorPickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Form.ColorPickerForm{}
+          |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :color_picker_ecto, id: "color-picker-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"color_picker_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Form.ColorPickerForm{}
+          |> MyApp.Form.ColorPickerForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :color_picker_ecto,
+             id: "color-picker-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"color_picker_ecto" => params}, socket) do
+        case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params),
+                 as: :color_picker_ecto,
+                 id: "color-picker-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :color_picker_ecto,
+                 id: "color-picker-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

@@ -66,7 +66,7 @@ defmodule Corex.ComponentHelpersCoverageTest do
     {:render_toggle_group, %{}},
     {:render_tree_view, %{}},
     {:render_tree_view_with_branch, %{}},
-    {:render_tree_view_controlled, %{}},
+    {:render_tree_view_with_defaults, %{}},
     {:render_action, %{}},
     {:render_action_with_opts, %{type: "button", aria_label: "Save", disabled: false}},
     {:render_navigate,

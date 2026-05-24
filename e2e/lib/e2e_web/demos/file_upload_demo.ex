@@ -128,7 +128,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_ecto do
     ~S"""
-    defmodule E2e.Form.FileUploadForm do
+    defmodule MyApp.Form.FileUploadForm do
       use Ecto.Schema
       import Ecto.Changeset
 
@@ -162,6 +162,54 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} action={~p"/file-upload/form"} method="post" id={@phoenix_form.id} multipart>
+      <.file_upload field={@phoenix_form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def file_upload_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"attachment" => nil}, as: :file_upload_phoenix, id: "file-upload-form-phoenix")
+
+      render(conn, :file_upload_form_page, phoenix_form: phoenix_form)
+    end
+
+    def file_upload_form_submit(conn, _params) do
+      conn
+      |> put_flash(:info, "Submitted")
+      |> redirect(to: ~p"/file-upload/form#file-upload-form-phoenix")
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix" multipart>
+      <.file_upload field={@phoenix_form[:attachment]} class="file-upload" id="file-upload-live-phoenix-field">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_changeset_heex do
     ~S"""
     <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
@@ -183,7 +231,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_changeset_elixir do
     ~S"""
-    changeset = E2e.Form.FileUploadForm.changeset(%E2e.Form.FileUploadForm{}, %{})
+    changeset = MyApp.Form.FileUploadForm.changeset(%MyApp.Form.FileUploadForm{}, %{})
     to_form(changeset, as: :file_upload_changeset, id: "file-upload-changeset-form")
     """
   end
@@ -209,7 +257,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_validate_elixir do
     ~S"""
-    changeset = E2e.Form.FileUploadForm.changeset_validate(%E2e.Form.FileUploadForm{}, %{})
+    changeset = MyApp.Form.FileUploadForm.changeset_validate(%MyApp.Form.FileUploadForm{}, %{})
     to_form(changeset, as: :file_upload_validate, id: "file-upload-validate-form")
     """
   end
@@ -560,4 +608,153 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       %{value: "ecto", label: "Ecto", language: :elixir, code: form_ecto()}
     ]
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+      <.file_upload field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix" multipart>
+      <.file_upload id="file-upload-live-phoenix-field" field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+      </.file_upload>
+      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save" multipart>
+      <.file_upload id="file-upload-live-ecto-field" field={@form[:attachment]} class="file-upload">
+        <:label>Attachment</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.file_upload>
+      <.action type="submit" id="file-upload-live-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.FileUploadFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"attachment" => nil}, as: :file_upload_phoenix, id: "file-upload-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"file_upload_phoenix" => params}, socket) do
+    {:noreply, socket}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.FileUploadFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Form.FileUploadForm{}
+          |> MyApp.Form.FileUploadForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :file_upload_ecto, id: "file-upload-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"file_upload_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Form.FileUploadForm{}
+          |> MyApp.Form.FileUploadForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :file_upload_ecto,
+             id: "file-upload-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"file_upload_ecto" => params}, socket) do
+        case MyApp.Form.FileUploadForm.changeset_validate(%MyApp.Form.FileUploadForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.FileUploadForm.changeset_validate(%MyApp.Form.FileUploadForm{}, params),
+                 as: :file_upload_ecto,
+                 id: "file-upload-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :file_upload_ecto,
+                 id: "file-upload-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

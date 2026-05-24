@@ -69,4 +69,18 @@ defmodule E2eWeb.DialogTest do
       |> Dialog.wait_playground_dialog_ready()
     end
   end
+
+  describe "patterns" do
+    feature "controlled  -  trigger toggles open state", %{session: session} do
+      host = "patterns-dialog-controlled"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(Dialog, :dialog, :patterns)
+        |> Dialog.wait_root_dialog_ready(host)
+
+      session = Dialog.open_dialog_by_host_id(session, host)
+      Dialog.wait_dialog_open_by_host_id(session, host, timeout: 8_000)
+    end
+  end
 end

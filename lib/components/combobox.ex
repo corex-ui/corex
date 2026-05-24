@@ -246,7 +246,7 @@ defmodule Corex.Combobox do
 
   ## Form
 
-  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. In LiveView, pass `controlled` so the server stays the source of truth. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
+  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
 
   ### Localization
 
@@ -307,12 +307,6 @@ defmodule Corex.Combobox do
     default: nil,
     doc:
       "Initial selected item values (list of strings or a single string); not updated by LiveView after mount"
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "When true (e.g. LiveView playground), selection is driven from the server via `data-value` and the hook passes Zag `value` on updates. When false, only `data-default-value` is used for SSR and hook updates omit selection so client filter/typing stay stable."
   )
 
   attr(:on_open_change, :string,
@@ -376,6 +370,11 @@ defmodule Corex.Combobox do
   attr(:on_input_value_change, :string,
     default: nil,
     doc: "The server event name to trigger on input value change"
+  )
+
+  attr(:on_input_value_change_client, :string,
+    default: nil,
+    doc: "The client event name to trigger on input value change"
   )
 
   attr(:on_value_change, :string,
@@ -477,7 +476,6 @@ defmodule Corex.Combobox do
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:controlled, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
       |> assign(:empty_text, empty_text)
@@ -509,11 +507,10 @@ defmodule Corex.Combobox do
     {@rest}
     {Connect.props(%Props{
       id: @id, items: @items, placeholder: @placeholder, value: @value,
-      controlled: @controlled,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
       read_only: @read_only, required: @required,
-      on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
+      on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_input_value_change_client: @on_input_value_change_client, on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client,
       positioning: @positioning,
       redirect: @redirect,

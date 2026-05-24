@@ -9,42 +9,39 @@
     path={@path}
     id="radio-group-form-page"
     title={~t"Radio Group · Form"}
-    subtitle={~t"Phoenix to_form/2, stricter validation, and plain HTML"}
   >
     <.demo_section
-      id="radio-group-form-changeset"
-      title={~t"Phoenix Form (changeset)"}
+      id="radio-group-form-phoenix"
+      title={~t"Phoenix Form"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.RadioGroupDemo.form_preview_controller_changeset form={@form} />
+        <E2eWeb.Demos.RadioGroupDemo.form_preview_controller_phoenix form={@phoenix_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="radio-group-form-validate"
-      title={~t"Ecto changeset (validation)"}
+      id="radio-group-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
         %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.RadioGroupDemo.form_preview_controller_validate form={@validate_form} />
+        <E2eWeb.Demos.RadioGroupDemo.form_preview_controller_ecto form={@ecto_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="radio-group-form-controller"
-      title={~t"Native form (plain HTML)"}
+      id="radio-group-form-native"
+      title={~t"Native HTML Form"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex}
       ]}
     >
       <:preview>

@@ -9,7 +9,6 @@ defmodule Corex.Carousel.Utils do
       items: nil,
       item_count: nil,
       page: 1,
-      controlled: false,
       dir: "ltr",
       orientation: "horizontal",
       slides_per_page: 1,

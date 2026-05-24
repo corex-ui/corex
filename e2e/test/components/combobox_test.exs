@@ -85,21 +85,11 @@ defmodule E2eWeb.ComboboxTest do
   end
 
   describe "patterns" do
-    feature "controlled  -  selecting Belgium updates state text", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :patterns)
-        |> Combobox.wait_patterns_page()
-        |> Combobox.wait_root_combobox_ready("combobox-patterns-controlled-field")
-
-      assert String.contains?(Combobox.controlled_patterns_state_text(session), "deu")
-
+    feature "server filter combobox is interactive", %{session: session} do
       session
-      |> Combobox.open_combobox_by_host_id("combobox-patterns-controlled-field")
-      |> Combobox.click_item_by_host_id("combobox-patterns-controlled-field", "bel")
-      |> Combobox.wait_patterns_state_contains("bel", timeout: 12_000)
-
-      assert String.contains?(Combobox.controlled_patterns_state_text(session), "bel")
+      |> ComponentBehaviorSpec.visit_ready(Combobox, :combobox, :patterns)
+      |> Combobox.wait_patterns_page()
+      |> Combobox.wait_root_combobox_ready("combobox-patterns-server-filter-field")
     end
   end
 

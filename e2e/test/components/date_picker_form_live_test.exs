@@ -2,12 +2,12 @@ defmodule E2eWeb.DatePickerFormLiveTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "save_basic submits iso date and pushes toast-create", %{conn: conn} do
+  test "save_phoenix submits iso date and pushes toast-create", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/date-picker/live-form")
 
     view
-    |> form("#date-picker-basic-form")
-    |> render_submit(%{"date_picker_basic" => %{"date" => "2024-06-01"}})
+    |> form("#date-picker-live-form-phoenix")
+    |> render_submit(%{"date_picker_phoenix" => %{"date" => "2024-06-01"}})
 
     assert_push_event(view, "toast-create", %{
       description: "Submitted: date=2024-06-01",

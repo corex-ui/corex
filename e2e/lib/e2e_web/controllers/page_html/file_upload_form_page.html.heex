@@ -1,35 +1,48 @@
-<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
     path={@path}
     id="file-upload-form-page"
     title={~t"File Upload · Form"}
-    subtitle={~t"Multipart forms and Plug.Upload"}
   >
     <.demo_section
-      id="file-upload-form-changeset"
-      title={~t"Phoenix Form (changeset)"}
-      code_tabs={E2eWeb.Demos.FileUploadDemo.form_changeset_code_tabs()}
+      id="file-upload-form-phoenix"
+      title={~t"Phoenix Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
+      ]}
     >
       <:preview>
-        <E2eWeb.Demos.FileUploadDemo.form_preview_controller_changeset form={@form} />
+        <E2eWeb.Demos.FileUploadDemo.form_preview_controller_phoenix form={@phoenix_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="file-upload-form-validate"
-      title={~t"Ecto changeset (validation)"}
-      code_tabs={E2eWeb.Demos.FileUploadDemo.form_validate_code_tabs()}
+      id="file-upload-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
     >
       <:preview>
-        <E2eWeb.Demos.FileUploadDemo.form_preview_controller_validate form={@validate_form} />
+        <E2eWeb.Demos.FileUploadDemo.form_preview_controller_ecto form={@ecto_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="file-upload-form-controller"
-      title={~t"Native form (plain HTML)"}
-      code_tabs={E2eWeb.Demos.FileUploadDemo.form_native_code_tabs()}
+      id="file-upload-form-native"
+      title={~t"Native HTML Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex}
+      ]}
     >
       <:preview>
         <E2eWeb.Demos.FileUploadDemo.form_preview_controller_native />

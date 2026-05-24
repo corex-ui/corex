@@ -7,7 +7,6 @@ defmodule Corex.NumberInput.Anatomy do
 
     defstruct [
       :id,
-      controlled: false,
       value: nil,
       min: nil,
       max: nil,
@@ -27,7 +26,6 @@ defmodule Corex.NumberInput.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            controlled: boolean(),
             value: String.t() | nil,
             min: number() | nil,
             max: number() | nil,

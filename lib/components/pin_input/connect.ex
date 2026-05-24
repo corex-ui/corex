@@ -33,7 +33,8 @@ defmodule Corex.PinInput.Connect do
       "data-placeholder" => assigns.placeholder,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
-      "data-on-value-complete" => assigns.on_value_complete
+      "data-on-value-complete" => assigns.on_value_complete,
+      "data-on-value-complete-client" => assigns.on_value_complete_client
     }
   end
 

@@ -55,8 +55,11 @@ defmodule Corex.FloatingPanel.Connect do
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-position-change" => assigns.on_position_change,
+      "data-on-position-change-client" => assigns.on_position_change_client,
       "data-on-size-change" => assigns.on_size_change,
-      "data-on-stage-change" => assigns.on_stage_change
+      "data-on-size-change-client" => assigns.on_size_change_client,
+      "data-on-stage-change" => assigns.on_stage_change,
+      "data-on-stage-change-client" => assigns.on_stage_change_client
     }
   end
 

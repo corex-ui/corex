@@ -110,20 +110,6 @@ defmodule E2eWeb.NumberInputModel do
     Process.get(key, "")
   end
 
-  def wait_patterns_state_contains(session, substring, opts \\ []) when is_binary(substring) do
-    if String.contains?(substring, "'") do
-      raise ArgumentError, "substring must not contain single quote"
-    end
-
-    wait_for_has(
-      session,
-      xpath("//*[@id='number-input-patterns-controlled-state' and contains(., '#{substring}')]"),
-      opts
-    )
-
-    session
-  end
-
   def number_input_events_server_log_has_row?(session) do
     has?(session, css("#number-input-events-log-server tr[data-part='row']"))
   end

@@ -90,23 +90,354 @@ defmodule E2eWeb.Demos.PinInputDemo do
     """
   end
 
-  def form_code do
+  def form_ecto do
     ~S"""
-    <form action={~p"/pin-input/form"} method="post">
-      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.pin_input
-        name="pin_input_form[pin]"
-        count={4}
-        class="pin-input"
-      >
+    defmodule MyApp.Form.PinInputForm do
+      use Ecto.Schema
+      import Ecto.Changeset
+
+      embedded_schema do
+        field :pin, :string
+      end
+
+      def changeset_validate(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:pin])
+        |> validate_required([:pin], message: "can't be blank")
+        |> validate_length(:pin, is: 4, message: "must be 4 characters")
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/pin-input/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
         <:label>Code</:label>
       </.pin_input>
-      <.action type="submit" class="button button--accent">
+      <.action type="submit" id="pin-input-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def pin_input_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: "pin-input-form-phoenix")
+
+      render(conn, :pin_input_form_page, phoenix_form: phoenix_form)
+    end
+
+    def pin_input_form_submit(conn, params) do
+      if is_map(params["pin_phoenix"]) do
+        pin = params["pin_phoenix"]["pin"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+        |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_ecto_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@ecto_form}
+      action={~p"/pin-input/form"}
+      method="post"
+      id={@ecto_form.id}
+    >
+      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
+        <:label>Code</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.pin_input>
+      <.action type="submit" id="pin-input-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_ecto_elixir do
+    ~S"""
+    def pin_input_form_page(conn, _params) do
+      ecto_form =
+        %MyApp.Form.PinInputForm{}
+        |> MyApp.Form.PinInputForm.changeset_validate(%{})
+        |> Phoenix.Component.to_form(as: :pin_ecto, id: "pin-input-form-ecto")
+
+      render(conn, :pin_input_form_page, ecto_form: ecto_form)
+    end
+
+    def pin_input_form_submit(conn, params) do
+      if is_map(params["pin_ecto"]) do
+        case MyApp.Form.PinInputForm.changeset_validate(%MyApp.Form.PinInputForm{}, params["pin_ecto"]) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted: pin=#{inspect(data.pin)}")
+            |> redirect(to: ~p"/pin-input/form#pin-input-form-ecto")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+            ecto_form = Phoenix.Component.to_form(changeset, as: :pin_ecto, id: "pin-input-form-ecto")
+            render(conn, :pin_input_form_page, ecto_form: ecto_form)
+        end
+      end
+    end
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/pin-input/form"} method="post" id="pin-input-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.pin_input name="pin_input[pin]" count={4} class="pin-input" id="pin-input-form-native-pin">
+        <:label>Code</:label>
+      </.pin_input>
+      <.action type="submit" id="pin-input-form-native-submit" class="button button--accent">
         Submit
       </.action>
     </form>
     """
   end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.pin_input field={@phoenix_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
+        <:label>Code</:label>
+      </.pin_input>
+      <.action type="submit" id="pin-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_heex do
+    ~S"""
+    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+      <.pin_input field={@ecto_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
+        <:label>Code</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.pin_input>
+      <.action type="submit" id="pin-input-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/pin-input/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
+        <:label>Code</:label>
+      </.pin_input>
+      <.action type="submit" id="pin-input-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_ecto(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/pin-input/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
+        <:label>Code</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.pin_input>
+      <.action type="submit" id="pin-input-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form action={~p"/pin-input/form"} method="post" id="pin-input-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.pin_input name="pin_input[pin]" count={4} class="pin-input" id="pin-input-form-native-pin">
+        <:label>Code</:label>
+      </.pin_input>
+      <.action type="submit" id="pin-input-form-native-submit" class="button button--accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
+        <:label>Code</:label>
+      </.pin_input>
+      <.action type="submit" id="pin-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
+        <:label>Code</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.pin_input>
+      <.action type="submit" id="pin-input-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.PinInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: "pin-input-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"pin_phoenix" => params}, socket) do
+        pin = params["pin"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"pin" => pin}, as: :pin_phoenix, id: "pin-input-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.PinInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Form.PinInputForm{}
+          |> MyApp.Form.PinInputForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :pin_ecto, id: "pin-input-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"pin_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Form.PinInputForm{}
+          |> MyApp.Form.PinInputForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :pin_ecto,
+             id: "pin-input-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"pin_ecto" => params}, socket) do
+        case MyApp.Form.PinInputForm.changeset_validate(%MyApp.Form.PinInputForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.PinInputForm.changeset_validate(%MyApp.Form.PinInputForm{}, params),
+                 as: :pin_ecto,
+                 id: "pin-input-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :pin_ecto,
+                 id: "pin-input-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_ecto_heex()
+  def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+  def form_code, do: form_native_heex()
 
   def api_set_value_client_binding_code do
     ~S"""

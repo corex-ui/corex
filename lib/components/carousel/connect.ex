@@ -27,9 +27,7 @@ defmodule Corex.Carousel.Connect do
     base = %{
       "id" => assigns.id,
       "data-slide-count" => to_string(assigns.slide_count),
-      "data-page" => if(assigns.controlled, do: to_string(assigns.page), else: nil),
-      "data-default-page" => if(assigns.controlled, do: nil, else: to_string(assigns.page)),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-page" => to_string(assigns.page),
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
       "data-loop" => get_boolean(assigns.loop),

@@ -268,6 +268,27 @@ defmodule Corex.DatePickerTest do
       assert result["data-default-value"] == nil
       assert result["data-value"] == "2025-02-22"
     end
+
+    test "props/1 includes client event attribute names when set" do
+      result =
+        Connect.props(
+          Map.merge(default_props(), %{
+            id: "test-dp",
+            controlled: false,
+            value: nil,
+            locale: nil,
+            time_zone: nil,
+            dir: "ltr",
+            on_focus_change_client: "focus_client",
+            on_view_change_client: "view_client",
+            on_visible_range_change_client: "range_client"
+          })
+        )
+
+      assert result["data-on-focus-change-client"] == "focus_client"
+      assert result["data-on-view-change-client"] == "view_client"
+      assert result["data-on-visible-range-change-client"] == "range_client"
+    end
   end
 
   defp default_props do
@@ -296,6 +317,9 @@ defmodule Corex.DatePickerTest do
       on_visible_range_change: nil,
       on_open_change: nil,
       on_value_change_client: nil,
+      on_focus_change_client: nil,
+      on_view_change_client: nil,
+      on_visible_range_change_client: nil,
       on_open_change_client: nil,
       max_selected_dates: nil,
       translation: nil

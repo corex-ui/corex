@@ -380,6 +380,22 @@ defmodule Corex.ColorPickerTest do
       assert result["data-on-open-change"] == "toggle_picker"
     end
 
+    test "includes client event names when set" do
+      assigns =
+        base_assigns(
+          on_format_change_client: "format_client",
+          on_pointer_down_outside_client: "pointer_client",
+          on_focus_outside_client: "focus_client",
+          on_interact_outside_client: "interact_client"
+        )
+
+      result = Connect.props(assigns)
+      assert result["data-on-format-change-client"] == "format_client"
+      assert result["data-on-pointer-down-outside-client"] == "pointer_client"
+      assert result["data-on-focus-outside-client"] == "focus_client"
+      assert result["data-on-interact-outside-client"] == "interact_client"
+    end
+
     test "includes positioning when set" do
       assigns = base_assigns(positioning: %Corex.Positioning{placement: "bottom"})
       result = Connect.props(assigns)
@@ -517,8 +533,19 @@ defmodule Corex.ColorPickerTest do
       dir: "ltr",
       positioning: %Corex.Positioning{},
       on_value_change: nil,
+      on_value_change_client: nil,
       on_value_change_end: nil,
-      on_open_change: nil
+      on_value_change_end_client: nil,
+      on_open_change: nil,
+      on_open_change_client: nil,
+      on_format_change: nil,
+      on_format_change_client: nil,
+      on_pointer_down_outside: nil,
+      on_pointer_down_outside_client: nil,
+      on_focus_outside: nil,
+      on_focus_outside_client: nil,
+      on_interact_outside: nil,
+      on_interact_outside_client: nil
     ]
     |> Keyword.merge(overrides)
     |> Map.new()

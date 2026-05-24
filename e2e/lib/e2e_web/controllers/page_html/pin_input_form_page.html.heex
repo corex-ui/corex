@@ -4,32 +4,48 @@
   theme={@theme}
   path={@path}
 >
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
     path={@path}
     id="pin-input-form-page"
     title={~t"Pin Input · Form"}
-    subtitle={~t"Controller-rendered form; the hidden input submits the pin string."}
   >
     <.demo_section
-      id="pin-input-form-plain"
-      title={~t"HTML form"}
-      code={E2eWeb.Demos.PinInputDemo.form_code()}
+      id="pin-input-form-phoenix"
+      title={~t"Phoenix Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
+      ]}
     >
       <:preview>
-        <form action={~p"/pin-input/form"} method="post" id="pin-input-plain-form">
-          <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-          <.pin_input
-            name="pin_input_form[pin]"
-            id="pin-input-form-pin"
-            count={4}
-            class="pin-input"
-          >
-            <:label>Code</:label>
-          </.pin_input>
-          <.action type="submit" id="pin-input-form-submit" class="button button--accent">
-            Submit
-          </.action>
-        </form>
+        <E2eWeb.Demos.PinInputDemo.form_preview_controller_phoenix form={@phoenix_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.form_preview_controller_ecto form={@ecto_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-form-native"
+      title={~t"Native HTML Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.form_preview_controller_native />
       </:preview>
     </.demo_section>
   </.demo_page>

@@ -453,7 +453,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_ecto do
     ~S"""
-    defmodule E2e.Form.DatePickerForm do
+    defmodule MyApp.Form.DatePickerForm do
       use Ecto.Schema
       import Ecto.Changeset
 
@@ -509,22 +509,66 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/date-picker/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.date_picker
+        field={f[:date]}
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        class="date-picker"
+      >
+        <:label>Date</:label>
+        <:trigger>
+          <.heroicon name="hero-calendar" class="icon" />
+        </:trigger>
+        <:prev_trigger>
+          <.heroicon name="hero-chevron-left" class="icon" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.heroicon name="hero-chevron-right" class="icon" />
+        </:next_trigger>
+      </.date_picker>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def date_picker_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"date" => ""}, as: :date_picker_phoenix, id: "date-picker-form-phoenix")
+
+      render(conn, :date_picker_form_page, phoenix_form: phoenix_form)
+    end
+
+    def date_picker_form_submit(conn, params) do
+      if is_map(params["date_picker_phoenix"]) do
+        date = params["date_picker_phoenix"]["date"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: date=#{inspect(date)}")
+        |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix")
+      end
+    end
+    """
+  end
+
   def form_doc_controller_changeset_elixir do
     ~S"""
     def date_picker_form_page(conn, _params) do
       form =
-        %E2e.Form.DatePickerForm{}
-        |> E2e.Form.DatePickerForm.changeset(%{})
+        %MyApp.Form.DatePickerForm{}
+        |> MyApp.Form.DatePickerForm.changeset(%{})
         |> Phoenix.Component.to_form(as: :date_picker_changeset, id: "date-picker-changeset-form")
 
-      validate_form =
-        %E2e.Form.DatePickerForm{}
-        |> E2e.Form.DatePickerForm.changeset_validate(%{})
-        |> Phoenix.Component.to_form(as: :date_picker_validate, id: "date-picker-validate-form")
-
-      conn
-      |> assign_date_picker_form_docs(nil)
-      |> render(:date_picker_form_page, form: form, validate_form: validate_form)
+      render(conn, :date_picker_form_page, form: form)
     end
     """
   end
@@ -566,11 +610,30 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def form_doc_controller_validate_elixir do
     ~S"""
     def date_picker_form_page(conn, _params) do
-      validate_form =
-        %E2e.Form.DatePickerForm{}
-        |> E2e.Form.DatePickerForm.changeset_validate(%{})
+      form =
+        %MyApp.Form.DatePickerForm{}
+        |> MyApp.Form.DatePickerForm.changeset_validate(%{})
         |> Phoenix.Component.to_form(as: :date_picker_validate, id: "date-picker-validate-form")
-      # ...
+
+      render(conn, :date_picker_form_page, form: form)
+    end
+
+    def date_picker_form_submit(conn, params) do
+      if is_map(params["date_picker_validate"]) do
+        case MyApp.Form.DatePickerForm.changeset_validate(%MyApp.Form.DatePickerForm{}, params["date_picker_validate"]) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted: date=#{inspect(data.date)}")
+            |> redirect(to: ~p"/date-picker/form#date-picker-validate-form")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+            form = Phoenix.Component.to_form(changeset, as: :date_picker_validate, id: "date-picker-validate-form")
+            render(conn, :date_picker_form_page, form: form)
+        end
+      end
     end
     """
   end
@@ -630,12 +693,137 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.date_picker
+        field={@phoenix_form[:date]}
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        class="date-picker"
+      >
+        <:label>Date</:label>
+        <:trigger>
+          <.heroicon name="hero-calendar" class="icon" />
+        </:trigger>
+        <:prev_trigger>
+          <.heroicon name="hero-chevron-left" class="icon" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.heroicon name="hero-chevron-right" class="icon" />
+        </:next_trigger>
+      </.date_picker>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.DatePickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"date" => ""}, as: :date_picker_phoenix, id: "date-picker-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"date_picker_phoenix" => params}, socket) do
+        date = params["date"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"date" => date}, as: :date_picker_phoenix, id: "date-picker-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
   def form_doc_live_changeset_elixir do
     ~S"""
-    def handle_event("date_changed_basic", %{"value" => value}, socket) do
-      params = %{"date" => value}
-      changeset = E2e.Form.DatePickerForm.changeset(%E2e.Form.DatePickerForm{}, params) |> Map.put(:action, :validate)
-      {:noreply, assign(socket, :basic_form, to_form(changeset, as: :date_picker_basic, id: "date-picker-basic-form"))}
+    defmodule MyAppWeb.DatePickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        basic_form =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset(%{})
+          |> Phoenix.Component.to_form(as: :date_picker_basic, id: "date-picker-basic-form")
+
+        {:ok, assign(socket, :basic_form, basic_form)}
+      end
+
+      def handle_event("validate_basic", %{"date_picker_basic" => params}, socket) do
+        changeset =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :basic_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :date_picker_basic,
+             id: "date-picker-basic-form"
+           )
+         )}
+      end
+
+      def handle_event("date_changed_basic", %{"value" => value}, socket) do
+        params = %{"date" => value}
+
+        changeset =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :basic_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :date_picker_basic,
+             id: "date-picker-basic-form"
+           )
+         )}
+      end
+
+      def handle_event("save_basic", %{"date_picker_basic" => params}, socket) do
+        case MyApp.Form.DatePickerForm.changeset(%MyApp.Form.DatePickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :basic_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.DatePickerForm.changeset(%MyApp.Form.DatePickerForm{}, params),
+                 as: :date_picker_basic,
+                 id: "date-picker-basic-form"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :basic_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :date_picker_basic,
+                 id: "date-picker-basic-form"
+               )
+             )}
+        end
+      end
     end
     """
   end
@@ -670,15 +858,87 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     """
   end
 
-  def form_doc_live_validate_elixir do
+  def form_doc_live_ecto_elixir do
     ~S"""
-    def handle_event("date_changed_validate", %{"value" => value}, socket) do
-      params = %{"date" => value}
-      changeset =
-        E2e.Form.DatePickerForm.changeset_validate(%E2e.Form.DatePickerForm{}, params)
-        |> Map.put(:action, :validate)
+    defmodule MyAppWeb.DatePickerFormLive do
+      use MyAppWeb, :live_view
 
-      {:noreply, assign(socket, :validate_form, to_form(changeset, as: :date_picker_validate, id: "date-picker-validate-form-live"))}
+      def mount(_params, _session, socket) do
+        validate_form =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :date_picker_validate, id: "date-picker-validate-form-live")
+
+        {:ok, assign(socket, :validate_form, validate_form)}
+      end
+
+      def handle_event("validate_validate", %{"date_picker_validate" => params}, socket) do
+        changeset =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :validate_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :date_picker_validate,
+             id: "date-picker-validate-form-live"
+           )
+         )}
+      end
+
+      def handle_event("date_changed_validate", %{"value" => value}, socket) do
+        params = %{"date" => value}
+
+        changeset =
+          %MyApp.Form.DatePickerForm{}
+          |> MyApp.Form.DatePickerForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :validate_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :date_picker_validate,
+             id: "date-picker-validate-form-live"
+           )
+         )}
+      end
+
+      def handle_event("save_validate", %{"date_picker_validate" => params}, socket) do
+        case MyApp.Form.DatePickerForm.changeset_validate(%MyApp.Form.DatePickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :validate_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.DatePickerForm.changeset_validate(%MyApp.Form.DatePickerForm{}, params),
+                 as: :date_picker_validate,
+                 id: "date-picker-validate-form-live"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :validate_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :date_picker_validate,
+                 id: "date-picker-validate-form-live"
+               )
+             )}
+        end
+      end
     end
     """
   end
@@ -932,4 +1192,72 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     </.form>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/date-picker/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.date_picker
+        field={f[:date]}
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        class="date-picker"
+      >
+        <:label>Date</:label>
+        <:trigger>
+          <.heroicon name="hero-calendar" class="icon" />
+        </:trigger>
+        <:prev_trigger>
+          <.heroicon name="hero-chevron-left" class="icon" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.heroicon name="hero-chevron-right" class="icon" />
+        </:next_trigger>
+      </.date_picker>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_validate_heex()
+  def form_ecto_elixir, do: form_doc_controller_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.date_picker
+        field={@form[:date]}
+        translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
+        class="date-picker"
+      >
+        <:label>Date</:label>
+        <:trigger>
+          <.heroicon name="hero-calendar" class="icon" />
+        </:trigger>
+        <:prev_trigger>
+          <.heroicon name="hero-chevron-left" class="icon" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.heroicon name="hero-chevron-right" class="icon" />
+        </:next_trigger>
+      </.date_picker>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
 end

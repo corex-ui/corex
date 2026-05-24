@@ -5,117 +5,54 @@ defmodule E2eWeb.RadioGroupFormLive do
 
   alias Corex.Toast
   alias E2e.Form.RadioGroupForm
-  alias E2eWeb.Demos.RadioGroupDemo
+  alias E2eWeb.Demos.RadioGroupDemo, as: Demo
+
+  @phoenix_form_id "radio-group-live-form-phoenix"
+  @ecto_form_id "radio-group-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Radio Group form")
-     |> assign(:form_ecto, RadioGroupDemo.form_ecto())
-     |> assign(:live_basic_heex, RadioGroupDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, RadioGroupDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, RadioGroupDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, RadioGroupDemo.form_doc_live_validate_elixir())
+     |> assign(:page_title, "Radio Group · Form")
+     |> assign(:form_ecto, Demo.form_ecto())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
+     |> assign(:native_heex, Demo.form_native_heex())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    form =
-      %RadioGroupForm{}
-      |> RadioGroupForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :radio_group_live, id: "radio-group-live-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"choice" => ""}, as: :radio_group_phoenix, id: @phoenix_form_id)
 
-    strict_form =
+    ecto_form =
       %RadioGroupForm{}
       |> RadioGroupForm.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :radio_group_strict, id: "radio-group-strict-form-live")
+      |> Phoenix.Component.to_form(as: :radio_group_ecto, id: @ecto_form_id)
 
     socket
-    |> assign(:form, form)
-    |> assign(:strict_form, strict_form)
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
   @impl true
-  def handle_event("choice_changed", %{"value" => value}, socket) do
-    params = %{"choice" => value}
-
-    changeset =
-      %RadioGroupForm{}
-      |> RadioGroupForm.changeset(params)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"radio_group_phoenix" => params}, socket) do
+    choice = params["choice"] || ""
 
     {:noreply,
-     assign(
-       socket,
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :radio_group_live,
-         id: "radio-group-live-form"
-       )
+     socket
+     |> Toast.create("layout-toast", "Submitted", "choice=#{inspect(choice)}", :info, duration: 5000)
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"choice" => choice}, as: :radio_group_phoenix, id: @phoenix_form_id)
      )}
   end
 
   @impl true
-  def handle_event("validate", params, socket) do
-    rparams = Map.get(params, "radio_group_live", %{})
-
-    changeset =
-      %RadioGroupForm{}
-      |> RadioGroupForm.changeset(rparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :radio_group_live,
-         id: "radio-group-live-form"
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save", params, socket) do
-    rparams = Map.get(params, "radio_group_live", %{})
-
-    case RadioGroupForm.changeset(%RadioGroupForm{}, rparams) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: choice=#{data.choice}"
-
-        {:noreply,
-         socket
-         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(RadioGroupForm.changeset(%RadioGroupForm{}, %{}),
-             as: :radio_group_live,
-             id: "radio-group-live-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         assign(
-           socket,
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :radio_group_live,
-             id: "radio-group-live-form"
-           )
-         )}
-    end
-  end
-
-  @impl true
-  def handle_event("choice_changed_strict", %{"value" => value}, socket) do
-    params = %{"choice" => value}
-
+  def handle_event("validate", %{"radio_group_ecto" => params}, socket) do
     changeset =
       %RadioGroupForm{}
       |> RadioGroupForm.changeset_validate(params)
@@ -124,41 +61,14 @@ defmodule E2eWeb.RadioGroupFormLive do
     {:noreply,
      assign(
        socket,
-       :strict_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :radio_group_strict,
-         id: "radio-group-strict-form-live"
-       )
+       :ecto_form,
+       Phoenix.Component.to_form(changeset, action: :validate, as: :radio_group_ecto, id: @ecto_form_id)
      )}
   end
 
   @impl true
-  def handle_event("validate_strict", params, socket) do
-    rparams = Map.get(params, "radio_group_strict", %{})
-
-    changeset =
-      %RadioGroupForm{}
-      |> RadioGroupForm.changeset_validate(rparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :strict_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :radio_group_strict,
-         id: "radio-group-strict-form-live"
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save_strict", params, socket) do
-    rparams = Map.get(params, "radio_group_strict", %{})
-
-    case RadioGroupForm.changeset_validate(%RadioGroupForm{}, rparams) do
+  def handle_event("save", %{"radio_group_ecto" => params}, socket) do
+    case RadioGroupForm.changeset_validate(%RadioGroupForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: choice=#{data.choice}"
@@ -167,11 +77,11 @@ defmodule E2eWeb.RadioGroupFormLive do
          socket
          |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
-             RadioGroupForm.changeset_validate(%RadioGroupForm{}, %{}),
-             as: :radio_group_strict,
-             id: "radio-group-strict-form-live"
+             RadioGroupForm.changeset_validate(%RadioGroupForm{}, params),
+             as: :radio_group_ecto,
+             id: @ecto_form_id
            )
          )}
 
@@ -179,12 +89,8 @@ defmodule E2eWeb.RadioGroupFormLive do
         {:noreply,
          assign(
            socket,
-           :strict_form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :radio_group_strict,
-             id: "radio-group-strict-form-live"
-           )
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :insert, as: :radio_group_ecto, id: @ecto_form_id)
          )}
     end
   end
@@ -192,43 +98,44 @@ defmodule E2eWeb.RadioGroupFormLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      mode={@mode}
-      theme={@theme}
-      path={@path}
-    >
-      <.demo_page
-        path={@path}
-        id="radio-group-form-live-page"
-        title="Radio Group · Form"
-        subtitle="Live View form"
-      >
+    <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+      <.demo_page path={@path} id="radio-group-form-live-page" title={~t"Radio Group · Form"}>
         <.demo_section
-          id="radio-group-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="radio-group-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <RadioGroupDemo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="radio-group-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="radio-group-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
-            <RadioGroupDemo.form_preview_live_validate form={@strict_form} />
+            <Demo.form_preview_live_ecto form={@ecto_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="radio-group-live-form-native"
+          title={~t"Native HTML Form"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex}
+          ]}
+        >
+          <:preview>
+            <Demo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

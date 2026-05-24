@@ -939,7 +939,7 @@ defmodule E2eWeb.Demos.SelectDemo do
           %{label: "Austria", value: "aut"}
         ])}
       >
-        <:label>Country (stricter messages)</:label>
+        <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
@@ -1058,7 +1058,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed_strict"
       >
-        <:label>Country (stricter)</:label>
+        <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
@@ -1222,6 +1222,182 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/select/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.select
+        field={f[:country]}
+        class="select"
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
+        ])}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def select_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"country" => ""}, as: :select_phoenix, id: "select-form-phoenix")
+
+      render(conn, :select_form_page, phoenix_form: phoenix_form)
+    end
+
+    def select_form_submit(conn, params) do
+      if is_map(params["select_phoenix"]) do
+        country = params["select_phoenix"]["country"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+        |> redirect(to: ~p"/select/form#select-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.select
+        id="select-live-form-phoenix-country"
+        class="select"
+        field={@phoenix_form[:country]}
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
+        ])}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
+      <.action type="submit" id="select-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.SelectFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"country" => ""}, as: :select_phoenix, id: "select-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"select_phoenix" => params}, socket) do
+        country = params["country"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"country" => country}, as: :select_phoenix, id: "select-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.SelectFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.CountryForm{}
+          |> MyApp.Forms.CountryForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :select_ecto, id: "select-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("select_country_changed", %{"value" => value}, socket) do
+        country = List.first(value) || ""
+        validate_ecto(socket, %{"country" => country})
+      end
+
+      def handle_event("validate", %{"select_ecto" => params}, socket) do
+        validate_ecto(socket, params)
+      end
+
+      def handle_event("save", %{"select_ecto" => params}, socket) do
+        case MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.CountryForm.changeset_validate(%MyApp.Forms.CountryForm{}, params),
+                 as: :select_ecto,
+                 id: "select-live-form-ecto"
+               )
+             )}
+
+          %Ecto.Changeset{} = changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset, action: :insert, as: :select_ecto, id: "select-live-form-ecto")
+             )}
+        end
+      end
+
+      defp validate_ecto(socket, params) do
+        changeset =
+          %MyApp.Forms.CountryForm{}
+          |> MyApp.Forms.CountryForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :select_ecto, id: "select-live-form-ecto")
+         )}
+      end
+    end
+    """
+  end
+
   attr(:form, :any, required: true)
 
   def form_preview_controller_changeset(assigns) do
@@ -1274,7 +1450,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         items={form_country_items()}
         invalid={f[:country].errors != []}
       >
-        <:label>Country (stricter messages)</:label>
+        <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
@@ -1374,7 +1550,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         on_value_change="select_country_changed_strict"
         invalid={@form[:country].errors != []}
       >
-        <:label>Country (stricter)</:label>
+        <:label>Country</:label>
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
@@ -1728,4 +1904,93 @@ defmodule E2eWeb.Demos.SelectDemo do
     </.select>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/select/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.select
+        field={f[:country]}
+        class="select"
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={form_country_items()}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.select
+        id="select-live-form-phoenix-country"
+        class="select"
+        field={@form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
+      <.action type="submit" id="select-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+      <.select
+        id="select-live-form-ecto-country"
+        class="select"
+        field={@form[:country]}
+        items={form_country_items()}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        on_value_change="select_country_changed"
+        invalid={@form[:country].errors != []}
+      >
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+      <.action type="submit" id="select-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
 end

@@ -156,6 +156,17 @@ defmodule Corex.TooltipTest do
       assert m["data-on-trigger-value-change"] == "tooltip_trigger"
     end
 
+    test "maps on_trigger_value_change_client to data attribute" do
+      m =
+        Connect.props(%Props{
+          id: "id1",
+          positioning: %Corex.Positioning{},
+          on_trigger_value_change_client: "tooltip_trigger_client"
+        })
+
+      assert m["data-on-trigger-value-change-client"] == "tooltip_trigger_client"
+    end
+
     test "maps delays and close flags" do
       m =
         Connect.props(%Props{

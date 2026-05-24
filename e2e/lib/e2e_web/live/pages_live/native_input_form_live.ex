@@ -7,27 +7,29 @@ defmodule E2eWeb.NativeInputFormLive do
   alias E2e.Form.NativeInputProfile
   alias E2eWeb.Demos.NativeInputDemo, as: Demo
 
-  @live_form_id "native-input-live-profile-form"
+  @phoenix_form_id "native-input-live-form-phoenix"
   @live_strict_form_id "native-input-live-strict-form"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "NativeInput form")
+     |> assign(:page_title, "Native Input · Form")
      |> assign(:form_ecto, Demo.form_ecto())
-     |> assign(:live_basic_heex, Demo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, Demo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, Demo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, Demo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
+     |> assign(:native_heex, Demo.form_native_heex())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    form =
-      %NativeInputProfile{}
-      |> NativeInputProfile.changeset(%{})
-      |> Phoenix.Component.to_form(as: :profile, id: @live_form_id)
+    phoenix_form =
+      Phoenix.Component.to_form(%{"email" => ""},
+        as: :native_input_phoenix,
+        id: @phoenix_form_id
+      )
 
     strict_form =
       %NativeInputProfile{}
@@ -35,24 +37,23 @@ defmodule E2eWeb.NativeInputFormLive do
       |> Phoenix.Component.to_form(as: :profile_strict, id: @live_strict_form_id)
 
     socket
-    |> assign(:form, form)
+    |> assign(:phoenix_form, phoenix_form)
     |> assign(:strict_form, strict_form)
   end
 
   @impl true
-  def handle_event("validate", params, socket) do
-    p = Map.get(params, "profile", %{})
-
-    changeset =
-      %NativeInputProfile{}
-      |> NativeInputProfile.changeset(p)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", params, socket) do
+    email = get_in(params, ["native_input_phoenix", "email"]) || ""
 
     {:noreply,
      socket
+     |> Toast.create("layout-toast", "Submitted", "Submitted: email=#{email}", :info, duration: 5000)
      |> assign(
-       :form,
-       Phoenix.Component.to_form(changeset, action: :validate, as: :profile, id: @live_form_id)
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"email" => email},
+         as: :native_input_phoenix,
+         id: @phoenix_form_id
+       )
      )}
   end
 
@@ -77,40 +78,6 @@ defmodule E2eWeb.NativeInputFormLive do
   end
 
   @impl true
-  def handle_event("save", params, socket) do
-    p = Map.get(params, "profile", %{})
-
-    case NativeInputProfile.changeset(%NativeInputProfile{}, p) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: #{NativeInputProfile.format_for_toast(data)}"
-
-        {:noreply,
-         socket
-         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(
-             NativeInputProfile.changeset(%NativeInputProfile{}, p),
-             as: :profile,
-             id: @live_form_id
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         socket
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :profile,
-             id: @live_form_id
-           )
-         )}
-    end
-  end
-
   def handle_event("save_strict", params, socket) do
     p = Map.get(params, "profile_strict", %{})
 
@@ -158,33 +125,43 @@ defmodule E2eWeb.NativeInputFormLive do
         path={@path}
         id="native-input-form-live-page"
         title="Native Input · Form"
-        subtitle="LiveView phx-change / phx-submit with grouped fields (changeset vs stricter validation)."
       >
         <.demo_section
-          id="native-input-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="native-input-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="native-input-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="native-input-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
             <Demo.form_preview_live_validate form={@strict_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="native-input-live-form-native"
+          title={~t"Native HTML Form"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @native_heex}
+          ]}
+        >
+          <:preview>
+            <Demo.form_preview_controller_native />
           </:preview>
         </.demo_section>
       </.demo_page>

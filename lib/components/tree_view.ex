@@ -160,41 +160,6 @@ defmodule Corex.TreeView do
    />
    ```
 
-   ### Controlled (LiveView)
-
-   ```elixir
-   def handle_event("tree_expanded", %{"expandedValue" => expanded}, socket) do
-     {:noreply, assign(socket, :expanded, expanded)}
-   end
-
-   def handle_event("tree_selected", %{"selectedValue" => selected}, socket) do
-     {:noreply, assign(socket, :selected, selected)}
-   end
-
-   def render(assigns) do
-     ~H"""
-     <.tree_view
-       id="controlled-tree"
-       controlled
-       class="tree-view"
-       value={@selected}
-       expanded_value={@expanded}
-       on_selection_change="tree_selected"
-       on_expanded_change="tree_expanded"
-       items={
-         Corex.Tree.new([
-           %{label: "Components", value: "components", children: [
-             %{label: "Accordion", value: "accordion"},
-             %{label: "Checkbox", value: "checkbox"}
-           ]},
-           %{label: "Form", value: "form"}
-         ])
-       }
-     />
-     """
-   end
-   ```
-
    ### Async (`assign_async`)
 
    ```elixir
@@ -470,17 +435,12 @@ defmodule Corex.TreeView do
 
   attr(:value, :list,
     default: [],
-    doc: "Selected node value(s). Use with controlled."
+    doc: "Initial selected node value(s)."
   )
 
   attr(:expanded_value, :list,
     default: [],
-    doc: "Expanded node value(s). Use with controlled."
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc: "Whether the tree is controlled (value and expanded_value from server)."
+    doc: "Initial expanded node value(s)."
   )
 
   attr(:selection_mode, :string,
@@ -602,7 +562,6 @@ defmodule Corex.TreeView do
         tree: @tree,
         value: @value,
         expanded_value: @expanded_value,
-        controlled: @controlled,
         selection_mode: @selection_mode,
         redirect: @redirect,
         typeahead: @typeahead,

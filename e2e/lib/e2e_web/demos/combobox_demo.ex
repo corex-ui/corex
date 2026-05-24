@@ -534,6 +534,81 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/combobox/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
+      ])}>
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      </.combobox>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def combobox_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"country" => ""}, as: :combobox_phoenix, id: "combobox-form-phoenix")
+
+      render(conn, :combobox_form_page, phoenix_form: phoenix_form)
+    end
+
+    def combobox_form_submit(conn, params) do
+      if is_map(params["combobox_phoenix"]) do
+        country = params["combobox_phoenix"]["country"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+        |> redirect(to: ~p"/combobox/form#combobox-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.combobox
+        field={@phoenix_form[:country]}
+        class="combobox"
+        placeholder="Country"
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"},
+          %{label: "Netherlands", value: "nld"},
+          %{label: "Switzerland", value: "che"},
+          %{label: "Austria", value: "aut"}
+        ])}
+      >
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.action type="submit" id="combobox-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
@@ -854,18 +929,18 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     """
   end
 
-  attr(:strict_form, :any, required: true)
+  attr(:form, :any, required: true)
 
   def form_preview_live_validate(assigns) do
     ~H"""
     <.form
-      for={@strict_form}
-      id={@strict_form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
+      for={@form}
+      id={@form.id}
+      phx-change="validate"
+      phx-submit="save"
     >
       <.combobox
-        field={@strict_form[:country]}
+        field={@form[:country]}
         id="combobox-live-country-strict-preview"
         class="combobox"
         placeholder="Country"
@@ -1043,4 +1118,179 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     </div>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/combobox/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      </.combobox>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_ecto(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/combobox/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.combobox
+        field={f[:country]}
+        class="combobox"
+        placeholder="Country"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.combobox>
+      <.action type="submit" id="combobox-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_validate_heex()
+  def form_ecto_elixir, do: form_doc_controller_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.combobox
+        field={@form[:country]}
+        class="combobox"
+        placeholder="Country"
+        items={Corex.List.new(items_minimal())}
+      >
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
+      <.action type="submit" id="combobox-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.ComboboxFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"country" => ""}, as: :combobox_phoenix, id: "combobox-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"combobox_phoenix" => params}, socket) do
+        country = params["country"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"country" => country}, as: :combobox_phoenix, id: "combobox-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.ComboboxFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.Travel{}
+          |> MyApp.Forms.Travel.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :combobox_ecto, id: "combobox-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"combobox_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.Travel{}
+          |> MyApp.Forms.Travel.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :combobox_ecto,
+             id: "combobox-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"combobox_ecto" => params}, socket) do
+        case MyApp.Forms.Travel.changeset_validate(%MyApp.Forms.Travel{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Travel.changeset_validate(%MyApp.Forms.Travel{}, params),
+                 as: :combobox_ecto,
+                 id: "combobox-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :combobox_ecto,
+                 id: "combobox-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

@@ -119,6 +119,10 @@ defmodule Corex.ColorPicker do
   | ----- | ---- | -------------- |
   | `on_value_change_client="color-value-changed"` | Color changes | `id`, `valueAsString` |
   | `on_open_change_client="color-open-changed"` | Open state changes | `id`, `open` |
+  | `on_format_change_client="color-format-changed"` | Format changes | `id`, `format` |
+  | `on_pointer_down_outside_client="color-pointer-down-outside"` | Pointer down outside | `id`, ... |
+  | `on_focus_outside_client="color-focus-outside"` | Focus outside | `id`, ... |
+  | `on_interact_outside_client="color-interact-outside"` | Interact outside | `id`, ... |
 
   <!-- tabs-open -->
 
@@ -222,9 +226,13 @@ defmodule Corex.ColorPicker do
   attr(:on_open_change, :string, default: nil)
   attr(:on_open_change_client, :string, default: nil)
   attr(:on_format_change, :string, default: nil)
+  attr(:on_format_change_client, :string, default: nil)
   attr(:on_pointer_down_outside, :string, default: nil)
+  attr(:on_pointer_down_outside_client, :string, default: nil)
   attr(:on_focus_outside, :string, default: nil)
+  attr(:on_focus_outside_client, :string, default: nil)
   attr(:on_interact_outside, :string, default: nil)
+  attr(:on_interact_outside_client, :string, default: nil)
 
   attr(:translation, Corex.ColorPicker.Translation,
     default: nil,
@@ -300,9 +308,13 @@ defmodule Corex.ColorPicker do
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         on_format_change: @on_format_change,
+        on_format_change_client: @on_format_change_client,
         on_pointer_down_outside: @on_pointer_down_outside,
+        on_pointer_down_outside_client: @on_pointer_down_outside_client,
         on_focus_outside: @on_focus_outside,
-        on_interact_outside: @on_interact_outside
+        on_focus_outside_client: @on_focus_outside_client,
+        on_interact_outside: @on_interact_outside,
+        on_interact_outside_client: @on_interact_outside_client
       })}
       data-label={@label}
       data-presets={Corex.Json.encode!(@presets)}

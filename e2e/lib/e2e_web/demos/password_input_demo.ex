@@ -429,12 +429,70 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     """
   end
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/password-input/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.password_input field={f[:password]} class="password-input">
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def password_input_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"password" => ""}, as: :password_input_phoenix, id: "password-input-form-phoenix")
+
+      render(conn, :password_input_form_page, phoenix_form: phoenix_form)
+    end
+
+    def password_input_form_submit(conn, params) do
+      if is_map(params["password_input_phoenix"]) do
+        _password = params["password_input_phoenix"]["password"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted")
+        |> redirect(to: ~p"/password-input/form#password-input-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.password_input field={@phoenix_form[:password]} class="password-input" id="password-input-live-form-phoenix-password">
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.action type="submit" id="password-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
       :let={f}
       for={@form}
-      action="//account/password"
+      action={~p"/password-input/form"}
       method="post"
       id={@form.id}
           >
@@ -475,7 +533,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: "//account")
+          |> redirect(to: ~p"/account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -497,12 +555,12 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <.form
       :let={f}
       for={@form}
-      action="//account/password-strict"
+      action={~p"/password-input/form"}
       method="post"
       id={@form.id}
           >
       <.password_input field={f[:password]} class="password-input">
-        <:label>Password (stricter validation)</:label>
+        <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
         <:error :let={msg}>
@@ -539,7 +597,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
           _data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved")
-          |> redirect(to: "//account")
+          |> redirect(to: ~p"/account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -559,7 +617,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_doc_native_heex do
     ~S"""
     <form
-      action="//register"
+      action={~p"/password-input/form"}
       method="post"
           >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -774,7 +832,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id={@form.id}
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-validate-field">
-        <:label>Password (stricter validation)</:label>
+        <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
         <:error :let={msg}>
@@ -857,11 +915,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <.form
       for={@form}
       id={@form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
+      phx-change="validate"
+      phx-submit="save"
     >
-      <.password_input field={@form[:password]} class="password-input" id="password-input-live-strict">
-        <:label>Password (stricter validation)</:label>
+      <.password_input field={@form[:password]} class="password-input" id="password-input-live-form-ecto-password">
+        <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
         <:error :let={msg}>
@@ -880,4 +938,146 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     </.form>
     """
   end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/password-input/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.password_input field={f[:password]} class="password-input">
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.password_input field={@form[:password]} class="password-input" id="password-input-live-form-phoenix-password">
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
+      <.action type="submit" id="password-input-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.PasswordInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"password" => ""}, as: :password_input_phoenix, id: "password-input-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"password_input_phoenix" => params}, socket) do
+        password = params["password"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"password" => password}, as: :password_input_phoenix, id: "password-input-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.PasswordInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.PasswordForm{}
+          |> MyApp.Forms.PasswordForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :password_input_ecto, id: "password-input-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"password_input_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.PasswordForm{}
+          |> MyApp.Forms.PasswordForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :password_input_ecto,
+             id: "password-input-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"password_input_ecto" => params}, socket) do
+        case MyApp.Forms.PasswordForm.changeset_validate(%MyApp.Forms.PasswordForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.PasswordForm.changeset_validate(%MyApp.Forms.PasswordForm{}, params),
+                 as: :password_input_ecto,
+                 id: "password-input-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :password_input_ecto,
+                 id: "password-input-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end

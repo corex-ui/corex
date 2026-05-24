@@ -355,7 +355,6 @@ defmodule Corex.Carousel do
     doc: "Active page (1-based, same as pagination; first page is 1)"
   )
 
-  attr(:controlled, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])
   attr(:slides_per_page, :integer, default: 1)
@@ -455,7 +454,6 @@ defmodule Corex.Carousel do
         id: @id,
         slide_count: @slide_count,
         page: @page,
-        controlled: @controlled,
         dir: @dir,
         orientation: @orientation,
         slides_per_page: @slides_per_page,

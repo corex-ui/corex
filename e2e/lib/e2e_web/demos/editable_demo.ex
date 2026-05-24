@@ -308,7 +308,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_ecto do
     ~S"""
-    defmodule E2e.Form.EditableForm do
+    defmodule MyApp.Form.EditableForm do
       use Ecto.Schema
       import Ecto.Changeset
 
@@ -324,6 +324,255 @@ defmodule E2eWeb.Demos.EditableDemo do
     end
     """
   end
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/editable/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-phoenix-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def editable_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"text" => ""}, as: :editable_phoenix, id: "editable-form-phoenix")
+
+      render(conn, :editable_form_page, phoenix_form: phoenix_form)
+    end
+
+    def editable_form_submit(conn, params) do
+      if is_map(params["editable_phoenix"]) do
+        text = params["editable_phoenix"]["text"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+        |> redirect(to: ~p"/editable/form#editable-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_ecto_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@ecto_form}
+      action={~p"/editable/form"}
+      method="post"
+      id={@ecto_form.id}
+    >
+      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-ecto-text">
+        <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_ecto_elixir do
+    ~S"""
+    def editable_form_page(conn, _params) do
+      ecto_form =
+        %MyApp.Form.EditableForm{}
+        |> MyApp.Form.EditableForm.changeset(%{})
+        |> Phoenix.Component.to_form(as: :editable_ecto, id: "editable-form-ecto")
+
+      render(conn, :editable_form_page, ecto_form: ecto_form)
+    end
+
+    def editable_form_submit(conn, params) do
+      if is_map(params["editable_ecto"]) do
+        case MyApp.Form.EditableForm.changeset(%MyApp.Form.EditableForm{}, params["editable_ecto"]) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted: text=#{inspect(data.text)}")
+            |> redirect(to: ~p"/editable/form#editable-form-ecto")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+            ecto_form = Phoenix.Component.to_form(changeset, as: :editable_ecto, id: "editable-form-ecto")
+            render(conn, :editable_form_page, ecto_form: ecto_form)
+        end
+      end
+    end
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/editable/form"} method="post" id="editable-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-native-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-native-submit" class="button button--accent">Submit</.action>
+    </form>
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.editable field={@phoenix_form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-phoenix-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_heex do
+    ~S"""
+    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+      <.editable field={@ecto_form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-ecto-text">
+        <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/editable/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-phoenix-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_ecto(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/editable/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-ecto-text">
+        <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form action={~p"/editable/form"} method="post" id="editable-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-native-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-native-submit" class="button button--accent">Submit</.action>
+    </form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-phoenix-text">
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+      <.editable field={@form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-ecto-text">
+        <:label>Text</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_ecto_heex()
+  def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
 
   def form_doc_live_changeset_heex do
     ~S"""
@@ -357,80 +606,120 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
-  def form_doc_live_changeset_elixir do
+  def form_doc_live_phoenix_elixir do
     ~S"""
-    def mount(_params, _session, socket) do
-      form =
-        %E2e.Form.EditableForm{}
-        |> E2e.Form.EditableForm.changeset(%{})
-        |> Phoenix.Component.to_form(as: :editable_form, id: "editable-form")
+    defmodule MyAppWeb.EditableFormLive do
+      use MyAppWeb, :live_view
 
-      {:ok, assign(socket, :form, form)}
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"text" => ""}, as: :editable_phoenix, id: "editable-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"editable_phoenix" => params}, socket) do
+        text = params["text"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"text" => text}, as: :editable_phoenix, id: "editable-live-form-phoenix")
+         )}
+      end
     end
+    """
+  end
 
-    def handle_event("validate", %{"editable_form" => params}, socket) do
-      changeset =
-        %E2e.Form.EditableForm{}
-        |> E2e.Form.EditableForm.changeset(params)
-        |> Map.put(:action, :validate)
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.EditableFormLive do
+      use MyAppWeb, :live_view
 
-      {:noreply,
-       assign(
-         socket,
-         :form,
-         Phoenix.Component.to_form(changeset,
-           action: :validate,
-           as: :editable_form,
-           id: "editable-form"
-         )
-       )}
-    end
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Form.EditableForm{}
+          |> MyApp.Form.EditableForm.changeset(%{})
+          |> Phoenix.Component.to_form(as: :editable_ecto, id: "editable-live-form-ecto")
 
-    def handle_event("value_changed", %{"value" => value}, socket) do
-      params = Map.merge(socket.assigns.form.params || %{}, %{"text" => to_string(value)})
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
 
-      changeset =
-        %E2e.Form.EditableForm{}
-        |> E2e.Form.EditableForm.changeset(params)
-        |> Map.put(:action, :validate)
+      def handle_event("validate", event_params, socket) do
+        params =
+          Map.get(event_params, "editable_ecto") ||
+            socket.assigns.ecto_form.params
 
-      {:noreply,
-       assign(
-         socket,
-         :form,
-         Phoenix.Component.to_form(changeset,
-           action: :validate,
-           as: :editable_form,
-           id: "editable-form"
-         )
-       )}
-    end
+        changeset =
+          %MyApp.Form.EditableForm{}
+          |> MyApp.Form.EditableForm.changeset(params)
+          |> Map.put(:action, :validate)
 
-    def handle_event("save", %{"editable_form" => params}, socket) do
-      case E2e.Form.EditableForm.changeset(%E2e.Form.EditableForm{}, params) do
-        %Ecto.Changeset{valid?: true} = changeset ->
-          _data = Ecto.Changeset.apply_changes(changeset)
-          {:noreply,
-           assign(
-             socket,
-             :form,
-             Phoenix.Component.to_form(E2e.Form.EditableForm.changeset(%E2e.Form.EditableForm{}, params),
-               as: :editable_form,
-               id: "editable-form"
-             )
-           )}
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :editable_ecto,
+             id: "editable-live-form-ecto"
+           )
+         )}
+      end
 
-        changeset ->
-          {:noreply,
-           assign(
-             socket,
-             :form,
-             Phoenix.Component.to_form(changeset,
-               action: :insert,
-               as: :editable_form,
-               id: "editable-form"
-             )
-           )}
+      def handle_event("value_changed", %{"value" => value}, socket) do
+        params = Map.merge(socket.assigns.ecto_form.params || %{}, %{"text" => to_string(value)})
+
+        changeset =
+          %MyApp.Form.EditableForm{}
+          |> MyApp.Form.EditableForm.changeset(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :editable_ecto,
+             id: "editable-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", event_params, socket) do
+        params =
+          Map.get(event_params, "editable_ecto") ||
+            socket.assigns.ecto_form.params
+
+        case MyApp.Form.EditableForm.changeset(%MyApp.Form.EditableForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.EditableForm.changeset(%MyApp.Form.EditableForm{}, params),
+                 as: :editable_ecto,
+                 id: "editable-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :editable_ecto,
+                 id: "editable-live-form-ecto"
+               )
+             )}
+        end
       end
     end
     """
@@ -522,36 +811,5 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
-  def form_code do
-    ~S"""
-    <.form
-      :let={f}
-      for={@form}
-      action={~p"/editable/form"}
-      method="post"
-      id={@form.id}
-    >
-      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.editable
-        field={f[:text]}
-        placeholder="Enter text"
-        activation_mode="dblclick"
-        select_on_focus
-        class="editable"
-      >
-        <:label>Text</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-      </.editable>
-      <.action type="submit" class="button button--accent">
-        Submit
-      </.action>
-    </.form>
-    """
-  end
+  def form_code, do: form_native_heex()
 end

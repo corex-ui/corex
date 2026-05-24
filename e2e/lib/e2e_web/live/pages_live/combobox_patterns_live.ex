@@ -13,15 +13,6 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
   @grouped_iata ~W(LHR LGW STN JFK LGA EWR CDG ORY IST SAW)
 
-  @controlled_items [
-    %{label: "France", value: "fra"},
-    %{label: "Belgium", value: "bel"},
-    %{label: "Germany", value: "deu"},
-    %{label: "Netherlands", value: "nld"},
-    %{label: "Switzerland", value: "che"},
-    %{label: "Austria", value: "aut"}
-  ]
-
   def mount(_params, _session, socket) do
     airports = Place.list_airports_first(@airport_page_size, 0) |> Enum.map(&format_airport/1)
     grouped = load_airports_grouped_from_db()
@@ -31,9 +22,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
      socket
      |> assign(:airports, airports)
      |> assign(:airports_grouped, grouped)
-     |> assign(:airports_grouped_all, grouped_all)
-     |> assign(:combobox_controlled_value, ["deu"])
-     |> assign(:combobox_controlled_items, Corex.List.new(@controlled_items))}
+     |> assign(:airports_grouped_all, grouped_all)}
   end
 
   def handle_event("search_airports", %{"reason" => "clear-trigger"}, socket) do
@@ -84,11 +73,6 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
   def handle_event("search_airports_grouped", _params, socket), do: {:noreply, socket}
 
-  def handle_event("combobox_patterns_controlled_value", %{"value" => value}, socket) do
-    v = value |> List.wrap() |> Enum.map(&to_string/1)
-    {:noreply, assign(socket, :combobox_controlled_value, v)}
-  end
-
   defp load_airports_grouped_from_db do
     from(a in Airport,
       where: a.iata_code in ^@grouped_iata,
@@ -117,7 +101,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
         path={@path}
         id="combobox-patterns-page"
         title={~t"Combobox · Patterns"}
-        subtitle={~t"Server-driven filtering and controlled value."}
+        subtitle={~t"Server-driven filtering."}
       >
         <.demo_section
           id="combobox-patterns-server-filter-doc"
@@ -182,41 +166,6 @@ defmodule E2eWeb.ComboboxPatternsLive do
           </:preview>
         </.demo_section>
 
-        <.demo_section
-          id="combobox-patterns-controlled-doc"
-          title={~t"Controlled (value)"}
-          code_tabs={[
-            %{value: "heex", label: ~t"Heex", language: :heex, code: patterns_controlled_heex()},
-            %{
-              value: "elixir",
-              label: ~t"Elixir",
-              language: :elixir,
-              code: patterns_controlled_elixir()
-            }
-          ]}
-        >
-          <:preview>
-            <div class="flex flex-col gap-3 max-w-md">
-              <.combobox
-                id="combobox-patterns-controlled-field"
-                class="combobox"
-                placeholder={~t"Select a country…"}
-                items={@combobox_controlled_items}
-                controlled
-                value={@combobox_controlled_value}
-                on_value_change="combobox_patterns_controlled_value"
-              >
-                <:empty>No results</:empty>
-                <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-                <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
-                <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-              </.combobox>
-              <p class="text-sm text-ink-muted font-mono" id="combobox-patterns-controlled-state">
-                value: {inspect(@combobox_controlled_value)}
-              </p>
-            </div>
-          </:preview>
-        </.demo_section>
       </.demo_page>
     </Layouts.app>
     """
@@ -379,43 +328,5 @@ defmodule E2eWeb.ComboboxPatternsLive do
     """
   end
 
-  defp patterns_controlled_heex do
-    ~S"""
-    <.combobox
-      id="combobox-patterns-controlled-field"
-      class="combobox"
-      placeholder={~t"Select a country…"}
-      items={@combobox_controlled_items}
-      controlled
-      value={@combobox_controlled_value}
-      on_value_change="combobox_patterns_controlled_value"
-    >
-      <:empty>No results</:empty>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:clear_trigger><.heroicon name="hero-backspace" class="icon" /></:clear_trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-    </.combobox>
-    """
-  end
 
-  defp patterns_controlled_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      items = Corex.List.new([
-        %{label: ~t"Belgium", value: "bel"},
-        %{label: ~t"Germany", value: "deu"}
-      ])
-
-      {:ok,
-       socket
-       |> assign(:combobox_controlled_value, ["deu"])
-       |> assign(:combobox_controlled_items, items)}
-    end
-
-    def handle_event("combobox_patterns_controlled_value", %{"value" => value}, socket) do
-      v = value |> List.wrap() |> Enum.map(&to_string/1)
-      {:noreply, assign(socket, :combobox_controlled_value, v)}
-    end
-    """
-  end
 end

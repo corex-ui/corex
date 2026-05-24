@@ -416,6 +416,63 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
 
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@phoenix_form}
+      action={~p"/native-input/form"}
+      method="post"
+      id={@phoenix_form.id}
+    >
+      <.native_input field={f[:email]} type="email" placeholder="you@example.com" class="native-input">
+        <:label>Email</:label>
+      </.native_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def native_input_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"email" => "", "website" => "", "age" => ""},
+          as: :native_input_phoenix,
+          id: "native-input-form-phoenix"
+        )
+
+      render(conn, :native_input_form_page, phoenix_form: phoenix_form)
+    end
+
+    def native_input_form_submit(conn, params) do
+      if is_map(params["native_input_phoenix"]) do
+        email = params["native_input_phoenix"]["email"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: email=#{inspect(email)}")
+        |> redirect(to: ~p"/native-input/form#native-input-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+      <.native_input field={@phoenix_form[:email]} type="email" placeholder="you@example.com" class="native-input">
+        <:label>Email</:label>
+      </.native_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
@@ -1846,4 +1903,142 @@ defmodule E2eWeb.Demos.NativeInputDemo do
   end
 
   def form_code, do: form_native_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/native-input/form"}
+      method="post"
+      id={@form.id}
+    >
+      <.native_input field={f[:email]} type="email" placeholder="you@example.com" class="native-input">
+        <:label>Email</:label>
+      </.native_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+      <.native_input field={@form[:email]} type="email" placeholder="you@example.com" class="native-input">
+        <:label>Email</:label>
+      </.native_input>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.NativeInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"email" => "", "website" => "", "age" => ""}, as: :native_input_phoenix, id: "native-input-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", params, socket) do
+        email = params["email"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"email" => email}, as: :native_input_phoenix, id: "native-input-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.NativeInputFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.NativeInputProfile{}
+          |> MyApp.Forms.NativeInputProfile.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :native_input_ecto, id: "native-input-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"native_input_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.NativeInputProfile{}
+          |> MyApp.Forms.NativeInputProfile.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :native_input_ecto,
+             id: "native-input-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"native_input_ecto" => params}, socket) do
+        case MyApp.Forms.NativeInputProfile.changeset_validate(%MyApp.Forms.NativeInputProfile{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.NativeInputProfile.changeset_validate(%MyApp.Forms.NativeInputProfile{}, params),
+                 as: :native_input_ecto,
+                 id: "native-input-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :native_input_ecto,
+                 id: "native-input-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+
 end
