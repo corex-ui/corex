@@ -3,15 +3,12 @@ defmodule E2eWeb.FormDemoContractTest do
 
   @demo_dir Path.expand("../../lib/e2e_web/demos", __DIR__)
 
-  @form_doc_function ~r/^  def (form_ecto|form_doc_|form_phoenix_|form_ecto_|form_changeset_|form_validate_)/
-
-  @forbidden_patterns [
+  @forbidden_strings [
     {"E2eWeb.Demos.", "E2eWeb.Demos."},
     {"E2e.Form.", "E2e.Form."},
     {"assign(:form_ecto", "assign(:form_ecto"},
     {"assign(:phoenix_heex", "assign(:phoenix_heex"},
-    {"FormDemoDocs", "FormDemoDocs"},
-    {~r/assign_\w+_form_docs/, "assign_*_form_docs"}
+    {"FormDemoDocs", "FormDemoDocs"}
   ]
 
   test "demo modules do not use action=\"//\" or stricter wording" do
@@ -34,13 +31,6 @@ defmodule E2eWeb.FormDemoContractTest do
     assert violations == [],
            "form demo contract violations:\n#{format_violations(violations)}"
   end
-
-  @forbidden_preview_aliases [
-    {~r/def form_preview_controller_phoenix\(assigns\), do: form_preview_controller_(changeset|validate|basic)/,
-     "form_preview_controller_phoenix aliased to changeset/validate/basic"},
-    {~r/def form_preview_live_phoenix\(assigns\), do: form_preview_live_(changeset|validate|basic)/,
-     "form_preview_live_phoenix aliased to changeset/validate/basic"}
-  ]
 
   test "form doc snippet functions do not contain e2e-only references" do
     violations =
@@ -70,7 +60,7 @@ defmodule E2eWeb.FormDemoContractTest do
     path = Path.join(@demo_dir, file)
     contents = File.read!(path)
 
-    for {pattern, label} <- @forbidden_preview_aliases,
+    for {pattern, label} <- forbidden_preview_aliases(),
         Regex.match?(pattern, contents) do
       "#{file}: #{label}"
     end
@@ -81,7 +71,7 @@ defmodule E2eWeb.FormDemoContractTest do
     contents = File.read!(path)
 
     for {line, snippet} <- form_doc_snippets(contents),
-        {pattern, label} <- @forbidden_patterns,
+        {pattern, label} <- forbidden_patterns(),
         matches?(snippet, pattern) do
       "#{file}:#{line}: #{label} in form doc snippet"
     end
@@ -91,7 +81,7 @@ defmodule E2eWeb.FormDemoContractTest do
     contents
     |> String.split("\n")
     |> Enum.with_index(1)
-    |> Enum.filter(fn {line, _index} -> Regex.match?(@form_doc_function, line) end)
+    |> Enum.filter(fn {line, _index} -> Regex.match?(form_doc_function(), line) end)
     |> Enum.map(fn {line, index} ->
       {index, extract_function_body(contents, line)}
     end)
@@ -111,6 +101,24 @@ defmodule E2eWeb.FormDemoContractTest do
       line == def_line or not String.match?(line, ~r/^  def /)
     end)
     |> Enum.join("\n")
+  end
+
+  defp forbidden_patterns do
+    @forbidden_strings ++
+      [{~r/assign_\w+_form_docs/, "assign_*_form_docs"}]
+  end
+
+  defp forbidden_preview_aliases do
+    [
+      {~r/def form_preview_controller_phoenix\(assigns\), do: form_preview_controller_(changeset|validate|basic)/,
+       "form_preview_controller_phoenix aliased to changeset/validate/basic"},
+      {~r/def form_preview_live_phoenix\(assigns\), do: form_preview_live_(changeset|validate|basic)/,
+       "form_preview_live_phoenix aliased to changeset/validate/basic"}
+    ]
+  end
+
+  defp form_doc_function do
+    ~r/^  def (form_ecto|form_doc_|form_phoenix_|form_ecto_|form_changeset_|form_validate_)/
   end
 
   defp matches?(snippet, pattern) when is_binary(pattern), do: String.contains?(snippet, pattern)

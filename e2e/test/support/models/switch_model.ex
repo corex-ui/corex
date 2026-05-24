@@ -63,7 +63,7 @@ defmodule E2eWeb.SwitchModel do
   def click_switch(session, mode \\ :static) do
     host_id =
       case mode do
-        :live -> "#switch-form-live-notifications"
+        :live -> "#switch-live-form-ecto-notifications"
         _ -> "#switch-form-changeset"
       end
 
@@ -91,8 +91,8 @@ defmodule E2eWeb.SwitchModel do
     case mode do
       :live ->
         session
-        |> assert_has(css("#switch-live-form-changeset [phx-hook='Switch']:not([data-loading])"))
-        |> click(css("#switch-live-form-changeset #switch-form-live-submit"))
+        |> assert_has(css("#switch-live-form-ecto [phx-hook='Switch']:not([data-loading])"))
+        |> click(css("#switch-live-form-ecto-submit"))
 
       _ ->
         click(session, css("#switch-changeset-submit"))
