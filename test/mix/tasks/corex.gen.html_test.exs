@@ -3,6 +3,7 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
 
   import MixGenHelpers
 
+  alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema}
   alias Mix.Tasks.Corex.Gen.Html
 
@@ -158,12 +159,12 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
   test "display_expr/5 formats array fields" do
     schema = %Schema{attrs: [tags: {:array, :string}], module: MyApp.User, redacts: []}
 
-    assert Mix.Corex.Gen.Inputs.display_expr("user", :tags, {:array, :string}, schema) =~
+    assert Inputs.display_expr("user", :tags, {:array, :string}, schema) =~
              "Enum.join(user.tags"
 
     redact_schema = %Schema{attrs: [secret: :string], redacts: [:secret], module: MyApp.User}
 
-    assert Mix.Corex.Gen.Inputs.display_expr("@user", :secret, :string, redact_schema, :show) ==
+    assert Inputs.display_expr("@user", :secret, :string, redact_schema, :show) ==
              "\"••••••••\""
   end
 

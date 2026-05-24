@@ -1,8 +1,12 @@
 # Changelog
 
-## 0.1.0
+## Unreleased
 
-First release of Corex
+Stable **0.1.0** will follow this release candidate after RC feedback.
+
+## 0.1.0-rc.0
+
+First release candidate of Corex
 
 ### Features
 
@@ -71,7 +75,7 @@ Alphabetical list of everything available through `use Corex`. Entries marked **
 
 ### Versioning (0.1.x)
 
-With `{:corex, "~> 0.1.0"}`, Hex resolves **0.1.x** only. Patch and minor 0.1 releases are **additive** (bug fixes, new attrs or components). Breaking API or behavior changes ship in **0.2.0**, with deprecation notes in CHANGELOG when possible. See [Updating Corex](guides/update.html).
+With `{:corex, "~> 0.1.0-rc.0"}`, Hex resolves **0.1.0-rc.x** and later **0.1.x** on this line. Patch and minor 0.1 releases are **additive** (bug fixes, new attrs or components). Breaking API or behavior changes ship in **0.2.0**, with deprecation notes in CHANGELOG when possible. See [Updating Corex](guides/update.html).
 
 **Migrating form `invalid` styling:** if you relied on changeset errors to style radio group, pin input, color picker, or editable automatically, pass `invalid` explicitly:
 

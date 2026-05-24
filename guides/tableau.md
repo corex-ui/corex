@@ -35,7 +35,7 @@ cd my_site
 Add Corex to `mix.exs`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.1.0-rc.0"}
 ```
 
 ```bash

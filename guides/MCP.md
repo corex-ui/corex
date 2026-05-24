@@ -12,7 +12,7 @@ Do not enable MCP in production. The tools are read-only, but the endpoint still
 
 | Requirement | Notes |
 | ----------- | ----- |
-| `{:corex, "~> 0.1.0"}` | In `mix.exs` |
+| `{:corex, "~> 0.1.0-rc.0"}` | In `mix.exs` |
 | Running HTTP server | Phoenix endpoint or Tableau Bandit child |
 
 <!-- tabs-open -->

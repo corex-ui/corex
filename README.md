@@ -15,7 +15,7 @@
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
 
-With `{:corex, "~> 0.1.0"}`, patch and minor releases stay backward compatible until 0.2.0. See [Updating Corex](https://hexdocs.pm/corex/update.html).
+With `{:corex, "~> 0.1.0-rc.0"}`, patch and minor releases stay backward compatible until 0.2.0. See [Updating Corex](https://hexdocs.pm/corex/update.html).
 
 ## New Corex application
 

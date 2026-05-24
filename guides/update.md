@@ -7,10 +7,10 @@ How to pull a newer **0.1.x** release into your app and refresh vendored assets.
 In `mix.exs`:
 
 ```elixir
-{:corex, "~> 0.1.0"}
+{:corex, "~> 0.1.0-rc.0"}
 ```
 
-`~> 0.1.0` keeps you on **0.1.x** (patch and minor releases on that line). To move to a future **0.2.0**, change the requirement after reading [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
+`~> 0.1.0-rc.0` keeps you on **0.1.0-rc.x** and **0.1.x** (patch and minor releases on that line). To move to a future **0.2.0**, change the requirement after reading [CHANGELOG.md](https://github.com/corex-ui/corex/blob/main/CHANGELOG.md).
 
 ```bash
 mix deps.update corex
