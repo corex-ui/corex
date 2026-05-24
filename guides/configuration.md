@@ -26,15 +26,30 @@ Components with a `translation` assign (Select, Editable, Dialog, and others) us
 | Key | Type | Default | Purpose |
 | --- | ---- | ------- | ------- |
 | `:debug` | boolean | `false` | When `true`, MCP request logging is verbose instead of silenced |
-| `:generators` | keyword | `[]` | Generator options; `:layout` lists layout modules for `mix corex.gen.live` / `mix corex.gen.html` |
+| `:generators` | keyword | `[]` | Options for `mix corex.gen.live` and `mix corex.gen.html` (see below) |
+
+Generator keys:
+
+| Key | Values | Purpose |
+| --- | ------ | ------- |
+| `:gettext` | `true`, `:sigils`, or omit | When `true`, generated copy uses `gettext/1`. When `:sigils`, uses `~t` (needs `gettext_sigils` in `html_helpers`). |
+| `:gettext_sigils` | boolean | Alias for `gettext: :sigils` |
+| `:layout` | keyword | `mode: true`, `theme: true`, `locale: true` wire `Layouts.app` assigns in generated LiveViews / HTML |
+
+`mix corex.new --lang` writes `gettext: :sigils` and `layout: [locale: true]` (plus `mode` / `theme` when those flags are set). Generators also auto-detect `GettextSigils` in `lib/my_app_web.ex` when config is omitted.
 
 Example:
 
 ```elixir
 config :corex,
   debug: false,
-  generators: [layout: [MyAppWeb.Layouts]]
+  generators: [
+    gettext: :sigils,
+    layout: [locale: true, mode: true, theme: true]
+  ]
 ```
+
+Phoenix uses a similar pattern on the web app, for example `config :my_app, :generators, context_app: :my_app`. Corex reads `config :corex, :generators` for layout and translation behavior in `mix corex.gen.*`.
 
 ## MCP
 

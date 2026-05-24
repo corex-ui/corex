@@ -32,9 +32,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             <.navigate
               to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
               type="navigate"
-              class="button button--accent"
+              class="button button--accent button--square"
+              aria_label={"Edit #{schema.human_singular}"}
             >
-              <.heroicon name="hero-pencil-square" /> Edit <%= schema.human_singular %>
+              <.heroicon name="hero-pencil-square" />
+              <span class="sr-only">Edit <%= schema.human_singular %></span>
             </.navigate>
             <.dialog
               id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}"}

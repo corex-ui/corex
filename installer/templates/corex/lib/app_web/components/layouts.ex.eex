@@ -71,7 +71,9 @@ defmodule <%= @web_module %>.Layouts do
             class="button button--sm button--circle text-ink-brand"
             external
             to="https://github.com/corex-ui/corex"
-            aria_label="Corex on GitHub"
+<%= if @lang do %>            aria_label={~t"Corex on GitHub"}
+<% else %>            aria_label="Corex on GitHub"
+<% end %>
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 102 102" fill="none" aria-hidden="true">
               <path
@@ -86,7 +88,9 @@ defmodule <%= @web_module %>.Layouts do
             class="button button--sm button--circle"
             external
             to="https://hexdocs.pm/corex"
-            aria_label="Corex documentation on HexDocs"
+<%= if @lang do %>            aria_label={~t"Corex documentation on HexDocs"}
+<% else %>            aria_label="Corex documentation on HexDocs"
+<% end %>
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 114 100" fill="none" aria-hidden="true">
               <path d="M47.7086 28.06H65.1941C66.3521 28.06 67.3942 28.4064 68.4364 28.8683L84.1849 0.923785C82.9112 0.346419 81.5216 0 80.0162 0H32.8865C31.1495 0 29.5283 0.461893 28.1388 1.2702L44.2347 28.8683C45.2769 28.2909 46.4348 28.06 47.7086 28.06Z" fill="#FFCC1D" />
@@ -108,9 +112,11 @@ defmodule <%= @web_module %>.Layouts do
     </.toast_group>
     <.toast_client_error
       toast_group_id="layout-toast"
-      title="We lost the connection"
+<%= if @lang do %>      title={~t"We lost the connection"}
+      description={~t"We're trying to reconnect you..."}
+<% else %>      title="We lost the connection"
       description="We're trying to reconnect you..."
-      type={:error}
+<% end %>      type={:error}
       duration={:infinity}
     />
     """
@@ -135,11 +141,11 @@ defmodule <%= @web_module %>.Layouts do
     >
       <span>
         <.heroicon name="hero-moon" />
-        <span class="sr-only">Dark mode</span>
+        <span class="sr-only"><%= if @lang do %>{~t"Dark mode"}<% else %>Dark mode<% end %></span>
       </span>
       <span data-pressed>
         <.heroicon name="hero-sun" />
-        <span class="sr-only">Light mode</span>
+        <span class="sr-only"><%= if @lang do %>{~t"Light mode"}<% else %>Light mode<% end %></span>
       </span>
     </.toggle>
     """
@@ -169,8 +175,9 @@ defmodule <%= @web_module %>.Layouts do
       on_value_change_client="phx:set-theme"
     >
       <:label class="sr-only">
-        Theme
-      </:label>
+<%= if @lang do %>        {~t"Theme"}
+<% else %>        Theme
+<% end %>      </:label>
       <:item :let={item}>
         {item.label}
       </:item>
@@ -216,7 +223,7 @@ defmodule <%= @web_module %>.Layouts do
       redirect
       positioning={%Corex.Positioning{same_width: true}}
     >
-      <:label class="sr-only">Language</:label>
+      <:label class="sr-only"><%= if @lang do %>{~t"Language"}<% else %>Language<% end %></:label>
       <:item :let={item}>{item.label}</:item>
       <:trigger>
         <.heroicon name="hero-language" class="icon" />

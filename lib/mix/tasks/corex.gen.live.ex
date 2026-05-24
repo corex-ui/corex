@@ -237,11 +237,14 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
 
+    gettext_mode = Mix.Corex.generators_gettext_mode()
+
     binding =
       Keyword.merge(binding,
         assigns: %{
           web_namespace: inspect(context.web_module),
-          gettext: true,
+          gettext: gettext_mode != false,
+          gettext_mode: gettext_mode,
           live: true,
           javascript: true
         }

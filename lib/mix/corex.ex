@@ -69,7 +69,11 @@ defmodule Mix.Corex do
     binding =
       Keyword.merge(binding,
         maybe_heex_attr_gettext: &maybe_heex_attr_gettext/2,
-        maybe_eex_gettext: &maybe_eex_gettext/2
+        maybe_eex_gettext: &maybe_eex_gettext/2,
+        maybe_heex_attr_translate: &maybe_heex_attr_translate/2,
+        maybe_eex_translate: &maybe_eex_translate/2,
+        maybe_heex_slot_translate: &maybe_heex_slot_translate/2,
+        generators_gettext_mode: generators_gettext_mode()
       )
 
     for {format, source_file_path, target} <- mapping do
@@ -490,11 +494,18 @@ defmodule Mix.Corex do
   #     iex> ~s|<tag attr=#{maybe_heex_attr_gettext("Hello", false)} />|
   #     ~S|<tag attr="Hello" />|
   defp maybe_heex_attr_gettext(message, gettext?) do
-    if gettext? do
-      ~s|{gettext(#{inspect(message)})}|
-    else
-      inspect(message)
-    end
+    mode = if gettext?, do: :gettext, else: false
+    maybe_heex_attr_translate(message, mode)
+  end
+
+  def maybe_heex_attr_translate(message, false), do: inspect(message)
+
+  def maybe_heex_attr_translate(message, :gettext) do
+    ~s|{gettext(#{inspect(message)})}|
+  end
+
+  def maybe_heex_attr_translate(message, :sigils) do
+    ~s|{~t#{inspect(message)}}|
   end
 
   # In the context of an EEx template, transforms a given message into a dynamic
@@ -508,16 +519,78 @@ defmodule Mix.Corex do
   #     iex> ~s|<tag>#{maybe_eex_gettext("Hello", false)}</tag>|
   #     ~S|<tag>Hello</tag>|
   defp maybe_eex_gettext(message, gettext?) do
-    if gettext? do
-      ~s|<%= gettext(#{inspect(message)}) %>|
-    else
-      message
-    end
+    mode = if gettext?, do: :gettext, else: false
+    maybe_eex_translate(message, mode)
+  end
+
+  def maybe_eex_translate(message, false), do: message
+
+  def maybe_eex_translate(message, :gettext) do
+    ~s|<%= gettext(#{inspect(message)}) %>|
+  end
+
+  def maybe_eex_translate(message, :sigils) do
+    "{~t#{inspect(message)}}"
+  end
+
+  @doc "Like `maybe_eex_translate/2` but for plain HEEx slot text (no `<%= %>` wrapper)."
+  def maybe_heex_slot_translate(message, mode), do: maybe_eex_translate(message, mode)
+
+  @doc "Returns generator options from `config :corex, :generators`."
+  def generators_opts do
+    Application.get_env(:corex, :generators, [])
   end
 
   @doc "Returns `:layout` generator options from application config."
   def layout_generators_opts do
-    Application.get_env(:corex, :generators, [])[:layout] || []
+    generators_opts()[:layout] || []
+  end
+
+  @doc """
+  Returns how generators should wrap user-facing copy.
+
+  * `false` — plain strings
+  * `:gettext` — `gettext("...")` / `{gettext("...")}`
+  * `:sigils` — `~t"..."` / `{~t"..."}` (requires `gettext_sigils` in `html_helpers`)
+
+  Reads `config :corex, :generators` (`:gettext`, `:gettext_sigils`) or detects
+  `GettextSigils` in the current project's `lib/<app>_web.ex`.
+  """
+  def generators_gettext_mode do
+    gens = generators_opts()
+
+    cond do
+      gens[:gettext_sigils] == true or gens[:gettext] == :sigils ->
+        :sigils
+
+      gens[:gettext] == true ->
+        :gettext
+
+      true ->
+        detect_gettext_mode_from_web()
+    end
+  end
+
+  defp detect_gettext_mode_from_web do
+    case web_ex_path_from_project() do
+      nil ->
+        false
+
+      path ->
+        content = read_web_ex(path)
+
+        cond do
+          String.contains?(content, "GettextSigils") -> :sigils
+          String.contains?(content, "use Gettext, backend:") -> :gettext
+          true -> false
+        end
+    end
+  end
+
+  defp web_ex_path_from_project do
+    app = otp_app() |> to_string()
+    path = Path.join("lib", app <> ".ex")
+    if File.exists?(path), do: path, else: nil
   end
 
   @doc "Returns whether the web module defines verified route path prefixes."

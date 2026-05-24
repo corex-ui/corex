@@ -65,7 +65,7 @@ mix deps.get
 
 **What `mix corex.new --lang` generates**
 
-The installer injects **`locales: ~w(en ar)`** into **`use Gettext.Backend`** in **`lib/my_app_web/gettext.ex`** and adds **`config :localize, supported_locales: [:en, :ar]`** to **`config/config.exs`**. Those two lists should stay aligned when you add or remove locales.
+The installer injects **`locales: ~w(en fr ar)`** into **`use Gettext.Backend`** in **`lib/my_app_web/gettext.ex`**, adds **`config :localize, supported_locales: [:en, :fr, :ar]`** to **`config/config.exs`**, adds **`{:gettext_sigils, "~> 0.5"}`**, patches **`html_helpers`** to **`use GettextSigils`**, wraps scaffold copy in **`~t"..."`**, and copies starter **`priv/gettext`** PO files for English, French, and Arabic. Keep Gettext and Localize locale lists aligned when you add or remove locales.
 
 **Manual / existing apps**
 
@@ -76,7 +76,7 @@ defmodule MyAppWeb.Gettext do
   use Gettext.Backend,
     otp_app: :my_app,
     default_locale: "en",
-    locales: ~w(en ar)
+    locales: ~w(en fr ar)
 end
 ```
 
@@ -84,7 +84,7 @@ Point **`localize`** at the same set of locales (atoms). One approach is **`conf
 
 ```elixir
 config :localize,
-  supported_locales: [:en, :ar]
+  supported_locales: [:en, :fr, :ar]
 ```
 
 Another approach is **`config/runtime.exs`** so the list tracks Gettext:
@@ -118,7 +118,7 @@ mix localize.download_locales
 Or request specific locale ids:
 
 ```bash
-mix localize.download_locales en ar
+mix localize.download_locales en fr ar
 ```
 
 Files are written under the app’s build output (for example `_build/dev/lib/localize/priv/localize/locales/`). In Docker or CI, run **`mix localize.download_locales`** during the image build so production ships with the cache; alternatively set **`config :localize, allow_runtime_locale_download: true`** so missing locales are fetched from the Localize CDN on first use (often avoided in production in favor of pre-downloading).
@@ -371,7 +371,7 @@ If you maintain an app without rerunning the installer, add the same **`on_mount
 
 ## 9. Translate strings
 
-With Gettext configured, wrap user-facing strings in **`gettext("...")`** and run the extract / merge cycle whenever you add new ones:
+With Gettext configured, wrap user-facing strings in **`~t"..."`** (from **`gettext_sigils`**, enabled in **`html_helpers`** when you use **`mix corex.new --lang`**) or **`gettext("...")`**, then run the extract / merge cycle whenever you add new ones:
 
 ```bash
 mix gettext.extract
@@ -380,13 +380,13 @@ mix gettext.merge priv/gettext
 
 `mix gettext.extract` rewrites **`priv/gettext/default.pot`** from your source. **`mix gettext.merge priv/gettext`** creates or updates the per-locale **`.po`** files (one for every locale in the **`locales:`** list of your backend).
 
-Open **`priv/gettext/fr/LC_MESSAGES/default.po`** and fill in the **`msgstr`**:
+**`mix corex.new --lang`** ships starter **`priv/gettext/en`**, **`fr`**, and **`ar`** catalogs for the home page and layout scaffold. Open **`priv/gettext/fr/LC_MESSAGES/default.po`** to adjust translations or add new **`msgstr`** entries:
 
 ```
-#: lib/my_app_web/controllers/page_html/home.html.heex:3
+#: lib/my_app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Home"
-msgstr "Accueil"
+msgid "Corex for Phoenix"
+msgstr "Corex pour Phoenix"
 ```
 
 Corex components that expose translatable labels (Select, Editable, Dialog, …) read them from your Gettext backend automatically when **`config :phoenix, :gettext_backend`** is set. To override a single label without touching the whole catalog, pass a **`Translation`** struct on the component:
@@ -397,13 +397,13 @@ Corex components that expose translatable labels (Select, Editable, Dialog, …)
 
 ## Summary
 
-1. **`localize_web` dep + Gettext**  -  align **`locales:`** on the backend with **`config :localize, :supported_locales`**. Run **`mix localize.download_locales`** so CLDR data exists for **`Locale.dir/0`**, **`Locale.label/1`**, and related APIs.
-2. **`Phoenix.VerifiedRoutes`**  -  **`mix corex.new --lang`** does not add **`path_prefixes`**; add an MFA later if you need locale-prefixed **`~p`** expansion (see Phoenix docs).
+1. **`localize_web` + `gettext_sigils` + Gettext**  -  align **`locales:`** on the backend with **`config :localize, :supported_locales`**. Run **`mix localize.download_locales en fr ar`** so CLDR data exists for **`Locale.dir/0`**, **`Locale.label/1`**, and related APIs.
+2. **`Phoenix.VerifiedRoutes`**  -  **`mix corex.new --lang`** adds **`path_prefixes`** on **`Phoenix.VerifiedRoutes`** for locale-prefixed **`~p`** paths (see section 3).
 3. **Router**  -  **`use Localize.Routes, gettext: ..., helpers: false`** (Corex default), **`Localize.Plug.PutLocale`** with **`from: [:path, :session, :accept_language]`**, **`Localize.Plug.PutSession`**, optional Mode/Theme plugs **after** localize plugs, and **`localize do … end`** around localized routes (plus **`/:locale`** scope as generated).
 4. **`MyAppWeb.Locale`**  -  **`locales`**, **`current`**, **`swap_path`**, **`lang`**, **`dir`**, **`label`** for root layout and switcher.
 5. **`Layouts.app`**  -  **`current_path`** and **`<.language_switch>`** with **`Corex.List.Item`** + **`<.select redirect>`**.
 6. **LiveViews**  -  **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** (installer adds this when **`--lang`**).
-7. **Translations**  -  **`mix gettext.extract`** and **`mix gettext.merge priv/gettext`**, then edit **`.po`** files.
+7. **Translations**  -  **`~t`** in templates, starter **`priv/gettext`** from the installer, then **`mix gettext.extract`** / **`mix gettext.merge priv/gettext`** as you add copy.
 
 This gives you URL-driven locales with a persistent user choice, RTL handling where CLDR says so, and Corex components that follow your Gettext backend.
 

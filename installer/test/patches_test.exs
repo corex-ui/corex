@@ -707,7 +707,7 @@ defmodule Corex.New.PatchesTest do
         assert body =~ ~s(themes: ["neo", "uno"])
         assert body =~ "config :localize"
         assert body =~ "default_locale: :en"
-        assert body =~ "supported_locales: [:en, :ar]"
+        assert body =~ "supported_locales: [:en, :fr, :ar]"
       end)
     end
 
@@ -743,7 +743,7 @@ defmodule Corex.New.PatchesTest do
 
         Patches.patch_gettext_backend(File.cwd!(), MyAppWeb, lang: true)
         body = File.read!("lib/my_app_web/gettext.ex")
-        assert body =~ "locales: ~w(en ar)"
+        assert body =~ "locales: ~w(en fr ar)"
       end)
     end
   end

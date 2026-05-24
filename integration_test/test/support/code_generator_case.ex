@@ -395,6 +395,31 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(Path.join([base, "lib", web, "hooks", "layout.ex"]))
   end
 
+  def assert_corex_lang_i18n_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    assert_file(Path.join(base, "mix.exs"), "gettext_sigils")
+    assert_file(Path.join(base, "config/config.exs"), "supported_locales: [:en, :fr, :ar]")
+
+    assert_file(Path.join(base, "config/config.exs"), fn c ->
+      assert c =~ "config :corex"
+      assert c =~ "gettext: :sigils"
+      assert c =~ "layout: [locale: true]"
+    end)
+    assert_file(Path.join(base, "lib/#{web}.ex"), "GettextSigils")
+    assert_file(Path.join(base, "lib/#{web}/gettext.ex"), "locales: ~w(en fr ar)")
+
+    assert_file(Path.join([base, "priv/gettext/fr/LC_MESSAGES/default.po"]))
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, ~s(~t"Corex for Phoenix"))
+
+    layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
+    assert_file(layouts, ~s(~t"Language"))
+  end
+
   def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
     base = app_base_path(app_root, app_name, opts)

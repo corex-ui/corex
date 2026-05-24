@@ -18,11 +18,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     <% else %><Layouts.app flash={@flash}><% end %>
       <article class="layout__article">
         <.layout_heading class="layout-heading">
-          <:title>Listing <%= schema.human_plural %></:title>
-          <:subtitle>Add and manage <%= schema.singular %> records</:subtitle>
+          <:title><%= maybe_heex_slot_translate.("Listing #{schema.human_plural}", @gettext_mode) %></:title>
+          <:subtitle><%= maybe_heex_slot_translate.("Add and manage #{schema.singular} records", @gettext_mode) %></:subtitle>
           <:actions>
             <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--accent">
-              <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
+              <.heroicon name="hero-plus" /> <%= maybe_heex_slot_translate.("New #{schema.human_singular}", @gettext_mode) %>
             </.navigate>
           </:actions>
         </.layout_heading>
@@ -33,7 +33,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           rows={@streams.<%= schema.collection %>}
           row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
         >
-          <:empty>No <%= schema.human_plural %> yet.</:empty><%= for {k, type} <- schema.attrs do %>
+          <:empty><%= maybe_heex_slot_translate.("No #{schema.human_plural} yet.", @gettext_mode) %></:empty><%= for {k, type} <- schema.attrs do %>
           <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= Mix.Corex.Gen.Inputs.display_expr(schema.singular, k, type, schema) %>}</:col><% end %>
           <:action :let={{_id, <%= schema.singular %>}}>
             <div class="sr-only">

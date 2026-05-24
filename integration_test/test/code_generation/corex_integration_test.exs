@@ -80,6 +80,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+        assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
       end)
     end
   end
@@ -119,6 +120,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+        assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
 
         web = Path.join(app_root_path, "lib/my_app_web")
 

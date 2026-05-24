@@ -1,0 +1,73 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+
+#: lib/app_web/components/layouts.ex
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Accessible and unstyled Phoenix components"
+msgstr "مكوّنات Phoenix يمكن الوصول إليها وبدون تنسيق مسبق"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex documentation on HexDocs"
+msgstr "توثيق Corex على HexDocs"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Corex for Phoenix"
+msgstr "Corex لـ Phoenix"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex on GitHub"
+msgstr "Corex على GitHub"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Dark mode"
+msgstr "الوضع الداكن"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Demo Site"
+msgstr "موقع تجريبي"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Hex Doc"
+msgstr "وثائق Hex"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "اللغة"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Light mode"
+msgstr "الوضع الفاتح"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theme"
+msgstr "المظهر"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr "فُقد الاتصال"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We're trying to reconnect you..."
+msgstr "نحاول إعادة الاتصال بك..."

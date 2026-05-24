@@ -46,6 +46,7 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
         inject_resources(router_path, resources_routes, locale_scope: true, locale_only: true)
 
         assert_corex_lang_path_plug_invariants!(app_root_path, "full_app")
+        assert_corex_lang_i18n_invariants!(app_root_path, "full_app")
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)

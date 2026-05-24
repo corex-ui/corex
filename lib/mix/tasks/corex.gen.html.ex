@@ -164,6 +164,8 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
     layout_opts = Mix.Corex.layout_generators_opts()
 
+    gettext_mode = Mix.Corex.generators_gettext_mode()
+
     binding = [
       context: context,
       schema: schema,
@@ -180,7 +182,11 @@ defmodule Mix.Tasks.Corex.Gen.Html do
       scope_param_route_prefix: Scope.route_prefix("scope", schema),
       scope_assign_route_prefix: scope_assign_route_prefix(schema),
       test_context_scope:
-        if(schema.scope && schema.scope.route_prefix, do: ", scope: scope", else: "")
+        if(schema.scope && schema.scope.route_prefix, do: ", scope: scope", else: ""),
+      assigns: %{
+        gettext: gettext_mode != false,
+        gettext_mode: gettext_mode
+      }
     ]
 
     prompt_for_conflicts(context)

@@ -251,6 +251,35 @@ defmodule Mix.CorexTest do
     assert File.read!(target2) == "Hi\"Bye\""
   end
 
+  test "maybe_heex_attr_translate/2 supports gettext sigils" do
+    assert Mix.Corex.maybe_heex_attr_translate("Hello", :sigils) == ~S|{~t"Hello"}|
+    assert Mix.Corex.maybe_heex_slot_translate("Hi", :sigils) == ~S|{~t"Hi"}|
+    assert Mix.Corex.maybe_eex_translate("Bye", :gettext) == ~S|<%= gettext("Bye") %>|
+  end
+
+  test "generators_gettext_mode/0 reads config" do
+    prev = Application.get_env(:corex, :generators)
+
+    on_exit(fn ->
+      case prev do
+        nil -> Application.delete_env(:corex, :generators)
+        val -> Application.put_env(:corex, :generators, val)
+      end
+    end)
+
+    Application.put_env(:corex, :generators, gettext: :sigils)
+    assert Mix.Corex.generators_gettext_mode() == :sigils
+
+    Application.put_env(:corex, :generators, gettext_sigils: true)
+    assert Mix.Corex.generators_gettext_mode() == :sigils
+
+    Application.put_env(:corex, :generators, gettext: true)
+    assert Mix.Corex.generators_gettext_mode() == :gettext
+
+    Application.put_env(:corex, :generators, [])
+    assert Mix.Corex.generators_gettext_mode() == false
+  end
+
   test "context_app_path/2 uses generators context_app when configured" do
     prev = Application.get_env(:corex, :generators)
 

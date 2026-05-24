@@ -29,6 +29,7 @@ defmodule Corex.New.Generate do
 
     Patches.patch_mix_exs(install_dir, opts)
     Patches.patch_web_module(install_dir, opts[:web_module], opts)
+    Patches.patch_web_gettext_sigils(install_dir, opts[:web_module], opts)
     Patches.patch_live_view_for_lang(install_dir, opts[:web_module], opts)
     Patches.patch_router(install_dir, opts[:web_module], opts)
     Patches.patch_endpoint(install_dir, opts[:web_module], opts)
@@ -42,6 +43,7 @@ defmodule Corex.New.Generate do
 
     if opts[:lang] do
       Patches.patch_verified_routes_path_prefixes!(install_dir, opts[:web_module], opts)
+      copy_gettext_catalog(install_dir)
     end
 
     :ok
@@ -385,5 +387,26 @@ defmodule Corex.New.Generate do
   defp write!(path, contents) do
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, contents)
+  end
+
+  defp gettext_catalog_template_root do
+    Path.expand("../../templates/corex/priv/gettext", __DIR__)
+  end
+
+  defp copy_gettext_catalog(install_dir) do
+    src = gettext_catalog_template_root()
+    dest = Path.join(install_dir, "priv/gettext")
+
+    unless File.dir?(src) do
+      Mix.raise("""
+      Corex gettext catalog template is missing at #{src}.
+
+      Expected installer/templates/corex/priv/gettext with default.pot and en/fr/ar PO files.
+      """)
+    end
+
+    Mix.shell().info([:green, "* copying ", :reset, "gettext catalog → priv/gettext/"])
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp_r!(src, dest)
   end
 end

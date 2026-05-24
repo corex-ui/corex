@@ -14,6 +14,7 @@ defmodule Corex.New.Patches do
       content
       |> ensure_corex_dep(opts)
       |> maybe_ensure_localize_web_dep(opts)
+      |> maybe_ensure_gettext_sigils_dep(opts)
       |> maybe_ensure_designex_dep(opts)
       |> maybe_add_designex_aliases(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
@@ -147,6 +148,7 @@ defmodule Corex.New.Patches do
       content
       |> maybe_add_themes_to_app_config(opts)
       |> maybe_add_localize_config(opts)
+      |> maybe_add_corex_generators_config(opts)
       |> maybe_add_designex_config(opts)
       |> patch_esbuild_for_esm()
 
@@ -154,7 +156,22 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
-  Sets `locales: ~w(en ar)` on the `Gettext.Backend` use options when `--lang` is on.
+  In `html_helpers`, replaces `use Gettext, backend: ...` with `use GettextSigils, backend: ...`
+  when `--lang` is on. Idempotent.
+  """
+  def patch_web_gettext_sigils(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path = web_module_path(install_dir, web_module, opts)
+      content = File.read!(path)
+      updated = replace_gettext_with_sigils(content, web_module)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
+  Sets `locales: ~w(en fr ar)` on the `Gettext.Backend` use options when `--lang` is on.
   Idempotent.
   """
   def patch_gettext_backend(install_dir, web_module, opts) do
@@ -209,6 +226,18 @@ defmodule Corex.New.Patches do
         content
       else
         insert_before_closing_deps(content, "      {:localize_web, \"~> 0.5\"},\n")
+      end
+    else
+      content
+    end
+  end
+
+  defp maybe_ensure_gettext_sigils_dep(content, opts) do
+    if Keyword.get(opts, :lang, false) do
+      if Regex.match?(~r/\{:gettext_sigils\s*,/u, content) do
+        content
+      else
+        insert_before_closing_deps(content, "      {:gettext_sigils, \"~> 0.5\"},\n")
       end
     else
       content
@@ -625,16 +654,87 @@ defmodule Corex.New.Patches do
     end
   end
 
+  defp maybe_add_corex_generators_config(content, opts) do
+    layout =
+      []
+      |> maybe_generators_layout_key(:locale, Keyword.get(opts, :lang, false))
+      |> maybe_generators_layout_key(:mode, Keyword.get(opts, :mode, false))
+      |> maybe_generators_layout_key(:theme, Keyword.get(opts, :theme, false))
+
+    gettext_opt =
+      if Keyword.get(opts, :lang, false) do
+        "gettext: :sigils"
+      else
+        nil
+      end
+
+    cond do
+      layout == [] and is_nil(gettext_opt) ->
+        content
+
+      String.contains?(content, "config :corex") ->
+        content
+
+      true ->
+        layout_line =
+          if layout == [] do
+            ""
+          else
+            "    layout: #{inspect(layout)},\n"
+          end
+
+        gettext_line =
+          if gettext_opt do
+            "    #{gettext_opt},\n"
+          else
+            ""
+          end
+
+        block = """
+
+        config :corex,
+          generators: [
+        #{gettext_line}#{layout_line}  ]
+        """
+
+        marker = "import_config \"#{"#"}{config_env()}.exs\""
+
+        if String.contains?(content, marker) do
+          String.replace(content, marker, String.trim_leading(block) <> "\n" <> marker,
+            global: false
+          )
+        else
+          content <> block
+        end
+    end
+  end
+
+  defp maybe_generators_layout_key(layout, _key, false), do: layout
+  defp maybe_generators_layout_key(layout, key, true), do: [{key, true} | layout]
+
   defp maybe_add_localize_config(content, opts) do
+    content =
+      if Keyword.get(opts, :lang, false) do
+        content
+        |> String.replace("supported_locales: [:en, :ar]", "supported_locales: [:en, :fr, :ar]")
+      else
+        content
+      end
+
     cond do
       not Keyword.get(opts, :lang, false) ->
+        content
+
+      String.contains?(content, "supported_locales: [:en, :fr, :ar]") ->
         content
 
       String.contains?(content, "config :localize") ->
         content
 
       true ->
-        block = "\nconfig :localize,\n  default_locale: :en,\n  supported_locales: [:en, :ar]\n"
+        block =
+          "\nconfig :localize,\n  default_locale: :en,\n  supported_locales: [:en, :fr, :ar]\n"
+
         marker = "import_config \"#{"#"}{config_env()}.exs\""
 
         if String.contains?(content, marker) do
@@ -690,20 +790,60 @@ defmodule Corex.New.Patches do
   end
 
   defp inject_locales_into_gettext_backend(content) do
+    content =
+      String.replace(content, "locales: ~w(en ar)", "locales: ~w(en fr ar)", global: false)
+
     cond do
+      Regex.match?(~r/\blocales:\s*~w\(en fr ar\)/m, content) ->
+        content
+
       Regex.match?(~r/\blocales:\s*~w\(/m, content) ->
         content
 
       Regex.match?(~r/use\s+Gettext\.Backend\b/m, content) ->
+        inject_gettext_locales_after_backend_use(content)
+
+      true ->
+        content
+    end
+  end
+
+  defp inject_gettext_locales_after_backend_use(content) do
+    cond do
+      Regex.match?(~r/default_locale:\s*"[^"]+"/m, content) ->
         Regex.replace(
           ~r/(use\s+Gettext\.Backend\s*,\s*[\s\S]*?default_locale:\s*"[^"]+")/m,
           content,
-          "\\1,\n    locales: ~w(en ar)",
+          "\\1,\n    locales: ~w(en fr ar)",
+          global: false
+        )
+
+      Regex.match?(~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+/m, content) ->
+        Regex.replace(
+          ~r/(use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+)/m,
+          content,
+          "\\1,\n    default_locale: \"en\",\n    locales: ~w(en fr ar)",
           global: false
         )
 
       true ->
         content
+    end
+  end
+
+  defp replace_gettext_with_sigils(content, web_module) do
+    if String.contains?(content, "GettextSigils") do
+      content
+    else
+      web_str = inspect(web_module)
+      old = "use Gettext, backend: #{web_str}.Gettext"
+      new = "use GettextSigils, backend: #{web_str}.Gettext"
+
+      if String.contains?(content, old) do
+        String.replace(content, old, new, global: true)
+      else
+        content
+      end
     end
   end
 

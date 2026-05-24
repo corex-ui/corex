@@ -77,8 +77,8 @@ defmodule Corex.New.PostGenerate do
     localize_block =
       if lang? do
         IO.iodata_to_binary([
-          "\nOptionally you can download Localize locales:\n\n",
-          "#{indent}$ mix localize.download_locales\n"
+          "\nDownload CLDR data for English, French, and Arabic:\n\n",
+          "#{indent}$ mix localize.download_locales en fr ar\n"
         ])
       else
         ""

@@ -4,15 +4,19 @@
   current_path={@conn.request_path}<% end %>
 >
   <.layout_heading class="layout-heading">
-    <:title>Corex for Phoenix</:title>
+<%= if @lang do %>    <:title>{~t"Corex for Phoenix"}</:title>
+    <:subtitle>{~t"Accessible and unstyled Phoenix components"}</:subtitle>
+<% else %>    <:title>Corex for Phoenix</:title>
     <:subtitle>Accessible and unstyled Phoenix components</:subtitle>
-    <:actions>
+<% end %>    <:actions>
       <.navigate class="button" external to="https://hexdocs.pm/corex">
-        Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
-      </.navigate>
+<%= if @lang do %>        {~t"Hex Doc"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>        Hex Doc <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>      </.navigate>
       <.navigate class="button" external to="https://corex.gigalixirapp.com/">
-        Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
-      </.navigate>
+<%= if @lang do %>        {~t"Demo Site"} <.heroicon name="hero-arrow-top-right-on-square" />
+<% else %>        Demo Site <.heroicon name="hero-arrow-top-right-on-square" />
+<% end %>      </.navigate>
     </:actions>
   </.layout_heading>
 </Layouts.app>

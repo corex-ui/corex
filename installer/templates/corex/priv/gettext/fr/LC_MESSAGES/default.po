@@ -1,0 +1,73 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: lib/app_web/components/layouts.ex
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Accessible and unstyled Phoenix components"
+msgstr "Composants Phoenix accessibles et sans style imposé"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex documentation on HexDocs"
+msgstr "Documentation Corex sur HexDocs"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Corex for Phoenix"
+msgstr "Corex pour Phoenix"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex on GitHub"
+msgstr "Corex sur GitHub"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Dark mode"
+msgstr "Mode sombre"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Demo Site"
+msgstr "Site de démo"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Hex Doc"
+msgstr "Doc Hex"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "Langue"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Light mode"
+msgstr "Mode clair"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theme"
+msgstr "Thème"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr "Connexion perdue"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We're trying to reconnect you..."
+msgstr "Nous tentons de vous reconnecter..."
