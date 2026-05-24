@@ -103,12 +103,12 @@ defmodule E2eWeb.ColorPickerModel do
   end
 
   def submit_form(session, mode \\ :static) do
-    id =
+    form_id =
       if mode == :live,
-        do: "color-picker-basic-form-live-submit",
-        else: "color-picker-form-submit"
+        do: "color-picker-live-form-phoenix",
+        else: "color-picker-form-phoenix"
 
-    click(session, css("##{id}"))
+    click(session, css("##{form_id} button[type='submit']"))
   end
 
   def see_flash(session, flash_text) do

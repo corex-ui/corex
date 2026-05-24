@@ -64,7 +64,7 @@ defmodule E2eWeb.SwitchModel do
     host_id =
       case mode do
         :live -> "#switch-live-form-ecto-notifications"
-        _ -> "#switch-form-changeset"
+        _ -> "#switch-form-phoenix-notifications"
       end
 
     session
@@ -95,7 +95,7 @@ defmodule E2eWeb.SwitchModel do
         |> click(css("#switch-live-form-ecto-submit"))
 
       _ ->
-        click(session, css("#switch-changeset-submit"))
+        click(session, css("#switch-form-phoenix-submit"))
     end
   end
 

@@ -37,10 +37,10 @@ defmodule E2eWeb.RadioGroupFormTest do
       session
       |> RadioGroup.goto_form(:live)
       |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-      |> RadioGroup.submit_form(:live)
+      |> RadioGroup.submit_form(:live, :ecto)
 
     refute_has(session, Wallaby.Query.text("choice=b"))
-    assert_has(session, Wallaby.Query.css("#radio-group-live-form-changeset", text: "Choose one"))
+    assert_has(session, Wallaby.Query.css("#radio-group-live-form-ecto", text: "Choose one"))
   end
 
   feature "live form - select option then submit shows success", %{session: session} do
@@ -48,7 +48,7 @@ defmodule E2eWeb.RadioGroupFormTest do
     |> RadioGroup.goto_form(:live)
     |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
     |> RadioGroup.click_radio_live("duis")
-    |> RadioGroup.submit_form(:live)
+    |> RadioGroup.submit_form(:live, :ecto)
     |> RadioGroup.see_flash("Submitted: choice=")
   end
 

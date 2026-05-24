@@ -11,7 +11,7 @@ defmodule E2eWeb.SwitchFormTest do
     |> Switch.goto_form(:static)
     |> Switch.wait_for_has(css("#switch-form-page"), timeout: 15_000)
     |> Switch.submit_form()
-    |> Switch.see_flash("Submitted (changeset): notifications=")
+    |> Switch.see_flash("Submitted: notifications=")
   end
 
   feature "static form - click switch then submit includes notifications", %{session: session} do
@@ -20,7 +20,7 @@ defmodule E2eWeb.SwitchFormTest do
     |> Switch.wait_for_has(css("#switch-form-page"), timeout: 15_000)
     |> Switch.click_switch()
     |> Switch.submit_form()
-    |> Switch.see_flash("Submitted (changeset): notifications=")
+    |> Switch.see_flash("Submitted: notifications=")
   end
 
   feature "live form (controlled) - submit without toggling then toggle and submit shows success",

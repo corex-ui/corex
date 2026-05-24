@@ -54,6 +54,7 @@ defmodule E2eWeb.DialogPatternsLive do
               on_open_change="patterns_dialog_open_changed"
             >
               <:trigger>Open</:trigger>
+              <:title>Controlled dialog</:title>
               <:content>
                 <p>LiveView owns open state.</p>
               </:content>

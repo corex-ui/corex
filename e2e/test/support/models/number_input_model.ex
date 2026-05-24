@@ -114,11 +114,12 @@ defmodule E2eWeb.NumberInputModel do
     has?(session, css("#number-input-events-log-server tr[data-part='row']"))
   end
 
-  def goto_form(session, mode) do
+  def goto_form(session, mode, form \\ :phoenix) do
     path =
-      case mode do
-        :static -> "/en/number-input/form"
-        :live -> "/en/number-input/live-form"
+      case {mode, form} do
+        {:static, :native} -> "/en/number-input/form#number-input-form-native"
+        {:static, _} -> "/en/number-input/form#number-input-form-phoenix"
+        {:live, _} -> "/en/number-input/live-form"
       end
 
     session = visit_path(session, path)
@@ -130,30 +131,51 @@ defmodule E2eWeb.NumberInputModel do
     end
   end
 
-  def fill_number_input(session, value, mode \\ :static)
+  def fill_number_input(session, value, mode \\ :static, form \\ :phoenix)
 
-  def fill_number_input(session, value, mode) when is_number(value) do
-    fill_number_input(session, to_string(value), mode)
+  def fill_number_input(session, value, mode, form) when is_number(value) do
+    fill_number_input(session, to_string(value), mode, form)
   end
 
-  def fill_number_input(session, value, mode) when is_binary(value) do
-    form_id =
-      case mode do
-        :live -> "number-input-live-changeset-form"
-        :static -> "number-input-changeset-form"
-      end
+  def fill_number_input(session, value, mode, form) when is_binary(value) do
+    if mode == :static and form == :native do
+      visible_q =
+        css(
+          "#number-input-plain-value [data-scope='number-input'][data-part='input']",
+          visible: :any
+        )
 
-    visible_q =
-      css(~s|##{form_id} input[data-scope="number-input"][data-part="input"]|)
+      ready_q =
+        css(
+          "#number-input-plain-form [phx-hook='NumberInput']:not([data-loading])",
+          visible: :any
+        )
 
-    ready_q = css(~s|##{form_id} [phx-hook="NumberInput"]:not([data-loading])|, visible: :any)
+      session
+      |> assert_has(ready_q)
+      |> click(visible_q)
+      |> send_keys(visible_q, [:control, "a"])
+      |> send_keys(visible_q, value)
+      |> assert_value_synced("number-input-plain-form", value)
+    else
+      form_id =
+        case mode do
+          :live -> "number-input-live-form-phoenix"
+          _ -> "number-input-form-phoenix"
+        end
 
-    session
-    |> assert_has(ready_q)
-    |> click(visible_q)
-    |> send_keys(visible_q, [:control, "a"])
-    |> send_keys(visible_q, value)
-    |> assert_value_synced(form_id, value)
+      visible_q =
+        css(~s|##{form_id} input[data-scope="number-input"][data-part="input"]|)
+
+      ready_q = css(~s|##{form_id} [phx-hook="NumberInput"]:not([data-loading])|, visible: :any)
+
+      session
+      |> assert_has(ready_q)
+      |> click(visible_q)
+      |> send_keys(visible_q, [:control, "a"])
+      |> send_keys(visible_q, value)
+      |> assert_value_synced(form_id, value)
+    end
   end
 
   defp assert_value_synced(session, form_id, expected) do
@@ -180,16 +202,86 @@ defmodule E2eWeb.NumberInputModel do
     Wallaby.Browser.execute_script(session, script)
   end
 
-  def submit_form(session, mode \\ :static) do
-    id =
-      if mode == :live,
-        do: "number-input-form-live-changeset-submit",
-        else: "number-input-changeset-submit"
+  def submit_form(session, mode \\ :static, form \\ :phoenix) do
+    case {mode, form} do
+      {:static, :native} ->
+        session
+        |> assert_has(
+          css(
+            "#number-input-plain-form [phx-hook='NumberInput']:not([data-loading])",
+            visible: :any
+          )
+        )
+        |> click(css("#number-input-plain-submit"))
 
-    click(session, css("##{id}"))
+      {:live, _} ->
+        form_id = "number-input-live-form-phoenix"
+
+        session
+        |> assert_has(
+          css("##{form_id} [phx-hook='NumberInput']:not([data-loading])", visible: :any)
+        )
+        |> click(css("##{form_id} button[type='submit']"))
+
+      _ ->
+        form_id = "number-input-form-phoenix"
+
+        session
+        |> assert_has(
+          css("##{form_id} [phx-hook='NumberInput']:not([data-loading])", visible: :any)
+        )
+        |> wait_number_input_hidden_value(form_id, :static)
+        |> click(css("##{form_id} button[type='submit']"))
+    end
   end
 
-  def see_flash(session, flash_text, _opts \\ []) do
+  defp wait_number_input_hidden_value(session, form_id, :live), do: session
+
+  defp wait_number_input_hidden_value(session, form_id, _mode) do
+    deadline = System.monotonic_time(:millisecond) + 8_000
+    busy_wait_hidden_value(session, form_id, deadline)
+    session
+  end
+
+  defp busy_wait_hidden_value(session, form_id, deadline) do
+    value = hidden_value_in_form(session, form_id)
+
+    if value != "" do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        :ok
+      else
+        Process.sleep(50)
+        busy_wait_hidden_value(session, form_id, deadline)
+      end
+    end
+  end
+
+  defp hidden_value_in_form(session, form_id) do
+    key = {:e2e_number_input_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const form = document.getElementById(arguments[0]);
+        const input = form?.querySelector('input[data-scope="number-input"][data-part="value-input"]');
+        return input?.value ?? "";
+        """,
+        [form_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
+  def wait_for_redirect(session) do
+    assert_has(session, css("#number-input-form-page", visible: :any))
+    session
+  end
+
+  def see_flash(session, flash_text, opts \\ []) do
     assert_toast(session, flash_text)
   end
 end

@@ -8,7 +8,7 @@ defmodule E2eWeb.DatePickerFormTest do
     session
     |> DatePicker.goto_form(:static)
     |> DatePicker.submit_form()
-    |> DatePicker.see_flash("Submitted (changeset): date=")
+    |> DatePicker.see_flash("Submitted: date=")
   end
 
   feature "static form - has no A11y violations", %{session: session} do

@@ -144,7 +144,7 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def click_radio_live(session, value) do
-    click_item_in_section(session, "radio-group-live-form-changeset", value)
+    click_item_in_section(session, "radio-group-live-form-ecto-section", value)
   end
 
   def click_radio_item(session, value) do
@@ -155,11 +155,20 @@ defmodule E2eWeb.RadioGroupModel do
     assert_has(session, css("#radio-group-form-page"))
   end
 
-  def submit_form(session, mode \\ :static) do
+  def submit_form(session, mode \\ :static, form \\ :native) do
     id =
-      if mode == :live, do: "radio-group-form-live-submit", else: "radio-group-controller-submit"
+      case {mode, form} do
+        {:live, :ecto} -> "radio-group-form-live-strict-submit"
+        {:live, _} -> "radio-group-live-form-phoenix-submit"
+        {:static, :phoenix} -> nil
+        _ -> "radio-group-controller-submit"
+      end
 
-    click(session, css("##{id}"))
+    if id do
+      click(session, css("##{id}"))
+    else
+      click(session, css("#radio-group-form-phoenix button[type='submit']"))
+    end
   end
 
   def see_flash(session, flash_text) do

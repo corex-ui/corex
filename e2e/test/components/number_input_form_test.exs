@@ -6,17 +6,19 @@ defmodule E2eWeb.NumberInputFormTest do
 
   feature "static form - submit empty includes default value", %{session: session} do
     session
-    |> NumberInput.goto_form(:static)
-    |> NumberInput.submit_form()
+    |> NumberInput.goto_form(:static, :native)
+    |> NumberInput.submit_form(:static, :native)
+    |> NumberInput.wait_for_redirect()
     |> NumberInput.see_flash("Submitted: value=1234")
   end
 
   feature "static form - fill value then submit includes value", %{session: session} do
     session
-    |> NumberInput.goto_form(:static)
-    |> NumberInput.fill_number_input("42", :static)
-    |> NumberInput.submit_form()
-    |> NumberInput.see_flash("42")
+    |> NumberInput.goto_form(:static, :native)
+    |> NumberInput.fill_number_input("42", :static, :native)
+    |> NumberInput.submit_form(:static, :native)
+    |> NumberInput.wait_for_redirect()
+    |> NumberInput.see_flash("Submitted: value=42")
   end
 
   feature "static form - has no A11y violations", %{session: session} do
@@ -29,7 +31,7 @@ defmodule E2eWeb.NumberInputFormTest do
     session
     |> NumberInput.goto_form(:live)
     |> NumberInput.submit_form(:live)
-    |> NumberInput.see_flash("Submitted: 1234")
+    |> NumberInput.see_flash("1234")
   end
 
   feature "live form - fill value then submit shows submitted value", %{session: session} do

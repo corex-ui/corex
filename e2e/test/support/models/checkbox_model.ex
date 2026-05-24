@@ -182,19 +182,27 @@ defmodule E2eWeb.CheckboxModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def goto_ecto_section(session) do
+    visit_path(session, "/en/checkbox/form#checkbox-form-ecto")
+  end
+
   def click_checkbox(session, :live) do
-    click(session, css("#checkbox-form-live-terms [data-part='control']"))
+    click(session, css("#checkbox-live-form-phoenix-terms [data-part='control']"))
   end
 
   def click_checkbox(session) do
     click(
       session,
-      css("#checkbox-form-controller [data-scope='checkbox'][data-part='control']")
+      css("#checkbox-form-phoenix-terms [data-scope='checkbox'][data-part='control']")
     )
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "checkbox-form-live-submit", else: "checkbox-form-submit"
+    id =
+      if mode == :live,
+        do: "checkbox-live-form-phoenix-submit",
+        else: "checkbox-form-phoenix-submit"
+
     click(session, css("##{id}"))
   end
 
@@ -224,14 +232,14 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def submit_static_changeset(session) do
-    click(session, css("#checkbox-changeset-submit"))
+    click(session, css("#checkbox-form-ecto button[type='submit']"))
   end
 
   def submit_static_validate(session) do
-    click(session, css("#checkbox-validate-submit"))
+    click(session, css("#checkbox-form-ecto-submit"))
   end
 
   def click_live_strict_submit(session) do
-    click(session, css("#checkbox-live-form-validate [type='submit']"))
+    click(session, css("#checkbox-live-form-ecto button[type='submit']"))
   end
 end

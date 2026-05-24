@@ -261,17 +261,29 @@ defmodule E2eWeb.SignatureModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
-  def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "signature-form-live-submit", else: "signature-changeset-submit"
-    click(session, css("##{id}"))
+  def submit_form(session, mode \\ :static, form \\ :ecto) do
+    id =
+      case {mode, form} do
+        {:live, :phoenix} -> "signature-live-form-phoenix-submit"
+        {:live, _} -> "signature-live-form-ecto-submit"
+        {:static, :phoenix} -> nil
+        _ -> "signature-validate-submit"
+      end
+
+    if id do
+      click(session, css("##{id}"))
+    else
+      click(session, css("#signature-form-phoenix button[type='submit']"))
+    end
+
     session
   end
 
   def wait_for_signature_field_error(session, mode \\ :static, opts \\ []) do
     scope =
       case mode do
-        :live -> "#signature-live-form-changeset"
-        :static -> "section#signature-form-changeset"
+        :live -> "#signature-live-form-ecto"
+        :static -> "#signature-form-ecto"
       end
 
     error_sel = ~s|#{scope} [data-scope="signature-pad"][data-part="error"]|

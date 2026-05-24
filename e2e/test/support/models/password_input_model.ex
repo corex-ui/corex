@@ -150,7 +150,8 @@ defmodule E2eWeb.PasswordInputModel do
 
     script = """
     (function() {
-      var el = document.getElementById('password-input-native-password');
+      var root = document.getElementById('password-input-native-password');
+      var el = root?.querySelector('[data-scope="password-input"][data-part="input"]') || root;
       if (!el) return 'not found';
       el.value = '#{escaped}';
       el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -163,23 +164,36 @@ defmodule E2eWeb.PasswordInputModel do
     session
   end
 
-  def fill_live_password_input(session, value) do
+  def fill_live_password_input(session, value, form \\ :phoenix) do
+    host_id =
+      case form do
+        :ecto -> "password-input-live-form-ecto-password"
+        _ -> "password-input-live-form-phoenix-password"
+      end
+
     fill_in(
       session,
-      css("#p-input-password-input-live-changeset-input", visible: :any),
+      css("##{host_id} [data-scope='password-input'][data-part='input']", visible: :any),
       with: value
     )
 
     session
   end
 
-  def submit_form(session, mode \\ :static) do
+  def submit_form(session, mode \\ :static, form \\ :native) do
     id =
-      if mode == :live,
-        do: "password-input-form-live-submit",
-        else: "password-input-controller-submit"
+      case {mode, form} do
+        {:live, :ecto} -> "password-input-form-live-strict-submit"
+        {:live, _} -> "password-input-live-form-phoenix-submit"
+        {:static, :phoenix} -> nil
+        _ -> "password-input-controller-submit"
+      end
 
-    click(session, css("##{id}"))
+    if id do
+      click(session, css("##{id}"))
+    else
+      click(session, css("#password-input-form-phoenix button[type='submit']"))
+    end
   end
 
   def see_flash(session, flash_text) do

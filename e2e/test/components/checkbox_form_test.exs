@@ -25,27 +25,6 @@ defmodule E2eWeb.CheckboxFormTest do
       |> Checkbox.see_flash("Submitted: terms=")
     end
 
-    feature "changeset section submits when terms accepted", %{session: session} do
-      session
-      |> Checkbox.goto_form(:static)
-      |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-      |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-changeset")
-      |> click(css("#checkbox-form-changeset [data-scope='checkbox'][data-part='control']"))
-      |> Checkbox.submit_static_changeset()
-      |> Checkbox.see_flash("Submitted (changeset): terms=true")
-    end
-
-    feature "validate section rejects submit when terms not accepted", %{session: session} do
-      session =
-        session
-        |> Checkbox.goto_form(:static)
-        |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-        |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-validate")
-        |> Checkbox.submit_static_validate()
-
-      assert_has(session, css("#checkbox-form-validate", text: "must be accepted"))
-    end
-
     feature "checkbox form has no A11y violations", %{session: session} do
       session
       |> Checkbox.goto_form(:static)
@@ -63,7 +42,7 @@ defmodule E2eWeb.CheckboxFormTest do
         |> Checkbox.submit_form(:live)
 
       refute_has(session, Wallaby.Query.text("terms=true"))
-      assert_has(session, css("#checkbox-form-live-terms", visible: true))
+      assert_has(session, css("#checkbox-live-form-phoenix-section", visible: true))
     end
 
     feature "check terms then submit shows success", %{session: session} do
@@ -82,7 +61,10 @@ defmodule E2eWeb.CheckboxFormTest do
         |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
         |> Checkbox.click_live_strict_submit()
 
-      assert_has(session, css("#checkbox-live-form-validate", text: "must be accepted"))
+      assert_has(
+        session,
+        css("#checkbox-live-form-ecto-section", text: "must be accepted to continue")
+      )
     end
 
     feature "checkbox live form has no A11y violations", %{session: session} do

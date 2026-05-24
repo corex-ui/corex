@@ -193,12 +193,12 @@ defmodule E2eWeb.DatePickerModel do
   end
 
   def submit_form(session, mode \\ :static) do
-    id =
+    form_id =
       if mode == :live,
-        do: "date-picker-basic-form-live-submit",
-        else: "date-picker-changeset-form-submit"
+        do: "date-picker-live-form-phoenix",
+        else: "date-picker-form-phoenix"
 
-    click(session, css("##{id}"))
+    click(session, css("##{form_id} button[type='submit']"))
   end
 
   def see_flash(session, flash_text) do

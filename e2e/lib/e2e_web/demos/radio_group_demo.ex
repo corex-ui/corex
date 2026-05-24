@@ -892,23 +892,20 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_native_heex do
     ~S"""
-    <form action="/register" method="post">
+    <form action={~p"/radio-group/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <fieldset>
-        <legend class="typo-label">Choose one</legend>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="a" />
-          <span>Lorem ipsum dolor sit amet</span>
-        </label>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="b" />
-          <span>Duis dictum gravida odio ac pharetra?</span>
-        </label>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="c" />
-          <span>Donec condimentum ex mi</span>
-        </label>
-      </fieldset>
+      <.radio_group
+        name="user[choice]"
+        class="radio-group"
+        items={[
+          %{value: "a", label: "Lorem ipsum dolor sit amet"},
+          %{value: "b", label: "Duis dictum gravida odio ac pharetra?"},
+          %{value: "c", label: "Donec condimentum ex mi"}
+        ]}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
       <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
@@ -1230,21 +1227,19 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       id="radio-group-plain-form"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <fieldset class="w-full flex flex-col gap-space">
-        <legend class="typo-label">Choose one</legend>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="a" />
-          <span>Lorem ipsum dolor sit amet</span>
-        </label>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="b" />
-          <span>Duis dictum gravida odio ac pharetra?</span>
-        </label>
-        <label class="flex items-center gap-2">
-          <input type="radio" name="user[choice]" value="c" />
-          <span>Donec condimentum ex mi</span>
-        </label>
-      </fieldset>
+      <.radio_group
+        name="user[choice]"
+        id="radio-group-form-native-choice"
+        class="radio-group"
+        items={[
+          %{value: "a", label: "Lorem ipsum dolor sit amet"},
+          %{value: "b", label: "Duis dictum gravida odio ac pharetra?"},
+          %{value: "c", label: "Donec condimentum ex mi"}
+        ]}
+      >
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+      </.radio_group>
       <.action type="submit" id="radio-group-controller-submit" class="button button--accent">
         Submit
       </.action>

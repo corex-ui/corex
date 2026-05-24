@@ -1086,7 +1086,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
           >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.angle_slider
-        name="product[angle]"
+        name="angle_slider_form[angle]"
         value={0.0}
         marker_values={[0, 90, 180, 270]}
         class="angle-slider"

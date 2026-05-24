@@ -871,17 +871,18 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       method="post"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <label class="typo typo--sm font-medium" for="number-input-plain-value">Value</label>
-      <input
-        type="number"
-        name="value"
-        value="1234"
-        class="native-input"
-        step="any"
-      />
-      <button type="submit" class="button button--accent">
+      <.number_input name="value" value="1234" class="number-input">
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.action type="submit" class="button button--accent">
         Submit
-      </button>
+      </.action>
     </form>
     """
   end
@@ -973,15 +974,21 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       method="post"
       id="number-input-plain-form"
     >
-      <label class="typo typo--sm font-medium" for="number-input-plain-value">Value</label>
-      <input
-        type="number"
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.number_input
         name="value"
-        id="number-input-plain-value"
         value="1234"
-        class="native-input"
-        step="any"
-      />
+        id="number-input-plain-value"
+        class="number-input"
+      >
+        <:label>Value</:label>
+        <:decrement_trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.heroicon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
       <.action type="submit" id="number-input-plain-submit" class="button button--accent">
         Submit
       </.action>

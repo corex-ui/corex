@@ -704,7 +704,20 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <form action={~p"/combobox/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <input name="combobox_native[country]" type="hidden" value="" />
+      <.combobox
+        name="combobox_native[country]"
+        class="combobox"
+        translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "No results"}}
+        items={Corex.List.new([
+          %{label: "France", value: "fra"},
+          %{label: "Belgium", value: "bel"},
+          %{label: "Germany", value: "deu"}
+        ])}
+      >
+        <:label>Country</:label>
+        <:empty>No results</:empty>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.combobox>
       <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """

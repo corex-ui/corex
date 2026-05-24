@@ -170,52 +170,103 @@ defmodule E2eWeb.SelectModel do
   end
 
   def hidden_input_value_in_anatomy_section(session, section_dom_id) do
-    el =
-      find(
-        session,
-        css(
-          ~s|section##{section_dom_id} [phx-hook="Select"] input|,
-          visible: :any
-        )
-      )
-
-    Wallaby.Element.attr(el, "value")
+    select_value(session, "section#" <> section_dom_id)
   end
 
   def hidden_input_value_by_host_id(session, host_dom_id) do
-    el =
-      find(
+    select_value(session, "#" <> host_dom_id)
+  end
+
+  defp select_value(session, root_selector) do
+    key = {:e2e_select_value, self(), make_ref()}
+
+    _ =
+      execute_script(
         session,
-        css(~s|##{host_dom_id} input|, visible: :any)
+        """
+        const root = document.querySelector(arguments[0]);
+        const input =
+          root?.querySelector('[data-part="value-input"]') ||
+          root?.querySelector('input[type="text"][hidden]') ||
+          root?.querySelector('input');
+        return input?.value ?? "";
+        """,
+        [root_selector],
+        fn value -> Process.put(key, to_string(value || "")) end
       )
 
-    Wallaby.Element.attr(el, "value")
+    Process.get(key, "")
   end
 
   def wait_hidden_value_in_anatomy_section(session, section_dom_id, expected, opts \\ [])
       when is_binary(expected) do
-    wait_for_has(
-      session,
-      css(
-        ~s|section##{section_dom_id} [phx-hook="Select"] input[value="#{expected}"]|,
-        visible: :any
-      ),
-      opts
-    )
-
+    deadline = Keyword.get(opts, :timeout, 8_000) + System.monotonic_time(:millisecond)
+    busy_wait_select_value(session, "section#" <> section_dom_id, expected, deadline)
     session
   end
 
   def wait_hidden_value_by_host_id(session, host_dom_id, expected, opts \\ [])
       when is_binary(expected) do
-    wait_for_has(
-      session,
-      css(~s|##{host_dom_id} input[value="#{expected}"]|, visible: :any),
-      opts
-    )
-
+    deadline = Keyword.get(opts, :timeout, 8_000) + System.monotonic_time(:millisecond)
+    busy_wait_select_value(session, "#" <> host_dom_id, expected, deadline)
     session
   end
+
+  defp busy_wait_select_value(session, root_selector, expected, deadline) do
+    actual = select_value(session, root_selector)
+
+    if actual == expected do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected select value #{inspect(expected)} in #{root_selector}, got #{inspect(actual)}"
+      else
+        Process.sleep(50)
+        busy_wait_select_value(session, root_selector, expected, deadline)
+      end
+    end
+  end
+
+  def wait_for_select_field_error(session, mode \\ :static, _opts \\ []) do
+    form_id = if mode == :live, do: "select-live-form-ecto", else: "select-form-ecto"
+    assert_has(session, css("##{form_id}", text: "can't be blank"))
+  end
+
+  def click_form_select_trigger(session, mode \\ :static, form \\ :phoenix) do
+    form_id = form_dom_id(mode, form)
+
+    session =
+      if mode == :live do
+        assert_has(session, css("##{form_id} [phx-hook='Select']:not([data-loading])"))
+      else
+        session
+      end
+
+    click(session, css("##{form_id} [data-scope='select'][data-part='trigger']"))
+  end
+
+  def submit_form(session, mode \\ :static, form \\ :phoenix) do
+    case {mode, form} do
+      {:static, :ecto} ->
+        click(session, css("#select-validate-submit"))
+
+      {:live, :ecto} ->
+        click(session, css("#select-live-form-ecto-submit"))
+
+      {:live, _} ->
+        click(session, css("#select-live-form-phoenix-submit"))
+
+      {:static, _} ->
+        click(session, css("#select-form-phoenix button[type='submit']"))
+    end
+  end
+
+  defp form_dom_id(:static, :ecto), do: "select-form-ecto"
+  defp form_dom_id(:static, _), do: "select-form-phoenix"
+  defp form_dom_id(:live, :ecto), do: "select-live-form-ecto"
+  defp form_dom_id(:live, _), do: "select-live-form-phoenix"
 
   def click_button_in_section(session, section_id, label) when is_binary(label) do
     if String.contains?(label, "'") or String.contains?(label, "\"") do
@@ -254,33 +305,10 @@ defmodule E2eWeb.SelectModel do
     end
   end
 
-  def wait_for_select_field_error(session, mode \\ :static, _opts \\ []) do
-    form_id =
-      case mode do
-        :live -> "select-form"
-        :static -> "select-changeset-form"
-      end
-
-    q =
-      css(~s(##{form_id} [data-scope="select"][data-part="error"]),
-        text: "blank"
-      )
-
-    assert_has(session, q)
-  end
-
   def click_select_trigger(session) do
     session
     |> assert_has(css("[phx-hook='Select']:not([data-loading])"))
     |> click(css("[data-scope='select'][data-part='trigger']"))
-  end
-
-  def click_form_select_trigger(session, mode \\ :static) do
-    form_id = if mode == :live, do: "select-form", else: "select-changeset-form"
-
-    session
-    |> assert_has(css("##{form_id} [phx-hook='Select']:not([data-loading])"))
-    |> click(css("##{form_id} [data-scope='select'][data-part='trigger']"))
   end
 
   def select_item(session, value) when is_binary(value) do
@@ -305,11 +333,6 @@ defmodule E2eWeb.SelectModel do
 
     Wallaby.Browser.execute_script(session, script)
     session
-  end
-
-  def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "select-form-live-submit", else: "select-changeset-submit"
-    click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do

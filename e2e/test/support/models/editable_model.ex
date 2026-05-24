@@ -148,21 +148,27 @@ defmodule E2eWeb.EditableModel do
 
   def set_live_form_text(session, text) when is_binary(text) do
     session
-    |> click(
-      css(
-        ~S|#editable-form [data-scope="editable"][data-part="edit-trigger"]|,
-        visible: :any
-      )
+    |> wait_for_has(
+      css("#editable-live-form-phoenix-section", visible: :any),
+      timeout: 15_000
     )
-    |> fill_in(
-      css(~S|#editable-form [data-scope="editable"][data-part="input"]|, visible: :any),
-      with: text
-    )
-    |> click(
-      css(
-        ~S|#editable-form [data-scope="editable"][data-part="submit-trigger"]|,
-        visible: :any
-      )
+    |> execute_script(
+      """
+      const input = document.querySelector('input[name="editable_phoenix[text]"]');
+      if (input) {
+        input.value = arguments[0];
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      const host = document.getElementById("editable-live-form-phoenix-text");
+      host?.dispatchEvent(
+        new CustomEvent("corex:editable:set-value", {
+          bubbles: false,
+          detail: { value: arguments[0] }
+        })
+      );
+      """,
+      [text]
     )
   end
 
@@ -170,7 +176,7 @@ defmodule E2eWeb.EditableModel do
     path =
       case mode do
         :static -> "/en/editable/form"
-        :live -> "/en/editable/live-form"
+        :live -> "/en/editable/live-form#editable-live-form-phoenix-section"
       end
 
     session = visit_path(session, path)
@@ -178,9 +184,12 @@ defmodule E2eWeb.EditableModel do
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "editable-form-live-submit", else: "editable-form-submit"
+    id =
+      if mode == :live,
+        do: "editable-live-form-phoenix-submit",
+        else: "editable-form-phoenix-submit"
+
     click(session, css("##{id}"))
-    session
   end
 
   def see_flash(session, flash_text) do

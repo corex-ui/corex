@@ -110,16 +110,40 @@ defmodule E2eWeb.PinInputModel do
     end)
   end
 
-  def fill_pin_input(session, pin) when is_binary(pin) do
-    host_id = "pin-input-form-pin"
+  def fill_pin_input(session, pin, mode \\ :static) when is_binary(pin) do
+    host_id =
+      case mode do
+        :live -> "pin-input-live-form-phoenix_pin"
+        _ -> "pin-input-form-phoenix_pin"
+      end
 
-    session
-    |> wait_root_pin_input_ready(host_id)
-    |> fill_pin_at_host(pin, host_id)
+    session =
+      case mode do
+        :live ->
+          wait_section_pin_input_ready(session, "pin-input-live-form-phoenix-section")
+
+        _ ->
+          assert_has(
+            session,
+            css(
+              ~s|##{host_id} [data-scope="pin-input"][data-part="input"][data-index="0"]|,
+              visible: :any
+            )
+          )
+
+          session
+      end
+
+    fill_pin_at_host(session, pin, host_id)
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "pin-input-form-live-submit", else: "pin-input-form-submit"
+    id =
+      case mode do
+        :live -> "pin-input-live-form-phoenix-submit"
+        _ -> "pin-input-form-phoenix-submit"
+      end
+
     click(session, css("##{id}"))
   end
 

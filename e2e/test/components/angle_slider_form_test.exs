@@ -30,7 +30,7 @@ defmodule E2eWeb.AngleSliderFormTest do
       |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
       |> AngleSlider.wait_static_changeset_angle_slider_ready()
       |> AngleSlider.submit_static_changeset()
-      |> AngleSlider.see_flash("Submitted (changeset): angle=0")
+      |> AngleSlider.see_flash("Submitted: angle=0")
     end
 
     feature "validate section submits default valid angle", %{session: session} do
@@ -39,7 +39,7 @@ defmodule E2eWeb.AngleSliderFormTest do
       |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
       |> AngleSlider.wait_static_validate_angle_slider_ready()
       |> AngleSlider.submit_static_validate()
-      |> AngleSlider.see_flash("Submitted (validated): angle=0")
+      |> AngleSlider.see_flash("Submitted: angle=0")
     end
 
     feature "has no A11y violations", %{session: session} do

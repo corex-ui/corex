@@ -618,14 +618,17 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     <form
       action={~p"/password-input/form"}
       method="post"
-          >
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <input
-        type="password"
+      <.password_input
         name="user[password]"
-        class="native-input"
-        autocomplete="new-password"
-      />
+        class="password-input"
+        auto_complete="new-password"
+      >
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
       <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
@@ -876,14 +879,16 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       id="password-input-plain-form"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <label class="w-full typo-label" for="password-input-native-password">Password</label>
-      <input
-        type="password"
+      <.password_input
         name="user[password]"
         id="password-input-native-password"
-        class="native-input w-full"
-        autocomplete="new-password"
-      />
+        class="password-input"
+        auto_complete="new-password"
+      >
+        <:label>Password</:label>
+        <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+      </.password_input>
       <.action
         type="submit"
         id="password-input-controller-submit"

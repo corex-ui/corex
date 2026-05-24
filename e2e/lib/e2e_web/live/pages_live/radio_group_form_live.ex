@@ -56,10 +56,12 @@ defmodule E2eWeb.RadioGroupFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"radio_group_ecto" => params}, socket) do
+  def handle_event("validate", params, socket) do
+    p = Map.get(params, "radio_group_ecto", %{})
+
     changeset =
       %RadioGroupForm{}
-      |> RadioGroupForm.changeset_validate(params)
+      |> RadioGroupForm.changeset_validate(p)
       |> Map.put(:action, :validate)
 
     {:noreply,
@@ -75,8 +77,10 @@ defmodule E2eWeb.RadioGroupFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"radio_group_ecto" => params}, socket) do
-    case RadioGroupForm.changeset_validate(%RadioGroupForm{}, params) do
+  def handle_event("save", params, socket) do
+    p = Map.get(params, "radio_group_ecto", %{})
+
+    case RadioGroupForm.changeset_validate(%RadioGroupForm{}, p) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: choice=#{data.choice}"
