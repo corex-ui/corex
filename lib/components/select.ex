@@ -598,11 +598,13 @@ defmodule Corex.Select do
   )
 
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the select")
+
   attr(:multiple, :boolean,
     default: false,
     doc:
       "Allow multiple selection. With field and form, submits name[] list params for Ecto {:array, :string}"
   )
+
   attr(:invalid, :boolean, default: false, doc: "Whether the select is invalid")
   attr(:name, :string, doc: "The name of the select")
   attr(:form, :string, doc: "The id of the form of the select")

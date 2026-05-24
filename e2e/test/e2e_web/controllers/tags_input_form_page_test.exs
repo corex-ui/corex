@@ -5,10 +5,10 @@ defmodule E2eWeb.TagsInputFormPageTest do
     conn = get(conn, ~p"/tags-input/form")
     html = html_response(conn, 200)
 
-    assert html =~ ~s(name="tags_input_phoenix[tags][]")
-    assert html =~ ~s(name="tags_input_ecto[tags][]")
-    assert html =~ ~s(id="tags-input-form-phoenix")
-    assert html =~ ~s(id="tags-input-form-ecto")
+    assert html =~ ~S(name="tags_input_phoenix[tags][]")
+    assert html =~ ~S(name="tags_input_ecto[tags][]")
+    assert html =~ ~S(id="tags-input-form-phoenix")
+    assert html =~ ~S(id="tags-input-form-ecto")
   end
 
   test "POST phoenix form with tags list", %{conn: conn} do

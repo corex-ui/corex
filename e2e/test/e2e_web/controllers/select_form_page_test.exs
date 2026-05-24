@@ -5,10 +5,10 @@ defmodule E2eWeb.SelectFormPageTest do
     conn = get(conn, ~p"/select/form")
     html = html_response(conn, 200)
 
-    assert html =~ ~s(name="select_phoenix[country]")
-    assert html =~ ~s(name="select_ecto[country]")
-    assert html =~ ~s(id="select-form-phoenix")
-    assert html =~ ~s(id="select-form-ecto")
+    assert html =~ ~S(name="select_phoenix[country]")
+    assert html =~ ~S(name="select_ecto[country]")
+    assert html =~ ~S(id="select-form-phoenix")
+    assert html =~ ~S(id="select-form-ecto")
   end
 
   test "POST phoenix form with country", %{conn: conn} do
