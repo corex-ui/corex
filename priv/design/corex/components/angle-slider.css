@@ -27,20 +27,30 @@
 
   .angle-slider [data-scope="angle-slider"][data-part="root"][data-orientation="horizontal"] {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: end;
     justify-content: end;
   }
 
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-orientation="horizontal"]
+    [data-scope="angle-slider"][data-part="label"] {
+    flex-shrink: 0;
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-orientation="horizontal"]
     [data-scope="angle-slider"][data-part="value-text"] {
-    width: fit-content;
+    width: auto;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch);
   }
 
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-orientation="horizontal"]
     [data-scope="angle-slider"][data-part="control"] {
+    flex-shrink: 0;
     margin-inline: 0;
   }
 
@@ -96,16 +106,18 @@
     justify-content: center;
     user-select: none;
     position: relative;
+    overflow: hidden;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="thumb"] {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 50%;
-    transform: translateX(1px);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    transform-origin: center;
     pointer-events: none;
-    width: 2px;
+    width: 0;
     color: var(--color-ink);
   }
 
@@ -116,10 +128,11 @@
   .angle-slider [data-scope="angle-slider"][data-part="thumb"]::before {
     content: "";
     position: absolute;
-    right: -1px;
-    top: -1px;
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    translate: -50% 0;
     height: var(--thumb-indicator-size);
-    width: var(--spacing-space-sm);
+    width: max(3px, calc(var(--thumb-size) * 0.12));
     background-color: var(--color-ink);
     border-radius: var(--radius-md);
   }
@@ -138,21 +151,23 @@
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="marker"] {
-    width: 2px;
     position: absolute;
     top: 0;
     bottom: 0;
-    left: calc(50% + 1px);
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    transform-origin: center;
+    width: 0;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="marker"]::before {
     content: "";
     position: absolute;
     top: calc(var(--thumb-size) / 4);
-    left: 0.5px;
+    inset-inline-start: 50%;
     width: 1px;
     height: calc(var(--thumb-size) / 2);
-    transform: translate(-50%, -50%);
+    translate: -50% -50%;
     background-color: var(--marker-color);
     border-radius: 1px;
   }
@@ -178,9 +193,11 @@
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="value-text"] {
+    --angle-slider-value-ch: 6;
+
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-space);
@@ -198,7 +215,16 @@
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     font-weight: var(--font-weight-normal);
+    font-variant-numeric: tabular-nums;
     color: var(--color-ink);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="value"] {
+    display: inline-block;
+    min-inline-size: calc(var(--angle-slider-value-ch, 6) * 1ch);
+    text-align: center;
   }
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-invalid]
