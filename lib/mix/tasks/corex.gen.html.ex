@@ -234,6 +234,8 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
     if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
 
+    Mix.Corex.format_generated_files(files)
+
     context
   end
 

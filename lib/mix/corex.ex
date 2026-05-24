@@ -540,6 +540,14 @@ defmodule Mix.Corex do
     Keyword.has_key?(layout_opts, :locale) and not verified_routes_path_prefixes?(web_module)
   end
 
+  def format_generated_files(files) when is_list(files) do
+    paths = for {_, _, path} <- files, do: path
+
+    if paths != [] do
+      Mix.Task.run("format", paths)
+    end
+  end
+
   defp web_ex_path(web_module) do
     web_module
     |> Module.split()

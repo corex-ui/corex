@@ -18,68 +18,68 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     >
     <% else %><Layouts.app flash={@flash}><% end %>
       <article class="layout__article">
-      <.layout_heading class="layout-heading">
-        <:title>{@page_title}</:title>
-        <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
-        <:actions :if={@live_action == :edit}>
-          <.dialog
-            id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}"}
-            class="dialog"
-            role="alertdialog"
-            modal
-            close_on_interact_outside={false}
-            initial_focus={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
-            final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
-          >
-            <:trigger
-              class="button button--alert button--square"
-              aria_label={"Delete <%= schema.human_singular %>"}
+        <.layout_heading class="layout-heading">
+          <:title>{@page_title}</:title>
+          <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
+          <:actions :if={@live_action == :edit}>
+            <.dialog
+              id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}"}
+              class="dialog"
+              role="alertdialog"
+              modal
+              close_on_interact_outside={false}
+              initial_focus={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
+              final_focus={"dialog:<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}:trigger"}
             >
-              <.heroicon name="hero-trash" />
-            </:trigger>
-            <:title>Delete <%= schema.singular %>?</:title>
-            <:description>This action cannot be undone.</:description>
-            <:content>
-              <div class="flex flex-wrap justify-end gap-2 mt-4">
-                <.action
-                  id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
-                  phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)}
-                  class="button button--sm button--ghost"
-                >
-                  Cancel
-                </.action>
-                <.action
-                  id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-confirm"}
-                  phx-click={
-                    Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)
-                    |> JS.push("delete", value: %{<%= primary_key %>: @<%= schema.singular %>.<%= primary_key %>})
-                  }
-                  class="button button--sm button--alert"
-                >
-                  Delete
-                </.action>
-              </div>
-            </:content>
-          </.dialog>
-        </:actions>
-      </.layout_heading>
+              <:trigger
+                class="button button--alert button--square"
+                aria_label="Delete <%= schema.human_singular %>"
+              >
+                <.heroicon name="hero-trash" />
+              </:trigger>
+              <:title>Delete <%= schema.singular %>?</:title>
+              <:description>This action cannot be undone.</:description>
+              <:content>
+                <div class="flex flex-wrap justify-end gap-2 mt-4">
+                  <.action
+                    id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-cancel"}
+                    phx-click={Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)}
+                    class="button button--sm button--ghost"
+                  >
+                    Cancel
+                  </.action>
+                  <.action
+                    id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}-confirm"}
+                    phx-click={
+                      Corex.Dialog.set_open("<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}", false)
+                      |> JS.push("delete", value: %{<%= primary_key %>: @<%= schema.singular %>.<%= primary_key %>})
+                    }
+                    class="button button--sm button--alert"
+                  >
+                    Delete
+                  </.action>
+                </div>
+              </:content>
+            </.dialog>
+          </:actions>
+        </.layout_heading>
 
-      <.form
-        for={@form}
-        id={@form.id}
-        phx-change="validate"
-        phx-submit="save"
-      >
-<%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 8) %>
-        <div class="layout__row justify-between">
-          <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">
-            Cancel
-          </.navigate>
-          <.action phx-disable-with="Saving..." class="button button--accent" type="submit">
-            Save <%= schema.human_singular %>
-          </.action>
-        </div>
-      </.form>
+        <.form
+          for={@form}
+          id={@form.id}
+          phx-change="validate"
+          phx-submit="save"
+        >
+<%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 10) %>
+          <div class="layout__row justify-between">
+            <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">
+              Cancel
+            </.navigate>
+            <.action phx-disable-with="Saving..." class="button button--accent" type="submit">
+              Save <%= schema.human_singular %>
+            </.action>
+          </div>
+        </.form>
       </article>
     </Layouts.app>
     """
