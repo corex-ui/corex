@@ -118,8 +118,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
       when is_list(args) and is_binary(app_path) and is_list(opts) do
     env = opts |> Keyword.get(:env, []) |> merge_hex_home_env()
 
-    System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path), env: env] ++
-                              Keyword.delete(opts, :env))
+    System.cmd(
+      "mix",
+      args,
+      [stderr_to_stdout: true, cd: Path.expand(app_path), env: env] ++
+        Keyword.delete(opts, :env)
+    )
   end
 
   def assert_dir(path) do
