@@ -170,57 +170,60 @@ defmodule E2eWeb.ComboboxModel do
   end
 
   def hidden_input_value_in_anatomy_section(session, section_dom_id) do
-    el =
-      find(
-        session,
-        css(
-          ~s|section##{section_dom_id} [phx-hook="Combobox"] input[data-scope="combobox"][data-part="hidden-input"]|,
-          visible: :any
-        )
-      )
-
-    Wallaby.Element.attr(el, "value")
+    combobox_value(session, "section#" <> section_dom_id)
   end
 
   def hidden_input_value_by_host_id(session, host_dom_id) do
-    el =
-      find(
-        session,
-        css(
-          ~s|##{host_dom_id} input[data-scope="combobox"][data-part="hidden-input"]|,
-          visible: :any
-        )
-      )
-
-    Wallaby.Element.attr(el, "value")
+    combobox_value(session, "#" <> host_dom_id)
   end
 
   def wait_hidden_value_in_anatomy_section(session, section_dom_id, expected, opts \\ [])
       when is_binary(expected) do
-    wait_for_has(
-      session,
-      css(
-        ~s|section##{section_dom_id} [phx-hook="Combobox"] input[data-scope="combobox"][data-part="hidden-input"][value="#{expected}"]|,
-        visible: :any
-      ),
-      opts
-    )
-
+    deadline = Keyword.get(opts, :timeout, 8_000) + System.monotonic_time(:millisecond)
+    busy_wait_combobox_value(session, "section#" <> section_dom_id, expected, deadline)
     session
   end
 
   def wait_hidden_value_by_host_id(session, host_dom_id, expected, opts \\ [])
       when is_binary(expected) do
-    wait_for_has(
-      session,
-      css(
-        ~s|##{host_dom_id} input[data-scope="combobox"][data-part="hidden-input"][value="#{expected}"]|,
-        visible: :any
-      ),
-      opts
-    )
-
+    deadline = Keyword.get(opts, :timeout, 8_000) + System.monotonic_time(:millisecond)
+    busy_wait_combobox_value(session, "#" <> host_dom_id, expected, deadline)
     session
+  end
+
+  defp combobox_value(session, root_selector) do
+    key = {:e2e_combobox_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const root = document.querySelector(arguments[0]);
+        const input = root?.querySelector('[data-scope="combobox"][data-part="hidden-input"]');
+        return input?.value ?? "";
+        """,
+        [root_selector],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
+  defp busy_wait_combobox_value(session, root_selector, expected, deadline) do
+    actual = combobox_value(session, root_selector)
+
+    if actual == expected do
+      :ok
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        raise Wallaby.ExpectationNotMetError,
+          message:
+            "expected combobox value #{inspect(expected)} in #{root_selector}, got #{inspect(actual)}"
+      else
+        Process.sleep(50)
+        busy_wait_combobox_value(session, root_selector, expected, deadline)
+      end
+    end
   end
 
   def click_button_in_section(session, section_id, label) when is_binary(label) do

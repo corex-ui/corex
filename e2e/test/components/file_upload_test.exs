@@ -82,18 +82,12 @@ defmodule E2eWeb.FileUploadTest do
 
   describe "form" do
     feature "form page renders file upload field", %{session: session} do
-      session =
-        session
-        |> visit("/en/file-upload/form")
-        |> assert_has(css("#file-upload-form-page", visible: :any))
+      alias E2eWeb.FileUploadModel, as: FileUpload
 
-      assert has?(
-               session,
-               css(
-                 "#file-upload-cs-field[phx-hook='FileUpload']:not([data-loading])",
-                 visible: :any
-               )
-             )
+      session
+      |> visit("/en/file-upload/form")
+      |> assert_has(css("#file-upload-form-page", visible: :any))
+      |> FileUpload.wait_section_file_upload_ready("file-upload-form-phoenix")
     end
   end
 end

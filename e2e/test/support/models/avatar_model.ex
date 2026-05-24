@@ -107,6 +107,33 @@ defmodule E2eWeb.AvatarModel do
   end
 
   def set_events_src(session, url) when is_binary(url) do
-    E2eWeb.NativeInputModel.fill_input_via_script(session, "avatar-events-src", url)
+    escaped = String.replace(url, "'", "\\'")
+
+    _ =
+      execute_script(
+        session,
+        """
+        (function () {
+          var el = document.getElementById("avatar-events-src");
+          if (!el) return "not found";
+          el.value = '#{escaped}';
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+          return "ok";
+        })();
+        """
+      )
+
+    session
+  end
+
+  def wait_events_src_applied(session, url, opts \\ []) when is_binary(url) do
+    wait_for_has(
+      session,
+      css(~s|#avatar-events img[src*="#{url}"]|, visible: :any),
+      opts
+    )
+
+    session
   end
 end

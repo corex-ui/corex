@@ -75,6 +75,7 @@ defmodule E2eWeb.AvatarTest do
 
       session
       |> Avatar.set_events_src("https://corex-ui.com/pwa-192x192.png")
+      |> Avatar.wait_events_src_applied("pwa-192x192", timeout: 12_000)
       |> Avatar.wait_log_rows_grew("avatar-events-log", before, timeout: 12_000)
     end
   end
