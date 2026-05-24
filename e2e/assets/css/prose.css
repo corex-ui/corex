@@ -1,5 +1,3 @@
-@import "../main.css";
-
 @layer components {
   .prose {
     width: 100%;
