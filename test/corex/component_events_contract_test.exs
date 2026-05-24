@@ -1,11 +1,11 @@
 defmodule Corex.ComponentEventsContractTest do
   @moduledoc false
-  
+
   use ExUnit.Case, async: true
 
   @components_root Path.expand("../../lib/components", __DIR__)
 
-  @server_only ~w(
+  @server_only ~W(
     on_draw_end
     on_select
     on_select_all
