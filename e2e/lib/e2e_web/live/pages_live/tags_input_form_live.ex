@@ -25,14 +25,14 @@ defmodule E2eWeb.TagsInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
+      Phoenix.Component.to_form(%{"tags" => ["alpha", "beta"]},
         as: :tags_input_phoenix,
         id: @phoenix_form_id
       )
 
     ecto_form =
       %TagsInputForm{}
-      |> TagsInputForm.changeset_validate(%{"tags" => "alpha,beta"})
+      |> TagsInputForm.changeset_validate(%{"tags" => ["alpha", "beta"]})
       |> Phoenix.Component.to_form(as: :tags_input_ecto, id: @ecto_form_id)
 
     socket
@@ -42,34 +42,27 @@ defmodule E2eWeb.TagsInputFormLive do
 
   @impl true
   def handle_event("save_phoenix", %{"tags_input_phoenix" => params}, socket) do
-    tags = params["tags"] || ""
+    tags = List.wrap(params["tags"])
 
     {:noreply,
-     socket
-     |> Toast.create("layout-toast", "Submitted", "tags=#{inspect(tags)}", :info, duration: 5000)
-     |> assign(
-       :phoenix_form,
-       Phoenix.Component.to_form(%{"tags" => tags}, as: :tags_input_phoenix, id: @phoenix_form_id)
+     Toast.create(
+       socket,
+       "layout-toast",
+       "Submitted",
+       "tags=#{inspect(tags)}",
+       :info,
+       duration: 5000
      )}
   end
 
   @impl true
-  def handle_event("validate", %{"tags_input_ecto" => params}, socket) do
-    changeset =
-      %TagsInputForm{}
-      |> TagsInputForm.changeset_validate(params)
-      |> Map.put(:action, :validate)
+  def handle_event("validate", params, socket) when not is_map_key(params, "tags_input_ecto") do
+    {:noreply, socket}
+  end
 
-    {:noreply,
-     assign(
-       socket,
-       :ecto_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :tags_input_ecto,
-         id: @ecto_form_id
-       )
-     )}
+  @impl true
+  def handle_event("validate", %{"tags_input_ecto" => params}, socket) do
+    {:noreply, assign_ecto_form(socket, params)}
   end
 
   @impl true
@@ -77,19 +70,11 @@ defmodule E2eWeb.TagsInputFormLive do
     case TagsInputForm.changeset_validate(%TagsInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: tags=#{data.tags}"
+        message = "Submitted: tags=#{inspect(data.tags)}"
 
         {:noreply,
          socket
-         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
-         |> assign(
-           :ecto_form,
-           Phoenix.Component.to_form(
-             TagsInputForm.changeset_validate(%TagsInputForm{}, params),
-             as: :tags_input_ecto,
-             id: @ecto_form_id
-           )
-         )}
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -103,6 +88,23 @@ defmodule E2eWeb.TagsInputFormLive do
            )
          )}
     end
+  end
+
+  defp assign_ecto_form(socket, params) when is_map(params) do
+    changeset =
+      %TagsInputForm{}
+      |> TagsInputForm.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    assign(
+      socket,
+      :ecto_form,
+      Phoenix.Component.to_form(changeset,
+        action: :validate,
+        as: :tags_input_ecto,
+        id: @ecto_form_id
+      )
+    )
   end
 
   @impl true

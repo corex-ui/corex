@@ -436,7 +436,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@phoenix_form}
       action={~p"/password-input/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
@@ -473,7 +472,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.password_input field={@phoenix_form[:password]} class="password-input" id="password-input-live-form-phoenix-password">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
@@ -493,7 +492,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={@form.id}
           >
       <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
@@ -556,7 +554,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={@form.id}
           >
       <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
@@ -653,7 +650,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
           >
@@ -728,7 +725,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
           >
@@ -814,7 +811,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={@form.id}
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-changeset-field">
         <:label>Password</:label>
@@ -846,7 +842,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={@form.id}
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-validate-field">
         <:label>Password</:label>
@@ -904,7 +899,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -933,7 +927,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -971,7 +964,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={@form.id}
     >
       <.password_input field={f[:password]} class="password-input">
         <:label>Password</:label>
@@ -996,7 +988,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.password_input
         field={@form[:password]}
         class="password-input"

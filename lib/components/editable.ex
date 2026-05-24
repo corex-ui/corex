@@ -72,7 +72,7 @@ defmodule Corex.Editable do
   Use `field={f[:name]}` inside `<.form>` for changeset-backed forms.
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate">
     <.editable field={@form[:name]} class="editable">
       <:label>Name</:label>
       <:error :let={msg}>

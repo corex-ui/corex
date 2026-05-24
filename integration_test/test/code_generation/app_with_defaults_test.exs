@@ -250,7 +250,8 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
           Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/post_form.html.heex")
 
         assert_file(form_path, fn file ->
-          assert file =~ "id={@form.id}"
+          assert file =~ "for={@form}"
+          refute file =~ "id={@form.id}"
         end)
       end)
     end
@@ -292,7 +293,8 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         form_path = Path.join(app_root_path, "lib/phx_blog_web/live/post_live/form.ex")
 
         assert_file(form_path, fn file ->
-          assert file =~ "id={@form.id}"
+          assert file =~ "for={@form}"
+          refute file =~ "id={@form.id}"
           assert file =~ "role=\"alertdialog\""
           assert file =~ "@live_action == :edit"
           assert file =~ "handle_event(\"delete\""

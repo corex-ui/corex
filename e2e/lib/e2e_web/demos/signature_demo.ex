@@ -270,7 +270,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@phoenix_form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -313,7 +312,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@ecto_form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@ecto_form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -365,7 +363,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.signature_pad field={@phoenix_form[:signature]} class="signature-pad" id="signature-live-form-phoenix-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -407,7 +405,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
       <.signature_pad field={@ecto_form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -516,7 +514,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -555,7 +552,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -596,7 +592,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -624,7 +619,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -652,7 +646,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
@@ -729,7 +722,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.signature_pad
         field={@form[:signature]}
         class="signature-pad"
@@ -751,7 +744,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.signature_pad
         field={@form[:signature]}
         class="signature-pad"

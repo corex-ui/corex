@@ -124,3 +124,25 @@ export function canPushEvent(liveSocket: {
 }): boolean {
   return !liveSocket.main.isDead && liveSocket.main.isConnected();
 }
+
+export function associateInputWithFormIfOutside(input: HTMLElement, hookEl: HTMLElement): void {
+  const formId = getString(hookEl, "form");
+  if (!formId) return;
+  if (hookEl.closest("form") !== null) return;
+  input.setAttribute("form", formId);
+}
+
+export function clearFormAssociationWhenNested(input: HTMLElement, hookEl: HTMLElement): void {
+  if (hookEl.closest("form") !== null) {
+    input.removeAttribute("form");
+  }
+}
+
+export function syncInputFormAssociation(input: HTMLElement | null, hookEl: HTMLElement): void {
+  if (!input) return;
+  if (hookEl.closest("form") !== null) {
+    input.removeAttribute("form");
+  } else {
+    associateInputWithFormIfOutside(input, hookEl);
+  }
+}

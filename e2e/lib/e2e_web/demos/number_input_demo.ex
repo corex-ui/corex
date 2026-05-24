@@ -701,7 +701,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@phoenix_form}
       action={~p"/number-input/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.number_input field={f[:value]} class="number-input">
         <:label>Value</:label>
@@ -742,7 +741,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.number_input field={@phoenix_form[:value]} class="number-input" id="number-input-live-form-phoenix-field">
         <:label>Value</:label>
         <:decrement_trigger>
@@ -766,7 +765,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={@form.id}
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.number_input field={f[:value]} class="number-input">
@@ -906,7 +904,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={@form.id}
     >
       <.number_input
         field={f[:value]}
@@ -939,7 +936,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={@form.id}
     >
       <.number_input
         field={f[:value]}
@@ -998,7 +994,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_changeset_heex do
     ~S"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.number_input field={@form[:value]} class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
@@ -1057,7 +1053,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -1119,7 +1115,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1155,7 +1150,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1192,7 +1186,6 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={@form.id}
     >
       <.number_input field={f[:value]} class="number-input">
         <:label>Value</:label>
@@ -1221,7 +1214,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.number_input
         field={@form[:value]}
         class="number-input"

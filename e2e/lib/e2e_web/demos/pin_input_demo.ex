@@ -117,7 +117,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@phoenix_form}
       action={~p"/pin-input/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
         <:label>Code</:label>
@@ -157,7 +156,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@ecto_form}
       action={~p"/pin-input/form"}
       method="post"
-      id={@ecto_form.id}
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
         <:label>Code</:label>
@@ -232,7 +230,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.pin_input field={@phoenix_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
         <:label>Code</:label>
       </.pin_input>
@@ -245,7 +243,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
       <.pin_input field={@ecto_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
         <:label>Code</:label>
         <:error :let={msg}>
@@ -269,7 +267,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
-      id={@form.id}
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
         <:label>Code</:label>
@@ -290,7 +287,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
       for={@form}
       action={~p"/pin-input/form"}
       method="post"
-      id={@form.id}
     >
       <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
         <:label>Code</:label>
@@ -326,7 +322,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
         <:label>Code</:label>
       </.pin_input>
@@ -341,7 +337,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.pin_input field={@form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
         <:label>Code</:label>
         <:error :let={msg}>

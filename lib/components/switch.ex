@@ -120,7 +120,7 @@ defmodule Corex.Switch do
   Use `field={f[:notifications]}` inside `<.form>`. In LiveView, add `controlled` when the form drives checked state.
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate">
     <.switch field={@form[:notifications]} class="switch" controlled>
       <:label>Enable notifications</:label>
       <:error :let={msg}>

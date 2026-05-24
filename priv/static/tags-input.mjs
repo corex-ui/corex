@@ -3,7 +3,7 @@ import {
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   trackInteractOutside
-} from "./chunks/chunk-QS5WHZEI.mjs";
+} from "./chunks/chunk-4QMNVH3P.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -19,6 +19,7 @@ import {
   Component,
   VanillaMachine,
   ariaAttr,
+  associateInputWithFormIfOutside,
   canPushEvent,
   contains,
   createAnatomy,
@@ -51,7 +52,7 @@ import {
   trackFormControl,
   uniq,
   warn
-} from "./chunks/chunk-XGGASIX4.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tags-input@1.40.0/node_modules/@zag-js/tags-input/dist/tags-input.anatomy.mjs
 var anatomy = createAnatomy("tagsInput").parts(
@@ -1158,7 +1159,6 @@ var machine = createMachine({
 function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
   const submitName = getString(el, "submitName");
   if (!submitName) return;
-  const form = getString(el, "form");
   let container = el.querySelector(
     '[data-scope="tags-input"][data-part="array-inputs"]'
   );
@@ -1172,20 +1172,36 @@ function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
     root.prepend(container);
   }
   container.replaceChildren();
-  values.forEach((value) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.setAttribute("data-scope", "tags-input");
-    input.setAttribute("data-part", "array-input");
-    input.name = submitName;
-    if (form) input.setAttribute("form", form);
-    input.value = String(value);
-    container.appendChild(input);
-  });
+  let notifyInput = null;
+  if (values.length === 0) {
+    const empty = document.createElement("input");
+    empty.type = "hidden";
+    empty.setAttribute("data-scope", "tags-input");
+    empty.setAttribute("data-part", "array-input");
+    empty.setAttribute("data-empty", "true");
+    empty.name = submitName;
+    associateInputWithFormIfOutside(empty, el);
+    empty.value = "";
+    container.appendChild(empty);
+    notifyInput = empty;
+  } else {
+    values.forEach((value, index) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.setAttribute("data-scope", "tags-input");
+      input.setAttribute("data-part", "array-input");
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, el);
+      input.value = String(value);
+      container.appendChild(input);
+      notifyInput = input;
+    });
+  }
   queueMicrotask(() => {
     onTouched?.();
-    container.dispatchEvent(new Event("input", { bubbles: true }));
-    container.dispatchEvent(new Event("change", { bubbles: true }));
+    if (!notifyInput) return;
+    notifyInput.dispatchEvent(new Event("input", { bubbles: true }));
+    notifyInput.dispatchEvent(new Event("change", { bubbles: true }));
   });
 }
 function syncTagsInputFormForPhoenix(el, values, onTouched) {
@@ -1325,7 +1341,13 @@ var TagsInput = class extends Component {
     const inputEl = this.el.querySelector(
       '[data-scope="tags-input"][data-part="input"]'
     );
-    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    if (inputEl) {
+      this.spreadProps(inputEl, this.api.getInputProps());
+      if (getString(this.el, "submitName")) {
+        inputEl.removeAttribute("name");
+        inputEl.removeAttribute("form");
+      }
+    }
     if (getString(this.el, "submitName")) {
       syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);
     }

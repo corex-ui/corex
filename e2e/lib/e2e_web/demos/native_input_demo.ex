@@ -424,7 +424,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@phoenix_form}
       action={~p"/native-input/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.native_input field={f[:email]} type="email" placeholder="you@example.com" class="native-input">
         <:label>Email</:label>
@@ -462,7 +461,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.native_input field={@phoenix_form[:email]} type="email" placeholder="you@example.com" class="native-input">
         <:label>Email</:label>
       </.native_input>
@@ -480,7 +479,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={@form.id}
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <div class="flex flex-col gap-3">
@@ -784,7 +782,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={@form.id}
       class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -995,7 +992,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={@form.id}
       class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -1392,7 +1388,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
     >
@@ -1435,7 +1431,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -1500,7 +1496,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="flex flex-col gap-6 w-full max-w-lg"
@@ -1709,7 +1704,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="flex flex-col gap-6 w-full max-w-lg"
@@ -1923,7 +1917,6 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={@form.id}
     >
       <.native_input field={f[:email]} type="email" placeholder="you@example.com" class="native-input">
         <:label>Email</:label>
@@ -1946,7 +1939,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.native_input
         field={@form[:email]}
         type="email"

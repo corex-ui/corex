@@ -332,7 +332,6 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@phoenix_form}
       action={~p"/editable/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-phoenix-text">
         <:label>Text</:label>
@@ -373,7 +372,6 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@ecto_form}
       action={~p"/editable/form"}
       method="post"
-      id={@ecto_form.id}
     >
       <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-ecto-text">
         <:label>Text</:label>
@@ -450,7 +448,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.editable field={@phoenix_form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-phoenix-text">
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -464,7 +462,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
       <.editable field={@ecto_form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-ecto-text">
         <:label>Text</:label>
         <:error :let={msg}>
@@ -489,7 +487,6 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
-      id={@form.id}
     >
       <.editable
         field={f[:text]}
@@ -520,7 +517,6 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
-      id={@form.id}
     >
       <.editable
         field={f[:text]}
@@ -577,7 +573,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.editable
         field={@form[:text]}
         placeholder="Enter text"
@@ -602,7 +598,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.editable
         field={@form[:text]}
         on_value_change="value_changed"
@@ -637,7 +633,7 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
           >
@@ -788,7 +784,6 @@ defmodule E2eWeb.Demos.EditableDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >

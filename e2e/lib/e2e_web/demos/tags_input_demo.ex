@@ -235,7 +235,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@phoenix_form}
       action={~p"/tags-input/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.tags_input field={f[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -252,7 +251,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     def tags_input_form_page(conn, _params) do
       phoenix_form =
-        Phoenix.Component.to_form(%{"tags" => "alpha,beta"}, as: :tags_input_phoenix, id: "tags-input-form-phoenix")
+        Phoenix.Component.to_form(%{"tags" => ["alpha", "beta"]}, as: :tags_input_phoenix, id: "tags-input-form-phoenix")
 
       render(conn, :tags_input_form_page, phoenix_form: phoenix_form)
     end
@@ -271,7 +270,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.tags_input field={@phoenix_form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -290,7 +289,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
-      id={@form.id}
           >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.tags_input field={f[:tags]} class="tags-input">
@@ -312,7 +310,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     def tags_input_form_page(conn, _params) do
       form =
-        MyApp.Forms.TagsInputForm.changeset_validate(%MyApp.Forms.TagsInputForm{}, %{"tags" => "alpha,beta"})
+        MyApp.Forms.TagsInputForm.changeset_validate(%MyApp.Forms.TagsInputForm{}, %{"tags" => ["alpha", "beta"]})
         |> Phoenix.Component.to_form(as: :tags_input_changeset, id: "tags-input-changeset-form")
 
       render(conn, :tags_input_form_page, form: form)
@@ -384,7 +382,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
-      id={@form.id}
     >
       <.tags_input field={f[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -431,7 +428,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
           >
@@ -490,7 +487,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1317,7 +1313,6 @@ defmodule E2eWeb.Demos.TagsInputDemo do
       for={@form}
       action={~p"/tags-input/form"}
       method="post"
-      id={@form.id}
     >
       <.tags_input field={f[:tags]} class="tags-input">
         <:label>Keywords</:label>
@@ -1338,7 +1333,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
       <.tags_input field={@ecto_form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1358,7 +1353,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.tags_input field={@form[:tags]} class="tags-input">
         <:label>Keywords</:label>
         <:close><.heroicon name="hero-x-mark" /></:close>
@@ -1379,20 +1374,15 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
       def mount(_params, _session, socket) do
         phoenix_form =
-          Phoenix.Component.to_form(%{"tags" => "alpha,beta"}, as: :tags_input_phoenix, id: "tags-input-live-form-phoenix")
+          Phoenix.Component.to_form(%{"tags" => ["alpha", "beta"]}, as: :tags_input_phoenix, id: "tags-input-live-form-phoenix")
 
         {:ok, assign(socket, :phoenix_form, phoenix_form)}
       end
 
       def handle_event("save_phoenix", %{"tags_input_phoenix" => params}, socket) do
-        tags = params["tags"] || ""
+        tags = List.wrap(params["tags"])
 
-        {:noreply,
-         assign(
-           socket,
-           :phoenix_form,
-           Phoenix.Component.to_form(%{"tags" => tags}, as: :tags_input_phoenix, id: "tags-input-live-form-phoenix")
-         )}
+        {:noreply, put_flash(socket, :info, "Submitted: tags=#{inspect(tags)}")}
       end
     end
     """
@@ -1435,16 +1425,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
           %Ecto.Changeset{valid?: true} = changeset ->
             _data = Ecto.Changeset.apply_changes(changeset)
 
-            {:noreply,
-             assign(
-               socket,
-               :ecto_form,
-               Phoenix.Component.to_form(
-                 MyApp.Forms.TagsInputForm.changeset_validate(%MyApp.Forms.TagsInputForm{}, params),
-                 as: :tags_input_ecto,
-                 id: "tags-input-live-form-ecto"
-               )
-             )}
+            {:noreply, put_flash(socket, :info, "Submitted")}
 
           changeset ->
             {:noreply,

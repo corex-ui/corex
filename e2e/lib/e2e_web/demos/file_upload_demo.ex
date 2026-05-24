@@ -164,7 +164,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_controller_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} action={~p"/file-upload/form"} method="post" id={@phoenix_form.id} multipart>
+    <.form for={@phoenix_form} action={~p"/file-upload/form"} method="post" multipart>
       <.file_upload field={@phoenix_form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -195,7 +195,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix" multipart>
+    <.form for={@phoenix_form} phx-submit="save_phoenix" multipart>
       <.file_upload field={@phoenix_form[:attachment]} class="file-upload" id="file-upload-live-phoenix-field">
         <:label>Attachment</:label>
         <:close>
@@ -211,7 +211,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_changeset_heex do
     ~S"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
@@ -237,7 +237,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_validate_heex do
     ~S"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <input type="hidden" name="file_upload_validate[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
@@ -299,7 +299,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       for={@form}
       action={~p"/file-upload/form"}
       method="post"
-      id={@form.id}
       multipart
     >
       <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
@@ -328,7 +327,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       for={@form}
       action={~p"/file-upload/form"}
       method="post"
-      id={@form.id}
       multipart
     >
       <input type="hidden" name="file_upload_validate[_sent]" value="1" />
@@ -627,7 +625,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_controller_phoenix(assigns) do
     ~H"""
-    <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -650,7 +648,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix" multipart>
+    <.form for={@form} phx-submit="save_phoenix" multipart>
       <.file_upload id="file-upload-live-phoenix-field" field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -668,7 +666,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save" multipart>
+    <.form for={@form} phx-change="validate" phx-submit="save" multipart>
       <.file_upload id="file-upload-live-ecto-field" field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>

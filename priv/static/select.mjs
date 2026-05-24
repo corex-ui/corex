@@ -1,6 +1,6 @@
 import {
   readStringListControlledZagProps
-} from "./chunks/chunk-UUEU3QDP.mjs";
+} from "./chunks/chunk-AS2EYUTO.mjs";
 import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage
@@ -8,24 +8,24 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-KHWEM5PS.mjs";
+} from "./chunks/chunk-EPNQR235.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-YGX3OCBP.mjs";
-import "./chunks/chunk-QS5WHZEI.mjs";
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-RONCOJLT.mjs";
+} from "./chunks/chunk-VJGUNSK5.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-VXZFQO6Q.mjs";
+} from "./chunks/chunk-OAGPTRUC.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-Q3YPKFFU.mjs";
+} from "./chunks/chunk-4PIYPYVK.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -34,7 +34,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-VGZJOUNL.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -73,9 +73,10 @@ import {
   observeAttributes,
   raf,
   scrollIntoView,
+  syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-XGGASIX4.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1331,9 +1332,12 @@ var Select = class extends Component {
       '[data-scope="select"][data-part="value-input"]'
     );
     const formArrayName = getString(this.el, "hiddenSelectName");
-    if (valueInput?.name && !formArrayName) {
-      const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
-      valueInput.value = valueStr;
+    if (valueInput) {
+      syncInputFormAssociation(valueInput, this.el);
+      if (valueInput.name && !formArrayName) {
+        const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
+        valueInput.value = valueStr;
+      }
     }
     const hiddenSelect = this.el.querySelector(
       '[data-scope="select"][data-part="hidden-select"]'
@@ -1365,6 +1369,7 @@ var Select = class extends Component {
         hiddenSelect.disabled = true;
         hiddenSelect.removeAttribute("name");
       }
+      syncInputFormAssociation(hiddenSelect, this.el);
     }
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);

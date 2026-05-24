@@ -22,6 +22,13 @@ defmodule Corex.TagsInputArrayFormTest do
     assert Ecto.Changeset.apply_changes(changeset).tags == ["alpha", "beta"]
   end
 
+  test "ecto cast treats empty name[] submission as empty array" do
+    changeset = Profile.changeset(%Profile{}, %{"tags" => [""]})
+
+    assert changeset.valid?
+    assert Ecto.Changeset.apply_changes(changeset).tags == []
+  end
+
   test "ecto cast rejects comma string params" do
     changeset = Profile.changeset(%Profile{}, %{"tags" => "alpha,beta"})
 

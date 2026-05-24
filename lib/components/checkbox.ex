@@ -387,7 +387,7 @@ defmodule Corex.Checkbox do
 
   ## Form
 
-  Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. In LiveView, pass `controlled` on `<.checkbox>` so the server stays the source of truth.
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. In LiveView, pass `controlled` on `<.checkbox>` so the server stays the source of truth.
 
   <!-- tabs-open -->
 
@@ -401,7 +401,6 @@ defmodule Corex.Checkbox do
         for={@form}
         action="/account/terms"
         method="post"
-        id={@form.id}
       >
         <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms</:label>
@@ -491,7 +490,6 @@ defmodule Corex.Checkbox do
         for={@form}
         action="/account/terms"
         method="post"
-        id={@form.id}
       >
         <.checkbox field={f[:terms]} class="checkbox">
           <:label>Accept terms (strict messages)</:label>
@@ -597,7 +595,7 @@ defmodule Corex.Checkbox do
   ```heex
       <.form
         for={@form}
-        id={@form.id}
+       
         phx-change="validate"
         phx-submit="save"
       >
@@ -681,7 +679,7 @@ defmodule Corex.Checkbox do
   ```heex
       <.form
         for={@form}
-        id={@form.id}
+       
         phx-change="validate_strict"
         phx-submit="save_strict"
       >

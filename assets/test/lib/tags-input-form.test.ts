@@ -25,6 +25,44 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     expect(inputs[1]!.value).toBe("beta");
   });
 
+  it("renders empty placeholder input when there are no tags", () => {
+    const root = el({ submitName: "post[tags][]" });
+    root.innerHTML = `
+      <div data-scope="tags-input" data-part="root">
+        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+      </div>
+    `;
+
+    syncTagsArrayInputsForPhoenix(root, []);
+
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-scope="tags-input"][data-part="array-input"][data-empty]'
+    )!;
+    expect(input.name).toBe("post[tags][]");
+    expect(input.value).toBe("");
+  });
+
+  it("does not set form attribute when the hook is inside a form element", () => {
+    const root = el({ submitName: "post[tags][]", form: "post-form" });
+    const form = document.createElement("form");
+    form.id = "post-form";
+    form.innerHTML = `
+      <div data-scope="tags-input" data-part="root">
+        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+      </div>
+    `;
+    form.prepend(root);
+    document.body.appendChild(form);
+
+    syncTagsArrayInputsForPhoenix(root, ["alpha"]);
+
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-scope="tags-input"][data-part="array-input"]'
+    )!;
+    expect(input.hasAttribute("form")).toBe(false);
+    form.remove();
+  });
+
   it("does nothing without submit name", () => {
     const root = el({});
     root.innerHTML = `<div data-scope="tags-input" data-part="array-inputs"></div>`;

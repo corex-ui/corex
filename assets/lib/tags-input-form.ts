@@ -1,4 +1,4 @@
-import { getString } from "./util";
+import { associateInputWithFormIfOutside, getString } from "./util";
 
 export function syncTagsArrayInputsForPhoenix(
   el: HTMLElement,
@@ -8,7 +8,6 @@ export function syncTagsArrayInputsForPhoenix(
   const submitName = getString(el, "submitName");
   if (!submitName) return;
 
-  const form = getString(el, "form");
   let container = el.querySelector<HTMLElement>(
     '[data-scope="tags-input"][data-part="array-inputs"]'
   );
@@ -25,21 +24,38 @@ export function syncTagsArrayInputsForPhoenix(
 
   container.replaceChildren();
 
-  values.forEach((value) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.setAttribute("data-scope", "tags-input");
-    input.setAttribute("data-part", "array-input");
-    input.name = submitName;
-    if (form) input.setAttribute("form", form);
-    input.value = String(value);
-    container!.appendChild(input);
-  });
+  let notifyInput: HTMLInputElement | null = null;
+
+  if (values.length === 0) {
+    const empty = document.createElement("input");
+    empty.type = "hidden";
+    empty.setAttribute("data-scope", "tags-input");
+    empty.setAttribute("data-part", "array-input");
+    empty.setAttribute("data-empty", "true");
+    empty.name = submitName;
+    associateInputWithFormIfOutside(empty, el);
+    empty.value = "";
+    container.appendChild(empty);
+    notifyInput = empty;
+  } else {
+    values.forEach((value, index) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.setAttribute("data-scope", "tags-input");
+      input.setAttribute("data-part", "array-input");
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, el);
+      input.value = String(value);
+      container!.appendChild(input);
+      notifyInput = input;
+    });
+  }
 
   queueMicrotask(() => {
     onTouched?.();
-    container!.dispatchEvent(new Event("input", { bubbles: true }));
-    container!.dispatchEvent(new Event("change", { bubbles: true }));
+    if (!notifyInput) return;
+    notifyInput.dispatchEvent(new Event("input", { bubbles: true }));
+    notifyInput.dispatchEvent(new Event("change", { bubbles: true }));
   });
 }
 

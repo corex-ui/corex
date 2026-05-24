@@ -1424,14 +1424,14 @@ defmodule E2eWeb.PageController do
 
   def tags_input_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
+      Phoenix.Component.to_form(%{"tags" => ["alpha", "beta"]},
         as: :tags_input_phoenix,
         id: "tags-input-form-phoenix"
       )
 
     ecto_form =
       %E2e.Form.TagsInputForm{}
-      |> E2e.Form.TagsInputForm.changeset_validate(%{"tags" => "alpha,beta"})
+      |> E2e.Form.TagsInputForm.changeset_validate(%{"tags" => ["alpha", "beta"]})
       |> Phoenix.Component.to_form(as: :tags_input_ecto, id: "tags-input-form-ecto")
 
     conn
@@ -1439,7 +1439,9 @@ defmodule E2eWeb.PageController do
     |> render(:tags_input_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def tags_input_form_submit(conn, %{"tags_input_phoenix" => %{"tags" => tags}}) do
+  def tags_input_form_submit(conn, %{"tags_input_phoenix" => params}) when is_map(params) do
+    tags = params |> Map.get("tags", []) |> List.wrap()
+
     conn
     |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")
     |> redirect(to: ~p"/tags-input/form#tags-input-form-phoenix")
@@ -1467,7 +1469,7 @@ defmodule E2eWeb.PageController do
           )
 
         phoenix_form =
-          Phoenix.Component.to_form(%{"tags" => "alpha,beta"},
+          Phoenix.Component.to_form(%{"tags" => ["alpha", "beta"]},
             as: :tags_input_phoenix,
             id: "tags-input-form-phoenix"
           )

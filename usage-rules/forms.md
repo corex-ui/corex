@@ -55,15 +55,27 @@ Each documents **Form** pages on Hexdocs and in e2e (`*_form_live.ex`):
 | `checkbox` | boolean fields |
 | `switch` | boolean toggle fields |
 | `radio_group` | exclusive choice |
-| `select` / `combobox` | pick from list |
+| `select` / `combobox` | pick from list (`select` + `multiple` for `{:array, :string}`) |
 | `pin_input` | OTP codes |
 | `number_input` | numeric |
 | `password_input` | password |
 | `date_picker` / `color_picker` | specialized |
-| `tags_input` | multi-value strings |
+| `tags_input` | free-form tags (`{:array, :string}`, submits `name[]` list params) |
 | `file_upload` | uploads |
 
 Use `field={@form[:field_name]}` when the component supports it. Check MCP for exact attr names.
+
+## Array fields (`{:array, :string}`)
+
+Phoenix expects list params such as `%{"tags" => ["a", "b"]}`.
+
+| Component | When to use |
+|-----------|-------------|
+| `<.select multiple field={f[:tags]} items={…}>` | Tags chosen from a fixed option list |
+| `<.tags_input field={f[:tags]}>` | Free-form tags (user types or pastes values) |
+| `<.native_input type="select" multiple field={f[:tags]}>` | Plain HTML multi-select styling |
+
+Both Corex `select` (with `multiple`) and `tags_input` submit `name[]` automatically when bound with `field={…}`. Do not comma-join in the changeset.
 
 ## Rules
 

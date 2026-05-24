@@ -61,6 +61,20 @@ var generateId = (element, fallbackId = "element") => {
 function canPushEvent(liveSocket) {
   return !liveSocket.main.isDead && liveSocket.main.isConnected();
 }
+function associateInputWithFormIfOutside(input, hookEl) {
+  const formId = getString(hookEl, "form");
+  if (!formId) return;
+  if (hookEl.closest("form") !== null) return;
+  input.setAttribute("form", formId);
+}
+function syncInputFormAssociation(input, hookEl) {
+  if (!input) return;
+  if (hookEl.closest("form") !== null) {
+    input.removeAttribute("form");
+  } else {
+    associateInputWithFormIfOutside(input, hookEl);
+  }
+}
 
 // ../node_modules/.pnpm/@zag-js+vanilla@1.40.0/node_modules/@zag-js/vanilla/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
@@ -2814,5 +2828,7 @@ export {
   getCheckedState,
   templatesContentRoot,
   generateId,
-  canPushEvent
+  canPushEvent,
+  associateInputWithFormIfOutside,
+  syncInputFormAssociation
 };

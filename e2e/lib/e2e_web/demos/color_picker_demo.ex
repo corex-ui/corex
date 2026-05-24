@@ -311,7 +311,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@phoenix_form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.color_picker
         name={@phoenix_form[:color].name}
@@ -349,7 +348,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.color_picker
         name={@phoenix_form[:color].name}
         value={@phoenix_form[:color].value || "#3b82f6"}
@@ -369,7 +368,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
           >
       <.color_picker
         name={@form[:color].name}
@@ -438,7 +436,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
           >
       <.color_picker
         name={@form[:color].name}
@@ -520,7 +517,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_basic"
       phx-submit="save_basic"
           >
@@ -568,7 +565,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_validate"
       phx-submit="save_validate"
           >
@@ -644,7 +641,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.color_picker
         name={@form[:color].name}
@@ -673,7 +669,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.color_picker
         name={@form[:color].name}
@@ -729,7 +724,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
     >
@@ -760,7 +754,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
     >
@@ -792,7 +785,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.color_picker
         name={@form[:color].name}
@@ -819,7 +811,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.color_picker
         name={@form[:color].name}
         value={@form[:color].value || "#3b82f6"}

@@ -67,7 +67,7 @@ defmodule Corex.PinInput do
   Use `field={f[:code]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate">
     <.pin_input field={@form[:code]} count={4} class="pin-input">
       <:label>Verification code</:label>
     </.pin_input>

@@ -33,7 +33,7 @@ defmodule Corex.PasswordInput do
 
   ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
   ### Controller
 
@@ -50,7 +50,7 @@ defmodule Corex.PasswordInput do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.password_input field={f[:password]} class="password-input">
       <:label>Password</:label>
       <:error :let={msg}>
@@ -108,7 +108,7 @@ defmodule Corex.PasswordInput do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.password_input field={@form[:password]} class="password-input">
           <:label>Password</:label>
           <:error :let={msg}>

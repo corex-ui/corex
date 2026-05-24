@@ -52,10 +52,10 @@ defmodule Corex.NativeInput do
 
   ### With form field
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id}>
+  <.form :let={f} for={@form}>
     <.native_input type="email" field={f[:email]} class="native-input">
       <:label>Email</:label>
       <:error :let={msg}>{msg}</:error>
@@ -77,8 +77,10 @@ defmodule Corex.NativeInput do
 
   Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
 
+  For `type="select"` with `multiple`, the field name is suffixed with `[]` so Ecto `{:array, :string}` receives a list (same Phoenix convention as [`Corex.Select`](Corex.Select.html) `multiple`).
+
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate">
     <.native_input type="email" field={@form[:email]} class="native-input">
       <:label>Email</:label>
       <:error :let={msg}>{msg}</:error>

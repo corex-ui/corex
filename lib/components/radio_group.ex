@@ -257,7 +257,7 @@ defmodule Corex.RadioGroup do
   Use `field={@form[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms. Pass `invalid` only when you want invalid styling.
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate">
     <.radio_group
       field={@form[:choice]}
       class="radio-group"

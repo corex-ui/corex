@@ -368,7 +368,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox
         field={f[:country]}
@@ -541,7 +540,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@phoenix_form}
       action={~p"/combobox/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -583,7 +581,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.combobox
         field={@phoenix_form[:country]}
         class="combobox"
@@ -615,7 +613,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -661,7 +658,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox field={f[:country]} class="combobox" placeholder="Country" items={Corex.List.new([
         %{label: "France", value: "fra"},
@@ -739,7 +735,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
     >
@@ -786,7 +782,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <.form
       for={@strict_form}
-      id={@strict_form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -843,7 +839,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox
         field={f[:country]}
@@ -875,7 +870,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@validate_form}
       action={~p"/combobox/form"}
       method="post"
-      id={@validate_form.id}
     >
       <.combobox
         field={f[:country]}
@@ -927,7 +921,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -959,7 +952,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1152,7 +1144,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox
         field={f[:country]}
@@ -1178,7 +1169,6 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={@form.id}
     >
       <.combobox
         field={f[:country]}
@@ -1211,7 +1201,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.combobox
         field={@form[:country]}
         class="combobox"

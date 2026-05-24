@@ -179,7 +179,7 @@ defmodule Corex.AngleSlider do
 
   ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
   ```elixir
   def angle_slider_form_page(conn, _params) do
@@ -193,7 +193,7 @@ defmodule Corex.AngleSlider do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.angle_slider field={f[:angle]} class="angle-slider" marker_values={[0, 90, 180, 270]}>
       <:label>Angle</:label>
       <:error :let={msg}>

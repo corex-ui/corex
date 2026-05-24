@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-W6DW6OBY.mjs";
+} from "./chunks/chunk-RNYQBUAX.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -22,7 +22,7 @@ import {
   getNumber,
   getString,
   isNumber
-} from "./chunks/chunk-XGGASIX4.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
 var anatomy = createAnatomy("pagination").parts(

@@ -246,7 +246,7 @@ defmodule Corex.Combobox do
 
   ## Form
 
-  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
+  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
 
   ### Localization
 

@@ -442,7 +442,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -478,7 +477,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -516,7 +514,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
         <:label>Enable notifications</:label>
@@ -541,7 +538,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
         <:label>Enable notifications</:label>
@@ -594,7 +590,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
           >
@@ -671,7 +667,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
           >
@@ -756,7 +752,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -783,7 +778,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -837,7 +831,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@phoenix_form}
       action={~p"/switch/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.switch field={f[:notifications]} class="switch" id="switch-form-phoenix-notifications">
         <:label>Enable notifications</:label>
@@ -880,7 +873,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@ecto_form}
       action={~p"/switch/form"}
       method="post"
-      id={@ecto_form.id}
     >
       <.switch field={f[:notifications]} class="switch" id="switch-form-ecto-notifications">
         <:label>Enable notifications</:label>
@@ -931,7 +923,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.switch field={@phoenix_form[:notifications]} class="switch" controlled id="switch-live-form-phoenix-notifications">
         <:label>Enable notifications</:label>
       </.switch>
@@ -944,7 +936,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} id={@ecto_form.id} phx-change="validate" phx-submit="save">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
       <.switch field={@ecto_form[:notifications]} class="switch" controlled id="switch-live-form-ecto-notifications">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -968,7 +960,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" id="switch-form-phoenix-notifications">
         <:label>Enable notifications</:label>
@@ -989,7 +980,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={@form.id}
     >
       <.switch
         field={f[:notifications]}
@@ -1014,7 +1004,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.switch
         field={@form[:notifications]}
         class="switch"
@@ -1034,7 +1024,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.switch
         field={@form[:notifications]}
         class="switch"

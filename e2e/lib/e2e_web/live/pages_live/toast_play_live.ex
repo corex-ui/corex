@@ -168,7 +168,6 @@ defmodule E2eWeb.ToastPlayLive do
           <div class="flex w-full max-w-lg flex-col gap-size">
             <.form
               for={@form}
-              id={@form.id}
               phx-change="validate_toast"
               phx-submit="create_toast"
               class="flex flex-col gap-space"

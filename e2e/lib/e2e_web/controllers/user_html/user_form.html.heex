@@ -2,7 +2,6 @@
   :let={f}
   for={@form}
   action={@action}
-  id={@form.id}
 >
   <input :if={@return_context} type="hidden" name="return_to" value={@return_context} />
   <.native_input field={f[:name]} type="text" class="native-input max-w-none">

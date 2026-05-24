@@ -98,7 +98,7 @@ defmodule E2eWeb.App.Aside do
 
   attr(:path, :string, required: true)
   attr(:site_nav_tree_id, :string, default: "site-nav-menu")
-  attr(:tree_class, :string, default: "tree-view tree-view--accent max-w-3xs")
+  attr(:tree_class, :string, default: "tree-view navigation max-w-3xs")
 
   def drawer_site_nav_tree(assigns) do
     assigns =
@@ -134,7 +134,7 @@ defmodule E2eWeb.App.Aside do
   attr(:components_menu, :list, required: true)
   attr(:form_tree_id, :string, required: true)
   attr(:components_tree_id, :string, required: true)
-  attr(:tree_class, :string, default: "tree-view tree-view--accent max-w-xs layout__aside-tree")
+  attr(:tree_class, :string, default: "tree-view navigation max-w-xs layout__aside-tree")
 
   def aside_nav_tree_views(assigns) do
     assigns =

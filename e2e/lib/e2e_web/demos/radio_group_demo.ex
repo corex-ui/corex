@@ -695,7 +695,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@phoenix_form}
       action={~p"/radio-group/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new([
         %{label: "Option A", value: "a"},
@@ -734,7 +733,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.radio_group field={@phoenix_form[:choice]} class="radio-group" items={Corex.List.new([
         %{label: "Option A", value: "a"},
         %{label: "Option B", value: "b"},
@@ -756,7 +755,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action="/account/choice"
       method="post"
-      id={@form.id}
     >
       <.radio_group
         field={f[:choice]}
@@ -826,7 +824,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action="/account/choice"
       method="post"
-      id={@form.id}
     >
       <.radio_group
         field={f[:choice]}
@@ -927,7 +924,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
     >
@@ -1040,7 +1037,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -1164,7 +1161,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
-      id={@form.id}
     >
       <.radio_group field={f[:choice]} class="radio-group" items={items()}>
         <:label>Choose one</:label>
@@ -1195,7 +1191,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
-      id={@form.id}
     >
       <.radio_group field={f[:choice]} class="radio-group" items={items()}>
         <:label>Choose one</:label>
@@ -1253,7 +1248,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1285,7 +1279,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1529,7 +1522,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
-      id={@form.id}
     >
       <.radio_group
         field={f[:choice]}
@@ -1562,7 +1554,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.radio_group
         field={@form[:choice]}
         class="radio-group"

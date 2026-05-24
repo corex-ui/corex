@@ -55,7 +55,7 @@ defmodule Corex.SignaturePad do
 
   ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
   The value field is a `type="text"` input with the HTML `hidden` attribute (Zag’s pattern), not a `type="hidden"` control, so the LiveView client can mark it “used” like a normal text field. The hook re-applies the same `phxPrivate` usage metadata LiveView stores on that input after draws, clear, and after server patches, so a morph of the value input does not drop “used” state and `used_input?/1` on the server matches expected behaviour.
 
@@ -74,7 +74,7 @@ defmodule Corex.SignaturePad do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.signature_pad field={f[:signature]} class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger>
@@ -132,7 +132,7 @@ defmodule Corex.SignaturePad do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.signature_pad
           field={@form[:signature]}
           id="my-signature-pad"

@@ -77,7 +77,7 @@ defmodule E2eWeb.App.Header do
                   components_menu={@components_menu}
                   form_tree_id="form-menu"
                   components_tree_id="components-menu"
-                  tree_class="tree-view tree-view--accent max-w-3xs"
+                  tree_class="tree-view navigation max-w-3xs"
                 />
               </div>
               <div

@@ -17,6 +17,7 @@ defmodule E2e.Form.TagsInputForm do
     form
     |> cast(attrs, [:tags])
     |> validate_required([:tags], message: "can't be blank")
+    |> validate_length(:tags, min: 1, message: "can't be blank")
     |> validate_tag_list(:tags, 3)
   end
 

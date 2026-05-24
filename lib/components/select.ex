@@ -207,7 +207,40 @@ defmodule Corex.Select do
 
   ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
+
+  ### Multiple selection and `{:array, :string}` fields
+
+  With `multiple` and `field={f[:tags]}`, the hidden native `<select>` submits list params (`post[tags][]`), matching Phoenix's multi-select convention:
+
+  ```elixir
+  %{"post" => %{"tags" => ["option1", "option2"]}}
+  ```
+
+  Pair with `field :tags, {:array, :string}` in your schema. Single-select forms still submit one scalar through the hidden `value-input`.
+
+  ```heex
+  <.select
+    field={@form[:tags]}
+    class="select"
+    multiple
+    controlled
+    items={Corex.List.new([
+      %{label: "Option 1", value: "option1"},
+      %{label: "Option 2", value: "option2"}
+    ])}
+    translation={%Corex.Select.Translation{placeholder: "Choose tags"}}
+  >
+    <:label>Tags</:label>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.select>
+  ```
+
+  For **free-form** tags (not limited to `items`), use [`Corex.TagsInput`](Corex.TagsInput.html) with the same `{:array, :string}` field type.
 
   ### Controller
 
@@ -224,7 +257,7 @@ defmodule Corex.Select do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.select
       field={f[:country]}
       class="select"
@@ -298,7 +331,7 @@ defmodule Corex.Select do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.select
           field={@form[:country]}
           class="select"
@@ -565,7 +598,11 @@ defmodule Corex.Select do
   )
 
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the select")
-  attr(:multiple, :boolean, default: false, doc: "Whether to allow multiple selection")
+  attr(:multiple, :boolean,
+    default: false,
+    doc:
+      "Allow multiple selection. With field and form, submits name[] list params for Ecto {:array, :string}"
+  )
   attr(:invalid, :boolean, default: false, doc: "Whether the select is invalid")
   attr(:name, :string, doc: "The name of the select")
   attr(:form, :string, doc: "The id of the form of the select")
@@ -745,7 +782,6 @@ defmodule Corex.Select do
         phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
         {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
         name={@value_input_name}
-        form={if(@value_input_name, do: @form)}
         value={@value_for_hidden_input}
       />
 
@@ -753,7 +789,6 @@ defmodule Corex.Select do
         phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
         {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
         name={@hidden_select_name}
-        form={if(@hidden_select_name, do: @form)}
         multiple={@multiple}
       >
         {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}

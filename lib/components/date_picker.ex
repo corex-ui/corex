@@ -23,7 +23,7 @@ defmodule Corex.DatePicker do
 
   ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
   ### Controller
 
@@ -40,7 +40,7 @@ defmodule Corex.DatePicker do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.date_picker
       field={f[:date]}
       class="date-picker"
@@ -116,7 +116,7 @@ defmodule Corex.DatePicker do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Birth date</:label>
           <:trigger>

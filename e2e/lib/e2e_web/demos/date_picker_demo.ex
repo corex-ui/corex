@@ -482,7 +482,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -516,7 +515,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@phoenix_form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -580,7 +578,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -679,7 +676,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_basic"
       phx-submit="save_basic"
     >
@@ -707,7 +704,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.date_picker
         field={@phoenix_form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
@@ -844,7 +841,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_validate"
       phx-submit="save_validate"
     >
@@ -968,7 +965,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -1017,7 +1013,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -1108,7 +1103,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
     >
@@ -1160,7 +1154,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
     >
@@ -1214,7 +1207,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -1254,7 +1246,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.date_picker
         field={@form[:date]}
         translation={

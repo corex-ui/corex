@@ -1,6 +1,6 @@
 import {
   trackInteractOutside
-} from "./chunks/chunk-QS5WHZEI.mjs";
+} from "./chunks/chunk-4QMNVH3P.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -27,7 +27,7 @@ import {
   isComposingEvent,
   raf,
   setElementValue
-} from "./chunks/chunk-XGGASIX4.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+editable@1.40.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(

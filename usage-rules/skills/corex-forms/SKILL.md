@@ -31,4 +31,6 @@ end
 
 Import matching CSS (`native-input.css`, etc.) and register hooks. MCP `get_component` for `field` attr on each input.
 
+For `{:array, :string}` fields, use `field :tags, {:array, :string}` and either `<.select multiple field={@form[:tags]} items={…}>` (fixed options) or `<.tags_input field={@form[:tags]}>` (free-form). Both submit `%{"tags" => ["a", "b"]}` via `name[]`; do not use comma strings on `:string` fields.
+
 Full checklist: sub-rule `corex:forms`.

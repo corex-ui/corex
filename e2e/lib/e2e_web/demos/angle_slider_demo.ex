@@ -708,7 +708,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@phoenix_form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.angle_slider
         field={f[:angle]}
@@ -745,7 +744,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.angle_slider
         field={@phoenix_form[:angle]}
         marker_values={[0, 90, 180, 270]}
@@ -765,7 +764,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
           >
       <.angle_slider
         field={f[:angle]}
@@ -828,7 +826,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
           >
       <.angle_slider
         field={f[:angle]}
@@ -889,7 +886,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_angle"
       phx-submit="save_angle"
           >
@@ -982,7 +979,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_angle_range"
       phx-submit="save_angle_range"
           >
@@ -1117,7 +1114,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
     >
       <.angle_slider
         field={f[:angle]}
@@ -1152,7 +1148,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
     >
       <.angle_slider
         field={f[:angle]}
@@ -1211,7 +1206,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
     >
@@ -1248,7 +1242,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
     >
@@ -1294,7 +1287,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
     >
       <.angle_slider
         field={f[:angle]}
@@ -1319,7 +1311,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.angle_slider
         field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}

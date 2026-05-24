@@ -45,4 +45,10 @@ defmodule E2e.Form.TagsInputFormTest do
     refute cs.valid?
     assert {"must have at most 3 tags", _} = Keyword.fetch!(cs.errors, :tags)
   end
+
+  test "changeset_validate rejects empty tags list from array submit" do
+    cs = TagsInputForm.changeset_validate(%TagsInputForm{}, %{"tags" => [""]})
+    refute cs.valid?
+    assert {"can't be blank", _} = Keyword.fetch!(cs.errors, :tags)
+  end
 end

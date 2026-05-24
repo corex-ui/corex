@@ -611,7 +611,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@phoenix_form}
       action={~p"/checkbox/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
@@ -654,7 +653,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@ecto_form}
       action={~p"/checkbox/form"}
       method="post"
-      id={@ecto_form.id}
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>
@@ -731,7 +729,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.form
       for={@phoenix_form}
-      id={@phoenix_form.id}
+     
       phx-submit="save_phoenix"
     >
       <.checkbox field={@phoenix_form[:terms]} class="checkbox" controlled id="checkbox-live-form-phoenix-terms">
@@ -748,7 +746,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.form
       for={@ecto_form}
-      id={@ecto_form.id}
+     
       phx-change="validate"
       phx-submit="save"
     >
@@ -772,7 +770,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-submit="save_phoenix"
     >
       <.checkbox
@@ -796,7 +793,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -823,7 +819,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
-      id={@form.id}
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
@@ -844,7 +839,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
-      id={@form.id}
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>

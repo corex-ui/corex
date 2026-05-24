@@ -172,7 +172,13 @@ export class TagsInput extends Component<Props, Api> {
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="tags-input"][data-part="input"]'
     );
-    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    if (inputEl) {
+      this.spreadProps(inputEl, this.api.getInputProps());
+      if (getString(this.el, "submitName")) {
+        inputEl.removeAttribute("name");
+        inputEl.removeAttribute("form");
+      }
+    }
 
     if (getString(this.el, "submitName")) {
       syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);

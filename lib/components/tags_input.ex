@@ -126,10 +126,37 @@ defmodule Corex.TagsInput do
 
   ## Form
 
-  Use `field={f[:tags]}` inside `<.form>`. Each tag submits as a separate `name[]` param for Ecto `{:array, :string}` (or similar list fields).
+  With `field={f[:tags]}`, each tag is submitted as its own request param (`post[tags][]`), so Phoenix receives a **list**:
+
+  ```elixir
+  %{"post" => %{"tags" => ["alpha", "beta"]}}
+  ```
+
+  Use an Ecto field typed `{:array, :string}` (or cast a list in your changeset). A `:string` column with comma-splitting in the changeset is not supported by this component.
+
+  When there are no tags, the component still submits one `name[]` hidden input (empty string) so the form param is present. Phoenix decodes that as `[""]`; Ecto `cast/3` on `{:array, :string}` turns it into `[]`.
+
+  `validate_required/3` alone does not treat an empty list as blank. Pair `{:array, :string}` with `validate_length(:tags, min: 1)` (or equivalent) so cleared tags surface errors.
+
+  The `delimiter` attribute only controls how **new** tags are split when typing or pasting in the control (default `,`). It does not affect form submission.
+
+  In LiveView, use `controlled` and rebuild the form from the changeset on `phx-change` (same pattern as other Corex inputs).
+
+  ```elixir
+  embedded_schema do
+    field :tags, {:array, :string}
+  end
+
+  def changeset(profile, attrs) do
+    profile
+    |> cast(attrs, [:tags])
+    |> validate_required([:tags])
+    |> validate_length(:tags, min: 1)
+  end
+  ```
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate">
+  <.form for={@form} phx-change="validate" phx-submit="save">
     <.tags_input field={@form[:tags]} class="tags-input" controlled>
       <:label>Keywords</:label>
       <:close><.heroicon name="hero-x-mark" /></:close>
@@ -138,6 +165,7 @@ defmodule Corex.TagsInput do
         {msg}
       </:error>
     </.tags_input>
+    <.action type="submit" class="button button--accent">Save</.action>
   </.form>
   ```
 
@@ -245,7 +273,8 @@ defmodule Corex.TagsInput do
 
   attr(:delimiter, :string,
     default: nil,
-    doc: "Delimiter character or string for new tags and paste splitting"
+    doc:
+      "Delimiter for splitting typed or pasted text into new tags in the UI (default comma). Form submission always uses name[] list params when field or name is set."
   )
 
   attr(:blur_behavior, :string,
@@ -387,8 +416,16 @@ defmodule Corex.TagsInput do
             data-scope="tags-input"
             data-part="array-input"
             name={@submit_name}
-            form={@form}
             value={tag}
+          />
+          <input
+            :if={@value_list == []}
+            type="hidden"
+            data-scope="tags-input"
+            data-part="array-input"
+            data-empty
+            name={@submit_name}
+            value=""
           />
         </div>
         <label

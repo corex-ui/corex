@@ -873,7 +873,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -924,7 +923,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1014,7 +1012,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate"
       phx-submit="save"
     >
@@ -1052,7 +1050,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -1241,7 +1239,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@phoenix_form}
       action={~p"/select/form"}
       method="post"
-      id={@phoenix_form.id}
     >
       <.select
         field={f[:country]}
@@ -1291,7 +1288,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} id={@phoenix_form.id} phx-submit="save_phoenix">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
       <.select
         id="select-live-form-phoenix-country"
         class="select"
@@ -1419,7 +1416,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1453,7 +1449,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1514,7 +1509,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate"
       phx-submit="save"
     >
@@ -1549,7 +1543,6 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
     >
@@ -1926,7 +1919,6 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1957,7 +1949,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.select
         id="select-live-form-phoenix-country"
         class="select"
@@ -1979,7 +1971,7 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_preview_live_ecto(assigns) do
     ~H"""
-    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <.select
         id="select-live-form-ecto-country"
         class="select"

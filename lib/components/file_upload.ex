@@ -50,7 +50,7 @@ defmodule Corex.FileUpload do
   ### Multipart form (controller)
 
   ```heex
-  <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+  <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
     <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
     <.file_upload field={@form[:attachment]} class="file-upload">
       <:label>Attachment</:label>

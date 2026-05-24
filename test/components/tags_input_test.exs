@@ -198,6 +198,32 @@ defmodule Corex.TagsInputTest do
       refute html =~ ~r/data-part="value-input"/
     end
 
+    test "form field renders empty array placeholder input" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{tags: {:array, :string}}}
+        |> cast(%{"tags" => []}, [:tags])
+
+      form = to_form(cs, as: :post, id: "post-form")
+      assigns = %{field: form[:tags]}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.TagsInput.tags_input field={@field}>
+              <:close><.heroicon name="hero-x-mark" /></:close>
+            </Corex.TagsInput.tags_input>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-part="array-input"[^>]*data-empty/
+      assert html =~ ~r/name="post\[tags\]\[\]"[^>]*value=""/
+    end
+
     test "form field loads list values from field" do
       import Ecto.Changeset
 
