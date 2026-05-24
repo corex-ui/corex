@@ -399,9 +399,9 @@ defmodule Corex.TreeView do
 
   use Corex.Api.Imports, to: Corex.TreeView.Api
 
+  alias Corex.Api.RespondTo
   alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
-  alias Corex.Api.RespondTo
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]

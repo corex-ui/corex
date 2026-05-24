@@ -221,9 +221,15 @@ describe("runHeightOpenTransition", () => {
     panel.style.overflow = "hidden";
     root.appendChild(panel);
 
-    const animate = vi.fn(() => ({ onfinish: null, oncancel: null, cancel: vi.fn() }));
-    panel.animate = animate as typeof panel.animate;
-    panel.getAnimations = vi.fn(() => []) as typeof panel.getAnimations;
+    const mockAnimation = {
+      onfinish: null,
+      oncancel: null,
+      cancel: vi.fn(),
+    } as unknown as Animation;
+
+    const animate = vi.fn(() => mockAnimation);
+    panel.animate = animate as unknown as typeof panel.animate;
+    panel.getAnimations = vi.fn(() => []) as unknown as typeof panel.getAnimations;
 
     runHeightOpenTransition({
       el: root,

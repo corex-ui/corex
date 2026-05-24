@@ -126,6 +126,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   """
   use Mix.Task
 
+  alias Mix.Corex, as: Corex
   alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
@@ -229,12 +230,12 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
-    template_dirs = Mix.Corex.generator_template_dirs("corex.gen.html")
-    Mix.Corex.copy_from(template_dirs, "", binding, files)
+    template_dirs = Corex.generator_template_dirs("corex.gen.html")
+    Corex.copy_from(template_dirs, "", binding, files)
 
     if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
 
-    Mix.Corex.format_generated_files(files)
+    Corex.format_generated_files(files)
 
     context
   end
