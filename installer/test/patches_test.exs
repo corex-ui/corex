@@ -711,6 +711,26 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "adds config :corex generators with stable layout key order" do
+      in_tmp(:patch_config_corex_generators, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(
+          File.cwd!(),
+          otp_app: :my_app,
+          lang: true,
+          mode: true,
+          theme: true
+        )
+
+        body = File.read!("config/config.exs")
+        assert body =~ "config :corex"
+        assert body =~ "gettext: :sigils"
+        assert body =~ "layout: [locale: true, mode: true, theme: true]"
+      end)
+    end
+
     test "adds config :designex when designex: true" do
       in_tmp(:patch_config_designex, fn ->
         File.mkdir_p!("config")

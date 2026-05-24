@@ -406,7 +406,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(Path.join(base, "config/config.exs"), fn c ->
       assert c =~ "config :corex"
       assert c =~ "gettext: :sigils"
-      assert c =~ "layout: [locale: true]"
+      assert c =~ "layout: ["
+      assert c =~ "locale: true"
     end)
 
     assert_file(Path.join(base, "lib/#{web}.ex"), "GettextSigils")

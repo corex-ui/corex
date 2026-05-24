@@ -654,12 +654,17 @@ defmodule Corex.New.Patches do
     end
   end
 
+  @generators_layout_keys [
+    {:locale, :lang},
+    {:mode, :mode},
+    {:theme, :theme}
+  ]
+
   defp maybe_add_corex_generators_config(content, opts) do
     layout =
-      []
-      |> maybe_generators_layout_key(:locale, Keyword.get(opts, :lang, false))
-      |> maybe_generators_layout_key(:mode, Keyword.get(opts, :mode, false))
-      |> maybe_generators_layout_key(:theme, Keyword.get(opts, :theme, false))
+      for {layout_key, opt_key} <- @generators_layout_keys,
+          Keyword.get(opts, opt_key, false),
+          do: {layout_key, true}
 
     gettext_opt =
       if Keyword.get(opts, :lang, false) do
@@ -708,9 +713,6 @@ defmodule Corex.New.Patches do
         end
     end
   end
-
-  defp maybe_generators_layout_key(layout, _key, false), do: layout
-  defp maybe_generators_layout_key(layout, key, true), do: [{key, true} | layout]
 
   defp maybe_add_localize_config(content, opts) do
     content =
