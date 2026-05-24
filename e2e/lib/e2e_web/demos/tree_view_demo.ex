@@ -791,7 +791,9 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_set_expanded_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="repo-corex,repo-lib" class="button button--sm">Expand lib</.action>
+      <.action phx-click={@event} value="repo-corex,repo-lib" class="button button--sm">
+        Expand lib
+      </.action>
       <.action phx-click={@event} value="" class="button button--sm">Collapse all</.action>
     </div>
     <.tree_view id={@id} class="tree-view" expanded_value={[]} items={@items}>

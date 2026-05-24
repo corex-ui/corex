@@ -4,10 +4,6 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
 <% params_create = schema.params.create %><% params_update = schema.params.update %><% validation_hint = Mix.Phoenix.Schema.failed_render_change_message(schema) %>
-  @invalid_attrs %{
-<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value()) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
-<% end %>  }
-
   @create_attrs_params %{
 <%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    "<%= key %>" => <%= inspect(Mix.Phoenix.Schema.live_form_value(value)) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
 <% end %>  }
@@ -16,8 +12,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 <%= for {{key, value}, idx} <- Enum.with_index(params_update) do %>    "<%= key %>" => <%= inspect(Mix.Phoenix.Schema.live_form_value(value)) %><%= if idx < Enum.count(params_update) - 1 do %>,<% end %>
 <% end %>  }
 
-  @invalid_attrs_edit %{
-<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(if(schema.string_attr && key == schema.string_attr, do: "", else: Mix.Phoenix.Schema.live_form_value(value))) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
+  @invalid_attrs_params %{
+<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    "<%= key %>" => <%= inspect(Mix.Phoenix.Schema.live_form_value(value) |> Mix.Phoenix.Schema.invalid_form_value()) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
+<% end %>  }
+
+  @invalid_attrs_edit_params %{
+<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    "<%= key %>" => <%= inspect(if(schema.string_attr && key == schema.string_attr, do: "", else: Mix.Phoenix.Schema.live_form_value(value))) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
 <% end %>  }<%= if layout_locale do %>
 
   @locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()<% end %><%= if scope do %>
@@ -56,19 +56,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid =
         form_live
-        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs)
-        |> render_change()
+        |> render_change("validate", %{"<%= schema.singular %>" => @invalid_attrs_params})
 
       assert html_invalid =~ <%= inspect(validation_hint) %> or
                html_invalid =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
-      form_live
-      |> render_change("validate", %{"<%= schema.singular %>" => @create_attrs_params})
-
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>-form")
-               |> render_submit()
+               |> render_submit("save", %{"<%= schema.singular %>" => @create_attrs_params})
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
       html = render(index_live)
@@ -89,19 +84,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid_edit =
         form_live
-        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
-        |> render_change()
+        |> render_change("validate", %{"<%= schema.singular %>" => @invalid_attrs_edit_params})
 
       assert html_invalid_edit =~ <%= inspect(validation_hint) %> or
                html_invalid_edit =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
-      form_live
-      |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
-
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>-form")
-               |> render_submit()
+               |> render_submit("save", %{"<%= schema.singular %>" => @update_attrs_params})
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
       html = render(index_live)
@@ -140,19 +130,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       html_invalid_show =
         form_live
-        |> form("#<%= schema.singular %>-form", <%= schema.singular %>: @invalid_attrs_edit)
-        |> render_change()
+        |> render_change("validate", %{"<%= schema.singular %>" => @invalid_attrs_edit_params})
 
       assert html_invalid_show =~ <%= inspect(validation_hint) %> or
                html_invalid_show =~ String.replace(<%= inspect(validation_hint) %>, "'", "&#39;")
 
-      form_live
-      |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
-
       assert {:ok, show_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>-form")
-               |> render_submit()
+               |> render_submit("save", %{"<%= schema.singular %>" => @update_attrs_params})
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}")
 
       html = render(show_live)
