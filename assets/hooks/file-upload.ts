@@ -8,6 +8,7 @@ import type {
   FileRejectDetails,
 } from "@zag-js/file-upload";
 import { getString, getBoolean, getDir, getNumber, canPushEvent } from "../lib/util";
+import { bindArrayFieldSubmitIntent } from "../lib/form-array-submit";
 import { notifyChange, idMatches, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -15,6 +16,7 @@ import { createDomEventRegistry } from "../lib/dom-events";
 type FileUploadHookState = {
   fileUpload?: FileUpload;
   handlers?: Array<CallbackRef>;
+  unbindSubmitIntent?: () => void;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
@@ -28,6 +30,7 @@ export function fileChangePayload(
     id: el.id,
     acceptedCount: details.acceptedFiles.length,
     rejectedCount: details.rejectedFiles.length,
+    acceptedNames: details.acceptedFiles.map((file) => file.name),
     firstAcceptedName: first?.name ?? null,
     firstAcceptedType: first?.type ?? null,
   };
@@ -116,6 +119,10 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
     this.fileUpload = zag;
     this.handlers = [];
 
+    this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      zag.syncFormSubmitInputs();
+    });
+
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -174,6 +181,7 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & FileUploadHookState) {
+    this.unbindSubmitIntent?.();
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }

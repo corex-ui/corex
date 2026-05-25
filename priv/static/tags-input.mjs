@@ -5,6 +5,16 @@ import {
   trackInteractOutside
 } from "./chunks/chunk-4QMNVH3P.mjs";
 import {
+  bindArrayFieldSubmitIntent,
+  isFormFieldUsed,
+  syncArrayHiddenInputsForPhoenix
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import "./chunks/chunk-VMKNATWC.mjs";
+import {
+  mountTagsBinding,
+  readUpdatedServerTags
+} from "./chunks/chunk-7PXMD5A7.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -19,7 +29,6 @@ import {
   Component,
   VanillaMachine,
   ariaAttr,
-  associateInputWithFormIfOutside,
   canPushEvent,
   contains,
   createAnatomy,
@@ -1155,59 +1164,6 @@ var machine = createMachine({
   }
 });
 
-// lib/tags-input-form.ts
-function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
-  const submitName = getString(el, "submitName");
-  if (!submitName) return;
-  let container = el.querySelector(
-    '[data-scope="tags-input"][data-part="array-inputs"]'
-  );
-  if (!container) {
-    const root = el.querySelector('[data-scope="tags-input"][data-part="root"]') ?? el;
-    container = document.createElement("div");
-    container.setAttribute("data-scope", "tags-input");
-    container.setAttribute("data-part", "array-inputs");
-    container.setAttribute("phx-update", "ignore");
-    container.id = `tags-input:${el.id}:array-inputs`;
-    root.prepend(container);
-  }
-  container.replaceChildren();
-  let notifyInput = null;
-  if (values.length === 0) {
-    const empty = document.createElement("input");
-    empty.type = "hidden";
-    empty.setAttribute("data-scope", "tags-input");
-    empty.setAttribute("data-part", "array-input");
-    empty.setAttribute("data-empty", "true");
-    empty.name = submitName;
-    associateInputWithFormIfOutside(empty, el);
-    empty.value = "";
-    container.appendChild(empty);
-    notifyInput = empty;
-  } else {
-    values.forEach((value) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.setAttribute("data-scope", "tags-input");
-      input.setAttribute("data-part", "array-input");
-      input.name = submitName;
-      associateInputWithFormIfOutside(input, el);
-      input.value = String(value);
-      container.appendChild(input);
-      notifyInput = input;
-    });
-  }
-  queueMicrotask(() => {
-    onTouched?.();
-    if (!notifyInput) return;
-    notifyInput.dispatchEvent(new Event("input", { bubbles: true }));
-    notifyInput.dispatchEvent(new Event("change", { bubbles: true }));
-  });
-}
-function syncTagsInputFormForPhoenix(el, values, onTouched) {
-  syncTagsArrayInputsForPhoenix(el, values, onTouched);
-}
-
 // components/tags-input.ts
 var TAG_PLACEHOLDER = "%{tag}";
 var DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
@@ -1348,9 +1304,6 @@ var TagsInput = class extends Component {
         inputEl.removeAttribute("form");
       }
     }
-    if (getString(this.el, "submitName")) {
-      syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);
-    }
     const hiddenEl = this.el.querySelector(
       '[data-scope="tags-input"][data-part="hidden-input"]'
     );
@@ -1361,6 +1314,19 @@ var TagsInput = class extends Component {
     }
   }
 };
+
+// lib/tags-input-form.ts
+function syncTagsArrayInputsForPhoenix(el, values, onTouched, opts = {}) {
+  syncArrayHiddenInputsForPhoenix(el, values, {
+    onTouched,
+    scope: "tags-input",
+    notifyLiveView: opts.notifyLiveView,
+    fieldTouched: opts.fieldTouched === true
+  });
+}
+function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
+  syncTagsArrayInputsForPhoenix(el, values, onTouched, opts);
+}
 
 // hooks/tags-input.ts
 function parseJsonTags(el, key) {
@@ -1389,12 +1355,18 @@ function readPlaceholderFromMainInput(hookEl) {
   const v = input?.getAttribute("placeholder");
   return typeof v === "string" && v !== "" ? v : void 0;
 }
+function zagNameForForm(el) {
+  if (getString(el, "submitName")) return void 0;
+  return getString(el, "name");
+}
 var TagsInputHook = {
   mounted() {
     const el = this.el;
+    const hook = this;
+    hook.allowFormNotify = false;
+    hook.fieldTouched = false;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const controlled = getBoolean(el, "controlled");
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -1402,13 +1374,13 @@ var TagsInputHook = {
     const zag = new TagsInput(el, {
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") },
+      ...mountTagsBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? void 0 : getString(el, "form"),
       dir: getDir(el),
       addOnPaste: getBoolean(el, "addOnPaste"),
       allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -1420,7 +1392,11 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {},
       onValueChange: (details) => {
-        syncTagsInputFormForPhoenix(el, details.value);
+        hook.fieldTouched = true;
+        syncTagsInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: hook.allowFormNotify === true,
+          fieldTouched: true
+        });
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -1431,6 +1407,7 @@ var TagsInputHook = {
         });
       },
       onInputValueChange: (details) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -1463,10 +1440,22 @@ var TagsInputHook = {
     });
     zag.init();
     this.tagsInput = zag;
-    const defaultTags = parseJsonTags(el, "defaultTags");
-    if (defaultTags.length > 0) {
-      queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
-    }
+    const syncForm = (values, opts = {}) => {
+      syncTagsInputFormForPhoenix(el, values, void 0, {
+        notifyLiveView: opts.notifyLiveView,
+        fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true)
+      });
+    };
+    queueMicrotask(() => {
+      if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
+        syncForm(zag.api.value, { notifyLiveView: false });
+      }
+      hook.allowFormNotify = true;
+    });
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      hook.fieldTouched = true;
+      syncForm(zag.api.value, { notifyLiveView: false });
+    });
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:tags-input:set-value", (event) => {
@@ -1511,7 +1500,7 @@ var TagsInputHook = {
   },
   updated() {
     const el = this.el;
-    const controlled = getBoolean(el, "controlled");
+    const valuePatch = readUpdatedServerTags(el);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -1519,13 +1508,13 @@ var TagsInputHook = {
     this.tagsInput?.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...controlled ? { value: parseJsonTags(el, "tags") } : {},
+      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? void 0 : getString(el, "form"),
       dir: getDir(el),
       addOnPaste: getBoolean(el, "addOnPaste"),
       allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -1537,12 +1526,16 @@ var TagsInputHook = {
       ...delimiter !== void 0 && delimiter !== "" ? { delimiter } : {},
       ...placeholder !== void 0 ? { placeholder } : {}
     });
-    this.tagsInput?.render();
-    if (this.tagsInput) {
-      queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value));
+    if ("value" in valuePatch) {
+      syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
+        notifyLiveView: false,
+        fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
+      });
     }
+    this.tagsInput?.render();
   },
   destroyed() {
+    this.unbindSubmitIntent?.();
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.tagsInput?.destroy();

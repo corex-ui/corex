@@ -344,8 +344,8 @@ defmodule Corex.ComboboxTest do
 
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
       assert result["data-default-value"] == "a"
-      refute Map.has_key?(result, "data-value")
-      refute Map.has_key?(result, "data-controlled")
+      assert result["data-value"] == nil
+      assert result["data-controlled"] == nil
     end
   end
 end

@@ -1,6 +1,9 @@
 import { connect, machine, type Props, type Api } from "@zag-js/pin-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripZagSubmitNames } from "../lib/form-field-array-submit";
+import { getString } from "../lib/util";
+import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class PinInput extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +28,21 @@ export class PinInput extends Component<Props, Api> {
     const hiddenInputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="pin-input"][data-part="hidden-input"]'
     );
-    if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+    if (hiddenInputEl instanceof HTMLInputElement) {
+      syncHiddenInputValue(
+        hiddenInputEl,
+        this.el,
+        this.api.valueAsString ?? "",
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps() as Record<string, unknown>
+      );
+      if (getString(this.el, "submitName")) {
+        hiddenInputEl.removeAttribute("name");
+        hiddenInputEl.removeAttribute("form");
+      }
+    }
+
+    stripZagSubmitNames(this.el, "pin-input");
 
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="pin-input"][data-part="control"]'

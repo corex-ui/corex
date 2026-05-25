@@ -3,41 +3,28 @@ defmodule E2eWeb.AvatarApiLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias E2eWeb.Demos.AvatarDemo, as: Demo
+
   @id_sv_client "api-set-src-client"
   @id_sv_js "api-set-src-client-js"
   @id_sv_server "api-set-src-server"
+  @id_loaded_js "api-loaded-js"
   @id_loaded_server "api-loaded-server"
 
   @primary_src "https://corex-ui.com/images/avatar.png"
   @alt_src "https://corex-ui.com/pwa-192x192.png"
 
   def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign(:id_sv_client, @id_sv_client)
-      |> assign(:id_sv_js, @id_sv_js)
-      |> assign(:id_sv_server, @id_sv_server)
-      |> assign(:id_loaded_server, @id_loaded_server)
-      |> assign(:primary_src, @primary_src)
-      |> assign(:alt_src, @alt_src)
-      |> assign(:codes, demo_codes())
-
-    {:ok, socket}
-  end
-
-  defp demo_codes do
-    m = E2eWeb.Demos.AvatarDemo
-
-    %{
-      set_src_binding: m.api_set_src_client_binding_code(),
-      set_src_js_heex: m.api_set_src_client_js_heex(),
-      set_src_js: m.api_set_src_client_js_js(),
-      set_src_js_ts: m.api_set_src_client_js_ts(),
-      set_src_server_heex: m.api_set_src_server_heex(),
-      set_src_server_elixir: m.api_set_src_server_elixir(),
-      loaded_server_heex: m.api_loaded_server_heex(),
-      loaded_server_elixir: m.api_loaded_server_elixir()
-    }
+    {:ok,
+     socket
+     |> assign(:id_sv_client, @id_sv_client)
+     |> assign(:id_sv_js, @id_sv_js)
+     |> assign(:id_sv_server, @id_sv_server)
+     |> assign(:id_loaded_js, @id_loaded_js)
+     |> assign(:id_loaded_server, @id_loaded_server)
+     |> assign(:primary_src, @primary_src)
+     |> assign(:alt_src, @alt_src)
+     |> assign(:codes, Demo.api_codes())}
   end
 
   def handle_event("api_set_src_server", %{"url" => url}, socket) do
@@ -45,15 +32,10 @@ defmodule E2eWeb.AvatarApiLive do
   end
 
   def handle_event("api_loaded_server", _params, socket) do
-    {:noreply, Corex.Avatar.loaded(socket, @id_loaded_server)}
+    {:noreply, Corex.Avatar.loaded(socket, @id_loaded_server, respond_to: :server)}
   end
 
-  def handle_event("api_loaded_server_client_only", _params, socket) do
-    {:noreply, Corex.Avatar.loaded(socket, @id_loaded_server, respond_to: :client)}
-  end
-
-  def handle_event("avatar_loaded_response", %{"id" => id, "loaded" => loaded}, socket)
-      when id == @id_loaded_server do
+  def handle_event("avatar_loaded_response", %{"id" => id, "loaded" => loaded}, socket) do
     desc = "#{id}\n#{inspect(loaded)}"
 
     {:noreply,
@@ -134,7 +116,7 @@ defmodule E2eWeb.AvatarApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AvatarDemo.api_set_src_client_js_example id={@id_sv_js} />
+            <Demo.api_set_src_client_js_example id={@id_sv_js} />
           </:preview>
         </.demo_section>
 
@@ -157,55 +139,91 @@ defmodule E2eWeb.AvatarApiLive do
           ]}
         >
           <:preview>
-            <E2eWeb.Demos.AvatarDemo.api_set_src_server_example
+            <Demo.api_set_src_server_example
               id={@id_sv_server}
               event="api_set_src_server"
             />
           </:preview>
         </.demo_section>
 
-        <.demo_section
-          id="avatar-api-loaded-server"
-          title={~t"Loaded (Server)"}
-          code_tabs={[
-            %{
-              value: "heex",
-              label: ~t"Heex",
-              language: :heex,
-              code: @codes.loaded_server_heex
-            },
-            %{
-              value: "elixir",
-              label: ~t"Elixir",
-              language: :elixir,
-              code: @codes.loaded_server_elixir
-            }
-          ]}
+        <div
+          id="avatar-api-loaded-wrap"
+          phx-hook=".AvatarApiLoadedDomToast"
+          class="flex flex-col gap-4 w-full"
         >
-          <:preview>
-            <div
-              id="avatar-api-loaded-dom-wrap"
-              phx-hook=".AvatarApiLoadedDomToast"
-              class="flex flex-col items-center"
-            >
-              <E2eWeb.Demos.AvatarDemo.api_loaded_server_example
+          <.demo_section
+            id="avatar-api-loaded-binding"
+            title={~t"Loaded (Client Binding)"}
+            code={@codes.loaded_binding}
+          >
+            <:preview><Demo.api_loaded_client_binding_example /></:preview>
+          </.demo_section>
+
+          <.demo_section
+            id="avatar-api-loaded-js"
+            title={~t"Loaded (Client JS)"}
+            code_tabs={[
+              %{
+                value: "heex",
+                label: ~t"Heex",
+                language: :heex,
+                code: @codes.loaded_js_heex
+              },
+              %{
+                value: "js",
+                label: ~t"JS",
+                language: :js,
+                code: @codes.loaded_js
+              },
+              %{
+                value: "ts",
+                label: ~t"TS",
+                language: :javascript,
+                code: @codes.loaded_js_ts
+              }
+            ]}
+          >
+            <:preview>
+              <Demo.api_loaded_client_js_example id={@id_loaded_js} />
+            </:preview>
+          </.demo_section>
+
+          <.demo_section
+            id="avatar-api-loaded-server"
+            title={~t"Loaded (Server)"}
+            code_tabs={[
+              %{
+                value: "heex",
+                label: ~t"Heex",
+                language: :heex,
+                code: @codes.loaded_server_heex
+              },
+              %{
+                value: "elixir",
+                label: ~t"Elixir",
+                language: :elixir,
+                code: @codes.loaded_server_elixir
+              }
+            ]}
+          >
+            <:preview>
+              <Demo.api_loaded_server_example
                 id={@id_loaded_server}
                 event_loaded="api_loaded_server"
-                event_loaded_client_only="api_loaded_server_client_only"
               />
-            </div>
-            <script :type={Phoenix.LiveView.ColocatedHook} name=".AvatarApiLoadedDomToast">
-              export default {
-                mounted() {
-                  this.el.addEventListener("avatar-loaded", (event) => {
-                    const d = event.detail || {};
-                    this.pushEvent("avatar_loaded_dom", { id: d.id, loaded: d.loaded });
-                  });
-                }
-              }
-            </script>
-          </:preview>
-        </.demo_section>
+            </:preview>
+          </.demo_section>
+        </div>
+        <script :type={Phoenix.LiveView.ColocatedHook} name=".AvatarApiLoadedDomToast">
+          export default {
+            mounted() {
+              this.el.addEventListener("avatar-loaded", (event) => {
+                const d = event.detail || {};
+                this.pushEvent("avatar_loaded_dom", { id: d.id, loaded: d.loaded });
+              });
+            }
+          }
+        </script>
       </.demo_page>
     </Layouts.app>
     """

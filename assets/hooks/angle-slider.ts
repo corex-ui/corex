@@ -3,7 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { AngleSlider } from "../components/angle-slider";
 import type { Props, ValueChangeDetails } from "@zag-js/angle-slider";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { readNumberControlledZagProps } from "../lib/read-props";
+import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
 import {
   parseRespondTo,
   emitResponse,
@@ -59,7 +59,7 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
 
     const zag = new AngleSlider(el, {
       id: el.id,
-      ...readNumberControlledZagProps(el),
+      ...mountNumberBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -144,14 +144,18 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    this.angleSlider?.updateProps({
-      id: this.el.id,
-      ...readNumberControlledZagProps(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      readOnly: getBoolean(this.el, "readonly"),
-      invalid: getBoolean(this.el, "invalid"),
-      name: getString(this.el, "name"),
-      dir: getDir(this.el),
+    const el = this.el;
+    const zag = this.angleSlider;
+    const valuePatch = readUpdatedServerNumber(el);
+
+    zag?.updateProps({
+      id: el.id,
+      ...valuePatch,
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readonly"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      dir: getDir(el),
     } as Partial<Props>);
   },
 

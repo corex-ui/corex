@@ -89,12 +89,79 @@ defmodule Corex.PinInputTest do
           on_value_complete_client: "done-client"
         })
 
-      assert result["data-default-value"] == "1,2"
+      assert result["data-controlled"] == nil
+      assert result["data-default-value"] == ~S(["1","2","",""])
+      assert result["data-value"] == nil
       assert result["data-orientation"] == "vertical"
       assert result["data-dir"] == "rtl"
       assert result["data-on-value-change"] == "vc"
       assert result["data-on-value-complete"] == "done"
       assert result["data-on-value-complete-client"] == "done-client"
+    end
+
+    test "controlled uses data-value" do
+      result =
+        Connect.props(%{
+          id: "pin",
+          controlled: true,
+          value: ["1", "2"],
+          count: 4,
+          disabled: false,
+          invalid: false,
+          required: false,
+          read_only: false,
+          mask: false,
+          otp: false,
+          blur_on_complete: false,
+          select_on_focus: false,
+          name: nil,
+          form: nil,
+          dir: "ltr",
+          orientation: "horizontal",
+          type: "numeric",
+          placeholder: "○",
+          on_value_change: nil,
+          on_value_change_client: nil,
+          on_value_complete: nil,
+          on_value_complete_client: nil
+        })
+
+      assert result["data-controlled"] == ""
+      assert result["data-value"] == ~S(["1","2","",""])
+      assert result["data-default-value"] == nil
+    end
+
+    test "form_field uses data-value and data-controlled" do
+      result =
+        Connect.props(%{
+          id: "pin",
+          form_field: true,
+          value: ["1"],
+          count: 4,
+          disabled: false,
+          invalid: false,
+          required: false,
+          read_only: false,
+          mask: false,
+          otp: false,
+          blur_on_complete: false,
+          select_on_focus: false,
+          name: "user[code]",
+          form: "user",
+          dir: "ltr",
+          orientation: "horizontal",
+          type: "numeric",
+          placeholder: "○",
+          on_value_change: nil,
+          on_value_change_client: nil,
+          on_value_complete: nil,
+          on_value_complete_client: nil
+        })
+
+      assert result["data-controlled"] == ""
+      assert result["data-form-field"] == "true"
+      assert result["data-value"] == ~S(["1","","",""])
+      assert result["data-default-value"] == nil
     end
 
     test "renders on_value_complete_client on host" do
@@ -191,6 +258,39 @@ defmodule Corex.PinInputTest do
 
       assert html =~ "Code"
       assert html =~ ~S(data-scope="pin-input")
+      assert html =~ ~r/data-default-value=/
+      refute html =~ ~r/data-controlled/
+      refute html =~ ~S(data-value=")
+    end
+
+    test "renders error part when field has visible errors" do
+      import Ecto.Changeset
+
+      changeset =
+        {%{}, %{code: :string}}
+        |> cast(%{"code" => ""}, [:code])
+        |> validate_required([:code])
+
+      form = Phoenix.Component.to_form(changeset, as: :user, action: :validate)
+      field = form[:code]
+      assert Phoenix.Component.used_input?(field)
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <PinInput.pin_input field={@field} count={4}>
+              <:label>Code</:label>
+              <:error :let={msg}>{msg}</:error>
+            </PinInput.pin_input>
+            """
+          end,
+          %{field: field}
+        )
+
+      assert html =~ ~S(data-invalid=)
+      assert html =~ ~S(data-part="error")
+      assert html =~ "blank"
     end
   end
 

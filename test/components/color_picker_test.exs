@@ -355,8 +355,8 @@ defmodule Corex.ColorPickerTest do
       refute Map.has_key?(result, "data-format")
       refute Map.has_key?(result, "data-open")
       refute Map.has_key?(result, "data-default-open")
-      refute Map.has_key?(result, "data-value")
-      refute Map.has_key?(result, "data-controlled")
+      assert result["data-value"] == nil
+      assert result["data-controlled"] == nil
     end
 
     test "returns props with value as data-default-value" do

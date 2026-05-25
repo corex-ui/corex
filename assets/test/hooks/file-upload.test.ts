@@ -21,6 +21,7 @@ describe("fileChangePayload", () => {
     expect(payload.id).toBe("fu");
     expect(payload.acceptedCount).toBe(1);
     expect(payload.firstAcceptedName).toBe("doc.txt");
+    expect(payload.acceptedNames).toEqual(["doc.txt"]);
   });
 });
 

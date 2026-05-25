@@ -1214,7 +1214,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_preview_live_phoenix(assigns) do
     ~H"""
-    <.form for={@form} phx-submit="save_phoenix">
+    <.form for={@form} phx-change="change_phoenix" phx-submit="save_phoenix">
       <.number_input
         field={@form[:value]}
         class="number-input"

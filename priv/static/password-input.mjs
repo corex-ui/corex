@@ -1,4 +1,7 @@
 import {
+  readUpdatedServerString
+} from "./chunks/chunk-7PXMD5A7.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -339,16 +342,26 @@ var PasswordInputHook = {
     });
   },
   updated() {
+    const el = this.el;
+    const valuePatch = readUpdatedServerString(el);
     this.passwordInput?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readonly"),
-      required: getBoolean(this.el, "required"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      dir: getDir(this.el)
+      id: el.id,
+      ...valuePatch,
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      readOnly: getBoolean(el, "readonly"),
+      required: getBoolean(el, "required"),
+      name: getString(el, "name"),
+      dir: getDir(el)
     });
+    if ("value" in valuePatch && valuePatch.value !== null) {
+      const input = el.querySelector(
+        '[data-scope="password-input"][data-part="input"]'
+      );
+      if (input && input.value !== valuePatch.value) {
+        input.value = valuePatch.value;
+      }
+    }
   },
   destroyed() {
     if (this.handlers) {

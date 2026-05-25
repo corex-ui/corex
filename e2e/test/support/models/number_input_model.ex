@@ -169,13 +169,97 @@ defmodule E2eWeb.NumberInputModel do
 
       ready_q = css(~s|##{form_id} [phx-hook="NumberInput"]:not([data-loading])|, visible: :any)
 
-      session
-      |> assert_has(ready_q)
-      |> click(visible_q)
-      |> send_keys(visible_q, [:control, "a"])
-      |> send_keys(visible_q, value)
-      |> assert_value_synced(form_id, value)
+      session =
+        session
+        |> assert_has(ready_q)
+        |> set_number_input_value(form_id, value)
+        |> click(visible_q)
+
+      session =
+        if mode == :live do
+          session
+          |> nudge_number_input_change(form_id, value)
+          |> wait_live_number_input_used(form_id)
+          |> wait(400)
+        else
+          session
+          |> click(visible_q)
+          |> send_keys(visible_q, [:control, "a"])
+          |> send_keys(visible_q, value)
+        end
+
+      assert_value_synced(session, form_id, value)
     end
+  end
+
+  defp set_number_input_value(session, form_id, value) when is_binary(value) do
+    enc_form = Jason.encode!(form_id)
+    enc_value = Jason.encode!(value)
+
+    num =
+      case Float.parse(value) do
+        {n, _} -> n
+        :error -> value
+      end
+
+    enc_num = Jason.encode!(num)
+
+    execute_script(
+      session,
+      """
+      return (function () {
+        var form = document.getElementById(#{enc_form});
+        var hook = form?.querySelector('[phx-hook="NumberInput"]');
+        if (!hook) return;
+        hook.dispatchEvent(
+          new CustomEvent("corex:number-input:set-value", {
+            bubbles: true,
+            detail: { value: #{enc_num} }
+          })
+        );
+        var visible = hook.querySelector('[data-scope="number-input"][data-part="input"]');
+        var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        if (visible) setter.call(visible, #{enc_value});
+      })();
+      """
+    )
+
+    session
+  end
+
+  defp nudge_number_input_change(session, form_id, value \\ nil) do
+    enc_form = Jason.encode!(form_id)
+    enc_value = if(value, do: Jason.encode!(value), else: "null")
+
+    execute_script(
+      session,
+      """
+      return (function () {
+        var form = document.getElementById(#{enc_form});
+        var hook = form?.querySelector('[phx-hook="NumberInput"]');
+        var visible = hook?.querySelector('[data-scope="number-input"][data-part="input"]');
+        var hidden = hook?.querySelector('[data-scope="number-input"][data-part="value-input"]');
+        if (!visible) return;
+        var v = #{enc_value};
+        var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        if (v == null) {
+          v = hidden?.value ?? visible.value ?? "";
+        }
+        setter.call(visible, v);
+        visible.dispatchEvent(new Event("input", { bubbles: true }));
+        visible.dispatchEvent(new Event("change", { bubbles: true }));
+        if (hidden) {
+          setter.call(hidden, v);
+          if (!hidden.phxPrivate) hidden.phxPrivate = {};
+          hidden.phxPrivate["phx-has-focused"] = true;
+          hidden.dispatchEvent(new Event("input", { bubbles: true }));
+          hidden.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      })();
+      """
+    )
+
+    session
   end
 
   defp assert_value_synced(session, form_id, expected) do
@@ -221,6 +305,9 @@ defmodule E2eWeb.NumberInputModel do
         |> assert_has(
           css("##{form_id} [phx-hook='NumberInput']:not([data-loading])", visible: :any)
         )
+        |> wait_number_input_hidden_value(form_id, :live)
+        |> nudge_number_input_change(form_id)
+        |> wait_live_number_input_used(form_id)
         |> click(css("##{form_id} button[type='submit']"))
 
       _ ->
@@ -238,6 +325,30 @@ defmodule E2eWeb.NumberInputModel do
   defp wait_number_input_hidden_value(session, form_id, _mode) do
     deadline = System.monotonic_time(:millisecond) + 8_000
     busy_wait_hidden_value(session, form_id, deadline)
+    session
+  end
+
+  defp wait_live_number_input_used(session, form_id) do
+    enc_form = Jason.encode!(form_id)
+    key = {:e2e_number_input_used, self(), make_ref()}
+
+    Wallaby.Browser.retry(fn ->
+      _ =
+        execute_script(
+          session,
+          """
+          var form = document.getElementById(#{enc_form});
+          var hidden = form?.querySelector('[data-scope="number-input"][data-part="value-input"]');
+          return !!(hidden?.phxPrivate && hidden.phxPrivate["phx-has-focused"]);
+          """,
+          [],
+          fn value -> Process.put(key, value in [true, "true", 1, "1"]) end
+        )
+
+      if Process.get(key, false), do: {:ok, session}, else: {:error, :not_used}
+    end)
+
+    Process.delete(key)
     session
   end
 

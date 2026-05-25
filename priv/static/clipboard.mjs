@@ -343,8 +343,7 @@ var ClipboardHook = {
   updated() {
     this.clipboard?.updateProps({
       id: this.el.id,
-      timeout: getNumber(this.el, "timeout"),
-      defaultValue: getString(this.el, "defaultValue")
+      timeout: getNumber(this.el, "timeout")
     });
   },
   destroyed() {

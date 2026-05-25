@@ -2,6 +2,8 @@ defmodule Corex.SignaturePad.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.SignaturePad.Anatomy.{
     ClearTrigger,
     Control,
@@ -18,37 +20,26 @@ defmodule Corex.SignaturePad.Connect do
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
 
-  defp encode_paths([]), do: nil
+  defp default_paths_attr(assigns) do
+    paths = assigns.paths
 
-  defp encode_paths(paths) when is_binary(paths) do
-    if path_lines_for_connect(paths) == [] do
-      nil
-    else
-      paths
-    end
-  end
+    encoded =
+      case paths do
+        nil ->
+          nil
 
-  defp encode_paths(paths) when is_list(paths) do
-    case Enum.filter(paths, &is_binary/1) do
-      [] -> nil
-      lines -> Enum.join(lines, "\n")
-    end
-  end
+        p when is_list(p) ->
+          if Map.get(assigns, :form_field, false) do
+            FormField.default_value_dataset(assigns, FormField.dataset_default_json(p))
+          else
+            FormField.default_value_dataset(assigns, FormField.dataset_default_paths(p))
+          end
 
-  defp encode_paths(_), do: nil
+        p when is_binary(p) ->
+          FormField.default_value_dataset(assigns, p)
+      end
 
-  defp path_lines_for_connect(s) when is_binary(s) do
-    s
-    |> String.split("\n")
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(&1 == ""))
-  end
-
-  defp default_paths_attr(paths) do
-    case paths do
-      nil -> %{"data-default-paths" => nil}
-      p -> %{"data-default-paths" => encode_paths(p)}
-    end
+    %{"data-default-paths" => encoded}
   end
 
   @spec props(Props.t()) :: map()
@@ -63,7 +54,7 @@ defmodule Corex.SignaturePad.Connect do
       "data-on-draw-end-client" => assigns.on_draw_end_client
     }
 
-    paths_attrs = default_paths_attr(assigns.paths)
+    paths_attrs = default_paths_attr(assigns)
 
     smooth = assigns.drawing_smoothing
     thin = if(assigns.drawing_thinning != nil, do: assigns.drawing_thinning, else: 0.7)
@@ -72,10 +63,12 @@ defmodule Corex.SignaturePad.Connect do
     base_attrs
     |> Map.merge(paths_attrs)
     |> maybe_put_name(assigns.name)
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
     |> Map.put("data-drawing-smoothing", to_string(smooth))
     |> Map.put("data-drawing-thinning", to_string(thin))
     |> Map.put("data-drawing-streamline", to_string(stream))
     |> maybe_put_drawing_easing(assigns.drawing_easing)
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   defp maybe_put_drawing_easing(attrs, nil), do: attrs
@@ -85,6 +78,9 @@ defmodule Corex.SignaturePad.Connect do
 
   defp maybe_put_name(attrs, nil), do: attrs
   defp maybe_put_name(attrs, name), do: Map.put(attrs, "data-name", name)
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do

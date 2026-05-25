@@ -782,7 +782,6 @@ var TooltipHook = {
     const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
     this.tooltip?.updateProps({
       id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),

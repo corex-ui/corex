@@ -6,13 +6,14 @@ import {
   stripHiddenFromProps
 } from "./chunks/chunk-XI7CXJ3V.mjs";
 import {
-  readBooleanControlledZagProps,
-  readControlledOrDefaultBoolean
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
   trackDismissableElement
 } from "./chunks/chunk-57TWBSTW.mjs";
 import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  readBooleanControlledZagProps,
+  readBooleanControlledZagUpdate,
+  readControlledOrDefaultBoolean
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1438,7 +1439,7 @@ var DialogHook = {
   destroyed() {
     this.dialog?.updateProps({
       ...readDialogLayoutProps(this.el),
-      ...readBooleanControlledZagProps(this.el, "open", "defaultOpen")
+      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")
     });
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();

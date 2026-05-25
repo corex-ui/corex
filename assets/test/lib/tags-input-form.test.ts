@@ -1,9 +1,22 @@
 import { describe, expect, it } from "vitest";
+import { isFormFieldUsed } from "../../lib/form-array-submit";
 import {
   syncTagsArrayInputsForPhoenix,
   syncTagsInputFormForPhoenix,
 } from "../../lib/tags-input-form";
 import { el } from "../helpers/dom";
+
+describe("isFormFieldUsed", () => {
+  it("is true when data-field-used is set", () => {
+    const root = el({ fieldUsed: true });
+    expect(isFormFieldUsed(root, false)).toBe(true);
+  });
+
+  it("is true when the user touched the field in this session", () => {
+    const root = el({});
+    expect(isFormFieldUsed(root, true)).toBe(true);
+  });
+});
 
 describe("syncTagsArrayInputsForPhoenix", () => {
   it("creates hidden inputs with submit name[] per tag", () => {
@@ -25,7 +38,7 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     expect(inputs[1]!.value).toBe("beta");
   });
 
-  it("renders empty placeholder input when there are no tags", () => {
+  it("renders unnamed empty placeholder when untouched", () => {
     const root = el({ submitName: "post[tags][]" });
     root.innerHTML = `
       <div data-scope="tags-input" data-part="root">
@@ -38,8 +51,24 @@ describe("syncTagsArrayInputsForPhoenix", () => {
     const input = root.querySelector<HTMLInputElement>(
       '[data-scope="tags-input"][data-part="array-input"][data-empty]'
     )!;
-    expect(input.name).toBe("post[tags][]");
+    expect(input.name).toBe("");
     expect(input.value).toBe("");
+  });
+
+  it("renders named empty placeholder when the field is used", () => {
+    const root = el({ submitName: "post[tags][]", fieldUsed: true });
+    root.innerHTML = `
+      <div data-scope="tags-input" data-part="root">
+        <div data-scope="tags-input" data-part="array-inputs" phx-update="ignore"></div>
+      </div>
+    `;
+
+    syncTagsArrayInputsForPhoenix(root, [], undefined, { fieldTouched: true });
+
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-scope="tags-input"][data-part="array-input"][data-empty]'
+    )!;
+    expect(input.name).toBe("post[tags][]");
   });
 
   it("does not set form attribute when the hook is inside a form element", () => {

@@ -6,24 +6,24 @@ defmodule E2eWeb.SwitchFormTest do
 
   alias E2eWeb.SwitchModel, as: Switch
 
-  feature "static form - submit unchecked includes notifications", %{session: session} do
+  feature "static form - submit unchecked shows notifications=false", %{session: session} do
     session
     |> Switch.goto_form(:static)
     |> Switch.wait_for_has(css("#switch-form-page"), timeout: 15_000)
     |> Switch.submit_form()
-    |> Switch.see_flash("Submitted: notifications=")
+    |> Switch.see_flash("notifications=false")
   end
 
-  feature "static form - click switch then submit includes notifications", %{session: session} do
+  feature "static form - click switch then submit shows notifications=true", %{session: session} do
     session
     |> Switch.goto_form(:static)
     |> Switch.wait_for_has(css("#switch-form-page"), timeout: 15_000)
     |> Switch.click_switch()
     |> Switch.submit_form()
-    |> Switch.see_flash("Submitted: notifications=")
+    |> Switch.see_flash("notifications=true")
   end
 
-  feature "live form (controlled) - submit without toggling then toggle and submit shows success",
+  feature "live form - submit without toggling then toggle and submit shows success",
           %{session: session} do
     session =
       session
@@ -31,7 +31,7 @@ defmodule E2eWeb.SwitchFormTest do
       |> Switch.wait_for_has(css("#switch-form-live-page"), timeout: 15_000)
 
     session = Switch.submit_form(session, :live)
-    Switch.see_flash(session, "notifications=false")
+    Switch.see_error(session, "must be accepted")
 
     session =
       session

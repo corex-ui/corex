@@ -85,7 +85,8 @@ Generates apps with `corex.new` and asserts install paths. Requires `mix archive
 | `lib/components/` | Phoenix components (`Corex.*`), moduledoc, `attr` / `slot` |
 | `lib/components/<name>/` | Connect, anatomy, translation modules |
 | `assets/hooks/` | LiveView hooks (TypeScript, Zag.js) |
-| `assets/lib/` | Shared TS helpers (`util`, `respond-to`, `read-props`, …); tests in `assets/lib/*.test.ts` |
+| `assets/lib/` | Shared TS helpers (`util`, `respond-to`, `read-props`, …) |
+| `assets/test/lib/` | Unit tests for `assets/lib/` helpers |
 | `assets/components/` | Zag `Component` subclasses; colocated `*.test.ts` per module (helpers + smoke); all modules in `components-contract.test.ts` and `components-smoke.test.ts` |
 | `assets/hooks/` | LiveView hooks; hook-specific logic in `hooks/<name>.ts` + `hooks/<name>.test.ts`; wiring in `hooks-wiring.test.ts` |
 | `priv/design/corex/` | Corex Design tokens and component CSS (source of truth in the package) |
@@ -120,12 +121,12 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) style when i
 
 | Path | Expectation |
 | ---- | ----------- |
-| `assets/lib/*.ts` | Colocated `assets/lib/<name>.test.ts` for every module except `core.ts` (abstract base) |
+| `assets/lib/*.ts` | `assets/test/lib/<name>.test.ts` for every module except `core.ts` (abstract base) |
 | `assets/components/*.ts` | Tests under `assets/test/component/` (per-module + `components-contract.test.ts` + `components-smoke.test.ts`) |
 | `assets/hooks/*.ts` | Tests under `assets/test/hooks/` (per-hook lifecycle + parser tests + `hooks-contract.test.ts`) |
 | `assets/test/helpers/` | Shared DOM fixtures (`dom.ts`, `component-fixture.ts`, `component-smoke.ts`, `mock-live-socket.ts`, `expect-hook.ts`) |
 
-New shared helper → `assets/lib/<name>.test.ts`. New component or hook tests → `assets/test/component/<name>.test.ts` or `assets/test/hooks/<name>.test.ts`. Export small pure functions from hooks when logic is not otherwise testable.
+New shared helper → `assets/test/lib/<name>.test.ts`. New component or hook tests → `assets/test/component/<name>.test.ts` or `assets/test/hooks/<name>.test.ts`. Export small pure functions from hooks when logic is not otherwise testable.
 | Design CSS | `mix assets.build`, visual check in e2e styling pages |
 | Moduledoc only | `mix docs` (fix any warnings) |
 | Installer | `cd installer && mix test` |

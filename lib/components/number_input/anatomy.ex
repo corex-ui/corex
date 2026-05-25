@@ -7,6 +7,7 @@ defmodule Corex.NumberInput.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       value: nil,
       min: nil,
       max: nil,

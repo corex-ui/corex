@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { el } from "../test/helpers/dom";
+import { el } from "../helpers/dom";
 import {
   canPushEvent,
   generateId,
@@ -11,7 +11,7 @@ import {
   getString,
   getStringList,
   templatesContentRoot,
-} from "./util";
+} from "../../lib/util";
 
 describe("getBoolean", () => {
   it("returns false when attribute is absent", () => {

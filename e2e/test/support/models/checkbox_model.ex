@@ -189,21 +189,35 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def click_checkbox(session, :live) do
-    click(session, css("#checkbox-live-form-phoenix-terms [data-part='control']"))
+    click_checkbox_in_section(session, "checkbox-live-form-phoenix-terms")
+  end
+
+  def click_checkbox(session, :static_ecto) do
+    click_checkbox_in_section(session, "checkbox-form-ecto-terms")
+  end
+
+  def click_checkbox(session, :static_native) do
+    click_checkbox_in_section(session, "checkbox-form-native-terms")
   end
 
   def click_checkbox(session) do
-    click(
-      session,
-      css("#checkbox-form-phoenix-terms [data-scope='checkbox'][data-part='control']")
-    )
+    click_checkbox_in_section(session, "checkbox-form-phoenix-terms")
+  end
+
+  def click_checkbox_in_section(session, host_id) when is_binary(host_id) do
+    session
+    |> wait_static_form_checkbox_ready(host_id)
+    |> click(css("##{host_id} [data-scope='checkbox'][data-part='control']"))
   end
 
   def submit_form(session, mode \\ :static) do
     id =
-      if mode == :live,
-        do: "checkbox-live-form-phoenix-submit",
-        else: "checkbox-form-phoenix-submit"
+      case mode do
+        :live -> "checkbox-live-form-phoenix-submit"
+        :static_ecto -> "checkbox-form-ecto-submit"
+        :static_native -> "checkbox-form-native-submit"
+        _ -> "checkbox-form-phoenix-submit"
+      end
 
     click(session, css("##{id}"))
   end
@@ -213,21 +227,21 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def see_error(session, error_text) do
-    assert_has(session, css("body", text: error_text))
+    assert_has(session, css("[data-part='error']", text: error_text))
   end
 
   def see_flash(session, flash_text) do
     assert_toast(session, flash_text)
   end
 
-  def wait_static_form_checkbox_ready(session, section_id) when is_binary(section_id) do
-    if not (String.match?(section_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_id) > 0) do
-      raise ArgumentError, "invalid section id"
+  def wait_static_form_checkbox_ready(session, host_id) when is_binary(host_id) do
+    if not (String.match?(host_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_id) > 0) do
+      raise ArgumentError, "invalid host id"
     end
 
     assert_has(
       session,
-      css("##{section_id} [phx-hook='Checkbox']:not([data-loading])", visible: :any)
+      css("##{host_id}[phx-hook='Checkbox']:not([data-loading])", visible: :any)
     )
 
     session

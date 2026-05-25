@@ -57,7 +57,7 @@ defmodule Corex.SignaturePad do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
-  The value field is a `type="text"` input with the HTML `hidden` attribute (Zag’s pattern), not a `type="hidden"` control, so the LiveView client can mark it “used” like a normal text field. The hook re-applies the same `phxPrivate` usage metadata LiveView stores on that input after draws, clear, and after server patches, so a morph of the value input does not drop “used” state and `used_input?/1` on the server matches expected behaviour.
+  With `field={@form[:signature]}`, paths submit as `name="…[]"` hidden array inputs. On draw or clear, the hook updates those inputs and dispatches `input` so LiveView tracks the field. Errors render only when `Phoenix.Component.used_input?/1` is true for the field.
 
   ### Controller
 
@@ -357,6 +357,11 @@ defmodule Corex.SignaturePad do
       "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
+  attr(:field_used, :boolean,
+    default: false,
+    doc: "Whether Phoenix considers the field used (internal; set from field=)"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -377,8 +382,6 @@ defmodule Corex.SignaturePad do
   end
 
   def signature_pad(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = signature_pad_field_errors(field) |> Enum.map(&Corex.Gettext.translate_error/1)
-
     paths_value =
       case field.value do
         nil -> []
@@ -388,25 +391,22 @@ defmodule Corex.SignaturePad do
         _ -> []
       end
 
-    assigns =
-      assigns
-      |> assign(field: nil)
-      |> assign(:errors, errors)
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(:paths, paths_value)
-
-    signature_pad(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(:paths, paths_value)
+    |> signature_pad()
   end
 
   def signature_pad(assigns) do
     assigns =
       assigns
       |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:field_used, fn -> false end)
+      |> Corex.FormField.assign_list_submit()
 
     ~H"""
     <div
@@ -417,6 +417,8 @@ defmodule Corex.SignaturePad do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        field_used: @field_used,
         paths: @paths,
         drawing_fill: @drawing_fill,
         drawing_size: @drawing_size,
@@ -428,10 +430,36 @@ defmodule Corex.SignaturePad do
         dir: @dir,
         on_draw_end: @on_draw_end,
         on_draw_end_client: @on_draw_end_client,
-        name: @name
+        name: @name,
+        submit_name: @submit_name
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+        <div
+          :if={@submit_name}
+          data-scope="signature-pad"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"signature-pad:#{@id}:array-inputs"}
+        >
+          <input
+            :for={path <- @paths}
+            type="hidden"
+            data-scope="signature-pad"
+            data-part="array-input"
+            name={@submit_name}
+            value={path}
+          />
+          <input
+            :if={@paths == []}
+            type="hidden"
+            data-scope="signature-pad"
+            data-part="array-input"
+            data-empty
+            name={if(@field_used, do: @submit_name)}
+            value=""
+          />
+        </div>
         <label
           :if={@label != []}
           phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
@@ -474,9 +502,9 @@ defmodule Corex.SignaturePad do
           <div phx-mounted={Connect.ignore_guide(%Guide{id: @id, dir: @dir})} {Connect.guide(%Guide{id: @id, dir: @dir})} />
         </div>
         <input
-          value={hidden_input_value(@paths)}
+          value={if(@submit_name, do: "", else: hidden_input_value(@paths))}
           phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
-          {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
+          {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: if(@submit_name, do: nil, else: @name), form: @form})}
         />
       </div>
       <div
@@ -543,10 +571,6 @@ defmodule Corex.SignaturePad do
     LiveView.push_event(socket, "signature_pad_clear", %{
       signature_pad_id: signature_pad_id
     })
-  end
-
-  defp signature_pad_field_errors(%Phoenix.HTML.FormField{} = field) do
-    if Phoenix.Component.used_input?(field), do: field.errors, else: []
   end
 
   defp paths_from_paths_attr(nil), do: []

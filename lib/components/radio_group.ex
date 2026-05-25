@@ -388,15 +388,10 @@ defmodule Corex.RadioGroup do
   end
 
   def radio_group(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     v = if field.value in [nil, ""], do: nil, else: to_string(field.value)
 
     assigns
-    |> assign(:field, nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, v)
     |> radio_group()
   end
@@ -405,6 +400,7 @@ defmodule Corex.RadioGroup do
     assigns =
       assigns
       |> assign_new(:id, fn -> "radio-group-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, normalize_radio_items(assigns.items))
@@ -418,6 +414,7 @@ defmodule Corex.RadioGroup do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         controlled: @controlled,
         name: @name,

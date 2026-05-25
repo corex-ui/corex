@@ -2,6 +2,8 @@ import { connect, machine, type Props, type Api } from "@zag-js/radio-group";
 import type { ItemProps } from "@zag-js/radio-group";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { hiddenInputPropsWithoutChecked } from "../lib/checkable-form-sync";
+import { syncInputFormAssociation } from "../lib/util";
 
 export class RadioGroup extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,15 +61,20 @@ export class RadioGroup extends Component<Props, Api> {
         const hiddenInputEl = itemEl.querySelector<HTMLElement>(
           '[data-scope="radio-group"][data-part="item-hidden-input"]'
         );
-        if (hiddenInputEl)
+        if (hiddenInputEl instanceof HTMLInputElement) {
           this.spreadProps(
             hiddenInputEl,
-            this.api.getItemHiddenInputProps({
-              value,
-              disabled,
-              invalid,
-            } as ItemProps)
+            hiddenInputPropsWithoutChecked(
+              this.api.getItemHiddenInputProps({
+                value,
+                disabled,
+                invalid,
+              } as ItemProps) as Record<string, unknown>
+            )
           );
+          hiddenInputEl.checked = this.api.value === value;
+          syncInputFormAssociation(hiddenInputEl, this.el);
+        }
       });
   }
 }

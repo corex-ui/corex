@@ -1,14 +1,20 @@
 import {
-  readStringControlledZagProps,
-  readStringControlledZagUpdate
-} from "./chunks/chunk-AS2EYUTO.mjs";
+  hiddenInputPropsWithoutChecked
+} from "./chunks/chunk-G73IV5JU.mjs";
 import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
+import {
   isFocusVisible,
   trackFocusVisible
 } from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  readStringControlledZagProps,
+  readUpdatedServerString
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -37,6 +43,7 @@ import {
   isSafari,
   queryAll,
   resizeObserverBorderBox,
+  syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
 } from "./chunks/chunk-EWT2BP2N.mjs";
@@ -519,15 +526,20 @@ var RadioGroup = class extends Component {
       const hiddenInputEl = itemEl.querySelector(
         '[data-scope="radio-group"][data-part="item-hidden-input"]'
       );
-      if (hiddenInputEl)
+      if (hiddenInputEl instanceof HTMLInputElement) {
         this.spreadProps(
           hiddenInputEl,
-          this.api.getItemHiddenInputProps({
-            value,
-            disabled,
-            invalid
-          })
+          hiddenInputPropsWithoutChecked(
+            this.api.getItemHiddenInputProps({
+              value,
+              disabled,
+              invalid
+            })
+          )
         );
+        hiddenInputEl.checked = this.api.value === value;
+        syncInputFormAssociation(hiddenInputEl, this.el);
+      }
     });
   }
 };
@@ -556,10 +568,19 @@ var RadioGroupHook = {
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       onValueChange: (details) => {
+        const selected = details.value;
+        el.querySelectorAll(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]'
+        ).forEach((input) => {
+          const on = input.value === selected;
+          if (input.checked !== on) input.checked = on;
+          syncInputFormAssociation(input, el);
+        });
         const checked = el.querySelector(
           '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
         );
         if (checked) {
+          reapplyLiveViewValueInputUsage(checked);
           checked.dispatchEvent(new Event("input", { bubbles: true }));
           checked.dispatchEvent(new Event("change", { bubbles: true }));
         }
@@ -622,17 +643,19 @@ var RadioGroupHook = {
     });
   },
   updated() {
-    this.radioGroup?.updateProps({
-      id: this.el.id,
-      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readonly"),
-      orientation: getString(this.el, "orientation"),
-      dir: getDir(this.el)
+    const el = this.el;
+    const zag = this.radioGroup;
+    const valuePatch = readUpdatedServerString(el);
+    zag?.updateProps({
+      id: el.id,
+      ...valuePatch,
+      name: getString(el, "name"),
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readonly"),
+      orientation: getString(el, "orientation"),
+      dir: getDir(el)
     });
   },
   destroyed() {

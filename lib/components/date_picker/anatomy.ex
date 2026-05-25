@@ -18,6 +18,7 @@ defmodule Corex.DatePicker.Anatomy do
       :focused_value,
       :placeholder,
       :positioning,
+      form_field: false,
       controlled: false,
       disabled: false,
       read_only: false,
@@ -43,11 +44,13 @@ defmodule Corex.DatePicker.Anatomy do
       on_visible_range_change_client: nil,
       on_open_change_client: nil,
       max_selected_dates: nil,
-      translation: nil
+      translation: nil,
+      submit_name: nil
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             locale: String.t() | nil,
             time_zone: String.t() | nil,

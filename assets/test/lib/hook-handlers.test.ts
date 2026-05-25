@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
-import { createHookHandleEventRegistry } from "./hook-handlers";
+import { createHookHandleEventRegistry } from "../../lib/hook-handlers";
 
 describe("createHookHandleEventRegistry", () => {
   it("registers handleEvent callbacks and removes them on teardown", () => {

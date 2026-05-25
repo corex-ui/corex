@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { mockLiveSocket } from "../test/helpers/mock-live-socket";
-import { performRedirect, readDomItemRedirect } from "./redirect";
+import { mockLiveSocket } from "../helpers/mock-live-socket";
+import { performRedirect, readDomItemRedirect } from "../../lib/redirect";
 
 describe("readDomItemRedirect", () => {
   it("returns null without element or fallback", () => {

@@ -28,6 +28,10 @@ defmodule Corex.Checkable.Helpers do
     end
   end
 
+  def checked_form_field_default_attr(checked) do
+    checked |> normalize_checked() |> checked_attr_value()
+  end
+
   def native_checked(checked) do
     normalize_checked(checked) == true
   end

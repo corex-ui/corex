@@ -2,8 +2,8 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { RadioGroup } from "../components/radio-group";
 import type { Props, ValueChangeDetails } from "@zag-js/radio-group";
-import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { readStringControlledZagProps, readStringControlledZagUpdate } from "../lib/read-props";
+import { getString, getBoolean, getDir, canPushEvent, syncInputFormAssociation } from "../lib/util";
+import { readStringControlledZagProps, readUpdatedServerString } from "../lib/read-props";
 import {
   emitResponse,
   idMatches,
@@ -13,6 +13,7 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { reapplyLiveViewValueInputUsage } from "../lib/live-view-form-input";
 
 type RadioGroupHookState = {
   radioGroup?: RadioGroup;
@@ -47,10 +48,19 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
       dir: getDir(el),
       orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       onValueChange: (details: ValueChangeDetails) => {
+        const selected = details.value;
+        el.querySelectorAll<HTMLInputElement>(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]'
+        ).forEach((input) => {
+          const on = input.value === selected;
+          if (input.checked !== on) input.checked = on;
+          syncInputFormAssociation(input, el);
+        });
         const checked = el.querySelector<HTMLInputElement>(
           '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
         );
         if (checked) {
+          reapplyLiveViewValueInputUsage(checked);
           checked.dispatchEvent(new Event("input", { bubbles: true }));
           checked.dispatchEvent(new Event("change", { bubbles: true }));
         }
@@ -125,17 +135,20 @@ const RadioGroupHook: Hook<object & RadioGroupHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & RadioGroupHookState) {
-    this.radioGroup?.updateProps({
-      id: this.el.id,
-      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readonly"),
-      orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
-      dir: getDir(this.el),
+    const el = this.el;
+    const zag = this.radioGroup;
+    const valuePatch = readUpdatedServerString(el);
+
+    zag?.updateProps({
+      id: el.id,
+      ...valuePatch,
+      name: getString(el, "name"),
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readonly"),
+      orientation: getString<"horizontal" | "vertical">(el, "orientation"),
+      dir: getDir(el),
     } as Partial<Props>);
   },
 

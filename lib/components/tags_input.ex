@@ -140,7 +140,7 @@ defmodule Corex.TagsInput do
 
   The `delimiter` attribute only controls how **new** tags are split when typing or pasting in the control (default `,`). It does not affect form submission.
 
-  In LiveView, use `controlled` and rebuild the form from the changeset on `phx-change` (same pattern as other Corex inputs).
+  In LiveView, rebuild the form from the changeset on `phx-change` so validation stays in sync. Do not use `controlled` on form examples; use `field={@form[:tags]}` only.
 
   ```elixir
   embedded_schema do
@@ -157,7 +157,7 @@ defmodule Corex.TagsInput do
 
   ```heex
   <.form for={@form} phx-change="validate" phx-submit="save">
-    <.tags_input field={@form[:tags]} class="tags-input" controlled>
+    <.tags_input field={@form[:tags]} class="tags-input">
       <:label>Keywords</:label>
       <:close><.heroicon name="hero-x-mark" /></:close>
       <:error :let={msg}>
@@ -263,6 +263,11 @@ defmodule Corex.TagsInput do
       "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
   )
 
+  attr(:field_used, :boolean,
+    default: false,
+    doc: "Whether Phoenix considers the field used (internal; set from field=)"
+  )
+
   attr(:dir, :string,
     default: nil,
     values: [nil, "ltr", "rtl"],
@@ -327,22 +332,11 @@ defmodule Corex.TagsInput do
   end
 
   def tags_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors =
-      if Phoenix.Component.used_input?(field) do
-        Enum.map(field.errors, &Corex.Gettext.translate_error(&1))
-      else
-        []
-      end
-
     value = Form.input_value(field.form, field.field)
     tags = tags_from_field_value(value)
 
     assigns
-    |> assign(:field, nil)
-    |> assign(:errors, errors)
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, tags)
     |> tags_input()
   end
@@ -351,25 +345,27 @@ defmodule Corex.TagsInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "tags-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value_list, validate_value!(assigns.value))
       |> normalize_tags_input_translation()
 
-    form_submit = is_binary(assigns[:name])
-
     assigns =
       assigns
-      |> assign(:submit_name, if(form_submit, do: assigns.name <> "[]", else: nil))
+      |> assign_new(:field_used, fn -> false end)
+      |> Corex.FormField.assign_list_submit()
 
     ~H"""
     <div
       id={@id}
       phx-hook="TagsInput"
       data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-tags"])}
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        field_used: @field_used,
         value: @value,
         controlled: @controlled,
         disabled: @disabled,
@@ -424,7 +420,7 @@ defmodule Corex.TagsInput do
             data-scope="tags-input"
             data-part="array-input"
             data-empty
-            name={@submit_name}
+            name={if(@field_used, do: @submit_name)}
             value=""
           />
         </div>
@@ -539,7 +535,7 @@ defmodule Corex.TagsInput do
         />
       </div>
       <div
-        :if={@error != []}
+        :if={!Enum.empty?(@errors)}
         :for={msg <- @errors}
         data-scope="tags-input"
         data-part="error"

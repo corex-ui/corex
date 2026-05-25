@@ -19,6 +19,7 @@ defmodule Corex.Select.Connect do
     ValueInput
   }
 
+  alias Corex.FormField
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
@@ -28,15 +29,28 @@ defmodule Corex.Select.Connect do
   def props(assigns) do
     sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    joined = Corex.Helpers.joined_csv_values(vlist)
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+
+    joined =
+      if form_field do
+        FormField.dataset_default_json(vlist)
+      else
+        Corex.Helpers.joined_csv_values(vlist)
+      end
 
     {value_str, default_value_str} =
-      Corex.Helpers.controlled_dataset_values(assigns.controlled, joined)
+      if zag_controlled do
+        {joined, nil}
+      else
+        Corex.Helpers.controlled_dataset_values(controlled, joined)
+      end
 
     base = %{
       "id" => assigns.id,
       "data-items" => Corex.Dataset.encode_json(sorted_items),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-controlled" => get_boolean(zag_controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder || "",
@@ -56,6 +70,7 @@ defmodule Corex.Select.Connect do
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> merge_optional_select_props(assigns)
     |> maybe_put_data_dir(assigns.dir)
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   defp merge_optional_select_props(base, assigns) do

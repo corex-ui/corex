@@ -1,7 +1,14 @@
 import {
+  syncCheckableHiddenInput
+} from "./chunks/chunk-G73IV5JU.mjs";
+import {
   isFocusVisible,
   trackFocusVisible
 } from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  mountCheckedBinding,
+  readUpdatedServerChecked
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -23,7 +30,6 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
-  getCheckedState,
   getDir,
   getEventTarget,
   getString,
@@ -322,8 +328,14 @@ var Switch = class extends Component {
     const inputEl = rootEl.querySelector(
       ':scope > [data-scope="switch"][data-part="hidden-input"]'
     );
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    if (inputEl instanceof HTMLInputElement) {
+      syncCheckableHiddenInput(
+        inputEl,
+        this.el,
+        this.api.checked === true,
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps()
+      );
     }
     rootEl.querySelectorAll(':scope > [data-scope="switch"][data-part="label"]').forEach((labelEl) => {
       this.spreadProps(labelEl, this.api.getLabelProps());
@@ -351,7 +363,13 @@ var SwitchHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") === true } : { defaultChecked: getCheckedState(el, "defaultChecked") === true },
+      ...(() => {
+        const binding = mountCheckedBinding(el);
+        if ("checked" in binding) {
+          return { checked: binding.checked === true };
+        }
+        return { defaultChecked: binding.defaultChecked === true };
+      })(),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -369,6 +387,16 @@ var SwitchHook = {
           serverEventName: getString(el, "onCheckedChange"),
           clientEventName: getString(el, "onCheckedChangeClient")
         });
+        const input = el.querySelector(
+          '[data-scope="switch"][data-part="hidden-input"]'
+        );
+        if (input) {
+          queueMicrotask(() => {
+            input.checked = details.checked === true;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
       }
     });
     zagSwitch.init();
@@ -419,9 +447,11 @@ var SwitchHook = {
     });
   },
   updated() {
-    this.zagSwitch?.updateProps({
+    const zagSwitch = this.zagSwitch;
+    if (!zagSwitch) return;
+    zagSwitch.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") === true } : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true },
+      ...readUpdatedServerChecked(this.el),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),

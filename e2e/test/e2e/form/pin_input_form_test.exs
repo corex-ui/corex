@@ -12,9 +12,14 @@ defmodule E2e.Form.PinInputFormTest do
     assert f[:pin].id == "pin-input-form_pin"
   end
 
-  test "changeset applies pin string" do
-    cs = PinInputForm.changeset(%PinInputForm{}, %{"pin" => "abcd"})
+  test "changeset applies pin array" do
+    cs = PinInputForm.changeset(%PinInputForm{}, %{"pin" => ["1", "2", "3", "4"]})
     assert cs.valid?
-    assert Ecto.Changeset.apply_changes(cs).pin == "abcd"
+    assert Ecto.Changeset.apply_changes(cs).pin == ["1", "2", "3", "4"]
+  end
+
+  test "changeset_validate requires four single-character digits" do
+    cs = PinInputForm.changeset_validate(%PinInputForm{}, %{"pin" => ["1", "2", "3", "4"]})
+    assert cs.valid?
   end
 end

@@ -7,6 +7,8 @@ defmodule Corex.SignaturePad.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
+      field_used: false,
       paths: nil,
       drawing_fill: "black",
       drawing_size: 2,
@@ -18,11 +20,14 @@ defmodule Corex.SignaturePad.Anatomy do
       dir: "ltr",
       on_draw_end: nil,
       on_draw_end_client: nil,
-      name: nil
+      name: nil,
+      submit_name: nil
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
+            field_used: boolean(),
             paths: list() | String.t() | nil,
             drawing_fill: String.t(),
             drawing_size: integer(),
@@ -34,7 +39,8 @@ defmodule Corex.SignaturePad.Anatomy do
             dir: String.t(),
             on_draw_end: String.t() | nil,
             on_draw_end_client: String.t() | nil,
-            name: String.t() | nil
+            name: String.t() | nil,
+            submit_name: String.t() | nil
           }
   end
 

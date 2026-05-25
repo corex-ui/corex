@@ -159,8 +159,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
-      <div class="flex flex-wrap gap-2 mb-0">
+    <div class="flex flex-col gap-4 items-center w-full">
+      <div class="flex flex-wrap gap-2 items-center">
         <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">
           On
         </.action>
@@ -248,8 +248,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
-      <div class="flex flex-wrap gap-2 mb-0">
+    <div class="flex flex-col gap-4 items-center w-full">
+      <div class="flex flex-wrap gap-2 items-center">
         <button
           type="button"
           class="button button--sm"
@@ -312,8 +312,8 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
-      <div class="flex flex-wrap gap-2 mb-0">
+    <div class="flex flex-col gap-4 items-center w-full">
+      <div class="flex flex-wrap gap-2 items-center">
         <.action phx-click="switch_api_on" class="button button--sm">On</.action>
         <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
         <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
@@ -423,13 +423,13 @@ defmodule E2eWeb.Demos.SwitchDemo do
       def changeset(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:notifications])
-        |> validate_required([:notifications])
+        |> validate_acceptance(:notifications)
       end
 
       def changeset_validate(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:notifications])
-        |> validate_required([:notifications], message: "can't be blank")
+        |> validate_acceptance(:notifications, message: "must be accepted to continue")
       end
     end
     """
@@ -515,7 +515,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
+      <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -539,7 +539,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
+      <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -597,7 +597,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -674,7 +673,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
       >
         <:label>Enable notifications</:label>
         <:error :let={msg}>
@@ -758,7 +756,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
         id="switch-form-live-notifications"
       >
         <:label>Enable notifications</:label>
@@ -784,7 +781,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
         id="switch-form-live-strict"
       >
         <:label>Enable notifications</:label>
@@ -924,7 +920,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_live_phoenix_heex do
     ~S"""
     <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.switch field={@phoenix_form[:notifications]} class="switch" controlled id="switch-live-form-phoenix-notifications">
+      <.switch field={@phoenix_form[:notifications]} class="switch" id="switch-live-form-phoenix-notifications">
         <:label>Enable notifications</:label>
       </.switch>
       <.action type="submit" id="switch-live-form-phoenix-submit" class="button button--accent">
@@ -937,7 +933,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_live_ecto_heex do
     ~S"""
     <.form for={@ecto_form} phx-change="validate" phx-submit="save">
-      <.switch field={@ecto_form[:notifications]} class="switch" controlled id="switch-live-form-ecto-notifications">
+      <.switch field={@ecto_form[:notifications]} class="switch" id="switch-live-form-ecto-notifications">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -984,7 +980,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={f[:notifications]}
         class="switch"
-        invalid={f[:notifications].errors != []}
         id="switch-form-ecto-notifications"
       >
         <:label>Enable notifications</:label>
@@ -1008,7 +1003,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
         id="switch-live-form-phoenix-notifications"
       >
         <:label>Enable notifications</:label>
@@ -1028,7 +1022,6 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.switch
         field={@form[:notifications]}
         class="switch"
-        controlled
         id="switch-live-form-ecto-notifications"
       >
         <:label>Enable notifications</:label>

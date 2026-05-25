@@ -1,12 +1,16 @@
 import {
+  syncHiddenInputValue
+} from "./chunks/chunk-4SRF4GX7.mjs";
+import {
   createRect
 } from "./chunks/chunk-QB2YSZP6.mjs";
 import {
-  readNumberControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
   snapValueToStep
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  mountNumberBinding,
+  readUpdatedServerNumber
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -475,7 +479,15 @@ var AngleSlider = class extends Component {
     const hiddenInputEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="hidden-input"]'
     );
-    if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+    if (hiddenInputEl instanceof HTMLInputElement) {
+      syncHiddenInputValue(
+        hiddenInputEl,
+        this.el,
+        String(this.api.value),
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps()
+      );
+    }
     const controlEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="control"]'
     );
@@ -540,7 +552,7 @@ var AngleSliderHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zag = new AngleSlider(el, {
       id: el.id,
-      ...readNumberControlledZagProps(el),
+      ...mountNumberBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -616,14 +628,17 @@ var AngleSliderHook = {
     });
   },
   updated() {
-    this.angleSlider?.updateProps({
-      id: this.el.id,
-      ...readNumberControlledZagProps(this.el),
-      disabled: getBoolean(this.el, "disabled"),
-      readOnly: getBoolean(this.el, "readonly"),
-      invalid: getBoolean(this.el, "invalid"),
-      name: getString(this.el, "name"),
-      dir: getDir(this.el)
+    const el = this.el;
+    const zag = this.angleSlider;
+    const valuePatch = readUpdatedServerNumber(el);
+    zag?.updateProps({
+      id: el.id,
+      ...valuePatch,
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readonly"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      dir: getDir(el)
     });
   },
   destroyed() {

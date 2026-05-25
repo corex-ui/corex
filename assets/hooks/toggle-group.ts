@@ -5,6 +5,7 @@ import type { ValueChangeDetails, Props } from "@zag-js/toggle-group";
 import type { Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { readStringListControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -95,9 +96,7 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
     this.toggleGroup?.updateProps({
-      ...(getBoolean(this.el, "controlled")
-        ? { value: getStringList(this.el, "value") }
-        : { defaultValue: getStringList(this.el, "defaultValue") }),
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),

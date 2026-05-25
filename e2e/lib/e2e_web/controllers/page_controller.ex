@@ -224,8 +224,10 @@ defmodule E2eWeb.PageController do
   end
 
   def checkbox_form_submit(conn, %{"terms" => %{"terms" => terms}}) do
+    checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
+
     conn
-    |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+    |> put_flash(:info, "Submitted: terms=#{inspect(checked)}")
     |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
   end
 
@@ -722,7 +724,7 @@ defmodule E2eWeb.PageController do
 
   def signature_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"signature" => ""},
+      Phoenix.Component.to_form(%{"signature" => []},
         as: :signature_phoenix,
         id: "signature-form-phoenix"
       )
@@ -738,10 +740,8 @@ defmodule E2eWeb.PageController do
   end
 
   def signature_form_submit(conn, %{"signature_phoenix" => %{"signature" => sig}}) do
-    preview = preview_sig(sig)
-
     conn
-    |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast(sig)}")
     |> redirect(to: ~p"/signature-pad/form#signature-form-phoenix")
   end
 
@@ -752,10 +752,9 @@ defmodule E2eWeb.PageController do
 
     if changeset.valid? do
       data = Ecto.Changeset.apply_changes(changeset)
-      preview = preview_sig(data.signature)
 
       conn
-      |> put_flash(:info, "Submitted: signature=#{preview}")
+      |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast(data)}")
       |> redirect(to: ~p"/signature-pad/form#signature-form-ecto")
     else
       changeset = Map.put(changeset, :action, :insert)
@@ -764,7 +763,7 @@ defmodule E2eWeb.PageController do
         Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
 
       phoenix_form =
-        Phoenix.Component.to_form(%{"signature" => ""},
+        Phoenix.Component.to_form(%{"signature" => []},
           as: :signature_phoenix,
           id: "signature-form-phoenix"
         )
@@ -777,24 +776,17 @@ defmodule E2eWeb.PageController do
 
   def signature_form_submit(conn, %{"user" => user_params}) do
     sig = Map.get(user_params, "signature", "")
-    preview = preview_sig(sig)
 
     conn
-    |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast(sig)}")
     |> redirect(to: ~p"/signature-pad/form#signature-form-native")
   end
 
   def signature_form_submit(conn, _params) do
     conn
-    |> put_flash(:info, "Submitted: signature=(empty)")
+    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast([])}")
     |> redirect(to: ~p"/signature-pad/form#signature-form-native")
   end
-
-  defp preview_sig(sig) when is_binary(sig) and sig != "" do
-    String.slice(sig, 0, 30) <> "..."
-  end
-
-  defp preview_sig(_), do: "(empty)"
 
   def menu_page(conn, _params) do
     render(conn, :menu_page)
@@ -1171,76 +1163,166 @@ defmodule E2eWeb.PageController do
     phoenix_form =
       Phoenix.Component.to_form(%{"attachment" => nil},
         as: :file_upload_phoenix,
-        id: "file-upload-form-phoenix"
+        id: "file-upload-phoenix-form"
       )
 
     ecto_form =
       %E2e.Form.FileUploadForm{}
       |> E2e.Form.FileUploadForm.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :file_upload_ecto, id: "file-upload-form-ecto")
+      |> Phoenix.Component.to_form(as: :file_upload_ecto, id: "file-upload-ecto-form")
 
     conn
     |> assign_file_upload_form_docs(nil)
     |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
   end
 
-  def file_upload_form_submit(conn, %{"file_upload_phoenix" => %{"attachment" => upload}}) do
-    conn
-    |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
-    |> redirect(to: ~p"/file-upload/form#file-upload-form-phoenix")
-  end
+  def file_upload_form_submit(conn, params) do
+    case file_upload_form_target(params) do
+      :phoenix ->
+        nested = file_upload_nested_params(params, "file_upload_phoenix", "attachment")
+        upload = file_upload_param_attachment(nested)
 
-  def file_upload_form_submit(conn, %{"file_upload_ecto" => ecto_params}) do
-    upload = ecto_params["attachment"]
-
-    changeset =
-      %E2e.Form.FileUploadForm{}
-      |> E2e.Form.FileUploadForm.changeset_validate(ecto_params)
-
-    if changeset.valid? do
-      conn
-      |> put_flash(:info, "Submitted: attachment=#{file_upload_attachment_label(upload)}")
-      |> redirect(to: ~p"/file-upload/form#file-upload-form-ecto")
-    else
-      changeset = Map.put(changeset, :action, :insert)
-
-      ecto_form =
-        Phoenix.Component.to_form(changeset,
-          as: :file_upload_ecto,
-          id: "file-upload-form-ecto"
+        conn
+        |> put_flash(
+          :info,
+          "Submitted: attachment=#{file_upload_submit_label(upload, nested, "attachment")}"
         )
+        |> redirect(to: ~p"/file-upload/form#file-upload-form-phoenix")
 
-      phoenix_form =
-        Phoenix.Component.to_form(%{"attachment" => nil},
-          as: :file_upload_phoenix,
-          id: "file-upload-form-phoenix"
+      :ecto ->
+        nested = file_upload_nested_params(params, "file_upload_ecto", "attachment")
+        upload = file_upload_param_attachment(nested)
+
+        changeset =
+          %E2e.Form.FileUploadForm{}
+          |> E2e.Form.FileUploadForm.changeset_validate(nested)
+
+        if changeset.valid? do
+          conn
+          |> put_flash(
+            :info,
+            "Submitted: attachment=#{file_upload_submit_label(upload, nested, "attachment")}"
+          )
+          |> redirect(to: ~p"/file-upload/form#file-upload-form-ecto")
+        else
+          changeset = Map.put(changeset, :action, :insert)
+
+          ecto_form =
+            Phoenix.Component.to_form(changeset,
+              as: :file_upload_ecto,
+              id: "file-upload-ecto-form"
+            )
+
+          phoenix_form =
+            Phoenix.Component.to_form(%{"attachment" => nil},
+              as: :file_upload_phoenix,
+              id: "file-upload-phoenix-form"
+            )
+
+          conn
+          |> assign_file_upload_form_docs("file-upload-form-ecto")
+          |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+        end
+
+      :native ->
+        nested = file_upload_nested_params(params, "user", "avatar")
+        upload = normalize_single_upload(Map.get(nested, "avatar"))
+
+        conn
+        |> put_flash(
+          :info,
+          "Submitted: avatar=#{file_upload_submit_label(upload, nested, "avatar")}"
         )
+        |> redirect(to: ~p"/file-upload/form#file-upload-form-native")
 
-      conn
-      |> assign_file_upload_form_docs("file-upload-form-ecto")
-      |> render(:file_upload_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+      :unknown ->
+        conn
+        |> put_flash(:error, "Unexpected form payload")
+        |> redirect(to: ~p"/file-upload/form")
     end
   end
 
-  def file_upload_form_submit(conn, %{"user" => %{"avatar" => upload}}) do
-    conn
-    |> put_flash(:info, "Submitted: avatar=#{file_upload_attachment_label(upload)}")
-    |> redirect(to: ~p"/file-upload/form#file-upload-form-native")
+  defp file_upload_form_target(params) do
+    case Map.get(params, "_file_upload_form") do
+      "phoenix" -> :phoenix
+      "ecto" -> :ecto
+      "native" -> :native
+      _ -> file_upload_form_target_fallback(params)
+    end
   end
 
-  def file_upload_form_submit(conn, _params) do
-    conn
-    |> put_flash(:error, "Unexpected form payload")
-    |> redirect(to: ~p"/file-upload/form")
+  defp file_upload_form_target_fallback(params) do
+    cond do
+      Map.has_key?(params, "file_upload_phoenix") or
+          Map.has_key?(params, "file_upload_phoenix[attachment]") ->
+        :phoenix
+
+      Map.has_key?(params, "file_upload_ecto") or
+          Map.has_key?(params, "file_upload_ecto[attachment]") ->
+        :ecto
+
+      Map.has_key?(params, "user") or Map.has_key?(params, "user[avatar]") ->
+        :native
+
+      true ->
+        :unknown
+    end
   end
 
-  defp file_upload_attachment_label(%Plug.Upload{filename: name})
-       when is_binary(name) and name != "",
-       do: name
+  defp file_upload_nested_params(params, namespace, field) do
+    flat_key = "#{namespace}[#{field}]"
 
-  defp file_upload_attachment_label(_), do: "(none)"
+    cond do
+      is_map(params[namespace]) ->
+        params[namespace]
 
-  defp form_checkbox_checked?(value), do: value in [true, "true", "on", "1", 1]
+      is_list(params[namespace]) ->
+        %{field => normalize_single_upload(params[namespace])}
+
+      Map.has_key?(params, flat_key) ->
+        %{field => params[flat_key]}
+
+      true ->
+        %{}
+    end
+  end
+
+  defp file_upload_param_attachment(params) when is_map(params) do
+    cond do
+      Map.has_key?(params, "attachment") ->
+        normalize_single_upload(params["attachment"])
+
+      Map.has_key?(params, "attachment[]") ->
+        normalize_single_upload(params["attachment[]"])
+
+      true ->
+        nil
+    end
+  end
+
+  defp normalize_single_upload(values) when is_list(values) do
+    case Enum.find(values, &match?(%Plug.Upload{}, &1)) do
+      %Plug.Upload{} = upload ->
+        upload
+
+      _ ->
+        values
+        |> Enum.reject(&blank_upload_param?/1)
+        |> List.first()
+    end
+  end
+
+  defp normalize_single_upload(value), do: value
+
+  defp blank_upload_param?(value), do: value in [nil, ""]
+
+  defp file_upload_submit_label(upload, nested, field) do
+    label_field = E2e.Form.FileUploadForm.label_field_for(field)
+    E2e.Form.FileUploadForm.submit_label(upload, nested, label_field)
+  end
+
+  defp form_checkbox_checked?(value),
+    do: Phoenix.HTML.Form.normalize_value("checkbox", value)
 
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
@@ -1349,7 +1431,7 @@ defmodule E2eWeb.PageController do
 
   def pin_input_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: "pin-input-form-phoenix")
+      Phoenix.Component.to_form(%{"pin" => []}, as: :pin_phoenix, id: "pin-input-form-phoenix")
 
     ecto_form =
       %E2e.Form.PinInputForm{}
@@ -1363,7 +1445,7 @@ defmodule E2eWeb.PageController do
 
   def pin_input_form_submit(conn, %{"pin_phoenix" => %{"pin" => pin}}) do
     conn
-    |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+    |> put_flash(:info, "Submitted: pin=#{inspect(List.wrap(pin))}")
     |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
   end
 
@@ -1379,13 +1461,13 @@ defmodule E2eWeb.PageController do
       |> put_flash(:info, "Submitted: pin=#{inspect(data.pin)}")
       |> redirect(to: ~p"/pin-input/form#pin-input-form-ecto")
     else
-      changeset = Map.put(changeset, :action, :insert)
+      changeset = Map.put(changeset, :action, :validate)
 
       ecto_form =
         Phoenix.Component.to_form(changeset, as: :pin_ecto, id: "pin-input-form-ecto")
 
       phoenix_form =
-        Phoenix.Component.to_form(%{"pin" => ""},
+        Phoenix.Component.to_form(%{"pin" => []},
           as: :pin_phoenix,
           id: "pin-input-form-phoenix"
         )
@@ -1397,7 +1479,7 @@ defmodule E2eWeb.PageController do
   end
 
   def pin_input_form_submit(conn, %{"pin_input" => pin_params}) do
-    pin = Map.get(pin_params, "pin", "")
+    pin = Map.get(pin_params, "pin", []) |> List.wrap()
 
     conn
     |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
@@ -1406,7 +1488,7 @@ defmodule E2eWeb.PageController do
 
   def pin_input_form_submit(conn, _params) do
     conn
-    |> put_flash(:info, "Submitted: pin=#{inspect("")}")
+    |> put_flash(:info, "Submitted: pin=#{inspect([])}")
     |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
   end
 
@@ -1460,7 +1542,7 @@ defmodule E2eWeb.PageController do
         |> redirect(to: ~p"/tags-input/form#tags-input-form-ecto")
 
       changeset ->
-        changeset = Map.put(changeset, :action, :insert)
+        changeset = Map.put(changeset, :action, :validate)
 
         ecto_form =
           Phoenix.Component.to_form(changeset,
@@ -1481,7 +1563,7 @@ defmodule E2eWeb.PageController do
   end
 
   def tags_input_form_submit(conn, %{"tags_native" => native_params}) do
-    tags = Map.get(native_params, "tags", "")
+    tags = Map.get(native_params, "tags", []) |> List.wrap()
 
     conn
     |> put_flash(:info, "Submitted: tags=#{inspect(tags)}")

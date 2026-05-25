@@ -20,17 +20,19 @@ defmodule E2eWeb.AdminLive.Show do
           <.navigate
             to={~p"/admins"}
             type="navigate"
-            class="button button--sm button--square"
-            aria_label="Previous page"
+            class="button"
+            aria_label="Back to list"
           >
             <.heroicon name="hero-arrow-left" />
           </.navigate>
           <.navigate
             to={~p"/admins/#{@admin}/edit?return_to=show"}
             type="navigate"
-            class="button button--accent button--sm"
+            class="button button--accent button--square"
+            aria_label="Edit admin"
           >
-            <.heroicon name="hero-pencil-square" /> Edit admin
+            <.heroicon name="hero-pencil-square" />
+            <span class="sr-only">Edit admin</span>
           </.navigate>
           <.dialog
             id={"admin-delete-#{@admin.id}"}
@@ -42,7 +44,7 @@ defmodule E2eWeb.AdminLive.Show do
             final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button button--alert button--square"
               aria_label="Delete admin"
             >
               <.heroicon name="hero-trash" />

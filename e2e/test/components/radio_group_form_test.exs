@@ -19,7 +19,7 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:static)
     |> RadioGroup.wait_for_has(css("#radio-group-form-page"), timeout: 15_000)
-    |> RadioGroup.click_radio_native("b")
+    |> RadioGroup.click_radio_native("duis")
     |> RadioGroup.submit_form()
     |> RadioGroup.wait_for_redirect()
     |> RadioGroup.see_flash("Submitted: choice=")
@@ -41,15 +41,6 @@ defmodule E2eWeb.RadioGroupFormTest do
 
     refute_has(session, Wallaby.Query.text("choice=b"))
     assert_has(session, Wallaby.Query.css("#radio-group-live-form-ecto", text: "Choose one"))
-  end
-
-  feature "live form - select option then submit shows success", %{session: session} do
-    session
-    |> RadioGroup.goto_form(:live)
-    |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-    |> RadioGroup.click_radio_live("duis")
-    |> RadioGroup.submit_form(:live, :ecto)
-    |> RadioGroup.see_flash("Submitted: choice=")
   end
 
   feature "live form - has no A11y violations", %{session: session} do

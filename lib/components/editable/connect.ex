@@ -2,6 +2,8 @@ defmodule Corex.Editable.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.Editable.Anatomy.{
     Area,
     CancelTrigger,
@@ -77,9 +79,23 @@ defmodule Corex.Editable.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.default_value_dataset(assigns, assigns.value || "")
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
-      "data-default-value" => assigns.value || "",
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_attr,
+      "data-default-value" => default_attr,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
@@ -95,6 +111,7 @@ defmodule Corex.Editable.Connect do
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec root(Root.t()) :: map()

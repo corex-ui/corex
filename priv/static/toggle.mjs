@@ -1,4 +1,7 @@
 import {
+  readPressedControlledZagUpdate
+} from "./chunks/chunk-7PXMD5A7.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -192,12 +195,9 @@ var ToggleHook = {
     });
   },
   updated() {
-    const controlled = getBoolean(this.el, "controlled");
-    const pressedFromDataset = getBooleanValue(this.el, "pressed");
-    const defaultPressedFromDataset = getBooleanValue(this.el, "defaultPressed");
     this.zagToggle?.updateProps({
       id: this.el.id,
-      ...controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true },
+      ...readPressedControlledZagUpdate(this.el),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el)
     });

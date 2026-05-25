@@ -11,9 +11,11 @@
       <.navigate
         to={if(@return_to == "show", do: ~p"/users/#{@user}", else: ~p"/users")}
         type="navigate"
-        class="button button--sm"
+        class="button"
+        aria_label={~t"Cancel"}
       >
-        <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+        <.heroicon name="hero-arrow-left" />
+        <span class="sr-only">{~t"Cancel"}</span>
       </.navigate>
       <.dialog
         id={"user-delete-#{@user.id}"}
@@ -25,7 +27,7 @@
         final_focus={"dialog:user-delete-#{@user.id}:trigger"}
       >
         <:trigger
-          class="button button--sm button--alert button--square"
+          class="button button--alert button--square"
           aria_label="Delete user"
         >
           <.heroicon name="hero-trash" />

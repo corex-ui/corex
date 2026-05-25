@@ -32,13 +32,11 @@ export function readPayloadPageSize(payload: unknown): number | undefined {
   return typeof pageSize === "number" ? pageSize : undefined;
 }
 
-function buildPaginationProps(
+function paginationPropsBase(
   el: HTMLElement,
   pushEvent: (event: string, payload: unknown) => void,
   canPush: () => boolean
-): Props {
-  const controlled = getBoolean(el, "controlled");
-  const controlledPageSize = getBoolean(el, "controlledPageSize");
+) {
   const triggerType = getString<"button" | "link">(el, "type", ["button", "link"]) ?? "button";
   const count = getNumber(el, "count") ?? 0;
 
@@ -51,14 +49,6 @@ function buildPaginationProps(
     type: triggerType,
     translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
     getPageUrl: buildGetPageUrl(el),
-    ...(controlled
-      ? { page: getNumber(el, "page") }
-      : { defaultPage: getNumber(el, "defaultPage") ?? getNumber(el, "page") }),
-    ...(controlledPageSize
-      ? { pageSize: getNumber(el, "pageSize") }
-      : {
-          defaultPageSize: getNumber(el, "defaultPageSize") ?? getNumber(el, "pageSize"),
-        }),
     onPageChange: (details: PageChangeDetails) => {
       notifyChange({
         el,
@@ -79,6 +69,45 @@ function buildPaginationProps(
         clientEventName: getString(el, "onPageSizeChangeClient"),
       });
     },
+  };
+}
+
+function buildPaginationProps(
+  el: HTMLElement,
+  pushEvent: (event: string, payload: unknown) => void,
+  canPush: () => boolean
+): Props {
+  const controlled = getBoolean(el, "controlled");
+  const controlledPageSize = getBoolean(el, "controlledPageSize");
+
+  return {
+    ...paginationPropsBase(el, pushEvent, canPush),
+    ...(controlled
+      ? { page: getNumber(el, "page") }
+      : { defaultPage: getNumber(el, "defaultPage") ?? getNumber(el, "page") }),
+    ...(controlledPageSize
+      ? { pageSize: getNumber(el, "pageSize") }
+      : {
+          defaultPageSize: getNumber(el, "defaultPageSize") ?? getNumber(el, "pageSize"),
+        }),
+  } as Props;
+}
+
+function buildPaginationPropsForUpdate(
+  el: HTMLElement,
+  pushEvent: (event: string, payload: unknown) => void,
+  canPush: () => boolean
+): Partial<Props> {
+  const controlled = getBoolean(el, "controlled");
+  const controlledPageSize = getBoolean(el, "controlledPageSize");
+  const base = paginationPropsBase(el, pushEvent, canPush) as Partial<Props>;
+  delete base.onPageChange;
+  delete base.onPageSizeChange;
+
+  return {
+    ...base,
+    ...(controlled ? { page: getNumber(el, "page") } : {}),
+    ...(controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {}),
   };
 }
 
@@ -163,7 +192,7 @@ const PaginationHook: Hook<object & PaginationHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & PaginationHookState) {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    this.pagination?.updateProps(buildPaginationProps(this.el, pushEvent, canPush));
+    this.pagination?.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & PaginationHookState) {

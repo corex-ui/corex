@@ -12,7 +12,7 @@ import {
 import {
   readControlledOrDefaultStringList,
   readStringListControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

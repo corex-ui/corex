@@ -8,8 +8,9 @@
     <:title>New User</:title>
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
     <:actions>
-      <.navigate to={~p"/users"} type="navigate" class="button button--sm">
-        <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+      <.navigate to={~p"/users"} type="navigate" class="button" aria_label={~t"Cancel"}>
+        <.heroicon name="hero-arrow-left" />
+        <span class="sr-only">{~t"Cancel"}</span>
       </.navigate>
     </:actions>
   </.layout_heading>

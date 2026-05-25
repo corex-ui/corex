@@ -2,6 +2,11 @@ import {
   trackInteractOutside
 } from "./chunks/chunk-4QMNVH3P.mjs";
 import {
+  mountStringBinding,
+  readEditControlledZagUpdate,
+  readUpdatedServerString
+} from "./chunks/chunk-7PXMD5A7.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -591,9 +596,10 @@ var EditableHook = {
     const placeholder = getString(el, "placeholder");
     const activationMode = getString(el, "activationMode");
     const selectOnFocus = getBoolean(el, "selectOnFocus");
+    const valueBinding = mountStringBinding(el, "value", "defaultValue");
     const zag = new Editable(el, {
       id: el.id,
-      defaultValue: dataDefaultValue(el),
+      ..."value" in valueBinding ? { value: valueBinding.value ?? "" } : { defaultValue: valueBinding.defaultValue ?? "" },
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
@@ -629,11 +635,9 @@ var EditableHook = {
   },
   updated() {
     const el = this.el;
-    const dv = dataDefaultValue(el);
-    if (this.editable && !this.editable.api.editing && dv !== this.editable.api.value) {
-      this.editable.api.setValue(dv);
-    }
-    this.editable?.updateProps({
+    const valuePatch = readUpdatedServerString(el);
+    const editPatch = readEditControlledZagUpdate(el);
+    const props = {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
@@ -642,8 +646,12 @@ var EditableHook = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       dir: getDir(el),
-      ...getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }
-    });
+      ...editPatch
+    };
+    if (!this.editable?.api.editing && "value" in valuePatch) {
+      Object.assign(props, valuePatch);
+    }
+    this.editable?.updateProps(props);
   },
   destroyed() {
     this.domRegistry?.teardown();

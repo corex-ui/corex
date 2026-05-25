@@ -387,7 +387,7 @@ defmodule Corex.Checkbox do
 
   ## Form
 
-  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. In LiveView, pass `controlled` on `<.checkbox>` so the server stays the source of truth.
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:terms]}` so the checkbox name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
   <!-- tabs-open -->
 
@@ -599,7 +599,7 @@ defmodule Corex.Checkbox do
         phx-change="validate"
         phx-submit="save"
       >
-        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+        <.checkbox field={@form[:terms]} class="checkbox">
           <:label>Accept terms</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -683,7 +683,7 @@ defmodule Corex.Checkbox do
         phx-change="validate_strict"
         phx-submit="save_strict"
       >
-        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+        <.checkbox field={@form[:terms]} class="checkbox">
           <:label>Accept terms</:label>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -893,16 +893,10 @@ defmodule Corex.Checkbox do
   end
 
   def checkbox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns =
       assigns
-      |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
+      |> Corex.FormField.assign_form_field(field)
       |> assign(:checked, Form.normalize_value("checkbox", field.value))
-      |> assign_new(:form, fn -> field.form.id end)
 
     checkbox(assigns)
   end
@@ -913,6 +907,7 @@ defmodule Corex.Checkbox do
       |> assign_new(:id, fn -> "checkbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
 
     ~H"""
@@ -926,6 +921,7 @@ defmodule Corex.Checkbox do
         id: @id,
         controlled: @controlled,
         checked: @checked,
+        form_field: @form_field,
         name: @name,
         form: @form,
         dir: @dir,
@@ -940,10 +936,9 @@ defmodule Corex.Checkbox do
         value: @value
       })}
     >
+      <input type="hidden" name={@name} value="false" disabled={@disabled} />
 
       <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
-      <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
-
       <input
         phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
         {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}

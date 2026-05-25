@@ -691,16 +691,10 @@ defmodule Corex.Select do
   )
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     value = get_value(field.value)
 
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:id, fn -> field.id end)
-    |> assign_new(:form, fn -> field.form.id end)
-    |> assign_new(:name, fn -> field.name end)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> select()
   end
@@ -721,6 +715,7 @@ defmodule Corex.Select do
       |> assign(:items, items)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
 
     value_list = get_value(assigns[:value])
 
@@ -745,7 +740,7 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
-    array_form_submit = assigns.multiple && not is_nil(assigns[:form])
+    array_form_submit = assigns.multiple && is_binary(assigns[:name])
 
     assigns =
       assigns
@@ -757,7 +752,10 @@ defmodule Corex.Select do
       |> assign(:disabled_values, get_disabled_values(items))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
       |> assign(:array_form_submit, array_form_submit)
-      |> assign(:hidden_select_name, if(array_form_submit, do: assigns.name <> "[]", else: nil))
+      |> assign(
+        :hidden_select_name,
+        if(array_form_submit, do: Corex.FormField.list_submit_name(assigns.name), else: nil)
+      )
       |> assign(:value_input_name, if(array_form_submit, do: nil, else: assigns.name))
 
     ~H"""
@@ -765,10 +763,10 @@ defmodule Corex.Select do
     id={@id} 
     phx-hook="Select"
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])} 
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, controlled: @controlled, placeholder: @translation.placeholder, value: @value,
+      id: @id, items: @items, controlled: @controlled, form_field: @form_field, placeholder: @translation.placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, orientation: @orientation, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,

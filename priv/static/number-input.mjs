@@ -2,8 +2,8 @@ import {
   memo
 } from "./chunks/chunk-RNYQBUAX.mjs";
 import {
-  readNumberControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
+  syncHiddenInputValue
+} from "./chunks/chunk-4SRF4GX7.mjs";
 import {
   clampValue,
   decrementValue,
@@ -14,6 +14,14 @@ import {
   roundToDpr,
   wrap
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
+import {
+  mountNumberBinding,
+  readUpdatedServerNumber
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -52,6 +60,7 @@ import {
   setCaretToEnd,
   setElementValue,
   setup,
+  syncInputFormAssociation,
   trackFormControl
 } from "./chunks/chunk-EWT2BP2N.mjs";
 
@@ -1335,7 +1344,12 @@ var NumberInput = class extends Component {
     const inputEl = this.el.querySelector(
       '[data-scope="number-input"][data-part="input"]'
     );
-    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    if (inputEl) {
+      const visibleProps = { ...this.api.getInputProps() };
+      delete visibleProps.name;
+      delete visibleProps.form;
+      this.spreadProps(inputEl, visibleProps);
+    }
     const decrementEl = this.el.querySelector(
       '[data-scope="number-input"][data-part="decrement-trigger"]'
     );
@@ -1344,6 +1358,19 @@ var NumberInput = class extends Component {
       '[data-scope="number-input"][data-part="increment-trigger"]'
     );
     if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+    const valueInputEl = this.el.querySelector(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInputEl instanceof HTMLInputElement) {
+      const value = this.api.value || getString(this.el, "defaultValue") || "";
+      syncHiddenInputValue(
+        valueInputEl,
+        this.el,
+        value,
+        (el, props) => this.spreadProps(el, props),
+        {}
+      );
+    }
   }
 };
 
@@ -1357,10 +1384,25 @@ function machineState(api) {
     valueAsNumber: api.valueAsNumber
   };
 }
+function syncNumberInputValueInput(el, value, notifyForm = false) {
+  const valueInput = el.querySelector(
+    '[data-scope="number-input"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  const v = value ?? "";
+  const changed = valueInput.value !== v;
+  if (changed) valueInput.value = v;
+  syncInputFormAssociation(valueInput, el);
+  if (notifyForm && (changed || v !== "")) {
+    reapplyLiveViewValueInputUsage(valueInput);
+    valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+    valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
 function buildMachineProps(el, pushEvent, canPush) {
   return {
     id: el.id,
-    ...readNumberControlledZagProps(el),
+    ...mountNumberBinding(el),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
     step: getNumber(el, "step"),
@@ -1372,14 +1414,7 @@ function buildMachineProps(el, pushEvent, canPush) {
     dir: getDir(el),
     onValueChange: (details) => {
       if (details.value !== void 0) {
-        const valueInput = el.querySelector(
-          '[data-scope="number-input"][data-part="value-input"]'
-        );
-        if (valueInput) {
-          valueInput.value = details.value ?? "";
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncNumberInputValueInput(el, details.value ?? "", true);
       }
       notifyChange({
         el,
@@ -1404,6 +1439,14 @@ var NumberInputHook = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
+    const initial = String(zag.api.value ?? getString(el, "defaultValue") ?? "");
+    syncNumberInputValueInput(el, initial, true);
+    const valueInput = el.querySelector(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      queueLiveViewFormInputSync(valueInput, () => initial);
+    }
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
       emitResponse({
@@ -1483,6 +1526,8 @@ var NumberInputHook = {
   },
   updated() {
     const el = this.el;
+    const zag = this.numberInput;
+    const valuePatch = readUpdatedServerNumber(el);
     const next = {
       id: el.id,
       min: getNumber(el, "min"),
@@ -1495,11 +1540,14 @@ var NumberInputHook = {
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       dir: getDir(el)
     };
-    if (getBoolean(el, "controlled")) {
-      Object.assign(next, readNumberControlledZagProps(el));
-    }
-    this.numberInput?.updateProps(next);
+    Object.assign(next, valuePatch);
+    zag?.updateProps(next);
     queueMicrotask(() => {
+      if (zag && "value" in valuePatch) {
+        syncNumberInputValueInput(el, String(valuePatch.value ?? ""), false);
+      } else if (zag) {
+        syncNumberInputValueInput(el, zag.api.value ?? getString(el, "defaultValue") ?? "");
+      }
       const visible = el.querySelector(
         '[data-scope="number-input"][data-part="input"]'
       );
@@ -1532,5 +1580,6 @@ var NumberInputHook = {
 export {
   NumberInputHook as NumberInput,
   buildMachineProps,
-  machineState
+  machineState,
+  syncNumberInputValueInput
 };

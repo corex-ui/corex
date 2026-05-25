@@ -240,10 +240,12 @@ defmodule Corex.PasswordInput do
 
   alias Corex.PasswordInput.Connect
   alias Corex.PasswordInput.Translation
+  alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
+  attr(:value, :string, default: nil)
   attr(:visible, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
@@ -294,17 +296,10 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
-    assigns =
-      assigns
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(field: nil)
-
-    password_input(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(:value, Form.normalize_value("password", field.value))
+    |> password_input()
   end
 
   def password_input(assigns) do
@@ -315,6 +310,7 @@ defmodule Corex.PasswordInput do
       |> assign_new(:id, fn -> "password-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
@@ -324,11 +320,13 @@ defmodule Corex.PasswordInput do
       id={@id}
       phx-hook="PasswordInput"
       data-loading 
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-no-icon={if @visible_indicator == [] or @hidden_indicator == [], do: "", else: nil}
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        value: @value,
         visible: @visible,
         disabled: @disabled,
         invalid: @invalid,
@@ -364,9 +362,11 @@ defmodule Corex.PasswordInput do
               disabled: @disabled,
               name: @name,
               form: @form,
+              form_field: @form_field,
               auto_complete: @auto_complete,
               orientation: @orientation
             })}
+            value={@value || ""}
           />
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}

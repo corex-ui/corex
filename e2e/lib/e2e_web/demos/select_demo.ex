@@ -1422,7 +1422,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
-        invalid={f[:country].errors != []}
       >
         <:label>Country</:label>
         <:trigger>
@@ -1455,7 +1454,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={form_country_items()}
-        invalid={f[:country].errors != []}
       >
         <:label>Country</:label>
         <:trigger>
@@ -1519,7 +1517,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed"
-        invalid={@form[:country].errors != []}
       >
         <:label>Country</:label>
         <:trigger>
@@ -1553,7 +1550,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed_strict"
-        invalid={@form[:country].errors != []}
       >
         <:label>Country</:label>
         <:trigger>
@@ -1979,7 +1975,6 @@ defmodule E2eWeb.Demos.SelectDemo do
         items={form_country_items()}
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         on_value_change="select_country_changed"
-        invalid={@form[:country].errors != []}
       >
         <:label>Country</:label>
         <:trigger>

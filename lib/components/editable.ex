@@ -215,15 +215,9 @@ defmodule Corex.Editable do
   end
 
   def editable(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns
-    |> assign(field: nil)
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value_to_string(Form.normalize_value("text", field.value)))
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
     |> editable()
   end
 
@@ -240,6 +234,7 @@ defmodule Corex.Editable do
     assigns =
       assigns
       |> assign_new(:id, fn -> "editable-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
@@ -258,6 +253,7 @@ defmodule Corex.Editable do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         disabled: @disabled,
         read_only: @read_only,

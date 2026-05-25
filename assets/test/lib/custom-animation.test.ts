@@ -12,7 +12,7 @@ import {
   findDialogBackdrop,
   findDialogContent,
   findTreeBranch,
-} from "./custom-animation";
+} from "../../lib/custom-animation";
 
 describe("find* helpers", () => {
   it("finds accordion item content by value", () => {

@@ -3,7 +3,8 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
-import { getString, getBoolean, getDir, getCheckedState, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { mountCheckedBinding, readUpdatedServerChecked } from "../lib/read-props";
 import {
   checkedChangePayload,
   idMatches,
@@ -29,9 +30,13 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { checked: getCheckedState(el, "checked") === true }
-        : { defaultChecked: getCheckedState(el, "defaultChecked") === true }),
+      ...(() => {
+        const binding = mountCheckedBinding(el);
+        if ("checked" in binding) {
+          return { checked: binding.checked === true };
+        }
+        return { defaultChecked: binding.defaultChecked === true };
+      })(),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -50,12 +55,23 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
           serverEventName: getString(el, "onCheckedChange"),
           clientEventName: getString(el, "onCheckedChangeClient"),
         });
+
+        const input = el.querySelector<HTMLInputElement>(
+          '[data-scope="switch"][data-part="hidden-input"]'
+        );
+
+        if (input) {
+          queueMicrotask(() => {
+            input.checked = details.checked === true;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
       },
     });
 
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -111,11 +127,12 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.zagSwitch?.updateProps({
+    const zagSwitch = this.zagSwitch;
+    if (!zagSwitch) return;
+
+    zagSwitch.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { checked: getCheckedState(this.el, "checked") === true }
-        : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }),
+      ...readUpdatedServerChecked(this.el),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),

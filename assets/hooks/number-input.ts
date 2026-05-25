@@ -2,8 +2,15 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { NumberInput } from "../components/number-input";
 import type { Api, Props, ValueChangeDetails } from "@zag-js/number-input";
-import { getString, getBoolean, getNumber, canPushEvent, getDir } from "../lib/util";
-import { readNumberControlledZagProps } from "../lib/read-props";
+import {
+  getString,
+  getBoolean,
+  getNumber,
+  canPushEvent,
+  getDir,
+  syncInputFormAssociation,
+} from "../lib/util";
+import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
 import {
   notifyChange,
   emitResponse,
@@ -14,6 +21,10 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage,
+} from "../lib/live-view-form-input";
 
 type NumberInputMachineState = {
   focused: boolean;
@@ -39,6 +50,26 @@ type NumberInputHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
+export function syncNumberInputValueInput(
+  el: HTMLElement,
+  value: string,
+  notifyForm = false
+): void {
+  const valueInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="number-input"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  const v = value ?? "";
+  const changed = valueInput.value !== v;
+  if (changed) valueInput.value = v;
+  syncInputFormAssociation(valueInput, el);
+  if (notifyForm && (changed || v !== "")) {
+    reapplyLiveViewValueInputUsage(valueInput);
+    valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+    valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+
 export function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
@@ -46,7 +77,7 @@ export function buildMachineProps(
 ): Props {
   return {
     id: el.id,
-    ...readNumberControlledZagProps(el),
+    ...mountNumberBinding(el),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
     step: getNumber(el, "step"),
@@ -58,14 +89,7 @@ export function buildMachineProps(
     dir: getDir(el),
     onValueChange: (details: ValueChangeDetails) => {
       if (details.value !== undefined) {
-        const valueInput = el.querySelector<HTMLInputElement>(
-          '[data-scope="number-input"][data-part="value-input"]'
-        );
-        if (valueInput) {
-          valueInput.value = details.value ?? "";
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncNumberInputValueInput(el, details.value ?? "", true);
       }
       notifyChange({
         el,
@@ -92,6 +116,14 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
+    const initial = String(zag.api.value ?? getString(el, "defaultValue") ?? "");
+    syncNumberInputValueInput(el, initial, true);
+    const valueInput = el.querySelector<HTMLInputElement>(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      queueLiveViewFormInputSync(valueInput, () => initial);
+    }
 
     const emitState = (respondTo: RespondTo) => {
       const snapshot = machineState(zag.api);
@@ -191,6 +223,9 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
+    const zag = this.numberInput;
+    const valuePatch = readUpdatedServerNumber(el);
+
     const next: Partial<Props> = {
       id: el.id,
       min: getNumber(el, "min"),
@@ -203,12 +238,15 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       dir: getDir(el),
     };
-    if (getBoolean(el, "controlled")) {
-      Object.assign(next, readNumberControlledZagProps(el));
-    }
-    this.numberInput?.updateProps(next);
+    Object.assign(next, valuePatch);
+    zag?.updateProps(next);
 
     queueMicrotask(() => {
+      if (zag && "value" in valuePatch) {
+        syncNumberInputValueInput(el, String(valuePatch.value ?? ""), false);
+      } else if (zag) {
+        syncNumberInputValueInput(el, zag.api.value ?? getString(el, "defaultValue") ?? "");
+      }
       const visible = el.querySelector<HTMLInputElement>(
         '[data-scope="number-input"][data-part="input"]'
       );

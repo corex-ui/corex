@@ -1,6 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { getString } from "../lib/util";
+import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class NumberInput extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +38,12 @@ export class NumberInput extends Component<Props, Api> {
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="input"]'
     );
-    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    if (inputEl) {
+      const visibleProps = { ...(this.api.getInputProps() as Record<string, unknown>) };
+      delete visibleProps.name;
+      delete visibleProps.form;
+      this.spreadProps(inputEl, visibleProps);
+    }
 
     const decrementEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="decrement-trigger"]'
@@ -47,5 +54,19 @@ export class NumberInput extends Component<Props, Api> {
       '[data-scope="number-input"][data-part="increment-trigger"]'
     );
     if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+
+    const valueInputEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInputEl instanceof HTMLInputElement) {
+      const value = this.api.value || getString(this.el, "defaultValue") || "";
+      syncHiddenInputValue(
+        valueInputEl,
+        this.el,
+        value,
+        (el, props) => this.spreadProps(el, props),
+        {}
+      );
+    }
   }
 }

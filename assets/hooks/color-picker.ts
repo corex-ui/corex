@@ -8,6 +8,18 @@ import type {
   FormatChangeDetails,
 } from "@zag-js/color-picker";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { mountStringBinding, readUpdatedServerString } from "../lib/read-props";
+
+function readColorValueBinding(el: HTMLElement): Pick<Props, "value" | "defaultValue"> {
+  const binding = mountStringBinding(el, "value", "defaultValue");
+  if ("value" in binding && binding.value) {
+    return { value: parse(binding.value) };
+  }
+  if ("defaultValue" in binding && binding.defaultValue) {
+    return { defaultValue: parse(binding.defaultValue) };
+  }
+  return {};
+}
 import { readPositioningOptions } from "../lib/positioning";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 
@@ -41,7 +53,7 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const valueProps = readValueProps(el);
+    const valueProps = readColorValueBinding(el);
 
     const zag = new ColorPicker(el, {
       id: el.id,
@@ -156,10 +168,13 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
     const el = this.el;
-    const valueProps = readValueProps(el);
+    const zag = this.colorPicker;
+    const valuePatch = readUpdatedServerString(el);
+    const parsed =
+      "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
 
-    this.colorPicker?.updateProps({
-      ...valueProps,
+    zag?.updateProps({
+      ...parsed,
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -170,6 +185,10 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
       dir: getDir(el),
       positioning: readPositioningOptions(el),
     } as Partial<Props>);
+
+    if ("value" in valuePatch && valuePatch.value) {
+      syncColorHiddenAndNotify(el, valuePatch.value);
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {

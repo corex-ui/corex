@@ -447,7 +447,6 @@ defmodule Corex.Combobox do
   )
 
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     items = normalize_items(assigns.items)
     raw_value = get_value(field.value)
     value = normalize_value_to_ids(items, raw_value)
@@ -455,11 +454,7 @@ defmodule Corex.Combobox do
 
     assigns
     |> assign(:items, items)
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:id, fn -> field.id end)
-    |> assign_new(:form, fn -> field.form.id end)
-    |> assign_new(:name, fn -> field.name end)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> combobox()
@@ -475,6 +470,7 @@ defmodule Corex.Combobox do
       |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
@@ -490,6 +486,8 @@ defmodule Corex.Combobox do
 
     selected_label = get_selected_label(items, value_list)
 
+    array_form_submit = assigns.multiple && is_binary(assigns[:name])
+
     assigns =
       assigns
       |> assign(:items, items)
@@ -498,15 +496,22 @@ defmodule Corex.Combobox do
       |> assign(:value, value_list)
       |> assign(:selected_label, selected_label)
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+      |> then(fn a ->
+        if array_form_submit do
+          Corex.FormField.assign_list_submit(a)
+        else
+          assign(a, :submit_name, nil)
+        end
+      end)
 
     ~H"""
     <div id={@id} 
     phx-hook="Combobox" 
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])}
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, placeholder: @placeholder, value: @value,
+      id: @id, items: @items, form_field: @form_field, placeholder: @placeholder, value: @value,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
       read_only: @read_only, required: @required,
@@ -514,8 +519,34 @@ defmodule Corex.Combobox do
       on_value_change_client: @on_value_change_client,
       positioning: @positioning,
       redirect: @redirect,
-      disabled: @disabled, filter: @filter
+      disabled: @disabled, filter: @filter, submit_name: @submit_name
     })}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
+        <div
+          :if={@submit_name}
+          data-scope="combobox"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"combobox:#{@id}:array-inputs"}
+        >
+          <input
+            :for={v <- @value}
+            type="hidden"
+            data-scope="combobox"
+            data-part="array-input"
+            name={@submit_name}
+            value={v}
+          />
+          <input
+            :if={@value == []}
+            type="hidden"
+            data-scope="combobox"
+            data-part="array-input"
+            data-empty
+            name={@submit_name}
+            value=""
+          />
+        </div>
       <input
         type="text"
         hidden
@@ -523,14 +554,12 @@ defmodule Corex.Combobox do
         autocomplete="off"
         tabindex="-1"
         id={"#{@id}-hidden-value"}
-        name={@name}
-        form={@form}
+        name={if(@submit_name, do: nil, else: @name)}
         data-scope="combobox"
         data-part="hidden-input"
         value={@value_for_hidden_input}
         phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("#{@id}-hidden-value"))}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
         <div :if={!Enum.empty?(@label)} phx-mounted={Connect.ignore_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}

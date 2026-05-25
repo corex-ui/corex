@@ -241,7 +241,6 @@ const FloatingPanelHook: Hook<
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
-      defaultPosition: anchorProps.defaultPosition,
       getAnchorPosition: anchorProps.getAnchorPosition,
     } as Partial<Props>);
   },

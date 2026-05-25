@@ -3,6 +3,7 @@ import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/typ
 import { PasswordInput } from "../components/password-input";
 import type { Props, VisibilityChangeDetails } from "@zag-js/password-input";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readUpdatedServerString } from "../lib/read-props";
 import { notifyChange, idMatches, readPayloadId, readPayloadVisible } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -92,16 +93,28 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
+    const el = this.el;
+    const valuePatch = readUpdatedServerString(el);
+
     this.passwordInput?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readonly"),
-      required: getBoolean(this.el, "required"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      dir: getDir(this.el),
+      id: el.id,
+      ...valuePatch,
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      readOnly: getBoolean(el, "readonly"),
+      required: getBoolean(el, "required"),
+      name: getString(el, "name"),
+      dir: getDir(el),
     } as Partial<Props>);
+
+    if ("value" in valuePatch && valuePatch.value !== null) {
+      const input = el.querySelector<HTMLInputElement>(
+        '[data-scope="password-input"][data-part="input"]'
+      );
+      if (input && input.value !== valuePatch.value) {
+        input.value = valuePatch.value;
+      }
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {

@@ -124,9 +124,7 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...(controlled
-        ? { page: readCorexPage(this.el, "page") }
-        : { defaultPage: readCorexPage(this.el, "defaultPage") }),
+      ...(controlled ? { page: readCorexPage(this.el, "page") } : {}),
       dir: getDir(this.el),
       orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),

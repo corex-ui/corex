@@ -8,6 +8,7 @@ import type {
   ValueChangeDetails,
 } from "@zag-js/combobox";
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -17,6 +18,7 @@ import {
   queueLiveViewFormInputSync,
   reapplyLiveViewValueInputUsage,
 } from "../lib/live-view-form-input";
+import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
 
 type ComboboxHookState = {
   combobox?: Combobox;
@@ -36,6 +38,17 @@ export function syncComboboxHiddenInputForPhoenix(
   values: ReadonlyArray<string>,
   onTouched?: () => void
 ): void {
+  const submitName = getString(el, "submitName");
+  if (submitName && getBoolean(el, "multiple")) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "combobox",
+      submitName,
+      notifyLiveView: true,
+    });
+    return;
+  }
+
   const hidden = el.querySelector<HTMLInputElement>(
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
@@ -50,20 +63,7 @@ function reapplyComboboxHiddenInputUsage(el: HTMLElement): void {
   if (hidden) reapplyLiveViewValueInputUsage(hidden);
 }
 
-export function comboboxValueBinding(
-  el: HTMLElement
-): { value: string[] } | { defaultValue: string[] } {
-  const controlled = getBoolean(el, "controlled");
-  if (controlled) {
-    return { value: getStringList(el, "value") ?? [] };
-  }
-  return { defaultValue: getStringList(el, "defaultValue") ?? [] };
-}
-
-function comboboxValueBindingForUpdate(el: HTMLElement): { value?: string[] } {
-  if (!getBoolean(el, "controlled")) return {};
-  return { value: getStringList(el, "value") ?? [] };
-}
+export { mountStringListBinding as comboboxValueBinding };
 
 export function selectedItemLabel(items: ReadonlyArray<unknown>): string {
   const first = items?.[0] as { label?: unknown } | undefined;
@@ -207,7 +207,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         () => comboboxRef,
         markFieldTouched
       ),
-      ...comboboxValueBinding(el),
+      ...mountStringListBinding(el),
     } as Props;
 
     const combobox = new Combobox(el, props, allItems, hasGroups);
@@ -216,7 +216,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
     this.combobox = combobox;
     this.lastItemsJson = itemsJson;
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -235,6 +234,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     if (!this.combobox) return;
+
+    const valuePatch = readUpdatedServerStringList(this.el);
 
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
@@ -259,19 +260,19 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
           this.fieldTouched = true;
         }
       ),
-      ...comboboxValueBindingForUpdate(this.el),
+      ...valuePatch,
     } as Props);
 
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
 
-    const hidden = this.el.querySelector<HTMLInputElement>(
-      '[data-scope="combobox"][data-part="hidden-input"]'
-    );
-    if (!hidden || (!this.fieldTouched && hidden.value === "")) return;
-
-    reapplyLiveViewValueInputUsage(hidden);
+    if ("value" in valuePatch) {
+      syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, undefined);
+      reapplyComboboxHiddenInputUsage(this.el);
+      const label = selectedItemLabel(valuePatch.value.map((v) => ({ value: v, label: v })));
+      syncVisibleInputAttribute(this.el, label);
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {

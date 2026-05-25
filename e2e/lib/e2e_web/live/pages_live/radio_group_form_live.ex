@@ -39,23 +39,13 @@ defmodule E2eWeb.RadioGroupFormLive do
 
   @impl true
   def handle_event("save_phoenix", %{"radio_group_phoenix" => params}, socket) do
-    choice = params["choice"] || ""
-
-    {:noreply,
-     socket
-     |> Toast.create("layout-toast", "Submitted", "choice=#{inspect(choice)}", :info,
-       duration: 5000
-     )
-     |> assign(
-       :phoenix_form,
-       Phoenix.Component.to_form(%{"choice" => choice},
-         as: :radio_group_phoenix,
-         id: @phoenix_form_id
-       )
-     )}
+    {:noreply, save_phoenix_choice(socket, params["choice"] || "")}
   end
 
-  @impl true
+  def handle_event("save_phoenix", _params, socket) do
+    {:noreply, save_phoenix_choice(socket, "")}
+  end
+
   def handle_event("validate", params, socket) do
     p = Map.get(params, "radio_group_ecto", %{})
 
@@ -91,7 +81,7 @@ defmodule E2eWeb.RadioGroupFormLive do
          |> assign(
            :ecto_form,
            Phoenix.Component.to_form(
-             RadioGroupForm.changeset_validate(%RadioGroupForm{}, params),
+             RadioGroupForm.changeset_validate(%RadioGroupForm{}, p),
              as: :radio_group_ecto,
              id: @ecto_form_id
            )
@@ -109,6 +99,18 @@ defmodule E2eWeb.RadioGroupFormLive do
            )
          )}
     end
+  end
+
+  defp save_phoenix_choice(socket, choice) do
+    socket
+    |> Toast.create("layout-toast", "Submitted", "choice=#{choice}", :info, duration: 5000)
+    |> assign(
+      :phoenix_form,
+      Phoenix.Component.to_form(%{"choice" => choice},
+        as: :radio_group_phoenix,
+        id: @phoenix_form_id
+      )
+    )
   end
 
   @impl true

@@ -23,6 +23,8 @@ defmodule Corex.Combobox.Connect do
 
   alias Phoenix.LiveView.JS
 
+  alias Corex.FormField
+
   import Corex.Helpers,
     only: [
       get_boolean: 1,
@@ -32,10 +34,30 @@ defmodule Corex.Combobox.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    default_value_str = joined_csv_values(validate_value!(assigns.value))
+    vlist = validate_value!(assigns.value)
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+
+    joined =
+      if form_field do
+        FormField.dataset_default_json(vlist)
+      else
+        joined_csv_values(vlist)
+      end
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {joined, nil}
+      else
+        {nil, joined}
+      end
 
     base = %{
+      "id" => assigns.id,
       "data-items" => Corex.Dataset.encode_json(assigns.items),
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder,
       "data-close-on-select" => get_boolean(assigns.close_on_select),
@@ -60,8 +82,14 @@ defmodule Corex.Combobox.Connect do
       "data-redirect" => get_boolean(assigns.redirect)
     }
 
-    Map.merge(base, Corex.Positioning.to_dataset(assigns.positioning))
+    base
+    |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
+    |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do

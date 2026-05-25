@@ -2,6 +2,8 @@ defmodule Corex.AngleSlider.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.AngleSlider.Anatomy.{
     Control,
     HiddenInput,
@@ -44,11 +46,24 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    formatted = format_number(assigns.value)
+    value_dataset = FormField.default_value_dataset(assigns, formatted)
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
-      "data-default-value" => if(assigns.controlled, do: nil, else: format_number(assigns.value)),
-      "data-value" => if(assigns.controlled, do: format_number(assigns.value), else: nil),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-value" => default_attr,
+      "data-value" => value_attr,
+      "data-controlled" => get_boolean(zag_controlled),
       "data-step" => format_number(assigns.step),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-readonly" => get_boolean(assigns.read_only),
@@ -62,6 +77,7 @@ defmodule Corex.AngleSlider.Connect do
       "data-on-value-change-end-client" => assigns.on_value_change_end_client,
       "data-value-text-as" => assigns.value_text_as
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec root(Root.t()) :: map()

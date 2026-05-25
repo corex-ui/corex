@@ -44,23 +44,13 @@ defmodule E2eWeb.DatePickerFormLive do
 
   @impl true
   def handle_event("save_phoenix", %{"date_picker_phoenix" => params}, socket) do
-    date = params["date"] || ""
-
-    {:noreply,
-     socket
-     |> Toast.create("layout-toast", "Submitted", "Submitted: date=#{date}", :info,
-       duration: 5000
-     )
-     |> assign(
-       :phoenix_form,
-       Phoenix.Component.to_form(%{"date" => date},
-         as: :date_picker_phoenix,
-         id: @phoenix_form_id
-       )
-     )}
+    {:noreply, save_phoenix_date(socket, Map.get(params, "date", ""))}
   end
 
-  @impl true
+  def handle_event("save_phoenix", _params, socket) do
+    {:noreply, save_phoenix_date(socket, "")}
+  end
+
   def handle_event("validate_validate", %{"date_picker_validate" => params}, socket) do
     changeset =
       %DatePickerForm{}
@@ -79,7 +69,6 @@ defmodule E2eWeb.DatePickerFormLive do
      )}
   end
 
-  @impl true
   def handle_event("date_changed_validate", %{"value" => value}, socket) do
     params = %{"date" => value}
 
@@ -100,7 +89,6 @@ defmodule E2eWeb.DatePickerFormLive do
      )}
   end
 
-  @impl true
   def handle_event("save_validate", %{"date_picker_validate" => params}, socket) do
     case DatePickerForm.changeset_validate(%DatePickerForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
@@ -131,6 +119,15 @@ defmodule E2eWeb.DatePickerFormLive do
            )
          )}
     end
+  end
+
+  defp save_phoenix_date(socket, date) do
+    socket
+    |> Toast.create("layout-toast", "Submitted", "Submitted: date=#{date}", :info, duration: 5000)
+    |> assign(
+      :phoenix_form,
+      Phoenix.Component.to_form(%{"date" => date}, as: :date_picker_phoenix, id: @phoenix_form_id)
+    )
   end
 
   @impl true

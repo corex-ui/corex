@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { el } from "../test/helpers/dom";
-import { readFlipAttr, readPositioningOptions } from "./positioning";
+import { el } from "../helpers/dom";
+import { readFlipAttr, readPositioningOptions } from "../../lib/positioning";
 
 describe("readFlipAttr", () => {
   it("returns true for position-flip=true", () => {

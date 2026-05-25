@@ -250,14 +250,8 @@ defmodule Corex.NumberInput do
   end
 
   def number_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
     |> number_input()
   end
@@ -272,6 +266,7 @@ defmodule Corex.NumberInput do
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
 
@@ -280,9 +275,10 @@ defmodule Corex.NumberInput do
       id={@id}
       phx-hook="NumberInput"
       data-loading
-      phx-mounted={JS.ignore_attributes(["data-loading", "data-default-value"])}
+      phx-mounted={JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         min: @min,
         max: @max,
@@ -310,7 +306,6 @@ defmodule Corex.NumberInput do
         autocomplete="off"
         tabindex="-1"
         name={@name}
-        form={@form}
         value={@value || ""}
         data-scope="number-input"
         data-part="value-input"

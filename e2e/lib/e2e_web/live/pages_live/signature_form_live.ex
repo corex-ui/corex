@@ -25,7 +25,7 @@ defmodule E2eWeb.SignatureFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"signature" => ""},
+      Phoenix.Component.to_form(%{"signature" => []},
         as: :signature_phoenix,
         id: @phoenix_form_id
       )
@@ -42,11 +42,17 @@ defmodule E2eWeb.SignatureFormLive do
 
   @impl true
   def handle_event("save_phoenix", %{"signature_phoenix" => params}, socket) do
-    sig = params["signature"] || ""
+    sig = Map.get(params, "signature", [])
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "signature saved", :info, duration: 5000)
+     |> Toast.create(
+       "layout-toast",
+       "Submitted",
+       SignatureForm.format_for_toast(sig),
+       :info,
+       duration: 5000
+     )
      |> assign(
        :phoenix_form,
        Phoenix.Component.to_form(%{"signature" => sig},
@@ -78,13 +84,8 @@ defmodule E2eWeb.SignatureFormLive do
   end
 
   @impl true
-  def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
-    value =
-      if is_list(paths) and paths != [],
-        do: Enum.join(paths, "\n"),
-        else: Map.get(payload, "url", "") || ""
-
-    validate_ecto(socket, %{"signature" => value})
+  def handle_event("signature_drawn", %{"paths" => paths}, socket) when is_list(paths) do
+    validate_ecto(socket, %{"signature" => paths})
   end
 
   @impl true
@@ -95,12 +96,13 @@ defmodule E2eWeb.SignatureFormLive do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
 
-        sig_preview =
-          if data.signature, do: String.slice(data.signature, 0, 50) <> "...", else: ""
-
         {:noreply,
          socket
-         |> Toast.create("layout-toast", "Submitted", "signature=#{sig_preview}", :info,
+         |> Toast.create(
+           "layout-toast",
+           "Submitted",
+           SignatureForm.format_for_toast(data),
+           :info,
            duration: 5000
          )
          |> assign(
@@ -118,7 +120,7 @@ defmodule E2eWeb.SignatureFormLive do
            socket,
            :ecto_form,
            Phoenix.Component.to_form(changeset,
-             action: :insert,
+             action: :validate,
              as: :signature_ecto,
              id: @ecto_form_id
            )
@@ -126,7 +128,7 @@ defmodule E2eWeb.SignatureFormLive do
     end
   end
 
-  defp validate_ecto(socket, params) do
+  defp validate_ecto(socket, params) when is_map(params) do
     changeset =
       %SignatureForm{}
       |> SignatureForm.changeset_validate(params)

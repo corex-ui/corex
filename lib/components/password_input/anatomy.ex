@@ -7,6 +7,8 @@ defmodule Corex.PasswordInput.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
+      value: nil,
       visible: false,
       disabled: false,
       invalid: false,
@@ -24,6 +26,8 @@ defmodule Corex.PasswordInput.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
+            value: String.t() | nil,
             visible: boolean(),
             disabled: boolean(),
             invalid: boolean(),
@@ -94,13 +98,22 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled, :name, :form, :auto_complete, orientation: "horizontal"]
+    defstruct [
+      :id,
+      :disabled,
+      :name,
+      :form,
+      :form_field,
+      :auto_complete,
+      orientation: "horizontal"
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             disabled: boolean(),
             name: String.t() | nil,
             form: String.t() | nil,
+            form_field: boolean() | nil,
             auto_complete: String.t(),
             orientation: String.t()
           }

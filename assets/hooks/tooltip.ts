@@ -118,7 +118,6 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
 
     this.tooltip?.updateProps({
       id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),

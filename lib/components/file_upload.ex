@@ -255,28 +255,9 @@ defmodule Corex.FileUpload do
   end
 
   def file_upload(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    show_errors? = Phoenix.Component.used_input?(field)
-
-    errors =
-      if show_errors? do
-        Enum.map(field.errors, &Corex.Gettext.translate_error(&1))
-      else
-        []
-      end
-
-    invalid =
-      (field.errors != [] and show_errors?) or Map.get(assigns, :invalid, false)
-
-    assigns =
-      assigns
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(:invalid, invalid)
-      |> assign(:errors, errors)
-      |> assign(field: nil)
-
-    file_upload(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> file_upload()
   end
 
   def file_upload(assigns) do
@@ -285,6 +266,7 @@ defmodule Corex.FileUpload do
     assigns =
       assigns
       |> assign_new(:id, fn -> "file-upload-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
@@ -307,6 +289,7 @@ defmodule Corex.FileUpload do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         disabled: @disabled,
         invalid: @invalid,
         read_only: @read_only,

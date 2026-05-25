@@ -71,13 +71,11 @@ defmodule Corex.DatePicker do
 
   ### Live View
 
-  When using in a Live view you must add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
+  Prefer building the form from an Ecto changeset (see "With Ecto changeset" below). Use `phx-change` on the form so params stay in sync after validation.
 
   ### With Ecto changeset
 
-  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
-
-  This allows the Live View to be the source of truth and the component to be in sync accordingly.
+  Use `field={@form[:birth_date]}` inside `<.form for={@form}>`. The component resyncs from the server value on patch without `controlled`.
 
   First create your schema and changeset:
 
@@ -117,7 +115,7 @@ defmodule Corex.DatePicker do
     def render(assigns) do
       ~H"""
       <.form for={@form} phx-change="validate">
-        <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
+        <.date_picker field={@form[:birth_date]} class="date-picker">
           <:label>Birth date</:label>
           <:trigger>
             <.heroicon name="hero-calendar" class="icon" />
@@ -286,7 +284,6 @@ defmodule Corex.DatePicker do
   alias Corex.DatePicker.Anatomy
   alias Corex.DatePicker.Connect
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
-  alias Corex.Gettext
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -495,7 +492,7 @@ defmodule Corex.DatePicker do
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
-      "A form field struct from the form, e.g. @form[:birth_date]. Sets id, name, value, and errors from the field; enables controlled mode for LiveView."
+      "A form field struct from the form, e.g. @form[:birth_date]. Sets id, name, value, and errors from the field for form submission and LiveView resync."
   )
 
   attr(:rest, :global)
@@ -521,13 +518,8 @@ defmodule Corex.DatePicker do
   end
 
   def date_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Gettext.translate_error(&1)))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, normalize_date_value(field.value))
     |> date_picker()
   end
@@ -537,6 +529,7 @@ defmodule Corex.DatePicker do
       assigns
       |> assign(:id, assigns[:id] || "date-picker-#{System.unique_integer([:positive])}")
       |> merge_date_picker_assigns()
+      |> assign_array_form_submit()
 
     ~H"""
     <div
@@ -547,6 +540,7 @@ defmodule Corex.DatePicker do
       {@rest}
       {Connect.props(%Anatomy.Props{
         id: @id,
+        form_field: @form_field,
         controlled: @controlled,
         value: @value,
         locale: @locale,
@@ -581,7 +575,8 @@ defmodule Corex.DatePicker do
         on_visible_range_change_client: @on_visible_range_change_client,
         on_open_change_client: @on_open_change_client,
         max_selected_dates: @max_selected_dates,
-        translation: @translation
+        translation: @translation,
+        submit_name: @submit_name
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir, read_only: @read_only})}>
@@ -593,7 +588,40 @@ defmodule Corex.DatePicker do
           {render_slot(@label)}
         </label>
         <div phx-mounted={Connect.ignore_control(%Anatomy.Control{id: @id, dir: @dir})} {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
-          <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
+          <div
+            :if={@array_form_submit}
+            data-scope="date-picker"
+            data-part="array-inputs"
+            phx-update="ignore"
+            id={"date-picker:#{@id}:array-inputs"}
+          >
+            <input
+              :for={iso <- @array_iso_values}
+              type="hidden"
+              data-scope="date-picker"
+              data-part="array-input"
+              name={@submit_name}
+              value={iso}
+            />
+            <input
+              :if={@array_iso_values == []}
+              type="hidden"
+              data-scope="date-picker"
+              data-part="array-input"
+              data-empty
+              name={@submit_name}
+              value=""
+            />
+          </div>
+          <input
+            :if={!@array_form_submit}
+            type="text"
+            hidden
+            id={"#{@id}-value"}
+            name={@name}
+            value={Phoenix.HTML.Form.normalize_value("date", @value)}
+            aria-hidden="true"
+          />
           <%= if @selection_mode == "range" do %>
             <div class="date-picker__control-inputs date-picker__control-inputs--range">
               <span class="date-picker__range-label" id={"#{@id}-range-start-label"}>{@translation.range_start}</span>
@@ -791,8 +819,44 @@ defmodule Corex.DatePicker do
   end
 
   defp merge_date_picker_assigns(%{} = assigns) do
-    assign(assigns, translation: DatePickerTranslation.resolve(Map.get(assigns, :translation)))
+    assigns
+    |> assign_new(:form_field, fn -> false end)
+    |> assign(translation: DatePickerTranslation.resolve(Map.get(assigns, :translation)))
   end
+
+  defp assign_array_form_submit(assigns) do
+    array = assigns.selection_mode in ["multiple", "range"] && is_binary(assigns[:name])
+
+    if array do
+      assigns
+      |> Corex.FormField.assign_list_submit()
+      |> assign(:array_form_submit, true)
+      |> assign(
+        :array_iso_values,
+        iso_values_for_array_submit(assigns.value, assigns.selection_mode)
+      )
+    else
+      assigns
+      |> assign(:array_form_submit, false)
+      |> assign(:submit_name, nil)
+      |> assign(:array_iso_values, [])
+    end
+  end
+
+  defp iso_values_for_array_submit(nil, _), do: []
+
+  defp iso_values_for_array_submit(value, _mode) when is_list(value) do
+    Enum.map(value, &to_string/1)
+  end
+
+  defp iso_values_for_array_submit(value, _mode) when is_binary(value) do
+    value
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  defp iso_values_for_array_submit(_, _), do: []
 
   defp normalize_date_value(nil), do: nil
   defp normalize_date_value(%Date{} = d), do: Date.to_iso8601(d)

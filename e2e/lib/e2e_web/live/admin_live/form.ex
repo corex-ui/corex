@@ -17,8 +17,14 @@ defmodule E2eWeb.AdminLive.Form do
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>
         <:actions>
-          <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button button--sm">
-            <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+          <.navigate
+            to={return_path(@return_to, @admin)}
+            type="navigate"
+            class="button"
+            aria_label="Cancel"
+          >
+            <.heroicon name="hero-arrow-left" />
+            <span class="sr-only">Cancel</span>
           </.navigate>
           <.dialog
             :if={@live_action == :edit}
@@ -31,7 +37,7 @@ defmodule E2eWeb.AdminLive.Form do
             final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
           >
             <:trigger
-              class="button button--sm button--alert button--square"
+              class="button button--alert button--square"
               aria_label="Delete admin"
             >
               <.heroicon name="hero-trash" />
@@ -161,7 +167,7 @@ defmodule E2eWeb.AdminLive.Form do
         <.number_input
           field={@form[:level]}
           min={1.0}
-          max={10.0}
+          max={5.0}
           step={1.0}
           class="number-input max-w-none"
         >
@@ -234,11 +240,22 @@ defmodule E2eWeb.AdminLive.Form do
 
   @impl true
   def handle_event("validate", %{"admin" => admin_params}, socket) do
-    changeset = Accounts.change_admin(socket.assigns.admin, admin_params)
+    changeset =
+      socket.assigns.admin
+      |> Accounts.change_admin(admin_params)
+      |> Map.put(:action, :validate)
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
+  def handle_event("validate", _params, socket), do: {:noreply, socket}
+
   def handle_event("save", %{"admin" => admin_params}, socket) do
+    save_admin(socket, socket.assigns.live_action, admin_params)
+  end
+
+  def handle_event("save", params, socket) do
+    admin_params = Map.get(params, "admin", %{})
     save_admin(socket, socket.assigns.live_action, admin_params)
   end
 
@@ -266,7 +283,7 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
     end
   end
 
@@ -279,7 +296,7 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
     end
   end
 

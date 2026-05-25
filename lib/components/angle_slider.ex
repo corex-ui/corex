@@ -303,15 +303,10 @@ defmodule Corex.AngleSlider do
   end
 
   def angle_slider(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     value = field.value |> angle_value_to_float() |> clamp_angle()
 
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> angle_slider()
   end
@@ -320,6 +315,7 @@ defmodule Corex.AngleSlider do
     assigns =
       assigns
       |> assign_new(:id, fn -> "angle-slider-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> update(:value, &clamp_angle/1)
 
     ctx = %{
@@ -348,6 +344,7 @@ defmodule Corex.AngleSlider do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         controlled: @controlled,
         step: @step,

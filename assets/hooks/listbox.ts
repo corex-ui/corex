@@ -3,7 +3,10 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Listbox } from "../components/listbox";
 import type { Props, ValueChangeDetails } from "@zag-js/listbox";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { readStringListControlledZagProps } from "../lib/read-props";
+import {
+  readStringListControlledZagProps,
+  readStringListControlledZagUpdate,
+} from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import {
   parseRespondTo,
@@ -138,7 +141,7 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     this.listbox.updateProps({
       ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
       collection: this.listbox.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
     } as Partial<Props<ListboxItem>>);
   },
 

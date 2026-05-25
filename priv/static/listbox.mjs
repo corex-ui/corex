@@ -1,7 +1,4 @@
 import {
-  readStringListControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
   buildCollection,
   collection,
   connect,
@@ -15,6 +12,10 @@ import {
   readDomItemRedirect
 } from "./chunks/chunk-FOQSALVP.mjs";
 import "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  readStringListControlledZagProps,
+  readStringListControlledZagUpdate
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -213,7 +214,7 @@ var ListboxHook = {
     this.listbox.updateProps({
       ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
       collection: this.listbox.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue")
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue")
     });
   },
   destroyed() {

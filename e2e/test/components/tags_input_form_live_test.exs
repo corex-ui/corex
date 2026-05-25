@@ -36,6 +36,28 @@ defmodule E2eWeb.TagsInputFormLiveTest do
     assert html =~ "can&#39;t be blank" or html =~ "can't be blank"
   end
 
+  test "phoenix save without nested params does not crash", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
+
+    html =
+      view
+      |> element("#tags-input-live-form-phoenix")
+      |> render_submit()
+
+    assert html =~ "tags-input-live-form-phoenix"
+  end
+
+  test "ecto save without nested params does not crash", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
+
+    html =
+      view
+      |> element("#tags-input-live-form-ecto")
+      |> render_submit()
+
+    assert html =~ "tags-input-live-form-ecto"
+  end
+
   test "phoenix save pushes toast-create and keeps form usable", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/tags-input/live-form")
 

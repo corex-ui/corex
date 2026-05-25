@@ -97,14 +97,14 @@ defmodule E2eWeb.Demos.PinInputDemo do
       import Ecto.Changeset
 
       embedded_schema do
-        field :pin, :string
+        field :pin, {:array, :string}
       end
 
       def changeset_validate(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:pin])
         |> validate_required([:pin], message: "can't be blank")
-        |> validate_length(:pin, is: 4, message: "must be 4 characters")
+        |> validate_length(:pin, is: 4, message: "must be 4 digits")
       end
     end
     """
@@ -132,19 +132,15 @@ defmodule E2eWeb.Demos.PinInputDemo do
     ~S"""
     def pin_input_form_page(conn, _params) do
       phoenix_form =
-        Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: "pin-input-form-phoenix")
+        Phoenix.Component.to_form(%{"pin" => []}, as: :pin_phoenix, id: "pin-input-form-phoenix")
 
       render(conn, :pin_input_form_page, phoenix_form: phoenix_form)
     end
 
-    def pin_input_form_submit(conn, params) do
-      if is_map(params["pin_phoenix"]) do
-        pin = params["pin_phoenix"]["pin"] || ""
-
-        conn
-        |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
-        |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
-      end
+    def pin_input_form_submit(conn, %{"pin_phoenix" => %{"pin" => pin}}) do
+      conn
+      |> put_flash(:info, "Submitted: pin=#{inspect(List.wrap(pin))}")
+      |> redirect(to: ~p"/pin-input/form#pin-input-form-phoenix")
     end
     """
   end
@@ -193,7 +189,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
             |> redirect(to: ~p"/pin-input/form#pin-input-form-ecto")
 
           changeset ->
-            changeset = Map.put(changeset, :action, :insert)
+            changeset = Map.put(changeset, :action, :validate)
             ecto_form = Phoenix.Component.to_form(changeset, as: :pin_ecto, id: "pin-input-form-ecto")
             render(conn, :pin_input_form_page, ecto_form: ecto_form)
         end
@@ -220,7 +216,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     ~S"""
     def pin_input_form_submit(conn, %{"pin_input" => %{"pin" => pin}}) do
       conn
-      |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+      |> put_flash(:info, "Submitted: pin=#{inspect(List.wrap(pin))}")
       |> redirect(to: ~p"/pin-input/form#pin-input-form-native")
     end
     """
@@ -359,13 +355,13 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
       def mount(_params, _session, socket) do
         phoenix_form =
-          Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: "pin-input-live-form-phoenix")
+          Phoenix.Component.to_form(%{"pin" => []}, as: :pin_phoenix, id: "pin-input-live-form-phoenix")
 
         {:ok, assign(socket, :phoenix_form, phoenix_form)}
       end
 
       def handle_event("save_phoenix", %{"pin_phoenix" => params}, socket) do
-        pin = params["pin"] || ""
+        pin = List.wrap(params["pin"])
 
         {:noreply,
          assign(
@@ -373,6 +369,10 @@ defmodule E2eWeb.Demos.PinInputDemo do
            :phoenix_form,
            Phoenix.Component.to_form(%{"pin" => pin}, as: :pin_phoenix, id: "pin-input-live-form-phoenix")
          )}
+      end
+
+      def handle_event("save_phoenix", _params, socket) do
+        {:noreply, socket}
       end
     end
     """
@@ -430,12 +430,16 @@ defmodule E2eWeb.Demos.PinInputDemo do
                socket,
                :ecto_form,
                Phoenix.Component.to_form(changeset,
-                 action: :insert,
+                 action: :validate,
                  as: :pin_ecto,
                  id: "pin-input-live-form-ecto"
                )
              )}
         end
+      end
+
+      def handle_event("save", _params, socket) do
+        {:noreply, socket}
       end
     end
     """

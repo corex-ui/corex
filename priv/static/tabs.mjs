@@ -1,9 +1,10 @@
 import {
-  readStringControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  readStringControlledZagProps,
+  readStringControlledZagUpdate
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -677,7 +678,7 @@ var TabsHook = {
   updated() {
     this.tabs?.updateProps({
       id: this.el.id,
-      ...readStringControlledZagProps(this.el, "value", "defaultValue"),
+      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
       orientation: getString(this.el, "orientation"),
       dir: getString(this.el, "dir")
     });

@@ -379,6 +379,7 @@ defmodule Corex.ColorPicker.Anatomy do
       :id,
       :value,
       :name,
+      form_field: false,
       close_on_select: true,
       open_auto_focus: true,
       disabled: false,
@@ -405,6 +406,7 @@ defmodule Corex.ColorPicker.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             name: String.t() | nil,
             close_on_select: boolean(),

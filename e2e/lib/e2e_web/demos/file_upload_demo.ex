@@ -180,7 +180,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     ~S"""
     def file_upload_form_page(conn, _params) do
       phoenix_form =
-        Phoenix.Component.to_form(%{"attachment" => nil}, as: :file_upload_phoenix, id: "file-upload-form-phoenix")
+        Phoenix.Component.to_form(%{"attachment" => nil}, as: :file_upload_phoenix, id: "file-upload-phoenix-form")
 
       render(conn, :file_upload_form_page, phoenix_form: phoenix_form)
     end
@@ -263,8 +263,9 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/file-upload/form"} method="post" multipart class="w-full max-w-2xs flex flex-col gap-space">
+    <form action={~p"/file-upload/form"} method="post" enctype="multipart/form-data" class="w-full max-w-2xs flex flex-col gap-space">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <input type="hidden" name="_file_upload_form" value="native" />
       <.file_upload name="user[avatar]" class="file-upload">
         <:label>Avatar</:label>
         <:close>
@@ -329,7 +330,8 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       method="post"
       multipart
     >
-      <input type="hidden" name="file_upload_validate[_sent]" value="1" />
+      <input type="hidden" name="_file_upload_form" value="ecto" />
+      <input type="hidden" name="file_upload_ecto[_sent]" value="1" />
       <.file_upload id="file-upload-val-field" field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -355,9 +357,10 @@ defmodule E2eWeb.Demos.FileUploadDemo do
       action={~p"/file-upload/form"}
       method="post"
       id="file-upload-plain-form"
-      multipart
+      enctype="multipart/form-data"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <input type="hidden" name="_file_upload_form" value="native" />
       <.file_upload id="file-upload-native" name="user[avatar]" class="file-upload">
         <:label>Avatar</:label>
         <:close>
@@ -626,6 +629,8 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_preview_controller_phoenix(assigns) do
     ~H"""
     <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+      <input type="hidden" name="_file_upload_form" value="phoenix" />
+      <input type="hidden" name="file_upload_phoenix[_sent]" value="1" />
       <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
@@ -649,7 +654,12 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} phx-submit="save_phoenix" multipart>
-      <.file_upload id="file-upload-live-phoenix-field" field={@form[:attachment]} class="file-upload">
+      <.file_upload
+        id="file-upload-live-phoenix-field"
+        field={@form[:attachment]}
+        class="file-upload"
+        on_file_change="file_upload_changed"
+      >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -667,7 +677,13 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def form_preview_live_ecto(assigns) do
     ~H"""
     <.form for={@form} phx-change="validate" phx-submit="save" multipart>
-      <.file_upload id="file-upload-live-ecto-field" field={@form[:attachment]} class="file-upload">
+      <input type="hidden" name="file_upload_ecto[_sent]" value="1" />
+      <.file_upload
+        id="file-upload-live-ecto-field"
+        field={@form[:attachment]}
+        class="file-upload"
+        on_file_change="file_upload_changed"
+      >
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />

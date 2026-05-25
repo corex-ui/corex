@@ -17,8 +17,18 @@ import {
 } from "./chunks/chunk-57TWBSTW.mjs";
 import "./chunks/chunk-4QMNVH3P.mjs";
 import {
+  syncArrayHiddenInputsForPhoenix
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import {
+  notifyPhoenixFormChange
+} from "./chunks/chunk-VMKNATWC.mjs";
+import {
   readPositioningOptions
 } from "./chunks/chunk-VJGUNSK5.mjs";
+import {
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   notifyChange
 } from "./chunks/chunk-2WCNJX5P.mjs";
@@ -38,7 +48,6 @@ import {
   getNativeEvent,
   getNumber,
   getString,
-  getStringList,
   isComposingEvent,
   match,
   query,
@@ -4372,6 +4381,8 @@ function resolveCloseOnSelect(el) {
 var DatePickerHook = {
   mounted() {
     const el = this.el;
+    const hook = this;
+    hook.allowFormNotify = false;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
     const canPush = () => canPushEvent(this.liveSocket);
@@ -4381,7 +4392,13 @@ var DatePickerHook = {
     const parseOne = (v) => v ? parse(v) : void 0;
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
+      ...(() => {
+        const binding = mountStringListBinding(el);
+        if ("value" in binding) {
+          return { value: parseList(binding.value) };
+        }
+        return { defaultValue: parseList(binding.defaultValue) };
+      })(),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString(el, "defaultView"),
       dir: getString(el, "dir"),
@@ -4407,18 +4424,33 @@ var DatePickerHook = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
       onValueChange: (details) => {
-        const isoStr = details.value?.length ? details.value.map((d) => valueToIsoString(d)).filter(Boolean).join(",") : "";
-        const hiddenInput = el.querySelector(`#${el.id}-value`);
-        if (hiddenInput && hiddenInput.value !== isoStr) {
-          hiddenInput.value = isoStr;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        const isoList = details.value?.length ? details.value.map((d) => valueToIsoString(d)).filter(Boolean) : [];
+        const submitName = getString(el, "submitName");
+        if (submitName) {
+          syncArrayHiddenInputsForPhoenix(el, isoList, {
+            scope: "date-picker",
+            submitName,
+            notifyLiveView: hook.allowFormNotify === true
+          });
+        } else {
+          const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+          const hiddenInput = el.querySelector(`#${el.id}-value`);
+          if (hiddenInput && hiddenInput.value !== isoStr) {
+            if (hook.allowFormNotify === true) {
+              notifyPhoenixFormChange(hiddenInput, isoStr);
+            } else {
+              notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+            }
+          }
         }
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: isoStr || null },
+          payload: {
+            id: el.id,
+            value: isoList.length > 0 ? isoList.join(",") : null
+          },
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
@@ -4464,6 +4496,24 @@ var DatePickerHook = {
     });
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
+    queueMicrotask(() => {
+      const submitName = getString(el, "submitName");
+      const isoList = datePickerInstance.api.value?.length ? datePickerInstance.api.value.map((d) => valueToIsoString(d)).filter(Boolean) : [];
+      if (submitName) {
+        syncArrayHiddenInputsForPhoenix(el, isoList, {
+          scope: "date-picker",
+          submitName,
+          notifyLiveView: false
+        });
+      } else {
+        const hiddenInput = el.querySelector(`#${el.id}-value`);
+        const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+        if (hiddenInput) {
+          notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+        }
+      }
+      hook.allowFormNotify = true;
+    });
     this.handlers = [];
     this.handlers.push(
       this.handleEvent(
@@ -4485,17 +4535,13 @@ var DatePickerHook = {
   },
   updated() {
     const el = this.el;
+    const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const focusedStr = getString(el, "focusedValue");
-    const controlled = getBoolean(el, "controlled");
-    const valueList = getStringList(el, "value");
-    this.datePicker?.updateProps({
-      ...controlled ? {
-        value: (valueList ?? []).map((x) => parse(x))
-      } : {},
-      defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
-      defaultView: getString(el, "defaultView"),
+    const valuePatch = readUpdatedServerStringList(el);
+    const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x) => parse(x)) } : {};
+    zag?.updateProps({
+      ...parsedValue,
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),

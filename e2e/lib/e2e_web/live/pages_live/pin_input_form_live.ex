@@ -25,7 +25,7 @@ defmodule E2eWeb.PinInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"pin" => ""}, as: :pin_phoenix, id: @phoenix_form_id)
+      Phoenix.Component.to_form(%{"pin" => []}, as: :pin_phoenix, id: @phoenix_form_id)
 
     ecto_form =
       %PinInputForm{}
@@ -35,19 +35,6 @@ defmodule E2eWeb.PinInputFormLive do
     socket
     |> assign(:phoenix_form, phoenix_form)
     |> assign(:ecto_form, ecto_form)
-  end
-
-  @impl true
-  def handle_event("save_phoenix", %{"pin_phoenix" => params}, socket) do
-    pin = params["pin"] || ""
-
-    {:noreply,
-     socket
-     |> Toast.create("layout-toast", "Submitted", "pin=#{pin}", :info, duration: 5000)
-     |> assign(
-       :phoenix_form,
-       Phoenix.Component.to_form(%{"pin" => pin}, as: :pin_phoenix, id: @phoenix_form_id)
-     )}
   end
 
   @impl true
@@ -74,7 +61,7 @@ defmodule E2eWeb.PinInputFormLive do
     case PinInputForm.changeset_validate(%PinInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: pin=#{data.pin}"
+        message = "Submitted: pin=#{inspect(data.pin)}"
 
         {:noreply,
          socket
@@ -94,12 +81,47 @@ defmodule E2eWeb.PinInputFormLive do
            socket,
            :ecto_form,
            Phoenix.Component.to_form(changeset,
-             action: :insert,
+             action: :validate,
              as: :pin_ecto,
              id: @ecto_form_id
            )
          )}
     end
+  end
+
+  def handle_event("save", _params, socket) do
+    changeset =
+      %PinInputForm{}
+      |> PinInputForm.changeset_validate(%{})
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :pin_ecto,
+         id: @ecto_form_id
+       )
+     )}
+  end
+
+  def handle_event("save_phoenix", %{"pin_phoenix" => params}, socket) do
+    {:noreply, save_phoenix_pin(socket, Map.get(params, "pin", []))}
+  end
+
+  def handle_event("save_phoenix", _params, socket) do
+    {:noreply, save_phoenix_pin(socket, [])}
+  end
+
+  defp save_phoenix_pin(socket, pin) do
+    socket
+    |> Toast.create("layout-toast", "Submitted", "pin=#{inspect(pin)}", :info, duration: 5000)
+    |> assign(
+      :phoenix_form,
+      Phoenix.Component.to_form(%{"pin" => pin}, as: :pin_phoenix, id: @phoenix_form_id)
+    )
   end
 
   @impl true

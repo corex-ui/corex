@@ -37,14 +37,18 @@ defmodule E2eWeb.SwitchApiLive do
       <.demo_page
         path={@path}
         id="switch-api-page"
-        title="Switch · API"
-        subtitle="set_checked and toggle_checked via LiveView JS, DOM events on the hook root, or server push."
+        title={~t"Switch · API"}
       >
         <.demo_section
           id="switch-api-set-checked-client-binding"
-          title="LiveView binding"
+          title={~t"LiveView binding"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_checked_client_binding}
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: @codes.set_checked_client_binding
+            }
           ]}
         >
           <:preview><Demo.api_set_checked_client_binding_example /></:preview>
@@ -52,23 +56,23 @@ defmodule E2eWeb.SwitchApiLive do
 
         <.demo_section
           id="switch-api-set-checked-client-js"
-          title="Client JS"
+          title={~t"Client JS"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_checked_client_js_heex
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: @codes.set_checked_client_js
             },
             %{
               value: "ts",
-              label: "TS",
+              label: ~t"TS",
               language: :javascript,
               code: @codes.set_checked_client_ts
             }
@@ -79,17 +83,17 @@ defmodule E2eWeb.SwitchApiLive do
 
         <.demo_section
           id="switch-api-set-checked-server"
-          title="Server push"
+          title={~t"Server push"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: @codes.set_checked_server_heex
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.set_checked_server_elixir
             }

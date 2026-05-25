@@ -1384,6 +1384,11 @@ defmodule E2eWeb.Demos.TagsInputDemo do
 
         {:noreply, put_flash(socket, :info, "Submitted: tags=#{inspect(tags)}")}
       end
+
+      def handle_event("save_phoenix", _params, socket) do
+        tags = socket.assigns.phoenix_form.params["tags"] |> List.wrap()
+        {:noreply, put_flash(socket, :info, "Submitted: tags=#{inspect(tags)}")}
+      end
     end
     """
   end
@@ -1433,12 +1438,16 @@ defmodule E2eWeb.Demos.TagsInputDemo do
                socket,
                :ecto_form,
                Phoenix.Component.to_form(changeset,
-                 action: :insert,
+                 action: :validate,
                  as: :tags_input_ecto,
                  id: "tags-input-live-form-ecto"
                )
              )}
         end
+      end
+
+      def handle_event("save", _params, socket) do
+        {:noreply, socket}
       end
     end
     """

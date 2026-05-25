@@ -20,18 +20,24 @@ defmodule E2eWeb.RecordFields do
     """
   end
 
-  attr(:signature, :string, default: nil)
+  attr(:signature, :any, default: nil)
 
   def signature_preview(assigns) do
     path_d_values = SignaturePaths.path_d_list(assigns.signature)
-    assigns = assign(assigns, :path_d_values, path_d_values)
+    view_box = SignaturePaths.path_view_box(path_d_values)
+
+    assigns =
+      assigns
+      |> assign(:path_d_values, path_d_values)
+      |> assign(:view_box, view_box)
 
     ~H"""
     <span :if={@path_d_values == []} class="text-muted"> - </span>
     <svg
       :if={@path_d_values != []}
-      viewBox="0 0 200 100"
-      class="inline-block w-12 h-6 border border-muted rounded"
+      viewBox={@view_box}
+      preserveAspectRatio="xMidYMid meet"
+      class="inline-block w-16 h-8 text-ink border border-border rounded"
       aria-hidden="true"
     >
       <g

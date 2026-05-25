@@ -7,6 +7,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       value: nil,
       controlled: false,
       name: nil,
@@ -23,6 +24,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             controlled: boolean(),
             name: String.t() | nil,

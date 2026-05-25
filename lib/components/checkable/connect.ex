@@ -5,18 +5,35 @@ defmodule Corex.Checkable.Connect do
 
   import Corex.Checkable.Helpers,
     only: [
+      checked_attr_value: 1,
       checked_controlled_attr: 2,
       checked_default_attr: 2,
-      native_checked: 1
+      native_checked: 1,
+      normalize_checked: 1
     ]
+
+  alias Corex.FormField
 
   @spec props(map(), String.t()) :: map()
   def props(assigns, _scope) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    checked_val = checked_attr_value(normalize_checked(assigns.checked))
+
+    {checked_attr, default_checked_attr} =
+      if zag_controlled do
+        {checked_val, nil}
+      else
+        {checked_controlled_attr(controlled, assigns.checked),
+         checked_default_attr(controlled, assigns.checked)}
+      end
+
     %{
       "id" => assigns.id,
-      "data-default-checked" => checked_default_attr(assigns.controlled, assigns.checked),
-      "data-checked" => checked_controlled_attr(assigns.controlled, assigns.checked),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-checked" => default_checked_attr,
+      "data-checked" => checked_attr,
+      "data-controlled" => get_boolean(zag_controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-value" => assigns.value,
       "data-name" => assigns.name,
@@ -30,6 +47,7 @@ defmodule Corex.Checkable.Connect do
       "data-on-checked-change-client" => assigns.on_checked_change_client
     }
     |> maybe_put_data_dir(assigns.dir)
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec hidden_input(map(), String.t(), keyword()) :: map()

@@ -1,5 +1,6 @@
 defmodule Corex.PinInput.Connect do
   @moduledoc false
+  alias Corex.FormField
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.Selectors
   import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
@@ -8,14 +9,35 @@ defmodule Corex.PinInput.Connect do
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
+  defp padded_value_list(value_list, count) when is_list(value_list) do
+    digits = Enum.map(value_list, &to_string/1)
+    missing = max(0, count - length(digits))
+    (digits ++ List.duplicate("", missing)) |> Enum.take(count)
+  end
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
     value_list = if is_list(assigns.value), do: validate_value!(assigns.value), else: []
-    data_default_value_str = Enum.join(value_list, ",")
+    count = assigns.count
+    padded = padded_value_list(value_list, count)
+    json = FormField.dataset_default_json(padded)
+
+    controlled = Map.get(assigns, :controlled, false)
+    form_field = Map.get(assigns, :form_field, false)
+    zag_controlled = form_field || controlled
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {json, nil}
+      else
+        {nil, FormField.default_value_dataset(assigns, json)}
+      end
 
     %{
       "id" => assigns.id,
-      "data-default-value" => data_default_value_str,
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-count" => to_string(assigns.count),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
@@ -36,7 +58,12 @@ defmodule Corex.PinInput.Connect do
       "data-on-value-complete" => assigns.on_value_complete,
       "data-on-value-complete-client" => assigns.on_value_complete_client
     }
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
+    |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(),

@@ -13,6 +13,7 @@ defmodule Corex.NumberInput.Connect do
     TriggerGroup
   }
 
+  alias Corex.FormField
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
 
@@ -26,9 +27,23 @@ defmodule Corex.NumberInput.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.default_value_dataset(assigns, value_str(assigns.value))
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
-      "data-default-value" => value_str(assigns.value),
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_attr,
+      "data-default-value" => default_attr,
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
@@ -42,6 +57,7 @@ defmodule Corex.NumberInput.Connect do
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   def ignore_root(assigns) do

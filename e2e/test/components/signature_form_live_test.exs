@@ -18,12 +18,26 @@ defmodule E2eWeb.SignatureFormLiveTest do
 
     view
     |> form("#signature-live-form-ecto")
-    |> render_submit(%{"signature_ecto" => %{"signature" => "path-data-mv"}})
+    |> render_submit(%{"signature_ecto" => %{"signature" => ["path-data-mv"]}})
 
     assert_push_event(view, "toast-create", %{
-      description: "signature=path-data-mv...",
+      description: "signature=[\"path-data-mv\"]",
       duration: 5000,
       groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+
+  test "phoenix save pushes toast with path array", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/signature-pad/live-form")
+
+    view
+    |> form("#signature-live-form-phoenix")
+    |> render_submit(%{"signature_phoenix" => %{"signature" => ["M0,0L1,1Z"]}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "signature=[\"M0,0L1,1Z\"]",
       title: "Submitted",
       type: "info"
     })

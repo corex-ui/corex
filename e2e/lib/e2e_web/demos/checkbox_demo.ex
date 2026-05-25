@@ -607,12 +607,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
       for={@phoenix_form}
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
+      <.checkbox field={@phoenix_form[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
       </.checkbox>
       <.action type="submit" id="checkbox-form-phoenix-submit" class="button button--accent">
@@ -634,14 +633,12 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       render(conn, :checkbox_form_page, phoenix_form: phoenix_form)
     end
 
-    def checkbox_form_submit(conn, params) do
-      if is_map(params["terms_phoenix"]) do
-        terms = params["terms_phoenix"]["terms"] in [true, "true", "on", "1", 1]
+    def checkbox_form_submit(conn, %{"terms_phoenix" => %{"terms" => terms}}) do
+      checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
 
-        conn
-        |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
-        |> redirect(to: ~p"/checkbox/form#checkbox-form-phoenix")
-      end
+      conn
+      |> put_flash(:info, "Submitted: terms=#{inspect(checked)}")
+      |> redirect(to: ~p"/checkbox/form#checkbox-form-phoenix")
     end
     """
   end
@@ -649,12 +646,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_doc_controller_ecto_heex do
     ~S"""
     <.form
-      :let={f}
       for={@ecto_form}
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
+      <.checkbox field={@ecto_form[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -679,23 +675,24 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       render(conn, :checkbox_form_page, ecto_form: ecto_form)
     end
 
-    def checkbox_form_submit(conn, params) do
-      if is_map(params["terms_ecto"]) do
-        changeset =
-          %MyApp.Form.Terms{}
-          |> MyApp.Form.Terms.changeset_validate(params["terms_ecto"] || %{})
+    def checkbox_form_submit(conn, %{"terms_ecto" => ecto_params}) do
+      changeset =
+        %MyApp.Form.Terms{}
+        |> MyApp.Form.Terms.changeset_validate(ecto_params)
 
-        if changeset.valid? do
-          data = Ecto.Changeset.apply_changes(changeset)
+      if changeset.valid? do
+        data = Ecto.Changeset.apply_changes(changeset)
 
-          conn
-          |> put_flash(:info, "Submitted: terms=#{inspect(data.terms)}")
-          |> redirect(to: ~p"/checkbox/form#checkbox-form-ecto")
-        else
-          changeset = Map.put(changeset, :action, :insert)
-          ecto_form = Phoenix.Component.to_form(changeset, as: :terms_ecto, id: "checkbox-form-ecto")
-          render(conn, :checkbox_form_page, ecto_form: ecto_form)
-        end
+        conn
+        |> put_flash(:info, "Submitted: terms=#{inspect(data.terms)}")
+        |> redirect(to: ~p"/checkbox/form#checkbox-form-ecto")
+      else
+        changeset = Map.put(changeset, :action, :insert)
+
+        ecto_form =
+          Phoenix.Component.to_form(changeset, as: :terms_ecto, id: "checkbox-form-ecto")
+
+        render(conn, :checkbox_form_page, ecto_form: ecto_form)
       end
     end
     """
@@ -718,8 +715,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_doc_controller_native_elixir do
     ~S"""
     def checkbox_form_submit(conn, %{"terms" => %{"terms" => terms}}) do
+      checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
+
       conn
-      |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+      |> put_flash(:info, "Submitted: terms=#{inspect(checked)}")
       |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
     end
     """
@@ -727,12 +726,8 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form
-      for={@phoenix_form}
-     
-      phx-submit="save_phoenix"
-    >
-      <.checkbox field={@phoenix_form[:terms]} class="checkbox" controlled id="checkbox-live-form-phoenix-terms">
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
+      <.checkbox field={@phoenix_form[:terms]} class="checkbox" id="checkbox-live-form-phoenix-terms">
         <:label>Accept terms</:label>
       </.checkbox>
       <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">
@@ -744,13 +739,8 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form
-      for={@ecto_form}
-     
-      phx-change="validate"
-      phx-submit="save"
-    >
-      <.checkbox field={@ecto_form[:terms]} class="checkbox" controlled id="checkbox-live-form-ecto-terms">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+      <.checkbox field={@ecto_form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -775,7 +765,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       <.checkbox
         field={@form[:terms]}
         class="checkbox"
-        controlled
         id="checkbox-live-form-phoenix-terms"
       >
         <:label>Accept terms</:label>
@@ -796,7 +785,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       phx-change="validate"
       phx-submit="save"
     >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-live-form-ecto-terms">
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -815,12 +804,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_preview_controller_phoenix(assigns) do
     ~H"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
         <:label>Accept terms</:label>
       </.checkbox>
       <.action type="submit" id="checkbox-form-phoenix-submit" class="button button--accent">
@@ -835,12 +823,11 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def form_preview_controller_ecto(assigns) do
     ~H"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -886,7 +873,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       end
 
       def handle_event("save_phoenix", %{"terms_phoenix" => params}, socket) do
-        terms = params["terms"] in [true, "true", "on", "1", 1]
+        terms = Phoenix.HTML.Form.normalize_value("checkbox", params["terms"])
 
         {:noreply,
          assign(

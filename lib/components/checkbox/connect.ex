@@ -19,9 +19,7 @@ defmodule Corex.Checkbox.Connect do
   alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
-  def props(assigns) do
-    CheckableConnect.props(assigns, "checkbox")
-  end
+  def props(%Props{} = assigns), do: CheckableConnect.props(assigns, "checkbox")
 
   @spec root(Root.t()) :: map()
   def root(assigns) do

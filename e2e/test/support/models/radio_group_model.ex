@@ -144,7 +144,64 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def click_radio_live(session, value) do
-    click_item_in_section(session, "radio-group-live-form-ecto-section", value)
+    session
+    |> click_item_in_section("radio-group-live-form-ecto-section", value)
+    |> wait_section_radio_choice("radio-group-live-form-ecto-section", value)
+    |> wait_radio_choice_in_form("radio-group-live-form-ecto", value)
+  end
+
+  defp wait_radio_choice_in_form(session, form_id, value) do
+    enc_form = Jason.encode!(form_id)
+    enc_value = Jason.encode!(value)
+
+    case Wallaby.Browser.retry(
+           fn ->
+             if radio_choice_in_form?(session, enc_form, enc_value),
+               do: {:ok, session},
+               else: {:error, :missing}
+           end,
+           count: 30,
+           delay: 100
+         ) do
+      {:ok, session} -> session
+      {:error, _} -> raise Wallaby.ExpectationNotMetError, message: "radio choice not in form"
+    end
+  end
+
+  defp radio_choice_in_form?(session, enc_form, enc_value) do
+    key = {:e2e_radio_choice, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        return (function () {
+          var form = document.getElementById(#{enc_form});
+          if (!form) return "";
+          var fd = new FormData(form);
+          for (var pair of fd.entries()) {
+            if (pair[1] === #{enc_value}) return pair[0];
+          }
+          return "";
+        })();
+        """,
+        [],
+        fn name -> Process.put(key, to_string(name || "")) end
+      )
+
+    Process.get(key, "") != ""
+  end
+
+  def wait_section_radio_choice(session, section_dom_id, value) do
+    assert_has(
+      session,
+      css(
+        ~s|section##{section_dom_id} input[data-scope="radio-group"][data-part="item-hidden-input"][value="#{value}"]:checked|,
+        visible: :any
+      )
+    )
+
+    session
   end
 
   def click_radio_item(session, value) do

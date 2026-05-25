@@ -13,6 +13,14 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
   """
 
+  @form_items_code ~S"""
+  [
+    %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
+    %{value: "duis", label: "Duis dictum gravida odio ac pharetra?"},
+    %{value: "donec", label: "Donec condimentum ex mi"}
+  ]
+  """
+
   def items_for_preview, do: E2eWeb.Demos.DocExamples.radio_items()
 
   defp items, do: items_for_preview()
@@ -689,19 +697,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   end
 
   def form_doc_controller_phoenix_heex do
-    ~S"""
+    ~s"""
     <.form
       :let={f}
       for={@phoenix_form}
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new([
-        %{label: "Option A", value: "a"},
-        %{label: "Option B", value: "b"},
-        %{label: "Option C", value: "c"}
-      ])}>
-        <:label>Choice</:label>
+      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
       <.action type="submit" class="button button--accent">
         Submit
@@ -732,14 +737,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   end
 
   def form_doc_live_phoenix_heex do
-    ~S"""
+    ~s"""
     <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.radio_group field={@phoenix_form[:choice]} class="radio-group" items={Corex.List.new([
-        %{label: "Option A", value: "a"},
-        %{label: "Option B", value: "b"},
-        %{label: "Option C", value: "c"}
-      ])}>
-        <:label>Choice</:label>
+      <.radio_group field={@phoenix_form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
       <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
         Submit
@@ -888,17 +890,13 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   end
 
   def form_doc_native_heex do
-    ~S"""
+    ~s"""
     <form action={~p"/radio-group/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.radio_group
         name="user[choice]"
         class="radio-group"
-        items={[
-          %{value: "a", label: "Lorem ipsum dolor sit amet"},
-          %{value: "b", label: "Duis dictum gravida odio ac pharetra?"},
-          %{value: "c", label: "Donec condimentum ex mi"}
-        ]}
+        items={#{@form_items_code}}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -930,7 +928,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        controlled
         class="radio-group"
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -1043,7 +1040,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        controlled
         class="radio-group"
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -1226,11 +1222,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
         name="user[choice]"
         id="radio-group-form-native-choice"
         class="radio-group"
-        items={[
-          %{value: "a", label: "Lorem ipsum dolor sit amet"},
-          %{value: "b", label: "Duis dictum gravida odio ac pharetra?"},
-          %{value: "c", label: "Donec condimentum ex mi"}
-        ]}
+        items={items()}
       >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
@@ -1253,7 +1245,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        controlled
         class="radio-group"
         items={items()}
         on_value_change="choice_changed"
@@ -1284,7 +1275,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     >
       <.radio_group
         field={@form[:choice]}
-        controlled
         class="radio-group"
         items={items()}
       >
@@ -1523,18 +1513,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group
-        field={f[:choice]}
-        class="radio-group"
-        items={
-          Corex.List.new([
-            %{label: "Option A", value: "a"},
-            %{label: "Option B", value: "b"},
-            %{label: "Option C", value: "c"}
-          ])
-        }
-      >
-        <:label>Choice</:label>
+      <.radio_group field={f[:choice]} class="radio-group" items={items()}>
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
       <.action type="submit" class="button button--accent">
         Submit
@@ -1555,18 +1536,9 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form for={@form} phx-submit="save_phoenix">
-      <.radio_group
-        field={@form[:choice]}
-        class="radio-group"
-        items={
-          Corex.List.new([
-            %{label: "Option A", value: "a"},
-            %{label: "Option B", value: "b"},
-            %{label: "Option C", value: "c"}
-          ])
-        }
-      >
-        <:label>Choice</:label>
+      <.radio_group field={@form[:choice]} class="radio-group" items={items()}>
+        <:label>Choose one</:label>
+        <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
       </.radio_group>
       <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
         Submit

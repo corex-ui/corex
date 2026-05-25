@@ -554,9 +554,7 @@ function readPayloadPageSize(payload) {
   const pageSize = o.page_size ?? o.pageSize ?? o["page_size"];
   return typeof pageSize === "number" ? pageSize : void 0;
 }
-function buildPaginationProps(el, pushEvent, canPush) {
-  const controlled = getBoolean(el, "controlled");
-  const controlledPageSize = getBoolean(el, "controlledPageSize");
+function paginationPropsBase(el, pushEvent, canPush) {
   const triggerType = getString(el, "type", ["button", "link"]) ?? "button";
   const count = getNumber(el, "count") ?? 0;
   return {
@@ -568,10 +566,6 @@ function buildPaginationProps(el, pushEvent, canPush) {
     type: triggerType,
     translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
     getPageUrl: buildGetPageUrl(el),
-    ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") ?? getNumber(el, "page") },
-    ...controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
-      defaultPageSize: getNumber(el, "defaultPageSize") ?? getNumber(el, "pageSize")
-    },
     onPageChange: (details) => {
       notifyChange({
         el,
@@ -592,6 +586,29 @@ function buildPaginationProps(el, pushEvent, canPush) {
         clientEventName: getString(el, "onPageSizeChangeClient")
       });
     }
+  };
+}
+function buildPaginationProps(el, pushEvent, canPush) {
+  const controlled = getBoolean(el, "controlled");
+  const controlledPageSize = getBoolean(el, "controlledPageSize");
+  return {
+    ...paginationPropsBase(el, pushEvent, canPush),
+    ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") ?? getNumber(el, "page") },
+    ...controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
+      defaultPageSize: getNumber(el, "defaultPageSize") ?? getNumber(el, "pageSize")
+    }
+  };
+}
+function buildPaginationPropsForUpdate(el, pushEvent, canPush) {
+  const controlled = getBoolean(el, "controlled");
+  const controlledPageSize = getBoolean(el, "controlledPageSize");
+  const base = paginationPropsBase(el, pushEvent, canPush);
+  delete base.onPageChange;
+  delete base.onPageSizeChange;
+  return {
+    ...base,
+    ...controlled ? { page: getNumber(el, "page") } : {},
+    ...controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {}
   };
 }
 var PaginationHook = {
@@ -659,7 +676,7 @@ var PaginationHook = {
   updated() {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    this.pagination?.updateProps(buildPaginationProps(this.el, pushEvent, canPush));
+    this.pagination?.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
   },
   destroyed() {
     this.domRegistry?.teardown();

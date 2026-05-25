@@ -23,6 +23,13 @@ defmodule E2eWeb.NumberInputFormLive do
      |> assign_forms()}
   end
 
+  defp phoenix_value_from_submit(params, socket) do
+    case params do
+      %{"number_input_phoenix" => %{"value" => v}} when is_binary(v) -> v
+      _ -> Phoenix.HTML.Form.normalize_value("number", socket.assigns.phoenix_form[:value].value)
+    end
+  end
+
   defp assign_forms(socket) do
     phoenix_form =
       Phoenix.Component.to_form(%{"value" => "1234"},
@@ -41,8 +48,23 @@ defmodule E2eWeb.NumberInputFormLive do
   end
 
   @impl true
-  def handle_event("save_phoenix", %{"number_input_phoenix" => params}, socket) do
-    value = params["value"] || ""
+  def handle_event("change_phoenix", %{"number_input_phoenix" => params}, socket) do
+    {:noreply,
+     assign(
+       socket,
+       :phoenix_form,
+       Phoenix.Component.to_form(params,
+         as: :number_input_phoenix,
+         id: @phoenix_form_id
+       )
+     )}
+  end
+
+  def handle_event("change_phoenix", _params, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_event("save_phoenix", params, socket) do
+    value = phoenix_value_from_submit(params, socket)
 
     {:noreply,
      socket

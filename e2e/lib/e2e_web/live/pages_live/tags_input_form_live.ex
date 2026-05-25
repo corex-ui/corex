@@ -41,21 +41,6 @@ defmodule E2eWeb.TagsInputFormLive do
   end
 
   @impl true
-  def handle_event("save_phoenix", %{"tags_input_phoenix" => params}, socket) do
-    tags = List.wrap(params["tags"])
-
-    {:noreply,
-     Toast.create(
-       socket,
-       "layout-toast",
-       "Submitted",
-       "tags=#{inspect(tags)}",
-       :info,
-       duration: 5000
-     )}
-  end
-
-  @impl true
   def handle_event("validate", params, socket) when not is_map_key(params, "tags_input_ecto") do
     {:noreply, socket}
   end
@@ -82,12 +67,38 @@ defmodule E2eWeb.TagsInputFormLive do
            socket,
            :ecto_form,
            Phoenix.Component.to_form(changeset,
-             action: :insert,
+             action: :validate,
              as: :tags_input_ecto,
              id: @ecto_form_id
            )
          )}
     end
+  end
+
+  def handle_event("save", _params, socket) do
+    {:noreply, assign_ecto_form(socket, %{})}
+  end
+
+  def handle_event("save_phoenix", %{"tags_input_phoenix" => params}, socket) do
+    {:noreply, save_phoenix_tags(socket, params)}
+  end
+
+  def handle_event("save_phoenix", _params, socket) do
+    tags = socket.assigns.phoenix_form.params["tags"] |> List.wrap()
+    {:noreply, save_phoenix_tags(socket, %{"tags" => tags})}
+  end
+
+  defp save_phoenix_tags(socket, params) do
+    tags = List.wrap(params["tags"])
+
+    Toast.create(
+      socket,
+      "layout-toast",
+      "Submitted",
+      "tags=#{inspect(tags)}",
+      :info,
+      duration: 5000
+    )
   end
 
   defp assign_ecto_form(socket, params) when is_map(params) do

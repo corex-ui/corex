@@ -3041,16 +3041,149 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-AS2EYUTO.mjs
+  // ../priv/static/chunks/chunk-7PXMD5A7.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+    return mountStringBinding(el, valueKey, defaultKey);
   }
-  function readStringControlledZagUpdate(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  function readStringControlledZagUpdate(el, valueKey, _defaultKey) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: z(getString(el, valueKey)) };
   }
-  function readNumberControlledZagProps(el) {
+  function getJsonStringList(el, datasetKey) {
+    const raw = el.dataset[datasetKey];
+    if (raw === void 0) return void 0;
+    if (!raw || raw.trim() === "") return [];
+    const trimmed = raw.trim();
+    if (!trimmed.startsWith("[")) return void 0;
+    try {
+      const v2 = JSON.parse(trimmed);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function readFormFieldServerPaths(el, datasetKey = "defaultPaths") {
+    if (!getBoolean(el, "formField")) {
+      return void 0;
+    }
+    const json = getJsonStringList(el, datasetKey);
+    if (json !== void 0) return json;
+    const raw = el.dataset[datasetKey];
+    if (!raw) return [];
+    return raw.split("\n").map((line) => line.trim()).filter(Boolean);
+  }
+  function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { open: getBoolean(el, openKey) };
+  }
+  function isZagValueControlled(el) {
+    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  }
+  function readDatasetStringList(el, datasetKey) {
+    var _a4, _b;
+    return (_b = (_a4 = getJsonStringList(el, datasetKey)) != null ? _a4 : getStringList(el, datasetKey)) != null ? _b : [];
+  }
+  function readUpdatedServerStringList(el) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: readDatasetStringList(el, "value") };
+  }
+  function mountStringListBinding(el) {
+    if (isZagValueControlled(el)) {
+      return { value: readDatasetStringList(el, "value") };
+    }
+    return { defaultValue: readDatasetStringList(el, "defaultValue") };
+  }
+  function readUpdatedServerString(el) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: z(getString(el, "value")) };
+  }
+  function mountStringBinding(el, valueKey, defaultKey) {
+    if (isZagValueControlled(el)) {
+      return { value: z(getString(el, valueKey)) };
+    }
+    return { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function isZagCheckedControlled(el) {
+    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  }
+  function readUpdatedServerChecked(el) {
+    if (!isZagCheckedControlled(el)) {
+      return {};
+    }
+    return { checked: getCheckedState(el, "checked") };
+  }
+  function mountCheckedBinding(el) {
+    if (isZagCheckedControlled(el)) {
+      return { checked: getCheckedState(el, "checked") };
+    }
+    return { defaultChecked: getCheckedState(el, "defaultChecked") };
+  }
+  function readDatasetTagsList(el, datasetKey) {
+    const raw = datasetKey === "tags" ? el.dataset.tags : el.dataset.defaultTags;
+    if (!raw || raw.trim() === "") return [];
+    try {
+      const v2 = JSON.parse(raw);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function readUpdatedServerTags(el) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: readDatasetTagsList(el, "tags") };
+  }
+  function mountTagsBinding(el) {
+    if (isZagValueControlled(el)) {
+      return { value: readDatasetTagsList(el, "tags") };
+    }
+    return { defaultValue: readDatasetTagsList(el, "defaultTags") };
+  }
+  function readUpdatedServerNumber(el) {
     const step = getNumber(el, "step");
-    return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
+    const base = step !== void 0 ? { step } : {};
+    if (!isZagValueControlled(el)) {
+      return base;
+    }
+    const raw = getString(el, "value");
+    if (raw === void 0 || raw === "") {
+      return base;
+    }
+    const parsed = Number(raw);
+    return Number.isNaN(parsed) ? base : __spreadProps(__spreadValues({}, base), { value: parsed });
+  }
+  function mountNumberBinding(el) {
+    const step = getNumber(el, "step");
+    if (isZagValueControlled(el)) {
+      const raw = getString(el, "value");
+      const value = raw !== void 0 && raw !== "" && !Number.isNaN(Number(raw)) ? Number(raw) : void 0;
+      return { value, step };
+    }
+    return { defaultValue: getNumber(el, "defaultValue"), step };
+  }
+  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey) {
+    return readUpdatedServerStringList(el);
+  }
+  function readPressedControlledZagUpdate(el) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { pressed: getBoolean(el, "pressed") };
+  }
+  function readEditControlledZagUpdate(el) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { edit: getBoolean(el, "edit") };
   }
   function readBooleanControlledZagProps(el, openKey, defaultOpenKey) {
     return getBoolean(el, "controlled") ? { open: getBoolean(el, openKey) } : { defaultOpen: getBoolean(el, defaultOpenKey) };
@@ -3059,15 +3192,18 @@ var Corex = (() => {
     return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
   }
   function readStringListControlledZagProps(el, valueKey, defaultValueKey) {
-    return getBoolean(el, "controlled") ? { value: getStringList(el, valueKey) } : { defaultValue: getStringList(el, defaultValueKey) };
+    if (isZagValueControlled(el)) {
+      return { value: readDatasetStringList(el, valueKey) };
+    }
+    return { defaultValue: readDatasetStringList(el, defaultValueKey) };
   }
   function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
     var _a4;
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var z;
-  var init_chunk_AS2EYUTO = __esm({
-    "../priv/static/chunks/chunk-AS2EYUTO.mjs"() {
+  var init_chunk_7PXMD5A7 = __esm({
+    "../priv/static/chunks/chunk-7PXMD5A7.mjs"() {
       "use strict";
       init_chunk_EWT2BP2N();
       z = (s2) => s2 === void 0 ? null : s2;
@@ -3409,7 +3545,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
-      init_chunk_AS2EYUTO();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -3805,6 +3941,27 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-4SRF4GX7.mjs
+  function hiddenInputPropsWithoutValue(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultValue;
+    delete rest.value;
+    return rest;
+  }
+  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
+    if (Object.keys(hiddenProps).length > 0) {
+      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
+    }
+    inputEl.value = value;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  var init_chunk_4SRF4GX7 = __esm({
+    "../priv/static/chunks/chunk-4SRF4GX7.mjs"() {
+      "use strict";
+      init_chunk_EWT2BP2N();
+    }
+  });
+
   // ../priv/static/chunks/chunk-QB2YSZP6.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
@@ -4187,9 +4344,10 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
+      init_chunk_4SRF4GX7();
       init_chunk_QB2YSZP6();
-      init_chunk_AS2EYUTO();
       init_chunk_PE34YET2();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -4410,7 +4568,15 @@ var Corex = (() => {
           const hiddenInputEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="hidden-input"]'
           );
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl instanceof HTMLInputElement) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              String(this.api.value),
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+          }
           const controlEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="control"]'
           );
@@ -4451,7 +4617,7 @@ var Corex = (() => {
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
-          }, readNumberControlledZagProps(el)), {
+          }, mountNumberBinding(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
@@ -4527,15 +4693,17 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.angleSlider) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readNumberControlledZagProps(this.el)), {
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readonly"),
-            invalid: getBoolean(this.el, "invalid"),
-            name: getString(this.el, "name"),
-            dir: getDir(this.el)
+          const el = this.el;
+          const zag = this.angleSlider;
+          const valuePatch = readUpdatedServerNumber(el);
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readonly"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            dir: getDir(el)
           }));
         },
         destroyed() {
@@ -6022,7 +6190,7 @@ var Corex = (() => {
           (_a4 = this.carousel) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
             slideCount
-          }, controlled ? { page: readCorexPage(this.el, "page") } : { defaultPage: readCorexPage(this.el, "defaultPage") }), {
+          }, controlled ? { page: readCorexPage(this.el, "page") } : {}), {
             dir: getDir(this.el),
             orientation: getString(this.el, "orientation"),
             slidesPerPage: getNumber(this.el, "slidesPerPage"),
@@ -6044,6 +6212,25 @@ var Corex = (() => {
           (_c = this.carousel) == null ? void 0 : _c.destroy();
         }
       };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-G73IV5JU.mjs
+  function hiddenInputPropsWithoutChecked(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultChecked;
+    delete rest.checked;
+    return rest;
+  }
+  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
+    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
+    inputEl.checked = checked;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  var init_chunk_G73IV5JU = __esm({
+    "../priv/static/chunks/chunk-G73IV5JU.mjs"() {
+      "use strict";
+      init_chunk_EWT2BP2N();
     }
   });
 
@@ -6339,7 +6526,9 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
+      init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -6514,8 +6703,14 @@ var Corex = (() => {
           const inputEl = rootEl.querySelector(
             ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
           );
-          if (inputEl) {
-            this.spreadProps(inputEl, this.api.getHiddenInputProps());
+          if (inputEl instanceof HTMLInputElement) {
+            syncCheckableHiddenInput(
+              inputEl,
+              this.el,
+              this.api.checked === true,
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
           }
           const labelEl = rootEl.querySelector(
             ':scope > [data-scope="checkbox"][data-part="label"]'
@@ -6544,7 +6739,7 @@ var Corex = (() => {
           const canPush = () => canPushEvent(this.liveSocket);
           const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") } : { defaultChecked: getCheckedState(el, "defaultChecked") }), {
+          }, mountCheckedBinding(el)), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -6562,6 +6757,16 @@ var Corex = (() => {
                 serverEventName: getString(el, "onCheckedChange"),
                 clientEventName: getString(el, "onCheckedChangeClient")
               });
+              const input = el.querySelector(
+                '[data-scope="checkbox"][data-part="hidden-input"]'
+              );
+              if (input) {
+                queueMicrotask(() => {
+                  input.checked = details.checked === true;
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+              }
             }
           }));
           zagCheckbox.init();
@@ -6628,10 +6833,11 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.checkbox) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          const zagCheckbox = this.checkbox;
+          if (!zagCheckbox) return;
+          zagCheckbox.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") } : { defaultChecked: getCheckedState(this.el, "defaultChecked") }), {
+          }, readUpdatedServerChecked(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -7071,8 +7277,7 @@ var Corex = (() => {
           var _a4;
           (_a4 = this.clipboard) == null ? void 0 : _a4.updateProps({
             id: this.el.id,
-            timeout: getNumber(this.el, "timeout"),
-            defaultValue: getString(this.el, "defaultValue")
+            timeout: getNumber(this.el, "timeout")
           });
         },
         destroyed() {
@@ -7183,8 +7388,8 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_AS2EYUTO();
       init_chunk_PE34YET2();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -7549,7 +7754,7 @@ var Corex = (() => {
           var _a4;
           (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, readBooleanControlledZagProps(this.el, "open", "defaultOpen")), {
+          }, readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")), {
             disabled: getBoolean(this.el, "disabled"),
             dir: getDir(this.el)
           }));
@@ -7564,29 +7769,23 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-V5KQ7TD7.mjs
-  function reapplyLiveViewValueInputUsage(input) {
-    const p2 = input;
-    if (!p2.phxPrivate) p2.phxPrivate = {};
-    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  // ../priv/static/chunks/chunk-FUVA3DRB.mjs
+  function hasArraySubmitName(el) {
+    return getString(el, "submitName") !== void 0;
   }
-  function queueLiveViewFormInputSync(input, getValue, onTouched) {
-    queueMicrotask(() => {
-      const v2 = getValue();
-      if (String(input.value) !== String(v2)) {
-        input.value = v2;
-      }
-      onTouched == null ? void 0 : onTouched();
-      reapplyLiveViewValueInputUsage(input);
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+  function stripZagSubmitNames(el, scope, parts34 = ["hidden-input"]) {
+    if (!hasArraySubmitName(el)) return;
+    for (const part of parts34) {
+      const node = el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`);
+      if (!node) continue;
+      node.removeAttribute("name");
+      node.removeAttribute("form");
+    }
   }
-  var PHX_HAS_FOCUSED;
-  var init_chunk_V5KQ7TD7 = __esm({
-    "../priv/static/chunks/chunk-V5KQ7TD7.mjs"() {
+  var init_chunk_FUVA3DRB = __esm({
+    "../priv/static/chunks/chunk-FUVA3DRB.mjs"() {
       "use strict";
-      PHX_HAS_FOCUSED = "phx-has-focused";
+      init_chunk_EWT2BP2N();
     }
   });
 
@@ -10242,6 +10441,155 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-VMKNATWC.mjs
+  function reapplyLiveViewValueInputUsage(input) {
+    const p2 = input;
+    if (!p2.phxPrivate) p2.phxPrivate = {};
+    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  }
+  function notifyPhoenixFormChange(input, value, options = {}) {
+    var _a4;
+    if (String(input.value) !== String(value)) {
+      input.value = value;
+    }
+    (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
+    if (options.markUsed === false) {
+      return;
+    }
+    reapplyLiveViewValueInputUsage(input);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    if (options.change !== false) {
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+  function queueLiveViewFormInputSync(input, getValue, onTouched) {
+    queueMicrotask(() => {
+      notifyPhoenixFormChange(input, getValue(), { onTouched });
+    });
+  }
+  var PHX_HAS_FOCUSED;
+  var init_chunk_VMKNATWC = __esm({
+    "../priv/static/chunks/chunk-VMKNATWC.mjs"() {
+      "use strict";
+      PHX_HAS_FOCUSED = "phx-has-focused";
+    }
+  });
+
+  // ../priv/static/chunks/chunk-WDSYQCT6.mjs
+  function isFormFieldUsed(el, userTouched = false) {
+    return userTouched || getBoolean(el, "fieldUsed") === true;
+  }
+  function padValues(values, fixedLength) {
+    const out = values.map((v2) => String(v2));
+    while (out.length < fixedLength) out.push("");
+    return out.slice(0, fixedLength);
+  }
+  function createArrayInput(scope, submitName, hostEl, value, empty) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.setAttribute("data-scope", scope);
+    input.setAttribute("data-part", "array-input");
+    if (empty) input.setAttribute("data-empty", "true");
+    if (submitName) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    }
+    input.value = value;
+    return input;
+  }
+  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
+    var _a4;
+    const existing = Array.from(
+      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
+    );
+    if (values.length === 0) {
+      existing.forEach((node) => node.remove());
+      const empty = createArrayInput(scope, fieldTouched ? submitName : void 0, hostEl, "", true);
+      container.appendChild(empty);
+      return empty;
+    }
+    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
+    emptyNodes.forEach((n2) => n2.remove());
+    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
+    while (valueNodes.length < values.length) {
+      const input = createArrayInput(scope, submitName, hostEl, "", false);
+      container.appendChild(input);
+      valueNodes = Array.from(
+        container.querySelectorAll(
+          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
+        )
+      );
+    }
+    while (valueNodes.length > values.length) {
+      const last2 = valueNodes[valueNodes.length - 1];
+      last2 == null ? void 0 : last2.remove();
+      valueNodes = valueNodes.slice(0, -1);
+    }
+    valueNodes.forEach((input, index) => {
+      var _a5;
+      input.value = (_a5 = values[index]) != null ? _a5 : "";
+    });
+    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
+  }
+  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
+    var _a4, _b, _c, _d;
+    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
+    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
+    if (!submitName) return;
+    const fixedLength = options.fixedLength;
+    const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
+    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+    let container = el.querySelector(
+      `[data-scope="${scope}"][data-part="array-inputs"]`
+    );
+    if (!container) {
+      const root = (_c = el.querySelector(`[data-scope="${scope}"][data-part="root"]`)) != null ? _c : el;
+      container = document.createElement("div");
+      container.setAttribute("data-scope", scope);
+      container.setAttribute("data-part", "array-inputs");
+      container.setAttribute("phx-update", "ignore");
+      container.id = `${scope}:${el.id}:array-inputs`;
+      root.prepend(container);
+    }
+    const notifyInput = syncArrayInputsInPlace(
+      container,
+      scope,
+      submitName,
+      el,
+      normalized,
+      fieldTouched
+    );
+    if (fieldTouched) {
+      container.querySelectorAll(
+        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
+      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
+    }
+    const notifyLiveView = (_d = options.notifyLiveView) != null ? _d : false;
+    if (!notifyLiveView || !notifyInput) return;
+    queueMicrotask(() => {
+      var _a5;
+      (_a5 = options.onTouched) == null ? void 0 : _a5.call(options);
+      notifyPhoenixFormChange(notifyInput, notifyInput.value, { onTouched: void 0 });
+    });
+  }
+  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
+    const form = hostEl.closest("form");
+    if (!form) return () => {
+    };
+    const handler = () => {
+      onPrepareSubmit();
+    };
+    form.addEventListener("submit", handler, { capture: true });
+    return () => form.removeEventListener("submit", handler, { capture: true });
+  }
+  var init_chunk_WDSYQCT6 = __esm({
+    "../priv/static/chunks/chunk-WDSYQCT6.mjs"() {
+      "use strict";
+      init_chunk_VMKNATWC();
+      init_chunk_EWT2BP2N();
+    }
+  });
+
   // ../priv/static/chunks/chunk-VJGUNSK5.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
@@ -12612,7 +12960,7 @@ var Corex = (() => {
   var combobox_exports = {};
   __export(combobox_exports, {
     Combobox: () => ComboboxHook,
-    comboboxValueBinding: () => comboboxValueBinding,
+    comboboxValueBinding: () => mountStringListBinding,
     formatComboboxHiddenValue: () => formatComboboxHiddenValue,
     selectedItemLabel: () => selectedItemLabel,
     syncComboboxHiddenInputForPhoenix: () => syncComboboxHiddenInputForPhoenix,
@@ -13026,6 +13374,16 @@ var Corex = (() => {
     return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
   }
   function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
+    const submitName = getString(el, "submitName");
+    if (submitName && getBoolean(el, "multiple")) {
+      syncArrayHiddenInputsForPhoenix(el, values, {
+        onTouched,
+        scope: "combobox",
+        submitName,
+        notifyLiveView: true
+      });
+      return;
+    }
     const hidden = el.querySelector(
       '[data-scope="combobox"][data-part="hidden-input"]'
     );
@@ -13037,19 +13395,6 @@ var Corex = (() => {
       '[data-scope="combobox"][data-part="hidden-input"]'
     );
     if (hidden) reapplyLiveViewValueInputUsage(hidden);
-  }
-  function comboboxValueBinding(el) {
-    var _a4, _b;
-    const controlled = getBoolean(el, "controlled");
-    if (controlled) {
-      return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
-    }
-    return { defaultValue: (_b = getStringList(el, "defaultValue")) != null ? _b : [] };
-  }
-  function comboboxValueBindingForUpdate(el) {
-    var _a4;
-    if (!getBoolean(el, "controlled")) return {};
-    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
   }
   function selectedItemLabel(items) {
     const first2 = items == null ? void 0 : items[0];
@@ -13148,16 +13493,19 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_V5KQ7TD7();
+      init_chunk_FUVA3DRB();
       init_chunk_7BZGUIUZ();
       init_chunk_EPNQR235();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -14466,7 +14814,12 @@ var Corex = (() => {
           if (hiddenInput) {
             const valueStr = this.hiddenInputValue();
             if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+            if (getString(this.el, "submitName")) {
+              hiddenInput.removeAttribute("name");
+              hiddenInput.removeAttribute("form");
+            }
           }
+          stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
           [
             "label",
             "control",
@@ -14513,7 +14866,7 @@ var Corex = (() => {
             this.liveSocket,
             () => comboboxRef,
             markFieldTouched
-          )), comboboxValueBinding(el));
+          )), mountStringListBinding(el));
           const combobox = new Combobox(el, props, allItems, hasGroups);
           comboboxRef = combobox;
           combobox.init();
@@ -14534,6 +14887,7 @@ var Corex = (() => {
         updated() {
           var _a4;
           if (!this.combobox) return;
+          const valuePatch = readUpdatedServerStringList(this.el);
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
           if (newItemsJson !== this.lastItemsJson) {
             this.lastItemsJson = newItemsJson;
@@ -14553,15 +14907,16 @@ var Corex = (() => {
             () => {
               this.fieldTouched = true;
             }
-          )), comboboxValueBindingForUpdate(this.el)));
+          )), valuePatch));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
           }
-          const hidden = this.el.querySelector(
-            '[data-scope="combobox"][data-part="hidden-input"]'
-          );
-          if (!hidden || !this.fieldTouched && hidden.value === "") return;
-          reapplyLiveViewValueInputUsage(hidden);
+          if ("value" in valuePatch) {
+            syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
+            reapplyComboboxHiddenInputUsage(this.el);
+            const label = selectedItemLabel(valuePatch.value.map((v2) => ({ value: v2, label: v2 })));
+            syncVisibleInputAttribute(this.el, label);
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -15347,6 +15702,16 @@ var Corex = (() => {
     if (!selectEl) return;
     raf(() => setElementValue(selectEl, format));
   }
+  function readColorValueBinding(el) {
+    const binding = mountStringBinding(el, "value", "defaultValue");
+    if ("value" in binding && binding.value) {
+      return { value: parse(binding.value) };
+    }
+    if ("defaultValue" in binding && binding.defaultValue) {
+      return { defaultValue: parse(binding.defaultValue) };
+    }
+    return {};
+  }
   function syncColorHiddenAndNotify(el, valueAsString) {
     if (valueAsString === void 0) {
       return;
@@ -15368,11 +15733,13 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
       init_chunk_EPNQR235();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
+      init_chunk_7PXMD5A7();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy10 = createAnatomy("color-picker", [
@@ -16768,12 +17135,21 @@ var Corex = (() => {
           return this.zagConnect(connect10);
         }
         render() {
+          var _a4;
           const rootEl = this.el.querySelector('[data-part="root"]');
           if (rootEl) this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector('[data-part="label"]');
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
           const hiddenInputEl = this.el.querySelector('[data-part="hidden-input"]');
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              (_a4 = this.api.valueAsString) != null ? _a4 : "",
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+          }
           const controlEl = this.el.querySelector('[data-part="control"]');
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           const triggerEl = this.el.querySelector('[data-part="trigger"]');
@@ -16891,7 +17267,7 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const valueProps = readValueProps(el);
+          const valueProps = readColorValueBinding(el);
           const zag = new ColorPicker(el, __spreadProps(__spreadValues({
             id: el.id
           }, valueProps), {
@@ -17001,10 +17377,11 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a4;
           const el = this.el;
-          const valueProps = readValueProps(el);
-          (_a4 = this.colorPicker) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, valueProps), {
+          const zag = this.colorPicker;
+          const valuePatch = readUpdatedServerString(el);
+          const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({}, parsed), {
             name: getString(el, "name"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             openAutoFocus: getBoolean(el, "openAutoFocus"),
@@ -17015,6 +17392,9 @@ var Corex = (() => {
             dir: getDir(el),
             positioning: readPositioningOptions(el)
           }));
+          if ("value" in valuePatch && valuePatch.value) {
+            syncColorHiddenAndNotify(el, valuePatch.value);
+          }
         },
         destroyed() {
           var _a4;
@@ -19310,7 +19690,10 @@ var Corex = (() => {
       init_chunk_EPNQR235();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
+      init_chunk_7PXMD5A7();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -21389,6 +21772,8 @@ var Corex = (() => {
       DatePickerHook = {
         mounted() {
           const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
           const canPush = () => canPushEvent(this.liveSocket);
@@ -21398,7 +21783,13 @@ var Corex = (() => {
           const parseOne = (v2) => v2 ? parse2(v2) : void 0;
           const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
+          }, (() => {
+            const binding = mountStringListBinding(el);
+            if ("value" in binding) {
+              return { value: parseList(binding.value) };
+            }
+            return { defaultValue: parseList(binding.defaultValue) };
+          })()), {
             defaultFocusedValue: parseOne(getString(el, "focusedValue")),
             defaultView: getString(el, "defaultView"),
             dir: getString(el, "dir"),
@@ -21425,18 +21816,33 @@ var Corex = (() => {
           }), resolveZagDatePickerTranslations(el)), {
             onValueChange: (details) => {
               var _a4;
-              const isoStr = ((_a4 = details.value) == null ? void 0 : _a4.length) ? details.value.map((d2) => valueToIsoString(d2)).filter(Boolean).join(",") : "";
-              const hiddenInput = el.querySelector(`#${el.id}-value`);
-              if (hiddenInput && hiddenInput.value !== isoStr) {
-                hiddenInput.value = isoStr;
-                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+              const isoList = ((_a4 = details.value) == null ? void 0 : _a4.length) ? details.value.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+              const submitName = getString(el, "submitName");
+              if (submitName) {
+                syncArrayHiddenInputsForPhoenix(el, isoList, {
+                  scope: "date-picker",
+                  submitName,
+                  notifyLiveView: hook.allowFormNotify === true
+                });
+              } else {
+                const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+                const hiddenInput = el.querySelector(`#${el.id}-value`);
+                if (hiddenInput && hiddenInput.value !== isoStr) {
+                  if (hook.allowFormNotify === true) {
+                    notifyPhoenixFormChange(hiddenInput, isoStr);
+                  } else {
+                    notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+                  }
+                }
               }
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: isoStr || null },
+                payload: {
+                  id: el.id,
+                  value: isoList.length > 0 ? isoList.join(",") : null
+                },
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
@@ -21483,6 +21889,25 @@ var Corex = (() => {
           }));
           datePickerInstance.init();
           this.datePicker = datePickerInstance;
+          queueMicrotask(() => {
+            var _a4;
+            const submitName = getString(el, "submitName");
+            const isoList = ((_a4 = datePickerInstance.api.value) == null ? void 0 : _a4.length) ? datePickerInstance.api.value.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+            if (submitName) {
+              syncArrayHiddenInputsForPhoenix(el, isoList, {
+                scope: "date-picker",
+                submitName,
+                notifyLiveView: false
+              });
+            } else {
+              const hiddenInput = el.querySelector(`#${el.id}-value`);
+              const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+              if (hiddenInput) {
+                notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+              }
+            }
+            hook.allowFormNotify = true;
+          });
           this.handlers = [];
           this.handlers.push(
             this.handleEvent(
@@ -21504,18 +21929,13 @@ var Corex = (() => {
           el.addEventListener("corex:date-picker:set-value", this.onSetValue);
         },
         updated() {
-          var _a4;
           const el = this.el;
+          const zag = this.datePicker;
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const focusedStr = getString(el, "focusedValue");
-          const controlled = getBoolean(el, "controlled");
-          const valueList = getStringList(el, "value");
-          (_a4 = this.datePicker) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadProps(__spreadValues({}, controlled ? {
-            value: (valueList != null ? valueList : []).map((x2) => parse2(x2))
-          } : {}), {
-            defaultFocusedValue: focusedStr ? parse2(focusedStr) : void 0,
-            defaultView: getString(el, "defaultView"),
+          const valuePatch = readUpdatedServerStringList(el);
+          const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x2) => parse2(x2)) } : {};
+          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadProps(__spreadValues({}, parsedValue), {
             dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
@@ -21819,9 +22239,9 @@ var Corex = (() => {
     "../priv/static/dialog.mjs"() {
       "use strict";
       init_chunk_XI7CXJ3V();
-      init_chunk_AS2EYUTO();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -22948,7 +23368,7 @@ var Corex = (() => {
         },
         destroyed() {
           var _a4, _b, _c, _d;
-          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(this.el)), readBooleanControlledZagProps(this.el, "open", "defaultOpen")));
+          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(this.el)), readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")));
           (_b = this.domRegistry) == null ? void 0 : _b.teardown();
           (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
           (_d = this.dialog) == null ? void 0 : _d.destroy();
@@ -23219,6 +23639,7 @@ var Corex = (() => {
     "../priv/static/editable.mjs"() {
       "use strict";
       init_chunk_4QMNVH3P();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -23549,15 +23970,17 @@ var Corex = (() => {
       };
       EditableHook = {
         mounted() {
+          var _a4, _b;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
-          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
-            id: el.id,
-            defaultValue: dataDefaultValue(el),
+          const valueBinding = mountStringBinding(el, "value", "defaultValue");
+          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+            id: el.id
+          }, "value" in valueBinding ? { value: (_a4 = valueBinding.value) != null ? _a4 : "" } : { defaultValue: (_b = valueBinding.defaultValue) != null ? _b : "" }), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
@@ -23565,7 +23988,7 @@ var Corex = (() => {
             name: getString(el, "name"),
             form: getString(el, "form"),
             dir: getDir(el)
-          }, placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+          }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
             onValueChange: (details) => {
               notifyEditableValueChange(el, pushEvent, canPush, details.value);
             },
@@ -23578,8 +24001,8 @@ var Corex = (() => {
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:editable:set-value", (event) => {
-            var _a4;
-            const raw = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            var _a5;
+            const raw = (_a5 = event.detail) == null ? void 0 : _a5.value;
             zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
           });
           const registry = createHookHandleEventRegistry(this);
@@ -23590,13 +24013,11 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
+          var _a4, _b;
           const el = this.el;
-          const dv = dataDefaultValue(el);
-          if (this.editable && !this.editable.api.editing && dv !== this.editable.api.value) {
-            this.editable.api.setValue(dv);
-          }
-          (_a4 = this.editable) == null ? void 0 : _a4.updateProps(__spreadValues({
+          const valuePatch = readUpdatedServerString(el);
+          const editPatch = readEditControlledZagUpdate(el);
+          const props = __spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
@@ -23605,7 +24026,11 @@ var Corex = (() => {
             name: getString(el, "name"),
             form: getString(el, "form"),
             dir: getDir(el)
-          }, getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
+          }, editPatch);
+          if (!((_a4 = this.editable) == null ? void 0 : _a4.api.editing) && "value" in valuePatch) {
+            Object.assign(props, valuePatch);
+          }
+          (_b = this.editable) == null ? void 0 : _b.updateProps(props);
         },
         destroyed() {
           var _a4, _b, _c;
@@ -24080,6 +24505,24 @@ var Corex = (() => {
   function fileKeyFor(file) {
     return zagFileId(`${file.name}-${file.size}`);
   }
+  function labelFieldNameFor(fieldName) {
+    if (fieldName.includes("[")) {
+      return fieldName.replace(/\[([^\]]+)\]$/, "[$1_label]");
+    }
+    return `${fieldName}_label`;
+  }
+  function setInputFiles2(inputEl, files) {
+    try {
+      if (typeof window.DataTransfer !== "undefined") {
+        const dataTransfer = new window.DataTransfer();
+        for (const file of files) {
+          dataTransfer.items.add(file);
+        }
+        inputEl.files = dataTransfer.files;
+      }
+    } catch (e2) {
+    }
+  }
   function fileChangePayload(el, details) {
     var _a4, _b;
     const first2 = details.acceptedFiles[0];
@@ -24087,6 +24530,7 @@ var Corex = (() => {
       id: el.id,
       acceptedCount: details.acceptedFiles.length,
       rejectedCount: details.rejectedFiles.length,
+      acceptedNames: details.acceptedFiles.map((file) => file.name),
       firstAcceptedName: (_a4 = first2 == null ? void 0 : first2.name) != null ? _a4 : null,
       firstAcceptedType: (_b = first2 == null ? void 0 : first2.type) != null ? _b : null
     };
@@ -24107,6 +24551,8 @@ var Corex = (() => {
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -24598,7 +25044,62 @@ ${err}`);
               );
             }
           }
+          this.syncFormSubmitInputs();
           this.touchSentinel();
+        }
+        syncFormSubmitInputs() {
+          const fileInput = this.el.querySelector(
+            '[data-scope="file-upload"][data-part="hidden-input"]'
+          );
+          const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
+          const files = this.api.acceptedFiles;
+          const name = this.el.dataset.name;
+          if (fileInput) {
+            setInputFiles2(fileInput, files);
+          }
+          this.syncAcceptedNamesHidden(name, files);
+          if (!sentinel) return;
+          if (files.length > 0) {
+            sentinel.disabled = true;
+            sentinel.removeAttribute("name");
+            return;
+          }
+          sentinel.disabled = false;
+          if (name) {
+            sentinel.setAttribute("name", name);
+          }
+        }
+        syncAcceptedNamesHidden(fieldName, files) {
+          var _a4;
+          if (!fieldName) return;
+          const labelFieldName = labelFieldNameFor(fieldName);
+          const region = (_a4 = this.el.querySelector('[data-scope="file-upload"][data-part="region"]')) != null ? _a4 : this.el;
+          let labelInput = region.querySelector(
+            '[data-scope="file-upload"][data-part="accepted-names-hidden"]'
+          );
+          if (!labelInput) {
+            labelInput = document.createElement("input");
+            labelInput.type = "hidden";
+            labelInput.setAttribute("data-scope", "file-upload");
+            labelInput.setAttribute("data-part", "accepted-names-hidden");
+            region.appendChild(labelInput);
+          }
+          const names = files.map((file) => file.name).filter(Boolean).join(", ");
+          if (names === "") {
+            labelInput.disabled = true;
+            labelInput.removeAttribute("name");
+            labelInput.value = "";
+            return;
+          }
+          labelInput.disabled = false;
+          labelInput.name = labelFieldName;
+          labelInput.value = names;
+          const formId = this.el.dataset.form;
+          if (formId) {
+            labelInput.setAttribute("form", formId);
+          } else {
+            labelInput.removeAttribute("form");
+          }
         }
         touchSentinel() {
           const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
@@ -24763,6 +25264,9 @@ ${err}`);
           zag.init();
           this.fileUpload = zag;
           this.handlers = [];
+          this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            zag.syncFormSubmitInputs();
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:file-upload:clear-files", () => {
@@ -24809,14 +25313,15 @@ ${err}`);
           });
         },
         destroyed() {
-          var _a4, _b, _c, _d;
+          var _a4, _b, _c, _d, _e;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
           }
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.fileUpload) == null ? void 0 : _c.cleanupPreviews();
-          (_d = this.fileUpload) == null ? void 0 : _d.destroy();
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.fileUpload) == null ? void 0 : _d.cleanupPreviews();
+          (_e = this.fileUpload) == null ? void 0 : _e.destroy();
         }
       };
     }
@@ -26392,7 +26897,6 @@ ${err}`);
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
-            defaultPosition: anchorProps.defaultPosition,
             getAnchorPosition: anchorProps.getAnchorPosition
           });
         },
@@ -26453,11 +26957,11 @@ ${err}`);
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_AS2EYUTO();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -26603,7 +27107,7 @@ ${err}`);
           this.listbox.setOptions(newItems);
           this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
             collection: this.listbox.getCollection()
-          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
+          }), readStringListControlledZagUpdate(this.el, "value", "defaultValue")));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -29105,7 +29609,8 @@ ${err}`);
   __export(number_input_exports, {
     NumberInput: () => NumberInputHook,
     buildMachineProps: () => buildMachineProps,
-    machineState: () => machineState
+    machineState: () => machineState,
+    syncNumberInputValueInput: () => syncNumberInputValueInput
   });
   function recordCursor(inputEl, scope) {
     if (!inputEl || !scope.isActiveElement(inputEl)) return;
@@ -29577,10 +30082,25 @@ ${err}`);
       valueAsNumber: api.valueAsNumber
     };
   }
+  function syncNumberInputValueInput(el, value, notifyForm = false) {
+    const valueInput = el.querySelector(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    const v2 = value != null ? value : "";
+    const changed = valueInput.value !== v2;
+    if (changed) valueInput.value = v2;
+    syncInputFormAssociation(valueInput, el);
+    if (notifyForm && (changed || v2 !== "")) {
+      reapplyLiveViewValueInputUsage(valueInput);
+      valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+      valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
   function buildMachineProps(el, pushEvent, canPush) {
     return __spreadProps(__spreadValues({
       id: el.id
-    }, readNumberControlledZagProps(el)), {
+    }, mountNumberBinding(el)), {
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
       step: getNumber(el, "step"),
@@ -29593,14 +30113,7 @@ ${err}`);
       onValueChange: (details) => {
         var _a4;
         if (details.value !== void 0) {
-          const valueInput = el.querySelector(
-            '[data-scope="number-input"][data-part="value-input"]'
-          );
-          if (valueInput) {
-            valueInput.value = (_a4 = details.value) != null ? _a4 : "";
-            valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-            valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
+          syncNumberInputValueInput(el, (_a4 = details.value) != null ? _a4 : "", true);
         }
         notifyChange({
           el,
@@ -29622,8 +30135,10 @@ ${err}`);
     "../priv/static/number-input.mjs"() {
       "use strict";
       init_chunk_RNYQBUAX();
-      init_chunk_AS2EYUTO();
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
+      init_chunk_VMKNATWC();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -30455,7 +30970,12 @@ ${err}`);
           const inputEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="input"]'
           );
-          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          if (inputEl) {
+            const visibleProps = __spreadValues({}, this.api.getInputProps());
+            delete visibleProps.name;
+            delete visibleProps.form;
+            this.spreadProps(inputEl, visibleProps);
+          }
           const decrementEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="decrement-trigger"]'
           );
@@ -30464,16 +30984,38 @@ ${err}`);
             '[data-scope="number-input"][data-part="increment-trigger"]'
           );
           if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+          const valueInputEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInputEl instanceof HTMLInputElement) {
+            const value = this.api.value || getString(this.el, "defaultValue") || "";
+            syncHiddenInputValue(
+              valueInputEl,
+              this.el,
+              value,
+              (el, props) => this.spreadProps(el, props),
+              {}
+            );
+          }
         }
       };
       NumberInputHook = {
         mounted() {
+          var _a4, _b;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
           zag.init();
           this.numberInput = zag;
+          const initial = String((_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "");
+          syncNumberInputValueInput(el, initial, true);
+          const valueInput = el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            queueLiveViewFormInputSync(valueInput, () => initial);
+          }
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
             emitResponse({
@@ -30490,8 +31032,8 @@ ${err}`);
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:number-input:set-value", (event) => {
-            var _a4;
-            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            var _a5;
+            const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
             if (typeof v2 === "number" && !Number.isNaN(v2)) zag.api.setValue(v2);
           });
           domRegistry.add("corex:number-input:clear-value", () => {
@@ -30553,8 +31095,9 @@ ${err}`);
           });
         },
         updated() {
-          var _a4;
           const el = this.el;
+          const zag = this.numberInput;
+          const valuePatch = readUpdatedServerNumber(el);
           const next2 = {
             id: el.id,
             min: getNumber(el, "min"),
@@ -30567,11 +31110,15 @@ ${err}`);
             allowMouseWheel: getBoolean(el, "allowMouseWheel"),
             dir: getDir(el)
           };
-          if (getBoolean(el, "controlled")) {
-            Object.assign(next2, readNumberControlledZagProps(el));
-          }
-          (_a4 = this.numberInput) == null ? void 0 : _a4.updateProps(next2);
+          Object.assign(next2, valuePatch);
+          zag == null ? void 0 : zag.updateProps(next2);
           queueMicrotask(() => {
+            var _a4, _b, _c;
+            if (zag && "value" in valuePatch) {
+              syncNumberInputValueInput(el, String((_a4 = valuePatch.value) != null ? _a4 : ""), false);
+            } else if (zag) {
+              syncNumberInputValueInput(el, (_c = (_b = zag.api.value) != null ? _b : getString(el, "defaultValue")) != null ? _c : "");
+            }
             const visible = el.querySelector(
               '[data-scope="number-input"][data-part="input"]'
             );
@@ -30838,13 +31385,11 @@ ${err}`);
     const pageSize = (_b = (_a4 = o2.page_size) != null ? _a4 : o2.pageSize) != null ? _b : o2["page_size"];
     return typeof pageSize === "number" ? pageSize : void 0;
   }
-  function buildPaginationProps(el, pushEvent, canPush) {
-    var _a4, _b, _c, _d;
-    const controlled = getBoolean(el, "controlled");
-    const controlledPageSize = getBoolean(el, "controlledPageSize");
+  function paginationPropsBase(el, pushEvent, canPush) {
+    var _a4, _b;
     const triggerType = (_a4 = getString(el, "type", ["button", "link"])) != null ? _a4 : "button";
     const count = (_b = getNumber(el, "count")) != null ? _b : 0;
-    return __spreadProps(__spreadValues(__spreadValues({
+    return {
       id: el.id,
       count,
       siblingCount: getNumber(el, "siblingCount"),
@@ -30852,10 +31397,7 @@ ${err}`);
       dir: getDir(el),
       type: triggerType,
       translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
-      getPageUrl: buildGetPageUrl(el)
-    }, controlled ? { page: getNumber(el, "page") } : { defaultPage: (_c = getNumber(el, "defaultPage")) != null ? _c : getNumber(el, "page") }), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
-      defaultPageSize: (_d = getNumber(el, "defaultPageSize")) != null ? _d : getNumber(el, "pageSize")
-    }), {
+      getPageUrl: buildGetPageUrl(el),
       onPageChange: (details) => {
         notifyChange({
           el,
@@ -30876,7 +31418,23 @@ ${err}`);
           clientEventName: getString(el, "onPageSizeChangeClient")
         });
       }
+    };
+  }
+  function buildPaginationProps(el, pushEvent, canPush) {
+    var _a4, _b;
+    const controlled = getBoolean(el, "controlled");
+    const controlledPageSize = getBoolean(el, "controlledPageSize");
+    return __spreadValues(__spreadValues(__spreadValues({}, paginationPropsBase(el, pushEvent, canPush)), controlled ? { page: getNumber(el, "page") } : { defaultPage: (_a4 = getNumber(el, "defaultPage")) != null ? _a4 : getNumber(el, "page") }), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
+      defaultPageSize: (_b = getNumber(el, "defaultPageSize")) != null ? _b : getNumber(el, "pageSize")
     });
+  }
+  function buildPaginationPropsForUpdate(el, pushEvent, canPush) {
+    const controlled = getBoolean(el, "controlled");
+    const controlledPageSize = getBoolean(el, "controlledPageSize");
+    const base = paginationPropsBase(el, pushEvent, canPush);
+    delete base.onPageChange;
+    delete base.onPageSizeChange;
+    return __spreadValues(__spreadValues(__spreadValues({}, base), controlled ? { page: getNumber(el, "page") } : {}), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {});
   }
   var anatomy19, parts19, getRootId15, getFirstTriggerId, getPrevTriggerId3, getNextTriggerId3, getLastTriggerId, getEllipsisId, getItemId7, range, transform, ELLIPSIS, getRange, getTransformedRange, machine19, clampPage, Pagination, PaginationHook;
   var init_pagination = __esm({
@@ -31262,7 +31820,7 @@ ${err}`);
           var _a4;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          (_a4 = this.pagination) == null ? void 0 : _a4.updateProps(buildPaginationProps(this.el, pushEvent, canPush));
+          (_a4 = this.pagination) == null ? void 0 : _a4.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -31383,6 +31941,7 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -31593,16 +32152,26 @@ ${err}`);
         },
         updated() {
           var _a4;
-          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readonly"),
-            required: getBoolean(this.el, "required"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            dir: getDir(this.el)
-          });
+          const el = this.el;
+          const valuePatch = readUpdatedServerString(el);
+          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            readOnly: getBoolean(el, "readonly"),
+            required: getBoolean(el, "required"),
+            name: getString(el, "name"),
+            dir: getDir(el)
+          }));
+          if ("value" in valuePatch && valuePatch.value !== null) {
+            const input = el.querySelector(
+              '[data-scope="password-input"][data-part="input"]'
+            );
+            if (input && input.value !== valuePatch.value) {
+              input.value = valuePatch.value;
+            }
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -31623,7 +32192,10 @@ ${err}`);
     PinInput: () => PinInputHook,
     padToCount: () => padToCount,
     parseValueWithEmpties: () => parseValueWithEmpties,
-    readDefaultValueList: () => readDefaultValueList
+    readDefaultValueList: () => readDefaultValueList,
+    readPinValueList: () => readPinValueList,
+    readUpdatedPinValue: () => readUpdatedPinValue,
+    syncPinInputFormForPhoenix: () => syncPinInputFormForPhoenix
   });
   function isValidType(type, value) {
     var _a4;
@@ -31871,19 +32443,66 @@ ${err}`);
     while (copy.length < count) copy.push("");
     return copy.slice(0, count);
   }
-  function readDefaultValueList(el, count) {
-    const raw = el.dataset.defaultValue;
+  function readPinValueList(el, datasetKey, count) {
+    const json = getJsonStringList(el, datasetKey);
+    if (json !== void 0) return padToCount(json, count);
+    const raw = el.dataset[datasetKey];
     if (raw === void 0 || raw === "") {
-      return [];
+      return padToCount([], count);
     }
     return padToCount(parseValueWithEmpties(raw), count);
   }
-  function buildMachineProps2(el, pushEvent, canPush) {
-    const count = getNumber(el, "count");
-    return {
+  function readDefaultValueList(el, count) {
+    return readPinValueList(el, "defaultValue", count);
+  }
+  function padStringListBinding(el, count) {
+    const binding = mountStringListBinding(el);
+    if ("value" in binding) {
+      return { value: padToCount(binding.value, count) };
+    }
+    return { defaultValue: padToCount(binding.defaultValue, count) };
+  }
+  function readUpdatedPinValue(el, count) {
+    const patch = readUpdatedServerStringList(el);
+    if (!("value" in patch)) return {};
+    return { value: padToCount(patch.value, count) };
+  }
+  function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
+    var _a4;
+    const submitName = getString(el, "submitName");
+    const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+    if (submitName) {
+      syncArrayHiddenInputsForPhoenix(el, values, {
+        onTouched,
+        scope: "pin-input",
+        submitName,
+        fixedLength: count,
+        notifyLiveView: opts.notifyLiveView,
+        fieldTouched: opts.notifyLiveView === true
+      });
+      return;
+    }
+    const hiddenInput = el.querySelector(
+      '[data-scope="pin-input"][data-part="hidden-input"]'
+    );
+    if (!hiddenInput) return;
+    if (opts.notifyLiveView === false) {
+      notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched, markUsed: false });
+      return;
+    }
+    notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched });
+  }
+  function zagNameForForm(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
+  }
+  function buildMachineProps2(el, pushEvent, canPush, allowFormNotify) {
+    var _a4;
+    const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+    return __spreadProps(__spreadValues({
       id: el.id,
-      count,
-      defaultValue: readDefaultValueList(el, count != null ? count : 0),
+      count
+    }, padStringListBinding(el, count)), {
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
@@ -31892,20 +32511,15 @@ ${err}`);
       otp: getBoolean(el, "otp"),
       blurOnComplete: getBoolean(el, "blurOnComplete"),
       selectOnFocus: getBoolean(el, "selectOnFocus"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? void 0 : getString(el, "form"),
       dir: getDir(el),
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder"),
       onValueChange: (details) => {
-        const hiddenInput = el.querySelector(
-          '[data-scope="pin-input"][data-part="hidden-input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.value = details.valueAsString;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncPinInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: (allowFormNotify == null ? void 0 : allowFormNotify()) === true
+        });
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -31933,13 +32547,18 @@ ${err}`);
           clientEventName: getString(el, "onValueCompleteClient")
         });
       }
-    };
+    });
   }
   var anatomy21, parts21, getRootId16, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, choose3, createMachine5, machine21, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
+      init_chunk_FUVA3DRB();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32290,7 +32909,7 @@ ${err}`);
           return this.zagConnect(connect21);
         }
         render() {
-          var _a4;
+          var _a4, _b;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="pin-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -32300,7 +32919,20 @@ ${err}`);
           const hiddenInputEl = this.el.querySelector(
             '[data-scope="pin-input"][data-part="hidden-input"]'
           );
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl instanceof HTMLInputElement) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              (_b = this.api.valueAsString) != null ? _b : "",
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+            if (getString(this.el, "submitName")) {
+              hiddenInputEl.removeAttribute("name");
+              hiddenInputEl.removeAttribute("form");
+            }
+          }
+          stripZagSubmitNames(this.el, "pin-input");
           const controlEl = this.el.querySelector(
             '[data-scope="pin-input"][data-part="control"]'
           );
@@ -32316,11 +32948,22 @@ ${err}`);
       PinInputHook = {
         mounted() {
           const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const zag = new PinInput(el, buildMachineProps2(el, pushEvent, canPush));
-          zag.init();
-          this.pinInput = zag;
+          const allowFormNotify = () => hook.allowFormNotify === true;
+          const zag = new PinInput(el, buildMachineProps2(el, pushEvent, canPush, allowFormNotify));
+          try {
+            zag.init();
+            this.pinInput = zag;
+          } finally {
+            el.removeAttribute("data-loading");
+          }
+          queueMicrotask(() => {
+            syncPinInputFormForPhoenix(el, zag.api.value, void 0, { notifyLiveView: false });
+            hook.allowFormNotify = true;
+          });
           const emitValue = (respondTo) => {
             const api = zag.api;
             const value = api.value;
@@ -32367,11 +33010,13 @@ ${err}`);
         updated() {
           var _a4;
           const el = this.el;
-          const count = getNumber(el, "count");
-          (_a4 = this.pinInput) == null ? void 0 : _a4.updateProps({
+          const zag = this.pinInput;
+          const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+          const valuePatch = readUpdatedPinValue(el, count);
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
             id: el.id,
-            count,
-            defaultValue: readDefaultValueList(el, count != null ? count : 0),
+            count
+          }, valuePatch), {
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
@@ -32380,12 +33025,15 @@ ${err}`);
             otp: getBoolean(el, "otp"),
             blurOnComplete: getBoolean(el, "blurOnComplete"),
             selectOnFocus: getBoolean(el, "selectOnFocus"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagNameForForm(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             type: getString(el, "type"),
             placeholder: getString(el, "placeholder")
-          });
+          }));
+          if ("value" in valuePatch) {
+            syncPinInputFormForPhoenix(el, valuePatch.value, void 0, { notifyLiveView: false });
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -32616,9 +33264,11 @@ ${err}`);
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_AS2EYUTO();
+      init_chunk_G73IV5JU();
       init_chunk_PE34YET2();
+      init_chunk_VMKNATWC();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32917,15 +33567,20 @@ ${err}`);
             const hiddenInputEl = itemEl.querySelector(
               '[data-scope="radio-group"][data-part="item-hidden-input"]'
             );
-            if (hiddenInputEl)
+            if (hiddenInputEl instanceof HTMLInputElement) {
               this.spreadProps(
                 hiddenInputEl,
-                this.api.getItemHiddenInputProps({
-                  value,
-                  disabled,
-                  invalid
-                })
+                hiddenInputPropsWithoutChecked(
+                  this.api.getItemHiddenInputProps({
+                    value,
+                    disabled,
+                    invalid
+                  })
+                )
               );
+              hiddenInputEl.checked = this.api.value === value;
+              syncInputFormAssociation(hiddenInputEl, this.el);
+            }
           });
         }
       };
@@ -32946,10 +33601,19 @@ ${err}`);
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
+              const selected = details.value;
+              el.querySelectorAll(
+                '[data-scope="radio-group"][data-part="item-hidden-input"]'
+              ).forEach((input) => {
+                const on = input.value === selected;
+                if (input.checked !== on) input.checked = on;
+                syncInputFormAssociation(input, el);
+              });
               const checked = el.querySelector(
                 '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
               );
               if (checked) {
+                reapplyLiveViewValueInputUsage(checked);
                 checked.dispatchEvent(new Event("input", { bubbles: true }));
                 checked.dispatchEvent(new Event("change", { bubbles: true }));
               }
@@ -33012,18 +33676,19 @@ ${err}`);
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.radioGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readonly"),
-            orientation: getString(this.el, "orientation"),
-            dir: getDir(this.el)
+          const el = this.el;
+          const zag = this.radioGroup;
+          const valuePatch = readUpdatedServerString(el);
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            name: getString(el, "name"),
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            readOnly: getBoolean(el, "readonly"),
+            orientation: getString(el, "orientation"),
+            dir: getDir(el)
           }));
         },
         destroyed() {
@@ -33481,7 +34146,9 @@ ${err}`);
   function formatSelectHiddenValue(el, values) {
     var _a4;
     const list = values.map((v2) => String(v2));
-    return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
+    if (list.length === 0) return "";
+    if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+    return getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
   }
   function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
     const valueSet = new Set(values.map(String));
@@ -33553,11 +34220,6 @@ ${err}`);
       }
     };
   }
-  function selectValueBindingForUpdate(el) {
-    var _a4;
-    if (!getBoolean(el, "controlled")) return {};
-    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
-  }
   function reapplySelectInteractiveState(el) {
     el.removeAttribute("data-loading");
     if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
@@ -33570,16 +34232,16 @@ ${err}`);
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_AS2EYUTO();
-      init_chunk_V5KQ7TD7();
       init_chunk_EPNQR235();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
+      init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -34560,7 +35222,7 @@ ${err}`);
           const hasGroups = allItems.some((item) => Boolean(item.group));
           const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched)), {
             collection: buildCollection2(allItems, hasGroups)
-          }), readStringListControlledZagProps(el, "value", "defaultValue")));
+          }), mountStringListBinding(el)));
           selectComponent.hasGroups = hasGroups;
           selectComponent.setOptions(allItems);
           selectComponent.init();
@@ -34588,6 +35250,7 @@ ${err}`);
         },
         updated() {
           if (!this.select) return;
+          const valuePatch = readUpdatedServerStringList(this.el);
           const newItems = JSON.parse(this.el.dataset.items || "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
           this.select.hasGroups = hasGroups;
@@ -34598,11 +35261,11 @@ ${err}`);
             this.fieldTouched = true;
           })), {
             collection: this.select.getCollection()
-          }), selectValueBindingForUpdate(this.el)));
+          }), valuePatch));
           queueMicrotask(() => {
             reapplySelectInteractiveState(this.el);
-            if (!this.fieldTouched || !this.select) return;
-            const values = this.select.api.value;
+            if (!("value" in valuePatch) || !this.select) return;
+            const values = valuePatch.value;
             const hiddenSelect = selectHiddenSelectForForm(this.el);
             if (hiddenSelect && getBoolean(this.el, "multiple")) {
               syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
@@ -34955,6 +35618,8 @@ ${err}`);
     return result;
   }
   function parsePathsFromDataset(el, key) {
+    const json = getJsonStringList(el, key);
+    if (json !== void 0) return json;
     const raw = el.dataset[key];
     if (!raw) return [];
     return raw.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -34972,18 +35637,46 @@ ${err}`);
     if (easing) o2.easing = easing;
     return o2;
   }
-  function queueFormBubblingInputForPhoenix2(el, getValue, opts) {
+  function zagNameForForm2(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
+  }
+  function syncSignatureFormForPhoenix(el, paths, opts) {
+    var _a4;
+    const submitName = getString(el, "submitName");
+    const fieldTouched = opts.fieldTouched === true;
+    if (submitName) {
+      syncArrayHiddenInputsForPhoenix(el, paths, {
+        onTouched: opts.onPadTouched,
+        scope: "signature-pad",
+        submitName,
+        notifyLiveView: (_a4 = opts.notifyLiveView) != null ? _a4 : true,
+        fieldTouched
+      });
+      return;
+    }
     const input = el.querySelector(
       '[data-scope="signature-pad"][data-part="hidden-input"]'
     );
     if (!input) return;
-    queueLiveViewFormInputSync(input, getValue, opts.onPadTouched);
+    if (opts.notifyLiveView === false) {
+      input.value = paths.length > 0 ? paths.join("\n") : "";
+      return;
+    }
+    queueLiveViewFormInputSync(
+      input,
+      () => paths.length > 0 ? paths.join("\n") : "",
+      opts.onPadTouched
+    );
   }
   var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_V5KQ7TD7();
+      init_chunk_FUVA3DRB();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_7PXMD5A7();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -35252,13 +35945,17 @@ ${err}`);
                 value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
               })
             );
+            if (getString(this.el, "submitName")) {
+              hiddenInput.removeAttribute("name");
+              hiddenInput.removeAttribute("form");
+            }
           }
+          stripZagSubmitNames(this.el, "signature-pad");
           this.syncPaths();
         }
       };
       SignaturePadHook = {
         mounted() {
-          var _a4;
           const el = this.el;
           const hook = this;
           const pushEvent = this.pushEvent.bind(this);
@@ -35267,32 +35964,18 @@ ${err}`);
             hook.padTouched = true;
           };
           const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
-          {
-            const input = el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (String((_a4 = input == null ? void 0 : input.value) != null ? _a4 : "") !== "" || defaultPaths.length > 0) {
-              hook.padTouched = true;
-              queueMicrotask(() => {
-                const i2 = el.querySelector(
-                  '[data-scope="signature-pad"][data-part="hidden-input"]'
-                );
-                if (i2) reapplyLiveViewValueInputUsage(i2);
-              });
-            }
-          }
           const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
-            name: getString(el, "name")
+            name: zagNameForForm2(el)
           }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
             drawing: buildDrawingOptions(el),
             onDrawEnd: (details) => {
               signaturePad.setPaths(details.paths);
-              queueFormBubblingInputForPhoenix2(
-                el,
-                () => details.paths.length > 0 ? details.paths.join("\n") : "",
-                { onPadTouched: markTouched }
-              );
+              syncSignatureFormForPhoenix(el, details.paths, {
+                onPadTouched: markTouched,
+                notifyLiveView: true,
+                fieldTouched: true
+              });
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
@@ -35321,11 +36004,34 @@ ${err}`);
           }));
           signaturePad.init();
           this.signaturePad = signaturePad;
+          const syncForm = (paths, opts) => {
+            syncSignatureFormForPhoenix(el, paths, {
+              onPadTouched: () => {
+              },
+              notifyLiveView: opts.notifyLiveView,
+              fieldTouched: isFormFieldUsed(el, hook.padTouched || opts.fieldTouched === true)
+            });
+          };
+          queueMicrotask(() => {
+            if (!hook.padTouched) {
+              syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+            }
+          });
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            var _a4;
+            hook.padTouched = true;
+            const paths = (_a4 = signaturePad.api.paths) != null ? _a4 : [];
+            syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
+          });
           this.onClear = (event) => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
-            queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
+            syncSignatureFormForPhoenix(el, [], {
+              onPadTouched: markTouched,
+              notifyLiveView: true,
+              fieldTouched: true
+            });
           };
           el.addEventListener("corex:signature-pad:clear", this.onClear);
           this.handlers = [];
@@ -35333,36 +36039,36 @@ ${err}`);
             this.handleEvent("signature_pad_clear", (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               signaturePad.api.clear();
-              queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
+              syncSignatureFormForPhoenix(el, [], {
+                onPadTouched: markTouched,
+                notifyLiveView: true,
+                fieldTouched: true
+              });
             })
           );
         },
         updated() {
           var _a4, _b;
           const el = this.el;
-          const name = getString(el, "name");
-          if (name) {
-            (_a4 = this.signaturePad) == null ? void 0 : _a4.setName(name);
-          }
-          (_b = this.signaturePad) == null ? void 0 : _b.updateProps({
+          (_a4 = this.signaturePad) == null ? void 0 : _a4.updateProps({
             id: el.id,
-            name,
+            name: zagNameForForm2(el),
             drawing: buildDrawingOptions(el)
           });
-          if (!this.padTouched) {
-            return;
+          const serverPaths = readFormFieldServerPaths(el);
+          if (serverPaths !== void 0 && !this.padTouched) {
+            (_b = this.signaturePad) == null ? void 0 : _b.setPaths(serverPaths);
+            syncSignatureFormForPhoenix(el, serverPaths, {
+              onPadTouched: () => {
+              },
+              notifyLiveView: false,
+              fieldTouched: isFormFieldUsed(el, this.padTouched)
+            });
           }
-          queueMicrotask(() => {
-            const input = this.el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (input) {
-              reapplyLiveViewValueInputUsage(input);
-            }
-          });
         },
         destroyed() {
-          var _a4;
+          var _a4, _b;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
           if (this.onClear) {
             this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
           }
@@ -35371,7 +36077,7 @@ ${err}`);
               this.removeHandleEvent(handler);
             }
           }
-          (_a4 = this.signaturePad) == null ? void 0 : _a4.destroy();
+          (_b = this.signaturePad) == null ? void 0 : _b.destroy();
         }
       };
     }
@@ -35495,7 +36201,9 @@ ${err}`);
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
+      init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -35678,8 +36386,14 @@ ${err}`);
           const inputEl = rootEl.querySelector(
             ':scope > [data-scope="switch"][data-part="hidden-input"]'
           );
-          if (inputEl) {
-            this.spreadProps(inputEl, this.api.getHiddenInputProps());
+          if (inputEl instanceof HTMLInputElement) {
+            syncCheckableHiddenInput(
+              inputEl,
+              this.el,
+              this.api.checked === true,
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
           }
           rootEl.querySelectorAll(':scope > [data-scope="switch"][data-part="label"]').forEach((labelEl) => {
             this.spreadProps(labelEl, this.api.getLabelProps());
@@ -35705,7 +36419,13 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") === true } : { defaultChecked: getCheckedState(el, "defaultChecked") === true }), {
+          }, (() => {
+            const binding = mountCheckedBinding(el);
+            if ("checked" in binding) {
+              return { checked: binding.checked === true };
+            }
+            return { defaultChecked: binding.defaultChecked === true };
+          })()), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -35723,6 +36443,16 @@ ${err}`);
                 serverEventName: getString(el, "onCheckedChange"),
                 clientEventName: getString(el, "onCheckedChangeClient")
               });
+              const input = el.querySelector(
+                '[data-scope="switch"][data-part="hidden-input"]'
+              );
+              if (input) {
+                queueMicrotask(() => {
+                  input.checked = details.checked === true;
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+              }
             }
           }));
           zagSwitch.init();
@@ -35773,10 +36503,11 @@ ${err}`);
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.zagSwitch) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          const zagSwitch = this.zagSwitch;
+          if (!zagSwitch) return;
+          zagSwitch.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") === true } : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }), {
+          }, readUpdatedServerChecked(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -36161,58 +36892,6 @@ ${err}`);
       input == null ? void 0 : input.removeEventListener("change", resize);
     };
   }
-  function syncTagsArrayInputsForPhoenix(el, values, onTouched) {
-    var _a4;
-    const submitName = getString(el, "submitName");
-    if (!submitName) return;
-    let container = el.querySelector(
-      '[data-scope="tags-input"][data-part="array-inputs"]'
-    );
-    if (!container) {
-      const root = (_a4 = el.querySelector('[data-scope="tags-input"][data-part="root"]')) != null ? _a4 : el;
-      container = document.createElement("div");
-      container.setAttribute("data-scope", "tags-input");
-      container.setAttribute("data-part", "array-inputs");
-      container.setAttribute("phx-update", "ignore");
-      container.id = `tags-input:${el.id}:array-inputs`;
-      root.prepend(container);
-    }
-    container.replaceChildren();
-    let notifyInput = null;
-    if (values.length === 0) {
-      const empty = document.createElement("input");
-      empty.type = "hidden";
-      empty.setAttribute("data-scope", "tags-input");
-      empty.setAttribute("data-part", "array-input");
-      empty.setAttribute("data-empty", "true");
-      empty.name = submitName;
-      associateInputWithFormIfOutside(empty, el);
-      empty.value = "";
-      container.appendChild(empty);
-      notifyInput = empty;
-    } else {
-      values.forEach((value) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.setAttribute("data-scope", "tags-input");
-        input.setAttribute("data-part", "array-input");
-        input.name = submitName;
-        associateInputWithFormIfOutside(input, el);
-        input.value = String(value);
-        container.appendChild(input);
-        notifyInput = input;
-      });
-    }
-    queueMicrotask(() => {
-      onTouched == null ? void 0 : onTouched();
-      if (!notifyInput) return;
-      notifyInput.dispatchEvent(new Event("input", { bubbles: true }));
-      notifyInput.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-  }
-  function syncTagsInputFormForPhoenix(el, values, onTouched) {
-    syncTagsArrayInputsForPhoenix(el, values, onTouched);
-  }
   function formatTagTemplate(template, tag) {
     return template.split(TAG_PLACEHOLDER).join(tag);
   }
@@ -36246,6 +36925,17 @@ ${err}`);
     if (!input) return false;
     return !input.hidden;
   }
+  function syncTagsArrayInputsForPhoenix(el, values, onTouched, opts = {}) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "tags-input",
+      notifyLiveView: opts.notifyLiveView,
+      fieldTouched: opts.fieldTouched === true
+    });
+  }
+  function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
+    syncTagsArrayInputsForPhoenix(el, values, onTouched, opts);
+  }
   function parseJsonTags(el, key) {
     const raw = el.dataset[key];
     if (!raw || raw.trim() === "") return [];
@@ -36272,12 +36962,19 @@ ${err}`);
     const v2 = input == null ? void 0 : input.getAttribute("placeholder");
     return typeof v2 === "string" && v2 !== "" ? v2 : void 0;
   }
+  function zagNameForForm3(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
+  }
   var anatomy26, parts26, getRootId21, getInputId8, getClearTriggerId4, getHiddenInputId8, getLabelId16, getControlId11, getItemId10, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl8, getInputEl6, getHiddenInputEl7, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, and9, not10, or4, machine26, TAG_PLACEHOLDER, DEFAULT_DELETE_TEMPLATE, DEFAULT_TAG_EDITED_TEMPLATE, TagsInput, TagsInputHook;
   var init_tags_input = __esm({
     "../priv/static/tags-input.mjs"() {
       "use strict";
       init_chunk_7BZGUIUZ();
       init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -37133,7 +37830,6 @@ ${err}`);
           }
         }
         render() {
-          var _a4;
           const rootEl = this.el.querySelector(
             '[data-scope="tags-input"][data-part="root"]'
           );
@@ -37158,9 +37854,6 @@ ${err}`);
               inputEl.removeAttribute("form");
             }
           }
-          if (getString(this.el, "submitName")) {
-            syncTagsInputFormForPhoenix(this.el, (_a4 = this.api.value) != null ? _a4 : []);
-          }
           const hiddenEl = this.el.querySelector(
             '[data-scope="tags-input"][data-part="hidden-input"]'
           );
@@ -37174,22 +37867,24 @@ ${err}`);
       TagsInputHook = {
         mounted() {
           const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
+          hook.fieldTouched = false;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const controlled = getBoolean(el, "controlled");
           const blur = blurBehavior(el);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
           const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : { defaultValue: parseJsonTags(el, "defaultTags") }), {
+          }, resolveZagTagsInputTranslations(el)), mountTagsBinding(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagNameForForm3(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             addOnPaste: getBoolean(el, "addOnPaste"),
             allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -37198,7 +37893,11 @@ ${err}`);
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), {
             onValueChange: (details) => {
-              syncTagsInputFormForPhoenix(el, details.value);
+              hook.fieldTouched = true;
+              syncTagsInputFormForPhoenix(el, details.value, void 0, {
+                notifyLiveView: hook.allowFormNotify === true,
+                fieldTouched: true
+              });
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -37209,6 +37908,7 @@ ${err}`);
               });
             },
             onInputValueChange: (details) => {
+              hook.fieldTouched = true;
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -37241,10 +37941,22 @@ ${err}`);
           }));
           zag.init();
           this.tagsInput = zag;
-          const defaultTags = parseJsonTags(el, "defaultTags");
-          if (defaultTags.length > 0) {
-            queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
-          }
+          const syncForm = (values, opts = {}) => {
+            syncTagsInputFormForPhoenix(el, values, void 0, {
+              notifyLiveView: opts.notifyLiveView,
+              fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true)
+            });
+          };
+          queueMicrotask(() => {
+            if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
+              syncForm(zag.api.value, { notifyLiveView: false });
+            }
+            hook.allowFormNotify = true;
+          });
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            hook.fieldTouched = true;
+            syncForm(zag.api.value, { notifyLiveView: false });
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:tags-input:set-value", (event) => {
@@ -37293,20 +38005,20 @@ ${err}`);
         updated() {
           var _a4, _b;
           const el = this.el;
-          const controlled = getBoolean(el, "controlled");
+          const valuePatch = readUpdatedServerTags(el);
           const blur = blurBehavior(el);
           const max3 = maxProp(el);
           const delimiter = getString(el, "delimiter");
           const placeholder = readPlaceholderFromMainInput(el);
           (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, resolveZagTagsInputTranslations(el)), controlled ? { value: parseJsonTags(el, "tags") } : {}), {
+          }, resolveZagTagsInputTranslations(el)), valuePatch), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagNameForForm3(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             addOnPaste: getBoolean(el, "addOnPaste"),
             allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -37314,16 +38026,20 @@ ${err}`);
           }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
             autoFocus: getBoolean(el, "autoFocus")
           }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
-          (_b = this.tagsInput) == null ? void 0 : _b.render();
-          if (this.tagsInput) {
-            queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput.api.value));
+          if ("value" in valuePatch) {
+            syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
+              notifyLiveView: false,
+              fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
+            });
           }
+          (_b = this.tagsInput) == null ? void 0 : _b.render();
         },
         destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.tagsInput) == null ? void 0 : _c.destroy();
+          var _a4, _b, _c, _d;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.tagsInput) == null ? void 0 : _d.destroy();
         }
       };
     }
@@ -37545,8 +38261,8 @@ ${err}`);
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_AS2EYUTO();
       init_chunk_PE34YET2();
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -37999,7 +38715,7 @@ ${err}`);
           var _a4;
           (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, readStringControlledZagProps(this.el, "value", "defaultValue")), {
+          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
             orientation: getString(this.el, "orientation"),
             dir: getString(this.el, "dir")
           }));
@@ -41045,7 +41761,6 @@ ${err}`);
           const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
           (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadValues({
             id: el.id,
-            defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             openDelay: getNumber(el, "openDelay"),
@@ -41129,6 +41844,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -41255,12 +41971,9 @@ ${err}`);
         },
         updated() {
           var _a4;
-          const controlled = getBoolean(this.el, "controlled");
-          const pressedFromDataset = getBooleanValue(this.el, "pressed");
-          const defaultPressedFromDataset = getBooleanValue(this.el, "defaultPressed");
           (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true }), {
+          }, readPressedControlledZagUpdate(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             dir: getDir(this.el)
           }));
@@ -41425,6 +42138,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
+      init_chunk_7PXMD5A7();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -41705,7 +42419,7 @@ ${err}`);
         },
         updated() {
           var _a4;
-          (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+          (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(this.el, "value", "defaultValue")), {
             deselectable: getBoolean(this.el, "deselectable"),
             loopFocus: getBoolean(this.el, "loopFocus"),
             rovingFocus: getBoolean(this.el, "rovingFocus"),

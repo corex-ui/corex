@@ -25,12 +25,17 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { bindArrayFieldSubmitIntent, isFormFieldUsed } from "../lib/form-array-submit";
 import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
+import { mountTagsBinding, readUpdatedServerTags } from "../lib/read-props";
 
 type TagsInputHookState = {
   tagsInput?: TagsInput;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  allowFormNotify?: boolean;
+  fieldTouched?: boolean;
+  unbindSubmitIntent?: () => void;
 };
 
 export function parseJsonTags(el: HTMLElement, key: "tags" | "defaultTags"): string[] {
@@ -63,12 +68,19 @@ export function readPlaceholderFromMainInput(hookEl: HTMLElement): string | unde
   return typeof v === "string" && v !== "" ? v : undefined;
 }
 
+function zagNameForForm(el: HTMLElement): string | undefined {
+  if (getString(el, "submitName")) return undefined;
+  return getString(el, "name");
+}
+
 const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
     const el = this.el;
+    const hook = this as object & HookInterface<HTMLElement> & TagsInputHookState;
+    hook.allowFormNotify = false;
+    hook.fieldTouched = false;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const controlled = getBoolean(el, "controlled");
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -77,15 +89,13 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     const zag = new TagsInput(el, {
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...(controlled
-        ? { value: parseJsonTags(el, "tags") }
-        : { defaultValue: parseJsonTags(el, "defaultTags") }),
+      ...mountTagsBinding(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? undefined : getString(el, "form"),
       dir: getDir(el),
       addOnPaste: getBoolean(el, "addOnPaste"),
       allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -99,7 +109,11 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
       onValueChange: (details: ValueChangeDetails) => {
-        syncTagsInputFormForPhoenix(el, details.value);
+        hook.fieldTouched = true;
+        syncTagsInputFormForPhoenix(el, details.value, undefined, {
+          notifyLiveView: hook.allowFormNotify === true,
+          fieldTouched: true,
+        });
 
         notifyChange({
           el,
@@ -111,6 +125,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
         });
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
+        hook.fieldTouched = true;
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -148,10 +163,24 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     zag.init();
     this.tagsInput = zag;
 
-    const defaultTags = parseJsonTags(el, "defaultTags");
-    if (defaultTags.length > 0) {
-      queueMicrotask(() => syncTagsInputFormForPhoenix(el, defaultTags));
-    }
+    const syncForm = (values: string[], opts: { notifyLiveView?: boolean } = {}) => {
+      syncTagsInputFormForPhoenix(el, values, undefined, {
+        notifyLiveView: opts.notifyLiveView,
+        fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true),
+      });
+    };
+
+    queueMicrotask(() => {
+      if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
+        syncForm(zag.api.value, { notifyLiveView: false });
+      }
+      hook.allowFormNotify = true;
+    });
+
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      hook.fieldTouched = true;
+      syncForm(zag.api.value, { notifyLiveView: false });
+    });
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -207,7 +236,7 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
     const el = this.el;
-    const controlled = getBoolean(el, "controlled");
+    const valuePatch = readUpdatedServerTags(el);
     const blur = blurBehavior(el);
     const max = maxProp(el);
     const delimiter = getString(el, "delimiter");
@@ -216,13 +245,13 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
     this.tagsInput?.updateProps({
       id: el.id,
       ...resolveZagTagsInputTranslations(el),
-      ...(controlled ? { value: parseJsonTags(el, "tags") } : {}),
+      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? undefined : getString(el, "form"),
       dir: getDir(el),
       addOnPaste: getBoolean(el, "addOnPaste"),
       allowDuplicates: getBoolean(el, "allowDuplicates"),
@@ -236,14 +265,19 @@ const TagsInputHook: Hook<object & TagsInputHookState, HTMLElement> = {
       ...(delimiter !== undefined && delimiter !== "" ? { delimiter } : {}),
       ...(placeholder !== undefined ? { placeholder } : {}),
     } as Partial<Props>);
-    this.tagsInput?.render();
 
-    if (this.tagsInput) {
-      queueMicrotask(() => syncTagsInputFormForPhoenix(el, this.tagsInput!.api.value as string[]));
+    if ("value" in valuePatch) {
+      syncTagsInputFormForPhoenix(el, valuePatch.value, undefined, {
+        notifyLiveView: false,
+        fieldTouched: isFormFieldUsed(el, this.fieldTouched === true),
+      });
     }
+
+    this.tagsInput?.render();
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TagsInputHookState) {
+    this.unbindSubmitIntent?.();
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.tagsInput?.destroy();

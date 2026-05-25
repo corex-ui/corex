@@ -9,6 +9,8 @@ import {
 } from "@zag-js/combobox";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripZagSubmitNames } from "../lib/form-field-array-submit";
+import { getString } from "../lib/util";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
@@ -299,7 +301,13 @@ export class Combobox extends Component<Props, Api> {
     if (hiddenInput) {
       const valueStr = this.hiddenInputValue();
       if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
     }
+
+    stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
 
     [
       "label",

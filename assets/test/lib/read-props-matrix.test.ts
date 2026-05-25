@@ -6,8 +6,11 @@ import {
   readControlledOrDefaultStringList,
   readNumberControlledZagProps,
   readStringControlledZagProps,
+  readBooleanControlledZagUpdate,
+  readNumberControlledZagUpdate,
   readStringControlledZagUpdate,
   readStringListControlledZagProps,
+  readStringListControlledZagUpdate,
 } from "../../lib/read-props";
 
 describe.each([
@@ -22,7 +25,7 @@ describe.each([
 
 describe.each([
   [true, { controlled: true, value: "live" }, { value: "live" }],
-  [false, { defaultValue: "init" }, { defaultValue: "init" }],
+  [false, { defaultValue: "init" }, {}],
 ] as const)("readStringControlledZagUpdate controlled=%s", (controlled, dataset, expected) => {
   it("returns update binding", () => {
     const node = el({ controlled, ...(dataset as Record<string, string>) });
@@ -76,6 +79,37 @@ describe.each([
     expect(
       readControlledOrDefaultBoolean(el(dataset as Record<string, boolean>), "open", "defaultOpen")
     ).toBe(expected);
+  });
+});
+
+describe.each([
+  [true, { controlled: true, open: true }, { open: true }],
+  [false, { defaultOpen: true }, {}],
+] as const)("readBooleanControlledZagUpdate controlled=%s", (controlled, dataset, expected) => {
+  it("returns update binding", () => {
+    const node = el({ controlled, ...(dataset as Record<string, string | boolean>) });
+    expect(readBooleanControlledZagUpdate(node, "open", "defaultOpen")).toEqual(expected);
+  });
+});
+
+describe.each([
+  [true, { controlled: true, value: "a, b" }, { value: ["a", "b"] }],
+  [false, { defaultValue: "x,y" }, {}],
+] as const)("readStringListControlledZagUpdate controlled=%s", (controlled, dataset, expected) => {
+  it("returns update binding", () => {
+    const node = el({ controlled, ...(dataset as Record<string, string>) });
+    expect(readStringListControlledZagUpdate(node, "value", "defaultValue")).toEqual(expected);
+  });
+});
+
+describe.each([
+  ["controlled", { controlled: true, value: 5, step: 2 }, { value: 5, step: 2 }],
+  ["uncontrolled", { defaultValue: 3, step: 1 }, { step: 1 }],
+] as const)("readNumberControlledZagUpdate %s", (_label, dataset, expected) => {
+  it("reads numbers", () => {
+    expect(readNumberControlledZagUpdate(el(dataset as Record<string, string | number>))).toEqual(
+      expected
+    );
   });
 });
 

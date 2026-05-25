@@ -79,7 +79,6 @@ const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
     this.clipboard?.updateProps({
       id: this.el.id,
       timeout: getNumber(this.el, "timeout"),
-      defaultValue: getString(this.el, "defaultValue"),
     });
   },
 

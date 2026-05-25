@@ -8,6 +8,8 @@ defmodule Corex.TagsInput.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
+      field_used: false,
       value: [],
       controlled: false,
       disabled: false,
@@ -39,6 +41,8 @@ defmodule Corex.TagsInput.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
+            field_used: boolean(),
             value: list(String.t()),
             controlled: boolean(),
             disabled: boolean(),

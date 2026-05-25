@@ -81,11 +81,18 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def anatomy_value_code do
     ~S"""
-    <.avatar src="https://example.com/photo.jpg" class="avatar">
-      <:value :let={src}>
-        {if src, do: "IMG", else: " - "}
-      </:value>
-    </.avatar>
+    <div class="layout__row gap-4 items-center">
+      <.avatar src="" class="avatar">
+        <:value :let={src}>
+          {if src, do: "IMG", else: " - "}
+        </:value>
+      </.avatar>
+      <.avatar src="https://example.com/photo.jpg" class="avatar">
+        <:value :let={src}>
+          {if src, do: "IMG", else: " - "}
+        </:value>
+      </.avatar>
+    </div>
     """
   end
 
@@ -113,24 +120,35 @@ defmodule E2eWeb.Demos.AvatarDemo do
     """
   end
 
-  def anatomy_custom_slots_code_tabs do
-    [
-      %{
-        value: "fallback",
-        label: "Fallback",
-        language: :heex,
-        code: anatomy_fallback_code()
-      },
-      %{
-        value: "value",
-        label: "Value",
-        language: :heex,
-        code: anatomy_value_code()
-      }
-    ]
+  def anatomy_custom_slots_code do
+    ~S"""
+    <div class="flex flex-col gap-8 items-center w-full">
+      <div class="flex flex-col gap-2 items-center w-full">
+        <.avatar src="" class="avatar">
+          <:fallback>
+            <span class="font-semibold">AB</span>
+          </:fallback>
+        </.avatar>
+      </div>
+      <div class="flex flex-col gap-2 items-center w-full">
+        <div class="layout__row gap-4 items-center">
+          <.avatar src="" class="avatar">
+            <:value :let={src}>
+              {if src, do: "IMG", else: " - "}
+            </:value>
+          </.avatar>
+          <.avatar src="https://example.com/photo.jpg" class="avatar">
+            <:value :let={src}>
+              {if src, do: "IMG", else: " - "}
+            </:value>
+          </.avatar>
+        </div>
+      </div>
+    </div>
+    """
   end
 
-  def anatomy_custom_slots_preview(assigns) do
+  def anatomy_custom_slots_example(assigns) do
     _ = assigns
 
     ~H"""
@@ -234,6 +252,94 @@ defmodule E2eWeb.Demos.AvatarDemo do
     </.avatar>
     <.avatar src="https://corex-ui.com/images/avatar.png" class="avatar avatar--xl">
       <:fallback>XL</:fallback>
+    </.avatar>
+    """
+  end
+
+  @styling_rounded_src "https://corex-ui.com/images/avatar.png"
+
+  def styling_rounded_example(assigns) do
+    assigns = assign(assigns, :rounded_src, @styling_rounded_src)
+
+    ~H"""
+    <div class="flex flex-wrap gap-4 items-end justify-center">
+      <.avatar id="avatar-style-rounded-default" src={@rounded_src} alt="" class="avatar">
+        <:fallback>MD</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-none"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-none"
+      >
+        <:fallback>0</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-sm"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-sm"
+      >
+        <:fallback>SM</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-md"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-md"
+      >
+        <:fallback>MD</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-lg"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-lg"
+      >
+        <:fallback>LG</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-xl"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-xl"
+      >
+        <:fallback>XL</:fallback>
+      </.avatar>
+      <.avatar
+        id="avatar-style-rounded-full"
+        src={@rounded_src}
+        alt=""
+        class="avatar avatar--rounded-full"
+      >
+        <:fallback>●</:fallback>
+      </.avatar>
+    </div>
+    """
+  end
+
+  def styling_rounded_code do
+    """
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar">
+      <:fallback>MD</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-none">
+      <:fallback>0</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-sm">
+      <:fallback>SM</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-md">
+      <:fallback>MD</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-lg">
+      <:fallback>LG</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-xl">
+      <:fallback>XL</:fallback>
+    </.avatar>
+    <.avatar src="#{@styling_rounded_src}" alt="" class="avatar avatar--rounded-full">
+      <:fallback>●</:fallback>
     </.avatar>
     """
   end
@@ -359,12 +465,17 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def api_set_src_server_heex do
     ~S"""
-    <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/images/avatar.png" class="button button--sm">
-      Set primary
-    </.action>
-    <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/pwa-192x192.png" class="button button--sm">
-      Set alternate
-    </.action>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/images/avatar.png" class="button button--sm">
+        Set primary
+      </.action>
+      <.action phx-click="api_set_src_server" phx-value-url="https://corex-ui.com/pwa-192x192.png" class="button button--sm">
+        Set alternate
+      </.action>
+    </div>
+    <.avatar id="api-set-src-server" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="API demo">
+      <:fallback>?</:fallback>
+    </.avatar>
     """
   end
 
@@ -400,10 +511,105 @@ defmodule E2eWeb.Demos.AvatarDemo do
     """
   end
 
+  def api_loaded_client_binding_code do
+    ~S"""
+    <.action phx-click={Corex.Avatar.loaded("api-loaded-bind", respond_to: :both)} class="button button--sm">
+      Status
+    </.action>
+    <.avatar id="api-loaded-bind" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
+      <:fallback>?</:fallback>
+    </.avatar>
+    """
+  end
+
+  def api_loaded_client_binding_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.action
+      phx-click={Corex.Avatar.loaded("api-loaded-bind", respond_to: :both)}
+      class="button button--sm"
+    >
+      Status
+    </.action>
+    <.avatar
+      id="api-loaded-bind"
+      class="avatar"
+      src="https://corex-ui.com/images/avatar.png"
+      alt=""
+    >
+      <:fallback>?</:fallback>
+    </.avatar>
+    """
+  end
+
+  def api_loaded_client_js_heex do
+    ~S"""
+    <.action
+      phx-click={
+        JS.dispatch("corex:avatar:loaded",
+          to: "#api-loaded-js",
+          detail: %{respond_to: "both"},
+          bubbles: false
+        )
+      }
+      class="button button--sm"
+    >
+      Status
+    </.action>
+    <.avatar id="api-loaded-js" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
+      <:fallback>?</:fallback>
+    </.avatar>
+    """
+  end
+
+  def api_loaded_client_js_js do
+    ~S"""
+    const el = document.getElementById("api-loaded-js")
+    el?.dispatchEvent(
+      new CustomEvent("corex:avatar:loaded", {
+        detail: { respond_to: "both" },
+        bubbles: false
+      })
+    )
+    """
+  end
+
+  def api_loaded_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("api-loaded-js")
+    el?.dispatchEvent(
+      new CustomEvent<{ respond_to: string }>("corex:avatar:loaded", {
+        detail: { respond_to: "both" },
+        bubbles: false
+      })
+    )
+    """
+  end
+
+  def api_loaded_client_js_example(assigns) do
+    ~H"""
+    <.action
+      phx-click={
+        JS.dispatch("corex:avatar:loaded",
+          to: "##{@id}",
+          detail: %{respond_to: "both"},
+          bubbles: false
+        )
+      }
+      class="button button--sm"
+    >
+      Status
+    </.action>
+    <.avatar id={@id} class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
+      <:fallback>?</:fallback>
+    </.avatar>
+    """
+  end
+
   def api_loaded_server_heex do
     ~S"""
-    <.action phx-click="api_loaded_server">Loaded</.action>
-    <.action phx-click="api_loaded_server_client_only">Loaded (client only)</.action>
+    <.action phx-click="api_loaded_server" class="button button--sm">Status</.action>
     <.avatar id="api-loaded-server" class="avatar" src="https://corex-ui.com/images/avatar.png" alt="">
       <:fallback>?</:fallback>
     </.avatar>
@@ -413,11 +619,7 @@ defmodule E2eWeb.Demos.AvatarDemo do
   def api_loaded_server_elixir do
     ~S"""
     def handle_event("api_loaded_server", _params, socket) do
-      {:noreply, Corex.Avatar.loaded(socket, "api-loaded-server")}
-    end
-
-    def handle_event("api_loaded_server_client_only", _params, socket) do
-      {:noreply, Corex.Avatar.loaded(socket, "api-loaded-server", respond_to: :client)}
+      {:noreply, Corex.Avatar.loaded(socket, "api-loaded-server", respond_to: :server)}
     end
 
     def handle_event("avatar_loaded_response", %{"id" => id, "loaded" => loaded}, socket) do
@@ -425,13 +627,6 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
       {:noreply,
        Corex.Toast.create(socket, "layout-toast", "avatar_loaded_response", desc, :info, duration: 5000)}
-    end
-
-    def handle_event("avatar_loaded_dom", %{"id" => id, "loaded" => loaded}, socket) do
-      desc = "avatar-loaded (client)\n#{id}\n#{inspect(loaded)}"
-
-      {:noreply,
-       Corex.Toast.create(socket, "layout-toast", "avatar_loaded_dom", desc, :info, duration: 5000)}
     end
     """
   end
@@ -445,15 +640,27 @@ defmodule E2eWeb.Demos.AvatarDemo do
       )
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event_loaded} class="button button--sm">Loaded</.action>
-      <.action phx-click={@event_loaded_client_only} class="button button--sm">
-        Loaded (client only)
-      </.action>
-    </div>
+    <.action phx-click={@event_loaded} class="button button--sm">Status</.action>
     <.avatar id={@id} class="avatar" src={@loaded_demo_src} alt="">
       <:fallback>?</:fallback>
     </.avatar>
     """
+  end
+
+  def api_codes do
+    %{
+      set_src_binding: api_set_src_client_binding_code(),
+      set_src_js_heex: api_set_src_client_js_heex(),
+      set_src_js: api_set_src_client_js_js(),
+      set_src_js_ts: api_set_src_client_js_ts(),
+      set_src_server_heex: api_set_src_server_heex(),
+      set_src_server_elixir: api_set_src_server_elixir(),
+      loaded_binding: api_loaded_client_binding_code(),
+      loaded_js_heex: api_loaded_client_js_heex(),
+      loaded_js: api_loaded_client_js_js(),
+      loaded_js_ts: api_loaded_client_js_ts(),
+      loaded_server_heex: api_loaded_server_heex(),
+      loaded_server_elixir: api_loaded_server_elixir()
+    }
   end
 end

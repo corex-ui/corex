@@ -682,7 +682,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     >
       <.date_picker
         field={@form[:date]}
-        controlled
         value={@date_display}
         on_value_change="date_changed_basic"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
@@ -847,7 +846,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     >
       <.date_picker
         field={@form[:date]}
-        controlled
         value={@date_display}
         on_value_change="date_changed_validate"
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
@@ -1109,7 +1107,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         id="date-picker-basic-live"
         field={@form[:date]}
-        controlled
         value={@date_display}
         on_value_change="date_changed_basic"
         translation={
@@ -1160,7 +1157,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       <.date_picker
         id="date-picker-validate-live"
         field={@form[:date]}
-        controlled
         value={@date_display}
         on_value_change="date_changed_validate"
         translation={

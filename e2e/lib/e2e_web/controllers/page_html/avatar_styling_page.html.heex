@@ -8,7 +8,7 @@
     path={@path}
     id="avatar-styling-page"
     title={~t"Avatar · Style"}
-    subtitle={~t"Modifiers for color and size on the fallback and frame."}
+    subtitle={~t"Modifiers for color, size, and corner radius on the fallback and frame."}
   >
     <.demo_section
       id="avatar-styling-color"
@@ -27,6 +27,16 @@
     >
       <:preview>
         <E2eWeb.Demos.AvatarDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="avatar-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.AvatarDemo.styling_rounded_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AvatarDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
   </.demo_page>

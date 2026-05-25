@@ -5,7 +5,7 @@ import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
 import { getString, getBoolean, canPushEvent, getDir, getStringList } from "../lib/util";
-import { readStringListControlledZagProps } from "../lib/read-props";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
@@ -38,7 +38,9 @@ function selectHiddenSelectForForm(el: HTMLElement): HTMLSelectElement | null {
 
 export function formatSelectHiddenValue(el: HTMLElement, values: ReadonlyArray<string>): string {
   const list = values.map((v) => String(v));
-  return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
+  if (list.length === 0) return "";
+  if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+  return getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
 }
 
 export function syncSelectHiddenSelectForPhoenix(
@@ -137,11 +139,6 @@ function selectZagPropsBase(
   };
 }
 
-function selectValueBindingForUpdate(el: HTMLElement): { value?: string[] } {
-  if (!getBoolean(el, "controlled")) return {};
-  return { value: getStringList(el, "value") ?? [] };
-}
-
 export function reapplySelectInteractiveState(el: HTMLElement): void {
   el.removeAttribute("data-loading");
 
@@ -197,7 +194,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const selectComponent = new Select(el, {
       ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
       collection: buildCollection(allItems, hasGroups),
-      ...readStringListControlledZagProps(el, "value", "defaultValue"),
+      ...mountStringListBinding(el),
     } as Props);
 
     selectComponent.hasGroups = hasGroups;
@@ -206,7 +203,6 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
 
     this.select = selectComponent;
     this.handlers = [];
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -236,6 +232,8 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
     if (!this.select) return;
 
+    const valuePatch = readUpdatedServerStringList(this.el);
+
     const newItems = JSON.parse(this.el.dataset.items || "[]") as SelectItem[];
     const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
 
@@ -250,15 +248,15 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
         this.fieldTouched = true;
       }),
       collection: this.select.getCollection(),
-      ...selectValueBindingForUpdate(this.el),
+      ...valuePatch,
     } as Props);
 
     queueMicrotask(() => {
       reapplySelectInteractiveState(this.el);
 
-      if (!this.fieldTouched || !this.select) return;
+      if (!("value" in valuePatch) || !this.select) return;
 
-      const values = this.select.api.value;
+      const values = valuePatch.value;
       const hiddenSelect = selectHiddenSelectForForm(this.el);
 
       if (hiddenSelect && getBoolean(this.el, "multiple")) {

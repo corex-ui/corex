@@ -15,6 +15,7 @@ defmodule Corex.DatePicker.Connect do
   }
 
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+  alias Corex.FormField
   alias Corex.Positioning
   alias Corex.Selectors
 
@@ -24,21 +25,26 @@ defmodule Corex.DatePicker.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    default_raw = default_value_for_props(assigns)
+
+    value_attr =
+      cond do
+        form_field -> default_raw
+        controlled -> assigns.value
+        true -> nil
+      end
+
+    default_attr =
+      if(zag_controlled, do: nil, else: FormField.default_value_dataset(assigns, default_raw))
+
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          assigns.value
-        end,
-      "data-value" =>
-        if assigns.controlled do
-          assigns.value
-        else
-          nil
-        end,
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-default-value" => default_attr,
+      "data-value" => value_attr,
       "data-locale" => assigns.locale,
       "data-time-zone" => assigns.time_zone,
       "data-name" => assigns.name,
@@ -77,7 +83,42 @@ defmodule Corex.DatePicker.Connect do
         end
     }
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
+    |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp default_value_for_props(assigns) do
+    array_mode = assigns.selection_mode in ["multiple", "range"]
+    form_field = Map.get(assigns, :form_field, false)
+
+    if array_mode && form_field do
+      iso_list = iso_values_from_assigns(assigns.value)
+
+      if form_field do
+        FormField.dataset_default_json(iso_list)
+      else
+        Corex.Helpers.joined_csv_values(iso_list)
+      end
+    else
+      assigns.value
+    end
+  end
+
+  defp iso_values_from_assigns(nil), do: []
+
+  defp iso_values_from_assigns(value) when is_list(value), do: Enum.map(value, &to_string/1)
+
+  defp iso_values_from_assigns(value) when is_binary(value) do
+    value
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  defp iso_values_from_assigns(_), do: []
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   defp translation_json(assigns) do
     case Map.get(assigns, :translation) do

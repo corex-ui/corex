@@ -1,9 +1,10 @@
 import {
-  readBooleanControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  readBooleanControlledZagProps,
+  readBooleanControlledZagUpdate
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -487,7 +488,7 @@ var CollapsibleHook = {
   updated() {
     this.collapsible?.updateProps({
       id: this.el.id,
-      ...readBooleanControlledZagProps(this.el, "open", "defaultOpen"),
+      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el)
     });

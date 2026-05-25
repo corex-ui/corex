@@ -1,6 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/signature-pad";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripZagSubmitNames } from "../lib/form-field-array-submit";
+import { getString } from "../lib/util";
 
 export class SignaturePad extends Component<Props, Api> {
   imageURL: string = "";
@@ -109,7 +111,13 @@ export class SignaturePad extends Component<Props, Api> {
           value: this.api.paths.length > 0 ? this.api.paths.join("\n") : "",
         })
       );
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
     }
+
+    stripZagSubmitNames(this.el, "signature-pad");
 
     this.syncPaths();
   }

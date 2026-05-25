@@ -1602,7 +1602,6 @@ var FloatingPanelHook = {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
-      defaultPosition: anchorProps.defaultPosition,
       getAnchorPosition: anchorProps.getAnchorPosition
     });
   },

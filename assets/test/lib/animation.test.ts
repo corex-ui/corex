@@ -13,7 +13,7 @@ import {
   runHeightOpenToValues,
   runHeightOpenTransition,
   stripHiddenFromProps,
-} from "./animation";
+} from "../../lib/animation";
 
 function animEl(extra: Record<string, string> = {}): HTMLElement {
   const node = document.createElement("div");

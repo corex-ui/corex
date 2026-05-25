@@ -20,6 +20,8 @@ defmodule E2eWeb.FileUploadFormLive do
      |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
      |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
      |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
+     |> assign(:phoenix_attachment_names, [])
+     |> assign(:ecto_attachment_names, [])
      |> assign_forms()}
   end
 
@@ -41,22 +43,116 @@ defmodule E2eWeb.FileUploadFormLive do
   end
 
   @impl true
-  def handle_event("save_phoenix", _params, socket) do
-    {:noreply,
-     socket
-     |> Toast.create("layout-toast", "Submitted", "attachment uploaded", :info, duration: 5000)}
-  end
+  def handle_event("file_upload_changed", params, socket) do
+    names = file_upload_accepted_names(params)
+    id = Map.get(params, "id", "")
 
-  @impl true
-  def handle_event("validate", _params, socket) do
+    socket =
+      socket
+      |> assign_attachment_names(id, names)
+      |> maybe_revalidate_ecto_form(id, names)
+
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_event("save", _params, socket) do
+  def handle_event("save_phoenix", _params, socket) do
+    label = FileUploadForm.names_label(socket.assigns.phoenix_attachment_names)
+
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "attachment saved", :info, duration: 5000)}
+     |> Toast.create("layout-toast", "Submitted", "attachment=#{label}", :info, duration: 5000)}
+  end
+
+  def handle_event("validate", params, socket) do
+    p = ecto_form_params(params, socket.assigns.ecto_attachment_names)
+
+    {:noreply, assign(socket, :ecto_form, ecto_validate_form(p))}
+  end
+
+  def handle_event("save", params, socket) do
+    p = ecto_form_params(params, socket.assigns.ecto_attachment_names)
+
+    case FileUploadForm.changeset_validate(%FileUploadForm{}, p) do
+      %Ecto.Changeset{valid?: true} ->
+        label = FileUploadForm.names_label(socket.assigns.ecto_attachment_names)
+
+        {:noreply,
+         socket
+         |> Toast.create("layout-toast", "Submitted", "attachment=#{label}", :info,
+           duration: 5000
+         )}
+
+      %Ecto.Changeset{} = changeset ->
+        changeset = Map.put(changeset, :action, :insert)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :file_upload_ecto,
+             id: @ecto_form_id
+           )
+         )}
+    end
+  end
+
+  defp file_upload_accepted_names(%{"acceptedNames" => names}) when is_list(names), do: names
+
+  defp file_upload_accepted_names(%{"firstAcceptedName" => name})
+       when is_binary(name) and name != "",
+       do: [name]
+
+  defp file_upload_accepted_names(_), do: []
+
+  defp assign_attachment_names(socket, id, names) do
+    cond do
+      String.contains?(id, "phoenix") ->
+        assign(socket, :phoenix_attachment_names, names)
+
+      String.contains?(id, "ecto") ->
+        assign(socket, :ecto_attachment_names, names)
+
+      true ->
+        socket
+    end
+  end
+
+  defp maybe_revalidate_ecto_form(socket, id, names) do
+    if String.contains?(id, "ecto") do
+      assign(socket, :ecto_form, ecto_validate_form(ecto_form_params(%{}, names)))
+    else
+      socket
+    end
+  end
+
+  defp ecto_form_params(params, names) do
+    sent = Map.get(params, "file_upload_ecto", %{})["_sent"] || "1"
+
+    params
+    |> Map.get("file_upload_ecto", %{})
+    |> Map.drop(["attachment", "attachment_label"])
+    |> put_ecto_attachment_param(names)
+    |> Map.put("_sent", sent)
+  end
+
+  defp put_ecto_attachment_param(attrs, []), do: Map.put(attrs, "attachment", "")
+
+  defp put_ecto_attachment_param(attrs, names),
+    do: FileUploadForm.put_attachment_label(attrs, names)
+
+  defp ecto_validate_form(params) do
+    changeset =
+      %FileUploadForm{}
+      |> FileUploadForm.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    Phoenix.Component.to_form(changeset,
+      action: :validate,
+      as: :file_upload_ecto,
+      id: @ecto_form_id
+    )
   end
 
   @impl true

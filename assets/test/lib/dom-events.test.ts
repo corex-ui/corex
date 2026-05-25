@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createDomEventRegistry } from "./dom-events";
+import { createDomEventRegistry } from "../../lib/dom-events";
 
 describe("createDomEventRegistry", () => {
   it("registers listeners and tears them down", () => {

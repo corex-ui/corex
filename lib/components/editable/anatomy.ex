@@ -7,6 +7,7 @@ defmodule Corex.Editable.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       value: "",
       disabled: false,
       read_only: false,
@@ -26,6 +27,7 @@ defmodule Corex.Editable.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t(),
             disabled: boolean(),
             read_only: boolean(),

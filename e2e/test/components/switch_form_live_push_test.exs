@@ -4,18 +4,26 @@ defmodule E2eWeb.SwitchFormLivePushTest do
 
   @form_id "#switch-live-form-ecto"
 
-  test "live ecto submit without toggle pushes toast-create", %{conn: conn} do
+  test "ecto validate shows acceptance error when unchecked", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
-    view |> form(@form_id) |> render_submit()
+    html =
+      view
+      |> form(@form_id)
+      |> render_change(%{"preferences_ecto" => %{"notifications" => "false"}})
 
-    assert_push_event(view, "toast-create", %{
-      description: "Submitted: notifications=false",
-      duration: 5000,
-      groupId: "layout-toast",
-      title: "Submitted",
-      type: "info"
-    })
+    assert html =~ "must be accepted"
+    assert html =~ "data-invalid"
+  end
+
+  test "ecto save when not accepted shows error markup", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
+
+    html = view |> form(@form_id) |> render_submit()
+
+    assert html =~ "must be accepted"
+    assert html =~ "data-invalid"
+    refute_push_event(view, "toast-create", %{})
   end
 
   test "validate shows cast error for invalid boolean", %{conn: conn} do

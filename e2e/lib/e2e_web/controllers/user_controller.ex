@@ -25,7 +25,9 @@ defmodule E2eWeb.UserController do
         |> redirect(to: ~p"/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, form: to_form(changeset, as: :user, id: "e2e-user-form"))
+        render(conn, :new,
+          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :validate)
+        )
     end
   end
 
@@ -59,7 +61,7 @@ defmodule E2eWeb.UserController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit,
           user: user,
-          form: to_form(changeset, as: :user, id: "e2e-user-form"),
+          form: to_form(changeset, as: :user, id: "e2e-user-form", action: :validate),
           return_to: return_to
         )
     end

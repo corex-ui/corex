@@ -15,9 +15,11 @@
       <.navigate
         to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
         type="href"
-        class="button button--sm"
+        class="button"
+        aria_label="Cancel"
       >
-        <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+        <.heroicon name="hero-arrow-left" />
+        <span class="sr-only">Cancel</span>
       </.navigate>
       <.dialog
         id={"<%= schema.singular %>-delete-#{@<%= schema.singular %>.<%= primary_key %>}"}

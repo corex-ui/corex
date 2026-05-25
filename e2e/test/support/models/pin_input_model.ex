@@ -17,7 +17,8 @@ defmodule E2eWeb.PinInputModel do
     assert_has(
       session,
       css(
-        ~s|section##{section_dom_id} [phx-hook="PinInput"]:not([data-loading])|,
+        ~s|section##{section_dom_id} [data-scope="pin-input"][data-part="input"]|,
+        at: 0,
         visible: :any
       )
     )
@@ -32,7 +33,11 @@ defmodule E2eWeb.PinInputModel do
 
     assert_has(
       session,
-      css(~s|##{host_dom_id}[phx-hook="PinInput"]:not([data-loading])|, visible: :any)
+      css(
+        ~s|##{host_dom_id} [data-scope="pin-input"][data-part="input"]|,
+        at: 0,
+        visible: :any
+      )
     )
 
     session
@@ -42,7 +47,8 @@ defmodule E2eWeb.PinInputModel do
     Enum.reduce(Enum.with_index(String.graphemes(pin)), session, fn {char, idx}, s ->
       q =
         css(
-          ~s|section##{section_dom_id} ##{host_id} [data-scope="pin-input"][data-part="input"][data-index="#{idx}"]|,
+          ~s|section##{section_dom_id} ##{host_id} [data-scope="pin-input"][data-part="input"]|,
+          at: idx,
           visible: :any
         )
 
@@ -53,15 +59,25 @@ defmodule E2eWeb.PinInputModel do
   end
 
   def wait_pin_complete_in_section(session, host_id, pin, opts \\ []) when is_binary(pin) do
-    wait_for_has(
-      session,
-      css(
-        ~s|##{host_id} [data-scope="pin-input"][data-part="hidden-input"][value="#{pin}"]|,
-        visible: :any
-      ),
-      opts
-    )
+    array_inputs =
+      css(~s|##{host_id} [data-scope="pin-input"][data-part="array-inputs"]|, visible: :any)
 
+    selector =
+      if has?(session, array_inputs) do
+        first = pin |> String.graphemes() |> List.first() || ""
+
+        css(
+          ~s|##{host_id} [data-scope="pin-input"][data-part="array-input"][value="#{first}"]|,
+          visible: :any
+        )
+      else
+        css(
+          ~s|##{host_id} [data-scope="pin-input"][data-part="hidden-input"][value="#{pin}"]|,
+          visible: :any
+        )
+      end
+
+    wait_for_has(session, selector, opts)
     session
   end
 
@@ -88,7 +104,7 @@ defmodule E2eWeb.PinInputModel do
   def goto_form(session, mode) do
     path =
       case mode do
-        :static -> "/en/pin-input/form"
+        :static -> "/en/pin-input/form#pin-input-form-phoenix"
         :live -> "/en/pin-input/live-form"
       end
 
@@ -100,7 +116,8 @@ defmodule E2eWeb.PinInputModel do
     Enum.reduce(Enum.with_index(String.graphemes(pin)), session, fn {char, idx}, s ->
       q =
         css(
-          ~s|##{host_id} [data-scope="pin-input"][data-part="input"][data-index="#{idx}"]|,
+          ~s|##{host_id} [data-scope="pin-input"][data-part="input"]|,
+          at: idx,
           visible: :any
         )
 
@@ -117,24 +134,17 @@ defmodule E2eWeb.PinInputModel do
         _ -> "pin-input-form-phoenix_pin"
       end
 
-    session =
-      case mode do
-        :live ->
-          wait_section_pin_input_ready(session, "pin-input-live-form-phoenix-section")
+    case mode do
+      :live ->
+        session
+        |> wait_section_pin_input_ready("pin-input-live-form-phoenix-section")
+        |> fill_pin_in_section("pin-input-live-form-phoenix-section", pin, host_id)
 
-        _ ->
-          assert_has(
-            session,
-            css(
-              ~s|##{host_id} [data-scope="pin-input"][data-part="input"][data-index="0"]|,
-              visible: :any
-            )
-          )
-
-          session
-      end
-
-    fill_pin_at_host(session, pin, host_id)
+      _ ->
+        session
+        |> wait_root_pin_input_ready(host_id)
+        |> fill_pin_at_host(pin, host_id)
+    end
   end
 
   def submit_form(session, mode \\ :static) do

@@ -1,6 +1,6 @@
 import { collection } from "@zag-js/listbox";
 import { describe, expect, it } from "vitest";
-import { itemValue, zagListCollectionConfig } from "./list-collection";
+import { itemValue, zagListCollectionConfig } from "../../lib/list-collection";
 
 describe("itemValue", () => {
   it("returns empty string when value is missing", () => {

@@ -168,14 +168,12 @@ defmodule Corex.NativeInput do
   end
 
   def native_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    name = if assigns.multiple, do: field.name <> "[]", else: field.name
 
     assigns
-    |> assign(field: nil, id: assigns[:id] || field.id)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:name, fn ->
-      if assigns.multiple, do: field.name <> "[]", else: field.name
-    end)
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(id: assigns[:id] || field.id)
+    |> assign(:name, name)
     |> assign_new(:value, fn -> field.value end)
     |> assign_read_only()
     |> native_input()
@@ -200,7 +198,6 @@ defmodule Corex.NativeInput do
           name={@name}
           value="false"
           disabled={@rest[:disabled]}
-          form={@rest[:form]}
         />
         <label data-scope="native-input" data-part="label" for={"#{@id}-input"}>
           <input

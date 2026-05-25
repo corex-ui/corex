@@ -4,6 +4,8 @@ defmodule Corex.FileUpload.Connect do
 
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.FileUpload.Anatomy.{
     Dropzone,
     HiddenInput,
@@ -55,6 +57,7 @@ defmodule Corex.FileUpload.Connect do
     |> maybe_put_int("data-max-file-size", assigns.max_file_size)
     |> maybe_put_int("data-min-file-size", assigns.min_file_size)
     |> Map.reject(fn {_k, v} -> is_nil(v) end)
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   def ignore_root(assigns) do

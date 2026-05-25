@@ -45,8 +45,8 @@
 
   .switch [data-scope="switch"][data-part="control"][data-disabled] {
     color: var(--color-ink-muted);
+    background: var(--color-ui-muted);
     cursor: not-allowed;
-    pointer-events: none;
     box-shadow: none;
   }
 
@@ -91,6 +91,15 @@
     @apply ui-label;
 
     cursor: pointer;
+  }
+
+  .switch[data-disabled] [data-scope="switch"][data-part="label"],
+  .switch[data-disabled] [data-scope="switch"][data-part="root"],
+  .switch:has([data-scope="switch"][data-part="root"][data-disabled])
+    [data-scope="switch"][data-part="label"],
+  .switch [data-scope="switch"][data-part="root"][data-disabled],
+  .switch [data-scope="switch"][data-part="label"][data-disabled] {
+    cursor: not-allowed;
   }
 
   .switch--square [data-scope="switch"][data-part="control"] {

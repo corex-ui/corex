@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { diffStringValues } from "./event-details";
+import { diffStringValues } from "../../lib/event-details";
 
 describe("diffStringValues", () => {
   it("computes added and removed", () => {

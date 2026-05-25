@@ -56,6 +56,44 @@ defmodule E2eWeb.NumberInputFormLiveTest do
     })
   end
 
+  test "phoenix save default value pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+
+    view
+    |> form("#number-input-live-form-phoenix")
+    |> render_change(%{"number_input_phoenix" => %{"value" => "1234"}})
+
+    view
+    |> form("#number-input-live-form-phoenix")
+    |> render_submit(%{"number_input_phoenix" => %{"value" => "1234"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "value=\"1234\"",
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+
+  test "phoenix save with changed value pushes toast-create", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/number-input/live-form")
+
+    view
+    |> form("#number-input-live-form-phoenix")
+    |> render_change(%{"number_input_phoenix" => %{"value" => "42"}})
+
+    view
+    |> form("#number-input-live-form-phoenix")
+    |> render_submit(%{"number_input_phoenix" => %{"value" => "42"}})
+
+    assert_push_event(view, "toast-create", %{
+      description: "value=\"42\"",
+      groupId: "layout-toast",
+      title: "Submitted",
+      type: "info"
+    })
+  end
+
   test "ecto save out of range shows number validation in markup", %{conn: conn} do
     {view, _html} = live_ok!(conn, ~p"/number-input/live-form")
 

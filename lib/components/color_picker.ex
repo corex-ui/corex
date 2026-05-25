@@ -249,14 +249,10 @@ defmodule Corex.ColorPicker do
   end
 
   def color_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     v = form_field_to_color_value(field)
 
     assigns
-    |> assign(:field, nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, v)
     |> color_picker()
   end
@@ -267,6 +263,7 @@ defmodule Corex.ColorPicker do
     assigns =
       assigns
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign(:translation, translation)
       |> assign(:dir, assigns.dir || "ltr")
@@ -291,6 +288,7 @@ defmodule Corex.ColorPicker do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         name: @name,
         close_on_select: @close_on_select,

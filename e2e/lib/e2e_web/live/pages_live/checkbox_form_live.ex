@@ -40,7 +40,7 @@ defmodule E2eWeb.CheckboxFormLive do
   end
 
   def handle_event("save_phoenix", %{"terms_phoenix" => params}, socket) do
-    terms = params["terms"] in [true, "true", "on", "1", 1]
+    terms = Phoenix.HTML.Form.normalize_value("checkbox", params["terms"])
 
     {:noreply,
      socket

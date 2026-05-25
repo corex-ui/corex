@@ -10,7 +10,7 @@ import {
   readPayloadStringArray,
   readPayloadValue,
   readPayloadVisible,
-} from "./respond-to";
+} from "../../lib/respond-to";
 
 describe("parseRespondTo", () => {
   it("defaults to server", () => {

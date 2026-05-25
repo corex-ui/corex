@@ -2,6 +2,8 @@ defmodule Corex.RadioGroup.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.RadioGroup.Anatomy.{
     Indicator,
     Item,
@@ -18,13 +20,23 @@ defmodule Corex.RadioGroup.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    {value_str, default_value_str} = controlled_string_value(assigns.controlled, assigns.value)
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.dataset_default_string(assigns.value)
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        controlled_string_value(controlled, assigns.value)
+      end
 
     %{
       "id" => assigns.id,
       "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-controlled" => get_boolean(zag_controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-disabled" => get_boolean(assigns.disabled),
@@ -36,6 +48,7 @@ defmodule Corex.RadioGroup.Connect do
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec root(Root.t()) :: map()

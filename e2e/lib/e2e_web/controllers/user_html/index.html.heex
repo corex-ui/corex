@@ -8,8 +8,13 @@
     <:title>Listing Users</:title>
     <:subtitle>Add and manage user records</:subtitle>
     <:actions>
-      <.navigate to={~p"/users/new"} class="button button--accent button--sm">
-        <.heroicon name="hero-plus" /> New User
+      <.navigate
+        to={~p"/users/new"}
+        class="button button--accent button--square"
+        aria_label={~t"New user"}
+      >
+        <.heroicon name="hero-plus" />
+        <span class="sr-only">{~t"New user"}</span>
       </.navigate>
     </:actions>
   </.layout_heading>

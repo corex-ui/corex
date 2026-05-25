@@ -1,7 +1,7 @@
 alias E2e.Accounts
 alias E2e.Place
 
-signature = "M0,0L1,1Z"
+signature = ["M0,0L1,1Z"]
 
 for {id, name, code, country} <- [
       {"seed-par", "Paris", "PAR", "FR"},

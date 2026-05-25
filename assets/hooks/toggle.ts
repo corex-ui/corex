@@ -4,6 +4,7 @@ import { Toggle } from "../components/toggle";
 import type { Props } from "@zag-js/toggle";
 
 import { getString, getBoolean, getBooleanValue, getDir, canPushEvent } from "../lib/util";
+import { readPressedControlledZagUpdate } from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId, readPayloadPressed } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -88,14 +89,9 @@ const ToggleHook: Hook<object & ToggleHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & ToggleHookState) {
-    const controlled = getBoolean(this.el, "controlled");
-    const pressedFromDataset = getBooleanValue(this.el, "pressed");
-    const defaultPressedFromDataset = getBooleanValue(this.el, "defaultPressed");
     this.zagToggle?.updateProps({
       id: this.el.id,
-      ...(controlled
-        ? { pressed: pressedFromDataset === true }
-        : { defaultPressed: defaultPressedFromDataset === true }),
+      ...readPressedControlledZagUpdate(this.el),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el),
     } as unknown as Partial<Props>);

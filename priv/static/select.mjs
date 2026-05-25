@@ -1,11 +1,4 @@
 import {
-  readStringListControlledZagProps
-} from "./chunks/chunk-AS2EYUTO.mjs";
-import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-V5KQ7TD7.mjs";
-import {
   getPlacement,
   getPlacementStyles
 } from "./chunks/chunk-EPNQR235.mjs";
@@ -13,6 +6,10 @@ import {
   trackDismissableElement
 } from "./chunks/chunk-57TWBSTW.mjs";
 import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-VJGUNSK5.mjs";
@@ -35,6 +32,10 @@ import {
   setInteractionModality,
   trackFocusVisible
 } from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1419,7 +1420,9 @@ function selectHiddenSelectForForm(el) {
 }
 function formatSelectHiddenValue(el, values) {
   const list = values.map((v) => String(v));
-  return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
+  if (list.length === 0) return "";
+  if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+  return getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
 }
 function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
   const valueSet = new Set(values.map(String));
@@ -1491,10 +1494,6 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched
     }
   };
 }
-function selectValueBindingForUpdate(el) {
-  if (!getBoolean(el, "controlled")) return {};
-  return { value: getStringList(el, "value") ?? [] };
-}
 function reapplySelectInteractiveState(el) {
   el.removeAttribute("data-loading");
   if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
@@ -1533,7 +1532,7 @@ var SelectHook = {
     const selectComponent = new Select(el, {
       ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
       collection: buildCollection(allItems, hasGroups),
-      ...readStringListControlledZagProps(el, "value", "defaultValue")
+      ...mountStringListBinding(el)
     });
     selectComponent.hasGroups = hasGroups;
     selectComponent.setOptions(allItems);
@@ -1562,6 +1561,7 @@ var SelectHook = {
   },
   updated() {
     if (!this.select) return;
+    const valuePatch = readUpdatedServerStringList(this.el);
     const newItems = JSON.parse(this.el.dataset.items || "[]");
     const hasGroups = newItems.some((item) => Boolean(item.group));
     this.select.hasGroups = hasGroups;
@@ -1573,12 +1573,12 @@ var SelectHook = {
         this.fieldTouched = true;
       }),
       collection: this.select.getCollection(),
-      ...selectValueBindingForUpdate(this.el)
+      ...valuePatch
     });
     queueMicrotask(() => {
       reapplySelectInteractiveState(this.el);
-      if (!this.fieldTouched || !this.select) return;
-      const values = this.select.api.value;
+      if (!("value" in valuePatch) || !this.select) return;
+      const values = valuePatch.value;
       const hiddenSelect = selectHiddenSelectForForm(this.el);
       if (hiddenSelect && getBoolean(this.el, "multiple")) {
         syncSelectHiddenSelectForPhoenix(hiddenSelect, values);

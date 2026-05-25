@@ -2,8 +2,6 @@ import { connect, machine, type Props, type Api } from "@zag-js/tags-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getString, templatesContentRoot } from "../lib/util";
-import { syncTagsInputFormForPhoenix } from "../lib/tags-input-form";
-
 type ZagTagsInputTranslations = NonNullable<Props["translations"]>;
 
 export type TagsInputMessageMap = {
@@ -178,10 +176,6 @@ export class TagsInput extends Component<Props, Api> {
         inputEl.removeAttribute("name");
         inputEl.removeAttribute("form");
       }
-    }
-
-    if (getString(this.el, "submitName")) {
-      syncTagsInputFormForPhoenix(this.el, this.api.value ?? []);
     }
 
     const hiddenEl = this.el.querySelector<HTMLElement>(

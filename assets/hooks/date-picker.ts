@@ -10,7 +10,10 @@ import type { ValueChangeDetails, Props } from "@zag-js/date-picker";
 import type { Direction } from "@zag-js/types";
 import * as datePicker from "@zag-js/date-picker";
 
-import { getString, getBoolean, getStringList, getNumber, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
+import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
+import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
 
@@ -47,6 +50,8 @@ type DatePickerHookState = {
 const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
+    const hook = this as object & HookInterface<HTMLElement> & DatePickerHookState;
+    hook.allowFormNotify = false;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
     const canPush = () => canPushEvent(this.liveSocket);
@@ -59,9 +64,13 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { value: parseList(getStringList(el, "value")) }
-        : { defaultValue: parseList(getStringList(el, "defaultValue")) }),
+      ...(() => {
+        const binding = mountStringListBinding(el);
+        if ("value" in binding) {
+          return { value: parseList(binding.value) };
+        }
+        return { defaultValue: parseList(binding.defaultValue) };
+      })(),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView"),
       dir: getString<Direction>(el, "dir"),
@@ -88,25 +97,37 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       ...resolveZagDatePickerTranslations(el),
 
       onValueChange: (details: ValueChangeDetails) => {
-        const isoStr = details.value?.length
-          ? details.value
-              .map((d: unknown) => valueToIsoString(d))
-              .filter(Boolean)
-              .join(",")
-          : "";
+        const isoList = details.value?.length
+          ? details.value.map((d: unknown) => valueToIsoString(d)).filter(Boolean)
+          : [];
 
-        const hiddenInput = el.querySelector<HTMLInputElement>(`#${el.id}-value`);
-        if (hiddenInput && hiddenInput.value !== isoStr) {
-          hiddenInput.value = isoStr;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        const submitName = getString(el, "submitName");
+        if (submitName) {
+          syncArrayHiddenInputsForPhoenix(el, isoList, {
+            scope: "date-picker",
+            submitName,
+            notifyLiveView: hook.allowFormNotify === true,
+          });
+        } else {
+          const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+          const hiddenInput = el.querySelector<HTMLInputElement>(`#${el.id}-value`);
+          if (hiddenInput && hiddenInput.value !== isoStr) {
+            if (hook.allowFormNotify === true) {
+              notifyPhoenixFormChange(hiddenInput, isoStr);
+            } else {
+              notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+            }
+          }
         }
 
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: isoStr || null } as Record<string, unknown>,
+          payload: {
+            id: el.id,
+            value: isoList.length > 0 ? isoList.join(",") : null,
+          } as Record<string, unknown>,
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient"),
         });
@@ -154,6 +175,29 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
 
+    queueMicrotask(() => {
+      const submitName = getString(el, "submitName");
+      const isoList = datePickerInstance.api.value?.length
+        ? datePickerInstance.api.value.map((d: unknown) => valueToIsoString(d)).filter(Boolean)
+        : [];
+
+      if (submitName) {
+        syncArrayHiddenInputsForPhoenix(el, isoList, {
+          scope: "date-picker",
+          submitName,
+          notifyLiveView: false,
+        });
+      } else {
+        const hiddenInput = el.querySelector<HTMLInputElement>(`#${el.id}-value`);
+        const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+        if (hiddenInput) {
+          notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+        }
+      }
+
+      hook.allowFormNotify = true;
+    });
+
     this.handlers = [];
 
     this.handlers.push(
@@ -178,20 +222,15 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
+    const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const focusedStr = getString(el, "focusedValue");
-    const controlled = getBoolean(el, "controlled");
-    const valueList = getStringList(el, "value");
+    const valuePatch = readUpdatedServerStringList(el);
+    const parsedValue =
+      "value" in valuePatch ? { value: valuePatch.value.map((x) => datePicker.parse(x)) } : {};
 
-    this.datePicker?.updateProps({
-      ...(controlled
-        ? {
-            value: (valueList ?? []).map((x) => datePicker.parse(x)),
-          }
-        : {}),
-      defaultFocusedValue: focusedStr ? datePicker.parse(focusedStr) : undefined,
-      defaultView: getString<"day" | "month" | "year">(el, "defaultView"),
+    zag?.updateProps({
+      ...parsedValue,
       dir: getString<Direction>(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),

@@ -1,7 +1,6 @@
 import {
-  queueLiveViewFormInputSync,
-  reapplyLiveViewValueInputUsage
-} from "./chunks/chunk-V5KQ7TD7.mjs";
+  stripZagSubmitNames
+} from "./chunks/chunk-FUVA3DRB.mjs";
 import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
@@ -13,6 +12,13 @@ import {
   trackDismissableElement
 } from "./chunks/chunk-57TWBSTW.mjs";
 import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  syncArrayHiddenInputsForPhoenix
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
 import {
   readPositioningOptions
 } from "./chunks/chunk-VJGUNSK5.mjs";
@@ -35,6 +41,10 @@ import {
   setInteractionModality,
   trackFocusVisible
 } from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-7PXMD5A7.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1760,7 +1770,12 @@ var Combobox = class extends Component {
     if (hiddenInput) {
       const valueStr = this.hiddenInputValue();
       if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
     }
+    stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
     [
       "label",
       "control",
@@ -1787,6 +1802,16 @@ function formatComboboxHiddenValue(el, values) {
   return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
 }
 function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
+  const submitName = getString(el, "submitName");
+  if (submitName && getBoolean(el, "multiple")) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "combobox",
+      submitName,
+      notifyLiveView: true
+    });
+    return;
+  }
   const hidden = el.querySelector(
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
@@ -1798,17 +1823,6 @@ function reapplyComboboxHiddenInputUsage(el) {
     '[data-scope="combobox"][data-part="hidden-input"]'
   );
   if (hidden) reapplyLiveViewValueInputUsage(hidden);
-}
-function comboboxValueBinding(el) {
-  const controlled = getBoolean(el, "controlled");
-  if (controlled) {
-    return { value: getStringList(el, "value") ?? [] };
-  }
-  return { defaultValue: getStringList(el, "defaultValue") ?? [] };
-}
-function comboboxValueBindingForUpdate(el) {
-  if (!getBoolean(el, "controlled")) return {};
-  return { value: getStringList(el, "value") ?? [] };
 }
 function selectedItemLabel(items) {
   const first = items?.[0];
@@ -1931,7 +1945,7 @@ var ComboboxHook = {
         () => comboboxRef,
         markFieldTouched
       ),
-      ...comboboxValueBinding(el)
+      ...mountStringListBinding(el)
     };
     const combobox = new Combobox(el, props, allItems, hasGroups);
     comboboxRef = combobox;
@@ -1952,6 +1966,7 @@ var ComboboxHook = {
   },
   updated() {
     if (!this.combobox) return;
+    const valuePatch = readUpdatedServerStringList(this.el);
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
@@ -1973,16 +1988,17 @@ var ComboboxHook = {
           this.fieldTouched = true;
         }
       ),
-      ...comboboxValueBindingForUpdate(this.el)
+      ...valuePatch
     });
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
     }
-    const hidden = this.el.querySelector(
-      '[data-scope="combobox"][data-part="hidden-input"]'
-    );
-    if (!hidden || !this.fieldTouched && hidden.value === "") return;
-    reapplyLiveViewValueInputUsage(hidden);
+    if ("value" in valuePatch) {
+      syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
+      reapplyComboboxHiddenInputUsage(this.el);
+      const label = selectedItemLabel(valuePatch.value.map((v) => ({ value: v, label: v })));
+      syncVisibleInputAttribute(this.el, label);
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();
@@ -1992,7 +2008,7 @@ var ComboboxHook = {
 };
 export {
   ComboboxHook as Combobox,
-  comboboxValueBinding,
+  mountStringListBinding as comboboxValueBinding,
   formatComboboxHiddenValue,
   selectedItemLabel,
   syncComboboxHiddenInputForPhoenix,

@@ -17,8 +17,14 @@ defmodule E2eWeb.AdminLive.Index do
         <:title>Listing Admins</:title>
         <:subtitle>Add and manage admin records</:subtitle>
         <:actions>
-          <.navigate to={~p"/admins/new"} type="navigate" class="button button--sm button--accent">
-            <.heroicon name="hero-plus" /> New Admin
+          <.navigate
+            to={~p"/admins/new"}
+            type="navigate"
+            class="button button--accent button--square"
+            aria_label="New admin"
+          >
+            <.heroicon name="hero-plus" />
+            <span class="sr-only">New admin</span>
           </.navigate>
         </:actions>
       </.layout_heading>

@@ -4,6 +4,8 @@ defmodule Corex.TagsInput.Connect do
 
   alias Corex.TagsInput.Translation, as: TagsInputTranslation
 
+  alias Corex.FormField
+
   alias Corex.TagsInput.Anatomy.{
     Control,
     HiddenInput,
@@ -166,13 +168,26 @@ defmodule Corex.TagsInput.Connect do
     |> put_data_editable(assigns.editable)
     |> maybe_put_data_dir_from(assigns)
     |> Map.put("data-translation", translation_json(assigns))
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   defp base_hook_props(assigns, value) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    encoded = tags_json(value)
+
+    {tags_attr, default_tags_attr} =
+      if zag_controlled do
+        {encoded, nil}
+      else
+        {if(controlled, do: encoded), if(!controlled, do: encoded)}
+      end
+
     %{
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-tags" => if(assigns.controlled, do: tags_json(value)),
-      "data-default-tags" => if(!assigns.controlled, do: tags_json(value)),
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-tags" => tags_attr,
+      "data-default-tags" => default_tags_attr,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),

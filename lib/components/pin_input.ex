@@ -117,7 +117,7 @@ defmodule Corex.PinInput do
 
   <!-- tabs-close -->
 
-  The `value` assign is the initial cell contents; it is serialized to `data-default-value` for Zag’s uncontrolled `defaultValue`.
+  The `value` assign is the initial cell contents. Standalone mode uses `data-default-value`; `field={@form[:code]}` uses Zag controlled `data-value` and resyncs on patch via `updateProps({ value })`. Use the `controlled` assign only for non-form LiveView with `on_value_change`.
 
   '''
 
@@ -138,7 +138,13 @@ defmodule Corex.PinInput do
   attr(:value, :list,
     default: [],
     doc:
-      "Initial value (list of single-character strings). Sent as `data-default-value` for Zag `defaultValue`."
+      "Initial or controlled value (list of single-character strings). Padded to `count` for the hook."
+  )
+
+  attr(:controlled, :boolean,
+    default: false,
+    doc:
+      "Opt-in LiveView controlled mode (`data-value`). Requires re-assigning `value` on `on_value_change`. Not used with `field={...}`."
   )
 
   attr(:count, :integer, default: 4, doc: "Number of input boxes")
@@ -180,16 +186,11 @@ defmodule Corex.PinInput do
   end
 
   def pin_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = form_field_to_pin_list(field)
     value_str = Enum.join(value)
 
     assigns
-    |> assign(:field, nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> assign(:value_str, value_str)
     |> pin_input()
@@ -207,13 +208,18 @@ defmodule Corex.PinInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:controlled, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign(:translation, translation)
       |> assign(:value, validate_value!(value || []))
 
-    assigns = assign(assigns, :value_str, Enum.join(assigns.value))
+    assigns =
+      assigns
+      |> assign(:value_str, Enum.join(assigns.value))
+      |> Corex.FormField.assign_list_submit()
 
     ~H"""
     <div
@@ -224,6 +230,8 @@ defmodule Corex.PinInput do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        controlled: @controlled,
         value: @value,
         count: @count,
         disabled: @disabled,
@@ -243,14 +251,31 @@ defmodule Corex.PinInput do
         on_value_change: @on_value_change,
         on_value_change_client: @on_value_change_client,
         on_value_complete: @on_value_complete,
-        on_value_complete_client: @on_value_complete_client
+        on_value_complete_client: @on_value_complete_client,
+        submit_name: @submit_name
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, value: @value_str})} {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: @value_str})} />
+        <div
+          :if={@submit_name}
+          data-scope="pin-input"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"pin-input:#{@id}:array-inputs"}
+        >
+          <input
+            :for={digit <- padded_pin_digits(@value, @count)}
+            type="hidden"
+            data-scope="pin-input"
+            data-part="array-input"
+            name={@submit_name}
+            value={digit}
+          />
+        </div>
+        <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} {Connect.hidden_input(%HiddenInput{id: @id, name: if(@submit_name, do: nil, else: @name), value: @value_str})} />
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <input
             :for={i <- 0..(@count - 1)}
@@ -268,6 +293,12 @@ defmodule Corex.PinInput do
       </div>
     </div>
     """
+  end
+
+  defp padded_pin_digits(value, count) when is_list(value) do
+    digits = Enum.map(value, &to_string/1)
+    missing = max(0, count - length(digits))
+    (digits ++ List.duplicate("", missing)) |> Enum.take(count)
   end
 
   defp form_field_to_pin_list(%Phoenix.HTML.FormField{} = field) do

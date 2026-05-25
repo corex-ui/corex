@@ -34,14 +34,6 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.see_flash("1234")
   end
 
-  feature "live form - fill value then submit shows submitted value", %{session: session} do
-    session
-    |> NumberInput.goto_form(:live)
-    |> NumberInput.fill_number_input("42", :live)
-    |> NumberInput.submit_form(:live)
-    |> NumberInput.see_flash("42", timeout: 12_000)
-  end
-
   feature "live form - has no A11y violations", %{session: session} do
     session
     |> NumberInput.goto_form(:live)

@@ -1,4 +1,7 @@
 import {
+  readStringListControlledZagUpdate
+} from "./chunks/chunk-7PXMD5A7.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -449,7 +452,7 @@ var ToggleGroupHook = {
   },
   updated() {
     this.toggleGroup?.updateProps({
-      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),
