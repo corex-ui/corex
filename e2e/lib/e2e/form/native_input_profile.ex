@@ -44,7 +44,7 @@ defmodule E2e.Form.NativeInputProfile do
     :agree
   ]
 
-  @required_fields @fields
+  @required_fields @fields -- [:tags]
 
   def changeset(profile, attrs \\ %{}) do
     profile
@@ -66,18 +66,7 @@ defmodule E2e.Form.NativeInputProfile do
       less_than: 99,
       message: "must be between 1 and 98"
     )
-    |> validate_tags_present()
     |> validate_acceptance(:agree, message: "must be accepted to continue")
-  end
-
-  defp validate_tags_present(changeset) do
-    tags = get_field(changeset, :tags) || []
-
-    if tags == [] do
-      add_error(changeset, :tags, "can't be blank")
-    else
-      changeset
-    end
   end
 
   def valid_attrs(overrides \\ %{}) do

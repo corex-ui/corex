@@ -9,7 +9,7 @@ defmodule E2e.Form.NativeInputProfileTest do
     refute changeset.valid?
 
     assert Enum.sort(Keyword.keys(changeset.errors)) ==
-             Enum.sort(NativeInputProfile.__schema__(:fields) -- [:id])
+             Enum.sort(NativeInputProfile.__schema__(:fields) -- [:id, :tags])
   end
 
   test "changeset_validate/2 accepts valid_attrs/0" do
