@@ -37,8 +37,13 @@ defmodule E2eWeb.TimerEventsLive do
 
   @impl true
   def handle_event("timer_tick", %{"id" => id} = params, socket) do
-    ft = Map.get(params, "formattedTime", "")
-    {:noreply, stream_insert(socket, :server_logs, new_log("on_tick", id, ft), at: 0)}
+    {:noreply,
+     stream_insert(
+       socket,
+       :server_logs,
+       new_log("on_tick", id, E2eWeb.TimerEventLog.format_value(params)),
+       at: 0
+     )}
   end
 
   @impl true
@@ -49,8 +54,14 @@ defmodule E2eWeb.TimerEventsLive do
   @impl true
   def handle_event("timer_tick_client", params, socket) do
     id = Map.get(params, "id", "timer-events-client")
-    ft = Map.get(params, "formattedTime", "")
-    {:noreply, stream_insert(socket, :client_logs, new_log("on_tick_client", id, ft), at: 0)}
+
+    {:noreply,
+     stream_insert(
+       socket,
+       :client_logs,
+       new_log("on_tick_client", id, E2eWeb.TimerEventLog.format_value(params)),
+       at: 0
+     )}
   end
 
   @impl true
@@ -69,12 +80,13 @@ defmodule E2eWeb.TimerEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="timer-events-page"
         title="Timer · Events"
         subtitle="Subscribe to tick and complete from LiveView or the client."
       >
         <.demo_section
-          id="timer-events-server"
+          id="timer-events-server-section"
           title="On tick and on complete (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
@@ -116,7 +128,7 @@ defmodule E2eWeb.TimerEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="timer-events-client"
+          id="timer-events-client-section"
           title="On tick and on complete (Client)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @client_heex},

@@ -62,6 +62,7 @@ defmodule Corex.Accordion.Anatomy do
       value: nil,
       disabled: false,
       animation: "instant",
+      label: nil,
       data: %{}
     ]
 
@@ -73,7 +74,8 @@ defmodule Corex.Accordion.Anatomy do
             value: String.t() | nil,
             disabled: boolean(),
             values: list(String.t()),
-            animation: String.t()
+            animation: String.t(),
+            label: String.t() | nil
           }
 
     @ignored_attrs ["data-state", "data-focus", "data-orientation", "dir"]
@@ -85,6 +87,7 @@ defmodule Corex.Accordion.Anatomy do
 
     @ignored_attrs [
       "aria-expanded",
+      "aria-label",
       "disabled",
       "aria-disabled",
       "data-state",
@@ -106,7 +109,6 @@ defmodule Corex.Accordion.Anatomy do
       "data-focus",
       "data-orientation",
       "dir",
-      "aria-label",
       "aria-labelledby"
     ]
     def ignored_attrs, do: @ignored_attrs

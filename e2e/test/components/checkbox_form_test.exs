@@ -3,47 +3,60 @@ defmodule E2eWeb.CheckboxFormTest do
   use Wallaby.Feature
 
   import Wallaby.Query
-  import Wallaby.Browser
 
   alias E2eWeb.CheckboxModel, as: Checkbox
 
-  describe "static" do
-    feature "submit unchecked includes terms=false", %{session: session} do
+  describe "static controller" do
+    feature "phoenix form submit unchecked shows terms=false", %{session: session} do
       session
       |> Checkbox.goto_form(:static)
       |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
+      |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-phoenix_terms")
       |> Checkbox.submit_form()
-      |> Checkbox.see_flash("Submitted: terms=")
+      |> Checkbox.see_flash("terms=false")
     end
 
-    feature "click native checkbox then submit includes terms", %{session: session} do
+    feature "phoenix form check then submit shows terms=true", %{session: session} do
       session
       |> Checkbox.goto_form(:static)
       |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
       |> Checkbox.click_checkbox()
       |> Checkbox.submit_form()
-      |> Checkbox.see_flash("Submitted: terms=")
+      |> Checkbox.see_flash("terms=true")
     end
 
-    feature "changeset section submits when terms accepted", %{session: session} do
+    feature "ecto form submit unchecked shows validation error", %{session: session} do
       session
       |> Checkbox.goto_form(:static)
       |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-      |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-changeset")
-      |> click(css("#checkbox-form-changeset [data-scope='checkbox'][data-part='control']"))
-      |> Checkbox.submit_static_changeset()
-      |> Checkbox.see_flash("Submitted (changeset): terms=true")
+      |> Checkbox.submit_form(:static_ecto)
+      |> Checkbox.see_error("must be accepted to continue")
     end
 
-    feature "validate section rejects submit when terms not accepted", %{session: session} do
-      session =
-        session
-        |> Checkbox.goto_form(:static)
-        |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-        |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-validate")
-        |> Checkbox.submit_static_validate()
+    feature "ecto form check then submit shows terms=true", %{session: session} do
+      session
+      |> Checkbox.goto_form(:static)
+      |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
+      |> Checkbox.click_checkbox(:static_ecto)
+      |> Checkbox.submit_form(:static_ecto)
+      |> Checkbox.see_flash("terms=true")
+    end
 
-      assert_has(session, css("#checkbox-form-validate", text: "must be accepted"))
+    feature "native form submit unchecked shows terms=false", %{session: session} do
+      session
+      |> Checkbox.goto_form(:static)
+      |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
+      |> Checkbox.submit_form(:static_native)
+      |> Checkbox.see_flash("terms=false")
+    end
+
+    feature "native form check then submit shows terms=true", %{session: session} do
+      session
+      |> Checkbox.goto_form(:static)
+      |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
+      |> Checkbox.click_checkbox(:static_native)
+      |> Checkbox.submit_form(:static_native)
+      |> Checkbox.see_flash("terms=true")
     end
 
     feature "checkbox form has no A11y violations", %{session: session} do
@@ -55,34 +68,41 @@ defmodule E2eWeb.CheckboxFormTest do
   end
 
   describe "live" do
-    feature "submit without checking terms does not show success", %{session: session} do
+    feature "phoenix form submit unchecked then checked shows correct toast", %{session: session} do
       session =
         session
         |> Checkbox.goto_form(:live)
         |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
+
+      session = Checkbox.submit_form(session, :live)
+      Checkbox.see_flash(session, "terms=false")
+
+      session =
+        session
+        |> Checkbox.click_checkbox(:live)
         |> Checkbox.submit_form(:live)
 
-      refute_has(session, Wallaby.Query.text("terms=true"))
-      assert_has(session, css("#checkbox-form-live-terms", visible: true))
+      Checkbox.see_flash(session, "terms=true")
     end
 
-    feature "check terms then submit shows success", %{session: session} do
+    feature "ecto form submit unchecked shows validation error", %{session: session} do
       session
       |> Checkbox.goto_form(:live)
       |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
-      |> Checkbox.click_checkbox(:live)
-      |> Checkbox.submit_form(:live)
-      |> Checkbox.see_flash("terms=true")
+      |> Checkbox.click_live_strict_submit()
+      |> Checkbox.see_error("must be accepted to continue")
     end
 
-    feature "strict validate section rejects submit without acceptance", %{session: session} do
+    feature "ecto form check then submit shows terms=true", %{session: session} do
       session =
         session
         |> Checkbox.goto_form(:live)
         |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
-        |> Checkbox.click_live_strict_submit()
 
-      assert_has(session, css("#checkbox-live-form-validate", text: "must be accepted"))
+      session
+      |> Checkbox.click_checkbox_in_section("checkbox-live-form-ecto_terms")
+      |> Checkbox.click_live_strict_submit()
+      |> Checkbox.see_flash("terms=true")
     end
 
     feature "checkbox live form has no A11y violations", %{session: session} do

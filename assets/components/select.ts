@@ -3,7 +3,7 @@ import type { ListCollection } from "@zag-js/collection";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
-import { getString } from "../lib/util";
+import { getString, syncInputFormAssociation } from "../lib/util";
 
 type Item = {
   value?: string;
@@ -111,9 +111,15 @@ export class Select extends Component<Props, Api> {
     const valueInput = this.el.querySelector<HTMLInputElement>(
       '[data-scope="select"][data-part="value-input"]'
     );
+    const formArrayName = getString(this.el, "hiddenSelectName");
+
     if (valueInput) {
-      const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
-      valueInput.value = valueStr;
+      syncInputFormAssociation(valueInput, this.el);
+
+      if (valueInput.name && !formArrayName) {
+        const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
+        valueInput.value = valueStr;
+      }
     }
 
     const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
@@ -121,6 +127,40 @@ export class Select extends Component<Props, Api> {
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+
+      if (formArrayName) {
+        hiddenSelect.name = formArrayName;
+        hiddenSelect.disabled = false;
+
+        const valueSet = new Set((this.api.value ?? []).map(String));
+
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+
+          option.selected = valueSet.has(option.value);
+        });
+
+        if (valueInput) valueInput.removeAttribute("name");
+      } else if (hiddenSelect.name) {
+        const valueSet = new Set((this.api.value ?? []).map(String));
+
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+
+          option.selected = valueSet.has(option.value);
+        });
+      } else {
+        hiddenSelect.disabled = true;
+        hiddenSelect.removeAttribute("name");
+      }
+
+      syncInputFormAssociation(hiddenSelect, this.el);
     }
 
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {

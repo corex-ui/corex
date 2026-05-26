@@ -1,0 +1,53 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
+  <.demo_page
+    path={@path}
+    id="tags-input-form-page"
+    title={~t"Tags Input · Form"}
+  >
+    <.demo_section
+      id="tags-input-form-phoenix"
+      title={~t"Phoenix Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.form_preview_controller_phoenix form={@phoenix_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.form_preview_controller_ecto form={@ecto_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tags-input-form-native"
+      title={~t"Native HTML Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.TagsInputDemo.form_preview_controller_native />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

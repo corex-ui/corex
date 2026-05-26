@@ -14,12 +14,15 @@ defmodule Corex.Dialog.Anatomy do
       close_on_escape: true,
       prevent_scroll: false,
       restore_focus: true,
+      role: "dialog",
+      initial_focus: nil,
+      final_focus: nil,
       dir: "ltr",
       on_open_change: nil,
       on_open_change_client: nil,
       animation: "js",
       animation_options: %Corex.Animation.Scale{scale_start: 0.96, scale_end: 1.0},
-      dialog_default_label: nil
+      label: nil
     ]
 
     @type t :: %__MODULE__{
@@ -31,12 +34,15 @@ defmodule Corex.Dialog.Anatomy do
             close_on_escape: boolean(),
             prevent_scroll: boolean(),
             restore_focus: boolean(),
+            role: String.t(),
+            initial_focus: String.t() | nil,
+            final_focus: String.t() | nil,
             dir: String.t(),
             on_open_change: String.t() | nil,
             on_open_change_client: String.t() | nil,
             animation: String.t(),
             animation_options: Corex.Animation.Scale.t(),
-            dialog_default_label: String.t() | nil
+            label: String.t() | nil
           }
   end
 
@@ -113,12 +119,24 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [
+      :id,
+      :dir,
+      :open,
+      role: "dialog",
+      has_title: false,
+      has_description: false,
+      label: nil
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            open: boolean(),
+            role: String.t(),
+            has_title: boolean(),
+            has_description: boolean(),
+            label: String.t() | nil
           }
 
     @ignored_attrs [
@@ -128,6 +146,7 @@ defmodule Corex.Dialog.Anatomy do
       "id",
       "role",
       "aria-modal",
+      "aria-label",
       "aria-labelledby",
       "aria-describedby",
       "tabindex",

@@ -18,6 +18,7 @@ defmodule E2eWeb.MenuPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="menu-patterns-page"
         title="Menu · Patterns"
         subtitle="Redirect menus: in-app paths, external docs (Zag.js, Phoenix LiveView), and per-item :href vs :navigate."

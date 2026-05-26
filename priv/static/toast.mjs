@@ -1,10 +1,10 @@
 import {
-  trackDismissableBranch
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
-import {
   setRafTimeout
-} from "./chunks/chunk-6Y5IFYJF.mjs";
+} from "./chunks/chunk-VHCQWARJ.mjs";
+import {
+  trackDismissableBranch
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
 import {
   AnimationFrame,
   Component,
@@ -28,7 +28,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1149,16 +1149,26 @@ var group = {
 };
 
 // components/toast.ts
+function actionClassTokens(action) {
+  if (action == null || typeof action !== "object") return [];
+  const cn = action.className;
+  if (typeof cn !== "string") return [];
+  return cn.trim().split(/\s+/).filter(Boolean);
+}
 var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
+  latestProps;
+  hadAction = false;
   duration;
   showLoading;
   constructor(el, props) {
     super(el, props);
+    this.latestProps = props;
     this.duration = props.duration;
     this.showLoading = props.meta?.loading === true;
+    this.hadAction = Boolean(props.action?.label);
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.classList.add("toast-item");
@@ -1170,9 +1180,12 @@ var ToastItem = class extends Component {
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
-          <button data-scope="toast" data-part="close-trigger"></button>
+          <button type="button" data-scope="toast" data-part="close-trigger"></button>
         </div>
         <div data-scope="toast" data-part="description"></div>
+        <div data-scope="toast" data-part="actions">
+          <button type="button" data-scope="toast" data-part="action-trigger" hidden></button>
+        </div>
       </div>
 
       <span data-scope="toast" data-part="ghost-after"></span>
@@ -1181,12 +1194,19 @@ var ToastItem = class extends Component {
       title: this.el.querySelector('[data-part="title"]'),
       description: this.el.querySelector('[data-part="description"]'),
       close: this.el.querySelector('[data-part="close-trigger"]'),
+      action: this.el.querySelector('[data-part="action-trigger"]'),
       ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
       ghostAfter: this.el.querySelector('[data-part="ghost-after"]'),
       progressbar: this.el.querySelector('[data-part="progressbar"]'),
       loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')
     };
   }
+  updateProps = (props) => {
+    Object.assign(this.latestProps, props);
+    super.updateProps(
+      props
+    );
+  };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -1225,6 +1245,32 @@ var ToastItem = class extends Component {
     }
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+    const hasAction = Boolean(this.latestProps.action?.label);
+    if (this.hadAction && !hasAction) {
+      const next = document.createElement("button");
+      next.type = "button";
+      next.setAttribute("data-scope", "toast");
+      next.setAttribute("data-part", "action-trigger");
+      next.hidden = true;
+      this.parts.action.replaceWith(next);
+      this.parts.action = next;
+    }
+    this.hadAction = hasAction;
+    if (hasAction) {
+      this.parts.action.hidden = false;
+      this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+      const label = this.latestProps.action?.label ?? "";
+      if (this.parts.action.innerHTML !== label) {
+        this.parts.action.innerHTML = label;
+      }
+      const extraClasses = actionClassTokens(this.latestProps.action);
+      if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
+    } else {
+      this.parts.action.hidden = true;
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
+      }
+    }
     const duration = this.duration;
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
     if (isInfinity) {
@@ -1341,7 +1387,53 @@ function getToastStore(groupId) {
 }
 
 // hooks/toast.ts
+function asRecord(v) {
+  return v != null && typeof v === "object" && !Array.isArray(v) ? v : {};
+}
+function parseSingleExecJsEffect(raw) {
+  const o = asRecord(raw);
+  if (o.kind !== "exec_js") return null;
+  const encoded = o.encoded;
+  if (typeof encoded !== "string" || encoded.length === 0) return null;
+  return encoded;
+}
+function parseActionSpec(raw) {
+  const o = asRecord(raw);
+  const label = o.label;
+  if (typeof label !== "string" || label.length === 0) return null;
+  const effectsRaw = o.effects;
+  if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+  const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+  if (encoded == null) return null;
+  const spec = { label, encoded };
+  const className = o.class;
+  if (typeof className === "string" && className.trim()) {
+    spec.className = className.trim();
+  }
+  return spec;
+}
+function buildZagAction(spec, rt) {
+  const action = {
+    label: spec.label,
+    onClick: () => {
+      rt.execJs(spec.encoded);
+    }
+  };
+  if (spec.className) action.className = spec.className;
+  return action;
+}
 var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
+function buildRuntime(self) {
+  return {
+    pushEvent: (event, payload) => {
+      self.pushEvent(event, payload ?? {});
+    },
+    execJs: (encoded) => {
+      self.js().exec(encoded);
+    },
+    redirectCtx: { liveSocket: self.liveSocket }
+  };
+}
 var ToastHook = {
   mounted() {
     const el = this.el;
@@ -1365,6 +1457,12 @@ var ToastHook = {
         return parseInt(duration, 10) || void 0;
       }
       return duration;
+    };
+    const parsePriority = (raw) => {
+      if (raw === void 0 || raw === null) return void 0;
+      const n = typeof raw === "string" ? parseInt(raw, 10) : raw;
+      if (!Number.isFinite(n) || n < 1 || n > 8) return void 0;
+      return n;
     };
     const placement = getString(el, "placement", [
       "top-start",
@@ -1417,20 +1515,70 @@ var ToastHook = {
         console.error("Failed to create flash error toast:", error);
       }
     }
+    const rt = buildRuntime(this);
+    const buildCreateOptions = (payload) => {
+      const spec = parseActionSpec(payload.action);
+      const base = {
+        title: payload.title ?? "",
+        description: payload.description,
+        type: payload.type || "info",
+        id: payload.id || generateId(void 0, "toast"),
+        duration: parseDuration(payload.duration),
+        ...loadingMeta(payload.loading)
+      };
+      if (spec) {
+        base.action = buildZagAction(spec, rt);
+      }
+      const pr = parsePriority(payload.priority);
+      if (pr !== void 0) base.priority = pr;
+      return base;
+    };
+    const buildUpdatePatch = (payload) => {
+      const patch = {};
+      if (payload.title !== void 0) patch.title = payload.title;
+      if (payload.description !== void 0) patch.description = payload.description;
+      if (payload.type !== void 0) patch.type = payload.type;
+      if (payload.duration !== void 0) patch.duration = parseDuration(payload.duration);
+      if (payload.loading === true || payload.loading === "true") {
+        patch.meta = { loading: true };
+      } else if (payload.loading === false || payload.loading === "false") {
+        patch.meta = { loading: false };
+      }
+      const spec = parseActionSpec(payload.action);
+      if (spec) {
+        patch.action = buildZagAction(spec, rt);
+      } else if (payload.action === null) {
+        patch.action = void 0;
+      }
+      const pr = parsePriority(payload.priority);
+      if (pr !== void 0) patch.priority = pr;
+      return patch;
+    };
+    const handleDismissPayload = (payload) => {
+      const st = getToastStore(payload.groupId || this.groupId);
+      if (!st) return;
+      try {
+        st.dismiss(payload.id);
+      } catch (error) {
+        console.error("Failed to dismiss toast:", error);
+      }
+    };
+    const handleRemovePayload = (payload) => {
+      const st = getToastStore(payload.groupId || this.groupId);
+      if (!st) return;
+      try {
+        st.remove(payload.id);
+      } catch (error) {
+        console.error("Failed to remove toast:", error);
+      }
+    };
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("toast-create", (payload) => {
-        const store2 = getToastStore(payload.groupId || this.groupId);
-        if (!store2) return;
+        const st = getToastStore(payload.groupId || this.groupId);
+        if (!st) return;
         try {
-          store2.create({
-            title: payload.title,
-            description: payload.description,
-            type: payload.type || "info",
-            id: payload.id || generateId(void 0, "toast"),
-            duration: parseDuration(payload.duration),
-            ...loadingMeta(payload.loading)
-          });
+          st.create(buildCreateOptions(payload));
         } catch (error) {
           console.error("Failed to create toast:", error);
         }
@@ -1438,49 +1586,58 @@ var ToastHook = {
     );
     this.handlers.push(
       this.handleEvent("toast-update", (payload) => {
-        const store2 = getToastStore(payload.groupId || this.groupId);
-        if (!store2) return;
+        const st = getToastStore(payload.groupId || this.groupId);
+        if (!st || !payload.id) return;
         try {
-          store2.update(payload.id, {
-            title: payload.title,
-            description: payload.description,
-            type: payload.type
-          });
+          st.update(payload.id, buildUpdatePatch(payload));
         } catch (error) {
           console.error("Failed to update toast:", error);
         }
       })
     );
-    this.handlers.push(
-      this.handleEvent("toast-dismiss", (payload) => {
-        const store2 = getToastStore(payload.groupId || this.groupId);
-        if (!store2) return;
-        try {
-          store2.dismiss(payload.id);
-        } catch (error) {
-          console.error("Failed to dismiss toast:", error);
-        }
-      })
-    );
-    el.addEventListener("toast:create", (event) => {
+    this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
+    this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
+    const onToastCreate = (event) => {
       const { detail } = event;
-      const store2 = getToastStore(detail.groupId || this.groupId);
-      if (!store2) return;
+      const st = getToastStore(detail.groupId || this.groupId);
+      if (!st) return;
       try {
-        store2.create({
-          title: detail.title,
-          description: detail.description,
-          type: detail.type || "info",
-          id: detail.id || generateId(void 0, "toast"),
-          duration: parseDuration(detail.duration),
-          ...loadingMeta(detail.loading)
-        });
+        st.create(buildCreateOptions(detail));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
-    });
+    };
+    const onToastUpdate = (event) => {
+      const { detail } = event;
+      const st = getToastStore(detail.groupId || this.groupId);
+      if (!st || !detail.id) return;
+      try {
+        st.update(detail.id, buildUpdatePatch(detail));
+      } catch (error) {
+        console.error("Failed to update toast:", error);
+      }
+    };
+    const onToastDismiss = (event) => {
+      handleDismissPayload(event.detail);
+    };
+    const onToastRemove = (event) => {
+      handleRemovePayload(event.detail);
+    };
+    const domListeners = [];
+    const addDom = (name, fn) => {
+      el.addEventListener(name, fn);
+      domListeners.push({ el, name, fn });
+    };
+    this.domListeners = domListeners;
+    addDom("toast:create", onToastCreate);
+    addDom("toast:update", onToastUpdate);
+    addDom("toast:dismiss", onToastDismiss);
+    addDom("toast:remove", onToastRemove);
   },
   destroyed() {
+    for (const { el, name, fn } of this.domListeners ?? []) {
+      el.removeEventListener(name, fn);
+    }
     if (this.handlers) {
       for (const handler of this.handlers) {
         this.removeHandleEvent(handler);
@@ -1489,5 +1646,7 @@ var ToastHook = {
   }
 };
 export {
-  ToastHook as Toast
+  ToastHook as Toast,
+  parseActionSpec,
+  parseSingleExecJsEffect
 };

@@ -13,7 +13,21 @@ type CarouselHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function readInstant(detail: unknown): boolean {
+export function toZagPage(page: number | undefined): number | undefined {
+  if (page == null) return undefined;
+  return Math.max(0, page - 1);
+}
+
+export function fromZagPage(page: number): number {
+  return page + 1;
+}
+
+export function readCorexPage(el: HTMLElement, attr: "page" | "defaultPage"): number | undefined {
+  const dataKey = attr === "page" ? "page" : "defaultPage";
+  return toZagPage(getNumber(el, dataKey));
+}
+
+export function readInstant(detail: unknown): boolean {
   if (detail && typeof detail === "object" && "instant" in detail) {
     const v = (detail as { instant?: unknown }).instant;
     return v === true || v === "true";
@@ -35,8 +49,8 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
       id: el.id,
       slideCount,
       ...(controlled
-        ? { page: getNumber(el, "page") }
-        : { defaultPage: getNumber(el, "defaultPage") }),
+        ? { page: readCorexPage(el, "page") }
+        : { defaultPage: readCorexPage(el, "defaultPage") }),
       dir: getDir(el),
       orientation: getString<"horizontal" | "vertical">(el, "orientation"),
       slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -57,7 +71,7 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
           pushEvent,
           payload: {
             id: el.id,
-            page: details.page,
+            page: fromZagPage(details.page),
             pageSnapPoint: details.pageSnapPoint,
           },
           serverEventName: getString(el, "onPageChange"),
@@ -110,9 +124,7 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...(controlled
-        ? { page: getNumber(this.el, "page") }
-        : { defaultPage: getNumber(this.el, "defaultPage") }),
+      ...(controlled ? { page: readCorexPage(this.el, "page") } : {}),
       dir: getDir(this.el),
       orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),

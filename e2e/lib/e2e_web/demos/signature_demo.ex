@@ -3,8 +3,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def minimal_code do
     ~S"""
-    <.signature_pad id="signature-anatomy-minimal" class="signature-pad">
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    <.signature_pad class="signature-pad">
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
     </.signature_pad>
     """
   end
@@ -21,9 +24,13 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def with_label_code do
     ~S"""
-    <.signature_pad id="signature-anatomy-labeled" class="signature-pad">
+    <.signature_pad
+      on_draw_end="signature_drawn"
+      class="signature-pad">
       <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
     </.signature_pad>
     """
   end
@@ -47,7 +54,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       </.action>
     </div>
 
-    <.signature_pad id="signature-api-cb" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -79,11 +86,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
         class="button button--sm"
         onclick="document.getElementById('signature-api-cjs')?.dispatchEvent(new CustomEvent('corex:signature-pad:clear', { bubbles: false, detail: { id: 'signature-api-cjs' } }))"
       >
-        Clear (client JS)
+        Clear
       </button>
     </div>
 
-    <.signature_pad id="signature-api-cjs" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -125,7 +132,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           class="button button--sm"
           onclick="document.getElementById('signature-api-cjs')?.dispatchEvent(new CustomEvent('corex:signature-pad:clear', { bubbles: false, detail: { id: 'signature-api-cjs' } }))"
         >
-          Clear (client JS)
+          Clear
         </button>
       </div>
       <.signature_pad id="signature-api-cjs" class="signature-pad">
@@ -140,11 +147,11 @@ defmodule E2eWeb.Demos.SignatureDemo do
     ~S"""
     <div class="layout__row">
       <.action phx-click="signature_api_clear" class="button button--sm">
-        Clear (server)
+        Clear
       </.action>
     </div>
 
-    <.signature_pad id="signature-api-srv" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -166,7 +173,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="signature_api_clear" class="button button--sm">
-          Clear (server)
+          Clear
         </.action>
       </div>
       <.signature_pad id="signature-api-srv" class="signature-pad">
@@ -193,7 +200,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def events_server_heex do
     ~S"""
-    <.signature_pad id="signature-events-server" class="signature-pad" on_draw_end="signature_drawn">
+    <.signature_pad class="signature-pad" on_draw_end="signature_drawn">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -201,18 +208,15 @@ defmodule E2eWeb.Demos.SignatureDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("signature_drawn", %{"id" => id, "url" => url}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(String.slice(url, 0, 32))}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "signature_drawn",
+      ~S|%{"id" => id, "url" => url} = params|
+    )
   end
 
   def events_client_heex do
     ~S"""
     <.signature_pad
-      id="signature-events-client"
       class="signature-pad"
       on_draw_end_client="signature-drawn"
     >
@@ -265,16 +269,14 @@ defmodule E2eWeb.Demos.SignatureDemo do
     """
   end
 
-  def form_changeset_heex do
+  def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -284,7 +286,260 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-changeset-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def signature_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-form-phoenix")
+
+      render(conn, :signature_form_page, phoenix_form: phoenix_form)
+    end
+
+    def signature_form_submit(conn, params) do
+      if is_map(params["signature_phoenix"]) do
+        signature = params["signature_phoenix"]["signature"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: signature saved")
+        |> redirect(to: ~p"/signature-pad/form#signature-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_controller_ecto_heex do
+    ~S"""
+    <.form
+      for={@form}
+      action={~p"/signature-pad/form"}
+      method="post"
+    >
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
+      <.signature_pad field={@form[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_ecto_elixir do
+    ~S"""
+    def signature_form_page(conn, _params) do
+      ecto_form =
+        %MyApp.Forms.SignatureForm{}
+        |> MyApp.Forms.SignatureForm.changeset_validate(%{})
+        |> Phoenix.Component.to_form(as: :signature_ecto, id: "signature-form-ecto")
+
+      render(conn, :signature_form_page, ecto_form: ecto_form)
+    end
+
+    def signature_form_submit(conn, params) do
+      if is_map(params["signature_ecto"]) do
+        case MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, params["signature_ecto"]) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Submitted: signature saved")
+            |> redirect(to: ~p"/signature-pad/form#signature-form-ecto")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+            ecto_form = Phoenix.Component.to_form(changeset, as: :signature_ecto, id: "signature-form-ecto")
+            render(conn, :signature_form_page, ecto_form: ecto_form)
+        end
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.SignatureFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"signature" => ""}, as: :signature_phoenix, id: "signature-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"signature_phoenix" => params}, socket) do
+        signature = params["signature"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"signature" => signature}, as: :signature_phoenix, id: "signature-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_heex do
+    ~S"""
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
+      <.signature_pad field={@form[:signature]} class="signature-pad" on_draw_end="signature_drawn">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.SignatureFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :signature_ecto, id: "signature-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", params, socket) do
+        sparams = Map.get(params, "signature_ecto", %{})
+
+        changeset =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(sparams)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: "signature-live-form-ecto")
+         )}
+      end
+
+      def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
+        value =
+          if is_list(paths) and paths != [],
+            do: Enum.join(paths, "\n"),
+            else: Map.get(payload, "url", "") || ""
+
+        validate_ecto(socket, %{"signature" => value})
+      end
+
+      def handle_event("save", params, socket) do
+        sparams = Map.get(params, "signature_ecto", %{})
+
+        case MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, sparams) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.SignatureForm.changeset_validate(%MyApp.Forms.SignatureForm{}, sparams),
+                 as: :signature_ecto,
+                 id: "signature-live-form-ecto"
+               )
+             )}
+
+          %Ecto.Changeset{} = changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset, action: :insert, as: :signature_ecto, id: "signature-live-form-ecto")
+             )}
+        end
+      end
+
+      defp validate_ecto(socket, params) do
+        changeset =
+          %MyApp.Forms.SignatureForm{}
+          |> MyApp.Forms.SignatureForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset, action: :validate, as: :signature_ecto, id: "signature-live-form-ecto")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_changeset_heex do
+    ~S"""
+    <.form
+      for={@form}
+      action={~p"/signature-pad/form"}
+      method="post"
+    >
+      <input type="hidden" name="signature_changeset[_sent]" value="1" />
+      <.signature_pad field={@form[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -307,14 +562,13 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
-      id={@form.id}
     >
-      <.signature_pad field={f[:signature]} class="signature-pad">
-        <:label>Sign here (stricter)</:label>
+      <input type="hidden" name="signature_validate[_sent]" value="1" />
+      <.signature_pad field={@form[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
@@ -323,7 +577,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-validate-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -350,11 +604,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={@form.id}
     >
+      <input type="hidden" name="signature_changeset[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -365,7 +618,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" id="signature-changeset-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -379,13 +632,12 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <.form
       :let={f}
       for={@form}
-      action={~p"/signature/form"}
+      action={~p"/signature-pad/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={@form.id}
     >
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
-        <:label>Sign here (stricter)</:label>
+        <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
@@ -394,10 +646,501 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-validate-submit" class="button button--accent w-full">
+      <.action type="submit" id="signature-validate-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/signature-pad/form"}
+      method="post"
+    >
+      <.signature_pad field={f[:signature]} class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+
+  def form_preview_controller_native(assigns) do
+    _ = assigns
+
+    ~H"""
+    <form action={~p"/signature-pad/form"} method="post" id="signature-form-native">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.signature_pad name="user[signature]" class="signature-pad" id="signature-form-native-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-form-native-submit" class="button button--accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  def form_native_heex do
+    ~S"""
+    <form action={~p"/signature-pad/form"} method="post">
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <.signature_pad name="user[signature]" class="signature-pad">
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </form>
+    """
+  end
+
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def signature_form_submit(conn, %{"user" => %{"signature" => sig}}) do
+      conn
+      |> put_flash(:info, "Submitted: signature=#{preview_sig(sig)}")
+      |> redirect(to: ~p"/signature-pad/form#signature-form-native")
+    end
+
+    defp preview_sig(""), do: "(empty)"
+    defp preview_sig(sig), do: sig
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_ecto_heex()
+  def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.signature_pad
+        field={@form[:signature]}
+        class="signature-pad"
+        id="signature-live-form-phoenix-pad"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_ecto(assigns) do
+    ~H"""
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
+      <.signature_pad
+        field={@form[:signature]}
+        class="signature-pad"
+        id="signature-live-form-ecto-pad"
+        on_draw_end="signature_drawn"
+      >
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.heroicon name="hero-x-mark" />
+        </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
+      <.action type="submit" id="signature-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def styling_drawing_color_code do
+    ~S"""
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-accent)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-brand)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-alert)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-success)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-info)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_drawing_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-drawing-ink"
+      class="signature-pad"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-accent"
+      class="signature-pad"
+      drawing_fill="var(--color-accent)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-brand"
+      class="signature-pad"
+      drawing_fill="var(--color-brand)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-alert"
+      class="signature-pad"
+      drawing_fill="var(--color-alert)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-success"
+      class="signature-pad"
+      drawing_fill="var(--color-success)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-info"
+      class="signature-pad"
+      drawing_fill="var(--color-info)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_trigger_color_code do
+    ~S"""
+    <.signature_pad class="signature-pad" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--accent" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--brand" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--alert" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--success" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--info" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_trigger_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-trigger-default"
+      class="signature-pad"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-accent"
+      class="signature-pad signature-pad--accent"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-brand"
+      class="signature-pad signature-pad--brand"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-alert"
+      class="signature-pad signature-pad--alert"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-success"
+      class="signature-pad signature-pad--success"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-info"
+      class="signature-pad signature-pad--info"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_size_code do
+    ~S"""
+    <.signature_pad class="signature-pad signature-pad--sm" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--md" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--lg" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--xl" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-size-sm"
+      class="signature-pad signature-pad--sm"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-md"
+      class="signature-pad signature-pad--md"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-lg"
+      class="signature-pad signature-pad--lg"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-xl"
+      class="signature-pad signature-pad--xl"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_max_width_code do
+    ~S"""
+    <.signature_pad class="signature-pad max-w-2xs" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-md" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-xl" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-2xl" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-max-2xs"
+      class="signature-pad max-w-2xs"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-max-md"
+      class="signature-pad max-w-md"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-max-xl"
+      class="signature-pad max-w-xl"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-max-2xl"
+      class="signature-pad max-w-2xl"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_rounded_code do
+    ~S"""
+    <.signature_pad class="signature-pad signature-pad--rounded-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-sm" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-md" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-lg" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-xl" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-rounded-none"
+      class="signature-pad signature-pad--rounded-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-sm"
+      class="signature-pad signature-pad--rounded-sm"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-md"
+      class="signature-pad signature-pad--rounded-md"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-lg"
+      class="signature-pad signature-pad--rounded-lg"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-xl"
+      class="signature-pad signature-pad--rounded-xl"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
     """
   end
 end

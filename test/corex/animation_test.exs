@@ -1,54 +1,67 @@
 defmodule Corex.AnimationTest do
   use ExUnit.Case, async: true
 
-  alias Corex.Animation.{Height, Scale}
+  alias Corex.Animation.Height
+  alias Corex.Animation.Scale
 
-  describe "Corex.Animation.Scale.to_dataset/1" do
-    test "emits data-anim-scale-* and transform scale keys" do
-      a = %Scale{
-        duration: 0.4,
-        easing: "ease-out",
-        opacity_start: 0.1,
-        opacity_end: 0.9,
-        scale_start: 0.95,
-        scale_end: 1.0
-      }
-
-      assert Scale.to_dataset(a) == %{
-               "data-anim-scale-block-interaction" => "false",
-               "data-anim-scale-duration" => 0.4,
-               "data-anim-scale-easing" => "ease-out",
-               "data-anim-scale-opacity-start" => 0.1,
-               "data-anim-scale-opacity-end" => 0.9,
-               "data-anim-transform-scale-start" => 0.95,
-               "data-anim-transform-scale-end" => 1.0
-             }
-    end
-
-    test "emits data-anim-scale-block-interaction when block_interaction is false" do
-      a = %Scale{block_interaction: false}
-
-      assert Map.get(Scale.to_dataset(a), "data-anim-scale-block-interaction") == "false"
+  test "namespace module loads" do
+    for mod <- [Corex.Animation, Height, Scale] do
+      assert {:module, _} = Code.ensure_loaded(mod)
     end
   end
 
-  describe "Corex.Animation.Height.to_dataset/1" do
-    test "emits data-anim-height-* keys" do
-      a = %Height{duration: 0.2, easing: "linear", opacity_start: 0.0, opacity_end: 1.0}
+  describe "Height.to_dataset/1" do
+    test "default options" do
+      dataset = Height.to_dataset(%Height{})
 
-      assert Height.to_dataset(a) == %{
-               "data-anim-height-block-interaction" => "false",
-               "data-anim-height-duration" => 0.2,
-               "data-anim-height-easing" => "linear",
-               "data-anim-height-opacity-start" => 0.0,
-               "data-anim-height-opacity-end" => 1.0
-             }
+      assert dataset["data-anim-height-duration"] == 0.3
+      assert dataset["data-anim-height-easing"] == "ease"
+      assert dataset["data-anim-height-opacity-start"] == 0.0
+      assert dataset["data-anim-height-opacity-end"] == 1.0
+      assert dataset["data-anim-height-block-interaction"] == "false"
     end
 
-    test "emits data-anim-height-block-interaction when block_interaction is false" do
-      a = %Height{block_interaction: false}
+    test "block_interaction true omits false flag attribute" do
+      dataset = Height.to_dataset(%Height{block_interaction: true})
 
-      assert Map.get(Height.to_dataset(a), "data-anim-height-block-interaction") == "false"
+      refute Map.has_key?(dataset, "data-anim-height-block-interaction")
+    end
+
+    test "custom duration and easing" do
+      dataset = Height.to_dataset(%Height{duration: 0.9, easing: "linear"})
+
+      assert dataset["data-anim-height-duration"] == 0.9
+      assert dataset["data-anim-height-easing"] == "linear"
+    end
+  end
+
+  describe "Scale.to_dataset/1" do
+    test "default options" do
+      dataset = Scale.to_dataset(%Scale{})
+
+      assert dataset["data-anim-scale-duration"] == 0.3
+      assert dataset["data-anim-transform-scale-start"] == 0.96
+      assert dataset["data-anim-transform-scale-end"] == 1.0
+      assert dataset["data-anim-scale-block-interaction"] == "false"
+    end
+
+    test "block_interaction true omits false flag attribute" do
+      dataset = Scale.to_dataset(%Scale{block_interaction: true})
+
+      refute Map.has_key?(dataset, "data-anim-scale-block-interaction")
+    end
+
+    test "custom scale range" do
+      dataset =
+        Scale.to_dataset(%Scale{
+          scale_start: 0.8,
+          scale_end: 1.0,
+          opacity_start: 0.5,
+          opacity_end: 1.0
+        })
+
+      assert dataset["data-anim-transform-scale-start"] == 0.8
+      assert dataset["data-anim-scale-opacity-start"] == 0.5
     end
   end
 end

@@ -2,85 +2,129 @@ defmodule Corex.NumberInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Number Input](https://zagjs.com/components/react/number-input).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
-  ### Basic
+  ### Minimal
 
   ```heex
-  <.number_input id="num" class="number-input">
+  <.number_input class="number-input">
     <:label>Quantity</:label>
     <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
     <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
   </.number_input>
   ```
 
+  ### Min, max, step
+
+  ```heex
+  <.number_input
+    class="number-input"
+    min={0.0}
+    max={100.0}
+    step={5.0}
+    value="10"
+  >
+    <:label>Amount</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  `min`, `max`, and `step` are floats. Use `step` for granularity: `step={1}` for whole-number steps (display omits `.0`), `step={0.01}` for two decimal places. The visible value is formatted on the server to match Zag after hydration.
+
   <!-- tabs-close -->
 
-  Slots `:decrement_trigger` and `:increment_trigger` are required and render the button content (e.g. icons).
+  Slots `:decrement_trigger` and `:increment_trigger` are required.
 
-  ## Phoenix Form Integration
+  ## API
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Pass `invalid={...}` when you want Zag's invalid styling; the component does not infer it from field errors.
+  Requires a stable `id` on `<.number_input>`. For forms, use `field`; use the API for imperative updates and reading machine state.
 
-  ### Controller
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set value (server) | `socket` |
+  | [`clear_value/1`](#clear_value/1) | Clear value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_value/2`](#clear_value/2) | Clear value (server) | `socket` |
+  | [`increment/1`](#increment/1) | Increment by step (client) | `%Phoenix.LiveView.JS{}` |
+  | [`increment/2`](#increment/2) | Increment by step (server) | `socket` |
+  | [`decrement/1`](#decrement/1) | Decrement by step (client) | `%Phoenix.LiveView.JS{}` |
+  | [`decrement/2`](#decrement/2) | Decrement by step (server) | `socket` |
+  | [`set_to_min/1`](#set_to_min/1) | Set to `min` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_to_min/2`](#set_to_min/2) | Set to `min` (server) | `socket` |
+  | [`set_to_max/1`](#set_to_max/1) | Set to `max` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_to_max/2`](#set_to_max/2) | Set to `max` (server) | `socket` |
+  | [`focus/1`](#focus/1) | Focus input (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focus/2`](#focus/2) | Focus input (server) | `socket` |
+  | [`state/1`](#state/1) | Read machine state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`state/2`](#state/2) | Read machine state (client, opts) | `%Phoenix.LiveView.JS{}` |
+  | [`state/3`](#state/3) | Read machine state (server) | `socket` |
 
-  Build the form from a changeset and pass it to the template:
+  ### Machine state (`state/2`, `state/3`)
 
-  ```elixir
-  def form_page(conn, _params) do
-    form =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(%{})
-      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
-    render(conn, :form_page, form: form)
-  end
-  ```
+  Replies with `number_input_state_response` (server) or `number-input-state` on the host (client). Payload includes Zag machine fields:
 
-  ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
-    <.number_input field={f[:value]} class="number-input">
-      <:label>Quantity</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.number_input>
-    <button type="submit">Submit</button>
-  </.form>
-  ```
+  | Field | Type | Meaning |
+  | ----- | ---- | ------- |
+  | `focused` | boolean | Input is focused |
+  | `invalid` | boolean | Input is invalid |
+  | `empty` | boolean | Value is empty |
+  | `value` | string | Formatted value |
+  | `valueAsNumber` | number | Numeric value |
 
-  ### Live View with Ecto changeset
+  ## Events
 
-  With `field={@form[:key]}`, the input stays **uncontrolled** in the Zag sense so increment and decrement work locally; the hidden field still updates for `phx-change` and submit. The `controlled` attribute is ignored when `field` is set.
+  Pick an event name and pass it to `on_*` on `<.number_input>`.
 
-  For a **standalone** server-owned value (no `field`), use `controlled`, `value`, and `on_value_change` so each change is applied on the server (see Number input · Patterns in the demo app).
+  ### Server events
 
-  Use a changeset and standard form events; the field value is submitted with the form.
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="number_input_changed"` | Value changes | `%{"id" => id, "value" => string, "valueAsNumber" => number}` |
 
-  ```elixir
-  def mount(_params, _session, socket) do
-    form =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(%{})
-      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
-    {:ok, assign(socket, :form, form)}
-  end
+  <!-- tabs-open -->
 
-  def handle_event("validate", %{"quantity" => params}, socket) do
-    changeset =
-      %MyApp.Form.Quantity{}
-      |> MyApp.Form.Quantity.changeset(params)
-      |> Map.put(:action, :validate)
-    {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, as: :quantity, id: "quantity-form"))}
-  end
-  ```
+  ### on_value_change
 
   ```heex
-  <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
+  <.number_input
+    class="number-input"
+    on_value_change="number_input_changed"
+  >
+    <:label>Quantity</:label>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ```elixir
+  def handle_event("number_input_changed", %{"id" => _id, "value" => value}, socket) do
+    {:noreply, assign(socket, :quantity, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="number-input-changed"` | Value changes | `id`, `value`, `valueAsNumber` |
+
+  ## Patterns
+
+  Pass `value` for the initial number on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
+
+  ## Form
+
+  Use `field={f[:value]}` inside `<.form>`. With a form field, increment and decrement stay local; the hidden input updates for submit.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:value])}` when you want alert borders after validation.
+
+  ```heex
+  <.form for={@form} phx-change="validate">
     <.number_input field={@form[:value]} class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -90,13 +134,12 @@ defmodule Corex.NumberInput do
         {msg}
       </:error>
     </.number_input>
-    <button type="submit">Submit</button>
   </.form>
   ```
 
-  ## Styling
+  ## Style
 
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `number-input.css`, then set `class="number-input"` on `<.number_input>`.
 
   ```css
   [data-scope="number-input"][data-part="root"] {}
@@ -107,39 +150,44 @@ defmodule Corex.NumberInput do
   [data-scope="number-input"][data-part="increment-trigger"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `number-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/number-input.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.number_input>`).
 
-  ```heex
-  <.number_input class="number-input number-input--accent number-input--lg">
-    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-  </.number_input>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `number-input` |
+  | Accent | `number-input number-input--accent` |
+  | Brand | `number-input number-input--brand` |
+  | Alert | `number-input number-input--alert` |
+  | Info | `number-input number-input--info` |
+  | Success | `number-input number-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `number-input number-input--sm` |
+  | MD | `number-input number-input--md` |
+  | LG | `number-input number-input--lg` |
+  | XL | `number-input number-input--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for NumberInput component strings.
-
-    Without gettext: `translation={%NumberInput.Translation{ decrease: "Decrease value" }}`
-
-    With gettext: `translation={%NumberInput.Translation{ decrease: Corex.Gettext.gettext("Decrease value") }}`
-    """
-    defstruct [:decrease, :increase]
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Phoenix.HTML.Form
 
@@ -155,10 +203,16 @@ defmodule Corex.NumberInput do
   }
 
   alias Corex.NumberInput.Connect
+  alias Corex.NumberInput.Format
+  alias Corex.NumberInput.Translation
+  alias Corex.Selectors
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [respond_to_fields: 1]
 
   attr(:id, :string, required: false)
   attr(:value, :string, default: nil)
-  attr(:default_value, :string, default: nil)
   attr(:min, :float, default: nil)
   attr(:max, :float, default: nil)
   attr(:step, :float, default: 1.0)
@@ -167,12 +221,6 @@ defmodule Corex.NumberInput do
   attr(:invalid, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:allow_mouse_wheel, :boolean, default: false)
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Server-driven value; use with value and on_value_change. Ignored when field is set (forms stay uncontrolled for working steppers)."
-  )
 
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
@@ -188,6 +236,8 @@ defmodule Corex.NumberInput do
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:field, Phoenix.HTML.FormField, doc: "A form field struct, e.g. f[:age] or @form[:age]")
+  attr(:form_field, :boolean, default: false)
+  attr(:field_used, :boolean, default: false)
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -207,51 +257,40 @@ defmodule Corex.NumberInput do
   end
 
   def number_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    step = Map.get(assigns, :step, 1.0)
 
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
-    |> assign(:form, field.form.id)
-    |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
-    |> assign(:controlled, false)
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(:value, Form.normalize_value("number", field.value))
+    |> assign_value_formats(step)
     |> number_input()
   end
 
   def number_input(assigns) do
     validate_triggers!(assigns)
 
-    default_translation = %Translation{
-      decrease: Corex.Gettext.gettext("Decrease value"),
-      increase: Corex.Gettext.gettext("Increase value")
-    }
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
-      |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
-      |> assign(
-        :default_value,
-        value_to_string(Form.normalize_value("number", assigns[:default_value]))
-      )
+      |> assign_new(:form_field, fn -> false end)
+      |> assign(:translation, translation)
+      |> assign(:value, Form.normalize_value("number", assigns[:value]))
+      |> assign_value_formats(assigns.step)
 
     ~H"""
     <div
       id={@id}
       phx-hook="NumberInput"
       data-loading
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+      phx-mounted={JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
-        controlled: @controlled,
+        form_field: @form_field,
         value: @value,
-        default_value: @default_value,
         min: @min,
         max: @max,
         step: @step,
@@ -272,19 +311,23 @@ defmodule Corex.NumberInput do
       <input
         :if={@name}
         id={"number-input:#{@id}:value-input"}
-        type="hidden"
+        type="text"
+        hidden
+        aria-hidden="true"
+        autocomplete="off"
+        tabindex="-1"
         name={@name}
-        form={@form}
-        value={@value || ""}
+        value={@submit_value || ""}
         data-scope="number-input"
         data-part="value-input"
+        phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("number-input:#{@id}:value-input"))}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input type="text" inputmode="decimal" value={@value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} />
+          <input value={@display_value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
           <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
             <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}
@@ -312,15 +355,349 @@ defmodule Corex.NumberInput do
     end
   end
 
-  defp value_to_string(nil), do: nil
-  defp value_to_string(value), do: to_string(value)
+  defp assign_value_formats(assigns, step) do
+    raw = Map.get(assigns, :value)
 
-  defp merge_translation(nil, default), do: default
+    display =
+      case formatted_string(raw, &Format.format_display(&1, step)) do
+        "" -> nil
+        s -> s
+      end
 
-  defp merge_translation(partial, default) do
-    %Translation{
-      decrease: partial.decrease || default.decrease,
-      increase: partial.increase || default.increase
-    }
+    submit =
+      case formatted_string(raw, &Format.format_submit(&1, step)) do
+        "" -> nil
+        s -> s
+      end
+
+    assigns
+    |> assign(:display_value, display)
+    |> assign(:submit_value, submit)
+    |> assign(:value, submit)
+  end
+
+  defp formatted_string(nil, _formatter), do: ""
+  defp formatted_string("", _formatter), do: ""
+
+  defp formatted_string(raw, formatter), do: formatter.(raw)
+
+  api_doc(~S"""
+  Replace the formatted value from `phx-click`. Dispatches `corex:number-input:set-value` with a numeric `value`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.set_value("my-num", 42)}>42</.action>
+  <.number_input id="my-num" value={40} step={1} class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-num")?.dispatchEvent(
+    new CustomEvent("corex:number-input:set-value", {
+      bubbles: false,
+      detail: { value: 42 },
+    })
+  );
+  ```
+  """)
+
+  def set_value(number_input_id, value)
+      when is_binary(number_input_id) and (is_number(value) or is_binary(value)) do
+    JS.dispatch("corex:number-input:set-value",
+      to: "##{number_input_id}",
+      detail: %{value: normalize_api_number!(value)},
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Replace the formatted value from `handle_event` (`number_input_set_value`).
+
+  ```elixir
+  def handle_event("set_answer", _, socket) do
+    {:noreply, Corex.NumberInput.set_value(socket, "my-num", 7)}
+  end
+  ```
+  """)
+
+  def set_value(socket, number_input_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
+             (is_number(value) or is_binary(value)) do
+    LiveView.push_event(socket, "number_input_set_value", %{
+      id: number_input_id,
+      value: normalize_api_number!(value)
+    })
+  end
+
+  api_doc(~S"""
+  Clear the value from `phx-click`. Dispatches `corex:number-input:clear-value`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.clear_value("my-num")}>Clear</.action>
+  <.number_input id="my-num" class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def clear_value(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:clear-value",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Clear the value from `handle_event` (`number_input_clear_value`).
+
+  ```elixir
+  def handle_event("clear", _, socket) do
+    {:noreply, Corex.NumberInput.clear_value(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def clear_value(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_clear_value", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Increment from `phx-click`. Dispatches `corex:number-input:increment`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.increment("my-num")}>Increment</.action>
+  <.number_input id="my-num" class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def increment(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:increment",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Increment from `handle_event` (`number_input_increment`).
+
+  ```elixir
+  def handle_event("inc", _, socket) do
+    {:noreply, Corex.NumberInput.increment(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def increment(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_increment", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Decrement from `phx-click`. Dispatches `corex:number-input:decrement`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.decrement("my-num")}>Decrement</.action>
+  <.number_input id="my-num" class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def decrement(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:decrement",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Decrement from `handle_event` (`number_input_decrement`).
+
+  ```elixir
+  def handle_event("dec", _, socket) do
+    {:noreply, Corex.NumberInput.decrement(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def decrement(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_decrement", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Snap to minimum from `phx-click`. Dispatches `corex:number-input:set-to-min`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.set_to_min("my-num")}>Min</.action>
+  <.number_input id="my-num" min={0} class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def set_to_min(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:set-to-min",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Snap to minimum from `handle_event` (`number_input_set_to_min`).
+
+  ```elixir
+  def handle_event("min", _, socket) do
+    {:noreply, Corex.NumberInput.set_to_min(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def set_to_min(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_set_to_min", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Snap to maximum from `phx-click`. Dispatches `corex:number-input:set-to-max`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.set_to_max("my-num")}>Max</.action>
+  <.number_input id="my-num" max={100} class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def set_to_max(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:set-to-max",
+      to: "##{number_input_id}",
+      bubbles: false
+    )
+  end
+
+  api_doc(~S"""
+  Snap to maximum from `handle_event` (`number_input_set_to_max`).
+
+  ```elixir
+  def handle_event("max", _, socket) do
+    {:noreply, Corex.NumberInput.set_to_max(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def set_to_max(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_set_to_max", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Focus the value field from `phx-click`. Dispatches `corex:number-input:focus`.
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.focus("my-num")}>Focus</.action>
+  <.number_input id="my-num" class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+  """)
+
+  def focus(number_input_id) when is_binary(number_input_id) do
+    JS.dispatch("corex:number-input:focus", to: "##{number_input_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Focus the value field from `handle_event` (`number_input_focus`).
+
+  ```elixir
+  def handle_event("focus", _, socket) do
+    {:noreply, Corex.NumberInput.focus(socket, "my-num")}
+  end
+  ```
+  """)
+
+  def focus(socket, number_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) do
+    LiveView.push_event(socket, "number_input_focus", %{id: number_input_id})
+  end
+
+  api_doc(~S"""
+  Read machine state from `phx-click`. Dispatches `corex:number-input:state`. Optional `respond_to:` `:server`, `:client`, or `:both`.
+
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `number_input_state_response` | `%{"id" => id, "focused" => bool, "invalid" => bool, "empty" => bool, "value" => str, "valueAsNumber" => num}` |
+  | Client | `number-input-state` on the input root | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.NumberInput.state("my-num")}>Snapshot</.action>
+  <.number_input id="my-num" class="number-input">
+    <:increment_trigger><span>+</span></:increment_trigger>
+    <:decrement_trigger><span>-</span></:decrement_trigger>
+  </.number_input>
+  ```
+
+  ```elixir
+  def handle_event("number_input_state_response", %{"id" => _, "valueAsNumber" => n}, socket) do
+    {:noreply, assign(socket, :n, n)}
+  end
+  ```
+  """)
+
+  def state(number_input_id, opts) when is_binary(number_input_id) and is_list(opts) do
+    JS.dispatch("corex:number-input:state",
+      to: "##{number_input_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
+  def state(number_input_id) when is_binary(number_input_id), do: state(number_input_id, [])
+
+  api_doc(~S"""
+  Read machine state from `handle_event` (`number_input_state`). Same replies as [`state/2`](#state/2); server-only unless you also use [`state/2`](#state/2) for a DOM reply.
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `number_input_state_response` | `%{"id" => id}` plus focused/invalid/value fields |
+
+  ```elixir
+  def handle_event("snapshot", _, socket) do
+    {:noreply, Corex.NumberInput.state(socket, "my-num", respond_to: :server)}
+  end
+  ```
+  """)
+
+  def state(socket, number_input_id, opts \\ [])
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(number_input_id) and
+             is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "number_input_state",
+      Map.merge(%{id: number_input_id}, respond_to_fields(opts))
+    )
+  end
+
+  defp normalize_api_number!(value) when is_integer(value), do: value * 1.0
+  defp normalize_api_number!(value) when is_float(value), do: value
+
+  defp normalize_api_number!(value) when is_binary(value) do
+    trimmed = String.trim(value)
+
+    case Float.parse(trimmed) do
+      {n, _} -> n
+      :error -> raise ArgumentError, "expected a number, got: #{inspect(value)}"
+    end
   end
 end

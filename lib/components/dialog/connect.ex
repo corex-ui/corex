@@ -35,6 +35,9 @@ defmodule Corex.Dialog.Connect do
       "data-close-on-escape-key-down" => get_boolean(assigns.close_on_escape),
       "data-prevent-scroll" => get_boolean(assigns.prevent_scroll),
       "data-restore-focus" => get_boolean(assigns.restore_focus),
+      "data-role" => assigns.role,
+      "data-initial-focus" => assigns.initial_focus,
+      "data-final-focus" => assigns.final_focus,
       "data-dir" => Map.get(assigns, :dir),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
@@ -48,11 +51,7 @@ defmodule Corex.Dialog.Connect do
         base
       end
 
-    Map.put(
-      merged,
-      "data-dialog-default-label",
-      assigns.dialog_default_label || Corex.Gettext.gettext("Dialog")
-    )
+    Map.put(merged, "data-dialog-default-label", assigns.label)
   end
 
   @spec trigger(Trigger.t()) :: map()
@@ -122,12 +121,24 @@ defmodule Corex.Dialog.Connect do
       "data-scope" => "dialog",
       "data-part" => "content",
       "data-state" => data_state(assigns.open, "open", "closed"),
-      "role" => "dialog",
+      "role" => Map.get(assigns, :role, "dialog"),
       "dir" => Map.get(assigns, :dir),
-      "id" => "dialog:#{assigns.id}:content",
-      "aria-labelledby" => "dialog:#{assigns.id}:title",
-      "aria-describedby" => "dialog:#{assigns.id}:description"
+      "id" => "dialog:#{assigns.id}:content"
     }
+
+    base =
+      if Map.get(assigns, :has_title, false) do
+        Map.put(base, "aria-labelledby", "dialog:#{assigns.id}:title")
+      else
+        Map.put(base, "aria-label", Map.get(assigns, :label) || "Dialog")
+      end
+
+    base =
+      if Map.get(assigns, :has_description, false) do
+        Map.put(base, "aria-describedby", "dialog:#{assigns.id}:description")
+      else
+        base
+      end
 
     cond do
       assigns.open -> base
@@ -182,7 +193,7 @@ defmodule Corex.Dialog.Connect do
       "type" => "button",
       "dir" => Map.get(assigns, :dir),
       "id" => "dialog:#{assigns.id}:close-trigger",
-      "aria-label" => Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Close dialog")
+      "aria-label" => assigns.aria_label
     }
   end
 

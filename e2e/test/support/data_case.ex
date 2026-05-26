@@ -37,7 +37,42 @@ defmodule E2e.DataCase do
   """
   def setup_sandbox(tags) do
     pid = Ecto.Adapters.SQL.Sandbox.start_owner!(E2e.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+
+    on_exit(fn ->
+      cleanup_tetrex_sessions()
+      Ecto.Adapters.SQL.Sandbox.stop_owner(pid)
+    end)
+  end
+
+  def cleanup_tetrex_sessions do
+    pids =
+      for %{id: id} <- E2e.Tetrex.Registry.list_active(), is_binary(id) do
+        pid = E2e.Tetrex.Session.whereis(id)
+        E2e.Tetrex.Session.kill(id)
+        E2e.Tetrex.Registry.unregister(id)
+        pid
+      end
+
+    for pid <- pids, is_pid(pid) do
+      ref = Process.monitor(pid)
+
+      receive do
+        {:DOWN, ^ref, _, _, _} -> :ok
+      after
+        1000 -> :ok
+      end
+    end
+
+    :ok
+  end
+
+  def allow_tetrex_session(game_id) when is_binary(game_id) do
+    case E2e.Tetrex.Session.whereis(game_id) do
+      pid when is_pid(pid) -> Ecto.Adapters.SQL.Sandbox.allow(E2e.Repo, self(), pid)
+      _ -> :ok
+    end
+  catch
+    :exit, _ -> :ok
   end
 
   @doc """

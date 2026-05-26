@@ -70,13 +70,11 @@ defmodule Corex.ListTest do
     end
   end
 
-  describe "List.generate_id/0" do
-    test "returns unique id" do
-      id1 = List.generate_id()
-      id2 = List.generate_id()
-      assert is_binary(id1)
-      assert String.starts_with?(id1, "list-")
-      refute id1 == id2
-    end
+  test "Item.new generates unique list- prefixed values" do
+    item1 = Item.new(%{label: "A"})
+    item2 = Item.new(%{label: "B"})
+    assert String.starts_with?(item1.value, "list-")
+    assert String.starts_with?(item2.value, "list-")
+    refute item1.value == item2.value
   end
 end

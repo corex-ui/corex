@@ -1,7 +1,22 @@
 import {
+  stripZagSubmitNames
+} from "./chunks/chunk-FUVA3DRB.mjs";
+import {
+  bindArrayFieldSubmitIntent,
+  isFormFieldUsed,
+  syncArrayHiddenInputsForPhoenix
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import {
+  queueLiveViewFormInputSync
+} from "./chunks/chunk-VMKNATWC.mjs";
+import {
+  getJsonStringList,
+  readFormFieldServerPaths
+} from "./chunks/chunk-VL4ETB3G.mjs";
+import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -10,6 +25,7 @@ import {
   dataAttr,
   getBoolean,
   getDataUrl,
+  getDir,
   getEventTarget,
   getNumber,
   getRelativePoint,
@@ -18,7 +34,7 @@ import {
   isModifierKey,
   query,
   trackPointerMove
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.40.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
@@ -531,6 +547,11 @@ var SignaturePad = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  applyPartDir = (el) => {
+    if (el instanceof HTMLElement) {
+      el.setAttribute("dir", getDir(this.el));
+    }
+  };
   syncPaths = () => {
     const segment = this.el.querySelector(
       '[data-scope="signature-pad"][data-part="segment"]'
@@ -571,27 +592,41 @@ var SignaturePad = class extends Component {
     );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
+    this.applyPartDir(rootEl);
     const label = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="label"]'
     );
-    if (label) this.spreadProps(label, this.api.getLabelProps());
+    if (label) {
+      this.spreadProps(label, this.api.getLabelProps());
+      this.applyPartDir(label);
+    }
     const control = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="control"]'
     );
-    if (control) this.spreadProps(control, this.api.getControlProps());
+    if (control) {
+      this.spreadProps(control, this.api.getControlProps());
+      this.applyPartDir(control);
+    }
     const segment = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="segment"]'
     );
-    if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+    if (segment) {
+      this.spreadProps(segment, this.api.getSegmentProps());
+      this.applyPartDir(segment);
+    }
     const guide = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="guide"]'
     );
-    if (guide) this.spreadProps(guide, this.api.getGuideProps());
+    if (guide) {
+      this.spreadProps(guide, this.api.getGuideProps());
+      this.applyPartDir(guide);
+    }
     const clearBtn = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="clear-trigger"]'
     );
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      this.applyPartDir(clearBtn);
     }
     const hiddenInput = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="hidden-input"]'
@@ -603,22 +638,24 @@ var SignaturePad = class extends Component {
           value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
         })
       );
+      this.applyPartDir(hiddenInput);
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
     }
+    stripZagSubmitNames(this.el, "signature-pad");
     this.syncPaths();
   }
 };
 
 // hooks/signature-pad.ts
-var PHX_HAS_FOCUSED = "phx-has-focused";
 function parsePathsFromDataset(el, key) {
+  const json = getJsonStringList(el, key);
+  if (json !== void 0) return json;
   const raw = el.dataset[key];
   if (!raw) return [];
   return raw.split("\n").map((line) => line.trim()).filter(Boolean);
-}
-function reapplyLiveViewValueInputUsage(input) {
-  const p2 = input;
-  if (!p2.phxPrivate) p2.phxPrivate = {};
-  p2.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 function buildDrawingOptions(el) {
   const o2 = {
@@ -633,23 +670,36 @@ function buildDrawingOptions(el) {
   if (easing) o2.easing = easing;
   return o2;
 }
-function queueFormBubblingInputForPhoenix(el, getValue, opts) {
-  queueMicrotask(() => {
-    const input = el.querySelector(
-      '[data-scope="signature-pad"][data-part="hidden-input"]'
-    );
-    if (!input) {
-      return;
-    }
-    const v2 = getValue();
-    if (String(input.value) !== String(v2)) {
-      input.value = v2;
-    }
-    opts.onPadTouched();
-    reapplyLiveViewValueInputUsage(input);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  });
+function zagNameForForm(el) {
+  if (getString(el, "submitName")) return void 0;
+  return getString(el, "name");
+}
+function syncSignatureFormForPhoenix(el, paths, opts) {
+  const submitName = getString(el, "submitName");
+  const fieldTouched = opts.fieldTouched === true;
+  if (submitName) {
+    syncArrayHiddenInputsForPhoenix(el, paths, {
+      onTouched: opts.onPadTouched,
+      scope: "signature-pad",
+      submitName,
+      notifyLiveView: opts.notifyLiveView ?? true,
+      fieldTouched
+    });
+    return;
+  }
+  const input = el.querySelector(
+    '[data-scope="signature-pad"][data-part="hidden-input"]'
+  );
+  if (!input) return;
+  if (opts.notifyLiveView === false) {
+    input.value = paths.length > 0 ? paths.join("\n") : "";
+    return;
+  }
+  queueLiveViewFormInputSync(
+    input,
+    () => paths.length > 0 ? paths.join("\n") : "",
+    opts.onPadTouched
+  );
 }
 var SignaturePadHook = {
   mounted() {
@@ -661,32 +711,19 @@ var SignaturePadHook = {
       hook.padTouched = true;
     };
     const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
-    {
-      const input = el.querySelector(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (String(input?.value ?? "") !== "" || defaultPaths.length > 0) {
-        hook.padTouched = true;
-        queueMicrotask(() => {
-          const i2 = el.querySelector(
-            '[data-scope="signature-pad"][data-part="hidden-input"]'
-          );
-          if (i2) reapplyLiveViewValueInputUsage(i2);
-        });
-      }
-    }
     const signaturePad = new SignaturePad(el, {
       id: el.id,
-      name: getString(el, "name"),
+      name: zagNameForForm(el),
+      dir: getDir(el),
       ...defaultPaths.length > 0 ? { defaultPaths } : {},
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
-        queueFormBubblingInputForPhoenix(
-          el,
-          () => details.paths.length > 0 ? details.paths.join("\n") : "",
-          { onPadTouched: markTouched }
-        );
+        syncSignatureFormForPhoenix(el, details.paths, {
+          onPadTouched: markTouched,
+          notifyLiveView: true,
+          fieldTouched: true
+        });
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
@@ -715,11 +752,33 @@ var SignaturePadHook = {
     });
     signaturePad.init();
     this.signaturePad = signaturePad;
+    const syncForm = (paths, opts) => {
+      syncSignatureFormForPhoenix(el, paths, {
+        onPadTouched: () => {
+        },
+        notifyLiveView: opts.notifyLiveView,
+        fieldTouched: isFormFieldUsed(el, hook.padTouched || opts.fieldTouched === true)
+      });
+    };
+    queueMicrotask(() => {
+      if (!hook.padTouched) {
+        syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+      }
+    });
+    hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      hook.padTouched = true;
+      const paths = signaturePad.api.paths ?? [];
+      syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
+    });
     this.onClear = (event) => {
       const { id: targetId } = event.detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
-      queueFormBubblingInputForPhoenix(el, () => "", { onPadTouched: markTouched });
+      syncSignatureFormForPhoenix(el, [], {
+        onPadTouched: markTouched,
+        notifyLiveView: true,
+        fieldTouched: true
+      });
     };
     el.addEventListener("corex:signature-pad:clear", this.onClear);
     this.handlers = [];
@@ -727,34 +786,35 @@ var SignaturePadHook = {
       this.handleEvent("signature_pad_clear", (payload) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         signaturePad.api.clear();
-        queueFormBubblingInputForPhoenix(el, () => "", { onPadTouched: markTouched });
+        syncSignatureFormForPhoenix(el, [], {
+          onPadTouched: markTouched,
+          notifyLiveView: true,
+          fieldTouched: true
+        });
       })
     );
   },
   updated() {
     const el = this.el;
-    const name = getString(el, "name");
-    if (name) {
-      this.signaturePad?.setName(name);
-    }
     this.signaturePad?.updateProps({
       id: el.id,
-      name,
+      name: zagNameForForm(el),
+      dir: getDir(el),
       drawing: buildDrawingOptions(el)
     });
-    if (!this.padTouched) {
-      return;
+    const serverPaths = readFormFieldServerPaths(el);
+    if (serverPaths !== void 0 && !this.padTouched) {
+      this.signaturePad?.setPaths(serverPaths);
+      syncSignatureFormForPhoenix(el, serverPaths, {
+        onPadTouched: () => {
+        },
+        notifyLiveView: false,
+        fieldTouched: isFormFieldUsed(el, this.padTouched)
+      });
     }
-    queueMicrotask(() => {
-      const input = this.el.querySelector(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (input) {
-        reapplyLiveViewValueInputUsage(input);
-      }
-    });
   },
   destroyed() {
+    this.unbindSubmitIntent?.();
     if (this.onClear) {
       this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
     }
@@ -767,5 +827,7 @@ var SignaturePadHook = {
   }
 };
 export {
-  SignaturePadHook as SignaturePad
+  SignaturePadHook as SignaturePad,
+  buildDrawingOptions,
+  parsePathsFromDataset
 };

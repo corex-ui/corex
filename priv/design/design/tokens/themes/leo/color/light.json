@@ -76,6 +76,11 @@
         "type": "color",
         "value": "#8a030c"
       },
+      "link": {
+        "description": "6.0:1 contrast against ui (#f0f0f1)",
+        "type": "color",
+        "value": "#2c52c2"
+      },
       "brand-active": {
         "description": "Semantic brand active fill at 40% lightness (chroma #B45309).",
         "type": "color",
@@ -192,9 +197,9 @@
         "value": "#741400"
       },
       "ink-muted": {
-        "description": "5.0:1 contrast against ui (#f0f0f1)",
+        "description": "5.15:1 contrast against ui (#f0f0f1)",
         "type": "color",
-        "value": "#666667"
+        "value": "#656565"
       },
       "info-hover": {
         "description": "Semantic info hover fill at 40% lightness (chroma #1E40AF).",

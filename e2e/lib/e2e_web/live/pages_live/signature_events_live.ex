@@ -60,16 +60,17 @@ defmodule E2eWeb.SignatureEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="signature-events-page"
-        title="Signature Pad · Event"
-        subtitle="Subscribe to draw end from LiveView or the client."
+        title={~t"Signature Pad · Event"}
+        subtitle={~t"Subscribe to draw end from LiveView or the client."}
       >
         <.demo_section
-          id="signature-events-server"
-          title="On Draw End (Server)"
+          id="signature-events-server-section"
+          title={~t"On Draw End (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -100,12 +101,12 @@ defmodule E2eWeb.SignatureEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="signature-events-client"
-          title="On Draw End (Client)"
+          id="signature-events-client-section"
+          title={~t"On Draw End (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

@@ -1,62 +1,84 @@
 defmodule Corex.Toast do
-  @moduledoc """
+  @moduledoc ~S'''
   Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
-  Compatible with Phoenix Flash messages
+  Replace layout flash groups with `<.toast_group>` and drive toasts from LiveView or the client API.
 
-  ## Examples
+  ## Anatomy
 
-  Toast components is meant to be a replacement for the Core Components and Layout flash group and flash components.
-
-  In your Layout App, you can replace the flash group `<.flash_group flash={@flash} />` components by the toast group
+  ### Layout flash
 
   ```heex
-    <.toast_group id="layout-toast" flash={@flash} class="toast">
-      <:loading>
-        <.heroicon name="hero-arrow-path" />
-      </:loading>
-    </.toast_group>
+  <.toast_group id="layout-toast" flash={@flash} class="toast">
+    <:loading>
+      <.heroicon name="hero-arrow-path" />
+    </:loading>
+  </.toast_group>
   ```
 
-  ## API Control
-
-  ***Client-side***
+  ### Flash defaults
 
   ```heex
-  <button phx-click={Corex.Toast.create_toast("layout-toast", "This is an info toast", "This is an info toast description", :info, [])} class="button">
-   Create Info Toast
-  </button>
-
-  <div phx-disconnected={Corex.Toast.create_toast("layout-toast", "We can't find the internet", "Attempting to reconnect", :info, [duration: :infinity, loading: true])}></div>
-
+  <.toast_group
+    id="layout-toast"
+    class="toast"
+    flash={@flash}
+    flash_info={%{title: "Success", type: :success, duration: 5000}}
+    flash_error={%{title: "Error", type: :error, duration: :infinity}}
+  />
   ```
 
-  ***Server-side***
+  ## API
+
+  Target a toast group by its DOM `id` on `<.toast_group>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`create/5`](#create/5) | Create toast (client) | `%Phoenix.LiveView.JS{}` |
+  | [`create/6`](#create/6) | Create toast (server) | `socket` |
+  | [`update/3`](#update/3) | Update toast (client) | `%Phoenix.LiveView.JS{}` |
+  | [`update/4`](#update/4) | Update toast (server) | `socket` |
+  | [`remove/2`](#remove/2) | Remove toast immediately (client) | `%Phoenix.LiveView.JS{}` |
+  | [`remove/3`](#remove/3) | Remove toast immediately (server) | `socket` |
+  | [`dismiss/2`](#dismiss/2) | Dismiss with lifecycle (client) | `%Phoenix.LiveView.JS{}` |
+  | [`dismiss/3`](#dismiss/3) | Dismiss with lifecycle (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### create (client)
+
+  ```heex
+  <.action
+    phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
+    class="button button--sm"
+  >
+    Info
+  </.action>
+  ```
+
+  ### create (server)
 
   ```elixir
   def handle_event("create_info_toast", _, socket) do
-    {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "This is an info toast", "This is an info toast description", :info, 5000)}
+    {:noreply,
+     Corex.Toast.create(
+       socket,
+       "layout-toast",
+       "Info",
+       "Info description",
+       :info,
+       duration: 5000
+     )}
   end
   ```
 
-  ## Flash Messages
-  You can use the `flash` attribute to display flash messages as toasts.
-  Optional `flash_info` and `flash_error` accept maps with atom keys `title`, `type`, and `duration` for defaults when rendering info and error flashes.
-  The description comes from the Phoenix flash message.
+  <!-- tabs-close -->
 
-  ```heex
+  `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label`, `js`, optional `class`.
 
-  <.toast_group
-  id="layout-toast"
-  class="toast"
-  flash={@flash}
-  flash_info={%{title: "Success", type: :success, duration: 5000}}
-  flash_error={%{title: "Error", type: :error, duration: :infinity}}/>
-  ```
+  ## Style
 
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `toast.css`, then set `class="toast"` on `<.toast_group>`.
 
   ```css
   [data-scope="toast"][data-part="group"] {}
@@ -64,41 +86,72 @@ defmodule Corex.Toast do
   [data-scope="toast"][data-part="title"] {}
   [data-scope="toast"][data-part="description"] {}
   [data-scope="toast"][data-part="close-trigger"] {}
+  [data-scope="toast"][data-part="action-trigger"] {}
   ```
-
-  If you wish to use the default Corex styling, you can use the class `toast` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/toast.css";
   ```
-  """
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for Toast component strings (default titles for flash messages).
+  Stack modifiers on the group host (`class` on `<.toast_group>`).
 
-    Without gettext: `translation={%Toast.Translation{ info: "Info", error: "Error" }}`
+  <!-- tabs-open -->
 
-    With gettext: `translation={%Toast.Translation{ info: Corex.Gettext.gettext("Info"), error: Corex.Gettext.gettext("Error") }}`
-    """
-    defstruct [:info, :error]
-  end
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `toast` |
+  | Accent | `toast toast--accent` |
+  | Brand | `toast toast--brand` |
+  | Alert | `toast toast--alert` |
+  | Info | `toast toast--info` |
+  | Success | `toast toast--success` |
+
+  <!-- tabs-close -->
+
+  '''
 
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   alias Corex.Flash
+  alias Corex.Toast.Payload, as: ToastPayload
+  alias Corex.Toast.Translation
   alias Phoenix.LiveView.JS
 
+  defp toast_duration_dispatch_string(:infinity), do: "Infinity"
+  defp toast_duration_dispatch_string(v), do: v
+
+  defp toast_dispatch_type_string(:info), do: "info"
+  defp toast_dispatch_type_string(:success), do: "success"
+  defp toast_dispatch_type_string(:error), do: "error"
+  defp toast_dispatch_type_string(_), do: nil
+
+  defp toast_dispatch_type_str(type, fallback) do
+    case toast_dispatch_type_string(type) do
+      nil -> fallback
+      s -> s
+    end
+  end
+
+  defp assign_toast_dispatch_strings(assigns, type_fallback) do
+    assigns
+    |> assign(:type_str, toast_dispatch_type_str(assigns.type, type_fallback))
+    |> assign(:duration_str, toast_duration_dispatch_string(assigns.duration))
+  end
+
+  @doc type: :component
   @doc """
   Renders a toast group (toaster) that manages multiple toast notifications.
 
   This component should be rendered once in your layout.
 
-  ## Examples
+  ## Anatomy
 
   ```heex
    <.toast_group id="layout-toast" class="toast" flash={@flash}>
@@ -127,7 +180,7 @@ defmodule Corex.Toast do
 
   attr(:placement, :string,
     default: "bottom-end",
-    values: ~w(top-start top top-end bottom-start bottom bottom-end),
+    values: ~W(top-start top top-end bottom-start bottom bottom-end),
     doc: "Where toasts appear on screen"
   )
 
@@ -140,12 +193,14 @@ defmodule Corex.Toast do
 
   attr(:flash_info, :any,
     default: nil,
-    doc: "Defaults for info flashes: map or struct with title, type, and duration keys"
+    doc:
+      "Defaults for `:info` flashes: [`Corex.Flash.Info`](Corex.Flash.Info.html), map, or omit for translation defaults"
   )
 
   attr(:flash_error, :any,
     default: nil,
-    doc: "Defaults for error flashes: map or struct with title, type, and duration keys"
+    doc:
+      "Defaults for `:error` flashes: [`Corex.Flash.Error`](Corex.Flash.Error.html), map, or omit for translation defaults"
   )
 
   attr(:translation, Corex.Toast.Translation,
@@ -168,12 +223,7 @@ defmodule Corex.Toast do
     info_flash = Phoenix.Flash.get(assigns.flash, :info)
     error_flash = Phoenix.Flash.get(assigns.flash, :error)
 
-    default_translation = %Translation{
-      info: Corex.Gettext.gettext("Info"),
-      error: Corex.Gettext.gettext("Error")
-    }
-
-    translation = merge_translation(assigns[:translation], default_translation)
+    translation = Translation.resolve(assigns[:translation])
 
     flash_info =
       Map.get(assigns, :flash_info) ||
@@ -220,12 +270,12 @@ defmodule Corex.Toast do
       </div>
       <div
         :if={@info_flash}
-        phx-mounted={create_toast(@id, @flash_info.title, @info_flash, @flash_info.type, [duration: @flash_info.duration])}
+        phx-mounted={create(@id, @flash_info.title, @info_flash, @flash_info.type, [duration: @flash_info.duration])}
       >
       </div>
       <div
         :if={@error_flash}
-        phx-mounted={create_toast(@id, @flash_error.title, @error_flash, @flash_error.type, [duration: @flash_error.duration])}
+        phx-mounted={create(@id, @flash_error.title, @error_flash, @flash_error.type, [duration: @flash_error.duration])}
       >
       </div>
     </div>
@@ -240,7 +290,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects a client-side connection error.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_client_error
         toast_group_id="layout-toast"
@@ -258,20 +308,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_client_error(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "info")
 
     ~H"""
     <div
@@ -303,7 +340,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects a server-side connection error.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_server_error
         toast_group_id="layout-toast"
@@ -321,20 +358,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_server_error(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "error"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "error")
 
     ~H"""
     <div
@@ -366,7 +390,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects that the connection has been restored.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_connected
         toast_group_id="layout-toast"
@@ -383,20 +407,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: 5000)
 
   def toast_connected(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "success"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "success")
 
     ~H"""
     <div
@@ -425,7 +436,7 @@ defmodule Corex.Toast do
   This component should be placed in your layout and will automatically
   create a toast when Phoenix LiveView detects that the connection has been lost.
 
-  ## Examples
+  ## Anatomy
 
       <.toast_disconnected
         toast_group_id="layout-toast"
@@ -443,20 +454,7 @@ defmodule Corex.Toast do
   attr(:duration, :any, default: :infinity)
 
   def toast_disconnected(assigns) do
-    type_str =
-      case assigns.type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    duration_str = if assigns.duration == :infinity, do: "Infinity", else: assigns.duration
-
-    assigns =
-      assigns
-      |> assign(:type_str, type_str)
-      |> assign(:duration_str, duration_str)
+    assigns = assign_toast_dispatch_strings(assigns, "info")
 
     ~H"""
     <div
@@ -479,99 +477,135 @@ defmodule Corex.Toast do
     """
   end
 
-  defp merge_translation(nil, default), do: default
+  api_doc(~S"""
+  Append a toast from `phx-click`. Dispatches `toast:create` on the toast group host (`id`). Optional keyword `opts`: `:id`, `:duration`, `:loading`, `:priority`, `:action`.
 
-  defp merge_translation(partial, default) do
-    %Translation{
-      info: partial.info || default.info,
-      error: partial.error || default.error
-    }
-  end
+  ```heex
+  <.action phx-click={Corex.Toast.create("toast-group-id", "Saved", "Draft stored.", :info, duration: 4_000)}>Notify</.action>
+  <.toast_group id="toast-group-id" placement="bottom-end" />
+  ```
 
-  @doc type: :api
-  @doc """
-  Creates a toast notification programmatically (client-side).
+  ```javascript
+  document.getElementById("toast-group-id")?.dispatchEvent(
+    new CustomEvent("toast:create", {
+      bubbles: true,
+      detail: { title: "Saved", description: "OK.", type: "info", duration: 4000 },
+    })
+  );
+  ```
+  """)
 
-  This function returns a JS command that can be used in event handlers.
-
-  ## Examples
-
-      <button phx-click={Corex.Toast.create_toast("layout-toast", "Saved!", "Your changes have been saved.", :success, [])}>
-        Save
-      </button>
-
-      <button phx-click={Corex.Toast.create_toast("layout-toast", "Loading...", nil, :info, [duration: :infinity, loading: true])}>
-        Show Loading
-      </button>
-
-  Option `loading: true` (default `false`) shows the loading slot; use it with `duration: :infinity` when you want a spinner, or with any duration to show the template.
-  """
-  def create_toast(toast_group_id, title, description, type, opts)
-      when is_binary(toast_group_id) do
-    duration = Keyword.get(opts, :duration, 5000)
-    loading = Keyword.get(opts, :loading, false)
-    duration_str = if duration == :infinity, do: "Infinity", else: duration
-
-    type_str =
-      case type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    base_detail = %{
-      title: title,
-      description: description,
-      type: type_str,
-      duration: duration_str
-    }
-
-    detail = if(loading, do: Map.put(base_detail, :loading, true), else: base_detail)
-
+  def create(toast_group_id, title, description, type, opts)
+      when is_binary(toast_group_id) and is_list(opts) do
+    detail = ToastPayload.create_detail(title, description, type, opts)
     JS.dispatch("toast:create", to: "##{toast_group_id}", detail: detail)
   end
 
-  @doc type: :api
-  @doc """
-  Server-side function to push a toast event to the client.
+  api_doc(~S"""
+  Append a toast from `handle_event` (`toast-create`). Payload includes `groupId` plus Zag fields assembled from the same arguments.
 
-  Use this in your LiveView event handlers.
+  ```elixir
+  def handle_event("notify", _, socket) do
+    {:noreply, Corex.Toast.create(socket, "toast-group-id", "Done", "Completed.", :success, duration: 3_000)}
+  end
+  ```
+  """)
 
-  ## Examples
-
-      def handle_event("save", _params, socket) do
-        {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "Saved!", "Your changes have been saved.", :success, 5000)}
-      end
-
-  Optional opts: `loading: true` shows the `<:loading>` template in the toast (independent of duration). Default is `false`.
-
-      push_toast(socket, "t", "Title", nil, :info, :infinity, loading: true)
-  """
-  def push_toast(socket, toast_group_id, title, description, type, duration, opts \\ [])
+  def create(socket, toast_group_id, title, description, type, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
              is_list(opts) do
-    duration_str = if duration == :infinity, do: "Infinity", else: duration
-    loading = Keyword.get(opts, :loading, false)
-
-    type_str =
-      case type do
-        :info -> "info"
-        :success -> "success"
-        :error -> "error"
-        _ -> "info"
-      end
-
-    base = %{
-      groupId: toast_group_id,
-      title: title,
-      description: description,
-      type: type_str,
-      duration: duration_str
-    }
-
-    data = if(loading, do: Map.put(base, :loading, true), else: base)
-
+    data = ToastPayload.create_server_data(toast_group_id, title, description, type, opts)
     Phoenix.LiveView.push_event(socket, "toast-create", data)
+  end
+
+  api_doc(~S"""
+  Patch an existing toast from `phx-click`. Dispatches `toast:update` with `detail.id` and optional fields from `attrs` (map or keyword list).
+
+  ```heex
+  <.action phx-click={Corex.Toast.update("toast-group-id", @toast_id, title: "Uploading…", loading: true)}>Update</.action>
+  <.toast_group id="toast-group-id" />
+  ```
+  """)
+
+  def update(toast_group_id, toast_id, attrs)
+      when is_binary(toast_group_id) and is_binary(toast_id) and (is_map(attrs) or is_list(attrs)) do
+    detail = ToastPayload.update_detail(toast_id, attrs)
+    JS.dispatch("toast:update", to: "##{toast_group_id}", detail: detail)
+  end
+
+  api_doc(~S"""
+  Patch an existing toast from `handle_event` (`toast-update`).
+
+  ```elixir
+  def handle_event("patch_toast", %{"id" => id}, socket) do
+    {:noreply, Corex.Toast.update(socket, "toast-group-id", id, %{title: "Finished", loading: false})}
+  end
+  ```
+  """)
+
+  def update(socket, toast_group_id, toast_id, attrs)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
+             is_binary(toast_id) and
+             (is_map(attrs) or is_list(attrs)) do
+    data = ToastPayload.update_server_data(toast_group_id, toast_id, attrs)
+    Phoenix.LiveView.push_event(socket, "toast-update", data)
+  end
+
+  api_doc(~S"""
+  Remove a toast immediately from `phx-click`. Dispatches `toast:remove` with `detail.id`.
+
+  ```heex
+  <.action phx-click={Corex.Toast.remove("toast-group-id", @toast_id)}>Remove</.action>
+  <.toast_group id="toast-group-id" />
+  ```
+  """)
+
+  def remove(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
+    JS.dispatch("toast:remove", to: "##{toast_group_id}", detail: %{id: toast_id})
+  end
+
+  api_doc(~S"""
+  Remove a toast immediately from `handle_event` (`toast-remove`).
+
+  ```elixir
+  def handle_event("drop_toast", %{"id" => id}, socket) do
+    {:noreply, Corex.Toast.remove(socket, "toast-group-id", id)}
+  end
+  ```
+  """)
+
+  def remove(socket, toast_group_id, toast_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
+             is_binary(toast_id) do
+    Phoenix.LiveView.push_event(socket, "toast-remove", %{groupId: toast_group_id, id: toast_id})
+  end
+
+  api_doc(~S"""
+  Begin dismiss animation from `phx-click`. Dispatches `toast:dismiss` with `detail.id`.
+
+  ```heex
+  <.action phx-click={Corex.Toast.dismiss("toast-group-id", @toast_id)}>Dismiss</.action>
+  <.toast_group id="toast-group-id" />
+  ```
+  """)
+
+  def dismiss(toast_group_id, toast_id) when is_binary(toast_group_id) and is_binary(toast_id) do
+    JS.dispatch("toast:dismiss", to: "##{toast_group_id}", detail: %{id: toast_id})
+  end
+
+  api_doc(~S"""
+  Begin dismiss animation from `handle_event` (`toast-dismiss`).
+
+  ```elixir
+  def handle_event("fade_out", %{"id" => id}, socket) do
+    {:noreply, Corex.Toast.dismiss(socket, "toast-group-id", id)}
+  end
+  ```
+  """)
+
+  def dismiss(socket, toast_group_id, toast_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toast_group_id) and
+             is_binary(toast_id) do
+    Phoenix.LiveView.push_event(socket, "toast-dismiss", %{groupId: toast_group_id, id: toast_id})
   end
 end

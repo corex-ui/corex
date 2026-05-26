@@ -1,7 +1,4 @@
 import {
-  readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
-import {
   __publicField,
   addPoints,
   createRect,
@@ -12,6 +9,9 @@ import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
+  readPositioningOptions
+} from "./chunks/chunk-VJGUNSK5.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -19,7 +19,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -46,7 +46,7 @@ import {
   resizeObserverBorderBox,
   subscribe,
   trackPointerMove
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+floating-panel@1.40.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
@@ -1422,7 +1422,7 @@ var FloatingPanel = class extends Component {
   }
 };
 
-// lib/floating-panel-anchor.ts
+// hooks/floating-panel.ts
 function anchorPointFromPositioning(positioning, details, panelSize, dir) {
   const boundaryRect = details.boundaryRect;
   if (!boundaryRect) return void 0;
@@ -1479,8 +1479,6 @@ function anchorPointFromPositioning(positioning, details, panelSize, dir) {
     y: yCenter + mainAxis
   };
 }
-
-// hooks/floating-panel.ts
 function parseSize(val) {
   if (!val) return void 0;
   try {
@@ -1604,7 +1602,6 @@ var FloatingPanelHook = {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
-      defaultPosition: anchorProps.defaultPosition,
       getAnchorPosition: anchorProps.getAnchorPosition
     });
   },
@@ -1617,5 +1614,8 @@ var FloatingPanelHook = {
   }
 };
 export {
-  FloatingPanelHook as FloatingPanel
+  FloatingPanelHook as FloatingPanel,
+  buildAnchorProps,
+  parsePoint,
+  parseSize
 };

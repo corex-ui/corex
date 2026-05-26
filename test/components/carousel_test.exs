@@ -1,5 +1,6 @@
 defmodule Corex.CarouselTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Carousel
   alias Corex.Carousel.Connect
@@ -9,8 +10,38 @@ defmodule Corex.CarouselTest do
       html = render_component(&CorexTest.ComponentHelpers.render_carousel/1, [])
       assert html =~ ~r/data-scope="carousel"/
       assert html =~ ~r/data-part="root"/
-      assert html =~ ~r//
+      assert html =~ ~r/src=/
       assert html =~ ~r/phx-mounted=/
+    end
+
+    test "renders multiple slides with vertical layout" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Carousel.carousel
+              id="carousel-multi"
+              items={[
+                Corex.Image.new("/a.jpg", alt: "A"),
+                Corex.Image.new("/b.jpg", alt: "B")
+              ]}
+              orientation="vertical"
+              slides_per_page={2}
+              spacing="8px"
+              autoplay
+            >
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+            </Carousel.carousel>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-orientation="vertical")
+      assert html =~ ~S(data-part="indicator-group")
     end
   end
 
@@ -42,6 +73,35 @@ defmodule Corex.CarouselTest do
 
       result = Connect.root(assigns)
       assert result["data-orientation"] == "vertical"
+    end
+  end
+
+  describe "Connect.indicator/1" do
+    test "marks first indicator current when page is 1" do
+      result =
+        Connect.indicator(%{
+          id: "test-carousel",
+          index: 0,
+          page: 1,
+          orientation: "horizontal",
+          dir: "ltr"
+        })
+
+      assert result["data-current"] == ""
+      assert result["data-index"] == "0"
+    end
+
+    test "marks second indicator current when page is 2" do
+      result =
+        Connect.indicator(%{
+          id: "test-carousel",
+          index: 1,
+          page: 2,
+          orientation: "horizontal",
+          dir: "ltr"
+        })
+
+      assert result["data-current"] == ""
     end
   end
 

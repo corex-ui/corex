@@ -46,12 +46,13 @@ defmodule E2eWeb.PasswordInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="password-input-api-page"
         title="Password Input · API"
         subtitle="LiveView push, client DOM events, programmatic visibility, and a native radio form."
       >
         <.demo_section
-          id="password-input-api-binding"
+          id="password-input-api-binding-section"
           title="LiveView binding"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: Demo.api_binding_heex()},
@@ -64,7 +65,7 @@ defmodule E2eWeb.PasswordInputApiLive do
             },
             %{
               value: "initial_elixir",
-              label: "Initial Elixir",
+              label: ~t"Initial Elixir",
               language: :elixir,
               code: Demo.api_initial_elixir()
             }
@@ -74,23 +75,23 @@ defmodule E2eWeb.PasswordInputApiLive do
         </.demo_section>
 
         <.demo_section
-          id="password-input-api-client"
-          title="Client JS"
+          id="password-input-api-client-section"
+          title={~t"Client JS"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_client_heex()},
-            %{value: "js", label: "JS", language: :js, code: Demo.api_client_js()},
-            %{value: "ts", label: "TS", language: :javascript, code: Demo.api_client_ts()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_client_heex()},
+            %{value: "js", label: ~t"JS", language: :js, code: Demo.api_client_js()},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: Demo.api_client_ts()}
           ]}
         >
           <:preview><Demo.api_client_example /></:preview>
         </.demo_section>
 
         <.demo_section
-          id="password-input-api-server"
-          title="Set visibility (Server)"
+          id="password-input-api-server-section"
+          title={~t"Set visibility (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: Demo.api_server_heex()},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: Demo.api_server_elixir()}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: Demo.api_server_heex()},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: Demo.api_server_elixir()}
           ]}
         >
           <:preview><Demo.api_server_example /></:preview>
@@ -98,10 +99,15 @@ defmodule E2eWeb.PasswordInputApiLive do
 
         <.demo_section
           id="password-input-api-native-form"
-          title="Native form (plain HTML)"
+          title={~t"Native form (plain HTML)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: RadioGroupDemo.form_native_heex()},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: RadioGroupDemo.form_ecto()}
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
+              code: RadioGroupDemo.form_native_heex()
+            },
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: RadioGroupDemo.form_ecto()}
           ]}
         >
           <:preview><RadioGroupDemo.form_preview_controller_native /></:preview>

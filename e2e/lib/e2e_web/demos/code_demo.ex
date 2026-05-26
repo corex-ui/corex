@@ -52,16 +52,23 @@ defmodule E2eWeb.Demos.CodeDemo do
     ~S"""
     <div class="relative w-full">
       <.clipboard
-        id="example-copy"
         class="clipboard "
-        value={E2eWeb.Demos.CodeDemo.examples().elixir}
+        value={\"\"\"
+    def hello(name) do
+      "Hello, #{name}!"
+    end
+    \"\"\"}
         input={false}
         trigger_aria_label="Copy code"
       >
         <:copy><.heroicon name="hero-clipboard" /></:copy>
         <:copied><.heroicon name="hero-check" /></:copied>
       </.clipboard>
-      <.code class="code" language={:elixir} code={E2eWeb.Demos.CodeDemo.examples().elixir} />
+      <.code class="code" language={:elixir} code={\"\"\"
+    def hello(name) do
+      "Hello, #{name}!"
+    end
+    \"\"\"} />
     </div>
     """
   end
@@ -77,8 +84,14 @@ defmodule E2eWeb.Demos.CodeDemo do
   end
 
   def anatomy_from_file_code do
-    ~S"""
-    <.code class="code" language={:elixir} code={E2eWeb.CodeExamples.load("hello.ex")} />
+    """
+    <.code class="code" language={:elixir} code={\"\"\"
+    defmodule Hello do
+      def world do
+        "Hello, World!"
+      end
+    end
+    \"\"\"} />
     """
   end
 

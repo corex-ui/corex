@@ -2,37 +2,47 @@ defmodule E2eWeb.SwitchFormLivePushTest do
   use E2eWeb.ConnCase, async: false
   import Phoenix.LiveViewTest
 
-  test "live changeset submit without toggle pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+  @form_id "#switch-live-form-ecto"
 
-    view |> form("#switch-form-live") |> render_submit()
-
-    assert_push_event(view, "toast-create", %{
-      description: "Submitted: notifications=false",
-      duration: 5000,
-      groupId: "layout-toast",
-      title: "Submitted",
-      type: "info"
-    })
-  end
-
-  test "changeset validate shows cast error for invalid boolean", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+  test "ecto validate shows acceptance error when unchecked", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     html =
       view
-      |> form("#switch-form-live")
-      |> render_change(%{"preferences" => %{"notifications" => "invalid"}})
+      |> form(@form_id)
+      |> render_change(%{"preferences_ecto" => %{"notifications" => "false"}})
+
+    assert html =~ "must be accepted"
+    refute html =~ ~r/\bdata-invalid=""/
+  end
+
+  test "ecto save when not accepted shows error markup", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
+
+    html = view |> form(@form_id) |> render_submit()
+
+    assert html =~ "must be accepted"
+    refute html =~ ~r/\bdata-invalid=""/
+    refute_push_event(view, "toast-create", %{})
+  end
+
+  test "validate shows cast error for invalid boolean", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
+
+    html =
+      view
+      |> form(@form_id)
+      |> render_change(%{"preferences_ecto" => %{"notifications" => "invalid"}})
 
     assert html =~ "is invalid"
   end
 
-  test "changeset save with notifications true pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+  test "save with notifications true pushes toast-create", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     view
-    |> form("#switch-form-live")
-    |> render_submit(%{"preferences" => %{"notifications" => "true"}})
+    |> form(@form_id)
+    |> render_submit(%{"preferences_ecto" => %{"notifications" => "true"}})
 
     assert_push_event(view, "toast-create", %{
       description: "Submitted: notifications=true",
@@ -43,40 +53,13 @@ defmodule E2eWeb.SwitchFormLivePushTest do
     })
   end
 
-  test "validate_strict shows cast error for invalid boolean", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
+  test "save with invalid boolean shows error markup", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/switch/live-form")
 
     html =
       view
-      |> form("#switch-strict-form-live")
-      |> render_change(%{"preferences_strict" => %{"notifications" => "invalid"}})
-
-    assert html =~ "is invalid"
-  end
-
-  test "save_strict with notifications true pushes toast-create", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
-
-    view
-    |> form("#switch-strict-form-live")
-    |> render_submit(%{"preferences_strict" => %{"notifications" => "true"}})
-
-    assert_push_event(view, "toast-create", %{
-      description: "Submitted: notifications=true",
-      duration: 5000,
-      groupId: "layout-toast",
-      title: "Submitted",
-      type: "info"
-    })
-  end
-
-  test "save_strict with invalid boolean shows error markup", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/switch/live-form")
-
-    html =
-      view
-      |> form("#switch-strict-form-live")
-      |> render_submit(%{"preferences_strict" => %{"notifications" => "invalid"}})
+      |> form(@form_id)
+      |> render_submit(%{"preferences_ecto" => %{"notifications" => "invalid"}})
 
     assert html =~ "is invalid"
   end

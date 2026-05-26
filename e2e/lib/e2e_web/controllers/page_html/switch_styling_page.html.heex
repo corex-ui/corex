@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="switch-styling-page"
-    title="Switch Style"
-    subtitle="Semantic colors and density (sm–xl) via modifier classes on the root."
+    title={~t"Switch · Style"}
+    subtitle={~t"Semantic colors and density (sm–xl) via modifier classes on the root."}
   >
     <.demo_section
       id="switch-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.SwitchDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="switch-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.SwitchDemo.styling_size_code()}
     >
       <:preview>

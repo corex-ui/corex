@@ -2,16 +2,24 @@
 
 ## Introduction
 
-This guide walks through wiring **locale-aware URLs and content** into a Phoenix + Corex app using the [`localize_web`](https://hex.pm/packages/localize_web) library. The result is:
+You add locale-aware URLs and translated content to a Phoenix + Corex app with [`localize_web`](https://hex.pm/packages/localize_web). Visitors get paths like `/en/home` and `/fr/home`, correct `lang` and `dir` on `<html>`, and a language switcher that keeps the same page when changing locale.
 
-- URLs that include a locale prefix (e.g. `/en/home`, `/fr/home`)
-- A `<html lang="..." dir="...">` that reflects the active locale, with **RTL automatic** for languages like Arabic
-- A `<.select>` language switcher that swaps locales while preserving the current page
-- Gettext-driven translations for component labels and your own strings
+Static Tableau sites use permalink-based locales instead—see [Tableau Localize](tableau_localize.html).
 
-If you ran `mix corex.new my_app --lang`, the installer wrote the modules and layout wiring described here. Use this guide to understand what that produced, or to wire it by hand in an existing app.
+## Before you start
 
-For the underlying Corex install, see [Manual installation](manual_installation.html).
+| Requirement | Notes |
+| ----------- | ----- |
+| Phoenix + Gettext | `phx.new` includes Gettext |
+| `localize_web` | Add to `mix.exs` deps |
+| Corex | [Manual installation](manual_installation.html) |
+
+## How it works
+
+1. **`localize_web`** resolves locale from path, session, and `Accept-Language`.
+2. **`localize do`** scopes wrap localized routes.
+3. **`MyAppWeb.Locale`** builds switcher paths and CLDR-backed `dir` for RTL.
+4. **Gettext** translates template and component strings.
 
 ### The problem
 
@@ -43,7 +51,7 @@ Add `localize_web` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.5"},
+    {:corex, "~> 0.1.0-rc.0"},
     {:localize_web, "~> 0.5"}
   ]
 end
@@ -57,7 +65,7 @@ mix deps.get
 
 **What `mix corex.new --lang` generates**
 
-The installer injects **`locales: ~w(en ar)`** into **`use Gettext.Backend`** in **`lib/my_app_web/gettext.ex`** and adds **`config :localize, supported_locales: [:en, :ar]`** to **`config/config.exs`**. Those two lists should stay aligned when you add or remove locales.
+The installer injects **`locales: ~w(en fr ar)`** into **`use Gettext.Backend`** in **`lib/my_app_web/gettext.ex`**, adds **`config :localize, supported_locales: [:en, :fr, :ar]`** to **`config/config.exs`**, adds **`{:gettext_sigils, "~> 0.5"}`**, patches **`html_helpers`** to **`use GettextSigils`**, wraps scaffold copy in **`~t"..."`**, and copies starter **`priv/gettext`** PO files for English, French, and Arabic. Keep Gettext and Localize locale lists aligned when you add or remove locales.
 
 **Manual / existing apps**
 
@@ -68,7 +76,7 @@ defmodule MyAppWeb.Gettext do
   use Gettext.Backend,
     otp_app: :my_app,
     default_locale: "en",
-    locales: ~w(en ar)
+    locales: ~w(en fr ar)
 end
 ```
 
@@ -76,7 +84,7 @@ Point **`localize`** at the same set of locales (atoms). One approach is **`conf
 
 ```elixir
 config :localize,
-  supported_locales: [:en, :ar]
+  supported_locales: [:en, :fr, :ar]
 ```
 
 Another approach is **`config/runtime.exs`** so the list tracks Gettext:
@@ -88,15 +96,16 @@ config :localize,
   supported_locales: Gettext.known_locales(MyAppWeb.Gettext) |> Enum.map(&String.to_atom/1)
 ```
 
-While you're in config, point Corex at the same Gettext backend so its components use your translations. In **`config/config.exs`**:
+While you're in config, set the Phoenix Gettext backend so Corex components use your translations. In **`config/config.exs`**:
 
 ```elixir
-config :corex,
-  gettext_backend: MyAppWeb.Gettext,
-  json_library: Jason
+config :phoenix,
+  gettext_backend: MyAppWeb.Gettext
 ```
 
-### Download CLDR locale files (`mix localize.download_locales`)
+Corex reads **`config :phoenix, :gettext_backend`** (the same key Phoenix uses for `gettext/1` in templates).
+
+### Download CLDR locale files (mix localize.download_locales)
 
 The [`localize`](https://hex.pm/packages/localize) dependency (pulled in by `localize_web`) serves formatting, validation, and locale display names from Unicode CLDR data stored in an **on-disk cache**. Until a locale’s data is present there, APIs such as `Localize.Locale.display_name/2`, `Localize.Locale.get/3` (used for RTL **`dir`** in **`MyAppWeb.Locale.dir/0`**), and **`Locale.label/1`** in the language switcher may not resolve that locale cleanly and may fall back.
 
@@ -109,22 +118,34 @@ mix localize.download_locales
 Or request specific locale ids:
 
 ```bash
-mix localize.download_locales en ar
+mix localize.download_locales en fr ar
 ```
 
 Files are written under the app’s build output (for example `_build/dev/lib/localize/priv/localize/locales/`). In Docker or CI, run **`mix localize.download_locales`** during the image build so production ships with the cache; alternatively set **`config :localize, allow_runtime_locale_download: true`** so missing locales are fetched from the Localize CDN on first use (often avoided in production in favor of pre-downloading).
 
 You can hook the task into setup-style pipelines - for example **`mix setup`** - alongside asset tooling so new clones get CLDR data without an extra manual step.
 
-## 3. Phoenix verified routes (default vs optional `path_prefixes`)
+## 3. Phoenix verified routes and `path_prefixes`
 
-[`mix corex.new --lang`](installation.html) keeps the stock **`Phoenix.VerifiedRoutes`** setup: **`endpoint`**, **`router`**, and **`statics`** only  -  **no** [`path_prefixes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html#module-localized-routes-and-path-prefixes). Static assets and route helpers behave like a typical Phoenix app; localized page URLs still come from your router (**`localize do … end`**) and plugs.
+[`mix corex.new --lang`](installation.html) configures [`path_prefixes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html#module-localized-routes-and-path-prefixes) on **`Phoenix.VerifiedRoutes`** in **`lib/my_app_web.ex`**
 
-### Optional: prefix `~p` with the active locale
+```elixir
+use Phoenix.VerifiedRoutes,
+  endpoint: MyAppWeb.Endpoint,
+  router: MyAppWeb.Router,
+  statics: MyAppWeb.static_paths(),
+  path_prefixes: [{MyAppWeb.Locale, :current, []}]
+```
 
-If you want **`~p"/foo"`** to expand to paths that include the leading locale segment, add a **`path_prefixes`** entry whose MFA returns the active locale segment (derived from **`Localize.get_locale()`** with a Gettext fallback). Implement a small module function that matches what your app considers the segment (for example mirroring the first segment of **`Locale.swap_path/2`** logic). Confirm against [`Phoenix.VerifiedRoutes`](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+**`MyAppWeb.Locale.current/0`** returns the active locale segment (from **`Localize.get_locale()`** with a Gettext fallback). At runtime, **`~p"/users"`** expands to **`/en/users`** (or the current locale) while your router defines resources under **`scope "/:locale", …`** only.
 
-## 4. Router: `use Localize.Routes`, plugs, and `localize do … end`
+**`mix corex.gen.live`** and **`mix corex.gen.html`** emit plain **`~p"/…"`** paths when **`path_prefixes`** is present. The generator shell instructions tell you to add routes inside the **`/:locale`** scope.
+
+### Without `path_prefixes` (advanced)
+
+If you omit **`path_prefixes`**, **`~p`** expects paths **without** a leading locale segment (for example **`~p"/users/#{user}"`**). Routes must then exist under **`scope "/", …`** as well as under **`scope "/:locale", …`**, or you must add manual **`/#{@locale}`** segments in templates. Confirm behavior with [**Phoenix.VerifiedRoutes**](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+
+## 4. Router: Localize.Routes, plugs, and localize block
 
 In **`lib/my_app_web/router.ex`**, three things change.
 
@@ -181,11 +202,11 @@ end
 
 **`mix corex.new --lang`** also duplicates the **`scope "/"`** block into **`scope "/:locale"`** so helpers and scopes match localized URLs  -  inspect your generated **`router.ex`** for the exact pattern.
 
-With the default **`Phoenix.VerifiedRoutes`** setup (no locale **`path_prefixes`**; see **Scoped routes** earlier in this guide), **`~p`** expects paths **without** a leading locale segment (for example **`~p"/users/#{user}"`**). Routes must therefore exist under **`scope "/", …`** as well as under **`scope "/:locale", …`**. After **`mix corex.gen.live`**, **`mix corex.gen.html`**, or any manual **`router.ex`** edit, add **`live`**, **`resources`**, and other browser routes in **both** scopes so **`/:locale/...`** URLs and verified paths stay aligned. If you adopt **`path_prefixes`** so **`~p`** includes the locale, you can consolidate on a single localized scope instead  -  confirm behavior with [**Phoenix.VerifiedRoutes**](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html) for your Phoenix version.
+After **`mix corex.gen.live`**, **`mix corex.gen.html`**, or any manual **`router.ex`** edit, add **`live`**, **`resources`**, and other browser routes inside the **`scope "/:locale"`** block (not only under **`scope "/"`**). **`path_prefixes`** keeps **`~p`** helpers aligned with those localized routes.
 
 Visiting **`/`** redirects to **`/en`** (or whichever locale the resolver picked). To localize more routes, put them inside the same **`localize do … end`** block, or open additional ones inside their scopes.
 
-## 5. Create `MyAppWeb.Locale`
+## 5. Create MyAppWeb.Locale
 
 Create **`lib/my_app_web/locale.ex`** (this matches the Corex installer template):
 
@@ -207,12 +228,35 @@ defmodule MyAppWeb.Locale do
     loc = to_string(loc)
 
     case Localize.Locale.display_name(loc, locale: loc) do
-      {:ok, name} -> name
+      {:ok, name} -> format_language_select_label(name)
       _ -> String.upcase(loc)
     end
   end
 
   def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
+
+  defp format_language_select_label(name) when is_binary(name) do
+    trimmed = String.trim(name)
+
+    if trimmed == "" do
+      trimmed
+    else
+      if String.match?(trimmed, ~r/^\p{Latin}/u) do
+        trimmed
+        |> String.split(~r/\s+/u, trim: true)
+        |> Enum.map_join(" ", &titlecase_word/1)
+      else
+        trimmed
+      end
+    end
+  end
+
+  defp titlecase_word(word) do
+    case String.next_grapheme(String.downcase(word)) do
+      {first, rest} -> String.upcase(first) <> rest
+      nil -> word
+    end
+  end
 
   def lang do
     Localize.get_locale()
@@ -246,7 +290,7 @@ end
 
 Adding **`ar`** (and downloading CLDR data) is enough for **`dir="rtl"`** where the locale metadata says RTL  -  there is **no separate RTL guide**.
 
-## 6. Root layout: `lang` + `dir`
+## 6. Root layout: lang and dir
 
 Localized apps set **`lang`** and **`dir`** from **`MyAppWeb.Locale`** in **`root.html.heex`**. With Corex Design and mode/theme, the installer template conditionally adds **`data-theme`** / **`data-mode`** on **`<html>`**; align with [Dark mode](dark_mode.html) and [Theming](theming.html) if you hand-wire.
 
@@ -271,7 +315,7 @@ Localized apps set **`lang`** and **`dir`** from **`MyAppWeb.Locale`** in **`roo
 
 Drop **`data-theme`** / **`data-mode`** / **`class="typo layout"`** if you have not enabled [Theming](theming.html), [Dark mode](dark_mode.html), or Corex Design  -  the generator turns those pieces on only when the matching flags are set.
 
-## 7. `Layouts.app`: `current_path` and `language_switch`
+## 7. Layouts.app: current_path and language_switch
 
 The switcher needs the **full request path** (including the locale segment) so **`Locale.swap_path/2`** can rewrite the first segment. **`mix corex.new --lang`** adds a **`:current_path`** assign on **`Layouts.app`** and renders **`<.language_switch>`** in the **footer**.
 
@@ -334,7 +378,7 @@ end
 
 Add **`mode`**, **`theme`**, and other assigns when you use those features.
 
-## 8. LiveViews: `MyAppWeb.Hooks.Layout`
+## 8. LiveViews: Hooks.Layout
 
 **`mix corex.new --lang`** generates **`lib/my_app_web/hooks/layout.ex`** and patches **`lib/my_app_web.ex`** so **`live_view`** contains **`on_mount MyAppWeb.Hooks.Layout`** immediately after **`use Phoenix.LiveView`**:
 
@@ -350,7 +394,7 @@ If you maintain an app without rerunning the installer, add the same **`on_mount
 
 ## 9. Translate strings
 
-With Gettext configured, wrap user-facing strings in **`gettext("...")`** and run the extract / merge cycle whenever you add new ones:
+With Gettext configured, wrap user-facing strings in **`~t"..."`** (from **`gettext_sigils`**, enabled in **`html_helpers`** when you use **`mix corex.new --lang`**) or **`gettext("...")`**, then run the extract / merge cycle whenever you add new ones:
 
 ```bash
 mix gettext.extract
@@ -359,16 +403,16 @@ mix gettext.merge priv/gettext
 
 `mix gettext.extract` rewrites **`priv/gettext/default.pot`** from your source. **`mix gettext.merge priv/gettext`** creates or updates the per-locale **`.po`** files (one for every locale in the **`locales:`** list of your backend).
 
-Open **`priv/gettext/fr/LC_MESSAGES/default.po`** and fill in the **`msgstr`**:
+**`mix corex.new --lang`** ships starter **`priv/gettext/en`**, **`fr`**, and **`ar`** catalogs for the home page and layout scaffold. Open **`priv/gettext/fr/LC_MESSAGES/default.po`** to adjust translations or add new **`msgstr`** entries:
 
 ```
-#: lib/my_app_web/controllers/page_html/home.html.heex:3
+#: lib/my_app_web/controllers/page_html/home.html.heex
 #, elixir-autogen, elixir-format
-msgid "Home"
-msgstr "Accueil"
+msgid "Corex for Phoenix"
+msgstr "Corex pour Phoenix"
 ```
 
-Corex components that expose translatable labels (Select, Editable, Dialog, …) read them from your Gettext backend automatically because of **`config :corex, :gettext_backend, MyAppWeb.Gettext`**. To override a single label without touching the whole catalog, pass a **`Translation`** struct on the component:
+Corex components that expose translatable labels (Select, Editable, Dialog, …) read them from your Gettext backend automatically when **`config :phoenix, :gettext_backend`** is set. To override a single label without touching the whole catalog, pass a **`Translation`** struct on the component:
 
 ```heex
 <.editable translation={%Corex.Editable.Translation{input: "Champ éditable"}} />
@@ -376,19 +420,20 @@ Corex components that expose translatable labels (Select, Editable, Dialog, …)
 
 ## Summary
 
-1. **`localize_web` dep + Gettext**  -  align **`locales:`** on the backend with **`config :localize, :supported_locales`**. Run **`mix localize.download_locales`** so CLDR data exists for **`Locale.dir/0`**, **`Locale.label/1`**, and related APIs.
-2. **`Phoenix.VerifiedRoutes`**  -  **`mix corex.new --lang`** does not add **`path_prefixes`**; add an MFA later if you need locale-prefixed **`~p`** expansion (see Phoenix docs).
+1. **`localize_web` + `gettext_sigils` + Gettext**  -  align **`locales:`** on the backend with **`config :localize, :supported_locales`**. Run **`mix localize.download_locales en fr ar`** so CLDR data exists for **`Locale.dir/0`**, **`Locale.label/1`**, and related APIs.
+2. **`Phoenix.VerifiedRoutes`**  -  **`mix corex.new --lang`** adds **`path_prefixes`** on **`Phoenix.VerifiedRoutes`** for locale-prefixed **`~p`** paths (see section 3).
 3. **Router**  -  **`use Localize.Routes, gettext: ..., helpers: false`** (Corex default), **`Localize.Plug.PutLocale`** with **`from: [:path, :session, :accept_language]`**, **`Localize.Plug.PutSession`**, optional Mode/Theme plugs **after** localize plugs, and **`localize do … end`** around localized routes (plus **`/:locale`** scope as generated).
 4. **`MyAppWeb.Locale`**  -  **`locales`**, **`current`**, **`swap_path`**, **`lang`**, **`dir`**, **`label`** for root layout and switcher.
 5. **`Layouts.app`**  -  **`current_path`** and **`<.language_switch>`** with **`Corex.List.Item`** + **`<.select redirect>`**.
 6. **LiveViews**  -  **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** (installer adds this when **`--lang`**).
-7. **Translations**  -  **`mix gettext.extract`** and **`mix gettext.merge priv/gettext`**, then edit **`.po`** files.
+7. **Translations**  -  **`~t`** in templates, starter **`priv/gettext`** from the installer, then **`mix gettext.extract`** / **`mix gettext.merge priv/gettext`** as you add copy.
 
 This gives you URL-driven locales with a persistent user choice, RTL handling where CLDR says so, and Corex components that follow your Gettext backend.
 
 ## Related
 
-- [Installation](installation.html)  -  the **`--lang`** flag wires the generated files for you.
-- [Dark mode](dark_mode.html) and [Theming](theming.html)  -  orthogonal preferences; the same browser pipeline can carry Mode/Theme plugs alongside localize plugs.
+- [Installation](installation.html) — `mix corex.new --lang`
+- [Tableau Localize](tableau_localize.html) — static site equivalent
+- [Dark mode](dark_mode.html) and [Theming](theming.html) — Mode/Theme plugs after localize plugs when combined
 - [Phoenix verified routes](https://hexdocs.pm/phoenix/Phoenix.VerifiedRoutes.html)  -  what **`~p`** does under the hood.
 - [`localize_web`](https://hex.pm/packages/localize_web)  -  full docs for the routing and CLDR layer.

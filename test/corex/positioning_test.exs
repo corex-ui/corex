@@ -1,28 +1,28 @@
 defmodule Corex.PositioningTest do
   use ExUnit.Case, async: true
 
-  describe "to_dataset/1" do
-    test "emits flat data-position keys for a struct" do
-      p = %Corex.Positioning{placement: "top-start", gutter: 12}
-      m = Corex.Positioning.to_dataset(p)
+  alias Corex.Positioning
 
-      assert m["data-position-placement"] == "top-start"
-      assert m["data-position-gutter"] == "12"
-    end
+  test "to_dataset/1 nil" do
+    assert Positioning.to_dataset(nil) == %{}
+  end
 
-    test "emits offset axis keys when set" do
-      p = %Corex.Positioning{
-        offset: %Corex.Offset{main_axis: 1, cross_axis: 2}
-      }
+  test "to_dataset/1 encodes flip list and offset axes" do
+    dataset =
+      Positioning.to_dataset(%Positioning{
+        flip: ["top", "bottom"],
+        offset: %Corex.Offset{main_axis: 4, cross_axis: -2}
+      })
 
-      m = Corex.Positioning.to_dataset(p)
+    assert dataset["data-position-flip"] == "top,bottom"
+    assert dataset["data-position-offset-main-axis"] == "4"
+    assert dataset["data-position-offset-cross-axis"] == "-2"
+  end
 
-      assert m["data-position-offset-main-axis"] == "1"
-      assert m["data-position-offset-cross-axis"] == "2"
-    end
+  test "to_dataset/1 omits invalid flip and bool values" do
+    dataset = Positioning.to_dataset(%Positioning{flip: :invalid, slide: :invalid})
 
-    test "empty map for nil" do
-      assert Corex.Positioning.to_dataset(nil) == %{}
-    end
+    assert dataset["data-position-flip"] == nil
+    assert dataset["data-position-slide"] == nil
   end
 end

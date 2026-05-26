@@ -1,8 +1,14 @@
 defmodule E2eWeb.ActionPatternsLive do
   use E2eWeb, :live_view
 
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+
   def mount(_params, _session, socket) do
     {:ok, socket}
+  end
+
+  def handle_event("noop", _params, socket) do
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -13,71 +19,36 @@ defmodule E2eWeb.ActionPatternsLive do
       theme={@theme}
       path={@path}
     >
-      <.layout_heading>
-        <:title>Action</:title>
-        <:subtitle>Live View</:subtitle>
-      </.layout_heading>
-      <h3>Anatomy</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2">
-          <.action class="button">Text</.action>
-          <.action class="button">
-            Text and SVG
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.action>
-          <.action class="button button--square" aria_label="Button text">
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.action>
-          <.action class="button button--square" aria_label="Button text">B</.action>
-        </div>
-      </section>
+      <.demo_page
+        path={@path}
+        id="action-patterns-page"
+        title={~t"Action · Pattern"}
+        subtitle={~t"type, phx-click, and Corex JS commands on <.action>."}
+      >
+        <.demo_section
+          id="action-patterns-type"
+          title={~t"Type"}
+          code={E2eWeb.Demos.ActionDemo.patterns_type_code()}
+        >
+          <:preview><E2eWeb.Demos.ActionDemo.patterns_type_example /></:preview>
+        </.demo_section>
 
-      <h3>Color</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2">
-          <.action class="button">Text</.action>
-          <.action class="button button--accent">Text</.action>
-          <.action class="button button--brand">Text</.action>
-          <.action class="button button--alert">Text</.action>
-          <.action class="button button--info">Text</.action>
-          <.action class="button button--success">Text</.action>
-        </div>
-      </section>
+        <.demo_section
+          id="action-patterns-phx-click"
+          title={~t"Trigger · phx-click"}
+          code={E2eWeb.Demos.ActionDemo.patterns_phx_click_code()}
+        >
+          <:preview><E2eWeb.Demos.ActionDemo.patterns_phx_click_example /></:preview>
+        </.demo_section>
 
-      <h3>Size</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2 items-center">
-          <.action class="button button--sm">Button SM</.action>
-          <.action class="button">Button MD</.action>
-          <.action class="button button--lg">Button LG</.action>
-          <.action class="button button--xl">Button XL</.action>
-        </div>
-      </section>
-
-      <h3>Shape</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2 items-center">
-          <.action class="button button--square" aria_label="Square button">
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.action>
-          <.action class="button button--square" aria_label="Square button">B</.action>
-          <.action class="button button--circle" aria_label="Circle button">
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.action>
-          <.action class="button button--circle" aria_label="Circle button">B</.action>
-        </div>
-      </section>
-
-      <h3>Disabled</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2 items-center">
-          <.action class="button" disabled>Text</.action>
-          <.action class="button button--accent" disabled>Text</.action>
-          <.action class="button button--square" aria_label="Disabled" disabled>
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.action>
-        </div>
-      </section>
+        <.demo_section
+          id="action-patterns-phx-click-js"
+          title={~t"Trigger · phx-click JS"}
+          code={E2eWeb.Demos.ActionDemo.patterns_phx_click_js_code()}
+        >
+          <:preview><E2eWeb.Demos.ActionDemo.patterns_phx_click_js_example /></:preview>
+        </.demo_section>
+      </.demo_page>
     </Layouts.app>
     """
   end

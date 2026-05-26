@@ -33,9 +33,14 @@
 @import "../corex/components/scrollbar.css";
 @import "../corex/components/signature-pad.css";
 @import "../corex/components/switch.css";
-@import "../corex/components/toggle-group.css";
+@import "../corex/components/tags-input.css";
 @import "../corex/components/tabs.css";
+@import "../corex/components/timer.css";
+@import "../corex/components/toggle.css";
+@import "../corex/components/toggle-group.css";
+@import "../corex/components/pagination.css";
 @import "../corex/components/tree-view.css";
+@import "./navigation.css";
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";
 @import "../corex/components/badge.css";
@@ -52,7 +57,6 @@
 @import "../corex/components/pin-input.css";
 @import "../corex/components/native-input.css";
 @import "../corex/components/radio-group.css";
-@import "../corex/components/timer.css";
 @import "../corex/components/tooltip.css";
 @import "../corex/components/code.css";
 @import "../corex/components/data-table.css";
@@ -62,14 +66,10 @@
 
 @import "./card.css";
 @import "./home.css";
+@import "./prose.css";
+@import "./blog.css";
+@import "./tetrex.css";
 
-
-.layout__aside-tree [data-scope="tree-view"][data-part="branch-text"],
-.layout__aside-tree [data-scope="tree-view"][data-part="item-text"] {
-  flex: 1 1 0%;
-  min-width: 0;
-  width: auto;
-}
 
 #locale-select.select,
 #locale-select.select [data-scope="select"][data-part="root"],

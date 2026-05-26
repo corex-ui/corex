@@ -14,6 +14,7 @@ defmodule Corex.New.Patches do
       content
       |> ensure_corex_dep(opts)
       |> maybe_ensure_localize_web_dep(opts)
+      |> maybe_ensure_gettext_sigils_dep(opts)
       |> maybe_ensure_designex_dep(opts)
       |> maybe_add_designex_aliases(opts)
       |> maybe_ensure_json_polyfill_dep(opts)
@@ -23,12 +24,17 @@ defmodule Corex.New.Patches do
 
   @doc """
   Inserts `use Corex` inside the `html_helpers/0` quote block of `<app>_web.ex`.
-  Idempotent.
+  When `:lang` is true, also adds `path_prefixes` on `Phoenix.VerifiedRoutes`. Idempotent.
   """
-  def patch_web_module(install_dir, web_module) do
-    path = web_module_path(install_dir, web_module)
+  def patch_web_module(install_dir, web_module, opts \\ []) do
+    path = web_module_path(install_dir, web_module, opts)
     content = File.read!(path)
-    updated = ensure_use_corex_in_html_helpers(content)
+
+    updated =
+      content
+      |> ensure_use_corex_in_html_helpers()
+      |> maybe_patch_verified_routes_for_lang(web_module, opts)
+
     write_if_changed!(path, content, updated)
   end
 
@@ -38,7 +44,7 @@ defmodule Corex.New.Patches do
   """
   def patch_live_view_for_lang(install_dir, web_module, opts) do
     if Keyword.get(opts, :lang, false) do
-      path = web_module_path(install_dir, web_module)
+      path = web_module_path(install_dir, web_module, opts)
       content = File.read!(path)
       updated = maybe_insert_hooks_layout_on_mount(content, web_module)
       write_if_changed!(path, content, updated)
@@ -48,11 +54,59 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  Adds `path_prefixes: [{Web.Locale, :current, []}]` to `Phoenix.VerifiedRoutes` in
+  `<web_module>.ex`. Idempotent. Raises when the patch cannot be applied.
+  """
+  def patch_verified_routes_path_prefixes!(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path = web_module_path(install_dir, web_module, opts)
+      content = File.read!(path)
+      web_str = inspect(web_module)
+      needle = "path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+      if String.contains?(content, needle) do
+        :ok
+      else
+        updated = maybe_insert_verified_routes_path_prefixes(content, web_module)
+
+        if updated == content do
+          Mix.raise("""
+          Could not add path_prefixes to #{path}.
+
+          Expected a verified_routes/0 block with statics: #{web_str}.static_paths().
+          Re-run after updating corex_new: cd corex/installer && mix local.corex --force
+          """)
+        else
+          Mix.shell().info([
+            :green,
+            "* adding path_prefixes to ",
+            :reset,
+            Path.relative_to_cwd(path)
+          ])
+
+          File.write!(path, updated)
+          :ok
+        end
+      end
+    else
+      :ok
+    end
+  end
+
+  defp maybe_patch_verified_routes_for_lang(content, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      maybe_insert_verified_routes_path_prefixes(content, web_module)
+    else
+      content
+    end
+  end
+
+  @doc """
   Inserts Corex plugs into the `:browser` pipeline in `router.ex`,
   plus (when lang?) `use Localize.Routes` and a locale scope. Idempotent.
   """
   def patch_router(install_dir, web_module, opts) do
-    path = router_path(install_dir, web_module)
+    path = router_path(install_dir, web_module, opts)
     content = File.read!(path)
 
     updated =
@@ -71,7 +125,7 @@ defmodule Corex.New.Patches do
   Idempotent.
   """
   def patch_endpoint(install_dir, web_module, opts) do
-    path = endpoint_path(install_dir, web_module)
+    path = endpoint_path(install_dir, web_module, opts)
     content = File.read!(path)
     updated = maybe_insert_corex_mcp_plug(content, opts)
     write_if_changed!(path, content, updated)
@@ -94,6 +148,7 @@ defmodule Corex.New.Patches do
       content
       |> maybe_add_themes_to_app_config(opts)
       |> maybe_add_localize_config(opts)
+      |> maybe_add_corex_generators_config(opts)
       |> maybe_add_designex_config(opts)
       |> patch_esbuild_for_esm()
 
@@ -101,7 +156,22 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
-  Sets `locales: ~w(en ar)` on the `Gettext.Backend` use options when `--lang` is on.
+  In `html_helpers`, replaces `use Gettext, backend: ...` with `use GettextSigils, backend: ...`
+  when `--lang` is on. Idempotent.
+  """
+  def patch_web_gettext_sigils(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path = web_module_path(install_dir, web_module, opts)
+      content = File.read!(path)
+      updated = replace_gettext_with_sigils(content, web_module)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
+  Sets `locales: ~w(en fr ar)` on the `Gettext.Backend` use options when `--lang` is on.
   Idempotent.
   """
   def patch_gettext_backend(install_dir, web_module, opts) do
@@ -156,6 +226,18 @@ defmodule Corex.New.Patches do
         content
       else
         insert_before_closing_deps(content, "      {:localize_web, \"~> 0.5\"},\n")
+      end
+    else
+      content
+    end
+  end
+
+  defp maybe_ensure_gettext_sigils_dep(content, opts) do
+    if Keyword.get(opts, :lang, false) do
+      if Regex.match?(~r/\{:gettext_sigils\s*,/u, content) do
+        content
+      else
+        insert_before_closing_deps(content, "      {:gettext_sigils, \"~> 0.5\"},\n")
       end
     else
       content
@@ -331,7 +413,7 @@ defmodule Corex.New.Patches do
           cd: Path.expand("../assets", __DIR__),
           dir: "corex",
           corex: [
-            build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
+            build_args: ~W(--dir=design --script=build.mjs --tokens=tokens)
           ]
 
         """
@@ -356,12 +438,17 @@ defmodule Corex.New.Patches do
         if trimmed != "" do
           ~s([path: "#{trimmed}", override: true])
         else
-          "\"~> 0.1.0-beta.5\""
+          corex_dep_constraint()
         end
 
       _ ->
-        "\"~> 0.1.0-beta.5\""
+        corex_dep_constraint()
     end
+  end
+
+  defp corex_dep_constraint do
+    version = Mix.Project.config()[:version] || "0.1.0-rc.0"
+    "\"~> #{version}\""
   end
 
   defp insert_before_closing_deps(content, extra_line) do
@@ -526,7 +613,7 @@ defmodule Corex.New.Patches do
       case Regex.run(pattern, content) do
         [full] ->
           locale_scope =
-            String.replace(full, ~s(scope "/",), ~s(scope "/:locale",), global: false)
+            String.replace(full, ~S(scope "/"), ~S(scope "/:locale"), global: false)
 
           String.replace(content, full, full <> "\n\n  " <> locale_scope, global: false)
 
@@ -567,16 +654,89 @@ defmodule Corex.New.Patches do
     end
   end
 
+  @generators_layout_keys [
+    {:locale, :lang},
+    {:mode, :mode},
+    {:theme, :theme}
+  ]
+
+  defp maybe_add_corex_generators_config(content, opts) do
+    layout =
+      for {layout_key, opt_key} <- @generators_layout_keys,
+          Keyword.get(opts, opt_key, false),
+          do: {layout_key, true}
+
+    gettext_opt =
+      if Keyword.get(opts, :lang, false) do
+        "gettext: :sigils"
+      else
+        nil
+      end
+
+    cond do
+      layout == [] and is_nil(gettext_opt) ->
+        content
+
+      String.contains?(content, "config :corex") ->
+        content
+
+      true ->
+        layout_line =
+          if layout == [] do
+            ""
+          else
+            "    layout: #{inspect(layout)},\n"
+          end
+
+        gettext_line =
+          if gettext_opt do
+            "    #{gettext_opt},\n"
+          else
+            ""
+          end
+
+        block = """
+
+        config :corex,
+          generators: [
+        #{gettext_line}#{layout_line}  ]
+        """
+
+        marker = "import_config \"#{"#"}{config_env()}.exs\""
+
+        if String.contains?(content, marker) do
+          String.replace(content, marker, String.trim_leading(block) <> "\n" <> marker,
+            global: false
+          )
+        else
+          content <> block
+        end
+    end
+  end
+
   defp maybe_add_localize_config(content, opts) do
+    content =
+      if Keyword.get(opts, :lang, false) do
+        content
+        |> String.replace("supported_locales: [:en, :ar]", "supported_locales: [:en, :fr, :ar]")
+      else
+        content
+      end
+
     cond do
       not Keyword.get(opts, :lang, false) ->
+        content
+
+      String.contains?(content, "supported_locales: [:en, :fr, :ar]") ->
         content
 
       String.contains?(content, "config :localize") ->
         content
 
       true ->
-        block = "\nconfig :localize,\n  default_locale: :en,\n  supported_locales: [:en, :ar]\n"
+        block =
+          "\nconfig :localize,\n  default_locale: :en,\n  supported_locales: [:en, :fr, :ar]\n"
+
         marker = "import_config \"#{"#"}{config_env()}.exs\""
 
         if String.contains?(content, marker) do
@@ -632,20 +792,60 @@ defmodule Corex.New.Patches do
   end
 
   defp inject_locales_into_gettext_backend(content) do
+    content =
+      String.replace(content, "locales: ~w(en ar)", "locales: ~w(en fr ar)", global: false)
+
     cond do
+      Regex.match?(~r/\blocales:\s*~w\(en fr ar\)/m, content) ->
+        content
+
       Regex.match?(~r/\blocales:\s*~w\(/m, content) ->
         content
 
       Regex.match?(~r/use\s+Gettext\.Backend\b/m, content) ->
+        inject_gettext_locales_after_backend_use(content)
+
+      true ->
+        content
+    end
+  end
+
+  defp inject_gettext_locales_after_backend_use(content) do
+    cond do
+      Regex.match?(~r/default_locale:\s*"[^"]+"/m, content) ->
         Regex.replace(
           ~r/(use\s+Gettext\.Backend\s*,\s*[\s\S]*?default_locale:\s*"[^"]+")/m,
           content,
-          "\\1,\n    locales: ~w(en ar)",
+          "\\1,\n    locales: ~w(en fr ar)",
+          global: false
+        )
+
+      Regex.match?(~r/use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+/m, content) ->
+        Regex.replace(
+          ~r/(use\s+Gettext\.Backend\s*,\s*otp_app:\s*:[a-z_0-9]+)/m,
+          content,
+          "\\1,\n    default_locale: \"en\",\n    locales: ~w(en fr ar)",
           global: false
         )
 
       true ->
         content
+    end
+  end
+
+  defp replace_gettext_with_sigils(content, web_module) do
+    if String.contains?(content, "GettextSigils") do
+      content
+    else
+      web_str = inspect(web_module)
+      old = "use Gettext, backend: #{web_str}.Gettext"
+      new = "use GettextSigils, backend: #{web_str}.Gettext"
+
+      if String.contains?(content, old) do
+        String.replace(content, old, new, global: true)
+      else
+        content
+      end
     end
   end
 
@@ -656,17 +856,86 @@ defmodule Corex.New.Patches do
     :ok
   end
 
-  defp web_module_path(install_dir, web_module) do
-    web_ex_basename = underscore(web_module)
-    Path.join([install_dir, "lib", web_ex_basename <> ".ex"])
+  defp maybe_insert_verified_routes_path_prefixes(content, web_module) do
+    web_str = inspect(web_module)
+    needle = "path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+    if String.contains?(content, needle) do
+      content
+    else
+      statics = "statics: #{web_str}.static_paths()"
+      suffix = ",\n        path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+      updated =
+        if String.contains?(content, statics) do
+          String.replace(content, statics, statics <> suffix, global: false)
+        else
+          content
+        end
+
+      if updated != content do
+        updated
+      else
+        insertion = ",\n          path_prefixes: [{#{web_str}.Locale, :current, []}]"
+
+        regex_updated =
+          Regex.replace(
+            ~r/(statics:\s+#{Regex.escape(web_str)}\.static_paths\(\))(\s*\n\s*end)/u,
+            content,
+            "\\1#{insertion}\\2",
+            global: false
+          )
+
+        if regex_updated != content do
+          regex_updated
+        else
+          replace_verified_routes_def(content, web_module)
+        end
+      end
+    end
   end
 
-  defp router_path(install_dir, web_module) do
-    Path.join([install_dir, "lib", underscore(web_module), "router.ex"])
+  defp web_lib_dir(web_module, opts) do
+    case Keyword.fetch(opts, :otp_app) do
+      {:ok, app} -> Atom.to_string(app) <> "_web"
+      :error -> web_module |> inspect() |> Macro.underscore()
+    end
   end
 
-  defp endpoint_path(install_dir, web_module) do
-    Path.join([install_dir, "lib", underscore(web_module), "endpoint.ex"])
+  defp replace_verified_routes_def(content, web_module) do
+    web_str = inspect(web_module)
+
+    verified_routes_def = """
+      def verified_routes do
+        quote do
+          use Phoenix.VerifiedRoutes,
+            endpoint: #{web_str}.Endpoint,
+            router: #{web_str}.Router,
+            statics: #{web_str}.static_paths(),
+            path_prefixes: [{#{web_str}.Locale, :current, []}]
+        end
+      end
+    """
+
+    pattern =
+      ~r/\n  def(?:p)? verified_routes do\n    quote do\n      use Phoenix\.VerifiedRoutes,[\s\S]*?\n    end\n  end/u
+
+    case Regex.run(pattern, content) do
+      [_match] -> Regex.replace(pattern, content, "\n" <> verified_routes_def)
+      _ -> content
+    end
+  end
+
+  defp web_module_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts) <> ".ex"])
+  end
+
+  defp router_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts), "router.ex"])
+  end
+
+  defp endpoint_path(install_dir, web_module, opts) do
+    Path.join([install_dir, "lib", web_lib_dir(web_module, opts), "endpoint.ex"])
   end
 
   defp maybe_insert_corex_mcp_plug(content, opts) do

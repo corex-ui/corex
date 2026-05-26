@@ -5,7 +5,7 @@ defmodule E2eWeb.ListboxModel do
 
   use E2eWeb.Model, component: "listbox"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     listbox-anatomy-minimal
     listbox-anatomy-with-indicator
     listbox-anatomy-grouped
@@ -110,7 +110,7 @@ defmodule E2eWeb.ListboxModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{label}\'])[1]")
     )
 
     session

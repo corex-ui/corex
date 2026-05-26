@@ -23,7 +23,7 @@ defmodule E2eWeb.App.Aside do
         id={@tip_id}
         trigger_tag={:span}
         positioning={%Corex.Positioning{placement: "top"}}
-        class="tooltip tooltip--size-sm"
+        class="tooltip tooltip--sm"
         close_on_click={false}
       >
         <:trigger>
@@ -97,11 +97,44 @@ defmodule E2eWeb.App.Aside do
   end
 
   attr(:path, :string, required: true)
+  attr(:site_nav_tree_id, :string, default: "site-nav-menu")
+  attr(:tree_class, :string, default: "tree-view navigation max-w-3xs")
+
+  def drawer_site_nav_tree(assigns) do
+    assigns =
+      assigns
+      |> assign(:full_path, E2eWeb.Path.with_current_locale(assigns.path))
+      |> assign(:items, site_nav_menu_items())
+
+    ~H"""
+    <.tree_view
+      id={@site_nav_tree_id}
+      class={@tree_class}
+      redirect
+      value={[@full_path]}
+      expanded_value={[]}
+      items={@items}
+    >
+      <:item :let={item}>
+        <span class="flex min-w-0 items-center gap-1.5">
+          <span class="min-w-0 truncate">{item.label}</span>
+          <.heroicon
+            :if={item.new_tab}
+            name="hero-arrow-top-right-on-square"
+            class="icon shrink-0"
+          />
+        </span>
+      </:item>
+    </.tree_view>
+    """
+  end
+
+  attr(:path, :string, required: true)
   attr(:form_menu, :list, required: true)
   attr(:components_menu, :list, required: true)
   attr(:form_tree_id, :string, required: true)
   attr(:components_tree_id, :string, required: true)
-  attr(:tree_class, :string, default: "tree-view tree-view--accent max-w-xs layout__aside-tree")
+  attr(:tree_class, :string, default: "tree-view navigation max-w-xs layout__aside-tree")
 
   def aside_nav_tree_views(assigns) do
     assigns =
@@ -155,6 +188,8 @@ defmodule E2eWeb.App.Aside do
   end
 
   attr(:path, :string, required: true)
+  attr(:theme, :string, required: true)
+  attr(:mode, :string, required: true)
 
   def aside(assigns) do
     form_menu = form_menu_items()

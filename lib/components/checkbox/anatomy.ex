@@ -12,6 +12,7 @@ defmodule Corex.Checkbox.Anatomy do
       :label,
       checked: false,
       controlled: false,
+      form_field: false,
       disabled: false,
       value: "true",
       dir: "ltr",
@@ -27,6 +28,7 @@ defmodule Corex.Checkbox.Anatomy do
             id: String.t(),
             checked: boolean() | :indeterminate,
             controlled: boolean(),
+            form_field: boolean(),
             name: String.t(),
             form: String.t(),
             label: String.t(),
@@ -44,7 +46,7 @@ defmodule Corex.Checkbox.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "horizontal"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal", read_only: false]
 
     @ignored_attrs [
       "data-state",

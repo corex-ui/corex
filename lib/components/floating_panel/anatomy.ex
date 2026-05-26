@@ -24,8 +24,11 @@ defmodule Corex.FloatingPanel.Anatomy do
       on_open_change: nil,
       on_open_change_client: nil,
       on_position_change: nil,
+      on_position_change_client: nil,
       on_size_change: nil,
-      on_stage_change: nil
+      on_size_change_client: nil,
+      on_stage_change: nil,
+      on_stage_change_client: nil
     ]
 
     @type t :: %__MODULE__{
@@ -47,8 +50,11 @@ defmodule Corex.FloatingPanel.Anatomy do
             on_open_change: String.t() | nil,
             on_open_change_client: String.t() | nil,
             on_position_change: String.t() | nil,
+            on_position_change_client: String.t() | nil,
             on_size_change: String.t() | nil,
-            on_stage_change: String.t() | nil
+            on_size_change_client: String.t() | nil,
+            on_stage_change: String.t() | nil,
+            on_stage_change_client: String.t() | nil
           }
   end
 

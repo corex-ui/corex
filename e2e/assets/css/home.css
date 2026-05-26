@@ -470,7 +470,7 @@
   .home__stack {
     display: flex;
     flex-direction: column;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
   }
 
   .home__stack__head {

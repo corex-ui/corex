@@ -2,7 +2,8 @@ defmodule Corex.Select do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
 
-  ## Examples
+  ## Anatomy
+
   <!-- tabs-open -->
 
   The placeholder text comes from the `translation` attribute (default English `"Select"` is passed through the host Phoenix gettext backend at render time when unchanged). Pass `translation={%Select.Translation{placeholder: …}}` to customize.
@@ -11,7 +12,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    id="my-select"
     class="select"
     items={Corex.List.new([
       %{label: "France", value: "fra", disabled: true},
@@ -116,7 +116,11 @@ defmodule Corex.Select do
 
   <!-- tabs-close -->
 
-  ## Use as Navigation
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Navigation
 
   Set `redirect` on the component so the first selected value is used as the destination URL.
   Per item, choose the navigation kind explicitly via the item's `:redirect` field:
@@ -137,7 +141,6 @@ defmodule Corex.Select do
 
   ```heex
   <.select
-    id="nav-select"
     class="select"
     redirect
     translation={%Corex.Select.Translation{placeholder: "Go to"}}
@@ -187,9 +190,59 @@ defmodule Corex.Select do
   end
   ```
 
-  ## Phoenix Form Integration
+  ### Stream
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  Use `Phoenix.LiveView.stream/3` to add or remove options at runtime. Keep `@items_list` in sync and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` as `select:stream-select:item:#{value}`.
+
+  ```heex
+  <.select class="select" items={Corex.List.new(@items_list)}>
+    <:label>Country</:label>
+    <:trigger>
+      <.heroicon name="hero-chevron-down" class="icon" />
+    </:trigger>
+  </.select>
+  ```
+
+  <!-- tabs-close -->
+
+  ## Form
+
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+
+  ### Multiple selection and `{:array, :string}` fields
+
+  With `multiple` and `field={f[:tags]}`, the hidden native `<select>` submits list params (`post[tags][]`), matching Phoenix's multi-select convention:
+
+  ```elixir
+  %{"post" => %{"tags" => ["option1", "option2"]}}
+  ```
+
+  Pair with `field :tags, {:array, :string}` in your schema. Single-select forms still submit one scalar through the hidden `value-input`.
+
+  ```heex
+  <.select
+    field={@form[:tags]}
+    class="select"
+    multiple
+    controlled
+    items={Corex.List.new([
+      %{label: "Option 1", value: "option1"},
+      %{label: "Option 2", value: "option2"}
+    ])}
+    translation={%Corex.Select.Translation{placeholder: "Choose tags"}}
+  >
+    <:label>Tags</:label>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.select>
+  ```
+
+  For **free-form** tags (not limited to `items`), use [`Corex.TagsInput`](Corex.TagsInput.html) with the same `{:array, :string}` field type.
 
   ### Controller
 
@@ -206,7 +259,7 @@ defmodule Corex.Select do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.select
       field={f[:country]}
       class="select"
@@ -280,7 +333,7 @@ defmodule Corex.Select do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.select
           field={@form[:country]}
           class="select"
@@ -307,21 +360,112 @@ defmodule Corex.Select do
   end
   ```
 
-  ## API Control
+  ## API
+
+  Requires a stable `id` on `<.select>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+  | [`set_open/2`](#set_open/2) | Open or close menu (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Open or close menu (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
 
   ```heex
-  <.action phx-click={Corex.Select.set_value("my-select", ["fra"])} class="button button--sm">France</.action>
-  <.action phx-click={Corex.Select.set_open("my-select", true)} class="button button--sm">Open</.action>
+  <.action phx-click={Corex.Select.set_value("select-api-bind", ["fra"])} class="button button--sm">France</.action>
+  <.select id="select-api-bind" class="select" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])
+  }>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
   ```
+
   ```elixir
-  def handle_event("api", _, socket) do
-    {:noreply, Corex.Select.set_value(socket, "my-select", ["bel"])}
+  def handle_event("select_api_set_value", _, socket) do
+    {:noreply, Corex.Select.set_value(socket, "select-api-srv", ["bel"])}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  Use data attributes to target elements:
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="select_value_changed"` | Selection changes | `%{"id" => id, "value" => values, "path" => path, "items" => items}` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change
+
+  ```heex
+  <.select
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+    on_value_change="select_value_changed"
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("select_value_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :selected, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="select-value-changed"` | Selection changes | `id`, `value`, `items` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.select
+    id="select-events-client"
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+    on_value_change_client="select-value-changed"
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("select-events-client")?.addEventListener("select-value-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`:
 
   ```css
   [data-scope="select"][data-part="root"] {}
@@ -337,27 +481,73 @@ defmodule Corex.Select do
   [data-scope="select"][data-part="item-indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `select` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/select.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on `<.select class="select ...">`.
 
-  ```heex
-  <.select class="select select--accent select--lg">
-  ```
+  <!-- tabs-open -->
 
+  ### Color
 
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `select` |
+  | Accent | `select select--accent` |
+  | Brand | `select select--brand` |
+  | Alert | `select select--alert` |
+  | Success | `select select--success` |
+  | Info | `select select--info` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select select--sm` |
+  | MD | `select select--md` |
+  | LG | `select select--lg` |
+  | XL | `select select--xl` |
+
+  ### Text
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select select--text-sm` |
+  | XL | `select select--text-xl` |
+  | 2XL | `select select--text-2xl` |
+  | 4XL | `select select--text-4xl` |
+
+  ### Rounded
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `select select--rounded-none` |
+  | SM | `select select--rounded-sm` |
+  | MD | `select select--rounded-md` |
+  | LG | `select select--rounded-lg` |
+  | XL | `select select--rounded-xl` |
+  | Full | `select select--rounded-full` |
+
+  ### Max width
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `select max-w-sm` |
+  | MD | `select max-w-md` |
+  | LG | `select max-w-lg` |
+  | XL | `select max-w-xl` |
+
+  <!-- tabs-close -->
   '''
 
+  @doc type: :component
   use Phoenix.Component
 
-  alias Phoenix.LiveView
+  import Corex.Api.Doc
+
   alias Phoenix.LiveView.JS
 
   alias Corex.Select.Anatomy.{
@@ -377,7 +567,9 @@ defmodule Corex.Select do
     ValueInput
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Select.Connect
+  alias Corex.Select.Translation
 
   import Corex.Helpers,
     only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
@@ -408,7 +600,13 @@ defmodule Corex.Select do
   )
 
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the select")
-  attr(:multiple, :boolean, default: false, doc: "Whether to allow multiple selection")
+
+  attr(:multiple, :boolean,
+    default: false,
+    doc:
+      "Allow multiple selection. With field and form, submits name[] list params for Ecto {:array, :string}"
+  )
+
   attr(:invalid, :boolean, default: false, doc: "Whether the select is invalid")
   attr(:name, :string, doc: "The name of the select")
   attr(:form, :string, doc: "The id of the form of the select")
@@ -456,7 +654,7 @@ defmodule Corex.Select do
   )
 
   attr(:translation, Corex.Select.Translation,
-    default: %Corex.Select.Translation{placeholder: "Select"},
+    default: nil,
     doc: "Translatable strings for the select"
   )
 
@@ -495,40 +693,31 @@ defmodule Corex.Select do
   )
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     value = get_value(field.value)
 
     assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:id, fn -> field.id end)
-    |> assign_new(:form, fn -> field.form.id end)
-    |> assign_new(:name, fn -> field.name end)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> select()
   end
 
   def select(assigns) do
     assigns =
-      case assigns.translation do
-        %Corex.Select.Translation{placeholder: "Select"} ->
-          assign(assigns, :translation, %Corex.Select.Translation{
-            placeholder: Corex.Gettext.gettext("Select")
-          })
-
-        _ ->
-          assigns
-      end
+      assign(
+        assigns,
+        :translation,
+        Translation.resolve(assigns.translation)
+      )
 
     items = normalize_items(assigns.items)
 
     assigns =
       assigns
-      |> assign(:items, items)
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
+      |> assign(:items, items)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
 
     value_list = get_value(assigns[:value])
 
@@ -553,6 +742,8 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
+    array_form_submit = assigns.multiple && is_binary(assigns[:name])
+
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
@@ -562,6 +753,12 @@ defmodule Corex.Select do
       |> assign(:selected_for_options, selected_for_options)
       |> assign(:disabled_values, get_disabled_values(items))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+      |> assign(:array_form_submit, array_form_submit)
+      |> assign(
+        :hidden_select_name,
+        if(array_form_submit, do: Corex.FormField.list_submit_name(assigns.name), else: nil)
+      )
+      |> assign(:value_input_name, if(array_form_submit, do: nil, else: assigns.name))
 
     ~H"""
     <div 
@@ -571,20 +768,31 @@ defmodule Corex.Select do
     phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, controlled: @controlled, placeholder: @translation.placeholder, value: @value,
+      id: @id, items: @items, controlled: @controlled, form_field: @form_field, placeholder: @translation.placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, orientation: @orientation, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
       positioning: @positioning,
       deselectable: @deselectable,
-      update_trigger: @update_trigger
+      update_trigger: @update_trigger,
+      hidden_select_name: @hidden_select_name
     })}>
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
-      <input phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} name={@name} form={@form} value={@value_for_hidden_input} />
+      <input
+        phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        name={@value_input_name}
+        value={@value_for_hidden_input}
+      />
 
-      <select phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} multiple={@multiple} name={@name} form={@form}>
+      <select
+        phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})}
+        name={@hidden_select_name}
+        multiple={@multiple}
+      >
         {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}
       </select>
 
@@ -599,7 +807,13 @@ defmodule Corex.Select do
             {render_slot(@trigger)}
           </button>
         </div>
-        <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
+        <div
+          :if={@error != [] and !Enum.empty?(@errors)}
+          :for={msg <- @errors}
+          class={Map.get(Enum.at(@error, 0), :class, nil)}
+          data-scope="select"
+          data-part="error"
+        >
           {render_slot(@error, msg)}
         </div>
         <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
@@ -640,10 +854,33 @@ defmodule Corex.Select do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets select value in the client. Dispatches `corex:select:set-value` on the hook root.
-  """
+  api_doc(~S"""
+  Set selected value(s) from a control (`phx-click`). Pass one value or a list (wrapped internally).
+
+  ```heex
+  <.action phx-click={Corex.Select.set_value("my-select", "bel")}>Belgium</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("my-select")?.dispatchEvent(
+    new CustomEvent("corex:select:set-value", {
+      bubbles: false,
+      detail: { value: ["bel"] },
+    })
+  );
+  ```
+  """)
+
   def set_value(select_id, value) when is_binary(select_id) do
     JS.dispatch("corex:select:set-value",
       to: "##{select_id}",
@@ -652,22 +889,64 @@ defmodule Corex.Select do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets select value from the server via `push_event` (`select_set_value`).
-  """
+  api_doc(~S"""
+  Set selected value(s) from `handle_event`. Pushes `select_set_value`.
+
+  ```heex
+  <.action phx-click="pick_bel" phx-value-value="bel">Belgium</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("pick_bel", %{"value" => v}, socket) do
+    {:noreply, Corex.Select.set_value(socket, "my-select", v)}
+  end
+  ```
+  """)
+
   def set_value(socket, select_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) do
-    LiveView.push_event(socket, "select_set_value", %{
-      id: select_id,
-      value: validate_value!(List.wrap(value))
-    })
+    RespondTo.push_set_value(
+      socket,
+      "select_set_value",
+      select_id,
+      validate_value!(List.wrap(value))
+    )
   end
 
-  @doc type: :api
-  @doc """
-  Opens or closes the menu. Dispatches `corex:select:set-open` on the hook root.
-  """
+  api_doc(~S"""
+  Open or close the listbox from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.Select.set_open("my-select", true)}>Open</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([%{label: "Belgium", value: "bel"}])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```javascript
+  document.getElementById("my-select")?.dispatchEvent(
+    new CustomEvent("corex:select:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
   def set_open(select_id, open) when is_binary(select_id) and is_boolean(open) do
     JS.dispatch("corex:select:set-open",
       to: "##{select_id}",
@@ -676,17 +955,31 @@ defmodule Corex.Select do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets open state from the server via `push_event` (`select_set_open`).
-  """
+  api_doc(~S"""
+  Set open state from `handle_event`. Pushes `select_set_open`.
+
+  ```heex
+  <.action phx-click="open_select">Open</.action>
+  <.select
+    id="my-select"
+    class="select"
+    items={Corex.List.new([%{label: "Belgium", value: "bel"}])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+  ```
+
+  ```elixir
+  def handle_event("open_select", _, socket) do
+    {:noreply, Corex.Select.set_open(socket, "my-select", true)}
+  end
+  ```
+  """)
+
   def set_open(socket, select_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "select_set_open", %{
-      id: select_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "select_set_open", select_id, open)
   end
 
   defp get_disabled_values(collection) do

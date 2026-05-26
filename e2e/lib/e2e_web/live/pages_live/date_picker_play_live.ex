@@ -18,7 +18,6 @@ defmodule E2eWeb.DatePickerPlayLive do
       dir: "ltr",
       locale: "en-US",
       selection_mode: "single",
-      view: "day",
       max_selected_dates: nil
     }
 
@@ -63,9 +62,6 @@ defmodule E2eWeb.DatePickerPlayLive do
   defp update_control(socket, "selection_mode", value) when is_binary(value),
     do: update(socket, :controls, &Map.put(&1, :selection_mode, value))
 
-  defp update_control(socket, "view", value) when is_binary(value),
-    do: update(socket, :controls, &Map.put(&1, :view, value))
-
   defp update_control(socket, "max_selected_dates", "unlimited"),
     do: update(socket, :controls, &Map.put(&1, :max_selected_dates, nil))
 
@@ -87,7 +83,7 @@ defmodule E2eWeb.DatePickerPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Date Picker · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Date Picker · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -96,7 +92,7 @@ defmodule E2eWeb.DatePickerPlayLive do
           />
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -104,7 +100,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -112,7 +108,7 @@ defmodule E2eWeb.DatePickerPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -163,34 +159,17 @@ defmodule E2eWeb.DatePickerPlayLive do
             ]}
             deselectable={false}
             items={[
-              %{value: "unlimited", label: "Unlimited days"},
-              %{value: "1", label: "Max 1 day"},
-              %{value: "2", label: "Max 2 days"},
-              %{value: "3", label: "Max 3 days"},
-              %{value: "5", label: "Max 5 days"}
+              %{value: "unlimited", label: ~t"Unlimited days"},
+              %{value: "1", label: ~t"Max 1 day"},
+              %{value: "2", label: ~t"Max 2 days"},
+              %{value: "3", label: ~t"Max 3 days"},
+              %{value: "5", label: ~t"Max 5 days"}
             ]}
             on_value_change="control_changed"
             translation={%Corex.Select.Translation{placeholder: "Max selected"}}
           >
             <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
             <:label>Multiple cap</:label>
-          </.select>
-
-          <.select
-            class="select select--sm w-4xs"
-            id="view"
-            value={[@controls.view]}
-            deselectable={false}
-            items={[
-              %{value: "day", label: "Day view"},
-              %{value: "month", label: "Month view"},
-              %{value: "year", label: "Year view"}
-            ]}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "View"}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-            <:label>Default view</:label>
           </.select>
         </:controls>
         <:canvas>
@@ -208,7 +187,6 @@ defmodule E2eWeb.DatePickerPlayLive do
             locale={@controls.locale}
             selection_mode={@controls.selection_mode}
             max_selected_dates={@controls.max_selected_dates}
-            view={@controls.view}
             value={@value && [@value]}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

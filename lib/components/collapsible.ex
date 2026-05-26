@@ -2,99 +2,215 @@ defmodule Corex.Collapsible do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Collapsible](https://zagjs.com/components/react/collapsible).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
-  ### Basic
+  ### Minimal
 
   ```heex
-  <.collapsible id="my-collapsible">
-    <:trigger>Toggle Content</:trigger>
+  <.collapsible class="collapsible">
+    <:trigger>Toggle</:trigger>
     <:content>
-      This content can be collapsed and expanded.
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
     </:content>
   </.collapsible>
   ```
 
-  ### With opened and closed surfaces
+  ### With indicator
 
-  Optional **`:closed`** and **`:opened`** slots render after the trigger label (same button). Use one chevron in **`:closed`** and default CSS rotates it when open (like Accordion). Use **both** slots to swap different markup when open vs closed.
+  Optional **`:closed`** and **`:opened`** slots render after the trigger label. Use one chevron in **`:closed`** and default CSS rotates it when open.
 
   ```heex
-  <.collapsible id="my-collapsible">
-    <:trigger>Toggle Content</:trigger>
+  <.collapsible class="collapsible">
+    <:trigger>Toggle</:trigger>
+    <:closed>
+      <.heroicon name="hero-chevron-right" />
+    </:closed>
+    <:content>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    </:content>
+  </.collapsible>
+  ```
+
+  ### Custom slots
+
+  Use `:let={collapsible}` on slots to read `collapsible.open` and `collapsible.disabled`.
+
+  ```heex
+  <.collapsible class="collapsible">
+    <:trigger :let={c}>
+      {if c.open, do: "Collapse", else: "Expand"}
+    </:trigger>
     <:closed>
       <.heroicon name="hero-chevron-down" />
     </:closed>
-    <:content>
-      This content can be collapsed and expanded.
+    <:opened>
+      <.heroicon name="hero-chevron-up" />
+    </:opened>
+    <:content :let={_c}>
+      Panel body with custom opened/closed adornments.
     </:content>
   </.collapsible>
   ```
 
-  ### Custom with :let
+  <!-- tabs-close -->
 
-  Use `:let={collapsible}` on `:trigger`, `:content`, `:closed`, or `:opened` to access `collapsible.open` and `collapsible.disabled`.
+  ## API
+
+  Requires a stable `id` on `<.collapsible>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_open
 
   ```heex
-  <.collapsible id="my-collapsible">
-    <:trigger :let={collapsible}>
-      {if collapsible.open, do: "Collapse", else: "Expand"}
-    </:trigger>
-    <:content :let={_c}>Panel body</:content>
-    <:closed :let={collapsible}>
-      <.heroicon name={if collapsible.open, do: "hero-minus", else: "hero-plus"} />
+  <.action phx-click={Corex.Collapsible.set_open("collapsible-api", true)} class="button button--sm">
+    Open
+  </.action>
+  <.collapsible id="collapsible-api" class="collapsible">
+    <:trigger>Toggle</:trigger>
+    <:closed>
+      <.heroicon name="hero-chevron-right" />
     </:closed>
+    <:content>Lorem ipsum dolor sit amet.</:content>
   </.collapsible>
+  ```
+
+  ```elixir
+  def handle_event("open_collapsible", _, socket) do
+    {:noreply, Corex.Collapsible.set_open(socket, "collapsible-api", true)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_open_change="collapsible_open_changed"` | Open state changes | `%{"id" => id, "open" => open}` |
+
+  <!-- tabs-open -->
+
+  ### on_open_change
+
+  ```heex
+  <.collapsible
+    class="collapsible"
+    on_open_change="collapsible_open_changed"
+  >
+    <:trigger>Toggle</:trigger>
+    <:closed>
+      <.heroicon name="hero-chevron-right" />
+    </:closed>
+    <:content>Lorem ipsum dolor sit amet.</:content>
+  </.collapsible>
+  ```
+
+  ```elixir
+  def handle_event("collapsible_open_changed", %{"id" => id, "open" => open}, socket) do
+    {:noreply, assign(socket, :open, open)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_open_change_client="collapsible-open-changed"` | Open state changes | `id`, `open`, `previousOpen` |
+
+  <!-- tabs-open -->
+
+  ### on_open_change_client
+
+  ```heex
+  <.collapsible
+    id="collapsible-events-client"
+    class="collapsible"
+    on_open_change_client="collapsible-open-changed"
+  >
+    <:trigger>Toggle</:trigger>
+    <:closed>
+      <.heroicon name="hero-chevron-right" />
+    </:closed>
+    <:content>Lorem ipsum dolor sit amet.</:content>
+  </.collapsible>
+  ```
+
+  ```javascript
+  document.getElementById("collapsible-events-client")?.addEventListener("collapsible-open-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Async
+
+  ```heex
+  <.async_result :let={panel} assign={@collapsible}>
+    <:loading>
+      <.collapsible_skeleton class="collapsible" />
+    </:loading>
+    <.collapsible class="collapsible" open={panel.open}>
+      <:trigger>Details</:trigger>
+      <:closed>
+        <.heroicon name="hero-chevron-right" />
+      </:closed>
+      <:content>{panel.body}</:content>
+    </.collapsible>
+  </.async_result>
+  ```
+
+  ```elixir
+  socket =
+    assign_async(socket, :collapsible, fn ->
+      {:ok, %{collapsible: %{open: false, body: "Loaded after async."}}}
+    end)
   ```
 
   ### Controlled
 
   ```heex
   <.collapsible
-    id="my-collapsible"
+    class="collapsible"
     controlled
-    open={@collapsible_open}
-    on_open_change="collapsible_changed">
-    <:trigger>Toggle Content</:trigger>
-    <:content>
-      This content can be collapsed and expanded.
-    </:content>
+    open={@open}
+    on_open_change="patterns_collapsible_changed"
+  >
+    <:trigger>Controlled</:trigger>
+    <:closed>
+      <.heroicon name="hero-chevron-right" />
+    </:closed>
+    <:content>LiveView owns open.</:content>
   </.collapsible>
   ```
 
   ```elixir
-  def handle_event("collapsible_changed", %{"open" => open}, socket) do
-    {:noreply, assign(socket, :collapsible_open, open)}
+  def handle_event("patterns_collapsible_changed", %{"open" => open}, socket) do
+    {:noreply, assign(socket, :open, open)}
   end
   ```
 
   <!-- tabs-close -->
 
-  ## API Control
+  ## Style
 
-  In order to use the API, you must use an id on the component
-
-  ***Client-side***
-
-  ```heex
-  <button phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>
-    Open
-  </button>
-  ```
-
-  ***Server-side***
-
-  ```elixir
-  def handle_event("open_collapsible", _, socket) do
-    {:noreply, Corex.Collapsible.set_open(socket, "my-collapsible", true)}
-  end
-  ```
-
-  ## Styling
-
-  Target parts with `data-scope="collapsible"` and `data-part`:
+  Target parts with `data-scope` and `data-part`. Content exposes `--height`, `--collapsed-height`, and related CSS variables for height animations.
 
   ```css
   [data-scope="collapsible"][data-part="root"] {}
@@ -104,54 +220,41 @@ defmodule Corex.Collapsible do
   [data-scope="collapsible"][data-part="opened"] {}
   ```
 
-  Root, trigger, and content have `data-state="open"` or `data-state="closed"`. When the trigger is focused, `data-focus` is set on root, trigger, and content.
-
-  The content part exposes `--height`, `--width`, `--collapsed-height`, and `--collapsed-width` for animations. Example:
-
-  ```css
-  [data-scope="collapsible"][data-part="content"] {
-    overflow: hidden;
-  }
-  [data-scope="collapsible"][data-part="content"][data-state="open"] {
-    animation: expand 110ms cubic-bezier(0, 0, 0.38, 0.9);
-  }
-  [data-scope="collapsible"][data-part="content"][data-state="closed"] {
-    animation: collapse 110ms cubic-bezier(0, 0, 0.38, 0.9);
-  }
-  @keyframes expand {
-    from { height: var(--collapsed-height, 0); }
-    to { height: var(--height); }
-  }
-  @keyframes collapse {
-    from { height: var(--height); }
-    to { height: var(--collapsed-height, 0); }
-  }
-  ```
-
-  If you wish to use the default Corex styling, you can use the class `collapsible` on the component.
-  This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/collapsible.css";
   ```
 
-  You can then use modifiers
+  <!-- tabs-open -->
 
-  ```heex
-  <.collapsible class="collapsible collapsible--accent collapsible--lg">
-  ```
+  ### Color
 
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `collapsible collapsible--md` |
+  | Accent | `collapsible collapsible--md collapsible--accent` |
+  | Brand | `collapsible collapsible--md collapsible--brand` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `collapsible collapsible--sm` |
+  | MD | `collapsible collapsible--md` |
+  | LG | `collapsible collapsible--lg` |
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
+  alias Corex.Api.RespondTo
   alias Corex.Collapsible.Anatomy.{Closed, Content, Opened, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a collapsible component.
@@ -302,6 +405,11 @@ defmodule Corex.Collapsible do
     """
   end
 
+  @doc type: :component
+  @doc """
+  Renders a loading skeleton for the collapsible component.
+  """
+
   attr(:dir, :string,
     default: nil,
     values: [nil, "ltr", "rtl"],
@@ -339,41 +447,52 @@ defmodule Corex.Collapsible do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the collapsible open state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set expanded or collapsed state from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>Expand</.action>
+  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+    <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
+    <:content>Details.</:content>
+  </.collapsible>
+  ```
 
-      <button phx-click={Corex.Collapsible.set_open("my-collapsible", true)}>
-        Open
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-collapsible")?.dispatchEvent(
+    new CustomEvent("corex:collapsible:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
-    JS.dispatch("corex:collapsible:set-open",
-      to: "##{collapsible_id}",
-      detail: %{open: open},
-      bubbles: false
-    )
+    RespondTo.dispatch_set_open(collapsible_id, open, "corex:collapsible:set-open")
   end
 
-  @doc type: :api
-  @doc """
-  Sets the collapsible open state from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Set open state from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="expand_collapsible">Expand</.action>
+  <.collapsible id="my-collapsible" class="collapsible collapsible--md">
+    <:trigger :let={c}>{if c.open, do: "Hide", else: "Show"}</:trigger>
+    <:content>Details.</:content>
+  </.collapsible>
+  ```
 
-      def handle_event("open_collapsible", _params, socket) do
-        socket = Corex.Collapsible.set_open(socket, "my-collapsible", true)
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("expand_collapsible", _, socket) do
+    {:noreply, Corex.Collapsible.set_open(socket, "my-collapsible", true)}
+  end
+  ```
+  """)
+
   def set_open(socket, collapsible_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(collapsible_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "collapsible_set_open", %{
-      collapsible_id: collapsible_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "collapsible_set_open", collapsible_id, open)
   end
 end

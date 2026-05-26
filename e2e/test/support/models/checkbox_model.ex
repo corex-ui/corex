@@ -1,14 +1,21 @@
 defmodule E2eWeb.CheckboxModel do
   use E2eWeb.Model, component: "checkbox"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     checkbox-anatomy-minimal
     checkbox-anatomy-labeled
     checkbox-anatomy-invalid
     checkbox-anatomy-indeterminate
   )
 
+  @anatomy_toggle_checked_sections ~W(
+    checkbox-anatomy-minimal
+    checkbox-anatomy-labeled
+  )
+
   def anatomy_section_ids, do: @anatomy_sections
+
+  def anatomy_toggle_checked_section_ids, do: @anatomy_toggle_checked_sections
 
   def wait_playground_checkbox_ready(session) do
     assert_has(
@@ -48,7 +55,8 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def focus_checkbox_control(session, checkbox_dom_id) when is_binary(checkbox_dom_id) do
-    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(checkbox_dom_id) > 0) do
+    if not (String.match?(checkbox_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(checkbox_dom_id) > 0) do
       raise ArgumentError, "invalid checkbox dom id"
     end
 
@@ -80,7 +88,7 @@ defmodule E2eWeb.CheckboxModel do
 
     click(
       session,
-      xpath("//*[@id='checkbox-api-js-dispatch']//button[contains(normalize-space(), 'Dispatch checked')]")
+      xpath("//*[@id='checkbox-api-js-dispatch']//button[normalize-space(.)='Set checked']")
     )
 
     session
@@ -88,17 +96,25 @@ defmodule E2eWeb.CheckboxModel do
 
   def click_api_server_set_checked(session) do
     session =
-      assert_has(
-        session,
-        css("#checkbox-api-server [phx-hook='Checkbox']:not([data-loading])", visible: :any)
+      session
+      |> assert_has(
+        css(
+          "#checkbox-api-server-section [phx-hook='Checkbox']:not([data-loading])",
+          visible: :any,
+          minimum: 1
+        )
+      )
+      |> click(
+        xpath(
+          "//*[@id='checkbox-api-server-section']//button[contains(normalize-space(), 'Set checked')]"
+        )
       )
 
-    click(
+    wait_for_has(
       session,
-      xpath("//*[@id='checkbox-api-server']//button[contains(normalize-space(), 'Set checked')]")
+      css(~S|[id="checkbox:checkbox-api-server:control"][data-state="checked"]|, visible: :any),
+      timeout: 10_000
     )
-
-    session
   end
 
   def click_events_client_checkbox(session) do
@@ -147,7 +163,7 @@ defmodule E2eWeb.CheckboxModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -168,19 +184,57 @@ defmodule E2eWeb.CheckboxModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def goto_ecto_section(session) do
+    visit_path(session, "/en/checkbox/form#checkbox-form-ecto")
+  end
+
   def click_checkbox(session, :live) do
-    click(session, css("#checkbox-form-live-terms [data-part='control']"))
+    click_checkbox_in_section(session, "checkbox-live-form-phoenix_terms")
+  end
+
+  def click_checkbox(session, :static_ecto) do
+    click_checkbox_in_section(session, "checkbox-form-ecto_terms")
+  end
+
+  def click_checkbox(session, :static_native) do
+    click_checkbox_in_section(session, "checkbox-form-native-terms")
   end
 
   def click_checkbox(session) do
+    click_checkbox_in_section(session, "checkbox-form-phoenix_terms")
+  end
+
+  def click_checkbox_in_section(session, host_id) when is_binary(host_id) do
+    session
+    |> wait_static_form_checkbox_ready(host_id)
+    |> click_checkbox_control(host_id)
+    |> wait_checkbox_checked(host_id)
+  end
+
+  def click_checkbox_control(session, host_id) when is_binary(host_id) do
     click(
       session,
-      css("#checkbox-form-controller [data-scope='checkbox'][data-part='control']")
+      css(~s|[id="checkbox:#{host_id}:control"]|, visible: :any)
+    )
+  end
+
+  def wait_checkbox_checked(session, host_id) when is_binary(host_id) do
+    wait_for_has(
+      session,
+      css(~s|[id="checkbox:#{host_id}:control"][data-state="checked"]|, visible: :any),
+      timeout: 10_000
     )
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "checkbox-form-live-submit", else: "checkbox-form-submit"
+    id =
+      case mode do
+        :live -> "checkbox-live-form-phoenix-submit"
+        :static_ecto -> "checkbox-form-ecto-submit"
+        :static_native -> "checkbox-form-native-submit"
+        _ -> "checkbox-form-phoenix-submit"
+      end
+
     click(session, css("##{id}"))
   end
 
@@ -189,35 +243,30 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def see_error(session, error_text) do
-    assert_has(session, css("body", text: error_text))
+    assert_has(session, css("[data-part='error']", text: error_text))
   end
 
   def see_flash(session, flash_text) do
     assert_toast(session, flash_text)
   end
 
-  def wait_static_form_checkbox_ready(session, section_id) when is_binary(section_id) do
-    if not (String.match?(section_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_id) > 0) do
-      raise ArgumentError, "invalid section id"
+  def wait_static_form_checkbox_ready(session, host_id) when is_binary(host_id) do
+    if not (String.match?(host_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_id) > 0) do
+      raise ArgumentError, "invalid host id"
     end
 
-    assert_has(
-      session,
-      css("##{section_id} [phx-hook='Checkbox']:not([data-loading])", visible: :any)
-    )
-
-    session
+    wait_ready(session, "##{host_id}")
   end
 
   def submit_static_changeset(session) do
-    click(session, css("#checkbox-changeset-submit"))
+    click(session, css("#checkbox-form-ecto button[type='submit']"))
   end
 
   def submit_static_validate(session) do
-    click(session, css("#checkbox-validate-submit"))
+    click(session, css("#checkbox-form-ecto-submit"))
   end
 
   def click_live_strict_submit(session) do
-    click(session, css("#checkbox-live-form-validate [type='submit']"))
+    click(session, css("#checkbox-live-form-ecto button[type='submit']"))
   end
 end

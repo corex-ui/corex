@@ -13,6 +13,7 @@ defmodule Corex.Select.Anatomy do
       placeholder: nil,
       value: [],
       controlled: false,
+      form_field: false,
       disabled: false,
       close_on_select: true,
       dir: "ltr",
@@ -29,7 +30,8 @@ defmodule Corex.Select.Anatomy do
       redirect: false,
       positioning: nil,
       deselectable: false,
-      update_trigger: true
+      update_trigger: true,
+      hidden_select_name: nil
     ]
 
     @type t :: %__MODULE__{
@@ -38,6 +40,7 @@ defmodule Corex.Select.Anatomy do
             placeholder: String.t() | nil,
             value: list(String.t()),
             controlled: boolean(),
+            form_field: boolean(),
             disabled: boolean(),
             close_on_select: boolean(),
             dir: String.t(),
@@ -54,7 +57,8 @@ defmodule Corex.Select.Anatomy do
             redirect: boolean(),
             positioning: Corex.Positioning.t() | nil,
             deselectable: boolean(),
-            update_trigger: boolean()
+            update_trigger: boolean(),
+            hidden_select_name: String.t() | nil
           }
   end
 
@@ -255,6 +259,7 @@ defmodule Corex.Select.Anatomy do
       "form",
       "aria-hidden",
       "tabindex",
+      "disabled",
       "data-state",
       "data-focus",
       "data-focus-visible"
@@ -278,6 +283,12 @@ defmodule Corex.Select.Anatomy do
       "dir",
       "name",
       "form",
+      "value",
+      "type",
+      "hidden",
+      "aria-hidden",
+      "autocomplete",
+      "tabindex",
       "data-focus",
       "data-focus-visible"
     ]

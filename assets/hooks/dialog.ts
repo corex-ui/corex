@@ -4,15 +4,21 @@ import { Dialog, dialogInitialAriaLabel } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { readBooleanControlledZagProps, readControlledOrDefaultBoolean } from "../lib/read-props";
+import {
+  readBooleanControlledZagProps,
+  readBooleanControlledZagUpdate,
+  readControlledOrDefaultBoolean,
+} from "../lib/read-props";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import {
-  prepareInitialScaleState,
+  isJsAnimation,
+  prepareJsScaleInitialState,
   readScaleAnimationOptions,
   runScaleAnimation,
 } from "../lib/animation";
+import { resolveFocusElement } from "../lib/focus";
 import { type DialogOpenChangedDetail } from "../lib/event-details";
 
 type DialogHookState = {
@@ -20,18 +26,28 @@ type DialogHookState = {
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastOpen?: boolean;
+  previousOpen?: boolean;
 };
 
-function getDialogUpdatePropsFromEl(el: HTMLElement) {
+const DIALOG_SCALE_SELECTOR =
+  '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
+
+export function readDialogLayoutProps(el: HTMLElement) {
+  const role = getString(el, "role", ["dialog", "alertdialog"] as const) ?? "dialog";
+  const initialFocusId = getString(el, "initialFocus");
+  const finalFocusId = getString(el, "finalFocus");
+
   return {
     id: el.id,
-    ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
+    role,
     modal: getBoolean(el, "modal"),
     closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
     closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
     preventScroll: getBoolean(el, "preventScroll"),
     restoreFocus: getBoolean(el, "restoreFocus"),
     dir: getDir(el),
+    initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : undefined,
+    finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : undefined,
   };
 }
 
@@ -44,6 +60,11 @@ function runDialogScaleTransitions(el: HTMLElement, isOpen: boolean): void {
   if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
 }
 
+function runDialogScaleIfJs(el: HTMLElement, isOpen: boolean): void {
+  if (!isJsAnimation(el)) return;
+  runDialogScaleTransitions(el, isOpen);
+}
+
 const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & DialogHookState) {
     const el = this.el;
@@ -54,19 +75,19 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
 
     const dialog = new Dialog(el, {
-      id: el.id,
+      ...readDialogLayoutProps(el),
       ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
-      modal: getBoolean(el, "modal"),
-      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-      preventScroll: getBoolean(el, "preventScroll"),
-      restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getDir(el),
       "aria-label": dialogInitialAriaLabel(el),
 
       onOpenChange: (details: OpenChangeDetails) => {
-        const previousOpen = self.lastOpen ?? false;
-        self.lastOpen = details.open;
+        const controlled = getBoolean(el, "controlled");
+        const previousOpen = controlled
+          ? readControlledOrDefaultBoolean(el, "open", "defaultOpen")
+          : (self.lastOpen ?? false);
+
+        if (!controlled) {
+          self.lastOpen = details.open;
+        }
 
         const payload: DialogOpenChangedDetail = {
           id: el.id,
@@ -83,7 +104,7 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
           clientEventName: getString(el, "onOpenChangeClient"),
         });
 
-        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+        if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
           runDialogScaleTransitions(el, details.open);
         }
       },
@@ -92,17 +113,9 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
     dialog.init();
     this.dialog = dialog;
 
-    if (el.dataset.animation === "js") {
-      const opts = readScaleAnimationOptions(el);
-      prepareInitialScaleState(
-        el,
-        '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
-        opts,
-        (sub) => {
-          if (sub.dataset.part === "backdrop") return { scale: false };
-        }
-      );
-    }
+    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+      if (sub.dataset.part === "backdrop") return { scale: false };
+    });
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -132,22 +145,39 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
     });
   },
 
-  updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    const el = this.el;
-    const controlled = getBoolean(el, "controlled");
-    if (controlled) {
-      const nextOpen = getBoolean(el, "open") ?? false;
-      const prevOpen = this.lastOpen ?? false;
-      this.lastOpen = nextOpen;
-      if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
-        runDialogScaleTransitions(el, nextOpen);
-      }
+  beforeUpdate(this: object & HookInterface<HTMLElement> & DialogHookState) {
+    const { el } = this;
+    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+      this.previousOpen = getBoolean(el, "open");
     }
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(el));
+  },
+
+  updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
+    const { el } = this;
+    const layout = readDialogLayoutProps(el);
+
+    if (!getBoolean(el, "controlled")) {
+      this.dialog?.updateProps(layout);
+      return;
+    }
+
+    const nextOpen = getBoolean(el, "open") ?? false;
+    const prevOpen = this.previousOpen ?? this.lastOpen ?? false;
+    this.previousOpen = undefined;
+    this.lastOpen = nextOpen;
+
+    this.dialog?.updateProps({ ...layout, open: nextOpen });
+
+    if (nextOpen !== prevOpen) {
+      runDialogScaleIfJs(el, nextOpen);
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.dialog?.updateProps({
+      ...readDialogLayoutProps(this.el),
+      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
+    });
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.dialog?.destroy();

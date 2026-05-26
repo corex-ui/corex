@@ -13,8 +13,13 @@ defmodule Corex.Integration.MixProject do
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
+  end
+
+  def cli do
+    [preferred_envs: [lint: :test]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
@@ -22,7 +27,7 @@ defmodule Corex.Integration.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :inets]
+      extra_applications: [:logger, :inets, :telemetry]
     ]
   end
 
@@ -63,7 +68,23 @@ defmodule Corex.Integration.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:req, "~> 0.5"}
+      {:req, "~> 0.5"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      lint: [
+        "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
+        "credo --strict",
+        "sobelow --exit"
+      ]
     ]
   end
 end

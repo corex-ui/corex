@@ -55,16 +55,17 @@ defmodule E2eWeb.EditableEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="editable-events-page"
-        title="Editable · Event"
-        subtitle="Value change events (server + client)."
+        title={~t"Editable · Event"}
+        subtitle={~t"Value change events (server + client)."}
       >
         <.demo_section
-          id="editable-events-server"
-          title="On Value Change (Server)"
+          id="editable-events-server-section"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -72,7 +73,7 @@ defmodule E2eWeb.EditableEventsLive do
               <.editable
                 id="editable-events-server"
                 class="editable"
-                default_value="Edit me"
+                value="Edit me"
                 on_value_change="editable_changed"
               >
                 <:label>Label</:label>
@@ -98,12 +99,12 @@ defmodule E2eWeb.EditableEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="editable-events-client"
-          title="On Value Change (Client)"
+          id="editable-events-client-section"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>
@@ -111,7 +112,7 @@ defmodule E2eWeb.EditableEventsLive do
               <.editable
                 id="editable-events-client"
                 class="editable"
-                default_value="Edit me"
+                value="Edit me"
                 on_value_change_client="editable-changed"
               >
                 <:label>Label</:label>

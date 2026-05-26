@@ -53,25 +53,19 @@
 
   .toast [data-scope="toast"][data-part="header"] {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    gap: calc(var(--spacing) * 2);
+    gap: var(--spacing-space);
     border-block-end: 1px solid var(--color-border);
-    padding-inline: --spacing(4);
-    padding-block: --spacing(1);
-
+    padding-inline: var(--spacing-space);
+    padding-block: calc(var(--spacing-space) * 0.5);
   }
 
   .toast [data-scope="toast"][data-part="title"] {
     @apply ui-label;
 
-    justify-content: start;
-    width: 100%;
+    flex: 1;
     min-width: 0;
-    padding-inline: var(--spacing-space);
     font-weight: var(--font-weight-medium);
-
   }
 
 
@@ -79,15 +73,33 @@
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     font-weight: var(--font-weight-medium);
-    padding: --spacing(6);
-    min-height: --spacing(14);
+    padding: var(--spacing-space-lg);
+    min-height: var(--spacing-size-lg);
     white-space: pre-line;
+  }
+
+  .toast [data-scope="toast"][data-part="actions"] {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--spacing-space);
+    padding-inline: var(--spacing-space-lg);
+    padding-block-end: var(--spacing-space);
+  }
+
+  .toast [data-scope="toast"][data-part="action-trigger"] {
+    @apply ui-trigger ui-trigger--sm;
+  }
+
+  .toast [data-scope="toast"][data-part="action-trigger"][hidden] {
+    display: none;
   }
 
   .toast [data-scope="toast"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--sm ui-trigger--square ui-trigger--ghost;
 
-    justify-self: end;
+    flex-shrink: 0;
   }
 
   .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="title"] {
@@ -121,7 +133,7 @@
   }
 
   .toast [data-scope="toast"][data-part="progressbar"] {
-    height: --spacing(1);
+    height: calc(var(--spacing-space) * 0.5);
     background: linear-gradient(to left,
         var(--color-ink-muted),
         var(--color-ink));
@@ -148,7 +160,7 @@
     @apply ui-icon ui-icon--sm;
 
     display: none;
-    min-height: --spacing(5);
+    min-height: var(--spacing-size-sm);
 
     animation: spin 1s linear infinite;
   }
@@ -198,7 +210,7 @@
   & [data-scope="toast"][data-part="header"] {
     gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
-    padding-block: --value(--spacing-space-*, [length]);
+    padding-block: calc(--value(--spacing-space-*, [length]) * 0.5);
   }
 
   & [data-scope="toast"][data-part="title"] {

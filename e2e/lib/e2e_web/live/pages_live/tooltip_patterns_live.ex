@@ -59,6 +59,7 @@ defmodule E2eWeb.TooltipPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tooltip-patterns-page"
         title="Tooltip · Pattern"
         subtitle="Multi-trigger with LiveView, per-row tooltips in a ul, and one tooltip with several link triggers."
@@ -75,7 +76,7 @@ defmodule E2eWeb.TooltipPatternsLive do
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.TooltipDemo.patterns_multi_trigger_elixir()
             }
@@ -102,17 +103,17 @@ defmodule E2eWeb.TooltipPatternsLive do
 
         <.demo_section
           id="tooltip-pattern-profile-links"
-          title="List of profile links (one tooltip per row)"
+          title={~t"List of profile links (one tooltip per row)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.TooltipDemo.patterns_profile_links_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.TooltipDemo.patterns_profile_links_elixir()
             }
@@ -143,17 +144,17 @@ defmodule E2eWeb.TooltipPatternsLive do
 
         <.demo_section
           id="tooltip-pattern-profile-link-multi"
-          title="One tooltip, multiple profile links as triggers"
+          title={~t"One tooltip, multiple profile links as triggers"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.TooltipDemo.patterns_profile_links_multi_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.TooltipDemo.patterns_profile_links_multi_elixir()
             }

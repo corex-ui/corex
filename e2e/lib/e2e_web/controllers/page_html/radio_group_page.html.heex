@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="radio-group-anatomy-page"
-    title="Radio Group Anatomy"
-    subtitle="Minimal items and optional item indicator."
+    title={~t"Radio Group Anatomy"}
+    subtitle={~t"Minimal items and optional item indicator."}
   >
     <.demo_section
       id="radio-group-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.RadioGroupDemo.minimal_code()}
     >
       <:preview>
@@ -21,10 +22,26 @@
 
     <.demo_section
       id="radio-group-anatomy-indicator"
-      title="With indicator"
+      title={~t"With indicator"}
       code={E2eWeb.Demos.RadioGroupDemo.indicator_code()}
     >
       <:preview><E2eWeb.Demos.RadioGroupDemo.indicator_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-anatomy-invalid"
+      title={~t"Invalid"}
+      code={E2eWeb.Demos.RadioGroupDemo.invalid_code()}
+    >
+      <:preview><E2eWeb.Demos.RadioGroupDemo.invalid_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-anatomy-readonly"
+      title={~t"Read-only"}
+      code={E2eWeb.Demos.RadioGroupDemo.read_only_code()}
+    >
+      <:preview><E2eWeb.Demos.RadioGroupDemo.read_only_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

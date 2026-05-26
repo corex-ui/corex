@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="pin-input-anatomy-page"
-    title="Pin Input Anatomy"
-    subtitle="Minimal pin input and an initial value via the value assign."
+    title={~t"Pin Input Anatomy"}
+    subtitle={~t"Minimal pin input and an initial value via the value assign."}
   >
     <.demo_section
       id="pin-input-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.PinInputDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.PinInputDemo.minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="pin-input-anatomy-default"
-      title="Initial value"
+      title={~t"Initial value"}
       code={E2eWeb.Demos.PinInputDemo.with_default_code()}
     >
       <:preview><E2eWeb.Demos.PinInputDemo.with_default_example /></:preview>

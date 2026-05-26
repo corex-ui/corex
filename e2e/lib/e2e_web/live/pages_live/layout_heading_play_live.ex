@@ -18,6 +18,7 @@ defmodule E2eWeb.LayoutHeadingPlayLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="layout-heading-playground"
         title="Layout Heading · Playground"
         subtitle="Common layout heading combinations."

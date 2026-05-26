@@ -2,11 +2,13 @@ defmodule Corex.DataTable.Selection do
   import Phoenix.Component, only: [assign: 3]
 
   @moduledoc """
-  Helpers for selectable `.data_table` usage in LiveViews.
+  Helpers for selectable [`data_table/1`](Corex.DataTable.html#data_table/1) usage in LiveViews.
 
-  Use in mount to assign initial selection state, and in
-  handle_event("select", ...) / handle_event("select_all", ...) to update
-  selection and sync checkboxes. Keeps the LiveView minimal.
+  Use with [`Corex.DataTable`](Corex.DataTable.html): set `selectable`, `selected`, `on_select`,
+  `on_select_all`, and `row_id` on the component (see the **Selectable** pattern in
+  [`data_table/1`](Corex.DataTable.html#data_table/1) docs). In the LiveView, call
+  `assign_for_selection/3` in `mount/3`, then `handle_select/3` and `handle_select_all/3`
+  from the matching `handle_event/3` callbacks.
 
   ## Example
 
@@ -46,15 +48,15 @@ defmodule Corex.DataTable.Selection do
   """
 
   @doc """
-  Assigns selection state for the data table.
+  Assigns selection state for a [`data_table/1`](Corex.DataTable.html#data_table/1) instance.
 
   Use in `mount/3` after assigning the rows list. Options:
 
-  - `:table_id` – required, the data_table `id` (e.g. `"users-table"`)
-  - `:row_id` – required, function from row to string id (e.g. `&"user-\#{&1.id}"`)
+  - `:table_id` – required; must match the `id` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `"users-table"`)
+  - `:row_id` – required; must match `row_id` on the same component (e.g. `&"user-\#{&1.id}"`)
 
   Adds `:selected` (empty list), `:selection_table_id`, and `:selection_row_id`
-  for use by the handlers.
+  for use by [`handle_select/3`](#handle_select/3) and [`handle_select_all/3`](#handle_select_all/3).
   """
   def assign_for_selection(socket, _rows_assign, opts) do
     table_id = Keyword.fetch!(opts, :table_id)
@@ -67,13 +69,13 @@ defmodule Corex.DataTable.Selection do
   end
 
   @doc """
-  Handles the "select" event (single row checkbox) and returns the updated socket.
+  Handles the row `on_select` event from [`data_table/1`](Corex.DataTable.html#data_table/1) and returns the updated socket.
 
-  Use in `handle_event("select", params, socket)` and return
+  Use in `handle_event("select", params, socket)` (same name as `on_select`) and return
   `{:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}`.
 
   `params` must contain `"id"` (checkbox DOM id) and `"checked"`. `rows_assign`
-  is the assign key holding the list (e.g. `:users`).
+  is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows` (e.g. `:users`).
   """
   def handle_select(socket, %{"id" => checkbox_id, "checked" => checked}, rows_assign) do
     table_id = socket.assigns.selection_table_id
@@ -95,13 +97,14 @@ defmodule Corex.DataTable.Selection do
   end
 
   @doc """
-  Handles the "select_all" event and returns the updated socket.
+  Handles the `on_select_all` event from [`data_table/1`](Corex.DataTable.html#data_table/1) and returns the updated socket.
 
-  Use in `handle_event("select_all", params, socket)` and return
+  Use in `handle_event("select_all", params, socket)` (same name as `on_select_all`) and return
   `{:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}`.
 
   `params` must contain `"checked"`. Syncs all row checkboxes via
-  `Corex.Checkbox.set_checked`. `rows_assign` is the assign key holding the list.
+  [`Corex.Checkbox.set_checked/3`](Corex.Checkbox.html#set_checked/3). `rows_assign` is the
+  assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
   def handle_select_all(socket, %{"checked" => checked}, rows_assign) do
     table_id = socket.assigns.selection_table_id

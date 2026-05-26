@@ -5,32 +5,33 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="carousel-anatomy-page"
-    title="Carousel Anatomy"
-    subtitle="Basic, looping, and vertical carousels."
+    title={~t"Carousel Anatomy"}
+    subtitle={~t"Image slides, custom content with links, and compound layout."}
   >
     <.demo_section
-      id="carousel-anatomy-basic"
-      title="Basic"
-      code={E2eWeb.Demos.CarouselDemo.basic_code()}
+      id="carousel-anatomy-images"
+      title={~t"Images"}
+      code={E2eWeb.Demos.CarouselDemo.images_code()}
     >
-      <:preview><E2eWeb.Demos.CarouselDemo.basic_example /></:preview>
+      <:preview><E2eWeb.Demos.CarouselDemo.images_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="carousel-anatomy-loop"
-      title="Loop"
-      code={E2eWeb.Demos.CarouselDemo.loop_code()}
+      id="carousel-anatomy-custom-content"
+      title={~t"Custom content"}
+      code={E2eWeb.Demos.CarouselDemo.custom_content_code()}
     >
-      <:preview><E2eWeb.Demos.CarouselDemo.loop_example /></:preview>
+      <:preview><E2eWeb.Demos.CarouselDemo.custom_content_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="carousel-anatomy-vertical"
-      title="Vertical"
-      code={E2eWeb.Demos.CarouselDemo.vertical_code()}
+      id="carousel-anatomy-compound"
+      title={~t"Compound"}
+      code={E2eWeb.Demos.CarouselDemo.compound_code()}
     >
-      <:preview><E2eWeb.Demos.CarouselDemo.vertical_example /></:preview>
+      <:preview><E2eWeb.Demos.CarouselDemo.compound_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

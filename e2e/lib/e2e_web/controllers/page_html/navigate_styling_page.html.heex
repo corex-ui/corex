@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="navigate-style-page"
-    title="Navigate Styling"
-    subtitle="Color and size variants."
+    title={~t"Navigate · Style"}
+    subtitle={~t"Color and size modifiers on class=\"link\"."}
   >
     <.demo_section
       id="navigate-style-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.NavigateDemo.styling_color_code()}
     >
       <:preview><E2eWeb.Demos.NavigateDemo.styling_color_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="navigate-style-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.NavigateDemo.styling_size_code()}
     >
       <:preview><E2eWeb.Demos.NavigateDemo.styling_size_example /></:preview>

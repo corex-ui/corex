@@ -45,26 +45,7 @@ defmodule Corex.Content do
     A unique `:value` is generated when omitted.
     """
     @spec new(map()) :: t()
-    def new(attrs) when is_map(attrs) do
-      attrs =
-        attrs
-        |> Map.put_new_lazy(:value, fn -> Corex.Content.generate_id() end)
-
-      struct!(__MODULE__, attrs)
-    rescue
-      e in [KeyError, ArgumentError] ->
-        reraise ArgumentError,
-                """
-                Failed to create Content.Item: #{Exception.message(e)}
-
-                Required fields: [:label, :content]
-                Optional fields: [:value, :disabled, :meta]
-
-                Example:
-                  Corex.Content.Item.new(%{value: "item-1", label: "Lorem", content: "Consectetur adipiscing elit."})
-                """,
-                __STACKTRACE__
-    end
+    def new(attrs) when is_map(attrs), do: new(attrs, [])
 
     def new(attrs) do
       raise ArgumentError, """
@@ -73,6 +54,20 @@ defmodule Corex.Content do
       Example:
         Corex.Content.Item.new(%{value: "item-1", label: "Lorem", content: "Consectetur adipiscing elit."})
       """
+    end
+
+    def new(attrs, opts) when is_map(attrs) do
+      Corex.ItemBuilder.build_item(
+        __MODULE__,
+        attrs,
+        Keyword.merge(opts,
+          id_prefix: "content",
+          required_fields: [:label, :content],
+          optional_fields: [:value, :disabled, :meta],
+          example:
+            "Corex.Content.Item.new(%{value: \"item-1\", label: \"Lorem\", content: \"Consectetur adipiscing elit.\"})"
+        )
+      )
     end
   end
 
@@ -153,8 +148,7 @@ defmodule Corex.Content do
     |> Enum.map(fn {row, index} ->
       row
       |> row_to_map()
-      |> Map.put_new(:value, "item-#{index}")
-      |> Item.new()
+      |> then(&Item.new(&1, index: index))
     end)
   end
 
@@ -180,10 +174,5 @@ defmodule Corex.Content do
     raise ArgumentError, """
     Expected a map or keyword list for each content row, got: #{inspect(other)}
     """
-  end
-
-  @doc false
-  def generate_id do
-    "content-#{System.unique_integer([:positive, :monotonic])}"
   end
 end

@@ -1,0 +1,65 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="signature-styling-page"
+    title={~t"Signature Pad · Style"}
+    subtitle={
+      ~t"Drawing color via drawing_fill, trigger color and density via modifier classes on the signature pad root."
+    }
+  >
+    <.demo_section
+      id="signature-styling-drawing-color"
+      title={~t"Drawing color"}
+      code={E2eWeb.Demos.SignatureDemo.styling_drawing_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SignatureDemo.styling_drawing_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-styling-trigger-color"
+      title={~t"Trigger color"}
+      code={E2eWeb.Demos.SignatureDemo.styling_trigger_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SignatureDemo.styling_trigger_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.SignatureDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SignatureDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-styling-max-width"
+      title={~t"Max Width"}
+      code={E2eWeb.Demos.SignatureDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SignatureDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="signature-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.SignatureDemo.styling_rounded_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SignatureDemo.styling_rounded_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

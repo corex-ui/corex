@@ -17,7 +17,7 @@ defmodule E2eWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~W(assets fonts images favicon.ico robots.txt)
 
   def router do
     quote do
@@ -40,7 +40,9 @@ defmodule E2eWeb do
     quote do
       use Phoenix.Controller, formats: [:html, :json]
 
-      use Gettext, backend: E2eWeb.Gettext
+      use GettextSigils, backend: E2eWeb.Gettext
+
+      plug(E2eWeb.Plugs.DemoAuth)
 
       import Plug.Conn
 
@@ -79,7 +81,7 @@ defmodule E2eWeb do
   defp html_helpers do
     quote do
       # Translation
-      use Gettext, backend: E2eWeb.Gettext
+      use GettextSigils, backend: E2eWeb.Gettext
 
       # HTML escaping functionality
       import Phoenix.HTML
@@ -87,8 +89,8 @@ defmodule E2eWeb do
       use Corex
 
       # Common modules used in templates
-      alias Phoenix.LiveView.JS
       alias E2eWeb.Layouts
+      alias Phoenix.LiveView.JS
       import E2eWeb.RecordFields
 
       # Routes generation with the ~p sigil

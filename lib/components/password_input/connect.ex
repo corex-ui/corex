@@ -12,23 +12,35 @@ defmodule Corex.PasswordInput.Connect do
     VisibilityTrigger
   }
 
+  alias Corex.FormField
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
-  defp aria_label_for_trigger(assigns) do
-    Map.get(assigns, :aria_label) || Corex.Gettext.gettext("Toggle password visibility")
-  end
-
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.default_value_dataset(assigns, Map.get(assigns, :value))
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_attr,
+      "data-default-value" => default_attr,
       "data-default-visible" => get_boolean(assigns.visible),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
       "data-name" => assigns.name,
@@ -39,6 +51,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-on-visibility-change" => assigns.on_visibility_change,
       "data-on-visibility-change-client" => assigns.on_visibility_change_client
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   def ignore_root(assigns) do
@@ -84,7 +97,8 @@ defmodule Corex.PasswordInput.Connect do
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns),
-      "id" => "password-input:#{assigns.id}"
+      "id" => "password-input:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -117,7 +131,7 @@ defmodule Corex.PasswordInput.Connect do
       "disabled" => get_boolean(assigns.disabled),
       "id" => "p-input-#{assigns.id}-input",
       "name" => Map.get(assigns, :name),
-      "form" => Map.get(assigns, :form),
+      "form" => if(Map.get(assigns, :form_field, false), do: nil, else: Map.get(assigns, :form)),
       "autocomplete" => Map.get(assigns, :auto_complete),
       "data-orientation" => orientation(assigns)
     }
@@ -133,7 +147,7 @@ defmodule Corex.PasswordInput.Connect do
       "type" => "button",
       "id" => "password-input:#{assigns.id}:visibility-trigger",
       "data-orientation" => orientation(assigns),
-      "aria-label" => aria_label_for_trigger(assigns)
+      "aria-label" => assigns.aria_label
     }
   end
 

@@ -8,6 +8,8 @@
 
   .floating-panel [data-scope="floating-panel"][data-part="trigger"] {
     @apply ui-trigger;
+
+    min-height: calc(var(--spacing-size) * 0.8);
   }
 
   .floating-panel
@@ -79,6 +81,15 @@
   .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"],
   .floating-panel [data-scope="floating-panel"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--square ui-trigger--sm;
+
+    width: calc(var(--spacing-size-sm) * 0.8);
+    min-width: calc(var(--spacing-size-sm) * 0.8);
+    max-width: calc(var(--spacing-size-sm) * 0.8);
+    min-height: calc(var(--spacing-size-sm) * 0.8);
+    max-height: calc(var(--spacing-size-sm) * 0.8);
+    padding: 0;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
   }
 
   [data-scope="floating-panel"][data-part="body"] {
@@ -89,7 +100,7 @@
     flex: 1 1 auto;
     min-height: fit-content;
     height: var(--height);
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     background-color: var(--color-root);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     border: 1px solid var(--color-border);
@@ -105,7 +116,7 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    padding-block: --spacing(1);
+    padding-block: var(--spacing-space-sm);
     padding-inline: var(--spacing-space);
     gap: var(--spacing-space);
   }
@@ -164,5 +175,26 @@
     touch-action: auto !important;
     -webkit-user-select: auto !important;
     user-select: auto !important;
+  }
+}
+
+@utility floating-panel--* {
+  [data-scope="floating-panel"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-part="title"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="floating-panel"][data-part="body"] {
+    padding: --value(--spacing-space-*, [length]);
   }
 }

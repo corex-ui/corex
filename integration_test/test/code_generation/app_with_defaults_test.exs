@@ -35,7 +35,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
-        mix_run!(~w(corex.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(corex.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -60,7 +63,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
-        mix_run!(~w(corex.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted order:integer:unique), app_root_path)
+        mix_run!(
+          ~w(corex.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted order:integer:unique),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -86,7 +92,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
-        mix_run!(~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -111,7 +120,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
-        mix_run!(~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -136,7 +148,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
-        mix_run!(~w(corex.gen.live Blog Post posts title:unique body:string p:boolean s:enum:a:b:c), app_root_path)
+        mix_run!(
+          ~w(corex.gen.live Blog Post posts title:unique body:string p:boolean s:enum:a:b:c),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -164,7 +179,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
-        mix_run!(~w(corex.gen.live Blog Post posts title body:string public:boolean status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(corex.gen.live Blog Post posts title body:string public:boolean status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/phx_blog_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -189,7 +207,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
   describe "corex.gen.html E2E patterns" do
     @tag database: :postgresql
-    test "generated templates use layout_heading, data_list, @form.id, link method delete" do
+    test "generated templates use layout_heading, data_list, @form.id, alert dialog delete" do
       with_installer_tmp("gen_html_e2e", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
@@ -198,24 +216,42 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
           app_root_path
         )
 
-        index_path = Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/index.html.heex")
+        index_path =
+          Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/index.html.heex")
+
         assert_file(index_path, fn file ->
           assert file =~ "layout_heading"
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "Corex.Dialog.set_open"
           assert file =~ "method=\"delete\""
+          refute file =~ "data-confirm"
           refute file =~ "JS.hide"
         end)
 
-        show_path = Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/show.html.heex")
+        edit_path =
+          Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/edit.html.heex")
+
+        assert_file(edit_path, fn file ->
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "post-delete-"
+        end)
+
+        show_path =
+          Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/show.html.heex")
+
         assert_file(show_path, fn file ->
           assert file =~ "layout_heading"
           assert file =~ "data_list"
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "post-delete-"
         end)
 
         form_path =
           Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/post_form.html.heex")
 
         assert_file(form_path, fn file ->
-          assert file =~ "id={@form.id}"
+          assert file =~ "for={@form}"
+          refute file =~ "id={@form.id}"
         end)
       end)
     end
@@ -223,7 +259,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
   describe "corex.gen.live E2E patterns" do
     @tag database: :postgresql
-    test "generated LiveView templates use layout_heading, data_list, @form.id, action delete" do
+    test "generated LiveView templates use layout_heading, data_list, @form.id, alert dialog delete" do
       with_installer_tmp("gen_live_e2e", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
@@ -233,25 +269,37 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         )
 
         index_path = Path.join(app_root_path, "lib/phx_blog_web/live/post_live/index.ex")
+
         assert_file(index_path, fn file ->
           assert file =~ "layout_heading"
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "Corex.Dialog.set_open"
           assert file =~ "JS.push(\"delete\""
           assert file =~ "phx-click"
+          refute file =~ "data-confirm"
           refute file =~ "JS.hide"
         end)
 
         show_path = Path.join(app_root_path, "lib/phx_blog_web/live/post_live/show.ex")
+
         assert_file(show_path, fn file ->
           assert file =~ "layout_heading"
           assert file =~ "data_list"
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "post-delete-"
+          assert file =~ "handle_event(\"delete\""
         end)
 
         form_path = Path.join(app_root_path, "lib/phx_blog_web/live/post_live/form.ex")
+
         assert_file(form_path, fn file ->
-          assert file =~ "id={@form.id}"
+          assert file =~ "for={@form}"
+          refute file =~ "id={@form.id}"
+          assert file =~ "role=\"alertdialog\""
+          assert file =~ "@live_action == :edit"
+          assert file =~ "handle_event(\"delete\""
         end)
       end)
     end
   end
-
 end

@@ -1,0 +1,40 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="toggle-anatomy-page"
+    title={~t"Toggle · Anatomy"}
+    subtitle={
+      ~t"lorem, duis, donec: pressed control, optional indicator, and trigger label swap."
+    }
+  >
+    <.demo_section
+      id="toggle-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.ToggleDemo.minimal_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-anatomy-indicator"
+      title={~t"With indicator"}
+      code={E2eWeb.Demos.ToggleDemo.with_indicator_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.with_indicator_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="toggle-anatomy-dual-label"
+      title={~t"With switching trigger"}
+      code={E2eWeb.Demos.ToggleDemo.dual_label_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ToggleDemo.dual_label_example mode={@mode} />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

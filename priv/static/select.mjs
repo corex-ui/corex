@@ -1,24 +1,28 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
+} from "./chunks/chunk-EPNQR235.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+} from "./chunks/chunk-VJGUNSK5.mjs";
 import {
   itemValue,
   zagListCollectionConfig
-} from "./chunks/chunk-PWLG55J6.mjs";
+} from "./chunks/chunk-OAGPTRUC.mjs";
 import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunks/chunk-P32UGRVU.mjs";
+} from "./chunks/chunk-4PIYPYVK.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -27,10 +31,11 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
 import {
-  readStringListControlledZagProps
-} from "./chunks/chunk-FBXRLPHX.mjs";
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -39,7 +44,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -60,6 +65,7 @@ import {
   getInitialFocus,
   getNativeEvent,
   getString,
+  getStringList,
   isEditableElement,
   isEqual,
   isInternalChangeEvent,
@@ -68,9 +74,10 @@ import {
   observeAttributes,
   raf,
   scrollIntoView,
+  syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1325,15 +1332,45 @@ var Select = class extends Component {
     const valueInput = this.el.querySelector(
       '[data-scope="select"][data-part="value-input"]'
     );
+    const formArrayName = getString(this.el, "hiddenSelectName");
     if (valueInput) {
-      const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
-      valueInput.value = valueStr;
+      syncInputFormAssociation(valueInput, this.el);
+      if (valueInput.name && !formArrayName) {
+        const valueStr = this.api.value?.length ? this.api.value.map(String).join(",") : "";
+        valueInput.value = valueStr;
+      }
     }
     const hiddenSelect = this.el.querySelector(
       '[data-scope="select"][data-part="hidden-select"]'
     );
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+      if (formArrayName) {
+        hiddenSelect.name = formArrayName;
+        hiddenSelect.disabled = false;
+        const valueSet = new Set((this.api.value ?? []).map(String));
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+          option.selected = valueSet.has(option.value);
+        });
+        if (valueInput) valueInput.removeAttribute("name");
+      } else if (hiddenSelect.name) {
+        const valueSet = new Set((this.api.value ?? []).map(String));
+        Array.from(hiddenSelect.options).forEach((option) => {
+          if (option.value === "") {
+            option.selected = false;
+            return;
+          }
+          option.selected = valueSet.has(option.value);
+        });
+      } else {
+        hiddenSelect.disabled = true;
+        hiddenSelect.removeAttribute("name");
+      }
+      syncInputFormAssociation(hiddenSelect, this.el);
     }
     ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -1367,10 +1404,57 @@ var Select = class extends Component {
 };
 
 // hooks/select.ts
+function selectHiddenSelectForForm(el) {
+  const hiddenSelect = el.querySelector(
+    '[data-scope="select"][data-part="hidden-select"]'
+  );
+  if (!hiddenSelect) return null;
+  const formArrayName = getString(el, "hiddenSelectName");
+  if (formArrayName) {
+    hiddenSelect.name = formArrayName;
+    hiddenSelect.disabled = false;
+    return hiddenSelect;
+  }
+  if (!hiddenSelect.name) return null;
+  return hiddenSelect;
+}
+function formatSelectHiddenValue(el, values) {
+  const list = values.map((v) => String(v));
+  if (list.length === 0) return "";
+  if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+  return getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
+}
+function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
+  const valueSet = new Set(values.map(String));
+  Array.from(hiddenSelect.options).forEach((option) => {
+    if (option.value === "") {
+      option.selected = false;
+      return;
+    }
+    option.selected = valueSet.has(option.value);
+  });
+  queueMicrotask(() => {
+    onTouched?.();
+    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+  const hiddenSelect = selectHiddenSelectForForm(el);
+  if (hiddenSelect && getBoolean(el, "multiple")) {
+    syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+    return;
+  }
+  const valueInput = el.querySelector(
+    '[data-scope="select"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+}
 function buildCollection(items, hasGroups) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
-function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched) {
   const redirectOn = getBoolean(el, "redirect");
   return {
     id: el.id,
@@ -1382,7 +1466,7 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
     invalid: getBoolean(el, "invalid"),
     name: getString(el, "name"),
     form: getString(el, "form"),
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
     deselectable: getBoolean(el, "deselectable"),
     positioning: readPositioningOptions(el),
@@ -1394,14 +1478,7 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
         );
         performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
-      const valueInput = el.querySelector(
-        '[data-scope="select"][data-part="value-input"]'
-      );
-      if (valueInput && getBoolean(el, "controlled")) {
-        valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+      syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -1417,17 +1494,45 @@ function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
     }
   };
 }
+function reapplySelectInteractiveState(el) {
+  el.removeAttribute("data-loading");
+  if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+  const trigger = el.querySelector('[data-scope="select"][data-part="trigger"]');
+  if (!trigger || getBoolean(trigger, "disabled")) return;
+  trigger.disabled = false;
+  trigger.removeAttribute("disabled");
+}
 var SelectHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const hook = this;
+    hook.fieldTouched = false;
+    const markFieldTouched = () => {
+      hook.fieldTouched = true;
+    };
+    const defaultValues = getStringList(el, "defaultValue") ?? [];
+    if (defaultValues.length > 0) {
+      hook.fieldTouched = true;
+      queueMicrotask(() => {
+        const hiddenSelect = selectHiddenSelectForForm(el);
+        if (hiddenSelect && getBoolean(el, "multiple")) {
+          syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+          return;
+        }
+        const valueInput = el.querySelector(
+          '[data-scope="select"][data-part="value-input"]'
+        );
+        if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
+      });
+    }
     const allItems = JSON.parse(el.dataset.items || "[]");
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const selectComponent = new Select(el, {
-      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
       collection: buildCollection(allItems, hasGroups),
-      ...readStringListControlledZagProps(el, "value", "defaultValue")
+      ...mountStringListBinding(el)
     });
     selectComponent.hasGroups = hasGroups;
     selectComponent.setOptions(allItems);
@@ -1456,6 +1561,7 @@ var SelectHook = {
   },
   updated() {
     if (!this.select) return;
+    const valuePatch = readUpdatedServerStringList(this.el);
     const newItems = JSON.parse(this.el.dataset.items || "[]");
     const hasGroups = newItems.some((item) => Boolean(item.group));
     this.select.hasGroups = hasGroups;
@@ -1463,9 +1569,28 @@ var SelectHook = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     this.select.updateProps({
-      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
+        this.fieldTouched = true;
+      }),
       collection: this.select.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue")
+      ...valuePatch
+    });
+    queueMicrotask(() => {
+      reapplySelectInteractiveState(this.el);
+      if (!("value" in valuePatch) || !this.select) return;
+      const values = valuePatch.value;
+      const hiddenSelect = selectHiddenSelectForForm(this.el);
+      if (hiddenSelect && getBoolean(this.el, "multiple")) {
+        syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+        return;
+      }
+      const valueInput = this.el.querySelector(
+        '[data-scope="select"][data-part="value-input"]'
+      );
+      if (!valueInput) return;
+      const v = formatSelectHiddenValue(this.el, values);
+      if (valueInput.value !== v) valueInput.value = v;
+      reapplyLiveViewValueInputUsage(valueInput);
     });
   },
   destroyed() {
@@ -1480,5 +1605,10 @@ var SelectHook = {
   }
 };
 export {
-  SelectHook as Select
+  SelectHook as Select,
+  buildCollection,
+  formatSelectHiddenValue,
+  reapplySelectInteractiveState,
+  syncSelectHiddenInputForPhoenix,
+  syncSelectHiddenSelectForPhoenix
 };

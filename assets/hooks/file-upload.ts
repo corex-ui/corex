@@ -8,6 +8,7 @@ import type {
   FileRejectDetails,
 } from "@zag-js/file-upload";
 import { getString, getBoolean, getDir, getNumber, canPushEvent } from "../lib/util";
+import { bindArrayFieldSubmitIntent } from "../lib/form-array-submit";
 import { notifyChange, idMatches, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -15,29 +16,40 @@ import { createDomEventRegistry } from "../lib/dom-events";
 type FileUploadHookState = {
   fileUpload?: FileUpload;
   handlers?: Array<CallbackRef>;
+  unbindSubmitIntent?: () => void;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function fileChangePayload(el: HTMLElement, details: FileChangeDetails): Record<string, unknown> {
+export function fileChangePayload(
+  el: HTMLElement,
+  details: FileChangeDetails
+): Record<string, unknown> {
   const first = details.acceptedFiles[0];
   return {
     id: el.id,
     acceptedCount: details.acceptedFiles.length,
     rejectedCount: details.rejectedFiles.length,
+    acceptedNames: details.acceptedFiles.map((file) => file.name),
     firstAcceptedName: first?.name ?? null,
     firstAcceptedType: first?.type ?? null,
   };
 }
 
-function fileAcceptPayload(el: HTMLElement, details: FileAcceptDetails): Record<string, unknown> {
+export function fileAcceptPayload(
+  el: HTMLElement,
+  details: FileAcceptDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     count: details.files.length,
   };
 }
 
-function fileRejectPayload(el: HTMLElement, details: FileRejectDetails): Record<string, unknown> {
+export function fileRejectPayload(
+  el: HTMLElement,
+  details: FileRejectDetails
+): Record<string, unknown> {
   return {
     id: el.id,
     count: details.files.length,
@@ -60,7 +72,7 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       name: getString(el, "name"),
       dir: getDir(el),
@@ -107,6 +119,10 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
     this.fileUpload = zag;
     this.handlers = [];
 
+    this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      zag.syncFormSubmitInputs();
+    });
+
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -146,7 +162,7 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
       id: this.el.id,
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
       required: getBoolean(this.el, "required"),
       name: getString(this.el, "name"),
       dir: getDir(this.el),
@@ -165,6 +181,7 @@ const FileUploadHook: Hook<object & FileUploadHookState, HTMLElement> = {
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & FileUploadHookState) {
+    this.unbindSubmitIntent?.();
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }

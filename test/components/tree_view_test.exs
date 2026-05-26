@@ -65,8 +65,8 @@ defmodule Corex.TreeViewTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-part="label")
-      assert html =~ ~s(class="sr-only")
+      assert html =~ ~S(data-part="label")
+      assert html =~ ~S(class="sr-only")
     end
 
     test "renders expanded and selected values" do
@@ -87,20 +87,20 @@ defmodule Corex.TreeViewTest do
           %{items: items}
         )
 
-      assert html =~ ~s(data-state="open")
-      assert html =~ ~s(data-selected)
+      assert html =~ ~S(data-state="open")
+      assert html =~ ~S(data-selected)
     end
   end
 
-  describe "tree_item/1 and tree_branch/1" do
-    test "renders tree_item" do
+  describe "tree_view_markup_item/1 and tree_view_markup_branch/1" do
+    test "renders tree_view_markup_item" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.TreeView.tree_item item={%{id: "i1", value: "v1", index_path: [0], dir: "ltr", redirect: true, new_tab: false, selected: false, focused: false, name: "I1", disabled: false}}>Leaf</Corex.TreeView.tree_item>
+            <Corex.TreeView.tree_view_markup_item item={%{id: "i1", value: "v1", index_path: [0], dir: "ltr", redirect: true, new_tab: false, selected: false, focused: false, name: "I1", disabled: false}}>Leaf</Corex.TreeView.tree_view_markup_item>
             """
           end,
           %{}
@@ -111,18 +111,18 @@ defmodule Corex.TreeViewTest do
       assert html =~ "data-part=\"item-text\""
     end
 
-    test "renders tree_branch" do
+    test "renders tree_view_markup_branch" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.TreeView.tree_branch row={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
+            <Corex.TreeView.tree_view_markup_branch row={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
               <:branch>Trigger</:branch>
               <:branch_indicator>Icon</:branch_indicator>
               Content
-            </Corex.TreeView.tree_branch>
+            </Corex.TreeView.tree_view_markup_branch>
             """
           end,
           %{}
@@ -623,11 +623,10 @@ defmodule Corex.TreeViewTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when uncontrolled" do
+    test "returns props with default expanded and selected values" do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: ["node-1"],
         value: ["node-2"],
         selection_mode: "single",
@@ -641,31 +640,9 @@ defmodule Corex.TreeViewTest do
       assert result["data-tree"] == Json.encode!(@zag_root)
       assert result["data-default-expanded-value"] == "node-1"
       assert result["data-default-selected-value"] == "node-2"
-      assert result["data-expanded-value"] == nil
-      assert result["data-selected-value"] == nil
-      assert result["data-typeahead"] == "true"
-    end
-
-    test "returns props when controlled" do
-      assigns = %{
-        id: "test-tree",
-        tree: @zag_root,
-        controlled: true,
-        expanded_value: ["node-1"],
-        value: ["node-2"],
-        selection_mode: "single",
-        dir: "ltr",
-        on_selection_change: nil,
-        on_expanded_change: nil,
-        redirect: true
-      }
-
-      result = Connect.props(assigns)
-      assert result["data-tree"] == Json.encode!(@zag_root)
-      assert result["data-default-expanded-value"] == nil
-      assert result["data-default-selected-value"] == nil
-      assert result["data-expanded-value"] == "node-1"
-      assert result["data-selected-value"] == "node-2"
+      refute Map.has_key?(result, "data-expanded-value")
+      refute Map.has_key?(result, "data-selected-value")
+      refute Map.has_key?(result, "data-controlled")
       assert result["data-typeahead"] == "true"
     end
 
@@ -673,7 +650,6 @@ defmodule Corex.TreeViewTest do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -693,7 +669,6 @@ defmodule Corex.TreeViewTest do
       assigns = %{
         id: "test-tree",
         tree: @zag_root,
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -714,7 +689,6 @@ defmodule Corex.TreeViewTest do
         tree: @zag_root,
         animation: "custom",
         animation_options: %Corex.Animation.Height{duration: 0.9},
-        controlled: false,
         expanded_value: [],
         value: [],
         selection_mode: "single",
@@ -738,10 +712,72 @@ defmodule Corex.TreeViewTest do
       assert html =~ ~r/Child/
     end
 
-    test "renders with controlled" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_controlled/1, [])
+    test "renders with initial selection and expansion" do
+      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_with_defaults/1, [])
       assert html =~ ~r/data-scope="tree-view"/
-      assert html =~ ~r/data-controlled/
+      refute html =~ "data-controlled"
+      refute html =~ "data-expanded-value"
+      refute html =~ "data-selected-value"
+    end
+
+    test "tree_view_skeleton renders loading markup" do
+      html = render_component(&TreeView.tree_view_skeleton/1, count: 2)
+      assert html =~ ~S(data-loading)
+      assert html =~ ~S(data-part="item")
+    end
+
+    test "renders items with link redirect metadata" do
+      items =
+        Corex.Tree.new([
+          %{label: "Patch", value: "p", to: "/p", redirect: :patch, new_tab: true},
+          %{label: "Off", value: "o", redirect: false},
+          %{label: "Nav", value: "n", to: "/n", redirect: :navigate}
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <TreeView.tree_view id="tv-links" items={@items} redirect />
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ ~S(data-redirect)
+      assert html =~ ~S(data-new-tab)
+    end
+  end
+
+  describe "compound errors" do
+    test "raises when compound item is missing from ctx" do
+      items = Corex.Tree.new([%{label: "Only", value: "only"}])
+
+      missing = %Corex.Tree.Item{
+        value: "missing",
+        label: "Missing",
+        children: [],
+        disabled: false,
+        to: nil,
+        redirect: nil,
+        new_tab: false,
+        meta: %{}
+      }
+
+      assert_raise ArgumentError, ~r/not present in ctx.items/, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <TreeView.tree_view id="tv-bad-compound" compound :let={ctx} items={@items}>
+              <TreeView.tree_view_root ctx={ctx}>
+                <TreeView.tree_view_item ctx={ctx} item={@missing} />
+              </TreeView.tree_view_root>
+            </TreeView.tree_view>
+            """
+          end,
+          %{items: items, missing: missing}
+        )
+      end
     end
   end
 end

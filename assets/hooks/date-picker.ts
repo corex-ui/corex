@@ -10,13 +10,74 @@ import type { ValueChangeDetails, Props } from "@zag-js/date-picker";
 import type { Direction } from "@zag-js/types";
 import * as datePicker from "@zag-js/date-picker";
 
-import { getString, getBoolean, getStringList, getNumber, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
+import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
+import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
 
-function valueToIsoString(d: unknown): string {
+type DateLike = { year: number; month: number; day: number };
+
+function isDateLike(d: unknown): d is DateLike {
+  return (
+    typeof d === "object" &&
+    d !== null &&
+    "year" in d &&
+    "month" in d &&
+    "day" in d &&
+    typeof (d as DateLike).year === "number" &&
+    typeof (d as DateLike).month === "number" &&
+    typeof (d as DateLike).day === "number"
+  );
+}
+
+export function valueToIsoString(d: unknown): string {
   if (d == null) return "";
+
+  if (typeof d === "string") {
+    const trimmed = d.trim();
+    if (trimmed === "") return "";
+    try {
+      return datePicker.parse(trimmed).toString();
+    } catch {
+      return trimmed;
+    }
+  }
+
+  if (isDateLike(d)) {
+    const { year, month, day } = d;
+    const mm = String(month).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    return `${year}-${mm}-${dd}`;
+  }
+
   return String(d);
+}
+
+function isoListFromValues(values: unknown[] | undefined): string[] {
+  return values?.length ? values.map((d) => valueToIsoString(d)).filter(Boolean) : [];
+}
+
+export function syncDatePickerValueInput(
+  el: HTMLElement,
+  isoStr: string,
+  notifyForm = false
+): void {
+  const hiddenInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="date-picker"][data-part="value-input"]'
+  );
+  if (!hiddenInput) return;
+
+  if (hiddenInput.value !== isoStr) {
+    hiddenInput.value = isoStr;
+  }
+
+  if (notifyForm) {
+    notifyPhoenixFormChange(hiddenInput, isoStr);
+  } else {
+    notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+  }
 }
 
 function resolveZagDatePickerTranslations(
@@ -34,7 +95,7 @@ function resolveZagDatePickerTranslations(
   }
 }
 
-function resolveCloseOnSelect(el: HTMLElement): boolean {
+export function resolveCloseOnSelect(el: HTMLElement): boolean {
   return getBoolean(el, "closeOnSelect");
 }
 
@@ -47,6 +108,8 @@ type DatePickerHookState = {
 const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
+    const hook = this as object & HookInterface<HTMLElement> & DatePickerHookState;
+    hook.allowFormNotify = false;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
     const canPush = () => canPushEvent(this.liveSocket);
@@ -59,16 +122,20 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { value: parseList(getStringList(el, "value")) }
-        : { defaultValue: parseList(getStringList(el, "defaultValue")) }),
+      ...(() => {
+        const binding = mountStringListBinding(el);
+        if ("value" in binding) {
+          return { value: parseList(binding.value) };
+        }
+        return { defaultValue: parseList(binding.defaultValue) };
+      })(),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView"),
       dir: getString<Direction>(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -88,25 +155,28 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       ...resolveZagDatePickerTranslations(el),
 
       onValueChange: (details: ValueChangeDetails) => {
-        const isoStr = details.value?.length
-          ? details.value
-              .map((d: unknown) => valueToIsoString(d))
-              .filter(Boolean)
-              .join(",")
-          : "";
+        const isoList = isoListFromValues(details.value);
 
-        const hiddenInput = el.querySelector<HTMLInputElement>(`#${el.id}-value`);
-        if (hiddenInput && hiddenInput.value !== isoStr) {
-          hiddenInput.value = isoStr;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        const submitName = getString(el, "submitName");
+        if (submitName) {
+          syncArrayHiddenInputsForPhoenix(el, isoList, {
+            scope: "date-picker",
+            submitName,
+            notifyLiveView: hook.allowFormNotify === true,
+          });
+        } else {
+          const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+          syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
         }
 
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: isoStr || null } as Record<string, unknown>,
+          payload: {
+            id: el.id,
+            value: isoList.length > 0 ? isoList.join(",") : null,
+          } as Record<string, unknown>,
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient"),
         });
@@ -154,6 +224,23 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
 
+    queueMicrotask(() => {
+      const submitName = getString(el, "submitName");
+      const isoList = isoListFromValues(datePickerInstance.api.value);
+
+      if (submitName) {
+        syncArrayHiddenInputsForPhoenix(el, isoList, {
+          scope: "date-picker",
+          submitName,
+          notifyLiveView: false,
+        });
+      } else {
+        syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+      }
+
+      hook.allowFormNotify = true;
+    });
+
     this.handlers = [];
 
     this.handlers.push(
@@ -178,25 +265,20 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
+    const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const focusedStr = getString(el, "focusedValue");
-    const controlled = getBoolean(el, "controlled");
-    const valueList = getStringList(el, "value");
+    const valuePatch = readUpdatedServerStringList(el);
+    const parsedValue =
+      "value" in valuePatch ? { value: valuePatch.value.map((x) => datePicker.parse(x)) } : {};
 
-    this.datePicker?.updateProps({
-      ...(controlled
-        ? {
-            value: (valueList ?? []).map((x) => datePicker.parse(x)),
-          }
-        : {}),
-      defaultFocusedValue: focusedStr ? datePicker.parse(focusedStr) : undefined,
-      defaultView: getString<"day" | "month" | "year">(el, "defaultView"),
+    zag?.updateProps({
+      ...parsedValue,
       dir: getString<Direction>(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -214,6 +296,16 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
     } as Props);
+
+    if (!getString(el, "submitName")) {
+      queueMicrotask(() => {
+        const isoStr =
+          "value" in valuePatch
+            ? valuePatch.value.join(",")
+            : isoListFromValues(zag?.api.value).join(",");
+        syncDatePickerValueInput(el, isoStr, false);
+      });
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & DatePickerHookState) {

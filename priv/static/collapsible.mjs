@@ -1,9 +1,10 @@
 import {
-  readBooleanControlledZagProps
-} from "./chunks/chunk-FBXRLPHX.mjs";
-import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  readBooleanControlledZagProps,
+  readBooleanControlledZagUpdate
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -14,7 +15,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -33,7 +34,7 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
@@ -393,22 +394,26 @@ var Collapsible = class extends Component {
     return this.zagConnect(connect);
   }
   render() {
+    const orientation = this.el.dataset.orientation;
     const rootEl = this.el.querySelector(
       '[data-scope="collapsible"][data-part="root"]'
     );
     if (rootEl) {
       this.spreadProps(rootEl, this.api.getRootProps());
+      if (orientation) rootEl.dataset.orientation = orientation;
       const triggerEl = rootEl.querySelector(
         '[data-scope="collapsible"][data-part="trigger"]'
       );
       if (triggerEl) {
         this.spreadProps(triggerEl, this.api.getTriggerProps());
+        if (orientation) triggerEl.dataset.orientation = orientation;
       }
       const contentEl = rootEl.querySelector(
         '[data-scope="collapsible"][data-part="content"]'
       );
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getContentProps());
+        if (orientation) contentEl.dataset.orientation = orientation;
       }
     }
   }
@@ -487,7 +492,7 @@ var CollapsibleHook = {
   updated() {
     this.collapsible?.updateProps({
       id: this.el.id,
-      ...readBooleanControlledZagProps(this.el, "open", "defaultOpen"),
+      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen"),
       disabled: getBoolean(this.el, "disabled"),
       dir: getDir(this.el)
     });
@@ -499,5 +504,6 @@ var CollapsibleHook = {
   }
 };
 export {
-  CollapsibleHook as Collapsible
+  CollapsibleHook as Collapsible,
+  openChangePayload
 };

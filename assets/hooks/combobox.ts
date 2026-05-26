@@ -8,39 +8,70 @@ import type {
   ValueChangeDetails,
 } from "@zag-js/combobox";
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { readPositioningOptions } from "../lib/positioning";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage,
+} from "../lib/live-view-form-input";
+import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
 
 type ComboboxHookState = {
   combobox?: Combobox;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastItemsJson?: string;
+  fieldTouched?: boolean;
 };
 
-function comboboxValueBinding(el: HTMLElement): { value: string[] } | { defaultValue: string[] } {
-  const controlled = getBoolean(el, "controlled");
-  if (controlled) {
-    return { value: getStringList(el, "value") ?? [] };
+export function formatComboboxHiddenValue(el: HTMLElement, values: ReadonlyArray<string>): string {
+  const list = values.map((v) => String(v));
+  return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
+}
+
+export function syncComboboxHiddenInputForPhoenix(
+  el: HTMLElement,
+  values: ReadonlyArray<string>,
+  onTouched?: () => void
+): void {
+  const submitName = getString(el, "submitName");
+  if (submitName && getBoolean(el, "multiple")) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "combobox",
+      submitName,
+      notifyLiveView: true,
+    });
+    return;
   }
-  return { defaultValue: getStringList(el, "defaultValue") ?? [] };
+
+  const hidden = el.querySelector<HTMLInputElement>(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (!hidden) return;
+  queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
 }
 
-function comboboxValueBindingForUpdate(el: HTMLElement): { value?: string[] } {
-  if (!getBoolean(el, "controlled")) return {};
-  return { value: getStringList(el, "value") ?? [] };
+function reapplyComboboxHiddenInputUsage(el: HTMLElement): void {
+  const hidden = el.querySelector<HTMLInputElement>(
+    '[data-scope="combobox"][data-part="hidden-input"]'
+  );
+  if (hidden) reapplyLiveViewValueInputUsage(hidden);
 }
 
-function selectedItemLabel(items: ReadonlyArray<unknown>): string {
+export { mountStringListBinding as comboboxValueBinding };
+
+export function selectedItemLabel(items: ReadonlyArray<unknown>): string {
   const first = items?.[0] as { label?: unknown } | undefined;
   if (!first) return "";
   return first.label != null ? String(first.label) : "";
 }
 
-function syncVisibleInputAttribute(el: HTMLElement, value: string): void {
+export function syncVisibleInputAttribute(el: HTMLElement, value: string): void {
   const visible = el.querySelector<HTMLInputElement>('[data-scope="combobox"][data-part="input"]');
   if (visible) visible.setAttribute("value", value);
 }
@@ -50,7 +81,8 @@ function buildComboboxProps(
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean,
   liveSocket: HookInterface<HTMLElement>["liveSocket"],
-  getCombobox: () => Combobox | undefined
+  getCombobox: () => Combobox | undefined,
+  markFieldTouched: () => void
 ): Props {
   const redirectOn = getBoolean(el, "redirect");
   return {
@@ -67,7 +99,7 @@ function buildComboboxProps(
     invalid: getBoolean(el, "invalid"),
     allowCustomValue: false,
     selectionBehavior: "replace",
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
     positioning: readPositioningOptions(el),
     onOpenChange: (details: OpenChangeDetails) => {
@@ -108,18 +140,7 @@ function buildComboboxProps(
         );
         performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
-      {
-        const hidden = el.querySelector<HTMLInputElement>(
-          '[data-scope="combobox"][data-part="hidden-input"]'
-        );
-        if (hidden) {
-          const list = details.value.map((v) => String(v));
-          hidden.value =
-            list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
-          hidden.dispatchEvent(new Event("input", { bubbles: true }));
-          hidden.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-      }
+      syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
       getCombobox()?.restoreFilteredOptions();
       syncVisibleInputAttribute(el, selectedItemLabel(details.items));
       notifyChange({
@@ -143,12 +164,12 @@ function comboboxMachineDomPropsForUpdate(
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean,
   liveSocket: HookInterface<HTMLElement>["liveSocket"],
-  getCombobox: () => Combobox | undefined
+  getCombobox: () => Combobox | undefined,
+  markFieldTouched: () => void
 ): Partial<Props> {
-  const rest = { ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) } as Record<
-    string,
-    unknown
-  >;
+  const rest = {
+    ...buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched),
+  } as Record<string, unknown>;
   delete rest.onOpenChange;
   delete rest.onInputValueChange;
   delete rest.onValueChange;
@@ -160,15 +181,33 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const hook = this as object & ComboboxHookState;
+    hook.fieldTouched = false;
+    const markFieldTouched = () => {
+      hook.fieldTouched = true;
+    };
 
     const itemsJson = el.getAttribute("data-items") ?? "[]";
     const allItems = JSON.parse(itemsJson);
     const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
 
+    const defaultValues = getStringList(el, "defaultValue") ?? [];
+    if (defaultValues.length > 0) {
+      hook.fieldTouched = true;
+      queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+    }
+
     let comboboxRef: Combobox | undefined;
     const props = {
-      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef),
-      ...comboboxValueBinding(el),
+      ...buildComboboxProps(
+        el,
+        pushEvent,
+        canPush,
+        this.liveSocket,
+        () => comboboxRef,
+        markFieldTouched
+      ),
+      ...mountStringListBinding(el),
     } as Props;
 
     const combobox = new Combobox(el, props, allItems, hasGroups);
@@ -177,7 +216,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
     this.combobox = combobox;
     this.lastItemsJson = itemsJson;
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -197,6 +235,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     if (!this.combobox) return;
 
+    const valuePatch = readUpdatedServerStringList(this.el);
+
     const newItemsJson = this.el.getAttribute("data-items") ?? "[]";
     if (newItemsJson !== this.lastItemsJson) {
       this.lastItemsJson = newItemsJson;
@@ -215,13 +255,23 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         pushEvent,
         canPush,
         this.liveSocket,
-        () => this.combobox
+        () => this.combobox,
+        () => {
+          this.fieldTouched = true;
+        }
       ),
-      ...comboboxValueBindingForUpdate(this.el),
+      ...valuePatch,
     } as Props);
 
     if (this.combobox.api.open) {
       this.combobox.api.reposition();
+    }
+
+    if ("value" in valuePatch) {
+      syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, undefined);
+      reapplyComboboxHiddenInputUsage(this.el);
+      const label = selectedItemLabel(valuePatch.value.map((v) => ({ value: v, label: v })));
+      syncVisibleInputAttribute(this.el, label);
     }
   },
 

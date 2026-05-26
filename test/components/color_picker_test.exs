@@ -1,9 +1,11 @@
 defmodule Corex.ColorPickerTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.ColorPicker
   alias Corex.ColorPicker.Connect
   alias Corex.ColorPicker.Initial
+  alias Corex.ColorPicker.Translation
 
   describe "color_picker/1" do
     test "renders" do
@@ -12,6 +14,137 @@ defmodule Corex.ColorPickerTest do
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
       assert html =~ ~r/phx-mounted=/
+    end
+
+    test "renders with presets and form field" do
+      form = Phoenix.Component.to_form(%{"color" => "#336699"}, as: :user)
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              field={@form[:color]}
+              presets={["#ff0000", "#00ff00"]}
+              open
+              read_only={false}
+            />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ ~S(data-scope="color-picker")
+    end
+
+    test "renders controlled value with errors" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              id="cp-full"
+              value="#ff0000"
+              controlled
+              open
+              invalid
+              errors={["Invalid color"]}
+            >
+              <:error :let={msg}>{msg}</:error>
+            </ColorPicker.color_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Invalid color"
+      assert html =~ "data-invalid"
+      assert html =~ ~S(data-part="positioner")
+    end
+
+    test "does not set invalid when only errors are present" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker id="cp-errors" errors={["Pick a color"]}>
+              <:error :let={msg}>{msg}</:error>
+            </ColorPicker.color_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Pick a color"
+      refute html =~ ~S(data-invalid="")
+    end
+
+    test "renders open picker with presets and partial translation" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker
+              id="cp-presets"
+              value="#ff0000"
+              open
+              presets={["#ff0000", "#00ff00", "rgba(0,0,255,0.5)"]}
+              translation={%Corex.ColorPicker.Translation{hex: "Hex"}}
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-part="swatch-trigger")
+      assert html =~ ~S(data-part="swatch-group")
+      assert html =~ "Hex"
+    end
+
+    test "form field coerces values" do
+      form = Phoenix.Component.to_form(%{"color" => ""}, as: :user)
+
+      empty_html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker field={@form[:color]} />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert empty_html =~ ~S(data-scope="color-picker")
+
+      form2 = Phoenix.Component.to_form(%{"color" => 16_777_215}, as: :user)
+
+      int_html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker field={@form[:color]} />
+            """
+          end,
+          %{form: form2}
+        )
+
+      assert int_html =~ "16777215"
+    end
+  end
+
+  describe "Translation" do
+    test "resolve uses defaults when partial is nil" do
+      defaults = Translation.resolve(nil)
+      assert defaults.hex =~ "Hex"
+      assert defaults.alpha =~ "Alpha"
+    end
+
+    test "resolve fills partial fields from defaults" do
+      defaults = Translation.resolve(nil)
+      partial = %Translation{hex: "Custom hex"}
+      merged = Translation.resolve(partial)
+      assert merged.hex == "Custom hex"
+      assert merged.alpha == defaults.alpha
     end
   end
 
@@ -239,8 +372,8 @@ defmodule Corex.ColorPickerTest do
       refute Map.has_key?(result, "data-format")
       refute Map.has_key?(result, "data-open")
       refute Map.has_key?(result, "data-default-open")
-      refute Map.has_key?(result, "data-value")
-      refute Map.has_key?(result, "data-controlled")
+      assert result["data-value"] == nil
+      assert result["data-controlled"] == nil
     end
 
     test "returns props with value as data-default-value" do
@@ -262,6 +395,22 @@ defmodule Corex.ColorPickerTest do
       assert result["data-on-value-change"] == "update_color"
       assert result["data-on-value-change-end"] == "commit_color"
       assert result["data-on-open-change"] == "toggle_picker"
+    end
+
+    test "includes client event names when set" do
+      assigns =
+        base_assigns(
+          on_format_change_client: "format_client",
+          on_pointer_down_outside_client: "pointer_client",
+          on_focus_outside_client: "focus_client",
+          on_interact_outside_client: "interact_client"
+        )
+
+      result = Connect.props(assigns)
+      assert result["data-on-format-change-client"] == "format_client"
+      assert result["data-on-pointer-down-outside-client"] == "pointer_client"
+      assert result["data-on-focus-outside-client"] == "focus_client"
+      assert result["data-on-interact-outside-client"] == "interact_client"
     end
 
     test "includes positioning when set" do
@@ -289,7 +438,7 @@ defmodule Corex.ColorPickerTest do
       result = Connect.props(assigns)
       assert result["data-disabled"] == ""
       assert result["data-invalid"] == ""
-      assert result["data-read-only"] == ""
+      assert result["data-readonly"] == ""
       assert result["data-required"] == ""
       assert result["data-close-on-select"] == nil
     end
@@ -321,6 +470,72 @@ defmodule Corex.ColorPickerTest do
     end
   end
 
+  describe "Connect ignore helpers" do
+    alias Corex.ColorPicker.Anatomy.{
+      Area,
+      Content,
+      Control,
+      Label,
+      Positioner,
+      Root,
+      Swatch,
+      TransparencyGrid
+    }
+
+    test "returns JS for ignore_* functions" do
+      root = %Root{
+        id: "cp",
+        disabled: false,
+        invalid: false,
+        read_only: false,
+        value_style: nil,
+        dir: "ltr"
+      }
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_root(root)
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_label(%Label{
+                 id: "cp",
+                 disabled: false,
+                 invalid: false,
+                 read_only: false,
+                 required: false,
+                 dir: "ltr"
+               })
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_control(%Control{
+                 id: "cp",
+                 disabled: false,
+                 invalid: false,
+                 read_only: false,
+                 open: false
+               })
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_positioner(%Positioner{id: "cp", dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_content(%Content{id: "cp", open: false, dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_area(%Area{picker_id: "cp", dir: "ltr"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_transparency_grid(%TransparencyGrid{id: "cp", size: "10px"})
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_swatch(%Swatch{
+                 id: "cp",
+                 color: "#fff",
+                 value: "#fff",
+                 checked: true
+               })
+
+      assert Connect.swatch_trigger_aria_label("#fff") =~ "#fff"
+      assert is_binary(Connect.channel_input_style())
+    end
+  end
+
   defp base_assigns(overrides \\ []) do
     [
       id: "test-color-picker",
@@ -335,8 +550,19 @@ defmodule Corex.ColorPickerTest do
       dir: "ltr",
       positioning: %Corex.Positioning{},
       on_value_change: nil,
+      on_value_change_client: nil,
       on_value_change_end: nil,
-      on_open_change: nil
+      on_value_change_end_client: nil,
+      on_open_change: nil,
+      on_open_change_client: nil,
+      on_format_change: nil,
+      on_format_change_client: nil,
+      on_pointer_down_outside: nil,
+      on_pointer_down_outside_client: nil,
+      on_focus_outside: nil,
+      on_focus_outside_client: nil,
+      on_interact_outside: nil,
+      on_interact_outside_client: nil
     ]
     |> Keyword.merge(overrides)
     |> Map.new()

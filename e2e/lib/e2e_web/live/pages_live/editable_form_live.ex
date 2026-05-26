@@ -3,9 +3,12 @@ defmodule E2eWeb.EditableFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  alias E2e.Form.EditableForm
   alias Corex.Toast
+  alias E2e.Form.EditableForm
   alias E2eWeb.Demos.EditableDemo, as: Demo
+
+  @phoenix_form_id "editable-live-form-phoenix"
+  @ecto_form_id "editable-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
@@ -13,25 +16,45 @@ defmodule E2eWeb.EditableFormLive do
      socket
      |> assign(:page_title, "Editable · Form")
      |> assign(:form_ecto, Demo.form_ecto())
-     |> assign(:live_basic_heex, Demo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, Demo.form_doc_live_changeset_elixir())
-     |> assign_form()}
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
+     |> assign_forms()}
   end
 
-  defp assign_form(socket) do
-    form =
+  defp assign_forms(socket) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"text" => ""}, as: :editable_phoenix, id: @phoenix_form_id)
+
+    ecto_form =
       %EditableForm{}
       |> EditableForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :editable_form, id: "editable-form")
+      |> Phoenix.Component.to_form(as: :editable_ecto, id: @ecto_form_id)
 
-    assign(socket, :form, form)
+    socket
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
+  end
+
+  @impl true
+  def handle_event("save_phoenix", %{"editable_phoenix" => params}, socket) do
+    text = params["text"] || ""
+
+    {:noreply,
+     socket
+     |> Toast.create("layout-toast", "Submitted", "text=#{text}", :info, duration: 5000)
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"text" => text}, as: :editable_phoenix, id: @phoenix_form_id)
+     )}
   end
 
   @impl true
   def handle_event("validate", event_params, socket) do
     params =
-      Map.get(event_params, "editable_form") ||
-        socket.assigns.form.params
+      Map.get(event_params, "editable_ecto") ||
+        socket.assigns.ecto_form.params
 
     changeset =
       %EditableForm{}
@@ -39,20 +62,20 @@ defmodule E2eWeb.EditableFormLive do
       |> Map.put(:action, :validate)
 
     {:noreply,
-     socket
-     |> assign(
-       :form,
+     assign(
+       socket,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :editable_form,
-         id: "editable-form"
+         as: :editable_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
   @impl true
   def handle_event("value_changed", %{"value" => value}, socket) do
-    params = Map.merge(socket.assigns.form.params || %{}, %{"text" => to_string(value)})
+    params = Map.merge(socket.assigns.ecto_form.params || %{}, %{"text" => to_string(value)})
 
     changeset =
       %EditableForm{}
@@ -60,13 +83,13 @@ defmodule E2eWeb.EditableFormLive do
       |> Map.put(:action, :validate)
 
     {:noreply,
-     socket
-     |> assign(
-       :form,
+     assign(
+       socket,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :editable_form,
-         id: "editable-form"
+         as: :editable_ecto,
+         id: @ecto_form_id
        )
      )}
   end
@@ -74,8 +97,8 @@ defmodule E2eWeb.EditableFormLive do
   @impl true
   def handle_event("save", event_params, socket) do
     params =
-      Map.get(event_params, "editable_form") ||
-        socket.assigns.form.params
+      Map.get(event_params, "editable_ecto") ||
+        socket.assigns.ecto_form.params
 
     case EditableForm.changeset(%EditableForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
@@ -84,24 +107,24 @@ defmodule E2eWeb.EditableFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :form,
+           :ecto_form,
            Phoenix.Component.to_form(EditableForm.changeset(%EditableForm{}, params),
-             as: :editable_form,
-             id: "editable-form"
+             as: :editable_ecto,
+             id: @ecto_form_id
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
-         socket
-         |> assign(
-           :form,
+         assign(
+           socket,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :editable_form,
-             id: "editable-form"
+             as: :editable_ecto,
+             id: @ecto_form_id
            )
          )}
     end
@@ -117,21 +140,34 @@ defmodule E2eWeb.EditableFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="editable-form-live-page"
-        title="Editable · Form"
-        subtitle="Live View form"
+        title={~t"Editable · Form"}
       >
         <.demo_section
-          id="editable-live-form-changeset"
-          title="Phoenix form (changeset)"
+          id="editable-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="editable-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

@@ -1,17 +1,19 @@
 import {
-  trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
-import {
-  prepareInitialScaleState,
+  isJsAnimation,
+  prepareJsScaleInitialState,
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunks/chunk-WG2KNE4C.mjs";
+} from "./chunks/chunk-XI7CXJ3V.mjs";
+import {
+  trackDismissableElement
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
 import {
   readBooleanControlledZagProps,
+  readBooleanControlledZagUpdate,
   readControlledOrDefaultBoolean
-} from "./chunks/chunk-FBXRLPHX.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -20,7 +22,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -56,7 +58,7 @@ import {
   raf,
   setStyle,
   setStyleProperty
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(
@@ -1241,6 +1243,18 @@ function dialogInitialAriaLabel(rootEl) {
   return "Dialog";
 }
 function syncDialogContentAriaRefs(rootEl, contentEl) {
+  const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+  if (!titleEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-labelledby");
+    const label = dialogInitialAriaLabel(rootEl);
+    if (label) {
+      contentEl.setAttribute("aria-label", label);
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
+  } else {
+    contentEl.removeAttribute("aria-label");
+  }
   const descriptionEl = rootEl.querySelector(
     '[data-scope="dialog"][data-part="description"]'
   );
@@ -1308,17 +1322,33 @@ var Dialog = class extends Component {
   }
 };
 
+// lib/focus.ts
+function resolveFocusElement(root, id) {
+  if (!id) return null;
+  const scoped = root.querySelector(`#${CSS.escape(id)}`);
+  if (scoped) return scoped;
+  const byId = document.getElementById(id);
+  if (byId && root.contains(byId)) return byId;
+  return null;
+}
+
 // hooks/dialog.ts
-function getDialogUpdatePropsFromEl(el) {
+var DIALOG_SCALE_SELECTOR = '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
+function readDialogLayoutProps(el) {
+  const role = getString(el, "role", ["dialog", "alertdialog"]) ?? "dialog";
+  const initialFocusId = getString(el, "initialFocus");
+  const finalFocusId = getString(el, "finalFocus");
   return {
     id: el.id,
-    ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
+    role,
     modal: getBoolean(el, "modal"),
     closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
     closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
     preventScroll: getBoolean(el, "preventScroll"),
     restoreFocus: getBoolean(el, "restoreFocus"),
-    dir: getDir(el)
+    dir: getDir(el),
+    initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : void 0,
+    finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : void 0
   };
 }
 function runDialogScaleTransitions(el, isOpen) {
@@ -1329,6 +1359,10 @@ function runDialogScaleTransitions(el, isOpen) {
   if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
   if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
 }
+function runDialogScaleIfJs(el, isOpen) {
+  if (!isJsAnimation(el)) return;
+  runDialogScaleTransitions(el, isOpen);
+}
 var DialogHook = {
   mounted() {
     const el = this.el;
@@ -1337,18 +1371,15 @@ var DialogHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     self.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
     const dialog = new Dialog(el, {
-      id: el.id,
+      ...readDialogLayoutProps(el),
       ...readBooleanControlledZagProps(el, "open", "defaultOpen"),
-      modal: getBoolean(el, "modal"),
-      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-      preventScroll: getBoolean(el, "preventScroll"),
-      restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getDir(el),
       "aria-label": dialogInitialAriaLabel(el),
       onOpenChange: (details) => {
-        const previousOpen = self.lastOpen ?? false;
-        self.lastOpen = details.open;
+        const controlled = getBoolean(el, "controlled");
+        const previousOpen = controlled ? readControlledOrDefaultBoolean(el, "open", "defaultOpen") : self.lastOpen ?? false;
+        if (!controlled) {
+          self.lastOpen = details.open;
+        }
         const payload = {
           id: el.id,
           open: details.open,
@@ -1362,24 +1393,16 @@ var DialogHook = {
           serverEventName: getString(el, "onOpenChange"),
           clientEventName: getString(el, "onOpenChangeClient")
         });
-        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+        if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
           runDialogScaleTransitions(el, details.open);
         }
       }
     });
     dialog.init();
     this.dialog = dialog;
-    if (el.dataset.animation === "js") {
-      const opts = readScaleAnimationOptions(el);
-      prepareInitialScaleState(
-        el,
-        '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
-        opts,
-        (sub) => {
-          if (sub.dataset.part === "backdrop") return { scale: false };
-        }
-      );
-    }
+    prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+      if (sub.dataset.part === "backdrop") return { scale: false };
+    });
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:dialog:set-open", (event) => {
@@ -1403,26 +1426,39 @@ var DialogHook = {
       });
     });
   },
-  updated() {
-    const el = this.el;
-    const controlled = getBoolean(el, "controlled");
-    if (controlled) {
-      const nextOpen = getBoolean(el, "open") ?? false;
-      const prevOpen = this.lastOpen ?? false;
-      this.lastOpen = nextOpen;
-      if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
-        runDialogScaleTransitions(el, nextOpen);
-      }
+  beforeUpdate() {
+    const { el } = this;
+    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+      this.previousOpen = getBoolean(el, "open");
     }
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(el));
+  },
+  updated() {
+    const { el } = this;
+    const layout = readDialogLayoutProps(el);
+    if (!getBoolean(el, "controlled")) {
+      this.dialog?.updateProps(layout);
+      return;
+    }
+    const nextOpen = getBoolean(el, "open") ?? false;
+    const prevOpen = this.previousOpen ?? this.lastOpen ?? false;
+    this.previousOpen = void 0;
+    this.lastOpen = nextOpen;
+    this.dialog?.updateProps({ ...layout, open: nextOpen });
+    if (nextOpen !== prevOpen) {
+      runDialogScaleIfJs(el, nextOpen);
+    }
   },
   destroyed() {
-    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.dialog?.updateProps({
+      ...readDialogLayoutProps(this.el),
+      ...readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")
+    });
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.dialog?.destroy();
   }
 };
 export {
-  DialogHook as Dialog
+  DialogHook as Dialog,
+  readDialogLayoutProps
 };

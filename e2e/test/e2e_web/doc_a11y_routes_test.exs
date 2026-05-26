@@ -1,10 +1,10 @@
 defmodule E2eWeb.DocA11yRoutesTest do
   use ExUnit.Case, async: true
 
-  test "all doc paths are unique and locale-prefixed" do
-    paths = E2eWeb.DocA11yRoutes.all() |> Enum.map(&elem(&1, 0))
-    assert length(paths) == length(Enum.uniq(paths))
-    assert Enum.all?(paths, &String.starts_with?(&1, "/en/"))
+  test "all doc path and ready pairs are unique and locale-prefixed" do
+    routes = E2eWeb.DocA11yRoutes.all()
+    assert length(routes) == length(Enum.uniq(routes))
+    assert Enum.all?(routes, fn {path, _} -> String.starts_with?(path, "/en/") end)
   end
 
   test "for_slug returns only matching component paths" do
@@ -24,24 +24,42 @@ defmodule E2eWeb.DocA11yRoutesTest do
 
     for {slug, comp} <- [
           {"angle-slider", :angle_slider},
-          {"checkbox", :checkbox}
+          {"checkbox", :checkbox},
+          {"listbox", :listbox},
+          {"switch", :switch},
+          {"combobox", :combobox}
         ],
         key <- [:anatomy, :api, :events] do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->
-               p == path and r == ready
+               p == "/en#{path}" and r == ready
              end),
-             "missing DocA11yRoutes entry for #{slug} #{key}: #{path} #{ready}"
+             "missing DocA11yRoutes entry for #{slug} #{key}: /en#{path} #{ready}"
+    end
+
+    for {slug, comp} <- [
+          {"angle-slider", :angle_slider},
+          {"checkbox", :checkbox},
+          {"switch", :switch},
+          {"combobox", :combobox}
+        ],
+        key <- [:playground, :patterns] do
+      {path, ready} = E2eWeb.ComponentBehaviorSpec.page(comp, key)
+
+      assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug(slug), fn {p, r} ->
+               p == "/en#{path}" and r == ready
+             end),
+             "missing DocA11yRoutes entry for #{slug} #{key}: /en#{path} #{ready}"
     end
 
     for key <- [:anatomy, :api, :events, :playground, :patterns, :animation] do
       {path, ready} = E2eWeb.ComponentBehaviorSpec.page(:accordion, key)
 
       assert Enum.any?(E2eWeb.DocA11yRoutes.for_slug("accordion"), fn {p, r} ->
-               p == path and r == ready
+               p == "/en#{path}" and r == ready
              end),
-             "missing DocA11yRoutes entry for accordion #{key}: #{path} #{ready}"
+             "missing DocA11yRoutes entry for accordion #{key}: /en#{path} #{ready}"
     end
   end
 end

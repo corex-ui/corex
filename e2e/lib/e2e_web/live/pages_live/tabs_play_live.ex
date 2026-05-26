@@ -36,11 +36,11 @@ defmodule E2eWeb.TabsPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Tabs · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Tabs · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle id="dir" on_value_change="control_changed" value={[@dir]} />
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="playground-tabs-vertical"
             checked={@vertical}
             on_checked_change="vertical_changed"

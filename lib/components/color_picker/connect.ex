@@ -2,6 +2,8 @@ defmodule Corex.ColorPicker.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.ColorPicker.Anatomy.{
     Area,
     AreaBackground,
@@ -488,26 +490,51 @@ defmodule Corex.ColorPicker.Connect do
       |> maybe_put("data-on-open-change", get_event(assigns, :on_open_change))
       |> maybe_put("data-on-open-change-client", get_event(assigns, :on_open_change_client))
       |> maybe_put("data-on-format-change", get_event(assigns, :on_format_change))
+      |> maybe_put("data-on-format-change-client", get_event(assigns, :on_format_change_client))
       |> maybe_put("data-on-pointer-down-outside", get_event(assigns, :on_pointer_down_outside))
+      |> maybe_put(
+        "data-on-pointer-down-outside-client",
+        get_event(assigns, :on_pointer_down_outside_client)
+      )
       |> maybe_put("data-on-focus-outside", get_event(assigns, :on_focus_outside))
+      |> maybe_put("data-on-focus-outside-client", get_event(assigns, :on_focus_outside_client))
       |> maybe_put("data-on-interact-outside", get_event(assigns, :on_interact_outside))
+      |> maybe_put(
+        "data-on-interact-outside-client",
+        get_event(assigns, :on_interact_outside_client)
+      )
       |> Map.new()
+
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.default_value_dataset(assigns, assigns.value)
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
 
     base =
       %{
         "id" => assigns.id,
-        "data-default-value" => assigns.value,
+        "data-controlled" => get_boolean(zag_controlled),
+        "data-value" => value_attr,
+        "data-default-value" => default_attr,
         "data-name" => Map.get(assigns, :name) || assigns.id,
         "data-close-on-select" => get_boolean(assigns.close_on_select),
         "data-open-auto-focus" => get_boolean(assigns.open_auto_focus),
         "data-disabled" => get_boolean(assigns.disabled),
         "data-invalid" => get_boolean(assigns.invalid),
-        "data-read-only" => get_boolean(assigns.read_only),
+        "data-readonly" => get_boolean(assigns.read_only),
         "data-required" => get_boolean(assigns.required),
         "data-dir" => assigns.dir
       }
       |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
 
     Map.merge(base, event_attrs)
+    |> FormField.put_form_field_attrs(assigns)
   end
 end

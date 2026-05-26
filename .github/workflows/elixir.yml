@@ -13,6 +13,142 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
+        with:
+          elixir-version: "1.18.4"
+          otp-version: "27.3"
+
+      - name: Restore Corex dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            deps
+            _build
+          key: deps-${{ runner.os }}-27.3-1.18.4-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-27.3-1.18.4
+
+      - name: Install Corex dependencies
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — Corex
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — build docs
+        run: mix docs
+        env:
+          MIX_ENV: docs
+
+      - name: Restore E2E dependencies cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+        with:
+          path: |
+            e2e/deps
+            e2e/_build
+          key: deps-e2e-${{ runner.os }}-27.3-1.18.4-${{ hashFiles('e2e/mix.lock') }}
+          restore-keys: |
+            deps-e2e-${{ runner.os }}-27.3-1.18.4
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — E2E
+        working-directory: e2e
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Install installer dependencies
+        working-directory: installer
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — installer
+        working-directory: installer
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Install integration test dependencies
+        working-directory: integration_test
+        run: mix deps.get
+        env:
+          MIX_ENV: test
+
+      - name: Elixir — integration test
+        working-directory: integration_test
+        run: mix lint
+        env:
+          MIX_ENV: test
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript — typecheck
+        run: pnpm run typecheck
+
+      - name: TypeScript — format
+        run: pnpm run format:check
+
+      - name: TypeScript — ESLint
+        run: pnpm run lint
+
+      - name: TypeScript — component declarations
+        run: pnpm run gen:components-dts:check
+
+  hooks:
+    name: Hooks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install JavaScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Vitest — hooks and components
+        run: pnpm test
+
   unit-tests:
     name: Unit tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04
@@ -57,18 +193,37 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Verify version alignment
+        if: matrix.coveralls
+        run: |
+          COREX_V=$(grep '@version' mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          PKG_V=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json | head -1)
+          INST_V=$(grep '@version' installer/mix.exs | head -1 | sed -n 's/.*"\([^"]*\)".*/\1/p')
+          test "$COREX_V" = "$PKG_V" && test "$COREX_V" = "$INST_V"
+
+      - name: Set up pnpm
+        if: matrix.coveralls
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.33.0
+
       - name: Set up Node.js
+        if: matrix.coveralls
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24"
-          cache: npm
-          cache-dependency-path: package.json
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install npm dependencies
-        run: npm install
+      - name: Install JavaScript dependencies
+        if: matrix.coveralls
+        run: pnpm install --frozen-lockfile
 
-      - name: Check JavaScript (prettier + eslint)
-        run: npm run check
+      - name: Verify installer design snapshot
+        if: matrix.coveralls
+        run: |
+          mix assets.build
+          diff -rq priv/design/corex installer/priv/corex_design/corex
 
       - name: Run tests and post coverage to Coveralls
         if: matrix.coveralls
@@ -124,7 +279,7 @@ jobs:
 
       - name: Install e2e JS dependencies
         working-directory: e2e
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-workspace
 
       - name: Set up Elixir
         uses: erlef/setup-beam@3580539ceec3dc05b0ed51e9e10b08eb7a7c2bb4
@@ -163,6 +318,8 @@ jobs:
   installer-tests:
     name: Installer tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
     runs-on: ubuntu-24.04
+    env:
+      MIX_ENV: test
 
     strategy:
       matrix:
@@ -189,7 +346,7 @@ jobs:
           path: |
             installer/deps
             installer/_build
-          key: deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('installer/mix.lock') }}
+          key: deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('installer/mix.lock', 'installer/mix.exs') }}-test-support
           restore-keys: |
             deps-installer-${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}
 
@@ -197,9 +354,20 @@ jobs:
         working-directory: installer
         run: mix deps.get
 
-      - name: Run installer tests
+      - name: Install phx_new archive for installer coverage
+        run: mix archive.install hex phx_new --force
+
+      - name: Run installer tests with coverage
         working-directory: installer
-        run: mix test
+        run: |
+          mix compile --force
+          mix test --cover --exclude integration
+
+      - name: Run installer integration tests
+        working-directory: installer
+        run: |
+          mix compile --force
+          mix test --only integration
 
       - name: Verify corex_new archive embeds priv design snapshot
         working-directory: installer
@@ -221,6 +389,8 @@ jobs:
             otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
+          - elixir: 1.18.4
+            otp: 28.0.1
 
     services:
       postgres:
@@ -262,13 +432,24 @@ jobs:
 
       - name: Install installer dependencies and local corex_new archive
         working-directory: installer
+        env:
+          MIX_ENV: test
         run: |
           mix deps.get
+          mix compile --force
           mix archive.build -o corex_new.ez
           mix archive.install corex_new.ez --force
 
       - name: Install Mix archives for corex.new (phx_new)
         run: mix archive.install hex phx_new --force
+
+      - name: Run installer integration test
+        working-directory: installer
+        env:
+          MIX_ENV: test
+        run: |
+          mix compile --force
+          mix test --only integration
 
       - name: Run integration tests (no database tag)
         working-directory: integration_test

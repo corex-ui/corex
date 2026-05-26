@@ -64,7 +64,7 @@ defmodule E2eWeb.RadioGroupPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Radio Group · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Radio Group · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -89,7 +89,7 @@ defmodule E2eWeb.RadioGroupPlayLive do
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -98,7 +98,7 @@ defmodule E2eWeb.RadioGroupPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -107,7 +107,7 @@ defmodule E2eWeb.RadioGroupPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

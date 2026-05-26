@@ -1,10 +1,12 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { collection } from "@zag-js/listbox";
 import { Listbox } from "../components/listbox";
 import type { Props, ValueChangeDetails } from "@zag-js/listbox";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { readStringListControlledZagProps } from "../lib/read-props";
+import {
+  readStringListControlledZagProps,
+  readStringListControlledZagUpdate,
+} from "../lib/read-props";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import {
   parseRespondTo,
@@ -16,13 +18,11 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
-import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
+import { type ValueLabelItem, buildCollection } from "../lib/list-collection";
 
 type ListboxItem = ValueLabelItem;
 
-function buildCollection(items: ListboxItem[], hasGroups: boolean) {
-  return collection(zagListCollectionConfig(items, hasGroups));
-}
+export { buildCollection };
 
 function listboxZagPropsBase(
   el: HTMLElement,
@@ -141,7 +141,7 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
     this.listbox.updateProps({
       ...listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this)),
       collection: this.listbox.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
     } as Partial<Props<ListboxItem>>);
   },
 

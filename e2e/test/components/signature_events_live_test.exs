@@ -4,7 +4,7 @@ defmodule E2eWeb.SignatureEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "signature_drawn inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/signature/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/signature-pad/events", on_error: :warn)
 
     html =
       render_click(view, "signature_drawn", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.SignatureEventsLiveTest do
         "url" => "data:image/png;base64,AAAA"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

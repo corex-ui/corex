@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="number-input-anatomy-page"
-    title="Number Input Anatomy"
-    subtitle="Label, required trigger slots, bounds, and default value."
+    title={~t"Number Input Anatomy"}
+    subtitle={~t"Label, required trigger slots, bounds, and default value."}
   >
     <.demo_section
       id="number-input-anatomy-minimal"
-      title="Minimal (with triggers)"
+      title={~t"Minimal (with triggers)"}
       code={E2eWeb.Demos.NumberInputDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.NumberInputDemo.minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="number-input-anatomy-bounds"
-      title="Min, max & default value"
+      title={~t"Min, max & default value"}
       code={E2eWeb.Demos.NumberInputDemo.min_max_default_code()}
     >
       <:preview><E2eWeb.Demos.NumberInputDemo.min_max_default_example /></:preview>

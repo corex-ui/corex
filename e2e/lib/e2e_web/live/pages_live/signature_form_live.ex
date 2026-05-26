@@ -3,98 +3,114 @@ defmodule E2eWeb.SignatureFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  alias E2e.Form.SignatureForm
-  alias E2eWeb.Demos.SignatureDemo, as: SignatureDemo
   alias Corex.Toast
+  alias E2e.Form.SignatureForm
+  alias E2eWeb.Demos.SignatureDemo, as: Demo
+
+  @phoenix_form_id "signature-live-form-phoenix"
+  @ecto_form_id "signature-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Signature · Live Form")
-     |> assign(:form_ecto, SignatureDemo.form_ecto())
-     |> assign(:live_basic_heex, SignatureDemo.form_changeset_heex())
-     |> assign(:live_basic_elixir, SignatureDemo.form_changeset_elixir())
-     |> assign_form()}
+     |> assign(:page_title, "Signature · Form")
+     |> assign(:form_ecto, Demo.form_ecto())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
+     |> assign_forms()}
   end
 
-  defp assign_form(socket) do
-    form =
-      %SignatureForm{}
-      |> SignatureForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :signature_form, id: "signature-form")
+  defp assign_forms(socket) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"signature" => []},
+        as: :signature_phoenix,
+        id: @phoenix_form_id
+      )
 
-    assign(socket, :form, form)
+    ecto_form =
+      %SignatureForm{}
+      |> SignatureForm.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :signature_ecto, id: @ecto_form_id)
+
+    socket
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
+  end
+
+  @impl true
+  def handle_event("save_phoenix", %{"signature_phoenix" => params}, socket) do
+    sig = Map.get(params, "signature", [])
+
+    {:noreply,
+     socket
+     |> Toast.create(
+       "layout-toast",
+       "Submitted",
+       SignatureForm.format_for_toast(sig),
+       :info,
+       duration: 5000
+     )
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"signature" => sig},
+         as: :signature_phoenix,
+         id: @phoenix_form_id
+       )
+     )}
   end
 
   @impl true
   def handle_event("validate", params, socket) do
-    sparams = Map.get(params, "signature_form", %{})
+    sparams = Map.get(params, "signature_ecto", %{})
 
     changeset =
       %SignatureForm{}
-      |> SignatureForm.changeset(sparams)
+      |> SignatureForm.changeset_validate(sparams)
       |> Map.put(:action, :validate)
 
     {:noreply,
      assign(
        socket,
-       :form,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :signature_form,
-         id: "signature-form"
+         as: :signature_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
   @impl true
-  def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
-    value =
-      if is_list(paths) and paths != [],
-        do: Enum.join(paths, "\n"),
-        else: Map.get(payload, "url", "") || ""
-
-    params = %{"signature" => value}
-
-    changeset =
-      %SignatureForm{}
-      |> SignatureForm.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :signature_form,
-         id: "signature-form"
-       )
-     )}
+  def handle_event("signature_drawn", %{"paths" => paths}, socket) when is_list(paths) do
+    validate_ecto(socket, %{"signature" => paths})
   end
 
   @impl true
   def handle_event("save", params, socket) do
-    sparams = Map.get(params, "signature_form", %{})
+    sparams = Map.get(params, "signature_ecto", %{})
 
-    case SignatureForm.changeset(%SignatureForm{}, sparams) do
+    case SignatureForm.changeset_validate(%SignatureForm{}, sparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
 
-        sig_preview =
-          if data.signature, do: String.slice(data.signature, 0, 50) <> "...", else: ""
-
-        message = "Submitted: signature=#{sig_preview}"
-
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create(
+           "layout-toast",
+           "Submitted",
+           SignatureForm.format_for_toast(data),
+           :info,
+           duration: 5000
+         )
          |> assign(
-           :form,
-           Phoenix.Component.to_form(SignatureForm.changeset(%SignatureForm{}, %{}),
-             as: :signature_form,
-             id: "signature-form"
+           :ecto_form,
+           Phoenix.Component.to_form(
+             SignatureForm.changeset_validate(%SignatureForm{}, sparams),
+             as: :signature_ecto,
+             id: @ecto_form_id
            )
          )}
 
@@ -102,70 +118,63 @@ defmodule E2eWeb.SignatureFormLive do
         {:noreply,
          assign(
            socket,
-           :form,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :signature_form,
-             id: "signature-form"
+             as: :signature_ecto,
+             id: @ecto_form_id
            )
          )}
     end
   end
 
+  defp validate_ecto(socket, params) when is_map(params) do
+    changeset =
+      %SignatureForm{}
+      |> SignatureForm.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :signature_ecto,
+         id: @ecto_form_id
+       )
+     )}
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      mode={@mode}
-      theme={@theme}
-      path={@path}
-    >
-      <.demo_page
-        id="signature-form-live-page"
-        title="Signature · Form"
-        subtitle="Live View form"
-      >
+    <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+      <.demo_page path={@path} id="signature-form-live-page" title={~t"Signature · Form"}>
         <.demo_section
-          id="signature-live-form-changeset"
-          title="Phoenix form (changeset)"
+          id="signature-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <.form
-              for={@form}
-              id={@form.id}
-              phx-change="validate"
-              phx-submit="save"
-              class="w-full max-w-2xs flex flex-col gap-space items-center"
-            >
-              <.signature_pad
-                id="signature-form-signature"
-                class="signature-pad"
-                field={@form[:signature]}
-                on_draw_end="signature_drawn"
-              >
-                <:label>Sign here</:label>
-                <:clear_trigger>
-                  <.heroicon name="hero-x-mark" />
-                </:clear_trigger>
-                <:error :let={msg}>
-                  <.heroicon name="hero-exclamation-circle" class="icon" />
-                  {msg}
-                </:error>
-              </.signature_pad>
-              <.action
-                type="submit"
-                id="signature-form-live-submit"
-                class="button button--accent w-full"
-              >
-                Submit
-              </.action>
-            </.form>
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="signature-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

@@ -24,6 +24,7 @@ defmodule E2eWeb.CarouselEventsLive do
       |> assign(:client_heex, @client_heex)
       |> assign(:client_js, @client_js)
       |> assign(:client_ts, @client_ts)
+      |> assign(:gallery_images, E2eWeb.Demos.CarouselDemo.gallery_images())
       |> stream(:server_logs, [])
       |> stream(:client_logs, [])
 
@@ -31,7 +32,7 @@ defmodule E2eWeb.CarouselEventsLive do
   end
 
   def handle_event("carousel_page_changed", %{"id" => id, "page" => page} = params, socket) do
-    log = new_log("server", id, inspect(%{page: page, params: params}))
+    log = new_log("server", id, page, Map.get(params, "pageSnapPoint"))
 
     socket =
       socket
@@ -40,8 +41,8 @@ defmodule E2eWeb.CarouselEventsLive do
     {:noreply, socket}
   end
 
-  def handle_event("carousel_page_client_changed", %{"id" => id, "page" => page}, socket) do
-    log = new_log("client", id, inspect(page))
+  def handle_event("carousel_page_client_changed", %{"id" => id, "page" => page} = params, socket) do
+    log = new_log("client", id, page, Map.get(params, "pageSnapPoint"))
 
     socket =
       socket
@@ -50,7 +51,7 @@ defmodule E2eWeb.CarouselEventsLive do
     {:noreply, socket}
   end
 
-  defp new_log(source, carousel_id, value) do
+  defp new_log(source, carousel_id, page, page_snap_point) do
     %{
       id: "#{System.unique_integer([:positive])}",
       time:
@@ -59,9 +60,13 @@ defmodule E2eWeb.CarouselEventsLive do
         |> Calendar.strftime("%H:%M:%S"),
       source: source,
       carousel_id: carousel_id,
-      value: value
+      page: to_string(page),
+      page_snap_point: format_snap_point(page_snap_point)
     }
   end
+
+  defp format_snap_point(nil), do: "—"
+  defp format_snap_point(value), do: to_string(value)
 
   def render(assigns) do
     ~H"""
@@ -72,16 +77,17 @@ defmodule E2eWeb.CarouselEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="carousel-events-page"
-        title="Carousel · Event"
-        subtitle="Subscribe to page changes from LiveView or the client."
+        title={~t"Carousel · Event"}
+        subtitle={~t"Subscribe to page changes from LiveView or the client."}
       >
         <.demo_section
-          id="carousel-events-server"
-          title="On Page Change (Server)"
+          id="carousel-events-server-section"
+          title={~t"On Page Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -89,13 +95,7 @@ defmodule E2eWeb.CarouselEventsLive do
               <div class="w-full flex justify-center">
                 <.carousel
                   id={@id_server}
-                  items={[
-                    ~p"/images/beach.jpg",
-                    ~p"/images/fall.jpg",
-                    ~p"/images/sand.jpg",
-                    ~p"/images/star.jpg",
-                    ~p"/images/winter.jpg"
-                  ]}
+                  items={@gallery_images}
                   class="carousel w-full"
                   on_page_change="carousel_page_changed"
                 >
@@ -111,7 +111,9 @@ defmodule E2eWeb.CarouselEventsLive do
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>
-                <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
+                <:col :let={{_dom_id, row}} label="ID">{row.carousel_id}</:col>
+                <:col :let={{_dom_id, row}} label="Page">{row.page}</:col>
+                <:col :let={{_dom_id, row}} label="Snap">{row.page_snap_point}</:col>
                 <:empty>
                   <p>No event yet. Interact with the components to receive new events</p>
                 </:empty>
@@ -121,12 +123,12 @@ defmodule E2eWeb.CarouselEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="carousel-events-client"
-          title="On Page Change (Client)"
+          id="carousel-events-client-section"
+          title={~t"On Page Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>
@@ -134,13 +136,7 @@ defmodule E2eWeb.CarouselEventsLive do
               <div class="w-full flex justify-center">
                 <.carousel
                   id={@id_client}
-                  items={[
-                    ~p"/images/beach.jpg",
-                    ~p"/images/fall.jpg",
-                    ~p"/images/sand.jpg",
-                    ~p"/images/star.jpg",
-                    ~p"/images/winter.jpg"
-                  ]}
+                  items={@gallery_images}
                   class="carousel w-full"
                   on_page_change_client={@client_event}
                 >
@@ -162,13 +158,10 @@ defmodule E2eWeb.CarouselEventsLive do
                       if (!el) return;
                       el.addEventListener("carousel-page-changed", (event) => {
                         const d = event.detail;
-                        const page =
-                          d && d.value && typeof d.value === "object" && "page" in d.value
-                            ? d.value.page
-                            : null;
                         this.pushEvent("carousel_page_client_changed", {
                           id: d?.id ?? "carousel-events-client",
-                          page
+                          page: d?.page ?? null,
+                          pageSnapPoint: d?.pageSnapPoint ?? null
                         });
                       });
                     }
@@ -183,7 +176,9 @@ defmodule E2eWeb.CarouselEventsLive do
               >
                 <:col :let={{_dom_id, row}} label="Time">{row.time}</:col>
                 <:col :let={{_dom_id, row}} label="Source">{row.source}</:col>
-                <:col :let={{_dom_id, row}} label="Value">{row.value}</:col>
+                <:col :let={{_dom_id, row}} label="ID">{row.carousel_id}</:col>
+                <:col :let={{_dom_id, row}} label="Page">{row.page}</:col>
+                <:col :let={{_dom_id, row}} label="Snap">{row.page_snap_point}</:col>
                 <:empty>
                   <p>No event yet. Interact with the components to receive new events</p>
                 </:empty>

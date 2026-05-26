@@ -4,23 +4,31 @@ defmodule Corex.ToggleGroup.Connect do
   alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, maybe_put_data_dir_from: 2, maybe_put_dir_from: 2]
+
+  import Corex.Helpers,
+    only: [
+      get_boolean: 1,
+      joined_csv_values: 1,
+      controlled_dataset_values: 2,
+      maybe_put_data_dir_from: 2,
+      maybe_put_dir_from: 2
+    ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    joined = joined_csv_values(assigns.value || [])
+
+    {value_str, default_value_str} =
+      controlled_dataset_values(assigns.controlled, joined)
+
     %{
       "id" => assigns.id,
       "data-deselectable" => get_boolean(assigns.deselectable),
       "data-loop-focus" => get_boolean(assigns.loopFocus),
       "data-roving-focus" => get_boolean(assigns.rovingFocus),
-      "data-default-value" =>
-        if !assigns.controlled and assigns.value != [] do
-          Enum.join(assigns.value, ",")
-        end,
-      "data-value" =>
-        if assigns.controlled and assigns.value != [] do
-          Enum.join(assigns.value, ",")
-        end,
+      "data-controlled" => get_boolean(assigns.controlled),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-multiple" => get_boolean(assigns.multiple),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
@@ -84,18 +92,4 @@ defmodule Corex.ToggleGroup.Connect do
       to: Selectors.css_id("toggle-group:#{assigns.id}:#{value}")
     )
   end
-
-  def validate_value!([]), do: []
-
-  def validate_value!(value) when is_list(value) do
-    if Enum.all?(value, &is_binary/1) do
-      value
-    else
-      raise ArgumentError, value_error(value)
-    end
-  end
-
-  def validate_value!(value), do: raise(ArgumentError, value_error(value))
-
-  def value_error(value), do: "value must be a list of strings, got: #{inspect(value)}"
 end

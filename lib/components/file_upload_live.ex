@@ -4,9 +4,9 @@ defmodule Corex.FileUploadLive do
 
   Use after [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#allow_upload/3). Pass `upload={@uploads.name}` and `field` matching the atom given to `allow_upload`. Renders [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) and `phx-drop-target`; **no** Zag `FileUpload` hook. Do not combine this component with `<.file_upload>` on the same file control.
 
-  Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html).
+  Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html). For shared form patterns, see the [Forms](forms.html) guide.
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -14,7 +14,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal} id="file-upload-live-anatomy-minimal">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
@@ -26,7 +26,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label} id="file-upload-live-anatomy-label">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:label>Files</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -39,7 +39,7 @@ defmodule Corex.FileUploadLive do
 
   ```heex
   <form phx-change="validate">
-    <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom} id="file-upload-live-anatomy-custom">
+    <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
       <:dropzone>
         <span>Custom dropzone</span>
       </:dropzone>
@@ -56,14 +56,14 @@ defmodule Corex.FileUploadLive do
   ### Form with submit
 
   ```heex
-  <form phx-change="validate" phx-submit="save" id="file-upload-live-form">
-    <.file_upload_live upload={@uploads.attachment} field={:attachment} id="file-upload-live-field">
+  <form phx-change="validate" phx-submit="save">
+    <.file_upload_live upload={@uploads.attachment} field={:attachment} class="file-upload">
       <:label>Attachment</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
       </:close>
     </.file_upload_live>
-    <.action type="submit" class="button button--accent w-full">Submit</.action>
+    <.action type="submit" class="button button--accent">Submit</.action>
   </form>
   ```
 
@@ -71,7 +71,7 @@ defmodule Corex.FileUploadLive do
   def mount(_params, _session, socket) do
     {:ok,
      allow_upload(socket, :attachment,
-       accept: ~w(.jpg .jpeg .png .pdf .txt),
+       accept: ~W(.jpg .jpeg .png .pdf .txt),
        max_entries: 3,
        max_file_size: 8_000_000
      )}
@@ -97,17 +97,37 @@ defmodule Corex.FileUploadLive do
 
   <!-- tabs-close -->
 
-  The Minimal / With label / Custom slots HEEx matches the e2e anatomy page; each expects `allow_upload` for `:anatomy_minimal`, `:anatomy_label`, or `:anatomy_custom` respectively (same names as `field`).
+  ### LiveView setup
 
-  Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
+  ```elixir
+  def mount(_params, _session, socket) do
+    {:ok,
+     allow_upload(socket, :document,
+       accept: ~w(.jpg .jpeg .png .pdf),
+       max_entries: 3,
+       max_file_size: 8_000_000
+     )}
+  end
+
+  def handle_event("file_upload_live_cancel", %{"ref" => ref, "upload_field" => field}, socket) do
+    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+  end
+  ```
+
+  The `field` atom must match the name passed to `allow_upload/3`. Implement `file_upload_live_cancel` so remove-entry works; optional `cancel_event` on the component overrides the event name.
   '''
 
+  @doc type: :component
   use Phoenix.Component
 
+  alias Corex.FileUpload.Translation
   alias Phoenix.LiveView.UploadConfig
   alias Phoenix.LiveView.UploadEntry
 
-  attr(:upload, UploadConfig, required: true)
+  attr(:upload, UploadConfig,
+    required: true,
+    doc: "Upload config from `allow_upload/3` on the LiveView socket"
+  )
 
   attr(:field, :atom,
     required: true,
@@ -119,9 +139,14 @@ defmodule Corex.FileUploadLive do
     doc: "Stable prefix for internal ids; defaults to a generated id"
   )
 
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:invalid, :boolean, default: false)
-  attr(:disabled, :boolean, default: false)
+  attr(:dir, :string,
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc: "Text direction (ltr or rtl)"
+  )
+
+  attr(:invalid, :boolean, default: false, doc: "Whether the file upload is invalid")
+  attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
 
   attr(:cancel_event, :string,
     default: "file_upload_live_cancel",
@@ -135,25 +160,29 @@ defmodule Corex.FileUploadLive do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot(:label, required: false, doc: "Label above the dropzone")
 
-  slot(:dropzone, required: false)
+  slot(:dropzone,
+    required: false,
+    doc: "Custom dropzone content; defaults to translation dropzone text"
+  )
 
-  slot(:open, required: false)
+  slot(:open,
+    required: false,
+    doc: "Custom open-picker trigger; defaults to translation open text"
+  )
 
-  slot(:close, required: true)
+  slot(:close, required: true, doc: "Remove control for each upload entry")
 
-  slot(:error, required: false) do
+  slot(:error,
+    required: false,
+    doc: "Error message content; receives the message as slot argument"
+  ) do
     attr(:class, :string, required: false)
   end
 
   def file_upload_live(assigns) do
-    default_translation = %Corex.FileUpload.Translation{
-      dropzone: Corex.Gettext.gettext("Drag your file(s) here"),
-      open: Corex.Gettext.gettext("Upload file(s)")
-    }
-
-    translation = merge_translation(Map.get(assigns, :translation), default_translation)
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assigns
@@ -265,18 +294,6 @@ defmodule Corex.FileUploadLive do
       </div>
     </div>
     """
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(
-         %Corex.FileUpload.Translation{} = partial,
-         %Corex.FileUpload.Translation{} = default
-       ) do
-    %Corex.FileUpload.Translation{
-      dropzone: partial.dropzone || default.dropzone,
-      open: partial.open || default.open
-    }
   end
 
   defp image_entry?(%UploadEntry{} = entry) do

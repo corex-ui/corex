@@ -2,14 +2,14 @@ defmodule Corex.SignaturePad do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Signature Pad](https://zagjs.com/components/react/signature-pad).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
   ### Basic Usage
 
   ```heex
-  <.signature_pad id="my-signature-pad" class="signature-pad">
+  <.signature_pad class="signature-pad">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -21,7 +21,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="my-signature-pad"
     on_draw_end="signature_drawn"
     class="signature-pad">
     <:label>Sign here</:label>
@@ -41,7 +40,6 @@ defmodule Corex.SignaturePad do
 
   ```heex
   <.signature_pad
-    id="my-signature-pad"
     drawing_fill="blue"
     drawing_size={3}
     drawing_simulate_pressure
@@ -55,11 +53,13 @@ defmodule Corex.SignaturePad do
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
-  The value field is a `type="text"` input with the HTML `hidden` attribute (Zag’s pattern), not a `type="hidden"` control, so the LiveView client can mark it “used” like a normal text field. The hook re-applies the same `phxPrivate` usage metadata LiveView stores on that input after draws, clear, and after server patches, so a morph of the value input does not drop “used” state and `used_input?/1` on the server matches expected behaviour.
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:signature])}` when you want alert borders after validation.
+
+  With `field={@form[:signature]}`, paths submit as `name="…[]"` hidden array inputs. On draw or clear, the hook updates those inputs and dispatches `input` so LiveView tracks the field. Errors render only when `Phoenix.Component.used_input?/1` is true for the field.
 
   ### Controller
 
@@ -76,7 +76,7 @@ defmodule Corex.SignaturePad do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.signature_pad field={f[:signature]} class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger>
@@ -134,7 +134,7 @@ defmodule Corex.SignaturePad do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.signature_pad
           field={@form[:signature]}
           id="my-signature-pad"
@@ -155,27 +155,79 @@ defmodule Corex.SignaturePad do
   end
   ```
 
-  ## API Control
+  ## API
 
-  In order to use the API, you must use an id on the component
+  Requires a stable `id` on `<.signature_pad>`.
 
-  ***Client-side***
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`clear/1`](#clear/1) | Clear canvas (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear/2`](#clear/2) | Clear canvas (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.signature_pad>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_draw_end="signature_drawn"` | Stroke ends | `%{"id" => id, "paths" => paths}` |
+
+  <!-- tabs-open -->
+
+  ### on_draw_end
 
   ```heex
-  <button phx-click={Corex.SignaturePad.clear("my-signature-pad")}>
-    Clear Signature
-  </button>
+  <.signature_pad
+    class="signature-pad"
+    on_draw_end="signature_drawn"
+  >
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
   ```
 
-  ***Server-side***
-
   ```elixir
-  def handle_event("clear_signature", _, socket) do
-    {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
+  def handle_event("signature_drawn", %{"id" => _id, "paths" => paths}, socket) do
+    {:noreply, assign(socket, :path_count, length(paths))}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### LiveView sync
+
+  Pass `paths` from a LiveView assign and handle `on_draw_end` so the server owns stroke data.
+
+  ```heex
+  <.signature_pad
+    class="signature-pad"
+    paths={@signature_paths}
+    on_draw_end="signature_drawn"
+  >
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.heroicon name="hero-x-mark" />
+    </:clear_trigger>
+  </.signature_pad>
+  ```
+
+  ```elixir
+  def handle_event("signature_drawn", %{"paths" => paths}, socket) do
+    {:noreply, assign(socket, :signature_paths, paths)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -198,16 +250,32 @@ defmodule Corex.SignaturePad do
   @import "../corex/components/signature-pad.css";
   ```
 
-  You can then use modifiers
+  Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
+  `var(--color-ink)` or `var(--color-accent)`). It is not controlled by root modifier classes.
+
+  Trigger color, size, and corner radius use modifier classes on the root:
 
   ```heex
-  <.signature_pad class="signature-pad signature-pad--accent signature-pad--lg">
+  <.signature_pad
+    class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
+    drawing_fill="var(--color-ink)"
+  >
   ```
+
+  | Modifier | Applies to |
+  | -------- | ---------- |
+  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger only |
+  | `signature-pad--{sm,md,lg,xl}` | Label, control height, clear trigger |
+  | `signature-pad--rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
+
+  The guide line (`data-part="guide"`) is not themed by color modifiers.
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.SignaturePad.Anatomy.{
     ClearTrigger,
@@ -237,7 +305,7 @@ defmodule Corex.SignaturePad do
 
   attr(:drawing_fill, :string,
     default: "black",
-    doc: "The fill color for drawing strokes"
+    doc: "CSS color for drawing strokes (e.g. `var(--color-ink)` or `var(--color-accent)`)"
   )
 
   attr(:drawing_size, :integer,
@@ -305,6 +373,11 @@ defmodule Corex.SignaturePad do
       "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
+  attr(:field_used, :boolean,
+    default: false,
+    doc: "Whether Phoenix considers the field used (internal; set from field=)"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -325,8 +398,6 @@ defmodule Corex.SignaturePad do
   end
 
   def signature_pad(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = signature_pad_field_errors(field) |> Enum.map(&Corex.Gettext.translate_error/1)
-
     paths_value =
       case field.value do
         nil -> []
@@ -336,25 +407,22 @@ defmodule Corex.SignaturePad do
         _ -> []
       end
 
-    assigns =
-      assigns
-      |> assign(field: nil)
-      |> assign(:errors, errors)
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(:paths, paths_value)
-
-    signature_pad(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(:paths, paths_value)
+    |> signature_pad()
   end
 
   def signature_pad(assigns) do
     assigns =
       assigns
+      |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:field_used, fn -> false end)
+      |> Corex.FormField.assign_list_submit()
 
     ~H"""
     <div
@@ -365,6 +433,8 @@ defmodule Corex.SignaturePad do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        field_used: @field_used,
         paths: @paths,
         drawing_fill: @drawing_fill,
         drawing_size: @drawing_size,
@@ -376,10 +446,36 @@ defmodule Corex.SignaturePad do
         dir: @dir,
         on_draw_end: @on_draw_end,
         on_draw_end_client: @on_draw_end_client,
-        name: @name
+        name: @name,
+        submit_name: @submit_name
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+        <div
+          :if={@submit_name}
+          data-scope="signature-pad"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"signature-pad:#{@id}:array-inputs"}
+        >
+          <input
+            :for={path <- @paths}
+            type="hidden"
+            data-scope="signature-pad"
+            data-part="array-input"
+            name={@submit_name}
+            value={path}
+          />
+          <input
+            :if={@paths == []}
+            type="hidden"
+            data-scope="signature-pad"
+            data-part="array-input"
+            data-empty
+            name={if(@field_used, do: @submit_name)}
+            value=""
+          />
+        </div>
         <label
           :if={@label != []}
           phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})}
@@ -422,9 +518,9 @@ defmodule Corex.SignaturePad do
           <div phx-mounted={Connect.ignore_guide(%Guide{id: @id, dir: @dir})} {Connect.guide(%Guide{id: @id, dir: @dir})} />
         </div>
         <input
-          value={hidden_input_value(@paths)}
+          value={if(@submit_name, do: "", else: hidden_input_value(@paths))}
           phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
-          {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, form: @form})}
+          {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: if(@submit_name, do: nil, else: @name), form: @form})}
         />
       </div>
       <div
@@ -439,16 +535,27 @@ defmodule Corex.SignaturePad do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Clears the signature pad from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Clear all strokes from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")}>Clear</.action>
+  <.signature_pad id="my-signature-pad" class="signature-pad">
+    <:label>Sign</:label>
+    <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+  </.signature_pad>
+  ```
 
-      <button phx-click={Corex.SignaturePad.clear("my-signature-pad")}>
-        Clear
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-signature-pad")?.dispatchEvent(
+    new CustomEvent("corex:signature-pad:clear", {
+      bubbles: false,
+      detail: { id: "my-signature-pad" },
+    })
+  );
+  ```
+  """)
+
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
     JS.dispatch("corex:signature-pad:clear",
       to: "##{signature_pad_id}",
@@ -457,25 +564,29 @@ defmodule Corex.SignaturePad do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Clears the signature pad from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Clear strokes from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="clear_sig">Clear</.action>
+  <.signature_pad id="my-signature-pad" class="signature-pad">
+    <:label>Sign</:label>
+    <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+  </.signature_pad>
+  ```
 
-      def handle_event("clear_signature", _params, socket) do
-        {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
-      end
-  """
+  ```elixir
+  def handle_event("clear_sig", _, socket) do
+    {:noreply, Corex.SignaturePad.clear(socket, "my-signature-pad")}
+  end
+  ```
+  """)
+
   def clear(socket, signature_pad_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(signature_pad_id) do
     LiveView.push_event(socket, "signature_pad_clear", %{
       signature_pad_id: signature_pad_id
     })
-  end
-
-  defp signature_pad_field_errors(%Phoenix.HTML.FormField{} = field) do
-    if Phoenix.Component.used_input?(field), do: field.errors, else: []
   end
 
   defp paths_from_paths_attr(nil), do: []
@@ -484,7 +595,7 @@ defmodule Corex.SignaturePad do
   defp paths_from_paths_attr(_), do: []
 
   defp has_paths?([]), do: false
-  defp has_paths?(paths) when is_list(paths), do: paths != []
+  defp has_paths?(paths) when is_list(paths), do: true
   defp has_paths?(_), do: false
 
   defp hidden_input_value([]), do: ""

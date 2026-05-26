@@ -1,9 +1,10 @@
 import {
-  readStringControlledZagProps
-} from "./chunks/chunk-FBXRLPHX.mjs";
-import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
+import {
+  readStringControlledZagProps,
+  readStringControlledZagUpdate
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -12,7 +13,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -40,7 +41,7 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
@@ -607,6 +608,12 @@ var Tabs = class extends Component {
 };
 
 // hooks/tabs.ts
+function tabsValueChangePayload(el, details) {
+  return { id: el.id, value: details.value ?? null };
+}
+function tabsFocusChangePayload(el, details) {
+  return { id: el.id, value: details.focusedValue ?? null };
+}
 var TabsHook = {
   mounted() {
     const el = this.el;
@@ -622,7 +629,7 @@ var TabsHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.value ?? null },
+          payload: tabsValueChangePayload(el, details),
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
@@ -632,7 +639,7 @@ var TabsHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.focusedValue ?? null },
+          payload: tabsFocusChangePayload(el, details),
           serverEventName: getString(el, "onFocusChange"),
           clientEventName: getString(el, "onFocusChangeClient")
         });
@@ -671,7 +678,7 @@ var TabsHook = {
   updated() {
     this.tabs?.updateProps({
       id: this.el.id,
-      ...readStringControlledZagProps(this.el, "value", "defaultValue"),
+      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
       orientation: getString(this.el, "orientation"),
       dir: getString(this.el, "dir")
     });
@@ -683,5 +690,7 @@ var TabsHook = {
   }
 };
 export {
-  TabsHook as Tabs
+  TabsHook as Tabs,
+  tabsFocusChangePayload,
+  tabsValueChangePayload
 };

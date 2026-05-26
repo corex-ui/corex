@@ -8,7 +8,13 @@ defmodule Corex.AngleSliderTest do
 
   describe "angle_slider/1" do
     test "renders" do
-      html = render_component(&AngleSlider.angle_slider/1, value: 0, name: "angle")
+      html =
+        render_component(&AngleSlider.angle_slider/1,
+          id: "test-angle-slider",
+          value: 0,
+          name: "angle"
+        )
+
       assert html =~ ~r/data-scope="angle-slider"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r/data-part="control"/
@@ -170,7 +176,7 @@ defmodule Corex.AngleSliderTest do
 
       assert m["data-step"] == "15"
       assert m["data-disabled"] == ""
-      assert m["data-read-only"] == ""
+      assert m["data-readonly"] == ""
       assert m["data-invalid"] == ""
       assert m["data-controlled"] == ""
       assert m["data-value"] == "30"
@@ -234,6 +240,73 @@ defmodule Corex.AngleSliderTest do
     test "returns value and text parts" do
       assert Connect.value(%{})["data-part"] == "value"
       assert Connect.text(%{})["data-part"] == "text"
+    end
+  end
+
+  describe "angle_slider/1 form field" do
+    test "renders from form field with errors" do
+      form =
+        Phoenix.Component.to_form(
+          %{"angle" => "45"},
+          as: :user,
+          errors: [angle: {"invalid", []}]
+        )
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <AngleSlider.angle_slider field={@form[:angle]} class="angle-slider">
+              <:label>Angle</:label>
+              <:error :let={msg}>{msg}</:error>
+            </AngleSlider.angle_slider>
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ "invalid"
+      refute html =~ ~r/\bdata-invalid=""/
+    end
+  end
+
+  describe "Connect ignore helpers" do
+    test "returns JS for all ignore_* functions" do
+      base = %{
+        id: "ign",
+        dir: "ltr",
+        orientation: "horizontal",
+        value: 0,
+        disabled: false,
+        read_only: false,
+        invalid: false,
+        name: "angle"
+      }
+
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_root(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_label(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_hidden_input(Map.put(base, :value, 0))
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_control(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_thumb(base)
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_value_text(Map.put(base, :value, 0))
+      assert %Phoenix.LiveView.JS{} = Connect.ignore_marker_group(base)
+
+      assert %Phoenix.LiveView.JS{} =
+               Connect.ignore_marker(%{
+                 id: "ign",
+                 value: 0,
+                 slider_value: 0,
+                 dir: "ltr",
+                 orientation: "horizontal",
+                 disabled: false
+               })
+    end
+  end
+
+  describe "Connect.format_number/1" do
+    test "formats integers and floats" do
+      assert Connect.format_number(5) == "5"
+      assert Connect.format_number(5.5) == "5.5"
     end
   end
 

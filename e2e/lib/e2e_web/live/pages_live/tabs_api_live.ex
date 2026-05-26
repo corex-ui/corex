@@ -35,6 +35,7 @@ defmodule E2eWeb.TabsApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tabs-api-page"
         title="Tabs · API"
         subtitle="Set the active value from client bindings, client JS, or a server event."

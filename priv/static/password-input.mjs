@@ -1,4 +1,7 @@
 import {
+  readUpdatedServerString
+} from "./chunks/chunk-VL4ETB3G.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -7,7 +10,7 @@ import {
   notifyChange,
   readPayloadId,
   readPayloadVisible
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -21,7 +24,7 @@ import {
   getString,
   isLeftClick,
   uuid
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+password-input@1.40.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
@@ -274,6 +277,9 @@ var PasswordInput = class extends Component {
 };
 
 // hooks/password-input.ts
+function visibilityChangePayload(el, details) {
+  return { id: el.id, visible: details.visible };
+}
 var PasswordInputHook = {
   mounted() {
     const el = this.el;
@@ -284,7 +290,7 @@ var PasswordInputHook = {
       defaultVisible: getBoolean(el, "defaultVisible"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
       name: getString(el, "name"),
@@ -295,7 +301,7 @@ var PasswordInputHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, visible: details.visible },
+          payload: visibilityChangePayload(el, details),
           serverEventName: getString(el, "onVisibilityChange"),
           clientEventName: getString(el, "onVisibilityChangeClient")
         });
@@ -336,16 +342,26 @@ var PasswordInputHook = {
     });
   },
   updated() {
+    const el = this.el;
+    const valuePatch = readUpdatedServerString(el);
     this.passwordInput?.updateProps({
-      id: this.el.id,
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      required: getBoolean(this.el, "required"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      dir: getDir(this.el)
+      id: el.id,
+      ...valuePatch,
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      readOnly: getBoolean(el, "readonly"),
+      required: getBoolean(el, "required"),
+      name: getString(el, "name"),
+      dir: getDir(el)
     });
+    if ("value" in valuePatch && valuePatch.value !== null) {
+      const input = el.querySelector(
+        '[data-scope="password-input"][data-part="input"]'
+      );
+      if (input && input.value !== valuePatch.value) {
+        input.value = valuePatch.value;
+      }
+    }
   },
   destroyed() {
     if (this.handlers) {
@@ -357,5 +373,6 @@ var PasswordInputHook = {
   }
 };
 export {
-  PasswordInputHook as PasswordInput
+  PasswordInputHook as PasswordInput,
+  visibilityChangePayload
 };

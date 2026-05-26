@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="tabs-styling-page"
-    title="Tabs · Style"
-    subtitle="Semantic colors, root gap, typography, radius, and max-width utilities on the tabs root."
+    title={~t"Tabs · Style"}
+    subtitle={
+      ~t"Semantic colors, root gap, typography, radius, and max-width utilities on the tabs root."
+    }
   >
     <.demo_section
       id="tabs-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.TabsDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +24,7 @@
 
     <.demo_section
       id="tabs-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.TabsDemo.styling_size_code()}
     >
       <:preview>
@@ -31,7 +34,7 @@
 
     <.demo_section
       id="tabs-styling-text"
-      title="Text"
+      title={~t"Text"}
       code={E2eWeb.Demos.TabsDemo.styling_text_code()}
     >
       <:preview>
@@ -41,7 +44,7 @@
 
     <.demo_section
       id="tabs-styling-radius"
-      title="Radius"
+      title={~t"Radius"}
       code={E2eWeb.Demos.TabsDemo.styling_radius_code()}
     >
       <:preview>
@@ -51,21 +54,11 @@
 
     <.demo_section
       id="tabs-styling-max-width"
-      title="Max width"
+      title={~t"Max width"}
       code={E2eWeb.Demos.TabsDemo.styling_max_width_code()}
     >
       <:preview>
         <E2eWeb.Demos.TabsDemo.styling_max_width_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="tabs-styling-mix-modifiers"
-      title="Mix modifiers"
-      code={E2eWeb.Demos.TabsDemo.styling_mix_modifiers_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.TabsDemo.styling_mix_modifiers_example />
       </:preview>
     </.demo_section>
   </.demo_page>

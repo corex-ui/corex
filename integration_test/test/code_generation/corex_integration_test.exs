@@ -33,9 +33,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
-        assert response.body =~ "Corex"
+
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+            assert response.body =~ "Corex"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end
@@ -74,6 +80,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+        assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
       end)
     end
   end
@@ -113,6 +120,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+        assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
 
         web = Path.join(app_root_path, "lib/my_app_web")
 
@@ -180,11 +188,17 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
 
-        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
-                 response.body =~ "theme"
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+
+            assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
+                     response.body =~ "theme"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end
@@ -204,8 +218,11 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           assert content =~ ~s(@import "../corex/theme/uno.css";)
           assert content =~ ~s(@import "../corex/theme/duo.css";)
           assert content =~ ~s(@import "../corex/theme/leo.css";)
-          assert content =~ ~s(@import "../corex/components/toggle-group.css";)
+          assert content =~ ~s(@import "../corex/components/toggle.css";)
+          refute content =~ "toggle-group.css"
           assert content =~ ~s(@import "../corex/components/select.css";)
+          assert content =~ ~s(@import "../corex/components/dialog.css";)
+          assert content =~ ~s(@import "../corex/components/password-input.css";)
           assert content =~ ~s(@import "../corex/components/data-table.css";)
           assert content =~ ~s(@import "../corex/components/data-list.css";)
           assert content =~ ~s(@import "../corex/components/scrollbar.css";)
@@ -237,11 +254,17 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-        assert response.status_code == 200
 
-        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
-                 response.body =~ "mode"
+        case request_with_retries("http://localhost:#{port}", 45) do
+          {:ok, response} ->
+            assert response.status_code == 200
+
+            assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
+                     response.body =~ "mode"
+
+          other ->
+            flunk("expected HTTP 200, got #{inspect(other)}")
+        end
       end)
     end
   end

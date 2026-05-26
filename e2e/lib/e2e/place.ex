@@ -6,8 +6,42 @@ defmodule E2e.Place do
   import Ecto.Query, warn: false
   alias E2e.Repo
 
-  alias E2e.Place.City
   alias E2e.Place.Airport
+  alias E2e.Place.City
+
+  @city_table_sortable [:name, :iata_code, :iata_country_code]
+
+  @doc """
+  Returns a paginated, sorted page of cities for data-table demos (manual Ecto).
+
+  Options: `:page` (default 1), `:page_size` (default 5), `:order_by` (default `:name`),
+  `:order_dir` (`:asc` or `:desc`, default `:asc`).
+
+  Returns `{rows, total_count}`.
+  """
+  def list_cities_table(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    page_size = Keyword.get(opts, :page_size, 5)
+    order_by = Keyword.get(opts, :order_by, :name)
+    order_dir = Keyword.get(opts, :order_dir, :asc)
+
+    order_by = if order_by in @city_table_sortable, do: order_by, else: :name
+    order_dir = if order_dir in [:asc, :desc], do: order_dir, else: :asc
+
+    ordered =
+      from(c in City, order_by: [{^order_dir, field(c, ^order_by)}])
+
+    total_count = Repo.aggregate(ordered, :count)
+    offset = max(page - 1, 0) * page_size
+
+    rows =
+      ordered
+      |> limit(^page_size)
+      |> offset(^offset)
+      |> Repo.all()
+
+    {rows, total_count}
+  end
 
   @doc """
   Returns the list of cities.

@@ -3,7 +3,12 @@ defmodule E2eWeb.AngleSliderModel do
 
   use E2eWeb.Model, component: "angle-slider"
 
-  @anatomy_sections ~w(
+  @static_phoenix_section "angle-slider-form-phoenix"
+  @static_ecto_section "angle-slider-form-ecto"
+  @live_phoenix_section "angle-slider-live-form-phoenix"
+  @live_validate_form "angle-slider-validate-form-live"
+
+  @anatomy_sections ~W(
     angle-slider-anatomy-minimal
     angle-slider-anatomy-with-label
     angle-slider-anatomy-custom-slots
@@ -13,7 +18,8 @@ defmodule E2eWeb.AngleSliderModel do
   def anatomy_section_ids, do: @anatomy_sections
 
   def wait_section_angle_slider_ready(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -26,7 +32,8 @@ defmodule E2eWeb.AngleSliderModel do
   end
 
   def focus_thumb_in_section(session, section_dom_id) do
-    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(section_dom_id) > 0) do
+    if not (String.match?(section_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and
+              String.length(section_dom_id) > 0) do
       raise ArgumentError, "invalid section dom id"
     end
 
@@ -55,58 +62,59 @@ defmodule E2eWeb.AngleSliderModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
-  def wait_static_native_form_angle_slider_ready(session) do
-    assert_has(
-      session,
-      css(
-        "#angle-slider-form-controller [phx-hook='AngleSlider']:not([data-loading])",
-        visible: :any
-      )
-    )
+  def wait_static_phoenix_angle_slider_ready(session) do
+    wait_section_angle_slider_ready(session, @static_phoenix_section)
+  end
 
+  def wait_static_native_form_angle_slider_ready(session),
+    do: wait_static_phoenix_angle_slider_ready(session)
+
+  def wait_static_changeset_angle_slider_ready(session),
+    do: wait_section_angle_slider_ready(session, @static_ecto_section)
+
+  def wait_static_validate_angle_slider_ready(session),
+    do: wait_section_angle_slider_ready(session, @static_ecto_section)
+
+  def wait_phoenix_form_root_style_contains(
+        session,
+        value,
+        section_id \\ @static_phoenix_section,
+        opts \\ []
+      )
+      when is_number(value) do
+    fragment = style_deg_marker(value)
+    timeout = Keyword.get(opts, :timeout, 12_000)
+    deadline = System.monotonic_time(:millisecond) + timeout
+    busy_wait_section_style(session, section_id, fragment, deadline)
     session
   end
 
   def wait_native_form_root_style_contains(session, value, opts \\ []) when is_number(value) do
-    fragment = style_deg_marker(value)
-    timeout = Keyword.get(opts, :timeout, 12_000)
-    deadline = System.monotonic_time(:millisecond) + timeout
-    busy_wait_native_style(session, fragment, deadline)
-    session
+    wait_phoenix_form_root_style_contains(session, value, @static_phoenix_section, opts)
   end
 
-  defp busy_wait_native_style(session, fragment, deadline) do
-    style = native_form_root_style(session)
+  defp busy_wait_section_style(session, section_id, fragment, deadline) do
+    style = section_root_style(session, section_id)
 
     if is_binary(style) and String.contains?(style, fragment) do
       :ok
     else
       if System.monotonic_time(:millisecond) >= deadline do
         flunk(
-          "expected native form angle slider root style to include #{inspect(fragment)}, got #{inspect(style)}"
+          "expected angle slider root style in ##{section_id} to include #{inspect(fragment)}, got #{inspect(style)}"
         )
       else
         Process.sleep(50)
-        busy_wait_native_style(session, fragment, deadline)
+        busy_wait_section_style(session, section_id, fragment, deadline)
       end
     end
   end
 
-  defp native_form_root_style(session) do
-    if has?(
-         session,
-         css("#angle-slider-form-controller [data-scope='angle-slider'][data-part='root']",
-           visible: :any
-         )
-       ) do
-      el =
-        find(
-          session,
-          css("#angle-slider-form-controller [data-scope='angle-slider'][data-part='root']",
-            visible: :any
-          )
-        )
+  defp section_root_style(session, section_id) do
+    selector = "##{section_id} [data-scope='angle-slider'][data-part='root']"
 
+    if has?(session, css(selector, visible: :any)) do
+      el = find(session, css(selector, visible: :any))
       Wallaby.Element.attr(el, "style") || ""
     else
       ""
@@ -119,89 +127,42 @@ defmodule E2eWeb.AngleSliderModel do
   end
 
   def set_angle_value(session, value, mode \\ :static) do
-    value_str = to_string(value)
     value_float = value * 1.0
 
-    script =
+    section_id =
       case mode do
-        :static ->
-          """
-          (function() {
-            var el = document.getElementById(#{Jason.encode!("angle-slider-form-angle")});
-            if (!el) return;
-            el.dispatchEvent(new CustomEvent('corex:angle-slider:set-value', {
-              detail: { value: #{Jason.encode!(value_float)} },
-              bubbles: false
-            }));
-          })();
-          """
-
-        :live ->
-          """
-          (function() {
-            var form = document.getElementById(#{Jason.encode!("angle-slider-basic-form")});
-            if (!form) return;
-            var el = form.querySelector('input[type=hidden]');
-            if (!el) return;
-            el.value = #{Jason.encode!(value_str)};
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          })();
-          """
+        :static -> @static_phoenix_section
+        :live -> @live_phoenix_section
       end
 
     session =
       case mode do
         :static ->
           session
-          |> wait_static_native_form_angle_slider_ready()
-          |> then(fn s ->
-            _ = execute_script(s, script, [])
-            s
-          end)
-          |> wait_native_form_root_style_contains(value_float)
+          |> wait_static_phoenix_angle_slider_ready()
+          |> dispatch_set_value_in_section(section_id, value_float)
+          |> wait_phoenix_form_root_style_contains(value_float, section_id)
 
         :live ->
-          _ = execute_script(session, script, [])
           session
+          |> wait_section_angle_slider_ready(section_id)
+          |> dispatch_set_value_in_section(section_id, value_float)
       end
 
     session
   end
 
   def submit_form(session, mode \\ :static) do
-    id =
-      if mode == :live,
-        do: "angle-slider-live-form-changeset-submit",
-        else: "angle-slider-form-submit"
-
-    click(session, css("##{id}"))
+    form_id = if mode == :live, do: @live_phoenix_section, else: @static_phoenix_section
+    click(session, css("##{form_id} button[type='submit']"))
   end
 
   def see_flash(session, flash_text, _opts \\ []) do
     assert_toast(session, flash_text)
   end
 
-  def wait_static_changeset_angle_slider_ready(session) do
-    assert_has(
-      session,
-      css("#angle-slider-form-changeset [phx-hook='AngleSlider']:not([data-loading])", visible: :any)
-    )
-
-    session
-  end
-
-  def wait_static_validate_angle_slider_ready(session) do
-    assert_has(
-      session,
-      css("#angle-slider-form-validate [phx-hook='AngleSlider']:not([data-loading])", visible: :any)
-    )
-
-    session
-  end
-
   def submit_static_changeset(session) do
-    click(session, css("#angle-slider-form-changeset-submit"))
+    click(session, css("#angle-slider-form-validate-submit"))
   end
 
   def submit_static_validate(session) do
@@ -216,8 +177,9 @@ defmodule E2eWeb.AngleSliderModel do
     assert_has(
       session,
       css(
-        "#angle-slider-live-form-validate [phx-hook='AngleSlider']:not([data-loading])",
-        visible: :any
+        "##{@live_validate_form} [phx-hook='AngleSlider']:not([data-loading])",
+        visible: :any,
+        minimum: 1
       )
     )
 
@@ -332,7 +294,9 @@ defmodule E2eWeb.AngleSliderModel do
     el =
       find(
         session,
-        css("#angle-slider-api-set-value-js [data-scope='angle-slider'][data-part='root']", visible: :any)
+        css("#angle-slider-api-set-value-js [data-scope='angle-slider'][data-part='root']",
+          visible: :any
+        )
       )
 
     Wallaby.Element.attr(el, "style")
@@ -355,7 +319,8 @@ defmodule E2eWeb.AngleSliderModel do
       assert_has(
         session,
         css("#angle-slider-api-set-value-js [phx-hook='AngleSlider']:not([data-loading])",
-          visible: :any
+          visible: :any,
+          minimum: 1
         )
       )
 
@@ -377,7 +342,8 @@ defmodule E2eWeb.AngleSliderModel do
         session,
         css(
           "#angle-slider-api-set-value-server [phx-hook='AngleSlider']:not([data-loading])",
-          visible: :any
+          visible: :any,
+          minimum: 1
         )
       )
 

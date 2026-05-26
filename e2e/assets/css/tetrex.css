@@ -1,0 +1,169 @@
+#tetrex-board .checkbox,
+#tetrex-next .checkbox {
+  gap: 0;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="root"],
+#tetrex-next .checkbox [data-scope="checkbox"][data-part="root"] {
+  gap: 0;
+  padding: 0;
+  padding-inline-end: 0;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="control"],
+#tetrex-next .checkbox [data-scope="checkbox"][data-part="control"],
+#tetrex-next [data-preview] [data-scope="checkbox"][data-part="control"] {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 0;
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="control"]:focus-visible,
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="control"][data-focus],
+#tetrex-next .checkbox [data-scope="checkbox"][data-part="control"]:focus-visible,
+#tetrex-next .checkbox [data-scope="checkbox"][data-part="control"][data-focus] {
+  box-shadow: none;
+}
+
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="indicator"],
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="indeterminate"] {
+  display: none !important;
+}
+
+#tetrex-board .checkbox [data-scope="checkbox"][data-part="root"][data-readonly]::after {
+  display: none;
+}
+
+#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.checkbox--accent [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-ink-accent);
+  border-color: var(--color-border);
+  color: var(--color-ink-accent);
+}
+
+#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.checkbox--brand [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-ink-brand);
+  border-color: var(--color-border);
+  color: var(--color-ink-brand);
+}
+
+#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.checkbox--alert [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-ink-alert);
+  border-color: var(--color-border);
+  color: var(--color-ink-alert);
+}
+
+#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"],
+#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"]:hover,
+#tetrex-board .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"]:active,
+#tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="checked"],
+#tetrex-next .checkbox.checkbox--success [data-scope="checkbox"][data-part="control"][data-state="indeterminate"] {
+  background-color: var(--color-ink-success);
+  border-color: var(--color-border);
+  color: var(--color-ink-success);
+}
+
+#tetrex-board-stage {
+  aspect-ratio: 10 / 18;
+  isolation: isolate;
+}
+
+@media (min-width: 768px) {
+  #tetrex-board-stage {
+    height: min(58dvh, 26rem);
+    width: min(100%, calc(min(58dvh, 26rem) * 10 / 18));
+  }
+}
+
+@media (max-width: 767px) {
+  body.layout:has(#tetrex-page) {
+    overflow: hidden;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  body:has(#tetrex-page) .layout__content--blog {
+    padding-block: var(--spacing-space-sm);
+  }
+
+  body:has(#tetrex-page) .layout__footer {
+    display: none;
+  }
+
+  body:has(#tetrex-page) .layout__wrapper {
+    min-height: 0;
+  }
+
+  body:has(#tetrex-page) .layout__main--blog {
+    min-height: 0;
+    max-height: calc(100dvh - var(--spacing-size-lg));
+  }
+
+  body:has(#tetrex-page) .layout__content--blog {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100dvh - var(--spacing-size-lg));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  body:has(#tetrex-page) .blog,
+  body:has(#tetrex-page) .blog__inner {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #tetrex-page {
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  #tetrex-cabinet {
+    overflow: hidden;
+  }
+
+  #tetrex-board-wrap {
+    min-height: 0;
+  }
+
+  #tetrex-board-stage {
+    height: 100%;
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
+  }
+}

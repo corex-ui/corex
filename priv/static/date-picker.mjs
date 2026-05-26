@@ -1,27 +1,37 @@
 import {
   memo
-} from "./chunks/chunk-5QA23UMN.mjs";
+} from "./chunks/chunk-RNYQBUAX.mjs";
+import {
+  clampValue,
+  isValueWithinRange
+} from "./chunks/chunk-PE34YET2.mjs";
 import {
   createLiveRegion
 } from "./chunks/chunk-7BZGUIUZ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
+} from "./chunks/chunk-EPNQR235.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  syncArrayHiddenInputsForPhoenix
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import {
+  notifyPhoenixFormChange
+} from "./chunks/chunk-VMKNATWC.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+} from "./chunks/chunk-VJGUNSK5.mjs";
 import {
-  clampValue,
-  isValueWithinRange
-} from "./chunks/chunk-PE34YET2.mjs";
+  mountStringListBinding,
+  readUpdatedServerStringList
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   notifyChange
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -38,7 +48,6 @@ import {
   getNativeEvent,
   getNumber,
   getString,
-  getStringList,
   isComposingEvent,
   match,
   query,
@@ -46,7 +55,7 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+date-picker@1.40.0_@internationalized+date@3.12.1/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
@@ -4350,9 +4359,44 @@ var DatePicker = class extends Component {
 };
 
 // hooks/date-picker.ts
+function isDateLike(d) {
+  return typeof d === "object" && d !== null && "year" in d && "month" in d && "day" in d && typeof d.year === "number" && typeof d.month === "number" && typeof d.day === "number";
+}
 function valueToIsoString(d) {
   if (d == null) return "";
+  if (typeof d === "string") {
+    const trimmed = d.trim();
+    if (trimmed === "") return "";
+    try {
+      return parse(trimmed).toString();
+    } catch {
+      return trimmed;
+    }
+  }
+  if (isDateLike(d)) {
+    const { year, month, day } = d;
+    const mm = String(month).padStart(2, "0");
+    const dd = String(day).padStart(2, "0");
+    return `${year}-${mm}-${dd}`;
+  }
   return String(d);
+}
+function isoListFromValues(values) {
+  return values?.length ? values.map((d) => valueToIsoString(d)).filter(Boolean) : [];
+}
+function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
+  const hiddenInput = el.querySelector(
+    '[data-scope="date-picker"][data-part="value-input"]'
+  );
+  if (!hiddenInput) return;
+  if (hiddenInput.value !== isoStr) {
+    hiddenInput.value = isoStr;
+  }
+  if (notifyForm) {
+    notifyPhoenixFormChange(hiddenInput, isoStr);
+  } else {
+    notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+  }
 }
 function resolveZagDatePickerTranslations(el) {
   const raw = el.dataset.translation;
@@ -4372,6 +4416,8 @@ function resolveCloseOnSelect(el) {
 var DatePickerHook = {
   mounted() {
     const el = this.el;
+    const hook = this;
+    hook.allowFormNotify = false;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
     const canPush = () => canPushEvent(this.liveSocket);
@@ -4381,14 +4427,20 @@ var DatePickerHook = {
     const parseOne = (v) => v ? parse(v) : void 0;
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
+      ...(() => {
+        const binding = mountStringListBinding(el);
+        if ("value" in binding) {
+          return { value: parseList(binding.value) };
+        }
+        return { defaultValue: parseList(binding.defaultValue) };
+      })(),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString(el, "defaultView"),
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -4407,18 +4459,26 @@ var DatePickerHook = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),
       onValueChange: (details) => {
-        const isoStr = details.value?.length ? details.value.map((d) => valueToIsoString(d)).filter(Boolean).join(",") : "";
-        const hiddenInput = el.querySelector(`#${el.id}-value`);
-        if (hiddenInput && hiddenInput.value !== isoStr) {
-          hiddenInput.value = isoStr;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        const isoList = isoListFromValues(details.value);
+        const submitName = getString(el, "submitName");
+        if (submitName) {
+          syncArrayHiddenInputsForPhoenix(el, isoList, {
+            scope: "date-picker",
+            submitName,
+            notifyLiveView: hook.allowFormNotify === true
+          });
+        } else {
+          const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+          syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
         }
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: isoStr || null },
+          payload: {
+            id: el.id,
+            value: isoList.length > 0 ? isoList.join(",") : null
+          },
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
@@ -4464,6 +4524,20 @@ var DatePickerHook = {
     });
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
+    queueMicrotask(() => {
+      const submitName = getString(el, "submitName");
+      const isoList = isoListFromValues(datePickerInstance.api.value);
+      if (submitName) {
+        syncArrayHiddenInputsForPhoenix(el, isoList, {
+          scope: "date-picker",
+          submitName,
+          notifyLiveView: false
+        });
+      } else {
+        syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+      }
+      hook.allowFormNotify = true;
+    });
     this.handlers = [];
     this.handlers.push(
       this.handleEvent(
@@ -4485,22 +4559,18 @@ var DatePickerHook = {
   },
   updated() {
     const el = this.el;
+    const zag = this.datePicker;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const focusedStr = getString(el, "focusedValue");
-    const controlled = getBoolean(el, "controlled");
-    const valueList = getStringList(el, "value");
-    this.datePicker?.updateProps({
-      ...controlled ? {
-        value: (valueList ?? []).map((x) => parse(x))
-      } : {},
-      defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
-      defaultView: getString(el, "defaultView"),
+    const valuePatch = readUpdatedServerStringList(el);
+    const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x) => parse(x)) } : {};
+    zag?.updateProps({
+      ...parsedValue,
       dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
       disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -4518,6 +4588,12 @@ var DatePickerHook = {
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el)
     });
+    if (!getString(el, "submitName")) {
+      queueMicrotask(() => {
+        const isoStr = "value" in valuePatch ? valuePatch.value.join(",") : isoListFromValues(zag?.api.value).join(",");
+        syncDatePickerValueInput(el, isoStr, false);
+      });
+    }
   },
   destroyed() {
     if (this.onSetValue) {
@@ -4532,5 +4608,8 @@ var DatePickerHook = {
   }
 };
 export {
-  DatePickerHook as DatePicker
+  DatePickerHook as DatePicker,
+  resolveCloseOnSelect,
+  syncDatePickerValueInput,
+  valueToIsoString
 };

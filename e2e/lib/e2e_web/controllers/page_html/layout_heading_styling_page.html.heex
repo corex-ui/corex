@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="layout-heading-styling-page"
-    title="Layout Heading Style"
-    subtitle="Semantic colors on title and subtitle, width utilities on the root; use typography utilities on the heading slots for scale."
+    title={~t"Layout Heading · Style"}
+    subtitle={
+      ~t"Semantic colors on title and subtitle, width utilities on the root; use typography utilities on the heading slots for scale."
+    }
   >
     <.demo_section
       id="layout-heading-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.LayoutHeadingDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +24,7 @@
 
     <.demo_section
       id="layout-heading-styling-max-width"
-      title="Max Width"
+      title={~t"Max Width"}
       code={E2eWeb.Demos.LayoutHeadingDemo.styling_max_width_code()}
     >
       <:preview>

@@ -23,25 +23,42 @@ defmodule Corex.Combobox.Connect do
 
   alias Phoenix.LiveView.JS
 
-  import Corex.Helpers, only: [get_boolean: 1, validate_value!: 1]
+  alias Corex.FormField
+
+  import Corex.Helpers,
+    only: [
+      get_boolean: 1,
+      validate_value!: 1,
+      joined_csv_values: 1
+    ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    vlist = validate_value!(assigns.value)
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+
+    joined =
+      if form_field do
+        FormField.dataset_default_json(vlist)
+      else
+        joined_csv_values(vlist)
+      end
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {joined, nil}
+      else
+        {nil, joined}
+      end
+
     base = %{
-      "data-items" => Corex.Json.encode!(assigns.items),
-      "data-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
-        end,
-      "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
-        end,
-      "data-controlled" => get_boolean(assigns.controlled),
+      "id" => assigns.id,
+      "data-items" => Corex.Dataset.encode_json(assigns.items),
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder,
       "data-close-on-select" => get_boolean(assigns.close_on_select),
       "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
@@ -53,19 +70,26 @@ defmodule Corex.Combobox.Connect do
       "data-multiple" => get_boolean(assigns.multiple),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-input-value-change" => assigns.on_input_value_change,
+      "data-on-input-value-change-client" => assigns.on_input_value_change_client,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-filter" => get_boolean(assigns.filter),
       "data-redirect" => get_boolean(assigns.redirect)
     }
 
-    Map.merge(base, Corex.Positioning.to_dataset(assigns.positioning))
+    base
+    |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
+    |> maybe_put_submit_name(Map.get(assigns, :submit_name))
+    |> FormField.put_form_field_attrs(assigns)
   end
+
+  defp maybe_put_submit_name(attrs, nil), do: attrs
+  defp maybe_put_submit_name(attrs, name), do: Map.put(attrs, "data-submit-name", name)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do

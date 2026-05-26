@@ -47,12 +47,13 @@ defmodule E2eWeb.ClipboardEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="clipboard-events-page"
         title="Clipboard · Event"
         subtitle="Copy events (server + client)."
       >
         <.demo_section
-          id="clipboard-events"
+          id="clipboard-events-section"
           title="Copy"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.heex},

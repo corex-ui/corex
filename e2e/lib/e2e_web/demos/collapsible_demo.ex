@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def anatomy_basic_code do
     ~S"""
-    <.collapsible id="collapsible-anatomy" class="collapsible">
+    <.collapsible class="collapsible">
       <:trigger>Toggle</:trigger>
       <:content>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -25,7 +25,7 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def with_indicator_code do
     ~S"""
-    <.collapsible id="collapsible-anatomy-indicator" class="collapsible">
+    <.collapsible class="collapsible">
       <:trigger>Toggle</:trigger>
       <:closed>
         <.heroicon name="hero-chevron-right" />
@@ -53,15 +53,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def custom_slots_code do
     ~S"""
-    <.collapsible id="collapsible-anatomy-custom" class="collapsible">
+    <.collapsible class="collapsible">
       <:trigger :let={c}>
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
       <:closed>
-        <span class="text-sm text-ink-muted">▼</span>
+        <.heroicon name="hero-chevron-down" />
       </:closed>
       <:opened>
-        <span class="text-sm text-ink-muted">▲</span>
+        <.heroicon name="hero-chevron-up" />
       </:opened>
       <:content :let={_c}>
         Panel body with custom opened/closed adornments.
@@ -77,10 +77,10 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
       <:closed>
-        <span class="text-sm text-ink-muted">▼</span>
+        <.heroicon name="hero-chevron-down" />
       </:closed>
       <:opened>
-        <span class="text-sm text-ink-muted">▲</span>
+        <.heroicon name="hero-chevron-up" />
       </:opened>
       <:content :let={_c}>
         Panel body with custom opened/closed adornments.
@@ -141,10 +141,165 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
     """
   end
 
+  def api_client_js_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:collapsible:set-open",
+            to: "#collapsible-api-js",
+            detail: %{open: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Open
+      </.action>
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:collapsible:set-open",
+            to: "#collapsible-api-js",
+            detail: %{open: false},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Close
+      </.action>
+    </div>
+
+    <.collapsible id="collapsible-api-js" class="collapsible">
+      <:trigger>Toggle</:trigger>
+      <:closed>
+        <.heroicon name="hero-chevron-right" />
+      </:closed>
+      <:content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </:content>
+    </.collapsible>
+    """
+  end
+
+  def api_client_js_js do
+    ~S"""
+    const el = document.getElementById("collapsible-api-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:collapsible:set-open", { bubbles: false, detail: { open: true } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:collapsible:set-open", { bubbles: false, detail: { open: false } })
+    );
+    """
+  end
+
+  def api_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("collapsible-api-js");
+    el?.dispatchEvent(
+      new CustomEvent("corex:collapsible:set-open", { bubbles: false, detail: { open: true } })
+    );
+    el?.dispatchEvent(
+      new CustomEvent("corex:collapsible:set-open", { bubbles: false, detail: { open: false } })
+    );
+    """
+  end
+
+  def api_client_js_example(assigns) do
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:collapsible:set-open",
+            to: "#collapsible-api-js",
+            detail: %{open: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Open
+      </.action>
+      <.action
+        phx-click={
+          Phoenix.LiveView.JS.dispatch("corex:collapsible:set-open",
+            to: "#collapsible-api-js",
+            detail: %{open: false},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Close
+      </.action>
+    </div>
+
+    <.collapsible id="collapsible-api-js" class="collapsible">
+      <:trigger>Toggle</:trigger>
+      <:closed>
+        <.heroicon name="hero-chevron-right" />
+      </:closed>
+      <:content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </:content>
+    </.collapsible>
+    """
+  end
+
+  def api_server_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
+      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+    </div>
+
+    <.collapsible id="collapsible-api-server" class="collapsible">
+      <:trigger>Toggle</:trigger>
+      <:closed>
+        <.heroicon name="hero-chevron-right" />
+      </:closed>
+      <:content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </:content>
+    </.collapsible>
+    """
+  end
+
+  def api_server_elixir do
+    ~S"""
+    def handle_event("collapsible_api_open", _, socket) do
+      {:noreply, Corex.Collapsible.set_open(socket, "collapsible-api-server", true)}
+    end
+
+    def handle_event("collapsible_api_close", _, socket) do
+      {:noreply, Corex.Collapsible.set_open(socket, "collapsible-api-server", false)}
+    end
+    """
+  end
+
+  def api_server_example(assigns) do
+    ~H"""
+    <div class="layout__row">
+      <.action phx-click="collapsible_api_open" class="button button--sm">Open</.action>
+      <.action phx-click="collapsible_api_close" class="button button--sm">Close</.action>
+    </div>
+
+    <.collapsible id="collapsible-api-server" class="collapsible">
+      <:trigger>Toggle</:trigger>
+      <:closed>
+        <.heroicon name="hero-chevron-right" />
+      </:closed>
+      <:content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      </:content>
+    </.collapsible>
+    """
+  end
+
   def events_server_heex do
     ~S"""
     <.collapsible
-      id="collapsible-events-server"
       class="collapsible"
       on_open_change="collapsible_open_changed"
     >
@@ -158,12 +313,10 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("collapsible_open_changed", %{"id" => id, "open" => open}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{id: id, open: open})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "collapsible_open_changed",
+      ~S|%{"id" => id, "open" => open} = params|
+    )
   end
 
   def events_client_heex do
@@ -200,15 +353,15 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_color_code do
     ~S"""
-    <.collapsible id="collapsible-style-default" class="collapsible collapsible--md">
+    <.collapsible class="collapsible collapsible--md">
       <:trigger>Default width</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible id="collapsible-style-accent" class="collapsible collapsible--md collapsible--accent">
+    <.collapsible class="collapsible collapsible--md collapsible--accent">
       <:trigger>Accent trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible id="collapsible-style-brand" class="collapsible collapsible--md collapsible--brand">
+    <.collapsible class="collapsible collapsible--md collapsible--brand">
       <:trigger>Brand trigger</:trigger>
       <:content>Content</:content>
     </.collapsible>
@@ -242,11 +395,11 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
 
   def styling_size_code do
     ~S"""
-    <.collapsible id="collapsible-style-sm" class="collapsible collapsible--sm">
+    <.collapsible class="collapsible collapsible--sm">
       <:trigger>Small max-width</:trigger>
       <:content>Content</:content>
     </.collapsible>
-    <.collapsible id="collapsible-style-lg" class="collapsible collapsible--lg">
+    <.collapsible class="collapsible collapsible--lg">
       <:trigger>Large max-width</:trigger>
       <:content>Content</:content>
     </.collapsible>
@@ -276,7 +429,6 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       </:loading>
 
       <.collapsible
-        id="patterns-collapsible-async"
         class="collapsible"
         open={panel.open}
       >
@@ -308,7 +460,6 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
   def patterns_controlled_heex do
     ~S"""
     <.collapsible
-      id="patterns-collapsible-controlled"
       class="collapsible"
       controlled
       open={@open}

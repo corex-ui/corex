@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="checkbox-anatomy-page"
-    title="Checkbox · Anatomy"
-    subtitle="Default structure, indicator, error slot, and indeterminate state."
+    title={~t"Checkbox · Anatomy"}
+    subtitle={~t"Default structure, indicator, error slot, and indeterminate state."}
   >
     <.demo_section
       id="checkbox-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.CheckboxDemo.minimal_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="checkbox-anatomy-labeled"
-      title="Label and indicator"
+      title={~t"Label and indicator"}
       code={E2eWeb.Demos.CheckboxDemo.labeled_code()}
     >
       <:preview>
@@ -31,7 +32,7 @@
 
     <.demo_section
       id="checkbox-anatomy-invalid"
-      title="Invalid"
+      title={~t"Invalid"}
       code={E2eWeb.Demos.CheckboxDemo.invalid_code()}
     >
       <:preview>
@@ -41,7 +42,7 @@
 
     <.demo_section
       id="checkbox-anatomy-indeterminate"
-      title="Indeterminate"
+      title={~t"Indeterminate"}
       code={E2eWeb.Demos.CheckboxDemo.indeterminate_code()}
     >
       <:preview>

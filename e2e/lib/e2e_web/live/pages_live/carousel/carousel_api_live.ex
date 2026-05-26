@@ -72,6 +72,7 @@ defmodule E2eWeb.CarouselApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="carousel-api-page"
         title="Carousel · API"
         subtitle="Drive autoplay and paging from LiveView or the client."
@@ -110,13 +111,7 @@ defmodule E2eWeb.CarouselApiLive do
             </div>
             <.carousel
               id={@id_client}
-              items={[
-                ~p"/images/beach.jpg",
-                ~p"/images/fall.jpg",
-                ~p"/images/sand.jpg",
-                ~p"/images/star.jpg",
-                ~p"/images/winter.jpg"
-              ]}
+              items={E2eWeb.Demos.CarouselDemo.gallery_images()}
               autoplay
               loop
               class="carousel"
@@ -129,11 +124,11 @@ defmodule E2eWeb.CarouselApiLive do
 
         <.demo_section
           id="carousel-api-client-js"
-          title="Play, pause, scroll (Client JS)"
+          title={~t"Play, pause, scroll (Client JS)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.js_heex},
-            %{value: "js", label: "JS", language: :js, code: @codes.js},
-            %{value: "ts", label: "TS", language: :javascript, code: @codes.js_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.js_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @codes.js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @codes.js_ts}
           ]}
         >
           <:preview>
@@ -143,10 +138,10 @@ defmodule E2eWeb.CarouselApiLive do
 
         <.demo_section
           id="carousel-api-server"
-          title="Play, pause, scroll (Server)"
+          title={~t"Play, pause, scroll (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>

@@ -23,7 +23,7 @@ defmodule Mix.Tasks.Corex.Heroicon do
 
   use Mix.Task
 
-  @plugin_line ~s|@plugin "../vendor/heroicons";|
+  @plugin_line ~S|@plugin "../vendor/heroicons";|
 
   @impl Mix.Task
   def run(args) do
@@ -102,12 +102,14 @@ defmodule Mix.Tasks.Corex.Heroicon do
   end
 
   defp print_css_path_status(%{css_path: css_path}) do
-    if File.exists?(css_path) do
-      content = File.read!(css_path)
+    case File.read(css_path) do
+      {:ok, content} ->
+        if String.contains?(content, "vendor/heroicons") do
+          Mix.shell().info("  (#{Path.relative_to_cwd(css_path)} already contains the plugin)")
+        end
 
-      if String.contains?(content, "vendor/heroicons") do
-        Mix.shell().info("  (#{Path.relative_to_cwd(css_path)} already contains the plugin)")
-      end
+      {:error, _} ->
+        :ok
     end
   end
 

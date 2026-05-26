@@ -2,17 +2,17 @@ defmodule CorexWeb.PasswordInput do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.PasswordInput
   alias Corex.Heroicon
+  alias Corex.PasswordInput
 
   capture variants: [
             with_visibility_icons: %{
               class: "password-input",
               name: "password",
               label: [%{inner_block: "Password"}],
-              visible_indicator: [%{inner_block: ~s(<.heroicon name="hero-eye" class="icon" />)}],
+              visible_indicator: [%{inner_block: ~S(<.heroicon name="hero-eye" class="icon" />)}],
               hidden_indicator: [
-                %{inner_block: ~s(<.heroicon name="hero-eye-slash" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-eye-slash" class="icon" />)}
               ]
             },
             basic: %{

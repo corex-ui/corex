@@ -379,6 +379,7 @@ defmodule Corex.ColorPicker.Anatomy do
       :id,
       :value,
       :name,
+      form_field: false,
       close_on_select: true,
       open_auto_focus: true,
       disabled: false,
@@ -394,13 +395,18 @@ defmodule Corex.ColorPicker.Anatomy do
       on_open_change: nil,
       on_open_change_client: nil,
       on_format_change: nil,
+      on_format_change_client: nil,
       on_pointer_down_outside: nil,
+      on_pointer_down_outside_client: nil,
       on_focus_outside: nil,
-      on_interact_outside: nil
+      on_focus_outside_client: nil,
+      on_interact_outside: nil,
+      on_interact_outside_client: nil
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             name: String.t() | nil,
             close_on_select: boolean(),
@@ -418,9 +424,13 @@ defmodule Corex.ColorPicker.Anatomy do
             on_open_change: String.t() | nil,
             on_open_change_client: String.t() | nil,
             on_format_change: String.t() | nil,
+            on_format_change_client: String.t() | nil,
             on_pointer_down_outside: String.t() | nil,
+            on_pointer_down_outside_client: String.t() | nil,
             on_focus_outside: String.t() | nil,
-            on_interact_outside: String.t() | nil
+            on_focus_outside_client: String.t() | nil,
+            on_interact_outside: String.t() | nil,
+            on_interact_outside_client: String.t() | nil
           }
   end
 end

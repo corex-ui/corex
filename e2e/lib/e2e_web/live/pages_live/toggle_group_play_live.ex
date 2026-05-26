@@ -56,6 +56,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="toggle-group-playground-page"
         title="Toggle group · Playground"
         heading_class="layout-heading"
@@ -84,7 +85,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="multiple"
             checked={@controls.multiple}
             on_checked_change="control_changed"
@@ -93,7 +94,7 @@ defmodule E2eWeb.ToggleGroupPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="deselectable"
             checked={@controls.deselectable}
             on_checked_change="control_changed"

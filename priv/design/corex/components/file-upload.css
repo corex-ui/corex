@@ -44,8 +44,7 @@
     width: 100%;
   }
 
-  .file-upload [data-scope="file-upload"][data-part="root"][data-readonly],
-  .file-upload [data-scope="file-upload"][data-part="root"][data-read-only] {
+  .file-upload [data-scope="file-upload"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 
@@ -173,5 +172,31 @@
 
   .file-upload [data-scope="file-upload"][data-part="error"] {
     @apply ui-error;
+  }
+}
+
+@utility file-upload--* {
+  [data-scope="file-upload"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+    max-width: --value(--container-*, [length]);
+  }
+
+  [data-scope="file-upload"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="file-upload"][data-part="region"] {
+    padding: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="file-upload"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
   }
 }

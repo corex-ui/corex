@@ -1,14 +1,34 @@
-# Tableau static + Corex: mode
+# Tableau Mode
 
-This guide is for a **[Tableau](https://hex.pm/packages/tableau)** site that already follows **[Tableau](tableau.html)** through design assets, ESM Esbuild, root layout, and `LiveSocket` hooks. It adds **light/dark** switching: `data-mode`, a before-paint inline script, **`<.toggle_group>`**, and **`mode.js`** for `localStorage` and `corex:set-mode`.
+## Introduction
 
-Phoenix’s pipeline in **[Dark mode](dark_mode.html)** sets **`data-mode`** per request from a cookie. Here, static HTML uses **build defaults + client reconciliation** and `prefers-color-scheme` inside the head script when nothing is stored.
+You add light/dark switching to a Tableau site that already follows [Tableau](tableau.html). Visitors get `data-mode` on `<html>`, a before-paint script, a Corex `<.toggle>`, and `mode.js` for `localStorage` and `corex:set-mode`.
 
-If you use **[Tableau static + Corex: theming](tableau_theming.html)** as well, install **mode** after **theme** so `<head>` runs **`MyApp.Theme.head_script()`** then **`MyApp.Mode.head_script()`**. If you **only** want mode, keep a **single** theme CSS import and a **fixed** **`data-theme`** on `<html>` (for example **`neo`**) so palette tokens resolve.
+For Phoenix apps with `Plugs.Mode` and cookies, see [Dark mode](dark_mode.html).
 
----
+## Before you start
 
-### 1. `MyApp.Mode`
+| Requirement | Notes |
+| ----------- | ----- |
+| [Tableau](tableau.html) | Design assets, ESM Esbuild, `use Corex`, `LiveSocket` |
+| `toggle.css` | Imported in `site.css` |
+
+## How it works
+
+1. **`head_script/0`** sets `data-mode` from `localStorage` or `prefers-color-scheme` before paint.
+2. **`mode.js`** syncs the toggle after hydration and listens for `corex:set-mode`.
+3. **`<.toggle id="mode-switcher">`** dispatches `corex:set-mode` when pressed changes.
+
+| Setup | `<html>` | `<head>` script order |
+| ----- | -------- | --------------------- |
+| Mode only | Fixed `data-theme="neo"` + `data-mode={@mode}` | `Mode.head_script()` only |
+| With [Tableau Theming](tableau_theming.html) | `data-theme` from theming | `Theme.head_script()` then `Mode.head_script()` |
+
+<!-- tabs-open -->
+
+### Mode only
+
+`lib/my_app/mode.ex`:
 
 ```elixir
 defmodule MyApp.Mode do
@@ -31,49 +51,41 @@ defmodule MyApp.Mode do
       _ -> "light"
     end
   end
-
-  def toggle_value("dark"), do: ["dark"]
-  def toggle_value(_), do: []
 end
 ```
 
----
-
-### 2. CSS imports
-
-Add **`toggle-group.css`** (see **[Tableau](tableau.html) §4** for the baseline stack):
-
-```css
-@import "../corex/components/toggle-group.css";
-```
-
----
-
-### 3. Root layout additions
-
-In **`template/1`**:
+In `RootLayout.template/1`:
 
 ```elixir
 assigns = Map.put(assigns, :mode, MyApp.Mode.current(assigns))
 ```
 
-On **`<html>`** (mode-only example with a fixed theme):
-
 ```heex
 <html lang="en" dir="ltr" data-theme="neo" data-mode={@mode}>
+  <head>
+    {MyApp.Mode.head_script()}
 ```
 
-If **[Tableau static + Corex: theming](tableau_theming.html)** already sets **`data-theme`**, **`data-themes`**, and **`data-default-theme`**, add only **`data-mode={@mode}`**.
+Import in `assets/css/site.css`:
 
-Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply):
+```css
+@import "../corex/components/toggle.css";
+```
+
+### With Tableau Theming
+
+Keep `data-theme`, `data-themes`, and `data-default-theme` from [Tableau Theming](tableau_theming.html). Add `data-mode={@mode}` on `<html>`.
+
+In `<head>`:
 
 ```heex
+{MyApp.Theme.head_script()}
 {MyApp.Mode.head_script()}
 ```
 
----
+### mode.js
 
-### 4. `assets/js/mode.js`
+Create `assets/js/mode.js`:
 
 ```javascript
 ;(() => {
@@ -98,9 +110,11 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
   const syncModeToggle = (mode) => {
     const root = document.getElementById("mode-switcher")
     if (!root) return
-    const value = mode === "dark" ? ["dark"] : []
     root.dispatchEvent(
-      new CustomEvent("corex:toggle-group:set-value", { detail: { value } }),
+      new CustomEvent("corex:toggle:set-pressed", {
+        bubbles: false,
+        detail: { pressed: mode === "dark" },
+      }),
     )
   }
 
@@ -131,7 +145,13 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
   })
 
   window.addEventListener("corex:set-mode", (e) => {
-    const raw = e.detail?.value
+    const detail = e.detail
+    if (typeof detail?.pressed === "boolean") {
+      applyMode(detail.pressed ? "dark" : "light")
+      whenControlReady("mode-switcher", syncModeFromDocument)
+      return
+    }
+    const raw = detail?.value
     const isDark = Array.isArray(raw) && raw.includes("dark")
     applyMode(isDark ? "dark" : "light")
     whenControlReady("mode-switcher", syncModeFromDocument)
@@ -139,50 +159,65 @@ Inside **`<head>`** (after **`MyApp.Theme.head_script`** when both guides apply)
 })()
 ```
 
----
+### site.js
 
-### 5. `assets/js/site.js` additions
+With theme and mode:
 
 ```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
+import { hooks } from "corex/hooks"
+import "./theme.js"
 import "./mode.js"
-```
 
-Register **ToggleGroup**:
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
 
-```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: {
     ...hooks({
-      ToggleGroup: () => import("corex/toggle-group"),
+      Select: () => import("corex/select"),
+      Toggle: () => import("corex/toggle"),
       Accordion: () => import("corex/accordion"),
     }),
+  },
+})
+
+liveSocket.connect()
 ```
 
-Merge with **`Select`** and **`theme.js`** from the theming guide if you use both.
+Mode only: omit `theme.js` and `Select` if you do not use [Tableau Theming](tableau_theming.html).
 
----
+### Toggle
 
-### 6. Mode toggle HEEx
-
-**`id="mode-switcher"`** matches **`mode.js`**. **`state-on`** / **`state-off`** swap icons with the toggle value.
+`id="mode-switcher"` must match `mode.js`. Use `data-toggle-dual-label` to swap moon and sun icons.
 
 ```heex
-<.toggle_group
+<.toggle
   id="mode-switcher"
-  class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
-  multiple={false}
-  deselectable={true}
-  value={MyApp.Mode.toggle_value(@mode)}
-  dir="ltr"
-  on_value_change_client="corex:set-mode"
+  class="toggle toggle--sm"
+  data-toggle-dual-label
+  pressed={@mode == "dark"}
+  on_pressed_change_client="corex:set-mode"
 >
-  <:item value="dark" aria_label="Toggle color mode">
-    <.heroicon name="hero-sun" class="icon state-on" />
-    <.heroicon name="hero-moon" class="icon state-off" />
-  </:item>
-</.toggle_group>
+  <span>
+    <.heroicon name="hero-moon" />
+    <span class="sr-only">Dark mode</span>
+  </span>
+  <span data-pressed>
+    <.heroicon name="hero-sun" />
+    <span class="sr-only">Light mode</span>
+  </span>
+</.toggle>
 ```
+
+<!-- tabs-close -->
 
 ## Related
 
-- [Tableau](tableau.html) — baseline Tableau + Corex setup.
-- [Tableau static + Corex: theming](tableau_theming.html) — multi-theme **`data-theme`** and picker.
-- [Dark mode](dark_mode.html) — Phoenix **`Plugs.Mode`** and cookie flow.
+- [Tableau](tableau.html) — baseline setup
+- [Tableau Theming](tableau_theming.html) — multi-theme picker
+- [Dark mode](dark_mode.html) — Phoenix plug and cookie flow

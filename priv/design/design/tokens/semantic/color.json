@@ -60,6 +60,10 @@
       "type": "color",
       "value": "{theme.color.alert}"
     },
+    "link": {
+      "type": "color",
+      "value": "{theme.color.link}"
+    },
     "brand-active": {
       "type": "color",
       "value": "{theme.color.brand-active}"

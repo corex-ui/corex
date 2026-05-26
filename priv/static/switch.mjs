@@ -1,17 +1,25 @@
 import {
+  syncCheckableHiddenInput
+} from "./chunks/chunk-G73IV5JU.mjs";
+import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  mountCheckedBinding,
+  readUpdatedServerChecked
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
 import {
+  checkedChangePayload,
   idMatches,
   notifyChange,
   readPayloadChecked,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -22,7 +30,6 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
-  getCheckedState,
   getDir,
   getEventTarget,
   getString,
@@ -31,7 +38,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
@@ -321,8 +328,14 @@ var Switch = class extends Component {
     const inputEl = rootEl.querySelector(
       ':scope > [data-scope="switch"][data-part="hidden-input"]'
     );
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    if (inputEl instanceof HTMLInputElement) {
+      syncCheckableHiddenInput(
+        inputEl,
+        this.el,
+        this.api.checked === true,
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps()
+      );
     }
     rootEl.querySelectorAll(':scope > [data-scope="switch"][data-part="label"]').forEach((labelEl) => {
       this.spreadProps(labelEl, this.api.getLabelProps());
@@ -343,12 +356,6 @@ var Switch = class extends Component {
 };
 
 // hooks/switch.ts
-function checkedChangePayload(el, details) {
-  return {
-    id: el.id,
-    checked: details.checked
-  };
-}
 var SwitchHook = {
   mounted() {
     const el = this.el;
@@ -356,7 +363,13 @@ var SwitchHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") === true } : { defaultChecked: getCheckedState(el, "defaultChecked") === true },
+      ...(() => {
+        const binding = mountCheckedBinding(el);
+        if ("checked" in binding) {
+          return { checked: binding.checked === true };
+        }
+        return { defaultChecked: binding.defaultChecked === true };
+      })(),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -364,7 +377,7 @@ var SwitchHook = {
       dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       onCheckedChange: (details) => {
         notifyChange({
           el,
@@ -374,6 +387,16 @@ var SwitchHook = {
           serverEventName: getString(el, "onCheckedChange"),
           clientEventName: getString(el, "onCheckedChangeClient")
         });
+        const input = el.querySelector(
+          '[data-scope="switch"][data-part="hidden-input"]'
+        );
+        if (input) {
+          queueMicrotask(() => {
+            input.checked = details.checked === true;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
       }
     });
     zagSwitch.init();
@@ -424,9 +447,11 @@ var SwitchHook = {
     });
   },
   updated() {
-    this.zagSwitch?.updateProps({
+    const zagSwitch = this.zagSwitch;
+    if (!zagSwitch) return;
+    zagSwitch.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") === true } : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true },
+      ...readUpdatedServerChecked(this.el),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
@@ -434,7 +459,7 @@ var SwitchHook = {
       dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly")
+      readOnly: getBoolean(this.el, "readonly")
     });
   },
   destroyed() {
@@ -444,5 +469,6 @@ var SwitchHook = {
   }
 };
 export {
-  SwitchHook as Switch
+  SwitchHook as Switch,
+  checkedChangePayload
 };

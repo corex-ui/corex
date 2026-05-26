@@ -29,6 +29,7 @@ defmodule E2eWeb.EditableApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="editable-api-page"
         title="Editable · API"
         subtitle="Set text from client bindings, client JS, or a server event."

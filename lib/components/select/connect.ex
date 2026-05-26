@@ -19,6 +19,7 @@ defmodule Corex.Select.Connect do
     ValueInput
   }
 
+  alias Corex.FormField
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
@@ -28,13 +29,28 @@ defmodule Corex.Select.Connect do
   def props(assigns) do
     sorted_items = sort_items_by_group(assigns.items || [])
     vlist = assigns.value || []
-    joined = joined_csv_values(vlist)
-    {value_str, default_value_str} = controlled_dataset_values(assigns.controlled, joined)
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+
+    joined =
+      if form_field do
+        FormField.dataset_default_json(vlist)
+      else
+        Corex.Helpers.joined_csv_values(vlist)
+      end
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {joined, nil}
+      else
+        Corex.Helpers.controlled_dataset_values(controlled, joined)
+      end
 
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(sorted_items),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-items" => Corex.Dataset.encode_json(sorted_items),
+      "data-controlled" => get_boolean(zag_controlled),
       "data-value" => value_str,
       "data-default-value" => default_value_str,
       "data-placeholder" => assigns.placeholder || "",
@@ -45,7 +61,7 @@ defmodule Corex.Select.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
@@ -54,17 +70,8 @@ defmodule Corex.Select.Connect do
     |> Map.merge(Corex.Positioning.to_dataset(assigns.positioning))
     |> merge_optional_select_props(assigns)
     |> maybe_put_data_dir(assigns.dir)
+    |> FormField.put_form_field_attrs(assigns)
   end
-
-  defp joined_csv_values([]), do: nil
-
-  defp joined_csv_values(vlist) do
-    Enum.map_join(vlist, ",", &to_string/1)
-  end
-
-  defp controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
-  defp controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
-  defp controlled_dataset_values(_controlled, _joined), do: {nil, nil}
 
   defp merge_optional_select_props(base, assigns) do
     base
@@ -72,6 +79,7 @@ defmodule Corex.Select.Connect do
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
     |> maybe_put("data-deselectable", get_boolean(Map.get(assigns, :deselectable)))
+    |> maybe_put("data-hidden-select-name", Map.get(assigns, :hidden_select_name))
     |> maybe_put(
       "data-update-trigger",
       if(Map.get(assigns, :update_trigger, true), do: nil, else: "false")
@@ -245,7 +253,11 @@ defmodule Corex.Select.Connect do
     orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
-      "type" => "hidden",
+      "type" => "text",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "autocomplete" => "off",
+      "tabindex" => "-1",
       "data-scope" => "select",
       "data-part" => "value-input",
       "dir" => assigns.dir,

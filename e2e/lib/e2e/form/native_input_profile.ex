@@ -23,57 +23,44 @@ defmodule E2e.Form.NativeInputProfile do
     field :agree, :boolean, default: false
   end
 
+  @fields [
+    :name,
+    :email,
+    :bio,
+    :birth_date,
+    :datetime,
+    :reminder_time,
+    :month,
+    :week,
+    :website,
+    :phone,
+    :q,
+    :color,
+    :count,
+    :password,
+    :role,
+    :tags,
+    :size,
+    :agree
+  ]
+
+  @required_fields @fields -- [:tags]
+
   def changeset(profile, attrs \\ %{}) do
     profile
-    |> cast(attrs, [
-      :name,
-      :email,
-      :bio,
-      :birth_date,
-      :datetime,
-      :reminder_time,
-      :month,
-      :week,
-      :website,
-      :phone,
-      :q,
-      :color,
-      :count,
-      :password,
-      :role,
-      :tags,
-      :size,
-      :agree
-    ])
+    |> cast(attrs, @fields)
     |> validate_required([:name, :email, :agree])
     |> validate_acceptance(:agree)
   end
 
   def changeset_validate(profile, attrs \\ %{}) do
     profile
-    |> cast(attrs, [
-      :name,
-      :email,
-      :bio,
-      :birth_date,
-      :datetime,
-      :reminder_time,
-      :month,
-      :week,
-      :website,
-      :phone,
-      :q,
-      :color,
-      :count,
-      :password,
-      :role,
-      :tags,
-      :size,
-      :agree
-    ])
-    |> validate_required([:name, :email, :role, :count, :agree], message: "can't be blank")
+    |> cast(attrs, @fields)
+    |> validate_required(@required_fields, message: "can't be blank")
     |> validate_format(:email, ~r/@/, message: "must look like an email address")
     |> validate_length(:bio, min: 3, message: "must be at least 3 characters")
+    |> validate_length(:password, min: 6, message: "must be at least 6 characters")
+    |> validate_format(:website, ~r/^https?:\/\//, message: "must start with http:// or https://")
     |> validate_number(:count,
       greater_than: 0,
       less_than: 99,
@@ -82,27 +69,60 @@ defmodule E2e.Form.NativeInputProfile do
     |> validate_acceptance(:agree, message: "must be accepted to continue")
   end
 
+  def valid_attrs(overrides \\ %{}) do
+    Map.merge(
+      %{
+        "name" => "Ada",
+        "email" => "ada@ex.com",
+        "bio" => "Short bio here",
+        "birth_date" => "1990-01-15",
+        "datetime" => "2024-06-15T14:30",
+        "reminder_time" => "09:00",
+        "month" => "2024-06",
+        "week" => "2024-W24",
+        "website" => "https://example.com",
+        "phone" => "+1234567890",
+        "q" => "elixir",
+        "color" => "#3b82f6",
+        "count" => "5",
+        "password" => "secret1",
+        "role" => "admin",
+        "tags" => ["elixir", "phoenix"],
+        "size" => "l",
+        "agree" => "true"
+      },
+      overrides
+    )
+  end
+
+  @toast_fields ~W(
+    name email bio birth_date datetime reminder_time month week website phone q
+    color count role tags size agree
+  )a
+
+  def format_for_toast(%__MODULE__{} = data) do
+    data |> Map.from_struct() |> format_for_toast()
+  end
+
   def format_for_toast(data) when is_map(data) do
-    [
-      "name=#{inspect(Map.get(data, :name) || Map.get(data, "name"))}",
-      "email=#{inspect(Map.get(data, :email) || Map.get(data, "email"))}",
-      "bio=#{inspect(Map.get(data, :bio) || Map.get(data, "bio"))}",
-      "birth_date=#{inspect(Map.get(data, :birth_date) || Map.get(data, "birth_date"))}",
-      "datetime=#{inspect(Map.get(data, :datetime) || Map.get(data, "datetime"))}",
-      "reminder_time=#{inspect(Map.get(data, :reminder_time) || Map.get(data, "reminder_time"))}",
-      "month=#{inspect(Map.get(data, :month) || Map.get(data, "month"))}",
-      "week=#{inspect(Map.get(data, :week) || Map.get(data, "week"))}",
-      "website=#{inspect(Map.get(data, :website) || Map.get(data, "website"))}",
-      "phone=#{inspect(Map.get(data, :phone) || Map.get(data, "phone"))}",
-      "q=#{inspect(Map.get(data, :q) || Map.get(data, "q"))}",
-      "color=#{inspect(Map.get(data, :color) || Map.get(data, "color"))}",
-      "count=#{inspect(Map.get(data, :count) || Map.get(data, "count"))}",
-      "password=***",
-      "role=#{inspect(Map.get(data, :role) || Map.get(data, "role"))}",
-      "tags=#{inspect(Map.get(data, :tags) || Map.get(data, "tags"))}",
-      "size=#{inspect(Map.get(data, :size) || Map.get(data, "size"))}",
-      "agree=#{inspect(Map.get(data, :agree) || Map.get(data, "agree"))}"
-    ]
+    data = normalize_atom_keys(data)
+
+    lines =
+      Enum.map(@toast_fields, fn field ->
+        "#{field}=#{inspect(Map.get(data, field))}"
+      end)
+
+    (lines ++ ["password=***"])
     |> Enum.join(", ")
+  end
+
+  defp normalize_atom_keys(map) do
+    Map.new(map, fn
+      {key, value} when is_atom(key) ->
+        {key, value}
+
+      {key, value} when is_binary(key) ->
+        {String.to_existing_atom(key), value}
+    end)
   end
 end

@@ -14,16 +14,26 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_minimal_code do
     ~S"""
     <.menu
-      id="menu-anatomy-minimal"
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "menu", label: "Menu"},
-        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{value: "select", label: "Select"}
+        %Corex.Tree.Item{
+          value: "edit",
+          label: "Edit"
+        },
+        %Corex.Tree.Item{
+          value: "duplicate",
+          label: "Duplicate"
+        },
+        %Corex.Tree.Item{
+          value: "delete",
+          label: "Delete"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
     </.menu>
     """
   end
@@ -56,17 +66,34 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_grouped_code do
     ~S"""
     <.menu
-      id="menu-anatomy-grouped"
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
-        %Corex.Tree.Item{value: "listbox", label: "Listbox", group: "Pickers"},
-        %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
-        %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
+        %Corex.Tree.Item{
+          value: "edit",
+          label: "Edit",
+          group: "Actions"
+        },
+        %Corex.Tree.Item{
+          value: "duplicate",
+          label: "Duplicate",
+          group: "Actions"
+        },
+        %Corex.Tree.Item{
+          value: "account-1",
+          label: "Account 1",
+          group: "Accounts"
+        },
+        %Corex.Tree.Item{
+          value: "account-2",
+          label: "Account 2",
+          group: "Accounts"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
     </.menu>
     """
   end
@@ -90,26 +117,59 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_code do
     ~S"""
     <.menu
-      id="menu-anatomy-nested"
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "listbox", label: "Listbox"},
         %Corex.Tree.Item{
-          value: "corex",
-          label: "Corex",
+          value: "new-tab",
+          label: "New tab"
+        },
+        %Corex.Tree.Item{
+          value: "share",
+          label: "Share",
           children: [
-            %Corex.Tree.Item{value: "combobox", label: "Combobox"},
-            %Corex.Tree.Item{value: "date-picker", label: "Date picker"},
-            %Corex.Tree.Item{value: "menu", label: "Menu"},
-            %Corex.Tree.Item{value: "dialog", label: "Dialog"}
+            %Corex.Tree.Item{
+              value: "messages",
+              label: "Messages"
+            },
+            %Corex.Tree.Item{
+              value: "airdrop",
+              label: "Airdrop"
+            },
+            %Corex.Tree.Item{
+              value: "whatsapp",
+              label: "WhatsApp"
+            }
           ]
         },
-        %Corex.Tree.Item{value: "tabs", label: "Tabs"}
+        %Corex.Tree.Item{
+          value: "print",
+          label: "Print"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-      <:nested_indicator><.heroicon name="hero-chevron-right" /></:nested_indicator>
+      <:trigger>Click me</:trigger>
+    </.menu>
+    """
+  end
+
+  def nested_menu_code do
+    ~S"""
+    <.menu
+      class="menu"
+      items={[
+        %Corex.Tree.Item{
+          value: "share",
+          label: "Share",
+          children: [
+            %Corex.Tree.Item{value: "messages", label: "Messages"}
+          ]
+        }
+      ]}
+    >
+      <:trigger>Click me</:trigger>
+      <:nested_indicator>
+        <.heroicon name="hero-arrow-right" />
+      </:nested_indicator>
     </.menu>
     """
   end
@@ -160,7 +220,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def anatomy_nested_grouped_code do
     ~S"""
     <.menu
-      id="menu-anatomy-nested-grouped"
       class="menu"
       items={[
         %Corex.Tree.Item{value: "tabs", label: "Tabs"},
@@ -284,15 +343,15 @@ defmodule E2eWeb.Demos.MenuDemo do
 
   def api_client_js_ts do
     ~S"""
-    const root = document.getElementById("menu:menu-api-js");
+    const root: HTMLElement | null = document.getElementById("menu:menu-api-js");
     document.querySelector("[data-menu-api-open]")?.addEventListener("click", () => {
       root?.dispatchEvent(
-        new CustomEvent("corex:menu:set-open", { bubbles: false, detail: { open: true } })
+        new CustomEvent<{ open: boolean }>("corex:menu:set-open", { bubbles: false, detail: { open: true } })
       );
     });
     document.querySelector("[data-menu-api-close]")?.addEventListener("click", () => {
       root?.dispatchEvent(
-        new CustomEvent("corex:menu:set-open", { bubbles: false, detail: { open: false } })
+        new CustomEvent<{ open: boolean }>("corex:menu:set-open", { bubbles: false, detail: { open: false } })
       );
     });
     """
@@ -390,7 +449,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def events_binding_code do
     ~S"""
     <.menu
-      id="menu-events-bind"
       class="menu"
       on_select="menu_bind_selected"
       on_open_change="menu_bind_open"
@@ -422,23 +480,15 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def events_binding_elixir do
-    ~S"""
-    def handle_event("menu_bind_open", %{"open" => open, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "binding", value: inspect(%{open: open, id: id})}
-      {:noreply, stream_insert(socket, :bind_logs, log, at: 0)}
-    end
-
-    def handle_event("menu_bind_selected", %{"value" => value, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "binding", value: inspect(%{value: value, id: id})}
-      {:noreply, stream_insert(socket, :bind_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"menu_bind_open", ~S|%{"open" => open, "id" => id} = params|},
+      {"menu_bind_selected", ~S|%{"value" => value, "id" => id} = params|}
+    ])
   end
 
   def events_server_heex do
     ~S"""
     <.menu
-      id="menu-events-server"
       class="menu"
       on_select="menu_selected"
       on_open_change="menu_open_changed"
@@ -455,17 +505,10 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("menu_open_changed", %{"open" => open, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{open: open, id: id})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("menu_selected", %{"value" => value, "id" => id}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(%{value: value, id: id})}
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"menu_open_changed", ~S|%{"open" => open, "id" => id} = params|},
+      {"menu_selected", ~S|%{"value" => value, "id" => id} = params|}
+    ])
   end
 
   def events_client_heex do
@@ -508,10 +551,16 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def patterns_redirect_code do
+    items = patterns_redirect_items()
+
+    item_lines =
+      Enum.map_join(items, ",\n      ", fn item ->
+        ~s|%Corex.Tree.Item{value: #{inspect(item.value)}, label: #{inspect(item.label)}}|
+      end)
+
     """
-    <.menu id="menu-pattern-redirect" class="menu" redirect items={[
-      %Corex.Tree.Item{value: ~p"/menu/anatomy", label: "Anatomy"},
-      %Corex.Tree.Item{value: ~p"/menu/api", label: "API"}
+    <.menu class="menu" redirect items={[
+      #{item_lines}
     ]}>
       <:trigger>Navigate</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
@@ -538,7 +587,6 @@ defmodule E2eWeb.Demos.MenuDemo do
   def patterns_redirect_external_code do
     ~S"""
     <.menu
-      id="menu-pattern-external"
       class="menu"
       redirect
       items={[
@@ -578,14 +626,19 @@ defmodule E2eWeb.Demos.MenuDemo do
   end
 
   def patterns_redirect_types_code do
+    items = patterns_redirect_types_items()
+
+    item_lines =
+      Enum.map_join(items, ",\n        ", fn item ->
+        ~s|%Corex.Tree.Item{value: #{inspect(item.value)}, label: #{inspect(item.label)}, redirect: #{inspect(item.redirect)}}|
+      end)
+
     """
     <.menu
-      id="menu-pattern-types"
       class="menu"
       redirect
       items={[
-        %Corex.Tree.Item{value: ~p"/menu/playground", label: "href (default)", redirect: :href},
-        %Corex.Tree.Item{value: ~p"/menu/events", label: "LiveView navigate", redirect: :navigate}
+        #{item_lines}
       ]}
     >
       <:trigger>Redirect kinds</:trigger>
@@ -612,6 +665,131 @@ defmodule E2eWeb.Demos.MenuDemo do
       <:trigger>Redirect kinds</:trigger>
       <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
     </.menu>
+    """
+  end
+
+  defp styling_items_attr do
+    ~S|items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}|
+  end
+
+  def styling_color_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu" value="menu" #{items}>
+      <:trigger>Default</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--accent" value="menu" #{items}>
+      <:trigger>Accent</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--brand" value="menu" #{items}>
+      <:trigger>Brand</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--alert" value="menu" #{items}>
+      <:trigger>Alert</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--info" value="menu" #{items}>
+      <:trigger>Info</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--success" value="menu" #{items}>
+      <:trigger>Success</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-color-default" class="menu w-full" items={@items} value="menu">
+        <:trigger>Default</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-accent" class="menu menu--accent w-full" items={@items} value="menu">
+        <:trigger>Accent</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-brand" class="menu menu--brand w-full" items={@items} value="menu">
+        <:trigger>Brand</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-alert" class="menu menu--alert w-full" items={@items} value="menu">
+        <:trigger>Alert</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-info" class="menu menu--info w-full" items={@items} value="menu">
+        <:trigger>Info</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-color-success"
+        class="menu menu--success w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Success</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu menu--sm" #{items}>
+      <:trigger>SM</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--md" #{items}>
+      <:trigger>MD</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--lg" #{items}>
+      <:trigger>LG</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--xl" #{items}>
+      <:trigger>XL</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-size-sm" class="menu menu--sm w-full" items={@items}>
+        <:trigger>SM</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-md" class="menu menu--md w-full" items={@items}>
+        <:trigger>MD</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-lg" class="menu menu--lg w-full" items={@items}>
+        <:trigger>LG</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-xl" class="menu menu--xl w-full" items={@items}>
+        <:trigger>XL</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
     """
   end
 end

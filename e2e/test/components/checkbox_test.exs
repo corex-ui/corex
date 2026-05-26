@@ -20,7 +20,7 @@ defmodule E2eWeb.CheckboxTest do
         session
         |> ComponentBehaviorSpec.visit_ready(Checkbox, :checkbox, :anatomy)
 
-      Enum.reduce(Checkbox.anatomy_section_ids(), session, fn section_id, sess ->
+      Enum.reduce(Checkbox.anatomy_toggle_checked_section_ids(), session, fn section_id, sess ->
         sess =
           sess
           |> Checkbox.click_control_in_section(section_id)
@@ -166,9 +166,11 @@ defmodule E2eWeb.CheckboxTest do
           sess
           |> Checkbox.click_playground_checkbox_control()
           |> Checkbox.wait(200)
-          |> then(&Checkbox.check_accessibility(&1, css("#checkbox-playground"),
-                    filter: E2eWeb.A11yDocPageFilter
-                  ))
+          |> then(
+            &Checkbox.check_accessibility(&1, css("#checkbox-playground"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+          )
       end
     end
   end

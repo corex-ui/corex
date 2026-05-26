@@ -2,214 +2,777 @@ defmodule Corex.Checkbox do
   @moduledoc ~S'''
     Phoenix implementation of [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
-    ## Anatomy
-    <!-- tabs-open -->
+  ## Anatomy
 
-    ### Minimal
+  <!-- tabs-open -->
 
-    ```heex
-    <.checkbox class="checkbox">
+  ### Minimal
+
+  ```heex
+  <.checkbox class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ### Label and indicator
+
+  ```heex
+  <.checkbox class="checkbox">
+    <:label>Accept the terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+  </.checkbox>
+  ```
+
+  ### Invalid
+
+  ```heex
+  <.checkbox
+    class="checkbox checkbox--accent"
+    invalid
+    checked
+    errors={["Required"]}
+  >
+    <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.checkbox>
+  ```
+
+  ### Indeterminate
+
+  ```heex
+  <.checkbox class="checkbox" checked={:indeterminate}>
+    <:label>Select some rows</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+    <:indeterminate>
+      <.heroicon name="hero-minus" />
+    </:indeterminate>
+  </.checkbox>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.checkbox>`. Imperative helpers set or toggle checked state (boolean only; clears indeterminate).
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_checked/2`](#set_checked/2) | Set checked state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_checked/3`](#set_checked/3) | Set checked state (server) | `socket` |
+  | [`toggle_checked/1`](#toggle_checked/1) | Toggle checked state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_checked/2`](#toggle_checked/2) | Toggle checked state (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_checked
+
+  ```heex
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", true)} class="button button--sm">
+    Set checked
+  </.action>
+  <.action phx-click={Corex.Checkbox.set_checked("checkbox-api-bind", false)} class="button button--sm">
+    Set unchecked
+  </.action>
+  <.action phx-click={Corex.Checkbox.toggle_checked("checkbox-api-bind")} class="button button--sm">
+    Toggle
+  </.action>
+  <.checkbox id="checkbox-api-bind" class="checkbox">
+    <:label>Terms</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+    <:indeterminate>
+      <.heroicon name="hero-minus" />
+    </:indeterminate>
+  </.checkbox>
+  ```
+
+  ### set_checked (dispatch)
+
+  ```javascript
+  const el = document.getElementById("checkbox-api-dispatch");
+
+  el?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: true } })
+  );
+
+  el?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: false } })
+  );
+
+  el?.dispatchEvent(new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false }));
+  ```
+
+  ```elixir
+  def handle_event("check", %{"id" => id}, socket) do
+    {:noreply, Corex.Checkbox.set_checked(socket, id, true)}
+  end
+
+  def handle_event("uncheck", %{"id" => id}, socket) do
+    {:noreply, Corex.Checkbox.set_checked(socket, id, false)}
+  end
+
+  def handle_event("toggle", %{"id" => id}, socket) do
+    {:noreply, Corex.Checkbox.toggle_checked(socket, id)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Events
+
+  User-driven only. Declarative `checked` may be `true`, `false`, or `:indeterminate`; imperative `set_checked` is always boolean.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_checked_change="checkbox_changed"` | User toggles checked state | `%{"id" => id, "checked" => boolean}` |
+
+  <!-- tabs-open -->
+
+  ### on_checked_change
+
+  ```heex
+  <.checkbox
+    class="checkbox"
+    on_checked_change="checkbox_changed"
+  >
+    <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+  </.checkbox>
+  ```
+
+  ```elixir
+  def handle_event("checkbox_changed", %{"id" => id, "checked" => checked}, socket) do
+    {:noreply, assign(socket, :checked, checked)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_checked_change_client="checkbox-changed"` | User toggles checked state | `id`, `checked` |
+
+  <!-- tabs-open -->
+
+  ### on_checked_change_client
+
+  ```heex
+  <.checkbox
+    id="checkbox-on-checked-change-client"
+    class="checkbox"
+    on_checked_change_client="checkbox-changed"
+  >
+    <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+  </.checkbox>
+  ```
+
+  ```javascript
+  document.getElementById("checkbox-on-checked-change-client")?.addEventListener(
+    "checkbox-changed",
+    (event) => console.log(event.detail)
+  );
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Async
+
+  #### Heex
+
+  ```heex
+  <.async_result :let={checkbox} assign={@checkbox}>
+    <:loading><.checkbox_skeleton class="checkbox" /></:loading>
+    <.checkbox class="checkbox" checked={checkbox.checked}>
       <:label>Accept terms</:label>
+      <:indicator><.heroicon name="hero-check" /></:indicator>
+      <:indeterminate><.heroicon name="hero-minus" /></:indeterminate>
     </.checkbox>
-    ```
+  </.async_result>
+  ```
 
-    ### Custom Control
+  #### Elixir
 
-    ```heex
-    <.checkbox class="checkbox">
-      <:label>
-        Accept the terms
-      </:label>
-      <:indicator>
-        <.heroicon name="hero-check" />
-      </:indicator>
-      <:indeterminate>
-        <.heroicon name="hero-minus" />
-      </:indeterminate>
-    </.checkbox>
-    ```
+  ```elixir
+  socket =
+    assign_async(socket, :checkbox, fn ->
+      Process.sleep(1000)
+      {:ok, %{checkbox: %{checked: true}}}
+    end)
+  ```
 
-    ### Custom Error
+  ### Controlled (LiveView)
 
-    ```heex
-    <.checkbox class="checkbox">
-      <:label>
-        Accept the terms
-      </:label>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.checkbox>
-    ```
+  #### Heex
 
-    <!-- tabs-close -->
+  ```heex
+  <.checkbox
+    class="checkbox"
+    controlled
+    checked={@checked}
+    on_checked_change="patterns_controlled_changed"
+  >
+    <:label>Accept terms</:label>
+    <:indicator><.heroicon name="hero-check" /></:indicator>
+    <:indeterminate><.heroicon name="hero-minus" /></:indeterminate>
+  </.checkbox>
+  ```
 
-    ## API
+  #### Elixir
 
-    See [API](api.html). Use a stable **`id`** on the checkbox with **`Corex.Checkbox.set_checked/2`**, **`set_checked/3`**, **`toggle_checked/1`**, and **`toggle_checked/2`**.
+  ```elixir
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :checked, true)}
+  end
 
-    | DOM `CustomEvent` | `detail` |
-    | ----------------- | -------- |
-    | `corex:checkbox:set-checked` | `checked`  -  boolean; clears indeterminate |
-    | `corex:checkbox:toggle-checked` | (empty)  -  toggles checked |
+  def handle_event("patterns_controlled_changed", %{"checked" => checked}, socket) do
+    {:noreply, assign(socket, :checked, checked)}
+  end
+  ```
 
-    ```heex
-    <.action phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>Check</.action>
-    <.action phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>Toggle</.action>
-    ```
+  <!-- tabs-close -->
+  ## Style
 
-    ```elixir
-    def handle_event("check", _, socket),
-      do: {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
+  Target parts with `data-scope` and `data-part`, or import `checkbox.css` and stack modifiers on the host.
 
-    def handle_event("toggle", _, socket),
-      do: {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
-    ```
+  ```css
+  [data-scope="checkbox"][data-part="root"] {}
+  [data-scope="checkbox"][data-part="control"] {}
+  [data-scope="checkbox"][data-part="label"] {}
+  [data-scope="checkbox"][data-part="hidden-input"] {}
+  [data-scope="checkbox"][data-part="error"] {}
+  ```
 
-    ## Events
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/checkbox.css";
+  ```
 
-    See [Events](events.html).
+  <!-- tabs-open -->
 
-    From imperative helpers the hook receives **`checkbox_set_checked`** (`%{"id" => ..., "checked" => boolean}`) and **`checkbox_toggle_checked`** (`%{"id" => ...}`).
+  ### Color
 
-    Declarative **`checked`** may be `true`, `false`, or `:indeterminate` (Zag `CheckedState`). Imperative **`set_checked`** remains boolean-only.
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `checkbox` |
+  | Accent | `checkbox checkbox--accent` |
+  | Brand | `checkbox checkbox--brand` |
+  | Alert | `checkbox checkbox--alert` |
+  | Info | `checkbox checkbox--info` |
+  | Success | `checkbox checkbox--success` |
 
-    ## Styling
-
-    Use data attributes to target elements:
-
-    ```css
-    [data-scope="checkbox"][data-part="root"] {}
-    [data-scope="checkbox"][data-part="control"] {}
-    [data-scope="checkbox"][data-part="label"] {}
-    [data-scope="checkbox"][data-part="hidden-input"] {}
-    [data-scope="checkbox"][data-part="error"] {}
-    ```
-
-    If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
-    This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-    ```css
-    @import "../corex/main.css";
-    @import "../corex/tokens/themes/neo/light.css";
-    @import "../corex/components/checkbox.css";
-    ```
-
-    You can then use modifiers:
-
-    ```heex
-    <.checkbox class="checkbox checkbox--accent checkbox--lg" />
-    ```
-
-    
-    ## Form
-
-    When using with Phoenix forms, set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
-
-    ### Controller
-
-    Build the form from an Ecto changeset and pass it to the template. Pass `id` into `to_form/2` so the template can use `id={@form.id}`:
-
-    ```elixir
-    def checkbox_form_page(conn, _params) do
-      form =
-        %MyApp.Form.Terms{}
-        |> MyApp.Form.Terms.changeset(%{})
-        |> Phoenix.Component.to_form(as: :terms, id: "checkbox-form")
-      render(conn, :checkbox_form_page, form: form)
-    end
-    ```
-
-    ```heex
-    <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
-      <.checkbox field={f[:terms]} class="checkbox">
-        <:label>Accept terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
+  ```heex
+  <.checkbox class="checkbox" checked>
+        <:label>Default</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
       </.checkbox>
-      <button type="submit">Submit</button>
-    </.form>
-    ```
+      <.checkbox class="checkbox checkbox--accent" checked>
+        <:label>Accent</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--brand" checked>
+        <:label>Brand</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--alert" checked>
+        <:label>Alert</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--info" checked>
+        <:label>Info</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--success" checked>
+        <:label>Success</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:indeterminate>
+          <.heroicon name="hero-minus" />
+        </:indeterminate>
+      </.checkbox>
+  ```
 
+  ### Size
 
-    ### Live View
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `checkbox checkbox--sm` |
+  | Default | `checkbox` |
+  | LG | `checkbox checkbox--lg` |
+  | XL | `checkbox checkbox--xl` |
 
-    When using Phoenix form in a Live view you must also add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
+  ```heex
+  <.checkbox class="checkbox checkbox--sm">
+        <:label>Small</:label>
+      </.checkbox>
+      <.checkbox class="checkbox">
+        <:label>Default</:label>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--lg">
+        <:label>Large</:label>
+      </.checkbox>
+      <.checkbox class="checkbox checkbox--xl">
+        <:label>XLarge</:label>
+      </.checkbox>
+  ```
 
-    ### With Ecto changeset (LiveView)
+  ### Invalid
 
-    When using an Ecto changeset for validation in a LiveView, enable the `controlled` attribute on the checkbox so the LiveView remains the source of truth.
+  Invalid styles the label and control border. Checked indicators keep their semantic fill color.
 
-    Schema and changeset:
+  ```heex
+  <.checkbox class="checkbox checkbox--accent" invalid checked errors={["Required"]}>
+    <:label>Subscribe</:label>
+    <:indicator>
+      <.heroicon name="hero-check" />
+    </:indicator>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.checkbox>
+  ```
 
-    ```elixir
-    defmodule MyApp.Form.Terms do
-      use Ecto.Schema
-      import Ecto.Changeset
+  <!-- tabs-close -->
 
-      embedded_schema do
-        field :terms, :boolean, default: false
+  ## Form
+
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:terms]}` so the checkbox name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:terms])}` when you want alert borders after validation.
+
+  <!-- tabs-open -->
+
+  ### Phoenix Form (changeset)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/account/terms"
+        method="post"
+      >
+        <.checkbox field={f[:terms]} class="checkbox">
+          <:label>Accept terms</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def account_terms_page(conn, _params) do
+        changeset = MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{})
+
+        form =
+          Phoenix.Component.to_form(changeset,
+            as: :terms_changeset,
+            id: "account-terms-changeset-form"
+          )
+
+        render(conn, :account_terms, form: form)
       end
 
-      def changeset(terms, attrs \\ %{}) do
-        terms
-        |> cast(attrs, [:terms])
-        |> validate_required([:terms])
-        |> validate_acceptance(:terms)
+      def account_terms_create(conn, %{"terms_changeset" => params}) do
+        case MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+            conn
+            |> put_flash(:info, "Saved: terms=#{data.terms}")
+            |> redirect(to: "/account")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+
+            form =
+              Phoenix.Component.to_form(changeset,
+                as: :terms_changeset,
+                id: "account-terms-changeset-form"
+              )
+
+            render(conn, :account_terms, form: form)
+        end
       end
-    end
-    ```
+  ```
 
-    LiveView with validate and submit:
+  #### Ecto
 
-    ```elixir
-    defmodule MyAppWeb.CheckboxFormLive do
-      use MyAppWeb, :live_view
-      alias MyApp.Form.Terms
+  ```elixir
+      defmodule MyApp.Forms.Terms do
+        use Ecto.Schema
+        import Ecto.Changeset
 
+        embedded_schema do
+          field :terms, :boolean, default: false
+        end
+
+        def changeset(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms])
+          |> validate_acceptance(:terms)
+        end
+
+        def changeset_validate(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms], message: "can't be blank")
+          |> validate_acceptance(:terms, message: "must be accepted to continue")
+        end
+      end
+  ```
+
+  ### Ecto changeset (validation)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/account/terms"
+        method="post"
+      >
+        <.checkbox field={f[:terms]} class="checkbox">
+          <:label>Accept terms (strict messages)</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def account_terms_strict_page(conn, _params) do
+        changeset =
+          MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, %{})
+
+        form =
+          Phoenix.Component.to_form(changeset,
+            as: :terms_validate,
+            id: "account-terms-validate-form"
+          )
+
+        render(conn, :account_terms_strict, form: form)
+      end
+
+      def account_terms_strict_create(conn, %{"terms_validate" => params}) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+            conn
+            |> put_flash(:info, "Saved: terms=#{data.terms}")
+            |> redirect(to: "/account")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+
+            form =
+              Phoenix.Component.to_form(changeset,
+                as: :terms_validate,
+                id: "account-terms-validate-form"
+              )
+
+            render(conn, :account_terms_strict, form: form)
+        end
+      end
+  ```
+
+  #### Ecto
+
+  ```elixir
+      defmodule MyApp.Forms.Terms do
+        use Ecto.Schema
+        import Ecto.Changeset
+
+        embedded_schema do
+          field :terms, :boolean, default: false
+        end
+
+        def changeset(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms])
+          |> validate_acceptance(:terms)
+        end
+
+        def changeset_validate(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms], message: "can't be blank")
+          |> validate_acceptance(:terms, message: "must be accepted to continue")
+        end
+      end
+  ```
+
+  ### Native form (plain HTML)
+
+  ```heex
+      <form
+        action="/register"
+        method="post"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <.checkbox
+          name="user[accept_terms]"
+          class="checkbox"
+        >
+          <:label>Accept terms</:label>
+        </.checkbox>
+        <.action type="submit" class="button button--accent">Submit</.action>
+      </form>
+  ```
+
+  ### LiveView · Phoenix Form (changeset)
+
+  #### Heex
+
+  ```heex
+      <.form
+        for={@form}
+       
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.checkbox field={@form[:terms]} class="checkbox">
+          <:label>Accept terms</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
       def mount(_params, _session, socket) do
-        form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms, id: "checkbox-form-terms")
+        form =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset(%{})
+          |> Phoenix.Component.to_form(as: :terms)
+
         {:ok, assign(socket, :form, form)}
       end
 
       def handle_event("validate", %{"terms" => params}, socket) do
-        changeset = Terms.changeset(%Terms{}, params)
-        {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms, id: "checkbox-form-terms"))}
+        changeset =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms))}
       end
 
       def handle_event("save", %{"terms" => params}, socket) do
-        case Terms.changeset(%Terms{}, params) do
-          %Ecto.Changeset{valid?: true} = _ ->
-            {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms, id: "checkbox-form-terms"))}
+        case MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = _changeset ->
+            {:noreply, assign(socket, :form, Phoenix.Component.to_form(MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{}), as: :terms))}
+
           changeset ->
-            {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms, id: "checkbox-form-terms"))}
+            {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms))}
         end
       end
+  ```
 
-      def render(assigns) do
-        ~H"""
-        <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
-          <.checkbox field={@form[:terms]} class="checkbox" controlled>
-            <:label>Accept terms</:label>
-            <:error :let={msg}>
-              <.heroicon name="hero-exclamation-circle" class="icon" />
-              {msg}
-            </:error>
-          </.checkbox>
-          <button type="submit">Submit</button>
-        </.form>
-        """
+  #### Ecto
+
+  ```elixir
+      defmodule MyApp.Forms.Terms do
+        use Ecto.Schema
+        import Ecto.Changeset
+
+        embedded_schema do
+          field :terms, :boolean, default: false
+        end
+
+        def changeset(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms])
+          |> validate_acceptance(:terms)
+        end
+
+        def changeset_validate(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms], message: "can't be blank")
+          |> validate_acceptance(:terms, message: "must be accepted to continue")
+        end
       end
-    end
-    ```
+  ```
 
+  ### LiveView · Ecto Changeset (validation)
+
+  #### Heex
+
+  ```heex
+      <.form
+        for={@form}
+       
+        phx-change="validate_strict"
+        phx-submit="save_strict"
+      >
+        <.checkbox field={@form[:terms]} class="checkbox">
+          <:label>Accept terms</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def mount(_params, _session, socket) do
+        form =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :terms_strict)
+
+        {:ok, assign(socket, :strict_form, form)}
+      end
+
+      def handle_event("validate_strict", %{"terms_strict" => params}, socket) do
+        changeset =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms_strict))}
+      end
+
+      def handle_event("save_strict", %{"terms_strict" => params}, socket) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = _changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :strict_form,
+               Phoenix.Component.to_form(MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, %{}), as: :terms_strict)
+             )}
+
+          changeset ->
+            {:noreply, assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms_strict))}
+        end
+      end
+  ```
+
+  #### Ecto
+
+  ```elixir
+      defmodule MyApp.Forms.Terms do
+        use Ecto.Schema
+        import Ecto.Changeset
+
+        embedded_schema do
+          field :terms, :boolean, default: false
+        end
+
+        def changeset(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms])
+          |> validate_acceptance(:terms)
+        end
+
+        def changeset_validate(terms, attrs \\ %{}) do
+          terms
+          |> cast(attrs, [:terms])
+          |> validate_required([:terms], message: "can't be blank")
+          |> validate_acceptance(:terms, message: "must be accepted to continue")
+        end
+      end
+  ```
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  use Corex.Api.Imports, to: Corex.Checkbox.Api
+
+  alias Corex.Checkable.Helpers, as: CheckableHelpers
 
   alias Corex.Checkbox.Anatomy.{
     Control,
@@ -222,10 +785,7 @@ defmodule Corex.Checkbox do
   }
 
   alias Corex.Checkbox.Connect
-  alias Corex.Helpers
   alias Phoenix.HTML.Form
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a checkbox component.
@@ -296,12 +856,14 @@ defmodule Corex.Checkbox do
 
   attr(:on_checked_change, :string,
     default: nil,
-    doc: "The server event name when the checked state changes"
+    doc:
+      "LiveView event when checked changes. `handle_event` receives `%{\"id\" => id, \"checked\" => boolean}`."
   )
 
   attr(:on_checked_change_client, :string,
     default: nil,
-    doc: "The client event name when the checked state changes"
+    doc:
+      "Browser event type on the checkbox element when checked changes. `event.detail`: `{ id, checked }`."
   )
 
   attr(:errors, :list,
@@ -333,16 +895,10 @@ defmodule Corex.Checkbox do
   end
 
   def checkbox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns =
       assigns
-      |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
+      |> Corex.FormField.assign_form_field(field)
       |> assign(:checked, Form.normalize_value("checkbox", field.value))
-      |> assign_new(:form, fn -> field.form.id end)
 
     checkbox(assigns)
   end
@@ -353,7 +909,8 @@ defmodule Corex.Checkbox do
       |> assign_new(:id, fn -> "checkbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
+      |> assign_new(:form_field, fn -> false end)
+      |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
 
     ~H"""
     <div
@@ -366,6 +923,7 @@ defmodule Corex.Checkbox do
         id: @id,
         controlled: @controlled,
         checked: @checked,
+        form_field: @form_field,
         name: @name,
         form: @form,
         dir: @dir,
@@ -380,10 +938,9 @@ defmodule Corex.Checkbox do
         value: @value
       })}
     >
+      <input type="hidden" name={@name} value="false" disabled={@disabled} />
 
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-      <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
-
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
       <input
         phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
         {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
@@ -420,12 +977,23 @@ defmodule Corex.Checkbox do
       {@aria_label}
       </span>
       </label>
-      <div :if={@error} :for={msg <- @errors} data-scope="checkbox" data-part="error">
+      <div
+        :if={@error != []}
+        :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
+        data-scope="checkbox"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>
     """
   end
+
+  @doc type: :component
+  @doc """
+  Renders a loading skeleton for the checkbox component.
+  """
 
   attr(:skeleton_label, :boolean,
     default: true,
@@ -473,78 +1041,82 @@ defmodule Corex.Checkbox do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the checkbox checked state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set checked state from a control (`phx-click`). Clears indeterminate when applied.
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>Check</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
 
-      <button phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}>
-        Check
-      </button>
-
-      <button phx-click={Corex.Checkbox.set_checked("my-checkbox", false)}>
-        Uncheck
-      </button>
-  """
-  def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
-    JS.dispatch("corex:checkbox:set-checked",
-      to: "##{checkbox_id}",
-      detail: %{checked: checked},
-      bubbles: false
-    )
-  end
-
-  @doc type: :api
-  @doc """
-  Sets the checkbox checked state from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("check", _params, socket) do
-        socket = Corex.Checkbox.set_checked(socket, "my-checkbox", true)
-        {:noreply, socket}
-      end
-  """
-  def set_checked(socket, checkbox_id, checked)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
-             is_boolean(checked) do
-    LiveView.push_event(socket, "checkbox_set_checked", %{
-      "id" => checkbox_id,
-      "checked" => checked
+  ```javascript
+  document.getElementById("my-checkbox")?.dispatchEvent(
+    new CustomEvent("corex:checkbox:set-checked", {
+      bubbles: false,
+      detail: { checked: true },
     })
+  );
+  ```
+  """)
+
+  defdelegate set_checked(checkbox_id, checked), to: Api
+
+  api_doc(~S"""
+  Set checked state from `handle_event`. Pushes `checkbox_set_checked` (no reply event).
+
+  ```heex
+  <.action phx-click="check_box">Check</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```elixir
+  def handle_event("check_box", _, socket) do
+    {:noreply, Corex.Checkbox.set_checked(socket, "my-checkbox", true)}
   end
+  ```
+  """)
 
-  @doc type: :api
-  @doc """
-  Toggles the checkbox checked state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  defdelegate set_checked(socket, checkbox_id, checked), to: Api
 
-  ## Examples
+  api_doc(~S"""
+  Toggle checked state from a control (`phx-click`).
 
-      <button phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>
-        Toggle
-      </button>
-  """
-  def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
-    JS.dispatch("corex:checkbox:toggle-checked",
-      to: "##{checkbox_id}",
-      bubbles: false
-    )
+  ```heex
+  <.action phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}>Toggle</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```javascript
+  document.getElementById("my-checkbox")?.dispatchEvent(
+    new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false })
+  );
+  ```
+  """)
+
+  defdelegate toggle_checked(checkbox_id), to: Api
+
+  api_doc(~S"""
+  Toggle checked from `handle_event`. Pushes `checkbox_toggle_checked` (no reply event).
+
+  ```heex
+  <.action phx-click="toggle_box">Toggle</.action>
+  <.checkbox id="my-checkbox" class="checkbox">
+    <:label>Option</:label>
+  </.checkbox>
+  ```
+
+  ```elixir
+  def handle_event("toggle_box", _, socket) do
+    {:noreply, Corex.Checkbox.toggle_checked(socket, "my-checkbox")}
   end
+  ```
+  """)
 
-  @doc type: :api
-  @doc """
-  Toggles the checkbox checked state from server-side. Pushes a LiveView event.
-
-  ## Examples
-
-      def handle_event("toggle", _params, socket) do
-        socket = Corex.Checkbox.toggle_checked(socket, "my-checkbox")
-        {:noreply, socket}
-      end
-  """
-  def toggle_checked(socket, checkbox_id)
-      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
-    LiveView.push_event(socket, "checkbox_toggle_checked", %{"id" => checkbox_id})
-  end
+  defdelegate toggle_checked(socket, checkbox_id), to: Api
 end

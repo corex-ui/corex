@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="angle-slider-styling-page"
-    title="Angle Slider Style"
-    subtitle="Modifiers and state flags for the angle slider."
+    title={~t"Angle Slider · Style"}
+    subtitle={~t"Modifiers and state flags for the angle slider."}
   >
     <.demo_section
       id="angle-slider-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.AngleSliderDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="angle-slider-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.AngleSliderDemo.styling_size_code()}
     >
       <:preview>

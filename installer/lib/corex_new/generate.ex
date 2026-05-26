@@ -28,7 +28,8 @@ defmodule Corex.New.Generate do
     write_app_css(install_dir, opts)
 
     Patches.patch_mix_exs(install_dir, opts)
-    Patches.patch_web_module(install_dir, opts[:web_module])
+    Patches.patch_web_module(install_dir, opts[:web_module], opts)
+    Patches.patch_web_gettext_sigils(install_dir, opts[:web_module], opts)
     Patches.patch_live_view_for_lang(install_dir, opts[:web_module], opts)
     Patches.patch_router(install_dir, opts[:web_module], opts)
     Patches.patch_endpoint(install_dir, opts[:web_module], opts)
@@ -38,6 +39,11 @@ defmodule Corex.New.Generate do
 
     if opts[:design] do
       copy_design_tree(install_dir, opts)
+    end
+
+    if opts[:lang] do
+      Patches.patch_verified_routes_path_prefixes!(install_dir, opts[:web_module], opts)
+      copy_gettext_catalog(install_dir)
     end
 
     :ok
@@ -170,6 +176,9 @@ defmodule Corex.New.Generate do
       :non_existing ->
         nil
 
+      :cover_compiled ->
+        nil
+
       beam ->
         beam = beam_path_to_string(beam)
 
@@ -219,11 +228,9 @@ defmodule Corex.New.Generate do
   end
 
   defp copy_priv_design_siblings!(install_dir, source_root, consumer_rel, designex_rel, opts) do
-    copy_design_subtree!(
-      source_root,
-      consumer_rel,
-      Path.join([install_dir, "assets", "corex"])
-    )
+    dest = Path.join([install_dir, "assets", "corex"])
+    copy_design_subtree!(source_root, consumer_rel, dest)
+    write_design_version!(dest)
 
     rm_assets_corex_design_if_present!(install_dir)
 
@@ -289,6 +296,16 @@ defmodule Corex.New.Generate do
 
     File.mkdir_p!(Path.dirname(dest))
     File.cp_r!(src, dest)
+  end
+
+  defp write_design_version!(dest) do
+    version =
+      case Mix.Project.config()[:version] do
+        nil -> "0.1.0-rc.0"
+        v -> to_string(v)
+      end
+
+    File.write!(Path.join(dest, "VERSION"), version <> "\n")
   end
 
   defp template_assigns(install_dir, opts) do
@@ -365,11 +382,31 @@ defmodule Corex.New.Generate do
   defp drop_common_prefix([h | ta], [h | tb]), do: drop_common_prefix(ta, tb)
   defp drop_common_prefix(a, b), do: {a, b}
 
-  defp web_underscore(opts),
-    do: opts[:web_module] |> inspect() |> Macro.underscore()
+  defp web_underscore(opts), do: Atom.to_string(Keyword.fetch!(opts, :otp_app)) <> "_web"
 
   defp write!(path, contents) do
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, contents)
+  end
+
+  defp gettext_catalog_template_root do
+    Path.expand("../../templates/corex/priv/gettext", __DIR__)
+  end
+
+  defp copy_gettext_catalog(install_dir) do
+    src = gettext_catalog_template_root()
+    dest = Path.join(install_dir, "priv/gettext")
+
+    unless File.dir?(src) do
+      Mix.raise("""
+      Corex gettext catalog template is missing at #{src}.
+
+      Expected installer/templates/corex/priv/gettext with default.pot and en/fr/ar PO files.
+      """)
+    end
+
+    Mix.shell().info([:green, "* copying ", :reset, "gettext catalog → priv/gettext/"])
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp_r!(src, dest)
   end
 end

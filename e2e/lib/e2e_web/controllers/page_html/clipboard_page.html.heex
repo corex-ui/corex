@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="clipboard-anatomy-page"
-    title="Clipboard Anatomy"
-    subtitle="Value, optional input, and copy / copied surfaces inside the trigger."
+    title={~t"Clipboard Anatomy"}
+    subtitle={~t"Value, optional input, and copy / copied surfaces inside the trigger."}
   >
     <.demo_section
       id="clipboard-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.ClipboardDemo.minimal_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="clipboard-anatomy-input-false"
-      title="Trigger only"
+      title={~t"Trigger only"}
       code={E2eWeb.Demos.ClipboardDemo.input_false_code()}
     >
       <:preview>

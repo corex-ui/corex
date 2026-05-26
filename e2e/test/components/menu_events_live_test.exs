@@ -4,7 +4,7 @@ defmodule E2eWeb.MenuEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "menu_bind_open inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/menu/events")
+    {view, _html} = live_ok!(conn, ~p"/menu/events")
 
     html =
       render_click(view, "menu_bind_open", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.MenuEventsLiveTest do
         "open" => true
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

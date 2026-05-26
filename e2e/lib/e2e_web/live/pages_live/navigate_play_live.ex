@@ -23,13 +23,14 @@ defmodule E2eWeb.NavigatePlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="navigate-playground-page"
         title="Navigate · Playground"
         heading_class="layout-heading"
       >
         <:controls>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="external"
             checked={@external}
             on_checked_change="external_changed"

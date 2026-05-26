@@ -17,8 +17,15 @@ defmodule E2eWeb.AdminLive.Index do
         <:title>Listing Admins</:title>
         <:subtitle>Add and manage admin records</:subtitle>
         <:actions>
-          <.navigate to={~p"/admins/new"} type="navigate" class="button button--sm button--accent">
-            <.heroicon name="hero-plus" /> New Admin
+          <.navigate
+            to={~p"/admins/new"}
+            type="navigate"
+            class="button button--accent button--square"
+            aria_label="New admin"
+            title="New admin"
+          >
+            <.heroicon name="hero-plus" />
+            <span class="sr-only">New admin</span>
           </.navigate>
         </:actions>
       </.layout_heading>
@@ -50,14 +57,45 @@ defmodule E2eWeb.AdminLive.Index do
           </.navigate>
         </:action>
         <:action :let={{_id, admin}}>
-          <.action
-            phx-click={JS.push("delete", value: %{id: admin.id})}
-            data-confirm="Are you sure?"
-            class="button button--sm button--alert button--square"
-            aria-label={"Delete #{admin.name}"}
+          <.dialog
+            id={"admin-delete-#{admin.id}"}
+            class="dialog"
+            role="alertdialog"
+            modal
+            close_on_interact_outside={false}
+            initial_focus={"admin-delete-#{admin.id}-cancel"}
+            final_focus={"dialog:admin-delete-#{admin.id}:trigger"}
           >
-            <.heroicon name="hero-trash" />
-          </.action>
+            <:trigger
+              class="button button--sm button--alert button--square"
+              aria_label={"Delete #{admin.name}"}
+            >
+              <.heroicon name="hero-trash" />
+            </:trigger>
+            <:title>Delete admin?</:title>
+            <:description>This action cannot be undone.</:description>
+            <:content>
+              <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.action
+                  id={"admin-delete-#{admin.id}-cancel"}
+                  phx-click={Corex.Dialog.set_open("admin-delete-#{admin.id}", false)}
+                  class="button button--sm button--ghost"
+                >
+                  Cancel
+                </.action>
+                <.action
+                  id={"admin-delete-#{admin.id}-confirm"}
+                  phx-click={
+                    Corex.Dialog.set_open("admin-delete-#{admin.id}", false)
+                    |> JS.push("delete", value: %{id: admin.id})
+                  }
+                  class="button button--sm button--alert"
+                >
+                  Delete
+                </.action>
+              </div>
+            </:content>
+          </.dialog>
         </:action>
       </.data_table>
     </Layouts.app>
@@ -76,12 +114,17 @@ defmodule E2eWeb.AdminLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     admin = Accounts.get_admin!(id)
-    {:ok, _} = Accounts.delete_admin(admin)
 
-    {:noreply, stream_delete(socket, :admins, admin)}
+    case Accounts.delete_admin(admin) do
+      {:ok, _admin} ->
+        {:noreply, stream_delete(socket, :admins, admin)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Could not delete admin.")}
+    end
   end
 
-  defp list_admins() do
+  defp list_admins do
     Accounts.list_admins()
   end
 end

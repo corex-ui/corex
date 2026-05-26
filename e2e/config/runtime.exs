@@ -60,6 +60,11 @@ if config_env() == :prod do
 
   host = System.get_env("PHX_HOST") || "example.com"
 
+  public_base_url =
+    System.get_env("COREX_PUBLIC_URL") ||
+      "https://#{host}"
+
+  config :corex_web, :public_base_url, String.trim_trailing(public_base_url, "/")
   config :corex_web, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :corex_web, E2eWeb.Endpoint,

@@ -24,5 +24,5 @@ defmodule E2eWeb.Gettext do
   use Gettext.Backend,
     otp_app: :corex_web,
     default_locale: "en",
-    locales: ~w(en ar)
+    locales: ~W(en ar)
 end

@@ -9,7 +9,21 @@ import Config
 
 config :corex_web,
   ecto_repos: [E2e.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  sitemap_urlset_xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
+  mdex: [
+    extension: [
+      table: true,
+      header_id_prefix: "",
+      tasklist: true,
+      strikethrough: true,
+      autolink: true,
+      alerts: true,
+      footnotes: true
+    ],
+    render: [unsafe: true],
+    syntax_highlight: nil
+  ]
 
 config :phoenix,
   json_library: Jason,
@@ -53,7 +67,13 @@ config :esbuild,
       --external:/images/*
       --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+    env: %{
+      "NODE_PATH" => [
+        Path.expand("../deps", __DIR__),
+        Path.expand("../node_modules", __DIR__),
+        Mix.Project.build_path()
+      ]
+    }
   ]
 
 config :designex,

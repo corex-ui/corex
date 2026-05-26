@@ -40,8 +40,9 @@ defmodule E2eWeb.CollapsiblePlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="collapsible-playground"
-        title="Collapsible · Playground"
+        title={~t"Collapsible · Playground"}
         heading_class="layout-heading"
       >
         <:controls>
@@ -59,16 +60,16 @@ defmodule E2eWeb.CollapsiblePlayLive do
             deselectable={false}
             value={[@controls.orientation]}
           >
-            <:item value="vertical" aria_label="Vertical orientation">
+            <:item value="vertical" aria_label={~t"Vertical orientation"}>
               <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
             </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
+            <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
               <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
             </:item>
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@disabled}
             on_checked_change="control_changed"

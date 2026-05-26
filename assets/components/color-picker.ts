@@ -1,6 +1,7 @@
 import { connect, machine, parse, type Props, type Api } from "@zag-js/color-picker";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class ColorPicker extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,7 +21,15 @@ export class ColorPicker extends Component<Props, Api> {
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
 
     const hiddenInputEl = this.el.querySelector<HTMLInputElement>('[data-part="hidden-input"]');
-    if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+    if (hiddenInputEl) {
+      syncHiddenInputValue(
+        hiddenInputEl,
+        this.el,
+        this.api.valueAsString ?? "",
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps() as Record<string, unknown>
+      );
+    }
 
     const controlEl = this.el.querySelector<HTMLElement>('[data-part="control"]');
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());

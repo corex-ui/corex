@@ -14,10 +14,10 @@ defmodule E2eWeb.App.Footer do
           </.navigate>
           <.navigate
             class="ui-link ui-link--sm ui-link--accent"
-            to="https://donate.stripe.com/dRm8wO75h5hH2G96gy4Rq00"
+            to="https://github.com/sponsors/corex-ui"
             external
           >
-            Support the project <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            Become a sponsor <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
         </div>
         <div class="layout__row gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0">
@@ -102,6 +102,11 @@ defmodule E2eWeb.App.Footer do
                 </g>
               </g>
             </svg>
+          </.navigate>
+
+          <.navigate class="button button--sm button--circle" to="/feed.xml" external>
+            <span class="sr-only">Corex Blog RSS</span>
+            <.heroicon name="hero-rss" />
           </.navigate>
         </div>
       </div>

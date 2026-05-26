@@ -14,7 +14,7 @@ defmodule Corex.NativeInput do
   ### Basic
 
   ```heex
-  <.native_input type="text" id="name" name="user[name]" class="native-input">
+  <.native_input type="text" name="user[name]" class="native-input">
     <:label>Name</:label>
   </.native_input>
   ```
@@ -22,7 +22,7 @@ defmodule Corex.NativeInput do
   ### With icon
 
   ```heex
-  <.native_input type="email" id="email" name="user[email]" class="native-input">
+  <.native_input type="email" name="user[email]" class="native-input">
     <:label>Email</:label>
     <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
   </.native_input>
@@ -31,7 +31,7 @@ defmodule Corex.NativeInput do
   ### Textarea (icon slot ignored)
 
   ```heex
-  <.native_input type="textarea" id="bio" name="user[bio]" class="native-input">
+  <.native_input type="textarea" name="user[bio]" class="native-input">
     <:label>Bio</:label>
   </.native_input>
   ```
@@ -42,7 +42,7 @@ defmodule Corex.NativeInput do
   <.native_input type="checkbox" name="user[agree]" class="native-input">
     <:label>I agree</:label>
   </.native_input>
-  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose..." class="native-input">
+  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose role" class="native-input">
     <:label>Role</:label>
   </.native_input>
   <.native_input type="radio" name="user[size]" options={["Small": "s", "Medium": "m", "Large": "l"]} value="m" class="native-input">
@@ -52,10 +52,10 @@ defmodule Corex.NativeInput do
 
   ### With form field
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id}>
+  <.form :let={f} for={@form}>
     <.native_input type="email" field={f[:email]} class="native-input">
       <:label>Email</:label>
       <:error :let={msg}>{msg}</:error>
@@ -63,9 +63,36 @@ defmodule Corex.NativeInput do
   </.form>
   ```
 
-  ## Styling
+  ## Read-only
 
-  Use data attributes to target elements:
+  Pass `read_only={true}` or `readonly` in global attributes. Both set `data-readonly` on the root for Corex CSS and the HTML `readonly` attribute on the input.
+
+  ```heex
+  <.native_input type="text" name="user[code]" read_only class="native-input">
+    <:label>Code</:label>
+  </.native_input>
+  ```
+
+  ## Form
+
+  Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:email])}` when you want alert borders after validation.
+
+  For `type="select"` with `multiple`, the field name is suffixed with `[]` so Ecto `{:array, :string}` receives a list (same Phoenix convention as [`Corex.Select`](Corex.Select.html) `multiple`).
+
+  ```heex
+  <.form for={@form} phx-change="validate">
+    <.native_input type="email" field={@form[:email]} class="native-input">
+      <:label>Email</:label>
+      <:error :let={msg}>{msg}</:error>
+    </.native_input>
+  </.form>
+  ```
+
+  ## Style
+
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `native-input.css`, then set `class="native-input"` on `<.native_input>`.
 
   ```css
   [data-scope="native-input"][data-part="root"] {}
@@ -92,13 +119,19 @@ defmodule Corex.NativeInput do
   use Phoenix.Component
   alias Phoenix.HTML.Form
 
-  @types ~w(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
+  @types ~W(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
 
   attr(:type, :string, required: true, values: @types)
   attr(:id, :string, required: false)
   attr(:name, :string, required: false)
   attr(:value, :any)
   attr(:invalid, :boolean, default: false)
+
+  attr(:read_only, :boolean,
+    default: false,
+    doc: "Read-only state; also sets HTML readonly on the input"
+  )
+
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
@@ -117,8 +150,8 @@ defmodule Corex.NativeInput do
 
   attr(:rest, :global,
     include:
-      ~w(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept) ++
-        ~w(phx-change phx-blur phx-focus phx-target phx-debounce phx-throttle)
+      ~W(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept) ++
+        ~W(phx-change phx-blur phx-focus phx-target phx-debounce phx-throttle)
   )
 
   slot :label, required: false do
@@ -137,37 +170,36 @@ defmodule Corex.NativeInput do
   end
 
   def native_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    name = if assigns.multiple, do: field.name <> "[]", else: field.name
 
     assigns
-    |> assign(field: nil, id: assigns[:id] || field.id)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:name, fn ->
-      if assigns.multiple, do: field.name <> "[]", else: field.name
-    end)
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(id: assigns[:id] || field.id)
+    |> assign(:name, name)
     |> assign_new(:value, fn -> field.value end)
+    |> assign_read_only()
     |> native_input()
   end
 
-  @types_ignoring_icon ~w(textarea date datetime-local time month week color number checkbox radio select)
+  @types_ignoring_icon ~W(textarea date datetime-local time month week color number checkbox radio select)
 
   def native_input(%{type: "checkbox"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:checked, fn ->
         Form.normalize_value("checkbox", assigns[:value])
       end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
       <div data-scope="native-input" data-part="control">
         <input
           type="hidden"
           name={@name}
           value="false"
           disabled={@rest[:disabled]}
-          form={@rest[:form]}
         />
         <label data-scope="native-input" data-part="label" for={"#{@id}-input"}>
           <input
@@ -198,11 +230,12 @@ defmodule Corex.NativeInput do
   def native_input(%{type: "select"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
       <label :for={label <- @label} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
         {render_slot(label)}
       </label>
@@ -234,12 +267,13 @@ defmodule Corex.NativeInput do
   def native_input(%{type: "radio"} = assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
       |> assign(:options, assigns[:options] || [])
 
     ~H"""
-    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""}>
+    <div id={@id} class={@class} data-scope="native-input" data-part="root" data-invalid={@invalid && ""} data-readonly={@read_only && ""}>
     <label :for={label <- @label} data-scope="native-input" data-part="label">
     {render_slot(label)}
       </label>
@@ -273,13 +307,14 @@ defmodule Corex.NativeInput do
   def native_input(assigns) do
     assigns =
       assigns
+      |> assign_read_only()
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:value, fn -> nil end)
       |> assign(:show_icon, show_icon?(assigns))
 
     ~H"""
     <div id={@id} class={@class} data-no-icon={if @show_icon, do: nil, else: ""} data-invalid={@invalid && ""}>
-      <div data-scope="native-input" data-part="root">
+      <div data-scope="native-input" data-part="root" data-readonly={@read_only && ""}>
         <label :for={label <- @label} class={Map.get(label, :class, nil)} data-scope="native-input" data-part="label" for={"#{@id}-input"}>
           {render_slot(label)}
         </label>
@@ -318,6 +353,22 @@ defmodule Corex.NativeInput do
       </div>
     </div>
     """
+  end
+
+  defp assign_read_only(assigns) do
+    read_only =
+      assigns[:read_only] == true ||
+        assigns.rest[:readonly] == true ||
+        assigns.rest[:readonly] == "readonly"
+
+    rest =
+      if read_only do
+        Map.put(assigns.rest, :readonly, true)
+      else
+        assigns.rest
+      end
+
+    assign(assigns, read_only: read_only, rest: rest)
   end
 
   defp error_wrapper_class(error_slot) do

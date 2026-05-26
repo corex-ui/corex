@@ -2,7 +2,7 @@ defmodule Corex.Menu do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Menu](https://zagjs.com/components/react/menu).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
@@ -71,7 +71,7 @@ defmodule Corex.Menu do
       },
       %Corex.Tree.Item{
         value: "print",
-        label: "Print..."
+        label: "Print"
       }
     ]}
   >
@@ -142,7 +142,11 @@ defmodule Corex.Menu do
 
   <!-- tabs-close -->
 
-  ## Use as Navigation
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Navigation
 
   Set `redirect` on the component so selecting an item navigates to the item's value (e.g. path).
   Per item, choose the navigation kind explicitly via the item's `:redirect` field:
@@ -216,61 +220,101 @@ defmodule Corex.Menu do
   end
   ```
 
-  ## API Control
+  <!-- tabs-close -->
 
-  In order to use the API, you must use an id on the component
+  ## API
 
-  ***Client-side***
+  Requires a stable `id` on `<.menu>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_open
 
   ```heex
-  <button phx-click={Corex.Menu.set_open("my-menu", true)}>
+  <.action phx-click={Corex.Menu.set_open("menu-api", true)} class="button button--sm">
     Open Menu
-  </button>
+  </.action>
   ```
-
-  ***Server-side***
 
   ```elixir
   def handle_event("open_menu", _, socket) do
-    {:noreply, Corex.Menu.set_open(socket, "my-menu", true)}
+    {:noreply, Corex.Menu.set_open(socket, "menu-api", true)}
   end
   ```
 
-  ## Styling
+  <!-- tabs-close -->
 
-  Use data attributes to target elements:
+  ## Events
 
-  ```css
-  [data-scope="menu"][data-part="root"] {}
-  [data-scope="menu"][data-part="trigger"] {}
-  [data-scope="menu"][data-part="positioner"] {}
-  [data-scope="menu"][data-part="content"] {}
-  [data-scope="menu"][data-part="item"] {}
-  [data-scope="menu"][data-part="separator"] {}
-  [data-scope="menu"][data-part="item-group"] {}
-  [data-scope="menu"][data-part="item-group-label"] {}
-  ```
+  ### Server events
 
-  If you wish to use the default Corex styling, you can use the class `menu` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_select="menu_selected"` | Item selected | `%{"id" => id, "value" => value}` |
+  | `on_open_change="menu_open_changed"` | Open state changes | `%{"id" => id, "open" => open}` |
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/menu.css";
-  ```
+  <!-- tabs-open -->
 
-  You can then use modifiers
+  ### on_select
 
   ```heex
-  <.menu class="menu menu--accent menu--lg">
+  <.menu
+    class="menu"
+    on_select="menu_selected"
+    items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}
+  >
+    <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
   </.menu>
   ```
+
+  ```elixir
+  def handle_event("menu_selected", %{"value" => value}, socket) do
+    {:noreply, socket}
+  end
+  ```
+
+  ### on_open_change
+
+  ```heex
+  <.menu
+    class="menu"
+    on_open_change="menu_open_changed"
+    items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}
+  >
+    <:trigger>Actions</:trigger>
+    <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+  </.menu>
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_select_client="menu-selected"` | Item selected | `id`, `value` |
+  | `on_open_change_client="menu-open-changed"` | Open state changes | `id`, `open` |
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Menu.Anatomy.{
     Content,
@@ -284,9 +328,9 @@ defmodule Corex.Menu do
     Trigger
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Menu.Connect
   alias Corex.Positioning
-  alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   @doc """
@@ -424,7 +468,7 @@ defmodule Corex.Menu do
     assigns =
       assigns
       |> assign_new(:id, fn -> "#{System.unique_integer([:positive])}" end)
-      |> validate_items()
+      |> Corex.Tree.validate_items_assigns!(component: "menu")
       |> assign_menu_entries()
 
     group_entries = Enum.filter(assigns.menu_entries, &match?({:group, _, _, _}, &1))
@@ -755,33 +799,6 @@ defmodule Corex.Menu do
     }
   end
 
-  defp validate_items(%{items: nil} = assigns), do: assigns
-
-  defp validate_items(%{items: items} = assigns) when is_list(items) do
-    Enum.each(items, fn item ->
-      unless is_struct(item, Corex.Tree.Item) do
-        raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.Tree.Item{} struct, got: #{inspect(item)}
-
-        Please use the Corex.Tree.Item struct:
-
-        %Corex.Tree.Item{
-          value: "unique-id",
-          label: "Label text",
-          children: [],
-          disabled: false,
-          group: nil,
-          meta: %{}
-        }
-        """
-      end
-    end)
-
-    assigns
-  end
-
-  defp validate_items(assigns), do: assigns
-
   defp assign_menu_entries(%{items: nil} = assigns) do
     assign(assigns, :menu_entries, [])
   end
@@ -805,16 +822,26 @@ defmodule Corex.Menu do
     entries ++ ungrouped
   end
 
-  @doc type: :api
-  @doc """
-  Sets the menu open state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set menu open state from a control (`phx-click`). Targets the root with id `menu:<id>`.
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Menu.set_open("my-menu", true)}>Open</.action>
+  <.menu id="my-menu" class="menu" items={[%Corex.Tree.Item{label: "Edit", value: "edit"}]}>
+    <:trigger>Actions</:trigger>
+  </.menu>
+  ```
 
-      <button phx-click={Corex.Menu.set_open("my-menu", true)}>
-        Open Menu
-      </button>
-  """
+  ```javascript
+  document.querySelector('[id="menu:my-menu"]')?.dispatchEvent(
+    new CustomEvent("corex:menu:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
   def set_open(menu_id, open) when is_binary(menu_id) do
     JS.dispatch("corex:menu:set-open",
       to: "[id=\"menu:#{menu_id}\"]",
@@ -823,22 +850,25 @@ defmodule Corex.Menu do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the menu open state from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Set open state from `handle_event`. Pushes `menu_set_open`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="open_menu">Open</.action>
+  <.menu id="my-menu" class="menu" items={[%Corex.Tree.Item{label: "Edit", value: "edit"}]}>
+    <:trigger>Actions</:trigger>
+  </.menu>
+  ```
 
-      def handle_event("open_menu", _params, socket) do
-        socket = Corex.Menu.set_open(socket, "my-menu", true)
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("open_menu", _, socket) do
+    {:noreply, Corex.Menu.set_open(socket, "my-menu", true)}
+  end
+  ```
+  """)
+
   def set_open(socket, menu_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do
-    LiveView.push_event(socket, "menu_set_open", %{
-      menu_id: menu_id,
-      open: open
-    })
+    RespondTo.push_set_open(socket, "menu_set_open", menu_id, open)
   end
 end

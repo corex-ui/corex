@@ -2,12 +2,12 @@ defmodule Corex.HiddenInput do
   @moduledoc ~S'''
   Hidden input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
   ```heex
-  <.hidden_input id="id" name="user[id]" value={@user.id} />
+  <.hidden_input name="user[id]" value={@user.id} />
   ```
 
   ### With form field

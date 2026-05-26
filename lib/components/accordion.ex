@@ -23,7 +23,7 @@ defmodule Corex.Accordion do
 
   ### With slots
 
-  With `items` and `<:indicator>` slot so every panel shares the same indicator markup.
+  With `items` and `<:indicator>` slot so every item shares the same indicator markup.
 
   ```heex
   <.accordion
@@ -187,71 +187,152 @@ defmodule Corex.Accordion do
 
   ## API
 
-  See [API](api.html) for **`id`**, **`respond_to`**, and calling helpers from **`handle_event`**, HEEx, or DOM `CustomEvent`s.
+  Requires a stable `id` on `<.accordion>`.
 
-  | Action | Elixir | DOM command |
-  | ------ | ------ | ----------- |
-  | Set open item(s) | `set_value/2`, `set_value/3` | `corex:accordion:set-value`  -  `detail.value` is a list of strings |
-  | Read open item(s) | `value/2`, `value/3` | `corex:accordion:value`  -  optional `detail.respond_to` |
-  | Read focused item | `focused/2`, `focused/3` | `corex:accordion:focused` |
-  | Read one item’s state | `item_state/3`, `item_state/4` | `corex:accordion:item-state`  -  `detail.value`, `detail.disabled`, optional `detail.respond_to` |
-
-  ```elixir
-  {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["lorem"])}
-  ```
-
-  ```heex
-  <.action phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}>Open first</.action>
-  ```
-
-  ```javascript
-  document.getElementById("my-accordion")?.dispatchEvent(
-    new CustomEvent("corex:accordion:set-value", {
-      bubbles: false,
-      detail: { value: ["lorem"] },
-    }),
-  )
-  ```
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set open items (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set open items (server) | `socket` |
+  | [`value/2`](#value/2) | Read open items (client) | `%Phoenix.LiveView.JS{}` |
+  | [`value/3`](#value/3) | Read open items (server) | `socket` |
+  | [`focused/2`](#focused/2) | Read focused item (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focused/3`](#focused/3) | Read focused item (server) | `socket` |
+  | [`item_state/3`](#item_state/3) | Read one item state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`item_state/4`](#item_state/4) | Read one item state (server) | `socket` |
 
   ## Events
 
-  See [Events](events.html) for how **`on_*`** and **`*_client`** relate to **`handle_event/3`** and browser `CustomEvent`s.
+  Pick an event name and pass it to `on_*` on `<.accordion>`.
 
-  | Assign | LiveView `handle_event` receives |
-  | ------ | -------------------------------- |
-  | `on_value_change` | `%{"id" => binary, "value" => list}` |
-  | `on_focus_change` | `%{"id" => binary, "value" => binary \\ nil}` |
+  ### Server events
 
-  For **`on_value_change_client`** and **`on_focus_change_client`**, the browser emits **`CustomEvent`s** named with the strings you pass. Value changes include **`id`**, **`value`**, **`previousValue`**, **`added`**, **`removed`** when useful.
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="items_changed"` | Open items change | `%{"id" => id, "value" => values}` — list of open item `value` strings |
+  | `on_focus_change="focus_changed"` | Focused item changes | `%{"id" => id, "value" => value}` — item `value` or `nil` |
 
-  After **`value`**, **`focused`**, or **`item_state`**, responses use the names below unless you route only to the DOM via **`respond_to`** (see [API](api.html)).
+  <!-- tabs-open -->
 
-  | Response to LiveView (`pushEvent`) | DOM event on the accordion root |
-  | ---------------------------------- | ------------------------------- |
-  | `accordion_value_response` | `accordion-value` |
-  | `accordion_focused_response` | `accordion-focused` |
-  | `accordion_item_state_response` | `accordion-item-state` |
+  ### on_value_change
 
   ```heex
   <.accordion
-    id="acc"
+    id="faq"
     class="accordion"
-    on_value_change="accordion_changed"
-    items={Corex.Content.new([%{value: "a", label: "Panel A", content: "Body A"}])}
-  />
+    on_value_change="items_changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.accordion>
   ```
 
   ```elixir
-  def handle_event("accordion_changed", %{"id" => _id, "value" => value}, socket) do
-    {:noreply, assign(open: value)}
+  def handle_event("items_changed", %{"id" => _id, "value" => values}, socket) do
+    {:noreply, assign(socket, :open_items, values)}
   end
   ```
+
+  ### on_focus_change
+
+  ```heex
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_focus_change="focus_changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.accordion>
+  ```
+
+  ```elixir
+  def handle_event("focus_changed", %{"id" => _id, "value" => item}, socket) do
+    {:noreply, assign(socket, :focused_item, item)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="items-changed"` | Open items change | `id`, `value`, `previousValue`, `added`, `removed` |
+  | `on_focus_change_client="focus-changed"` | Focused item changes | `id`, `value` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_value_change_client="items-changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.accordion>
+  ```
+
+  ```javascript
+  document.getElementById("faq")?.addEventListener("items-changed", (e) => {
+    console.log(e.detail.value, e.detail.added, e.detail.removed);
+  });
+  ```
+
+  ### on_focus_change_client
+
+  ```heex
+  <.accordion
+    id="faq"
+    class="accordion"
+    on_focus_change_client="focus-changed"
+    items={
+      Corex.Content.new([
+        %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+        %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+        %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+      ])
+    }
+  >
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.accordion>
+  ```
+
+  ```javascript
+  document.getElementById("faq")?.addEventListener("focus-changed", (e) => {
+    console.log(e.detail.value);
+  });
+  ```
+
+  <!-- tabs-close -->
 
   ## Patterns
 
   <!-- tabs-open -->
 
   ### Async
+
+  If `items` are not ready in `mount/3`—for example they load from the database or an external service—use `assign_async/3`, render inside `<.async_result>`, and put `<.accordion_skeleton>` in the `:loading` slot while the async assign is still pending.
 
   ```elixir
   defmodule MyAppWeb.AccordionAsyncLive do
@@ -308,6 +389,8 @@ defmodule Corex.Accordion do
 
   ### Controlled
 
+  For server-owned open state—validation, forms, or rules that must run before items open—set `controlled`, bind `value`, and handle `on_value_change` in LiveView so assigns stay the source of truth.
+
   ```elixir
   defmodule MyAppWeb.AccordionLive do
     use MyAppWeb, :live_view
@@ -348,15 +431,57 @@ defmodule Corex.Accordion do
   end
   ```
 
+  ### Stream
+
+  Use `Phoenix.LiveView.stream/3` to add or remove accordion items at runtime. Keep a list assign in sync with the stream and pass it as `items`. Configure `dom_id` to match each item element id (`accordion:my-accordion:item:#{value}`).
+
+  ```elixir
+  defmodule MyAppWeb.AccordionStreamLive do
+    use MyAppWeb, :live_view
+
+    @initial_items [
+      %{value: "1", label: "Lorem ipsum", content: "Consectetur adipiscing elit."},
+      %{value: "2", label: "Duis dictum", content: "Nullam eget vestibulum ligula."},
+      %{value: "3", label: "Donec condimentum", content: "Congue molestie ipsum gravida a."}
+    ]
+
+    def mount(_params, _session, socket) do
+      {:ok,
+       socket
+       |> stream_configure(:items, dom_id: &"accordion:my-accordion:item:#{&1.value}")
+       |> stream(:items, @initial_items)
+       |> assign(:items_list, @initial_items)
+       |> assign(:next_id, 4)}
+    end
+
+    def handle_event("add_item", _params, socket) do
+      id = to_string(socket.assigns.next_id)
+      item = %{value: id, label: "Item #{id}", content: "Content for item #{id}."}
+
+      {:noreply,
+       socket
+       |> stream_insert(:items, item)
+       |> assign(:items_list, socket.assigns.items_list ++ [item])
+       |> assign(:next_id, socket.assigns.next_id + 1)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new(@items_list)} />
+      """
+    end
+  end
+  ```
+
   <!-- tabs-close -->
 
   ## Animation
 
   <!-- tabs-open -->
 
-  ### `js`
+  ### JS
 
-  Built-in height and opacity via the Web Animations API. Tune timing with `animation_options` using `Corex.Animation.Height`.
+  Built-in height and opacity (Web Animations API). Set `animation_options` with `Corex.Animation.Height` for duration, easing, and opacity.
 
   ```heex
   <.accordion
@@ -386,9 +511,9 @@ defmodule Corex.Accordion do
   </.accordion>
   ```
 
-  ### `instant`
+  ### Instant
 
-  Zag toggles the native `hidden` attribute; no height animation.
+  Items open and close immediately. Content visibility uses the native `hidden` attribute; there is no height animation.
 
   ```heex
   <.accordion
@@ -417,18 +542,17 @@ defmodule Corex.Accordion do
   </.accordion>
   ```
 
-  ### `custom`
+  ### Custom (Motion)
 
-  The hook removes `hidden` and dispatches a browser `CustomEvent` when the value changes. Use `on_value_change_client` for the event name. The event `detail` is enriched with deltas so user code rarely needs DOM lookups beyond the affected items:
+  Set `animation="custom"` and `on_value_change_client` to run Motion (or any JS) on open and close. Content stays in the DOM (`hidden` is not toggled). Each change fires a `CustomEvent` on the accordion with:
 
-      // event.detail (AccordionChangedDetail)
+      // event.detail — AccordionChangedDetail
       { id, value, previousValue, added, removed }
 
-  Animate panels in your own JS. The example below also seeds initial closed-state styling on mount and after LiveView navigations.
+  `added` and `removed` list which item values opened or closed so you can animate only those items. Register the listener after mount (and again after LiveView navigation if the DOM is replaced).
 
   ```heex
   <.accordion
-    id="accordion-custom-animate"
     class="accordion"
     animation="custom"
     on_value_change_client="my-accordion-changed"
@@ -500,17 +624,16 @@ defmodule Corex.Accordion do
 
   ## Style
 
-  Zag exposes `data-scope` and `data-part` on each element:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `accordion.css`, then set `class="accordion"` on `<.accordion>`.
 
   ```css
   [data-scope="accordion"][data-part="root"] {}
   [data-scope="accordion"][data-part="item"] {}
   [data-scope="accordion"][data-part="item-trigger"] {}
+  [data-scope="accordion"][data-part="item-text"] {}
   [data-scope="accordion"][data-part="item-content"] {}
   [data-scope="accordion"][data-part="item-indicator"] {}
   ```
-
-  With Corex Design, import tokens and the accordion stylesheet, then add the `accordion` class and modifiers:
 
   ```css
   @import "../corex/main.css";
@@ -518,17 +641,78 @@ defmodule Corex.Accordion do
   @import "../corex/components/accordion.css";
   ```
 
-  ```heex
-  <.accordion
-    class="accordion accordion--accent accordion--lg"
-    items={
-      Corex.Content.new([
-        %{label: "First", content: "First body."},
-        %{label: "Second", content: "Second body."}
-      ])
-    }
-  />
-  ```
+  Stack modifiers on the host (`class` on `<.accordion>`). Combine axes, for example `accordion accordion--accent accordion--lg`.
+
+  <!-- tabs-open -->
+
+  ### Color
+
+  Semantic palette on the open item trigger (from design tokens).
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | Accent | `accordion accordion--accent` |
+  | Brand | `accordion accordion--brand` |
+  | Alert | `accordion accordion--alert` |
+  | Info | `accordion accordion--info` |
+  | Success | `accordion accordion--success` |
+
+  ### Size
+
+  Trigger padding, gap, min-height, and content spacing.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | SM | `accordion accordion--sm` |
+  | MD | `accordion accordion--md` |
+  | LG | `accordion accordion--lg` |
+  | XL | `accordion accordion--xl` |
+
+  ### Text
+
+  Font size on trigger and content.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | SM | `accordion accordion--text-sm` |
+  | XL | `accordion accordion--text-xl` |
+  | 2XL | `accordion accordion--text-2xl` |
+  | 4XL | `accordion accordion--text-4xl` |
+
+  ### Rounded
+
+  Corner radius on trigger and content.
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | None | `accordion accordion--rounded-none` |
+  | SM | `accordion accordion--rounded-sm` |
+  | MD | `accordion accordion--rounded-md` |
+  | LG | `accordion accordion--rounded-lg` |
+  | XL | `accordion accordion--rounded-xl` |
+  | Full | `accordion accordion--rounded-full` |
+
+  ### Max width
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `accordion` |
+  | None | `accordion max-w-none` |
+  | 5XS | `accordion max-w-5xs` |
+  | 2XS | `accordion max-w-2xs` |
+  | XS | `accordion max-w-xs` |
+  | SM | `accordion max-w-sm` |
+  | MD | `accordion max-w-md` |
+  | LG | `accordion max-w-lg` |
+  | XL | `accordion max-w-xl` |
+  | 2XL | `accordion max-w-2xl` |
+  | 5XL | `accordion max-w-5xl` |
+
+  <!-- tabs-close -->
 
   '''
 
@@ -537,11 +721,16 @@ defmodule Corex.Accordion do
 
   alias Corex.Accordion.Anatomy.{Item, Props, Root}
   alias Corex.Accordion.Connect
+  alias Corex.Api.RespondTo
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
-    only: [validate_value!: 1, validate_content_items_required!: 2, respond_to_fields: 1]
+    only: [
+      validate_content_items_required!: 2,
+      respond_to_fields: 1,
+      normalize_string_list_value!: 1
+    ]
 
   @doc """
   Renders an accordion. See the module documentation for list-driven `items`, With slots, Custom slots, Manual and Compound modes, patterns, API, and events.
@@ -550,7 +739,7 @@ defmodule Corex.Accordion do
   attr(:id, :string,
     required: false,
     doc:
-      "DOM id on the accordion root. Required for imperative helpers and DOM commands (see API guide)."
+      "DOM id on the accordion root. Used by `set_value`, `value`, `focused`, and `item_state`; auto-generated when omitted."
   )
 
   attr(:items, :list,
@@ -572,7 +761,7 @@ defmodule Corex.Accordion do
 
   attr(:controlled, :boolean,
     default: false,
-    doc: "LiveView owns open state. Requires `on_value_change` in LiveView (see Events guide)."
+    doc: "When true, LiveView owns open items via `value` and `on_value_change`."
   )
 
   attr(:collapsible, :boolean, default: true, doc: "Whether the accordion is collapsible")
@@ -586,17 +775,17 @@ defmodule Corex.Accordion do
     default: "js",
     values: ["instant", "js", "custom"],
     doc: """
-    Animation mode for content open/close.
-    - `instant`  -  no animation, content opens/closes instantly via native `hidden` attribute
-    - `js`  -  built-in animation via Web Animations API (opacity + height); tune with `animation_options` (`Corex.Animation.Height`)
-    - `custom`  -  removes `hidden`, full JS control via `on_value_change_client`
+    How items animate when opening or closing.
+    - `instant` — toggle `hidden` immediately
+    - `js` — built-in height and opacity (`animation_options` / `Corex.Animation.Height`)
+    - `custom` — no built-in animation; use `on_value_change_client` with Motion or other JS
     """
   )
 
   attr(:animation_options, Corex.Animation.Height,
     default: %Corex.Animation.Height{},
     doc:
-      "Wired to the host when `animation` is `js` only. Custom transitions ignore this assign. See `Corex.Animation.Height` (opacity, height, `block_interaction`)."
+      "Used when `animation` is `js`. Ignored for `instant` and `custom`. See `Corex.Animation.Height`."
   )
 
   attr(:orientation, :string,
@@ -614,26 +803,122 @@ defmodule Corex.Accordion do
 
   attr(:on_value_change, :string,
     default: nil,
-    doc:
-      "LiveView event name for `pushEvent` when the open value(s) change. Params: `%{\"id\" => dom_id, \"value\" => list}`. See **Events** in the module doc."
+    doc: ~S"""
+    LiveView event when open items change. Pick any event name.
+
+    ```heex
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_value_change="items_changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    ```
+
+    ```elixir
+    def handle_event("items_changed", %{"id" => _id, "value" => values}, socket) do
+      {:noreply, assign(socket, :open_items, values)}
+    end
+    ```
+    """
   )
 
   attr(:on_value_change_client, :string,
     default: nil,
-    doc:
-      "Browser `CustomEvent` type when the open value(s) change. `event.detail`: `%{id: dom_id, value: list, previousValue: list, added: list, removed: list}` (TS: `AccordionChangedDetail`). See **Events** in the module doc."
+    doc: ~S"""
+    Browser event on the accordion element when open items change (same moment as `on_value_change`).
+
+    ```heex
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_value_change_client="items-changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    ```
+
+    ```javascript
+    document.getElementById("faq")?.addEventListener("items-changed", (e) => {
+      console.log(e.detail.value, e.detail.added, e.detail.removed);
+    });
+    ```
+    """
   )
 
   attr(:on_focus_change, :string,
     default: nil,
-    doc:
-      "LiveView event name for `pushEvent` when the focused item changes. Params: `%{\"id\" => dom_id, \"value\" => focused_item_value}`. See **Events** in the module doc."
+    doc: ~S"""
+    LiveView event when keyboard focus moves to another item.
+
+    ```heex
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_focus_change="focus_changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    ```
+
+    ```elixir
+    def handle_event("focus_changed", %{"id" => _id, "value" => item}, socket) do
+      {:noreply, assign(socket, :focused_item, item)}
+    end
+    ```
+    """
   )
 
   attr(:on_focus_change_client, :string,
     default: nil,
-    doc:
-      "Browser `CustomEvent` type for focus changes. `event.detail`: `%{id: dom_id, value: focused_value}`. See **Events** in the module doc."
+    doc: ~S"""
+    Browser event on the accordion element when focus moves.
+
+    ```heex
+    <.accordion
+      id="faq"
+      class="accordion"
+      on_focus_change_client="focus-changed"
+      items={
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
+      <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+    </.accordion>
+    ```
+
+    ```javascript
+    document.getElementById("faq")?.addEventListener("focus-changed", (e) => {
+      console.log(e.detail.value);
+    });
+    ```
+    """
   )
 
   attr(:rest, :global)
@@ -649,7 +934,7 @@ defmodule Corex.Accordion do
   slot :indicator,
     required: false,
     doc:
-      "Optional slot after each trigger. With `:items`, use `:let={item}`. Without `:items` (manual mode), use one slot per panel and a matching `value` on `:trigger` and `:content`." do
+      "Optional slot after each trigger. With `:items`, use `:let={item}`. Without `:items` (manual mode), use one slot per item and a matching `value` on `:trigger` and `:content`." do
     attr(:value, :string, required: false)
     attr(:class, :string, required: false)
   end
@@ -657,7 +942,7 @@ defmodule Corex.Accordion do
   slot :trigger,
     required: false,
     doc:
-      "With `:items`, optional custom trigger; use `:let={item}`. Without `:items` (manual mode), one slot per panel with `value` (or default `item-0`, …)." do
+      "With `:items`, optional custom trigger; use `:let={item}`. Without `:items` (manual mode), one slot per item with `value` (or default `item-0`, …)." do
     attr(:value, :string, required: false)
     attr(:class, :string, required: false)
     attr(:disabled, :boolean, required: false)
@@ -666,7 +951,7 @@ defmodule Corex.Accordion do
   slot :content,
     required: false,
     doc:
-      "With `:items`, optional custom content; use `:let={item}`. Without `:items` (manual mode), one slot per panel with `value` (or default `item-0`, …)." do
+      "With `:items`, optional custom content; use `:let={item}`. Without `:items` (manual mode), one slot per item with `value` (or default `item-0`, …)." do
     attr(:value, :string, required: false)
     attr(:class, :string, required: false)
     attr(:disabled, :boolean, required: false)
@@ -734,6 +1019,7 @@ defmodule Corex.Accordion do
           ctx={@ctx}
           value={panel.value}
           disabled={panel.disabled}
+          label={panel_source_label(panel)}
           :let={item}
         >
           <.accordion_trigger item={item}>
@@ -772,6 +1058,7 @@ defmodule Corex.Accordion do
   Use inside `accordion` compound mode with `:let={ctx}`, wrapping all `accordion_item` components.
   """
 
+  @doc type: :compound
   attr(:ctx, :map,
     required: true,
     doc: "The context map yielded by the parent accordion via :let={ctx}"
@@ -807,6 +1094,7 @@ defmodule Corex.Accordion do
   Yields the `%Item{}` struct via `:let` for use in child parts.
   """
 
+  @doc type: :compound
   attr(:ctx, :map,
     required: true,
     doc: "The context map yielded by the parent accordion via :let={ctx}"
@@ -814,6 +1102,7 @@ defmodule Corex.Accordion do
 
   attr(:value, :string, required: true, doc: "The unique value identifying this item")
   attr(:disabled, :boolean, default: false, doc: "Whether the item is disabled")
+  attr(:label, :string, default: nil, doc: "Visible item label for unique region names")
   attr(:rest, :global)
   slot(:inner_block, required: false)
 
@@ -825,7 +1114,8 @@ defmodule Corex.Accordion do
       values: assigns.ctx.values,
       orientation: assigns.ctx.orientation,
       dir: assigns.ctx.dir,
-      animation: Map.get(assigns.ctx, :animation, "instant")
+      animation: Map.get(assigns.ctx, :animation, "instant"),
+      label: assigns[:label]
     }
 
     assigns = assign(assigns, :item, item)
@@ -889,7 +1179,7 @@ defmodule Corex.Accordion do
 
   @doc type: :compound
   @doc """
-  Renders the content panel for an accordion item.
+  Renders the content area for an accordion item.
 
   Use inside `accordion_item` with `:let={item}`, passing the yielded `item` as the `item` attr.
   """
@@ -964,210 +1254,102 @@ defmodule Corex.Accordion do
   end
 
   @doc type: :api
-  @doc """
-  Sets the accordion value from client-side. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Open or close items from `phx-click`. Pass a list (`["lorem"]`), a comma string (`"lorem,donec"`), or `[]` to close all.
 
-  Pass a list of open item ids, or a comma-separated binary (trimmed); an empty binary closes all panels.
+  ```heex
+  <.action phx-click={Corex.Accordion.set_value("my-accordion", "lorem")}>Open Lorem</.action>
+  <.action phx-click={Corex.Accordion.set_value("my-accordion", [])}>Close all</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}>
+    <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
+  </.accordion>
+  ```
 
-  ## Examples
-
-  #### From Client Binding
-
-      <.action phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])} class="button button--sm">
-        Open Lorem
-      </.action>
-      <.action phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "donec"])} class="button button--sm">
-        Open Lorem and Donec
-      </.action>
-      <.action phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
-        Close all
-      </.action>
-
-      <.accordion
-        id="my-accordion"
-        class="accordion"
-        items={
-          Corex.Content.new([
-            %{
-              value: "lorem",
-              label: "Lorem ipsum dolor sit amet",
-              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-            },
-            %{
-              value: "duis",
-              label: "Duis dictum gravida odio ac pharetra?",
-              content: "Nullam eget vestibulum ligula, at interdum tellus."
-            },
-            %{
-              value: "donec",
-              label: "Donec condimentum ex mi",
-              content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-              disabled: true
-            }
-          ])
-        }
-      />
-
-  #### From Client JS
-
-      ```javascript
-      const el = document.getElementById("my-accordion");
-      const set = (value) =>
-        el?.dispatchEvent(
-          new CustomEvent("corex:accordion:set-value", {
-            bubbles: false,
-            detail: { value },
-          })
-        );
-
-      set(["lorem"]);
-      set(["lorem", "donec"]);
-      set([]);
-      ```
+  ```javascript
+  document.getElementById("my-accordion")?.dispatchEvent(
+    new CustomEvent("corex:accordion:set-value", {
+      bubbles: false,
+      detail: { value: ["lorem"] }
+    })
+  );
+  ```
   """
   def set_value(accordion_id, value) when is_binary(accordion_id) do
     JS.dispatch("corex:accordion:set-value",
       to: "##{accordion_id}",
-      detail: %{value: normalize_set_value!(value)},
+      detail: %{value: normalize_string_list_value!(value)},
       bubbles: false
     )
   end
 
   @doc type: :api
-  @doc """
-  Sets the accordion value from server-side. Pushes a LiveView event.
+  @doc ~S"""
+  Open or close items from `handle_event`. Pushes `accordion_set_value` (no reply event).
 
-  ## Examples
+  ```heex
+  <.action phx-click="open_lorem" phx-value-value="lorem">Open Lorem</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-  <!-- tabs-open -->
-
-  ### Heex
-
-      <.action phx-click="open_lorem" class="button button--sm">
-        Open Lorem
-      </.action>
-      <.action phx-click="open_lorem_and_donec" class="button button--sm">
-        Open Lorem and Donec
-      </.action>
-      <.action phx-click="close_all" class="button button--sm">
-        Close all
-      </.action>
-
-      <.accordion
-        id="my-accordion"
-        class="accordion"
-        items={
-          Corex.Content.new([
-            %{
-              value: "lorem",
-              label: "Lorem ipsum dolor sit amet",
-              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-            },
-            %{
-              value: "duis",
-              label: "Duis dictum gravida odio ac pharetra?",
-              content: "Nullam eget vestibulum ligula, at interdum tellus."
-            },
-            %{
-              value: "donec",
-              label: "Donec condimentum ex mi",
-              content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-              disabled: true
-            }
-          ])
-        }
-      />
-
-  ### Elixir
-
-      def handle_event("open_lorem", _params, socket) do
-        {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["lorem"])}
-      end
-
-      def handle_event("open_lorem_and_donec", _params, socket) do
-        {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["lorem", "donec"])}
-      end
-
-      def handle_event("close_all", _params, socket) do
-        {:noreply, Corex.Accordion.set_value(socket, "my-accordion", [])}
-      end
-
-  <!-- tabs-close -->
+  ```elixir
+  def handle_event("open_lorem", %{"value" => value}, socket) do
+    {:noreply, Corex.Accordion.set_value(socket, "my-accordion", value)}
+  end
+  ```
   """
   def set_value(socket, accordion_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
-    LiveView.push_event(socket, "accordion_set_value", %{
-      id: accordion_id,
-      value: normalize_set_value!(value)
-    })
+    RespondTo.push_set_value(
+      socket,
+      "accordion_set_value",
+      accordion_id,
+      normalize_string_list_value!(value)
+    )
   end
-
-  defp normalize_set_value!(value) when is_list(value), do: validate_value!(value)
-
-  defp normalize_set_value!(value) when is_binary(value) do
-    case String.trim(value) do
-      "" ->
-        []
-
-      trimmed ->
-        trimmed
-        |> String.split(",", trim: true)
-        |> validate_value!()
-    end
-  end
-
-  defp normalize_set_value!(value), do: validate_value!(value)
 
   @doc type: :api
-  @doc """
-  Requests the accordion's current open values from the browser. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Read open items from `phx-click`. Dispatches `corex:accordion:value`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
-  Options:
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `accordion_value_response` | `%{"id" => id, "value" => values}` |
+  | Client | `accordion-value` on the accordion | `detail`: `id`, `value` |
 
-  - `:respond_to`  -  `:server` (default, LiveView `accordion_value_response` only), `:both` (also dispatches
-    `accordion-value`), or `:client` (DOM `accordion-value` only). When `:server` and the LiveView is not connected, nothing is pushed.
+  ```heex
+  <.action phx-click={Corex.Accordion.value("my-accordion", respond_to: :both)}>Which items are open?</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-  The hook pushes `accordion_value_response` when `:respond_to` is `:both` or `:server`, and dispatches
-  `accordion-value` on the element when `:respond_to` is `:both` or `:client`.
+  ```javascript
+  document.getElementById("my-accordion")?.dispatchEvent(
+    new CustomEvent("corex:accordion:value", {
+      bubbles: false,
+      detail: { respond_to: "both" }
+    })
+  );
+  ```
 
-  ## Examples
+  ```elixir
+  def handle_event("accordion_value_response", %{"id" => _id, "value" => values}, socket) do
+    {:noreply, assign(socket, :open_items, values)}
+  end
+  ```
 
-  #### From Client Binding
-
-      <.action phx-click={Corex.Accordion.value("my-accordion")} class="button button--sm">
-        Value
-      </.action>
-      <.action phx-click={Corex.Accordion.value("my-accordion", respond_to: :client)} class="button button--sm">
-        Value (client only)
-      </.action>
-
-      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-      ])} />
-
-      ```javascript
-      const el = document.getElementById("my-accordion");
-      el?.addEventListener("accordion-value", (e) => console.log(e.detail));
-      ```
-
-  #### JS.dispatch
-
-      <.action
-        phx-click={JS.dispatch("corex:accordion:value",
-          to: "#my-accordion",
-          detail: %{respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        Value (JS.dispatch, client only)
-      </.action>
+  `values` is a list of open item `value` strings, or `nil`.
   """
-
-  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
-
   def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:value",
       to: "##{accordion_id}",
@@ -1176,21 +1358,40 @@ defmodule Corex.Accordion do
     )
   end
 
+  def value(socket, accordion_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
+      do: value(socket, accordion_id, [])
+
+  def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
+
   @doc type: :api
-  @doc """
-  Requests the accordion's current open values from the client. Pushes a LiveView event handled by the hook.
+  @doc ~S"""
+  Read open items from `handle_event` (`accordion_value`). Same replies as [`value/2`](#value/2).
 
-  See `value/2` for `:respond_to`. The hook pushes `accordion_value_response` and/or dispatches `accordion-value`
-  accordingly.
+  | Reply | Payload |
+  | ----- | ------- |
+  | `accordion_value_response` | `%{"id" => id, "value" => values}` |
 
-  ## Examples
+  ```heex
+  <.action phx-click="read_items">Which items are open?</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-      def handle_event("accordion_value_response", %{"id" => id, "value" => value}, socket) do
-        {:noreply, assign(socket, :accordion_value, {id, value})}
-      end
+  ```elixir
+  def handle_event("read_items", _params, socket) do
+    {:noreply, Corex.Accordion.value(socket, "my-accordion", respond_to: :server)}
+  end
+
+  def handle_event("accordion_value_response", %{"id" => _id, "value" => values}, socket) do
+    {:noreply, assign(socket, :open_items, values)}
+  end
+  ```
   """
-
-  def value(socket, accordion_id, opts \\ [])
+  def value(socket, accordion_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_list(opts) do
     LiveView.push_event(
@@ -1201,49 +1402,38 @@ defmodule Corex.Accordion do
   end
 
   @doc type: :api
-  @doc """
-  Requests the accordion's focused item value from the browser. Returns a `Phoenix.LiveView.JS` command.
+  @doc ~S"""
+  Read the focused item from `phx-click`. Dispatches `corex:accordion:focused`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
-  Options: `:respond_to`  -  `:server` (default, `accordion_focused_response` only), `:both` (also dispatches
-  `accordion-focused`), or `:client` (`accordion-focused` DOM event only).
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `accordion_focused_response` | `%{"id" => id, "value" => value}` |
+  | Client | `accordion-focused` on the accordion | `detail`: `id`, `value` |
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Accordion.focused("my-accordion", respond_to: :both)}>Focused item</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-  #### From Client Binding
+  ```javascript
+  document.getElementById("my-accordion")?.dispatchEvent(
+    new CustomEvent("corex:accordion:focused", {
+      bubbles: false,
+      detail: { respond_to: "both" }
+    })
+  );
+  ```
 
-      <.action phx-click={Corex.Accordion.focused("my-accordion")} class="button button--sm">
-        Focused
-      </.action>
-      <.action phx-click={Corex.Accordion.focused("my-accordion", respond_to: :client)} class="button button--sm">
-        Focused (client only)
-      </.action>
-
-      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."}
-      ])} />
-
-      ```javascript
-      const el = document.getElementById("my-accordion");
-      el?.addEventListener("accordion-focused", (e) => console.log(e.detail));
-      ```
-
-  #### JS.dispatch
-
-      <.action
-        phx-click={JS.dispatch("corex:accordion:focused",
-          to: "#my-accordion",
-          detail: %{respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        Focused (JS.dispatch, client only)
-      </.action>
+  ```elixir
+  def handle_event("accordion_focused_response", %{"id" => _id, "value" => item}, socket) do
+    {:noreply, assign(socket, :focused_item, item)}
+  end
+  ```
   """
-
-  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
-
   def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:focused",
       to: "##{accordion_id}",
@@ -1252,20 +1442,40 @@ defmodule Corex.Accordion do
     )
   end
 
+  def focused(socket, accordion_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id),
+      do: focused(socket, accordion_id, [])
+
+  def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
+
   @doc type: :api
-  @doc """
-  Requests the accordion's focused item value from the client. Pushes a LiveView event handled by the hook.
+  @doc ~S"""
+  Read the focused item from `handle_event` (`accordion_focused`). Same replies as [`focused/2`](#focused/2).
 
-  See `focused/2` for `:respond_to`.
+  | Reply | Payload |
+  | ----- | ------- |
+  | `accordion_focused_response` | `%{"id" => id, "value" => value}` |
 
-  ## Examples
+  ```heex
+  <.action phx-click="read_focus">Focused item</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-      def handle_event("accordion_focused_response", %{"id" => id, "value" => value}, socket) do
-        {:noreply, assign(socket, :accordion_focused, {id, value})}
-      end
+  ```elixir
+  def handle_event("read_focus", _params, socket) do
+    {:noreply, Corex.Accordion.focused(socket, "my-accordion", respond_to: :server)}
+  end
+
+  def handle_event("accordion_focused_response", %{"id" => _id, "value" => item}, socket) do
+    {:noreply, assign(socket, :focused_item, item)}
+  end
+  ```
   """
-
-  def focused(socket, accordion_id, opts \\ [])
+  def focused(socket, accordion_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_list(opts) do
     LiveView.push_event(
@@ -1276,69 +1486,38 @@ defmodule Corex.Accordion do
   end
 
   @doc type: :api
-  @doc """
-  Zag `getItemState` for one item. Pass `value` and keyword `opts` (`:disabled`, `:respond_to`).
+  @doc ~S"""
+  Read expanded, focused, and disabled state for one item from `phx-click`. Dispatches `corex:accordion:item-state`. Optional `disabled:` and `respond_to:` `:server` (default), `:client`, or `:both`.
 
-  - `item_state/2`  -  `item_state(id, value)`; same as `item_state(id, value, [])`.
-  - `item_state/3`  -  client: `item_state(id, value, opts)`. Server: `item_state(socket, id, value)` or `item_state(socket, id, value, opts)`.
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `accordion_item_state_response` | `%{"id" => id, "value" => value, "state" => %{"expanded" => bool, "focused" => bool, "disabled" => bool}}` |
+  | Client | `accordion-item-state` on the accordion | `detail`: `id`, `value`, `state` |
 
-  The hook receives `value` and `disabled`, calls `getItemState`, pushes `accordion_item_state_response`
-  and/or dispatches `accordion-item-state` with `detail: %{id, value, state}` according to `:respond_to`.
+  ```heex
+  <.action phx-click={Corex.Accordion.item_state("my-accordion", "lorem", respond_to: :both)}>State for Lorem</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
 
-  ## Examples
+  ```javascript
+  document.getElementById("my-accordion")?.dispatchEvent(
+    new CustomEvent("corex:accordion:item-state", {
+      bubbles: false,
+      detail: { value: "lorem", respond_to: "both" }
+    })
+  );
+  ```
 
-  <!-- tabs-open -->
-
-  ### From Client Binding
-
-      <.action phx-click={Corex.Accordion.item_state("my-accordion", "lorem", disabled: false)} class="button button--sm">
-        item_state("lorem")
-      </.action>
-      <.action phx-click={Corex.Accordion.item_state("my-accordion", "donec", disabled: true)} class="button button--sm">
-        item_state("donec", disabled)
-      </.action>
-
-      <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "donec", label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-      ])} />
-
-  ### From Client JS
-
-      ```javascript
-      const el = document.getElementById("my-accordion");
-      el?.addEventListener("accordion-item-state", (e) => console.log(e.detail));
-      ```
-
-      <.action
-        phx-click={JS.dispatch("corex:accordion:item-state",
-          to: "#my-accordion",
-          detail: %{value: "lorem", disabled: false, respond_to: "client"},
-          bubbles: false
-        )}
-        class="button button--sm"
-      >
-        item_state("lorem") (JS.dispatch, client only)
-      </.action>
-
-  ### From Server
-
-      def handle_event(
-            "accordion_item_state_response",
-            %{"id" => id, "value" => v, "state" => state},
-            socket
-          ) do
-        {:noreply, assign(socket, :accordion_item_state, {id, v, state})}
-      end
-
-  <!-- tabs-close -->
-  """
-
-  def item_state(accordion_id, item_value)
-      when is_binary(accordion_id) and is_binary(item_value) do
-    item_state(accordion_id, item_value, [])
+  ```elixir
+  def handle_event("accordion_item_state_response", %{"id" => _id, "value" => item, "state" => state}, socket) do
+    {:noreply, assign(socket, :item_state, {item, state})}
   end
-
+  ```
+  """
   def item_state(accordion_id, item_value, opts)
       when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
     disabled = Keyword.get(opts, :disabled, false)
@@ -1347,7 +1526,7 @@ defmodule Corex.Accordion do
       to: "##{accordion_id}",
       detail:
         Map.merge(
-          %{value: validate_item_value!(item_value), disabled: disabled},
+          %{value: accordion_validate_item_value!(item_value), disabled: disabled},
           respond_to_fields(opts)
         ),
       bubbles: false
@@ -1360,10 +1539,41 @@ defmodule Corex.Accordion do
     item_state(socket, accordion_id, item_value, [])
   end
 
+  def item_state(accordion_id, item_value)
+      when is_binary(accordion_id) and is_binary(item_value) do
+    item_state(accordion_id, item_value, [])
+  end
+
+  @doc type: :api
+  @doc ~S"""
+  Read item state from `handle_event` (`accordion_item_state`). Same replies as [`item_state/3`](#item_state/3).
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `accordion_item_state_response` | `%{"id" => id, "value" => value, "state" => %{"expanded" => bool, "focused" => bool, "disabled" => bool}}` |
+
+  ```heex
+  <.action phx-click="read_lorem">State for Lorem</.action>
+  <.accordion id="my-accordion" class="accordion" items={Corex.Content.new([
+    %{value: "lorem", label: "Lorem", content: "Lorem body."},
+    %{value: "duis", label: "Duis", content: "Duis body."},
+    %{value: "donec", label: "Donec", content: "Donec body."}
+  ])}><:indicator><.heroicon name="hero-chevron-right" /></:indicator></.accordion>
+  ```
+
+  ```elixir
+  def handle_event("read_lorem", _params, socket) do
+    {:noreply, Corex.Accordion.item_state(socket, "my-accordion", "lorem", respond_to: :server)}
+  end
+
+  def handle_event("accordion_item_state_response", %{"id" => _id, "value" => item, "state" => state}, socket) do
+    {:noreply, assign(socket, :item_state, {item, state})}
+  end
+  ```
+  """
   def item_state(socket, accordion_id, item_value, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
-             is_binary(item_value) and
-             is_list(opts) do
+             is_binary(item_value) and is_list(opts) do
     disabled = Keyword.get(opts, :disabled, false)
 
     LiveView.push_event(
@@ -1372,7 +1582,7 @@ defmodule Corex.Accordion do
       Map.merge(
         %{
           id: accordion_id,
-          value: validate_item_value!(item_value),
+          value: accordion_validate_item_value!(item_value),
           disabled: disabled
         },
         respond_to_fields(opts)
@@ -1380,9 +1590,9 @@ defmodule Corex.Accordion do
     )
   end
 
-  defp validate_item_value!(v) when is_binary(v) and byte_size(v) > 0, do: v
+  defp accordion_validate_item_value!(v) when is_binary(v) and byte_size(v) > 0, do: v
 
-  defp validate_item_value!(_),
+  defp accordion_validate_item_value!(_),
     do: raise(ArgumentError, "accordion item value must be a non-empty string")
 
   defp accordion_assert_trigger_content_pair!(assigns) do
@@ -1471,6 +1681,11 @@ defmodule Corex.Accordion do
 
   defp accordion_panel_has_indicator?(%{source: :slots, indicator_slot: slot}, _top), do: !!slot
   defp accordion_panel_has_indicator?(%{source: :items}, top_indicator), do: top_indicator != []
+
+  defp panel_source_label(%{source: :items, item_entry: %{label: label}}) when is_binary(label),
+    do: label
+
+  defp panel_source_label(_), do: nil
 
   defp normalize_value(nil), do: []
   defp normalize_value(v) when is_binary(v), do: [v]

@@ -1,6 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/signature-pad";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripZagSubmitNames } from "../lib/form-field-array-submit";
+import { getDir, getString } from "../lib/util";
 
 export class SignaturePad extends Component<Props, Api> {
   imageURL: string = "";
@@ -24,6 +26,12 @@ export class SignaturePad extends Component<Props, Api> {
   initApi() {
     return this.zagConnect(connect);
   }
+
+  applyPartDir = (el: HTMLElement | Element | null | undefined) => {
+    if (el instanceof HTMLElement) {
+      el.setAttribute("dir", getDir(this.el));
+    }
+  };
 
   syncPaths = () => {
     const segment = this.el.querySelector<SVGSVGElement>(
@@ -71,32 +79,46 @@ export class SignaturePad extends Component<Props, Api> {
     );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
+    this.applyPartDir(rootEl);
 
     const label = rootEl.querySelector<HTMLElement>(
       '[data-scope="signature-pad"][data-part="label"]'
     );
-    if (label) this.spreadProps(label, this.api.getLabelProps());
+    if (label) {
+      this.spreadProps(label, this.api.getLabelProps());
+      this.applyPartDir(label);
+    }
 
     const control = rootEl.querySelector<HTMLElement>(
       '[data-scope="signature-pad"][data-part="control"]'
     );
-    if (control) this.spreadProps(control, this.api.getControlProps());
+    if (control) {
+      this.spreadProps(control, this.api.getControlProps());
+      this.applyPartDir(control);
+    }
 
     const segment = rootEl.querySelector<SVGSVGElement>(
       '[data-scope="signature-pad"][data-part="segment"]'
     );
-    if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+    if (segment) {
+      this.spreadProps(segment, this.api.getSegmentProps());
+      this.applyPartDir(segment);
+    }
 
     const guide = rootEl.querySelector<SVGRectElement | HTMLElement>(
       '[data-scope="signature-pad"][data-part="guide"]'
     );
-    if (guide) this.spreadProps(guide, this.api.getGuideProps());
+    if (guide) {
+      this.spreadProps(guide, this.api.getGuideProps());
+      this.applyPartDir(guide);
+    }
 
     const clearBtn = rootEl.querySelector<HTMLElement>(
       '[data-scope="signature-pad"][data-part="clear-trigger"]'
     );
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      this.applyPartDir(clearBtn);
     }
 
     const hiddenInput = rootEl.querySelector<HTMLInputElement>(
@@ -109,7 +131,14 @@ export class SignaturePad extends Component<Props, Api> {
           value: this.api.paths.length > 0 ? this.api.paths.join("\n") : "",
         })
       );
+      this.applyPartDir(hiddenInput);
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
     }
+
+    stripZagSubmitNames(this.el, "signature-pad");
 
     this.syncPaths();
   }

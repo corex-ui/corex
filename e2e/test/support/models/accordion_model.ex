@@ -5,7 +5,7 @@ defmodule E2eWeb.AccordionModel do
 
   use E2eWeb.Model, component: "accordion"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     accordion-anatomy-minimal
     accordion-anatomy-with-indicator
     accordion-anatomy-custom-slots
@@ -138,7 +138,7 @@ defmodule E2eWeb.AccordionModel do
   def lorem_trigger_expanded?(session) do
     has?(
       session,
-      css(~s([id="accordion:api-set-value-client:trigger:lorem"][aria-expanded="true"]))
+      css(~S([id="accordion:api-set-value-client:trigger:lorem"][aria-expanded="true"]))
     )
   end
 
@@ -150,7 +150,7 @@ defmodule E2eWeb.AccordionModel do
 
     click(
       session,
-      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
     )
 
     session
@@ -186,7 +186,7 @@ defmodule E2eWeb.AccordionModel do
     el =
       find(
         session,
-        css(~s(#my-accordion [data-scope="accordion"][data-part="root"]))
+        css(~S(#my-accordion [data-scope="accordion"][data-part="root"]))
       )
 
     Wallaby.Element.attr(el, "data-orientation")
@@ -196,7 +196,7 @@ defmodule E2eWeb.AccordionModel do
     click(
       session,
       css(
-        ~s|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="duis"] [data-part="item-trigger"]|
+        ~S|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="duis"] [data-part="item-trigger"]|
       )
     )
 
@@ -207,7 +207,7 @@ defmodule E2eWeb.AccordionModel do
     click(
       session,
       css(
-        ~s|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="lorem"] [data-part="item-trigger"]|
+        ~S|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="lorem"] [data-part="item-trigger"]|
       )
     )
 
@@ -224,7 +224,7 @@ defmodule E2eWeb.AccordionModel do
     click(
       session,
       css(
-        ~s|#accordion-events-client [data-part="item"][data-value="duis"] [data-part="item-trigger"]|
+        ~S|#accordion-events-client [data-part="item"][data-value="duis"] [data-part="item-trigger"]|
       )
     )
 

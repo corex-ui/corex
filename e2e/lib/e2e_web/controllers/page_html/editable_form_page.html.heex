@@ -4,41 +4,49 @@
   theme={@theme}
   path={@path}
 >
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="editable-form-page"
-    title="Editable · Form"
-    subtitle="Controller-rendered form with field={f[:...]}"
+    title={~t"Editable · Form"}
   >
     <.demo_section
-      id="editable-form-plain"
-      title="Phoenix Form (changeset)"
-      code={E2eWeb.Demos.EditableDemo.form_code()}
+      id="editable-form-phoenix"
+      title={~t"Phoenix Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
+      ]}
     >
       <:preview>
-        <.form
-          :let={f}
-          for={@form}
-          action={~p"/editable/form"}
-          method="post"
-          id={@form.id}
-        >
-          <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-          <.editable
-            field={f[:text]}
-            placeholder="Enter text"
-            activation_mode="dblclick"
-            select_on_focus
-            class="editable"
-          >
-            <:label>Text</:label>
-            <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-            <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-            <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-          </.editable>
-          <.action type="submit" id="editable-form-submit" class="button button--accent">
-            Submit
-          </.action>
-        </.form>
+        <E2eWeb.Demos.EditableDemo.form_preview_controller_phoenix form={@phoenix_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.form_preview_controller_ecto form={@ecto_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-form-native"
+      title={~t"Native HTML Form"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.form_preview_controller_native />
       </:preview>
     </.demo_section>
   </.demo_page>

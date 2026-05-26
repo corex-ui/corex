@@ -6,32 +6,14 @@ defmodule Corex.FileUpload do
 
   LiveView `phx-submit` cannot transport raw multipart file bytes over the WebSocket; use a controller route for classic `Plug.Upload`, or [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/uploads.html) for LiveView-native uploads with [`Corex.FileUploadLive`](Corex.FileUploadLive.html) (`<.file_upload_live>`). Do not combine this Zag component with [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) on the same file control.
 
-  ## API
-
-  Client DOM dispatches:
-
-  - `corex:file-upload:clear-files`
-  - `corex:file-upload:clear-rejected`
-  - `corex:file-upload:open`
-
-  Server pushes (from `clear_files/2`, `clear_rejected_files/2`, `open_file_picker/2`):
-
-  - `file_upload_clear_files`  -  `%{"id" => id}`
-  - `file_upload_clear_rejected`  -  `%{"id" => id}`
-  - `file_upload_open`  -  `%{"id" => id}`
-
-  The template renders a single list of **accepted** files (Zag’s default). Rejected
-  files are not listed in the DOM; use `on_file_change` (e.g. `rejectedCount`) and
-  `on_file_reject` / `on_file_reject_client` to react to validation failures.
-
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
   ### Minimal
 
   ```heex
-  <.file_upload id="file-upload-anatomy-minimal" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:close>
       <.heroicon name="hero-x-mark" />
     </:close>
@@ -41,7 +23,7 @@ defmodule Corex.FileUpload do
   ### With label
 
   ```heex
-  <.file_upload id="file-upload-anatomy-label" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:label>Files</:label>
     <:close>
       <.heroicon name="hero-x-mark" />
@@ -52,7 +34,7 @@ defmodule Corex.FileUpload do
   ### Custom slots
 
   ```heex
-  <.file_upload id="file-upload-anatomy-custom" name="document" class="file-upload">
+  <.file_upload name="document" class="file-upload">
     <:dropzone>
       <span>Custom dropzone</span>
     </:dropzone>
@@ -68,7 +50,7 @@ defmodule Corex.FileUpload do
   ### Multipart form (controller)
 
   ```heex
-  <.form for={@form} action={~p"/file-upload/form"} method="post" id={@form.id} multipart>
+  <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
     <input type="hidden" name="file_upload_changeset[_sent]" value="1" />
     <.file_upload field={@form[:attachment]} class="file-upload">
       <:label>Attachment</:label>
@@ -87,20 +69,52 @@ defmodule Corex.FileUpload do
   <!-- tabs-close -->
 
   Use `multipart` on the parent form so `%Plug.Upload{}` is available on the server for classic uploads. Optional hidden `_sent` supports `used_input?` when validating empty submits.
+
+  ## API
+
+  Requires a stable `id` on `<.file_upload>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`clear_files/1`](#clear_files/1) | Clear accepted files (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_files/2`](#clear_files/2) | Clear accepted files (server) | `socket` |
+  | [`clear_rejected_files/1`](#clear_rejected_files/1) | Clear rejected list (client) | `%Phoenix.LiveView.JS{}` |
+  | [`clear_rejected_files/2`](#clear_rejected_files/2) | Clear rejected list (server) | `socket` |
+  | [`open_file_picker/1`](#open_file_picker/1) | Open native picker (client) | `%Phoenix.LiveView.JS{}` |
+  | [`open_file_picker/2`](#open_file_picker/2) | Open native picker (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.file_upload>`. Rejected files are not listed in the DOM; use `on_file_reject` to react to validation failures.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_file_change="files_changed"` | Accepted file list changes | `%{"id" => id, ...}` |
+  | `on_file_accept="file_accepted"` | File passes validation | `%{"id" => id, ...}` |
+  | `on_file_reject="file_rejected"` | File fails validation | `%{"id" => id, ...}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_file_change_client="files-changed"` | Accepted list changes | `id`, file metadata |
+  | `on_file_accept_client="file-accepted"` | File accepted | `id`, file metadata |
+  | `on_file_reject_client="file-rejected"` | File rejected | `id`, reason |
+
+  ## Form
+
+  See **Multipart form** under Anatomy. Use `field={f[:attachment]}` inside `<.form multipart>`.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide.
+
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for FileUpload component strings.
-
-    Without gettext: `translation={%FileUpload.Translation{dropzone: "Drop files"}}`
-
-    With gettext: `translation={%FileUpload.Translation{dropzone: Corex.Gettext.gettext("Drag your file(s) here")}}`
-    """
-    defstruct [:dropzone, :open]
-  end
-
+  @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.FileUpload.Anatomy.{
     Dropzone,
@@ -114,30 +128,92 @@ defmodule Corex.FileUpload do
   }
 
   alias Corex.FileUpload.Connect
+  alias Corex.FileUpload.Translation
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: false)
-  attr(:disabled, :boolean, default: false)
-  attr(:invalid, :boolean, default: false)
-  attr(:read_only, :boolean, default: false)
-  attr(:required, :boolean, default: false)
-  attr(:name, :string)
-  attr(:form, :string)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:max_files, :integer, default: 1)
-  attr(:max_file_size, :integer, default: nil)
-  attr(:min_file_size, :integer, default: nil)
-  attr(:allow_drop, :boolean, default: true)
-  attr(:prevent_document_drop, :boolean, default: true)
-  attr(:accept, :string, default: nil)
-  attr(:directory, :boolean, default: false)
-  attr(:on_file_change, :string, default: nil)
-  attr(:on_file_change_client, :string, default: nil)
-  attr(:on_file_accept, :string, default: nil)
-  attr(:on_file_accept_client, :string, default: nil)
-  attr(:on_file_reject, :string, default: nil)
-  attr(:on_file_reject_client, :string, default: nil)
+  attr(:id, :string,
+    required: false,
+    doc: "Stable id for the file upload root; set automatically when using field"
+  )
+
+  attr(:disabled, :boolean, default: false, doc: "Whether the file upload is disabled")
+  attr(:invalid, :boolean, default: false, doc: "Whether the file upload is invalid")
+  attr(:read_only, :boolean, default: false, doc: "Whether the file upload is read-only")
+  attr(:required, :boolean, default: false, doc: "Whether at least one file is required")
+  attr(:name, :string, doc: "The name attribute of the hidden file input")
+  attr(:form, :string, doc: "The id of the form this control belongs to")
+
+  attr(:dir, :string,
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc: "Text direction (ltr or rtl)"
+  )
+
+  attr(:max_files, :integer,
+    default: 1,
+    doc: "Maximum number of files the user may select"
+  )
+
+  attr(:max_file_size, :integer,
+    default: nil,
+    doc: "Maximum file size in bytes; omit for no limit"
+  )
+
+  attr(:min_file_size, :integer,
+    default: nil,
+    doc: "Minimum file size in bytes; omit for no limit"
+  )
+
+  attr(:allow_drop, :boolean,
+    default: true,
+    doc: "Whether drag-and-drop onto the dropzone is enabled"
+  )
+
+  attr(:prevent_document_drop, :boolean,
+    default: true,
+    doc: "When true, prevents dropping files on the document outside the dropzone"
+  )
+
+  attr(:accept, :string,
+    default: nil,
+    doc: "Comma-separated MIME types or extensions (e.g. image/*,.pdf)"
+  )
+
+  attr(:directory, :boolean,
+    default: false,
+    doc: "When true, allow selecting a directory instead of individual files"
+  )
+
+  attr(:on_file_change, :string,
+    default: nil,
+    doc: "Server event when the accepted file list changes"
+  )
+
+  attr(:on_file_change_client, :string,
+    default: nil,
+    doc: "Client event name when the accepted file list changes"
+  )
+
+  attr(:on_file_accept, :string,
+    default: nil,
+    doc: "Server event when a file passes validation"
+  )
+
+  attr(:on_file_accept_client, :string,
+    default: nil,
+    doc: "Client event name when a file passes validation"
+  )
+
+  attr(:on_file_reject, :string,
+    default: nil,
+    doc: "Server event when a file fails validation"
+  )
+
+  attr(:on_file_reject_client, :string,
+    default: nil,
+    doc: "Client event name when a file fails validation"
+  )
 
   attr(:translation, Corex.FileUpload.Translation,
     default: nil,
@@ -155,58 +231,44 @@ defmodule Corex.FileUpload do
 
   attr(:rest, :global)
 
-  slot(:label, required: false) do
+  slot(:label, required: false, doc: "Label above the dropzone") do
     attr(:class, :string, required: false)
   end
 
-  slot(:dropzone, required: false)
+  slot(:dropzone,
+    required: false,
+    doc: "Custom dropzone content; defaults to translation dropzone text"
+  )
 
-  slot(:open, required: false)
+  slot(:open,
+    required: false,
+    doc: "Custom open-picker trigger; defaults to translation open text"
+  )
 
-  slot :close, required: true do
+  slot(:close, required: true, doc: "Remove control for each accepted file entry") do
     attr(:class, :string, required: false)
   end
 
-  slot :error, required: false do
+  slot(:error,
+    required: false,
+    doc: "Error message content; receives the message as slot argument"
+  ) do
     attr(:class, :string, required: false)
   end
 
   def file_upload(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    show_errors? = Phoenix.Component.used_input?(field)
-
-    errors =
-      if show_errors? do
-        Enum.map(field.errors, &Corex.Gettext.translate_error(&1))
-      else
-        []
-      end
-
-    invalid =
-      (field.errors != [] and show_errors?) or Map.get(assigns, :invalid, false)
-
-    assigns =
-      assigns
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(:invalid, invalid)
-      |> assign(:errors, errors)
-      |> assign(field: nil)
-
-    file_upload(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> file_upload()
   end
 
   def file_upload(assigns) do
-    default_translation = %Translation{
-      dropzone: Corex.Gettext.gettext("Drag your file(s) here"),
-      open: Corex.Gettext.gettext("Upload file(s)")
-    }
-
-    translation = merge_translation(Map.get(assigns, :translation), default_translation)
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "file-upload-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
@@ -229,6 +291,7 @@ defmodule Corex.FileUpload do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         disabled: @disabled,
         invalid: @invalid,
         read_only: @read_only,
@@ -259,7 +322,7 @@ defmodule Corex.FileUpload do
       >
         {render_slot(@close)}
       </template>
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir})} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
@@ -317,14 +380,20 @@ defmodule Corex.FileUpload do
     """
   end
 
-  defp merge_translation(nil, default), do: default
+  api_doc(~S"""
+  Drop every accepted file entry from `phx-click`. Dispatches `corex:file-upload:clear-files`.
 
-  defp merge_translation(%Translation{} = partial, %Translation{} = default) do
-    %Translation{
-      dropzone: partial.dropzone || default.dropzone,
-      open: partial.open || default.open
-    }
-  end
+  ```heex
+  <.action phx-click={Corex.FileUpload.clear_files("my-fu")}>Clear accepted</.action>
+  <.file_upload id="my-fu" class="file-upload" accept="image/*">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+
+  ```javascript
+  document.getElementById("my-fu")?.dispatchEvent(new CustomEvent("corex:file-upload:clear-files", { bubbles: false }));
+  ```
+  """)
 
   def clear_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-files",
@@ -333,10 +402,31 @@ defmodule Corex.FileUpload do
     )
   end
 
+  api_doc(~S"""
+  Clear accepted files from `handle_event` (`file_upload_clear_files`).
+
+  ```elixir
+  def handle_event("clear_files", _, socket) do
+    {:noreply, Corex.FileUpload.clear_files(socket, "my-fu")}
+  end
+  ```
+  """)
+
   def clear_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_files", %{"id" => file_upload_id})
   end
+
+  api_doc(~S"""
+  Remove rejected entries from `phx-click`. Dispatches `corex:file-upload:clear-rejected`.
+
+  ```heex
+  <.action phx-click={Corex.FileUpload.clear_rejected_files("my-fu")}>Clear rejected</.action>
+  <.file_upload id="my-fu" class="file-upload">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+  """)
 
   def clear_rejected_files(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:clear-rejected",
@@ -345,14 +435,45 @@ defmodule Corex.FileUpload do
     )
   end
 
+  api_doc(~S"""
+  Clear rejected files from `handle_event` (`file_upload_clear_rejected`).
+
+  ```elixir
+  def handle_event("clear_rejected", _, socket) do
+    {:noreply, Corex.FileUpload.clear_rejected_files(socket, "my-fu")}
+  end
+  ```
+  """)
+
   def clear_rejected_files(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do
     LiveView.push_event(socket, "file_upload_clear_rejected", %{"id" => file_upload_id})
   end
 
+  api_doc(~S"""
+  Open the OS file picker from `phx-click`. Dispatches `corex:file-upload:open`.
+
+  ```heex
+  <.action phx-click={Corex.FileUpload.open_file_picker("my-fu")}>Browse</.action>
+  <.file_upload id="my-fu" class="file-upload">
+    <:close><.heroicon name="hero-x-mark" /></:close>
+  </.file_upload>
+  ```
+  """)
+
   def open_file_picker(file_upload_id) when is_binary(file_upload_id) do
     JS.dispatch("corex:file-upload:open", to: "##{file_upload_id}", bubbles: false)
   end
+
+  api_doc(~S"""
+  Open the OS file picker from `handle_event` (`file_upload_open`).
+
+  ```elixir
+  def handle_event("browse", _, socket) do
+    {:noreply, Corex.FileUpload.open_file_picker(socket, "my-fu")}
+  end
+  ```
+  """)
 
   def open_file_picker(socket, file_upload_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(file_upload_id) do

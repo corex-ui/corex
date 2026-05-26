@@ -95,23 +95,26 @@ defmodule Corex.ToggleGroupTest do
       }
 
       props_ctrl = Connect.props(assigns_ctrl)
+      assert props_ctrl["data-controlled"] == ""
       assert props_ctrl["data-default-value"] == nil
       assert props_ctrl["data-value"] == "c"
       assert props_ctrl["data-disabled"] == ""
       assert props_ctrl["data-multiple"] == nil
+
+      assert props_unc["data-controlled"] == nil
     end
   end
 
-  describe "Connect.validate_value!/1" do
+  describe "Helpers.validate_value!/1 for toggle group values" do
     test "raises error on non-list" do
       assert_raise ArgumentError, ~r/value must be a list of strings, got: "not a list"/, fn ->
-        Connect.validate_value!("not a list")
+        Corex.Helpers.validate_value!("not a list")
       end
     end
 
     test "raises error on list with non-strings" do
       assert_raise ArgumentError, ~r/value must be a list of strings, got: \["a", 1\]/, fn ->
-        Connect.validate_value!(["a", 1])
+        Corex.Helpers.validate_value!(["a", 1])
       end
     end
   end

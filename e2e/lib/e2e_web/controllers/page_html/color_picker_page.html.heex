@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="color-picker-anatomy-page"
-    title="Color Picker · Anatomy"
-    subtitle="No value, initial value, presets, and popover placement."
+    title={~t"Color Picker · Anatomy"}
+    subtitle={~t"No value, initial value, presets, and popover placement."}
   >
     <.demo_section
       id="color-picker-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.ColorPickerDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.ColorPickerDemo.minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="color-picker-anatomy-with-value"
-      title="With value"
+      title={~t"With value"}
       code={E2eWeb.Demos.ColorPickerDemo.with_value_code()}
     >
       <:preview><E2eWeb.Demos.ColorPickerDemo.with_value_example /></:preview>
@@ -27,7 +28,7 @@
 
     <.demo_section
       id="color-picker-anatomy-with-preset"
-      title="With presets"
+      title={~t"With presets"}
       code={E2eWeb.Demos.ColorPickerDemo.with_presets_code()}
     >
       <:preview><E2eWeb.Demos.ColorPickerDemo.with_presets_example /></:preview>
@@ -35,7 +36,7 @@
 
     <.demo_section
       id="color-picker-anatomy-positioning"
-      title="With positioning"
+      title={~t"With positioning"}
       code={E2eWeb.Demos.ColorPickerDemo.with_positioning_code()}
     >
       <:preview><E2eWeb.Demos.ColorPickerDemo.with_positioning_example /></:preview>

@@ -69,14 +69,16 @@ defmodule E2eWeb.AccordionAnimationLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="accordion-animation-page"
-        title="Accordion · Animation"
-        subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
+        title={~t"Accordion · Animation"}
+        subtitle={~t"Built-in JS animation, instant mode, and custom Motion-driven transitions."}
       >
         <.demo_playground
           id="accordion-animation-playground"
-          title="Playground"
+          title={~t"Playground"}
           heading_class="layout-heading"
+          title_tag="h2"
         >
           <:controls>
             <.select
@@ -171,7 +173,7 @@ defmodule E2eWeb.AccordionAnimationLive do
 
         <.demo_section
           id="accordion-animation-instant"
-          title="Instant"
+          title={~t"Instant"}
           trigger_class="button--sm"
           code={@instant_heex}
         >
@@ -186,11 +188,11 @@ defmodule E2eWeb.AccordionAnimationLive do
 
         <.demo_section
           id="accordion-animation-custom"
-          title="Custom (Motion)"
+          title={~t"Custom (Motion)"}
           trigger_class="button--sm"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @custom_heex},
-            %{value: "js", label: "Javascript", language: :js, code: @custom_js}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @custom_heex},
+            %{value: "js", label: ~t"Javascript", language: :js, code: @custom_js}
           ]}
         >
           <:preview>

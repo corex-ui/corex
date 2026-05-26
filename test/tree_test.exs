@@ -61,8 +61,8 @@ defmodule Corex.TreeTest do
       end
     end
 
-    test "raises when nested child map uses :id" do
-      assert_raise ArgumentError, ~r/must not use :id/, fn ->
+    test "raises when nested child map uses unknown :id" do
+      assert_raise ArgumentError, ~r/key :id not found/, fn ->
         Tree.new([%{label: "P", children: [%{label: "C", id: "bad"}]}])
       end
     end
@@ -88,15 +88,9 @@ defmodule Corex.TreeTest do
       assert item.value == "custom"
     end
 
-    test "raises when map uses :id instead of :value" do
-      assert_raise ArgumentError, ~r/must not use :id.*:value/, fn ->
+    test "raises when map contains unknown :id" do
+      assert_raise ArgumentError, ~r/key :id not found/, fn ->
         Item.new(%{label: "X", id: "only-id"})
-      end
-    end
-
-    test "raises when map has both :id and :value" do
-      assert_raise ArgumentError, ~r/must not use :id.*:value/, fn ->
-        Item.new(%{label: "X", id: "a", value: "a"})
       end
     end
 
@@ -140,13 +134,29 @@ defmodule Corex.TreeTest do
     end
   end
 
-  describe "Tree.generate_id/0" do
-    test "returns unique id" do
-      id1 = Tree.generate_id()
-      id2 = Tree.generate_id()
-      assert is_binary(id1)
-      assert String.starts_with?(id1, "tree-")
-      refute id1 == id2
+  test "Item.new generates unique tree- prefixed values" do
+    item1 = Item.new(%{label: "A"})
+    item2 = Item.new(%{label: "B"})
+    assert String.starts_with?(item1.value, "tree-")
+    assert String.starts_with?(item2.value, "tree-")
+    refute item1.value == item2.value
+  end
+
+  describe "validate_items_assigns!/2" do
+    test "allows nil items for menu" do
+      assert Tree.validate_items_assigns!(%{items: nil}, component: "menu") == %{items: nil}
+    end
+
+    test "raises when tree_view items nil" do
+      assert_raise ArgumentError, ~r/tree_view requires/, fn ->
+        Tree.validate_items_assigns!(%{items: nil}, component: "tree_view", required: true)
+      end
+    end
+
+    test "raises for invalid item struct" do
+      assert_raise ArgumentError, ~r/Expected %Corex.Tree.Item/, fn ->
+        Tree.validate_items_assigns!(%{items: [%{label: "x"}]}, component: "menu")
+      end
     end
   end
 end

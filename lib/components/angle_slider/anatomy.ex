@@ -7,6 +7,7 @@ defmodule Corex.AngleSlider.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       value: 0,
       controlled: false,
       step: 1,
@@ -25,6 +26,7 @@ defmodule Corex.AngleSlider.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: number(),
             controlled: boolean(),
             step: number(),

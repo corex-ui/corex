@@ -33,6 +33,7 @@ defmodule E2eWeb.TimerPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="timer-playground"
         title="Timer · Playground"
         heading_class="layout-heading"

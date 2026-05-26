@@ -1,5 +1,15 @@
 export type RespondTo = "server" | "client" | "both";
 
+export function checkedChangePayload(
+  el: HTMLElement,
+  details: { checked: boolean | "indeterminate" }
+): Record<string, unknown> {
+  return {
+    id: el.id,
+    checked: details.checked,
+  };
+}
+
 export function parseRespondTo(source: unknown): RespondTo {
   if (source && typeof source === "object") {
     const o = source as Record<string, unknown>;
@@ -35,6 +45,23 @@ export function readPayloadChecked(payload: unknown): boolean | undefined {
   const c = o.checked ?? o["checked"];
   if (c === true || c === "true" || c === 1) return true;
   if (c === false || c === "false" || c === 0) return false;
+  return undefined;
+}
+
+export function readPayloadPressed(payload: unknown): boolean | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const o = payload as Record<string, unknown>;
+  const p = o.pressed ?? o["pressed"];
+  if (p === true || p === "true" || p === 1) return true;
+  if (p === false || p === "false" || p === 0) return false;
+  return undefined;
+}
+
+export function readPayloadStringArray(payload: unknown): string[] | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const o = payload as Record<string, unknown>;
+  const v = o.value ?? o["value"];
+  if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v as string[];
   return undefined;
 }
 
@@ -96,6 +123,39 @@ export function notifyChange<TPayload extends Record<string, unknown>>(
       })
     );
   }
+}
+
+type ValueEmitterHook = {
+  el: HTMLElement;
+  pushEvent: (name: string, payload: Record<string, unknown>) => void;
+  canPushServer: () => boolean;
+};
+
+type ValueEmitterOptions = {
+  getValue: () => unknown;
+  serverEventName: string;
+  domEventName: string;
+};
+
+export function createValueEmitter(
+  hook: ValueEmitterHook,
+  options: ValueEmitterOptions
+): (respondTo: RespondTo) => void {
+  return (respondTo: RespondTo) => {
+    const value = options.getValue();
+    const payload = { id: hook.el.id, value } as Record<string, unknown>;
+
+    emitResponse({
+      respondTo,
+      canPushServer: hook.canPushServer(),
+      pushEvent: hook.pushEvent,
+      serverEventName: options.serverEventName,
+      serverPayload: payload,
+      el: hook.el,
+      domEventName: options.domEventName,
+      domDetail: payload,
+    });
+  };
 }
 
 export function emitResponse<TPayload extends Record<string, unknown>>(

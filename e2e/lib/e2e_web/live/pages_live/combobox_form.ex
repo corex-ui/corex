@@ -7,124 +7,89 @@ defmodule E2eWeb.ComboboxForm do
   alias E2e.Form.Combobox
   alias E2eWeb.Demos.ComboboxDemo, as: Demo
 
+  @phoenix_form_id "combobox-live-form-phoenix"
+  @ecto_form_id "combobox-live-form-ecto"
+
+  @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Combobox form")
+     |> assign(:page_title, "Combobox · Form")
      |> assign(:form_ecto, Demo.form_ecto())
-     |> assign(:live_basic_heex, Demo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, Demo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, Demo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, Demo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    form =
-      %Combobox{}
-      |> Combobox.changeset(%{})
-      |> Phoenix.Component.to_form(as: :combobox, id: "combobox-live-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"country" => ""}, as: :combobox_phoenix, id: @phoenix_form_id)
 
-    strict_form =
+    ecto_form =
       %Combobox{}
-      |> Combobox.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :combobox_strict, id: "combobox-strict-form-live")
+      |> Combobox.changeset_validate(%{"country" => ""})
+      |> Phoenix.Component.to_form(as: :combobox_ecto, id: @ecto_form_id)
 
     socket
-    |> assign(:form, form)
-    |> assign(:strict_form, strict_form)
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
-  def handle_event("validate", params, socket) do
-    cparams = Map.get(params, "combobox", %{})
+  @impl true
+  def handle_event("save_phoenix", %{"combobox_phoenix" => params}, socket) do
+    country = params["country"] || ""
 
+    {:noreply,
+     socket
+     |> Toast.create("layout-toast", "Submitted", "country=#{inspect(country)}", :info,
+       duration: 5000
+     )
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"country" => country},
+         as: :combobox_phoenix,
+         id: @phoenix_form_id
+       )
+     )}
+  end
+
+  @impl true
+  def handle_event("validate", %{"combobox_ecto" => params}, socket) do
     changeset =
       %Combobox{}
-      |> Combobox.changeset(cparams)
+      |> Combobox.changeset_validate(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
      assign(
        socket,
-       :form,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :combobox,
-         id: "combobox-live-form"
+         as: :combobox_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
-  def handle_event("save", params, socket) do
-    cparams = Map.get(params, "combobox", %{})
-
-    case Combobox.changeset(%Combobox{}, cparams) do
+  @impl true
+  def handle_event("save", %{"combobox_ecto" => params}, socket) do
+    case Combobox.changeset_validate(%Combobox{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
         message = "Submitted: country=#{data.country}"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :form,
-           Phoenix.Component.to_form(Combobox.changeset(%Combobox{}, cparams),
-             as: :combobox,
-             id: "combobox-live-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         assign(
-           socket,
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :combobox,
-             id: "combobox-live-form"
-           )
-         )}
-    end
-  end
-
-  def handle_event("validate_strict", params, socket) do
-    cparams = Map.get(params, "combobox_strict", %{})
-
-    changeset =
-      %Combobox{}
-      |> Combobox.changeset_validate(cparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     assign(
-       socket,
-       :strict_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :combobox_strict,
-         id: "combobox-strict-form-live"
-       )
-     )}
-  end
-
-  def handle_event("save_strict", params, socket) do
-    cparams = Map.get(params, "combobox_strict", %{})
-
-    case Combobox.changeset_validate(%Combobox{}, cparams) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: country=#{data.country}"
-
-        {:noreply,
-         socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
-             Combobox.changeset_validate(%Combobox{}, cparams),
-             as: :combobox_strict,
-             id: "combobox-strict-form-live"
+             Combobox.changeset_validate(%Combobox{}, params),
+             as: :combobox_ecto,
+             id: @ecto_form_id
            )
          )}
 
@@ -132,54 +97,45 @@ defmodule E2eWeb.ComboboxForm do
         {:noreply,
          assign(
            socket,
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :combobox_strict,
-             id: "combobox-strict-form-live"
+             as: :combobox_ecto,
+             id: @ecto_form_id
            )
          )}
     end
   end
 
+  @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      mode={@mode}
-      theme={@theme}
-      path={@path}
-    >
-      <.demo_page
-        id="combobox-form-live-page"
-        title="Combobox · Form"
-        subtitle="LiveView form with hook-driven country field."
-      >
+    <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+      <.demo_page path={@path} id="combobox-form-live-page" title={~t"Combobox · Form"}>
         <.demo_section
-          id="combobox-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="combobox-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="combobox-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="combobox-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_validate strict_form={@strict_form} />
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

@@ -15,7 +15,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(Text and SVG <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(Text and SVG <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -25,7 +25,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -72,7 +72,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -87,7 +87,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
+                    ~S(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },

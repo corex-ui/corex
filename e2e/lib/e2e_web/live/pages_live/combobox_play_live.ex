@@ -125,7 +125,7 @@ defmodule E2eWeb.ComboboxPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Combobox · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title={~t"Combobox · Playground"} heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -141,17 +141,17 @@ defmodule E2eWeb.ComboboxPlayLive do
             deselectable={false}
             value={[@controls.orientation]}
           >
-            <:item value="vertical" aria_label="Vertical orientation">
+            <:item value="vertical" aria_label={~t"Vertical orientation"}>
               <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
             </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
+            <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
               <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
             </:item>
           </.toggle_group>
 
           <.select
             id="combobox-playground-disabled-items"
-            class="select select--accent w-4xs"
+            class="select select--sm w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -166,7 +166,7 @@ defmodule E2eWeb.ComboboxPlayLive do
           </.select>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -174,7 +174,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -182,7 +182,7 @@ defmodule E2eWeb.ComboboxPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

@@ -1,4 +1,7 @@
 import {
+  readStringListControlledZagUpdate
+} from "./chunks/chunk-VL4ETB3G.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -6,7 +9,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -33,7 +36,7 @@ import {
   prevById,
   queryAll,
   raf
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");
@@ -389,7 +392,7 @@ function valueChangePayload(el, details) {
     value: details.value
   };
 }
-function readPayloadValue(payload) {
+function readToggleGroupPayloadValue(payload) {
   if (!payload || typeof payload !== "object") return void 0;
   const o = payload;
   const v = o.value ?? o["value"];
@@ -435,7 +438,7 @@ var ToggleGroupHook = {
     this.handleRegistry = registry;
     registry.add("toggle-group_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      const value = readPayloadValue(payload);
+      const value = readToggleGroupPayloadValue(payload);
       if (value) toggleGroup.api.setValue(value);
     });
     registry.add("toggle-group:value", (payload) => {
@@ -449,7 +452,7 @@ var ToggleGroupHook = {
   },
   updated() {
     this.toggleGroup?.updateProps({
-      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+      ...readStringListControlledZagUpdate(this.el, "value", "defaultValue"),
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),
@@ -466,5 +469,7 @@ var ToggleGroupHook = {
   }
 };
 export {
-  ToggleGroupHook as ToggleGroup
+  ToggleGroupHook as ToggleGroup,
+  readToggleGroupPayloadValue,
+  valueChangePayload
 };

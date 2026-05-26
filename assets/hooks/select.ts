@@ -4,18 +4,88 @@ import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 
-import { getString, getBoolean, canPushEvent, getDir } from "../lib/util";
-import { readStringListControlledZagProps } from "../lib/read-props";
+import { getString, getBoolean, canPushEvent, getDir, getStringList } from "../lib/util";
+import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
 import { readPositioningOptions } from "../lib/positioning";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import {
+  queueLiveViewFormInputSync,
+  reapplyLiveViewValueInputUsage,
+} from "../lib/live-view-form-input";
 import { type ValueLabelItem, zagListCollectionConfig } from "../lib/list-collection";
 
 type SelectItem = ValueLabelItem;
 
-function buildCollection(items: SelectItem[], hasGroups: boolean) {
+function selectHiddenSelectForForm(el: HTMLElement): HTMLSelectElement | null {
+  const hiddenSelect = el.querySelector<HTMLSelectElement>(
+    '[data-scope="select"][data-part="hidden-select"]'
+  );
+  if (!hiddenSelect) return null;
+
+  const formArrayName = getString(el, "hiddenSelectName");
+  if (formArrayName) {
+    hiddenSelect.name = formArrayName;
+    hiddenSelect.disabled = false;
+    return hiddenSelect;
+  }
+
+  if (!hiddenSelect.name) return null;
+  return hiddenSelect;
+}
+
+export function formatSelectHiddenValue(el: HTMLElement, values: ReadonlyArray<string>): string {
+  const list = values.map((v) => String(v));
+  if (list.length === 0) return "";
+  if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+  return getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
+}
+
+export function syncSelectHiddenSelectForPhoenix(
+  hiddenSelect: HTMLSelectElement,
+  values: ReadonlyArray<string>,
+  onTouched?: () => void
+): void {
+  const valueSet = new Set(values.map(String));
+
+  Array.from(hiddenSelect.options).forEach((option) => {
+    if (option.value === "") {
+      option.selected = false;
+      return;
+    }
+
+    option.selected = valueSet.has(option.value);
+  });
+
+  queueMicrotask(() => {
+    onTouched?.();
+    hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
+export function syncSelectHiddenInputForPhoenix(
+  el: HTMLElement,
+  values: ReadonlyArray<string>,
+  onTouched?: () => void
+): void {
+  const hiddenSelect = selectHiddenSelectForForm(el);
+
+  if (hiddenSelect && getBoolean(el, "multiple")) {
+    syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+    return;
+  }
+
+  const valueInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="select"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+}
+
+export function buildCollection(items: SelectItem[], hasGroups: boolean) {
   return collection(zagListCollectionConfig(items, hasGroups));
 }
 
@@ -23,7 +93,8 @@ function selectZagPropsBase(
   el: HTMLElement,
   liveSocket: HookInterface<HTMLElement>["liveSocket"],
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
-  canPush: () => boolean
+  canPush: () => boolean,
+  markFieldTouched: () => void
 ): Omit<Props, "collection" | "value" | "defaultValue"> {
   const redirectOn = getBoolean(el, "redirect");
   return {
@@ -36,7 +107,7 @@ function selectZagPropsBase(
     invalid: getBoolean(el, "invalid"),
     name: getString(el, "name"),
     form: getString(el, "form"),
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     required: getBoolean(el, "required"),
     deselectable: getBoolean(el, "deselectable"),
     positioning: readPositioningOptions(el),
@@ -50,19 +121,7 @@ function selectZagPropsBase(
         performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
       }
 
-      const valueInput = el.querySelector<HTMLInputElement>(
-        '[data-scope="select"][data-part="value-input"]'
-      );
-      if (valueInput && getBoolean(el, "controlled")) {
-        valueInput.value =
-          details.value.length === 0
-            ? ""
-            : details.value.length === 1
-              ? String(details.value[0])
-              : details.value.map(String).join(",");
-        valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-        valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+      syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
 
       notifyChange({
         el,
@@ -80,12 +139,25 @@ function selectZagPropsBase(
   };
 }
 
+export function reapplySelectInteractiveState(el: HTMLElement): void {
+  el.removeAttribute("data-loading");
+
+  if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+
+  const trigger = el.querySelector<HTMLButtonElement>('[data-scope="select"][data-part="trigger"]');
+  if (!trigger || getBoolean(trigger, "disabled")) return;
+
+  trigger.disabled = false;
+  trigger.removeAttribute("disabled");
+}
+
 type SelectHookState = {
   select?: Select;
   handlers?: Array<CallbackRef>;
   wasFocused?: boolean;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  fieldTouched?: boolean;
 };
 
 const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
@@ -93,13 +165,36 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const hook = this as object & HookInterface<HTMLElement> & SelectHookState;
+    hook.fieldTouched = false;
+    const markFieldTouched = () => {
+      hook.fieldTouched = true;
+    };
+
+    const defaultValues = getStringList(el, "defaultValue") ?? [];
+    if (defaultValues.length > 0) {
+      hook.fieldTouched = true;
+      queueMicrotask(() => {
+        const hiddenSelect = selectHiddenSelectForForm(el);
+        if (hiddenSelect && getBoolean(el, "multiple")) {
+          syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+          return;
+        }
+
+        const valueInput = el.querySelector<HTMLInputElement>(
+          '[data-scope="select"][data-part="value-input"]'
+        );
+        if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
+      });
+    }
+
     const allItems = JSON.parse(el.dataset.items || "[]") as SelectItem[];
     const hasGroups = allItems.some((item: SelectItem) => Boolean(item.group));
 
     const selectComponent = new Select(el, {
-      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched),
       collection: buildCollection(allItems, hasGroups),
-      ...readStringListControlledZagProps(el, "value", "defaultValue"),
+      ...mountStringListBinding(el),
     } as Props);
 
     selectComponent.hasGroups = hasGroups;
@@ -108,7 +203,6 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
 
     this.select = selectComponent;
     this.handlers = [];
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -138,6 +232,8 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
     if (!this.select) return;
 
+    const valuePatch = readUpdatedServerStringList(this.el);
+
     const newItems = JSON.parse(this.el.dataset.items || "[]") as SelectItem[];
     const hasGroups = newItems.some((item: SelectItem) => Boolean(item.group));
 
@@ -148,10 +244,34 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
     const canPush = () => canPushEvent(this.liveSocket);
 
     this.select.updateProps({
-      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush),
+      ...selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
+        this.fieldTouched = true;
+      }),
       collection: this.select.getCollection(),
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
+      ...valuePatch,
     } as Props);
+
+    queueMicrotask(() => {
+      reapplySelectInteractiveState(this.el);
+
+      if (!("value" in valuePatch) || !this.select) return;
+
+      const values = valuePatch.value;
+      const hiddenSelect = selectHiddenSelectForForm(this.el);
+
+      if (hiddenSelect && getBoolean(this.el, "multiple")) {
+        syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+        return;
+      }
+
+      const valueInput = this.el.querySelector<HTMLInputElement>(
+        '[data-scope="select"][data-part="value-input"]'
+      );
+      if (!valueInput) return;
+      const v = formatSelectHiddenValue(this.el, values);
+      if (valueInput.value !== v) valueInput.value = v;
+      reapplyLiveViewValueInputUsage(valueInput);
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SelectHookState) {

@@ -24,16 +24,16 @@ defmodule Corex.FloatingPanel.Connect do
   defp encode_size(nil), do: nil
 
   defp encode_size(%{width: w, height: h}) when is_number(w) and is_number(h),
-    do: Corex.Json.encode!(%{width: w, height: h})
+    do: Corex.Dataset.encode_json(%{width: w, height: h})
 
   defp encode_size(_), do: nil
 
-  defp encode_point(nil), do: nil
-
-  defp encode_point(%{x: x, y: y}) when is_number(x) and is_number(y),
-    do: Corex.Json.encode!(%{x: x, y: y})
-
-  defp encode_point(_), do: nil
+  defp encode_point(point) do
+    case Corex.Point.to_map(point) do
+      nil -> nil
+      map -> Corex.Dataset.encode_json(map)
+    end
+  end
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -55,8 +55,11 @@ defmodule Corex.FloatingPanel.Connect do
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-position-change" => assigns.on_position_change,
+      "data-on-position-change-client" => assigns.on_position_change_client,
       "data-on-size-change" => assigns.on_size_change,
-      "data-on-stage-change" => assigns.on_stage_change
+      "data-on-size-change-client" => assigns.on_size_change_client,
+      "data-on-stage-change" => assigns.on_stage_change,
+      "data-on-stage-change-client" => assigns.on_stage_change_client
     }
   end
 

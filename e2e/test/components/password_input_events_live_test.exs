@@ -4,7 +4,7 @@ defmodule E2eWeb.PasswordInputEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "password_visibility_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/password-input/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/password-input/events", on_error: :warn)
 
     html =
       render_click(view, "password_visibility_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.PasswordInputEventsLiveTest do
         "visible" => true
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="editable-anatomy-page"
-    title="Editable · Anatomy"
-    subtitle="Basic setup and trigger slots."
+    title={~t"Editable · Anatomy"}
+    subtitle={~t"Basic setup and trigger slots."}
   >
     <.demo_section
       id="editable-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.EditableDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.EditableDemo.minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="editable-anatomy-triggers"
-      title="With triggers"
+      title={~t"With triggers"}
       code={E2eWeb.Demos.EditableDemo.with_triggers_code()}
     >
       <:preview><E2eWeb.Demos.EditableDemo.with_triggers_example /></:preview>

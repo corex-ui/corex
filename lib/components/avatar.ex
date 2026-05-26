@@ -2,102 +2,122 @@ defmodule Corex.Avatar do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Avatar](https://zagjs.com/components/react/avatar).
 
-  ## Examples
+  ## Anatomy
 
-  ### Basic
+  <!-- tabs-open -->
+
+  ### Fallback
 
   ```heex
-  <.avatar id="avatar" src="/me.jpg" class="avatar">
+  <.avatar src="" class="avatar">
+    <:fallback>
+      <span class="font-semibold">AB</span>
+    </:fallback>
+  </.avatar>
+  ```
+
+  ### Value slot
+
+  Override fallback body and receive the current `src` as `value`. When `:value` is omitted, `<:fallback>` is used.
+
+  ```heex
+  <.avatar src="https://corex-ui.com/images/avatar.png" alt="" class="avatar">
+    <:value :let={src}>
+      {if src, do: "IMG", else: " - "}
+    </:value>
+  </.avatar>
+  ```
+
+  ### Pending
+
+  With `pending={true}`, the hook and `<img>` are not mounted until `pending={false}`. Use `:loading` or `avatar_skeleton/1`.
+
+  ```heex
+  <.avatar pending class="avatar">
+    <:loading><span class="text-sm">Loading</span></:loading>
+  </.avatar>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.avatar>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_src/2`](#set_src/2) | Set image URL (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_src/3`](#set_src/3) | Set image URL (server) | `socket` |
+  | [`loaded/1`](#loaded/1) | Read loaded state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`loaded/2`](#loaded/2) | Read loaded state with `respond_to` (client) | `%Phoenix.LiveView.JS{}` |
+  | [`loaded/3`](#loaded/3) | Read loaded state (server) | `socket` |
+
+  For `loaded`, use `respond_to: :server | :client | :both`. LiveView receives `avatar_loaded_response`; the DOM receives `avatar-loaded`.
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.avatar>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_status_change="avatar_status_changed"` | Image load status changes | `%{"id" => id, "status" => "loaded" \| "error"}` |
+
+  <!-- tabs-open -->
+
+  ### on_status_change
+
+  ```heex
+  <.avatar
+    class="avatar"
+    src="https://corex-ui.com/images/avatar.png"
+    alt="Avatar"
+    on_status_change="avatar_status_changed"
+  >
     <:fallback>JD</:fallback>
   </.avatar>
   ```
 
-  ### Custom fallback with `:let` (`:value` slot)
-
-  Same idea as the angle slider `value_text` slot: override the fallback body and receive the current `src` as `value`.
-
-  ```heex
-  <.avatar id="avatar" src="/me.jpg" class="avatar">
-    <:value :let={value}>{if value, do: "JD", else: "?"}</:value>
-  </.avatar>
-  ```
-
-  When the `:value` slot is omitted, `<:fallback>` is used.
-
-  ### `pending` vs the hooked avatar
-
-  With `pending={true}`, the component does **not** mount `phx-hook="Avatar"`, does **not** run Zag, and does **not** render an `<img>`.
-  Assigns such as `src` have no visible effect until you re-render with `pending={false}`.
-  The `:loading` slot is only used in that pending branch (custom markup or `avatar_skeleton/1` when empty); it is **not** a replacement for the hooked avatar’s own loading UI.
-
-  ### Async loading
-
   ```elixir
-  <.async_result :let={profile} assign={@profile}>
-    <:loading>
-      <.avatar_skeleton class="avatar" />
-    </:loading>
-    <:failed>Could not load.</:failed>
-    <.avatar id="user-avatar" src={profile.avatar_url} class="avatar">
-      <:fallback>{profile.initials}</:fallback>
-    </.avatar>
-  </.async_result>
+  def handle_event("avatar_status_changed", %{"id" => _id, "status" => status}, socket) do
+    {:noreply, assign(socket, :avatar_status, status)}
+  end
   ```
 
-  ### Pending without `async_result`
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_status_change_client="avatar-status-changed"` | Image load status changes | `id`, `status` |
+
+  <!-- tabs-open -->
+
+  ### on_status_change_client
 
   ```heex
-  <.avatar pending class="avatar">
-    <:loading><span class="text-sm">Loading…</span></:loading>
+  <.avatar
+    id="avatar-events-client"
+    class="avatar"
+    src="https://corex-ui.com/images/avatar.png"
+    on_status_change_client="avatar-status-changed"
+  >
+    <:fallback>JD</:fallback>
   </.avatar>
   ```
 
-  When `pending` is true and the `:loading` slot is empty, `avatar_skeleton/1` is used.
-
-  ## API
-
-  The API targets one avatar via its DOM `id` (the same `id` you pass to `avatar/1`).
-
-  - `set_src/2` and `set_src/3`
-  - `loaded/1`, `loaded/2`, and `loaded/3`
-
-  For `loaded`, use `respond_to: :server | :client | :both` to control whether the response is pushed to LiveView, dispatched as a DOM event, or both.
-
-  ```heex
-  <.action phx-click={Corex.Avatar.set_src("my-avatar", "https://example.com/a.png")}>Set image</.action>
-  <.action phx-click={Corex.Avatar.loaded("my-avatar")}>Read loaded</.action>
+  ```javascript
+  const el = document.getElementById("avatar-events-client");
+  el?.addEventListener("avatar-status-changed", (e) => console.log(e.detail));
   ```
 
-  ## Events
+  <!-- tabs-close -->
 
-  User interaction and imperative API use different channels. See also `on_status_change` / `on_status_change_client` on `avatar/1`.
+  ## Style
 
-  ### User interaction
-
-  When `phx-hook="Avatar"` is active, Zag invokes **`on_status_change`** (server) and **`on_status_change_client`** (client `CustomEvent` type you set). Params / `event.detail` include `%{"id" => dom_id, "status" => "loaded" | "error"}` (string keys from the server; camelCase in JS `detail` as emitted by the hook).
-
-  ### Imperative API (LiveView helpers and client DOM)
-
-  **From LiveView**, use `Corex.Avatar.set_src/3` and `loaded/3`. They use `push_event/3` to the hook; optional `respond_to` controls where the answer goes for `loaded/3`.
-
-  **From the client**, dispatch `CustomEvent`s on the hook root (e.g. `#my-avatar`):
-
-  | Dispatch (type) | `detail` |
-  |-----------------|----------|
-  | `corex:avatar:set-src` | `src`  -  image URL string |
-  | `corex:avatar:loaded` | optional `respond_to`: `"server"`, `"client"`, or `"both"` |
-
-  **Responses to LiveView** (`push_event` from the hook; handle in `handle_event/3`):
-
-  - `avatar_loaded_response`  -  `%{"id" => ..., "loaded" => boolean}`
-
-  **Responses to the DOM** (listen on the hook root element):
-
-  - `avatar-loaded`  -  `detail` with `id` and `loaded`
-
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `avatar.css`, then set `class="avatar"` on `<.avatar>`.
 
   ```css
   [data-scope="avatar"][data-part="root"] {}
@@ -106,27 +126,44 @@ defmodule Corex.Avatar do
   [data-scope="avatar"][data-part="skeleton"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `avatar` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/avatar.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.avatar>`).
 
-  ```heex
-  <.avatar class="avatar avatar--accent avatar--lg">
-    <:fallback>JD</:fallback>
-  </.avatar>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `avatar` |
+  | Accent | `avatar avatar--accent` |
+  | Brand | `avatar avatar--brand` |
+  | Alert | `avatar avatar--alert` |
+  | Info | `avatar avatar--info` |
+  | Success | `avatar avatar--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `avatar avatar--sm` |
+  | MD | `avatar avatar--md` |
+  | LG | `avatar avatar--lg` |
+  | XL | `avatar avatar--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
   alias Corex.Avatar.Connect
@@ -188,7 +225,7 @@ defmodule Corex.Avatar do
       <div :if={@loading != []}>
         {render_slot(@loading)}
       </div>
-      <.avatar_skeleton :if={@loading == []} {@rest} />
+      <.avatar_skeleton :if={@loading == []} id={@id} {@rest} />
     </div>
 
     <div
@@ -251,16 +288,24 @@ defmodule Corex.Avatar do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the avatar image URL from the client. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set the image `src` from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Avatar.set_src("my-avatar", "https://example.com/a.png")}>A</.action>
+  <.avatar id="my-avatar" class="avatar" src={nil} />
+  ```
 
-      <.action phx-click={Corex.Avatar.set_src("my-avatar", "https://example.com/x.png")} class="button button--sm">
-        Set src
-      </.action>
-  """
+  ```javascript
+  document.getElementById("my-avatar")?.dispatchEvent(
+    new CustomEvent("corex:avatar:set-src", {
+      bubbles: false,
+      detail: { src: "https://example.com/a.png" },
+    })
+  );
+  ```
+  """)
+
   def set_src(avatar_id, src) when is_binary(avatar_id) and is_binary(src) do
     JS.dispatch("corex:avatar:set-src",
       to: "##{avatar_id}",
@@ -269,35 +314,46 @@ defmodule Corex.Avatar do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the avatar image URL from the server. Pushes a LiveView event handled by the hook.
+  api_doc(~S"""
+  Set `src` from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="avatar_a" phx-value-src="https://example.com/a.png">A</.action>
+  <.avatar id="my-avatar" class="avatar" src={nil} />
+  ```
 
-      def handle_event("set_avatar", %{"url" => url}, socket) do
-        {:noreply, Corex.Avatar.set_src(socket, "my-avatar", url)}
-      end
-  """
+  ```elixir
+  def handle_event("avatar_a", %{"src" => src}, socket) do
+    {:noreply, Corex.Avatar.set_src(socket, "my-avatar", src)}
+  end
+  ```
+  """)
+
   def set_src(socket, avatar_id, src)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_binary(src) do
     LiveView.push_event(socket, "avatar_set_src", %{id: avatar_id, src: src})
   end
 
-  @doc type: :api
-  @doc """
-  Requests whether the avatar image is loaded from the browser. Returns a `Phoenix.LiveView.JS` command.
-
-  Options: `:respond_to`  -  `:server` (default, `avatar_loaded_response` only), `:both`, or `:client` (`avatar-loaded` DOM only).
-
-  ## Examples
-
-      <.action phx-click={Corex.Avatar.loaded("my-avatar")} class="button button--sm">Loaded</.action>
-      <.action phx-click={Corex.Avatar.loaded("my-avatar", respond_to: :client)} class="button button--sm">
-        Loaded (client)
-      </.action>
-  """
+  @doc false
   def loaded(avatar_id) when is_binary(avatar_id), do: loaded(avatar_id, [])
+
+  api_doc(~S"""
+  Read image load status from `phx-click`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
+
+  ```heex
+  <.action phx-click={Corex.Avatar.loaded("my-avatar", respond_to: :both)}>Status</.action>
+  <.avatar id="my-avatar" class="avatar" src="https://example.com/a.png" />
+  ```
+
+  ```javascript
+  document.getElementById("my-avatar")?.dispatchEvent(
+    new CustomEvent("corex:avatar:loaded", {
+      bubbles: false,
+      detail: { respond_to: "both" },
+    })
+  );
+  ```
+  """)
 
   def loaded(avatar_id, opts) when is_binary(avatar_id) and is_list(opts) do
     JS.dispatch("corex:avatar:loaded",
@@ -307,18 +363,21 @@ defmodule Corex.Avatar do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Requests loaded state from the client. Pushes a LiveView event handled by the hook.
+  api_doc(~S"""
+  Read load status from `handle_event`. Same `respond_to` behavior as [`loaded/2`](#loaded/2).
 
-  See `loaded/2` for `:respond_to`.
+  ```heex
+  <.action phx-click="avatar_status">Status</.action>
+  <.avatar id="my-avatar" class="avatar" src="https://example.com/a.png" />
+  ```
 
-  ## Examples
+  ```elixir
+  def handle_event("avatar_status", _, socket) do
+    {:noreply, Corex.Avatar.loaded(socket, "my-avatar", respond_to: :server)}
+  end
+  ```
+  """)
 
-      def handle_event("avatar_loaded_response", %{"id" => id, "loaded" => loaded}, socket) do
-        {:noreply, assign(socket, :avatar_loaded, {id, loaded})}
-      end
-  """
   def loaded(socket, avatar_id, opts \\ [])
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(avatar_id) and is_list(opts) do
     attrs =

@@ -3,8 +3,15 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
-import { getString, getBoolean, getDir, getCheckedState, canPushEvent } from "../lib/util";
-import { idMatches, notifyChange, readPayloadId, readPayloadChecked } from "../lib/respond-to";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { mountCheckedBinding, readUpdatedServerChecked } from "../lib/read-props";
+import {
+  checkedChangePayload,
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadChecked,
+} from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
@@ -14,15 +21,7 @@ type SwitchHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function checkedChangePayload(
-  el: HTMLElement,
-  details: CheckedChangeDetails
-): Record<string, unknown> {
-  return {
-    id: el.id,
-    checked: details.checked,
-  };
-}
+export { checkedChangePayload };
 
 const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SwitchHookState) {
@@ -31,9 +30,13 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { checked: getCheckedState(el, "checked") === true }
-        : { defaultChecked: getCheckedState(el, "defaultChecked") === true }),
+      ...(() => {
+        const binding = mountCheckedBinding(el);
+        if ("checked" in binding) {
+          return { checked: binding.checked === true };
+        }
+        return { defaultChecked: binding.defaultChecked === true };
+      })(),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -41,7 +44,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
 
       onCheckedChange: (details: CheckedChangeDetails) => {
         notifyChange({
@@ -52,12 +55,23 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
           serverEventName: getString(el, "onCheckedChange"),
           clientEventName: getString(el, "onCheckedChangeClient"),
         });
+
+        const input = el.querySelector<HTMLInputElement>(
+          '[data-scope="switch"][data-part="hidden-input"]'
+        );
+
+        if (input) {
+          queueMicrotask(() => {
+            input.checked = details.checked === true;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
       },
     });
 
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
-
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
@@ -113,11 +127,12 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.zagSwitch?.updateProps({
+    const zagSwitch = this.zagSwitch;
+    if (!zagSwitch) return;
+
+    zagSwitch.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { checked: getCheckedState(this.el, "checked") === true }
-        : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }),
+      ...readUpdatedServerChecked(this.el),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
@@ -125,7 +140,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
     });
   },
 

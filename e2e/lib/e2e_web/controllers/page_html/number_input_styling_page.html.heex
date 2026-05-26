@@ -5,17 +5,40 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="number-input-styling-page"
-    title="Number Input Style"
-    subtitle="Density via modifier classes on the number input root."
+    title={~t"Number Input · Style"}
+    subtitle={
+      ~t"Semantic colors, density, and width via modifier classes and Tailwind max-w-* on the number input root."
+    }
   >
     <.demo_section
+      id="number-input-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.NumberInputDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NumberInputDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
       id="number-input-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.NumberInputDemo.styling_size_code()}
     >
       <:preview>
         <E2eWeb.Demos.NumberInputDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="number-input-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.NumberInputDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.NumberInputDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

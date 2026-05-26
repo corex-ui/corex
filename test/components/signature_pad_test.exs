@@ -97,7 +97,7 @@ defmodule Corex.SignaturePadTest do
         )
 
       assert html =~ ~r/value=""/
-      refute html =~ ~s(value="[]")
+      refute html =~ ~S(value="[]")
     end
 
     test "renders with field value as list" do
@@ -174,8 +174,8 @@ defmodule Corex.SignaturePadTest do
       assert html =~ "Error 1"
       assert html =~ "path1"
       assert html =~ "path2"
-      assert html =~ ~s(data-drawing-fill="red")
-      assert html =~ ~s(data-dir="rtl")
+      assert html =~ ~S(data-drawing-fill="red")
+      assert html =~ ~S(data-dir="rtl")
     end
 
     test "renders empty paths and unknown paths gracefully" do
@@ -185,7 +185,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={nil} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={nil} />
             """
           end,
           %{}
@@ -199,7 +199,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={""} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={""} />
             """
           end,
           %{}
@@ -213,7 +213,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths=" \n " />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths=" \n " />
             """
           end,
           %{}
@@ -227,7 +227,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={%{not: "a list"}} />
+            <Corex.SignaturePad.signature_pad id="test-signature-pad" paths={%{not: "a list"}} />
             """
           end,
           %{}
@@ -279,6 +279,7 @@ defmodule Corex.SignaturePadTest do
         )
 
       assert html =~ "blank"
+      assert html =~ "data-field-used"
     end
 
     test "shows field errors when form has no validate-only restriction" do

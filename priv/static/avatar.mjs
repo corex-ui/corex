@@ -8,7 +8,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -18,7 +18,7 @@ import {
   getString,
   observeAttributes,
   observeChildren
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
@@ -293,5 +293,6 @@ var AvatarHook = {
   }
 };
 export {
-  AvatarHook as Avatar
+  AvatarHook as Avatar,
+  statusPayload
 };

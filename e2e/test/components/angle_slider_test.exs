@@ -163,9 +163,11 @@ defmodule E2eWeb.AngleSliderTest do
           |> AngleSlider.focus_thumb_in_section("my-angle-slider")
           |> AngleSlider.press_key(:right_arrow, 1)
           |> AngleSlider.wait(200)
-          |> then(&AngleSlider.check_accessibility(&1, css("#my-angle-slider"),
-                    filter: E2eWeb.A11yDocPageFilter
-                  ))
+          |> then(
+            &AngleSlider.check_accessibility(&1, css("#my-angle-slider"),
+              filter: E2eWeb.A11yDocPageFilter
+            )
+          )
       end
     end
   end

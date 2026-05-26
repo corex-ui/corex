@@ -33,7 +33,11 @@ defmodule E2eWeb.FileUploadLivePlayLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_playground title="File Upload live · Playground" heading_class="layout-heading">
+      <.demo_playground
+        path={@path}
+        title="File Upload live · Playground"
+        heading_class="layout-heading"
+      >
         <:controls>
           <.playground_dir_toggle id="dir" on_value_change="control_changed" value={[@dir]} />
         </:controls>

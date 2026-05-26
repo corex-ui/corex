@@ -27,7 +27,41 @@ defmodule E2eWeb.ConnCase do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
+      import Phoenix.LiveViewTest
       import E2eWeb.ConnCase
+
+      def live_ok!(conn, path, opts \\ []) do
+        result =
+          if opts == [] do
+            live(conn, path)
+          else
+            live(conn, path, opts)
+          end
+
+        case result do
+          {:ok, view, html} ->
+            {view, html}
+
+          other ->
+            flunk("expected live/2 to succeed for #{inspect(path)}, got: #{inspect(other)}")
+        end
+      end
+
+      def unwrap_live_redirect!({:ok, view, html}), do: {view, html}
+
+      def unwrap_live_redirect!(other) do
+        flunk("expected follow_redirect/2 to succeed, got: #{inspect(other)}")
+      end
+
+      def session_ok!(:ok), do: :ok
+
+      def session_ok!({:error, reason}) do
+        flunk("expected session ok, got error: #{inspect(reason)}")
+      end
+
+      def session_ok!(other) do
+        flunk("expected session :ok, got: #{inspect(other)}")
+      end
     end
   end
 

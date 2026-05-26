@@ -4,7 +4,7 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getStringList } from "../lib/util";
 
-function collapseStartIndex(vals: number[]): number {
+export function collapseStartIndex(vals: number[]): number {
   const rec = (idx: number): number => {
     if (idx > 2) return idx;
     const restAfter = vals.length - idx;
@@ -16,7 +16,7 @@ function collapseStartIndex(vals: number[]): number {
   return rec(0);
 }
 
-function computeItemHidden(root: HTMLElement, time: Time<number>): boolean[] {
+export function computeItemHidden(root: HTMLElement, time: Time<number>): boolean[] {
   const types = ["days", "hours", "minutes", "seconds"] as const;
   const vals = [time.days, time.hours, time.minutes, time.seconds].map(Number);
   const segments = getStringList(root, "segments");

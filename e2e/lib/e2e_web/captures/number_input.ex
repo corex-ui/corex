@@ -2,8 +2,8 @@ defmodule CorexWeb.NumberInput do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.NumberInput
   alias Corex.Heroicon
+  alias Corex.NumberInput
 
   capture variants: [
             basic: %{
@@ -11,10 +11,10 @@ defmodule CorexWeb.NumberInput do
               class: "number-input",
               label: [%{inner_block: "Quantity"}],
               decrement_trigger: [
-                %{inner_block: ~s(<.heroicon name="hero-chevron-down" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-down" class="icon" />)}
               ],
               increment_trigger: [
-                %{inner_block: ~s(<.heroicon name="hero-chevron-up" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-chevron-up" class="icon" />)}
               ]
             }
           ]

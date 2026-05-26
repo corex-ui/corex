@@ -30,6 +30,7 @@ defmodule E2eWeb.TooltipApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tooltip-api-page"
         title="Tooltip · API"
         subtitle="Set open from client bindings, client JS, or a server event."

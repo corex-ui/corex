@@ -4,6 +4,13 @@ import { PinInput } from "../components/pin-input";
 import type { Props, ValueChangeDetails } from "@zag-js/pin-input";
 import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
 import {
+  getJsonStringList,
+  mountStringListBinding,
+  readUpdatedServerStringList,
+} from "../lib/read-props";
+import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
+import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
+import {
   notifyChange,
   emitResponse,
   idMatches,
@@ -14,57 +21,117 @@ import {
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 
-function parseValueWithEmpties(raw: string): string[] {
+export function parseValueWithEmpties(raw: string): string[] {
   return raw.split(",").map((v) => v.trim());
 }
 
-function padToCount(arr: string[], count: number): string[] {
+export function padToCount(arr: string[], count: number): string[] {
   const copy = [...arr];
   while (copy.length < count) copy.push("");
   return copy.slice(0, count);
 }
 
-function readDefaultValueList(el: HTMLElement, count: number): string[] {
-  const raw = el.dataset.defaultValue;
+export function readPinValueList(el: HTMLElement, datasetKey: string, count: number): string[] {
+  const json = getJsonStringList(el, datasetKey);
+  if (json !== undefined) return padToCount(json, count);
+
+  const raw = el.dataset[datasetKey];
   if (raw === undefined || raw === "") {
-    return [];
+    return padToCount([], count);
   }
   return padToCount(parseValueWithEmpties(raw), count);
+}
+
+export function readDefaultValueList(el: HTMLElement, count: number): string[] {
+  return readPinValueList(el, "defaultValue", count);
+}
+
+function padStringListBinding(
+  el: HTMLElement,
+  count: number
+): { value: string[] } | { defaultValue: string[] } {
+  const binding = mountStringListBinding(el);
+  if ("value" in binding) {
+    return { value: padToCount(binding.value, count) };
+  }
+  return { defaultValue: padToCount(binding.defaultValue, count) };
+}
+
+export function readUpdatedPinValue(
+  el: HTMLElement,
+  count: number
+): { value: string[] } | Record<string, never> {
+  const patch = readUpdatedServerStringList(el);
+  if (!("value" in patch)) return {};
+  return { value: padToCount(patch.value, count) };
+}
+
+export function syncPinInputFormForPhoenix(
+  el: HTMLElement,
+  values: ReadonlyArray<string>,
+  onTouched?: () => void,
+  opts: { notifyLiveView?: boolean } = {}
+): void {
+  const submitName = getString(el, "submitName");
+  const count = getNumber(el, "count") ?? 0;
+
+  if (submitName) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "pin-input",
+      submitName,
+      fixedLength: count,
+      notifyLiveView: opts.notifyLiveView,
+      fieldTouched: opts.notifyLiveView === true,
+    });
+    return;
+  }
+
+  const hiddenInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="pin-input"][data-part="hidden-input"]'
+  );
+  if (!hiddenInput) return;
+  if (opts.notifyLiveView === false) {
+    notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched, markUsed: false });
+    return;
+  }
+  notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched });
+}
+
+function zagNameForForm(el: HTMLElement): string | undefined {
+  if (getString(el, "submitName")) return undefined;
+  return getString(el, "name");
 }
 
 function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
-  canPush: () => boolean
+  canPush: () => boolean,
+  allowFormNotify?: () => boolean
 ): Props {
-  const count = getNumber(el, "count");
+  const count = getNumber(el, "count") ?? 0;
 
   return {
     id: el.id,
     count,
-    defaultValue: readDefaultValueList(el, count ?? 0),
+    ...padStringListBinding(el, count),
     disabled: getBoolean(el, "disabled"),
     invalid: getBoolean(el, "invalid"),
     required: getBoolean(el, "required"),
-    readOnly: getBoolean(el, "readOnly"),
+    readOnly: getBoolean(el, "readonly"),
     mask: getBoolean(el, "mask"),
     otp: getBoolean(el, "otp"),
     blurOnComplete: getBoolean(el, "blurOnComplete"),
     selectOnFocus: getBoolean(el, "selectOnFocus"),
-    name: getString(el, "name"),
-    form: getString(el, "form"),
+    name: zagNameForForm(el),
+    form: getString(el, "submitName") ? undefined : getString(el, "form"),
     dir: getDir(el),
     type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
     placeholder: getString(el, "placeholder"),
     onValueChange: (details: ValueChangeDetails) => {
-      const hiddenInput = el.querySelector<HTMLInputElement>(
-        '[data-scope="pin-input"][data-part="hidden-input"]'
-      );
-      if (hiddenInput) {
-        hiddenInput.value = details.valueAsString;
-        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
+      syncPinInputFormForPhoenix(el, details.value, undefined, {
+        notifyLiveView: allowFormNotify?.() === true,
+      });
       notifyChange({
         el,
         canPushServer: canPush(),
@@ -99,17 +166,30 @@ type PinInputHookState = {
   pinInput?: PinInput;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  allowFormNotify?: boolean;
 };
 
 const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & PinInputHookState) {
     const el = this.el;
+    const hook = this as object & HookInterface<HTMLElement> & PinInputHookState;
+    hook.allowFormNotify = false;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    const allowFormNotify = () => hook.allowFormNotify === true;
 
-    const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush));
-    zag.init();
-    this.pinInput = zag;
+    const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush, allowFormNotify));
+    try {
+      zag.init();
+      this.pinInput = zag;
+    } finally {
+      el.removeAttribute("data-loading");
+    }
+
+    queueMicrotask(() => {
+      syncPinInputFormForPhoenix(el, zag.api.value, undefined, { notifyLiveView: false });
+      hook.allowFormNotify = true;
+    });
 
     const emitValue = (respondTo: RespondTo) => {
       const api = zag.api;
@@ -164,25 +244,32 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & PinInputHookState) {
     const el = this.el;
-    const count = getNumber(el, "count");
-    this.pinInput?.updateProps({
+    const zag = this.pinInput;
+    const count = getNumber(el, "count") ?? 0;
+    const valuePatch = readUpdatedPinValue(el, count);
+
+    zag?.updateProps({
       id: el.id,
       count,
-      defaultValue: readDefaultValueList(el, count ?? 0),
+      ...valuePatch,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       mask: getBoolean(el, "mask"),
       otp: getBoolean(el, "otp"),
       blurOnComplete: getBoolean(el, "blurOnComplete"),
       selectOnFocus: getBoolean(el, "selectOnFocus"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? undefined : getString(el, "form"),
       dir: getDir(el),
       type: getString<"alphanumeric" | "numeric" | "alphabetic">(el, "type"),
       placeholder: getString(el, "placeholder"),
     } as Partial<Props>);
+
+    if ("value" in valuePatch) {
+      syncPinInputFormForPhoenix(el, valuePatch.value, undefined, { notifyLiveView: false });
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & PinInputHookState) {

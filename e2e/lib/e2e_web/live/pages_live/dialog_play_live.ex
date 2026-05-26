@@ -45,7 +45,7 @@ defmodule E2eWeb.DialogPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Dialog · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Dialog · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dialog-playground-dir"
@@ -53,7 +53,7 @@ defmodule E2eWeb.DialogPlayLive do
             value={@dir_select}
           />
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="close_on_escape"
             checked={@close_on_escape}
             on_checked_change="close_on_escape_changed"
@@ -61,7 +61,7 @@ defmodule E2eWeb.DialogPlayLive do
             <:label>Close on escape</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="prevent_scroll"
             checked={@prevent_scroll}
             on_checked_change="prevent_scroll_changed"

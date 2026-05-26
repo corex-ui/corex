@@ -1,79 +1,127 @@
 defmodule E2eWeb.PinInputFormLive do
   use E2eWeb, :live_view
 
-  alias E2e.Form.PinInputForm
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+
   alias Corex.Toast
+  alias E2e.Form.PinInputForm
+  alias E2eWeb.Demos.PinInputDemo
+
+  @phoenix_form_id "pin-input-live-form-phoenix"
+  @ecto_form_id "pin-input-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Pin Input form")
-     |> assign_form()}
+     |> assign(:page_title, "Pin Input · Form")
+     |> assign(:form_ecto, PinInputDemo.form_ecto())
+     |> assign(:live_phoenix_heex, PinInputDemo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, PinInputDemo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, PinInputDemo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, PinInputDemo.form_doc_live_ecto_elixir())
+     |> assign_forms()}
   end
 
-  defp assign_form(socket) do
-    form =
-      %PinInputForm{}
-      |> PinInputForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :pin_input_form, id: "pin-input-form")
+  defp assign_forms(socket) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"pin" => []}, as: :pin_phoenix, id: @phoenix_form_id)
 
-    assign(socket, :form, form)
+    ecto_form =
+      %PinInputForm{}
+      |> PinInputForm.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :pin_ecto, id: @ecto_form_id)
+
+    socket
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
   @impl true
-  def handle_event("validate", event_params, socket) do
-    params = Map.get(event_params, "pin_input_form", %{})
-
+  def handle_event("validate", %{"pin_ecto" => params}, socket) do
     changeset =
       %PinInputForm{}
-      |> PinInputForm.changeset(params)
+      |> PinInputForm.changeset_validate(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
-     socket
-     |> assign(
-       :form,
+     assign(
+       socket,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :pin_input_form,
-         id: "pin-input-form"
+         as: :pin_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
   @impl true
-  def handle_event("save", event_params, socket) do
-    params = Map.get(event_params, "pin_input_form", %{})
-
-    case PinInputForm.changeset(%PinInputForm{}, params) do
+  def handle_event("save", %{"pin_ecto" => params}, socket) do
+    case PinInputForm.changeset_validate(%PinInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: pin=#{data.pin}"
+        message = "Submitted: pin=#{inspect(data.pin)}"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :form,
-           Phoenix.Component.to_form(PinInputForm.changeset(%PinInputForm{}, %{}),
-             as: :pin_input_form,
-             id: "pin-input-form"
+           :ecto_form,
+           Phoenix.Component.to_form(
+             PinInputForm.changeset_validate(%PinInputForm{}, params),
+             as: :pin_ecto,
+             id: @ecto_form_id
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
-         socket
-         |> assign(
-           :form,
+         assign(
+           socket,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :pin_input_form,
-             id: "pin-input-form"
+             action: :validate,
+             as: :pin_ecto,
+             id: @ecto_form_id
            )
          )}
     end
+  end
+
+  def handle_event("save", _params, socket) do
+    changeset =
+      %PinInputForm{}
+      |> PinInputForm.changeset_validate(%{})
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :pin_ecto,
+         id: @ecto_form_id
+       )
+     )}
+  end
+
+  def handle_event("save_phoenix", %{"pin_phoenix" => params}, socket) do
+    {:noreply, save_phoenix_pin(socket, Map.get(params, "pin", []))}
+  end
+
+  def handle_event("save_phoenix", _params, socket) do
+    {:noreply, save_phoenix_pin(socket, [])}
+  end
+
+  defp save_phoenix_pin(socket, pin) do
+    socket
+    |> Toast.create("layout-toast", "Submitted", "pin=#{inspect(pin)}", :info, duration: 5000)
+    |> assign(
+      :phoenix_form,
+      Phoenix.Component.to_form(%{"pin" => pin}, as: :pin_phoenix, id: @phoenix_form_id)
+    )
   end
 
   @impl true
@@ -85,34 +133,38 @@ defmodule E2eWeb.PinInputFormLive do
       theme={@theme}
       path={@path}
     >
-      <article id="pin-input-form-live-page" class="w-full flex flex-col gap-4">
-        <.layout_heading>
-          <:title>Pin Input form</:title>
-          <:subtitle>Live View Form</:subtitle>
-        </.layout_heading>
-        <p>
-          Phoenix form with Ecto changeset. The pin input updates its hidden field for phx-change.
-        </p>
-
-        <.form
-          for={@form}
-          id={@form.id}
-          phx-change="validate"
-          phx-submit="save"
+      <.demo_page
+        path={@path}
+        id="pin-input-form-live-page"
+        title={~t"Pin Input · Form"}
+      >
+        <.demo_section
+          id="pin-input-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
+          ]}
         >
-          <.pin_input
-            id="pin-input-form-pin"
-            name="pin_input_form[pin]"
-            count={4}
-            class="pin-input"
-          >
-            <:label>Code</:label>
-          </.pin_input>
-          <.action type="submit" id="pin-input-form-live-submit" class="button button--accent">
-            Submit
-          </.action>
-        </.form>
-      </article>
+          <:preview>
+            <PinInputDemo.form_preview_live_phoenix form={@phoenix_form} />
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="pin-input-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
+          code_tabs={[
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
+          ]}
+        >
+          <:preview>
+            <PinInputDemo.form_preview_live_ecto form={@ecto_form} />
+          </:preview>
+        </.demo_section>
+      </.demo_page>
     </Layouts.app>
     """
   end

@@ -2,11 +2,14 @@ defmodule Corex.Editable.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.Editable.Anatomy.{
     Area,
     CancelTrigger,
     Control,
     EditTrigger,
+    FormValue,
     Input,
     Label,
     Preview,
@@ -45,6 +48,12 @@ defmodule Corex.Editable.Connect do
     )
   end
 
+  def ignore_form_value(assigns) do
+    JS.ignore_attributes(FormValue.ignored_attrs(),
+      to: "##{assigns.id}-value"
+    )
+  end
+
   def ignore_preview(assigns) do
     JS.ignore_attributes(Preview.ignored_attrs(),
       to: Selectors.css_id("editable:#{assigns.id}:preview")
@@ -77,27 +86,39 @@ defmodule Corex.Editable.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.default_value_dataset(assigns, assigns.value || "")
+
+    {value_attr, default_attr} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
-      "data-default-value" => assigns.default_value || assigns.value || "",
+      "data-controlled" => get_boolean(zag_controlled),
+      "data-value" => value_attr,
+      "data-default-value" => default_attr,
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "data-edit" => if(assigns.controlled_edit, do: get_boolean(assigns.edit), else: nil),
-      "data-default-edit" =>
-        if(assigns.controlled_edit, do: nil, else: get_boolean(assigns.default_edit)),
-      "data-controlled-edit" => get_boolean(assigns.controlled_edit),
+      "data-default-edit" => get_boolean(assigns.default_edit),
       "data-placeholder" => assigns.placeholder,
       "data-activation-mode" => assigns.activation_mode,
       "data-select-on-focus" => get_boolean(assigns.select_on_focus),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec root(Root.t()) :: map()
@@ -107,7 +128,8 @@ defmodule Corex.Editable.Connect do
       "data-part" => "root",
       "dir" => assigns.dir,
       "data-orientation" => orientation(assigns),
-      "id" => "editable:#{assigns.id}"
+      "id" => "editable:#{assigns.id}",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -140,6 +162,19 @@ defmodule Corex.Editable.Connect do
       "id" => "editable:#{assigns.id}:label",
       "for" => "editable:#{assigns.id}:input"
     }
+  end
+
+  @spec form_value(FormValue.t()) :: map()
+  def form_value(assigns) do
+    %{
+      "type" => "hidden",
+      "data-scope" => "editable",
+      "data-part" => "form-value",
+      "id" => "#{assigns.id}-value",
+      "name" => assigns.name,
+      "value" => assigns.value || ""
+    }
+    |> maybe_put("form", assigns.form)
   end
 
   @spec input(Input.t()) :: map()

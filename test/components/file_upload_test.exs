@@ -1,7 +1,11 @@
 defmodule Corex.FileUploadTest do
   use CorexTest.ComponentCase, async: true
 
+  import Phoenix.Component
+
+  alias Corex.FileUpload
   alias Corex.FileUpload.Connect
+  alias Corex.FileUpload.Translation
 
   describe "file_upload/1" do
     test "renders" do
@@ -27,6 +31,90 @@ defmodule Corex.FileUploadTest do
       html = render_component(&CorexTest.ComponentHelpers.render_file_upload_with_close/1, [])
       assert html =~ ~r/data-file-upload-item-close-template/
       assert html =~ "data-test-close"
+    end
+
+    test "renders field errors and default translation labels" do
+      form =
+        to_form(
+          %{"doc" => nil},
+          as: :user,
+          errors: [doc: {"is required", []}]
+        )
+
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <FileUpload.file_upload field={@form[:doc]} invalid>
+              <:close><span>X</span></:close>
+              <:error :let={msg}>{msg}</:error>
+            </FileUpload.file_upload>
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~ "is required"
+      assert html =~ ~S(data-part="dropzone")
+      assert html =~ ~S(data-part="trigger")
+    end
+
+    test "renders custom dropzone and open slots" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <FileUpload.file_upload
+              id="fu-slots"
+              name="doc"
+              translation={%Corex.FileUpload.Translation{dropzone: "Drop here", open: "Browse"}}
+            >
+              <:dropzone>Custom drop</:dropzone>
+              <:open>Custom open</:open>
+              <:close><span>X</span></:close>
+            </FileUpload.file_upload>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Custom drop"
+      assert html =~ "Custom open"
+    end
+  end
+
+  describe "Translation" do
+    test "resolve fills partial from defaults" do
+      defaults = Translation.resolve(nil)
+      partial = %Translation{dropzone: "Drop"}
+      merged = Translation.resolve(partial)
+      assert merged.dropzone == "Drop"
+      assert merged.open == defaults.open
+    end
+  end
+
+  describe "API helpers" do
+    test "clear_files/1 returns JS" do
+      assert %Phoenix.LiveView.JS{} = FileUpload.clear_files("fu-1")
+    end
+
+    test "clear_files/2 pushes to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = FileUpload.clear_files(socket, "fu-1")
+    end
+
+    test "clear_rejected_files/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = FileUpload.clear_rejected_files("fu-1")
+
+      assert %Phoenix.LiveView.Socket{} =
+               FileUpload.clear_rejected_files(%Phoenix.LiveView.Socket{}, "fu-1")
+    end
+
+    test "open_file_picker/1 and /2" do
+      assert %Phoenix.LiveView.JS{} = FileUpload.open_file_picker("fu-1")
+
+      assert %Phoenix.LiveView.Socket{} =
+               FileUpload.open_file_picker(%Phoenix.LiveView.Socket{}, "fu-1")
     end
   end
 

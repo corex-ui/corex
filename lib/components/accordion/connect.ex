@@ -6,24 +6,26 @@ defmodule Corex.Accordion.Connect do
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
-    only: [validate_value!: 1, get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
+    only: [
+      validate_value!: 1,
+      get_boolean: 1,
+      joined_csv_values: 1,
+      controlled_dataset_values: 2,
+      maybe_put_data_dir: 2,
+      maybe_put_dir: 2
+    ]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    joined = (assigns.value || []) |> validate_value!() |> joined_csv_values()
+
+    {value_str, default_value_str} =
+      controlled_dataset_values(assigns.controlled, joined)
+
     base = %{
       "data-collapsible" => get_boolean(assigns.collapsible),
-      "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
-        end,
-      "data-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
-        end,
+      "data-default-value" => default_value_str,
+      "data-value" => value_str,
       "data-controlled" => get_boolean(assigns.controlled),
       "data-multiple" => get_boolean(assigns.multiple),
       "data-orientation" => assigns.orientation,
@@ -109,6 +111,12 @@ defmodule Corex.Accordion.Connect do
       "data-ownedby" => root_id(assigns.id)
     }
 
+    base_trigger =
+      case trigger_aria_label(assigns) do
+        nil -> base_trigger
+        aria_label -> Map.put(base_trigger, "aria-label", aria_label)
+      end
+
     maybe_put_dir(base_trigger, assigns.dir)
   end
 
@@ -131,9 +139,10 @@ defmodule Corex.Accordion.Connect do
       "data-disabled" => get_boolean(assigns.disabled),
       "data-focus" => get_boolean(false),
       "data-orientation" => assigns.orientation,
-      "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "id" => content_id(assigns.id, assigns.value)
     }
+
+    base = Map.put(base, "aria-labelledby", trigger_id(assigns.id, assigns.value))
 
     result =
       cond do
@@ -149,6 +158,17 @@ defmodule Corex.Accordion.Connect do
 
     maybe_put_dir(result, assigns.dir)
   end
+
+  defp trigger_aria_label(%{label: label, id: id, value: value})
+       when is_binary(label) and label != "" and is_binary(id) and is_binary(value) do
+    "#{label} (#{trigger_id(id, value)})"
+  end
+
+  defp trigger_aria_label(%{id: id, value: value}) when is_binary(id) and is_binary(value) do
+    trigger_id(id, value)
+  end
+
+  defp trigger_aria_label(_), do: nil
 
   @spec ignore_content(Item.t()) :: JS.t()
   def ignore_content(assigns) do

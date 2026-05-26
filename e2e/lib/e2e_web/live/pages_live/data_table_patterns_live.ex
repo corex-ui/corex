@@ -3,9 +3,12 @@ defmodule E2eWeb.DataTablePatternsLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias E2e.Place
   alias E2eWeb.DataTablePatternState, as: PState
 
-  @categories ~w(Fruit Vegetable Misc)
+  @pattern_db_page_size 5
+
+  @categories ~W(Fruit Vegetable Misc)
   @stream_initial [
     %{id: "1", name: "Apple", category: "Fruit"},
     %{id: "2", name: "Banana", category: "Fruit"},
@@ -25,6 +28,14 @@ defmodule E2eWeb.DataTablePatternsLive do
     sort_rows = PState.sort_rows(@list_users, :id, :asc)
     full_rows = PState.sort_rows(@list_users, :id, :asc)
 
+    {db_rows, db_total} =
+      Place.list_cities_table(
+        page: 1,
+        page_size: @pattern_db_page_size,
+        order_by: :name,
+        order_dir: :asc
+      )
+
     {:ok,
      socket
      |> stream(:pattern_stream, @stream_initial)
@@ -38,7 +49,19 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> assign(:pattern_full_rows, full_rows)
      |> assign(:pattern_full_sort_by, :id)
      |> assign(:pattern_full_sort_order, :asc)
-     |> assign(:pattern_full_selected, [])}
+     |> assign(:pattern_full_selected, [])
+     |> assign(:pattern_db_rows, db_rows)
+     |> assign(:pattern_db_page, 1)
+     |> assign(:pattern_db_page_size, @pattern_db_page_size)
+     |> assign(:pattern_db_sort_by, :name)
+     |> assign(:pattern_db_sort_order, :asc)
+     |> assign(:pattern_db_total, db_total)
+     |> assign(:pattern_row_clicked, nil)
+     |> assign(:pattern_row_click_rows, [
+       %{id: 1, name: ~t"Alice", role: "Admin", email: "alice@example.com"},
+       %{id: 2, name: ~t"Bob", role: "User", email: "bob@example.com"},
+       %{id: 3, name: ~t"Charlie", role: "Editor", email: "charlie@example.com"}
+     ])}
   end
 
   @impl true
@@ -47,7 +70,7 @@ defmodule E2eWeb.DataTablePatternsLive do
 
     item = %{
       id: id,
-      name: "name-#{System.unique_integer([:positive])}",
+      name: ~t"name-#{System.unique_integer([:positive])}",
       category: Enum.random(socket.assigns.pattern_stream_categories)
     }
 
@@ -105,13 +128,13 @@ defmodule E2eWeb.DataTablePatternsLive do
       end
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "Selection",
        message,
        :info,
-       5000
+       duration: 5000
      )}
   end
 
@@ -143,6 +166,53 @@ defmodule E2eWeb.DataTablePatternsLive do
      )}
   end
 
+  def handle_event("pattern_db_sort", %{"sort_by" => sort_by_param}, socket) do
+    sort_by = String.to_existing_atom(sort_by_param)
+    current_by = socket.assigns.pattern_db_sort_by
+    current_order = socket.assigns.pattern_db_sort_order
+
+    {sort_by, sort_order} =
+      if current_by == sort_by do
+        {sort_by, toggle_order(current_order)}
+      else
+        {sort_by, :asc}
+      end
+
+    {rows, total} =
+      Place.list_cities_table(
+        page: 1,
+        page_size: socket.assigns.pattern_db_page_size,
+        order_by: sort_by,
+        order_dir: sort_order
+      )
+
+    {:noreply,
+     socket
+     |> assign(:pattern_db_rows, rows)
+     |> assign(:pattern_db_page, 1)
+     |> assign(:pattern_db_sort_by, sort_by)
+     |> assign(:pattern_db_sort_order, sort_order)
+     |> assign(:pattern_db_total, total)}
+  end
+
+  def handle_event("pattern_db_page", %{"page" => page}, socket) do
+    page = parse_page(page)
+
+    {rows, total} =
+      Place.list_cities_table(
+        page: page,
+        page_size: socket.assigns.pattern_db_page_size,
+        order_by: socket.assigns.pattern_db_sort_by,
+        order_dir: socket.assigns.pattern_db_sort_order
+      )
+
+    {:noreply,
+     socket
+     |> assign(:pattern_db_rows, rows)
+     |> assign(:pattern_db_page, page)
+     |> assign(:pattern_db_total, total)}
+  end
+
   def handle_event("pattern_full_check", _params, socket) do
     message =
       if socket.assigns.pattern_full_selected == [] do
@@ -152,14 +222,18 @@ defmodule E2eWeb.DataTablePatternsLive do
       end
 
     {:noreply,
-     Corex.Toast.push_toast(
+     Corex.Toast.create(
        socket,
        "layout-toast",
        "Selection",
        message,
        :info,
-       5000
+       duration: 5000
      )}
+  end
+
+  def handle_event("row_click", %{"id" => id, "name" => name}, socket) do
+    {:noreply, assign(socket, :pattern_row_clicked, "#{name} (##{id})")}
   end
 
   @impl true
@@ -172,31 +246,70 @@ defmodule E2eWeb.DataTablePatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="data-table-patterns-page"
         title="Data Table · Pattern"
-        subtitle="Stream rows, server-side sort, row selection, and a combined table on one page (namespaced assigns and events per section)."
+        subtitle="Stream, in-memory sort, selection, a database-backed table with pagination, and a combined table on one page."
         heading_class="layout-heading"
       >
         <.demo_section
-          id="data-table-patterns-stream"
-          title="Stream"
+          id="data-table-patterns-row-click"
+          title="Row click"
           code_tabs={[
             %{
               value: "heex",
               label: "Heex",
               language: :heex,
+              code: E2eWeb.Demos.DataTableDemo.patterns_row_click_heex()
+            },
+            %{
+              value: "elixir",
+              label: ~t"Elixir",
+              language: :elixir,
+              code: E2eWeb.Demos.DataTableDemo.patterns_row_click_elixir()
+            }
+          ]}
+        >
+          <:preview>
+            <p :if={@pattern_row_clicked}>Row clicked: {@pattern_row_clicked}</p>
+            <p :if={is_nil(@pattern_row_clicked)}>Click a row (not the action button).</p>
+            <.data_table
+              id="pattern-row-click-table"
+              class="data-table max-w-none"
+              rows={@pattern_row_click_rows}
+              row_click={fn row -> JS.push("row_click", value: %{id: row.id, name: row.name}) end}
+            >
+              <:col :let={row} label="ID">{row.id}</:col>
+              <:col :let={row} label="Name">{row.name}</:col>
+              <:action :let={row}>
+                <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+                  <.heroicon name="hero-pencil-square" />
+                </.action>
+              </:action>
+            </.data_table>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="data-table-patterns-stream"
+          title={~t"Stream"}
+          code_tabs={[
+            %{
+              value: "heex",
+              label: ~t"Heex",
+              language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_stream_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_stream_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-4 w-full max-w-3xl">
+            <div class="flex flex-col gap-4 w-full">
               <div class="flex gap-2 flex-wrap">
                 <.action phx-click="pattern_stream_add" class="button button--sm button--accent">
                   <.heroicon name="hero-plus" /> Add item
@@ -205,7 +318,11 @@ defmodule E2eWeb.DataTablePatternsLive do
                   <.heroicon name="hero-arrow-path" /> Reset
                 </.action>
               </div>
-              <.data_table id="pattern-stream-table" class="data-table" rows={@streams.pattern_stream}>
+              <.data_table
+                id="pattern-stream-table"
+                class="data-table max-w-none"
+                rows={@streams.pattern_stream}
+              >
                 <:col :let={{_id, row}} label="ID">{row.id}</:col>
                 <:col :let={{_id, row}} label="Name">{row.name}</:col>
                 <:col :let={{_id, row}} label="Category">{row.category}</:col>
@@ -229,17 +346,17 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-sort"
-          title="Sort"
+          title={~t"Sort"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_sort_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_sort_elixir()
             }
@@ -248,7 +365,7 @@ defmodule E2eWeb.DataTablePatternsLive do
           <:preview>
             <.data_table
               id="pattern-sort-table"
-              class="data-table max-w-4xl"
+              class="data-table max-w-none"
               rows={@pattern_sort_rows}
               sort_by={@pattern_sort_by}
               sort_order={@pattern_sort_order}
@@ -274,30 +391,30 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-select"
-          title="Select"
+          title={~t"Select"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_select_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_select_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-4xl">
+            <div class="flex flex-col gap-3 w-full">
               <.action phx-click="pattern_check_selected" class="button button--sm">
                 Check selected
               </.action>
               <.data_table
                 id="pattern-select-table"
-                class="data-table"
+                class="data-table max-w-none"
                 rows={@pattern_select_rows}
                 row_id={&"pselect-#{&1.id}"}
                 selectable
@@ -321,30 +438,30 @@ defmodule E2eWeb.DataTablePatternsLive do
 
         <.demo_section
           id="data-table-patterns-full"
-          title="Full (action, sort, select)"
+          title={~t"Full (action, sort, select)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: E2eWeb.Demos.DataTableDemo.patterns_full_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.DataTableDemo.patterns_full_elixir()
             }
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 w-full max-w-4xl">
+            <div class="flex flex-col gap-3 w-full">
               <.action phx-click="pattern_full_check" class="button button--sm">
                 Check selected
               </.action>
               <.data_table
                 id="pattern-full-table"
-                class="data-table"
+                class="data-table max-w-none"
                 rows={@pattern_full_rows}
                 row_id={&"pfull-#{&1.id}"}
                 sort_by={@pattern_full_sort_by}
@@ -385,8 +502,71 @@ defmodule E2eWeb.DataTablePatternsLive do
             </div>
           </:preview>
         </.demo_section>
+
+        <.demo_section
+          id="data-table-patterns-database"
+          title={~t"With database"}
+          code_tabs={E2eWeb.Demos.DataTableDemo.patterns_database_code_tabs()}
+        >
+          <:preview>
+            <div class="flex flex-col gap-4 w-full">
+              <.data_table
+                id="pattern-db-table"
+                class="data-table max-w-none"
+                rows={@pattern_db_rows}
+                row_id={&"db-#{&1.id}"}
+                sort_by={@pattern_db_sort_by}
+                sort_order={@pattern_db_sort_order}
+                on_sort="pattern_db_sort"
+              >
+                <:sort_icon :let={%{direction: direction}}>
+                  <.heroicon name={sort_icon_name(direction)} />
+                </:sort_icon>
+                <:col :let={city} label="Name" name={:name}>{city.name}</:col>
+                <:col :let={city} label="IATA" name={:iata_code}>{city.iata_code}</:col>
+                <:col :let={city} label="Country" name={:iata_country_code}>
+                  {city.iata_country_code}
+                </:col>
+                <:empty>
+                  <p id="pattern-db-empty">No cities</p>
+                </:empty>
+              </.data_table>
+              <.pagination
+                id="pattern-db-pagination"
+                class="pagination max-w-none mx-auto"
+                count={@pattern_db_total}
+                page={@pattern_db_page}
+                page_size={@pattern_db_page_size}
+                controlled
+                on_page_change="pattern_db_page"
+              >
+                <:prev><.heroicon name="hero-chevron-left" /></:prev>
+                <:next><.heroicon name="hero-chevron-right" /></:next>
+                <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+              </.pagination>
+            </div>
+          </:preview>
+        </.demo_section>
       </.demo_page>
     </Layouts.app>
     """
   end
+
+  defp sort_icon_name(:asc), do: "hero-chevron-up"
+  defp sort_icon_name(:desc), do: "hero-chevron-down"
+  defp sort_icon_name(:none), do: "hero-chevron-up-down"
+
+  defp toggle_order(:asc), do: :desc
+  defp toggle_order(:desc), do: :asc
+
+  defp parse_page(page) when is_integer(page) and page > 0, do: page
+
+  defp parse_page(page) when is_binary(page) do
+    case Integer.parse(page) do
+      {n, _} when n > 0 -> n
+      _ -> 1
+    end
+  end
+
+  defp parse_page(_), do: 1
 end

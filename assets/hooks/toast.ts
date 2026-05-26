@@ -2,27 +2,120 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 
 import { createToastGroup, getToastStore } from "../components/toast";
+import type { ActionOptions } from "@zag-js/toast";
 import type { Placement } from "@zag-js/toast";
+import type { Options } from "@zag-js/toast";
 
+import type { RedirectContext } from "../lib/redirect";
 import { getString, getBoolean, getNumber, generateId } from "../lib/util";
 
-type ToastPayload = {
-  title: string;
+type ToastActionSpec = {
+  label: string;
+  encoded: string;
+  className?: string;
+};
+
+type ToastHookRuntime = {
+  pushEvent: (event: string, payload?: Record<string, unknown>) => void;
+  execJs: (encoded: string) => void;
+  redirectCtx: RedirectContext;
+};
+
+function asRecord(v: unknown): Record<string, unknown> {
+  return v != null && typeof v === "object" && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : {};
+}
+
+export function parseSingleExecJsEffect(raw: unknown): string | null {
+  const o = asRecord(raw);
+  if (o.kind !== "exec_js") return null;
+  const encoded = o.encoded;
+  if (typeof encoded !== "string" || encoded.length === 0) return null;
+  return encoded;
+}
+
+export function parseActionSpec(raw: unknown): ToastActionSpec | null {
+  const o = asRecord(raw);
+  const label = o.label;
+  if (typeof label !== "string" || label.length === 0) return null;
+  const effectsRaw = o.effects;
+  if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+  const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+  if (encoded == null) return null;
+  const spec: ToastActionSpec = { label, encoded };
+  const className = o.class;
+  if (typeof className === "string" && className.trim()) {
+    spec.className = className.trim();
+  }
+  return spec;
+}
+
+function buildZagAction(
+  spec: ToastActionSpec,
+  rt: ToastHookRuntime
+): ActionOptions & { className?: string } {
+  const action: ActionOptions & { className?: string } = {
+    label: spec.label,
+    onClick: () => {
+      rt.execJs(spec.encoded);
+    },
+  };
+  if (spec.className) action.className = spec.className;
+  return action;
+}
+
+type ToastCreatePayload = {
+  title?: string;
   description?: string;
-  type?: "info" | "success" | "error";
+  type?: "info" | "success" | "error" | "warning" | "loading" | string;
   id?: string;
   duration?: number | string;
   groupId?: string;
-  loading?: boolean;
+  loading?: unknown;
+  action?: unknown;
+  priority?: number | string;
+};
+
+type ToastUpdatePayload = {
+  id: string;
+  title?: string;
+  description?: string;
+  type?: "info" | "success" | "error" | "warning" | "loading" | string;
+  duration?: number | string;
+  groupId?: string;
+  loading?: unknown;
+  action?: unknown;
+  priority?: number | string;
+};
+
+type ToastIdPayload = {
+  id: string;
+  groupId?: string;
 };
 
 const loadingMeta = (loading: unknown) =>
   loading === true || loading === "true" ? { meta: { loading: true as const } } : {};
 
+type DomListener = { el: HTMLElement; name: string; fn: EventListener };
+
 type ToastHookState = {
   groupId: string;
   handlers?: Array<CallbackRef>;
+  domListeners?: DomListener[];
 };
+
+function buildRuntime(self: HookInterface<HTMLElement>): ToastHookRuntime {
+  return {
+    pushEvent: (event, payload) => {
+      self.pushEvent(event, payload ?? {});
+    },
+    execJs: (encoded) => {
+      self.js().exec(encoded);
+    },
+    redirectCtx: { liveSocket: self.liveSocket },
+  };
+}
 
 const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ToastHookState) {
@@ -50,6 +143,13 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
         return parseInt(duration, 10) || undefined;
       }
       return duration;
+    };
+
+    const parsePriority = (raw: number | string | undefined): Options["priority"] | undefined => {
+      if (raw === undefined || raw === null) return undefined;
+      const n = typeof raw === "string" ? parseInt(raw, 10) : raw;
+      if (!Number.isFinite(n) || n < 1 || n > 8) return undefined;
+      return n as Options["priority"];
     };
 
     const placement =
@@ -110,22 +210,76 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       }
     }
 
+    const rt = buildRuntime(this);
+
+    const buildCreateOptions = (payload: ToastCreatePayload): Options => {
+      const spec = parseActionSpec(payload.action);
+      const base: Options = {
+        title: payload.title ?? "",
+        description: payload.description,
+        type: (payload.type as Options["type"]) || "info",
+        id: payload.id || generateId(undefined, "toast"),
+        duration: parseDuration(payload.duration),
+        ...loadingMeta(payload.loading),
+      };
+      if (spec) {
+        base.action = buildZagAction(spec, rt);
+      }
+      const pr = parsePriority(payload.priority);
+      if (pr !== undefined) base.priority = pr;
+      return base;
+    };
+
+    const buildUpdatePatch = (payload: ToastUpdatePayload): Partial<Options> => {
+      const patch: Partial<Options> = {};
+      if (payload.title !== undefined) patch.title = payload.title;
+      if (payload.description !== undefined) patch.description = payload.description;
+      if (payload.type !== undefined) patch.type = payload.type as Options["type"];
+      if (payload.duration !== undefined) patch.duration = parseDuration(payload.duration);
+      if (payload.loading === true || payload.loading === "true") {
+        patch.meta = { loading: true };
+      } else if (payload.loading === false || payload.loading === "false") {
+        patch.meta = { loading: false };
+      }
+      const spec = parseActionSpec(payload.action);
+      if (spec) {
+        patch.action = buildZagAction(spec, rt);
+      } else if (payload.action === null) {
+        patch.action = undefined;
+      }
+      const pr = parsePriority(payload.priority);
+      if (pr !== undefined) patch.priority = pr;
+      return patch;
+    };
+
+    const handleDismissPayload = (payload: ToastIdPayload) => {
+      const st = getToastStore(payload.groupId || this.groupId);
+      if (!st) return;
+      try {
+        st.dismiss(payload.id);
+      } catch (error) {
+        console.error("Failed to dismiss toast:", error);
+      }
+    };
+
+    const handleRemovePayload = (payload: ToastIdPayload) => {
+      const st = getToastStore(payload.groupId || this.groupId);
+      if (!st) return;
+      try {
+        st.remove(payload.id);
+      } catch (error) {
+        console.error("Failed to remove toast:", error);
+      }
+    };
+
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("toast-create", (payload: ToastPayload) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
-
+      this.handleEvent("toast-create", (payload: ToastCreatePayload) => {
+        const st = getToastStore(payload.groupId || this.groupId);
+        if (!st) return;
         try {
-          store.create({
-            title: payload.title,
-            description: payload.description,
-            type: payload.type || "info",
-            id: payload.id || generateId(undefined, "toast"),
-            duration: parseDuration(payload.duration),
-            ...loadingMeta(payload.loading),
-          });
+          st.create(buildCreateOptions(payload));
         } catch (error) {
           console.error("Failed to create toast:", error);
         }
@@ -133,56 +287,68 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
     );
 
     this.handlers.push(
-      this.handleEvent("toast-update", (payload: Omit<ToastPayload, "duration">) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
-
+      this.handleEvent("toast-update", (payload: ToastUpdatePayload) => {
+        const st = getToastStore(payload.groupId || this.groupId);
+        if (!st || !payload.id) return;
         try {
-          store.update(payload.id!, {
-            title: payload.title,
-            description: payload.description,
-            type: payload.type,
-          });
+          st.update(payload.id, buildUpdatePatch(payload));
         } catch (error) {
           console.error("Failed to update toast:", error);
         }
       })
     );
 
-    this.handlers.push(
-      this.handleEvent("toast-dismiss", (payload: { id: string; groupId?: string }) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
+    this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
 
-        try {
-          store.dismiss(payload.id);
-        } catch (error) {
-          console.error("Failed to dismiss toast:", error);
-        }
-      })
-    );
+    this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
 
-    el.addEventListener("toast:create", ((event: CustomEvent<ToastPayload>) => {
+    const onToastCreate = ((event: CustomEvent<ToastCreatePayload>) => {
       const { detail } = event;
-      const store = getToastStore(detail.groupId || this.groupId);
-      if (!store) return;
-
+      const st = getToastStore(detail.groupId || this.groupId);
+      if (!st) return;
       try {
-        store.create({
-          title: detail.title,
-          description: detail.description,
-          type: detail.type || "info",
-          id: detail.id || generateId(undefined, "toast"),
-          duration: parseDuration(detail.duration),
-          ...loadingMeta(detail.loading),
-        });
+        st.create(buildCreateOptions(detail));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
-    }) as EventListener);
+    }) as EventListener;
+
+    const onToastUpdate = ((event: CustomEvent<ToastUpdatePayload>) => {
+      const { detail } = event;
+      const st = getToastStore(detail.groupId || this.groupId);
+      if (!st || !detail.id) return;
+      try {
+        st.update(detail.id, buildUpdatePatch(detail));
+      } catch (error) {
+        console.error("Failed to update toast:", error);
+      }
+    }) as EventListener;
+
+    const onToastDismiss = ((event: CustomEvent<ToastIdPayload>) => {
+      handleDismissPayload(event.detail);
+    }) as EventListener;
+
+    const onToastRemove = ((event: CustomEvent<ToastIdPayload>) => {
+      handleRemovePayload(event.detail);
+    }) as EventListener;
+
+    const domListeners: DomListener[] = [];
+    const addDom = (name: string, fn: EventListener) => {
+      el.addEventListener(name, fn);
+      domListeners.push({ el, name, fn });
+    };
+    (this as object & ToastHookState).domListeners = domListeners;
+
+    addDom("toast:create", onToastCreate);
+    addDom("toast:update", onToastUpdate);
+    addDom("toast:dismiss", onToastDismiss);
+    addDom("toast:remove", onToastRemove);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ToastHookState) {
+    for (const { el, name, fn } of this.domListeners ?? []) {
+      el.removeEventListener(name, fn);
+    }
     if (this.handlers) {
       for (const handler of this.handlers) {
         this.removeHandleEvent(handler);

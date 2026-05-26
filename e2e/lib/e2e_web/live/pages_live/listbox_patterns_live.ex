@@ -48,7 +48,7 @@ defmodule E2eWeb.ListboxPatternsLive do
       |> DateTime.to_time()
       |> Time.to_string()
 
-    item = %{value: id, label: "Item #{id} @ #{time}"}
+    item = %{value: id, label: ~t"Item #{id} @ #{time}"}
 
     {:noreply,
      socket
@@ -59,7 +59,7 @@ defmodule E2eWeb.ListboxPatternsLive do
 
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
-    item = %{value: id, label: "Item #{id}"}
+    item = %{value: id, label: ~t"Item #{id}"}
 
     {:noreply,
      socket
@@ -78,7 +78,7 @@ defmodule E2eWeb.ListboxPatternsLive do
 
   def handle_event("add_to_group", %{"group" => group}, socket) do
     id = "g#{socket.assigns.next_grouped_id}"
-    item = %{value: id, label: "Item #{socket.assigns.next_grouped_id}", group: group}
+    item = %{value: id, label: ~t"Item #{socket.assigns.next_grouped_id}", group: group}
 
     {:noreply,
      socket
@@ -109,23 +109,24 @@ defmodule E2eWeb.ListboxPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="listbox-patterns-page"
-        title="Listbox · Patterns"
-        subtitle="Streaming items and server-controlled selection."
+        title={~t"Listbox · Patterns"}
+        subtitle={~t"Streaming items and server-controlled selection."}
       >
         <.demo_section
           id="listbox-patterns-stream"
-          title="Stream"
+          title={~t"Stream"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: Demo.patterns_stream_demo_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: Demo.patterns_stream_elixir()
             }
@@ -150,17 +151,17 @@ defmodule E2eWeb.ListboxPatternsLive do
 
         <.demo_section
           id="listbox-patterns-stream-grouped"
-          title="Stream grouped"
+          title={~t"Stream grouped"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: Demo.patterns_stream_grouped_demo_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: Demo.patterns_stream_grouped_elixir()
             }
@@ -200,17 +201,17 @@ defmodule E2eWeb.ListboxPatternsLive do
 
         <.demo_section
           id="listbox-patterns-controlled"
-          title="Controlled (value)"
+          title={~t"Controlled (value)"}
           code_tabs={[
             %{
               value: "heex",
-              label: "Heex",
+              label: ~t"Heex",
               language: :heex,
               code: Demo.patterns_controlled_heex()
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: Demo.patterns_controlled_elixir()
             }

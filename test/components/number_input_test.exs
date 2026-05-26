@@ -32,7 +32,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
+            <Corex.NumberInput.number_input id="test-number-input" min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
               <:label>Number</:label>
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
@@ -55,7 +55,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input>
+            <Corex.NumberInput.number_input id="test-number-input">
               <:decrement_trigger>-</:decrement_trigger>
             </Corex.NumberInput.number_input>
             """
@@ -72,7 +72,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input>
+            <Corex.NumberInput.number_input id="test-number-input">
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
             """
@@ -94,7 +94,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input translation={@translation}>
+            <Corex.NumberInput.number_input id="test-number-input" translation={@translation}>
               <:increment_trigger>+</:increment_trigger>
               <:decrement_trigger>-</:decrement_trigger>
             </Corex.NumberInput.number_input>
@@ -109,7 +109,7 @@ defmodule Corex.NumberInputTest do
       assert html =~ "-"
     end
 
-    test "does not emit data-controlled when uncontrolled" do
+    test "does not emit data-controlled without value" do
       html =
         render_component(
           fn assigns ->
@@ -126,16 +126,17 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ "data-controlled"
+      refute html =~ ~r/data-default-value="/
     end
 
-    test "controlled emits data-controlled and data-value" do
+    test "value sets data-default-value" do
       html =
         render_component(
           fn assigns ->
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input id="x" value="42" controlled>
+            <Corex.NumberInput.number_input id="x" value="7">
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
@@ -144,12 +145,75 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      assert html =~ "data-controlled"
-      assert html =~ ~s(data-value="42")
-      refute html =~ ~s(data-default-value="42")
+      assert html =~ ~S(data-default-value="7")
+      refute html =~ "data-value="
     end
 
-    test "field forces uncontrolled even when controlled is passed" do
+    test "value sets data-default-value and visible input" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value="5">
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-default-value="5")
+      assert html =~ ~r/<input\b[^>]*\bvalue="5"[^>]*\bdata-part="input"/
+    end
+
+    test "display and submit values differ when grouping applies" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value="1234" step={1.0}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-default-value="1234")
+      assert html =~ ~r/<input\b(?=[^>]*\bdata-part="input")(?=[^>]*\bvalue="1,234")[^>]*>/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")(?=[^>]*\bvalue="1,234")[^>]*>/
+    end
+
+    test "formats float value for whole step on server" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value={10.0} step={1.0}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-default-value="10")
+      assert html =~ ~r/<input\b[^>]*\bvalue="10"[^>]*\bdata-part="input"/
+      refute html =~ ~S(value="10.0")
+    end
+
+    test "field sets data-value from form value" do
       changeset =
         {%{}, %{value: :string}}
         |> Ecto.Changeset.cast(%{"value" => "99"}, [:value])
@@ -162,7 +226,7 @@ defmodule Corex.NumberInputTest do
             _ = assigns
 
             ~H"""
-            <Corex.NumberInput.number_input field={@form[:value]} controlled>
+            <Corex.NumberInput.number_input field={@form[:value]}>
               <:decrement_trigger>-</:decrement_trigger>
               <:increment_trigger>+</:increment_trigger>
             </Corex.NumberInput.number_input>
@@ -171,8 +235,39 @@ defmodule Corex.NumberInputTest do
           %{form: form}
         )
 
-      refute html =~ "data-controlled"
-      assert html =~ ~s(data-default-value="99")
+      refute html =~ ~r/data-controlled/
+      assert html =~ ~S(data-value="99")
+      refute html =~ ~S(data-default-value="99")
+      assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
+    end
+
+    test "hidden form input ignores LiveView patches to value and uses text type for used_input tracking" do
+      changeset =
+        {%{}, %{amount: :string}}
+        |> Ecto.Changeset.cast(%{"amount" => "42"}, [:amount])
+
+      form = to_form(changeset, as: :item, id: "item-form")
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input field={@form[:amount]}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="item\[amount\]")(?=[^>]*\bvalue="42")[^>]*\bdata-part="value-input"/
+
+      assert html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
     end
 
     test "visible input renders server-side value attribute to survive morphdom patches" do
@@ -191,7 +286,7 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      assert html =~ ~r/<input\b[^>]*\bvalue="5000"[^>]*\bdata-part="input"/
+      assert html =~ ~r/<input\b[^>]*\bvalue="5,000"[^>]*\bdata-part="input"/
     end
 
     test "visible input renders empty value attribute when no value is provided" do
@@ -211,6 +306,70 @@ defmodule Corex.NumberInputTest do
         )
 
       assert html =~ ~r/<input\b[^>]*\bvalue=""[^>]*\bdata-part="input"/
+    end
+  end
+
+  alias Corex.NumberInput
+
+  describe "set_value/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_value("n1", 42)
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = NumberInput.set_value(socket, "n1", 42)
+    end
+  end
+
+  describe "clear_value/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.clear_value("n1")
+    end
+  end
+
+  describe "increment/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.increment("n1")
+    end
+  end
+
+  describe "decrement/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.decrement("n1")
+    end
+  end
+
+  describe "set_to_min/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_to_min("n1")
+    end
+  end
+
+  describe "set_to_max/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.set_to_max("n1")
+    end
+  end
+
+  describe "focus/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.focus("n1")
+    end
+  end
+
+  describe "state/2" do
+    test "returns JS command" do
+      assert %Phoenix.LiveView.JS{} = NumberInput.state("n1")
+    end
+  end
+
+  describe "state/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = NumberInput.state(socket, "n1")
     end
   end
 

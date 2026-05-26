@@ -2,9 +2,9 @@ defmodule CorexWeb.Menu do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
+  alias Corex.Heroicon
   alias Corex.Menu
   alias Corex.Tree.Item
-  alias Corex.Heroicon
 
   @items_minimal [
     %Item{value: "menu", label: "Menu"},
@@ -48,47 +48,62 @@ defmodule CorexWeb.Menu do
     }
   ]
 
+  @pattern_redirect_items [
+    %Item{value: E2eWeb.Path.join_locale_path("en", "/menu/anatomy"), label: "Anatomy"},
+    %Item{value: E2eWeb.Path.join_locale_path("en", "/menu/api"), label: "API"}
+  ]
+
+  @pattern_redirect_types_items [
+    %Item{
+      value: E2eWeb.Path.join_locale_path("en", "/menu/playground"),
+      label: "href (default)",
+      redirect: :href
+    },
+    %Item{
+      value: E2eWeb.Path.join_locale_path("en", "/menu/events"),
+      label: "LiveView navigate",
+      redirect: :navigate
+    }
+  ]
+
   capture variants: [
             minimal: %{
               id: "menu-anatomy-minimal",
               class: "menu",
               items: @items_minimal,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             grouped: %{
               id: "menu-anatomy-grouped",
               class: "menu",
               items: @items_grouped,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             nested: %{
               id: "menu-anatomy-nested",
               class: "menu",
               items: @items_nested,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}],
-              nested_indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}],
+              nested_indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}]
             },
             nested_grouped: %{
               id: "menu-anatomy-nested-grouped",
               class: "menu",
               items: @items_nested_grouped,
               trigger: [%{inner_block: "Corex"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}],
-              nested_indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}],
+              nested_indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-right" />)}]
             },
             pattern_redirect: %{
               id: "menu-pattern-redirect",
               class: "menu",
               redirect: true,
-              items: [
-                %Item{value: "/en/menu/anatomy", label: "Anatomy"},
-                %Item{value: "/en/menu/api", label: "API"}
-              ],
+              items: @pattern_redirect_items,
               trigger: [%{inner_block: "Navigate"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             pattern_redirect_external: %{
               id: "menu-pattern-external",
@@ -107,18 +122,15 @@ defmodule CorexWeb.Menu do
                 }
               ],
               trigger: [%{inner_block: "External"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             },
             pattern_redirect_types: %{
               id: "menu-pattern-types",
               class: "menu",
               redirect: true,
-              items: [
-                %Item{value: "/en/menu/playground", label: "href (default)", redirect: :href},
-                %Item{value: "/en/menu/events", label: "LiveView navigate", redirect: :navigate}
-              ],
+              items: @pattern_redirect_types_items,
               trigger: [%{inner_block: "Redirect kinds"}],
-              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~S(<.heroicon name="hero-chevron-down" />)}]
             }
           ]
 

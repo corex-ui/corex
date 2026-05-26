@@ -29,7 +29,7 @@ defmodule Corex.HiddenInputTest do
       form = Phoenix.Component.to_form(%{"id" => "42"}, as: :user)
       field = form[:id]
       result = render_component(&Corex.HiddenInput.hidden_input/1, field: field)
-      assert [_] = find_in_html(result, ~s(input[type=hidden][name="user[id]"]))
+      assert [_] = find_in_html(result, ~S(input[type=hidden][name="user[id]"]))
     end
   end
 end

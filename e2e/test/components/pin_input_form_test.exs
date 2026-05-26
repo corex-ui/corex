@@ -18,7 +18,7 @@ defmodule E2eWeb.PinInputFormTest do
     |> PinInput.fill_pin_input("1234")
     |> PinInput.submit_form()
     |> PinInput.wait_for_redirect()
-    |> PinInput.see_flash("Submitted: pin=")
+    |> PinInput.see_flash(~S|["1", "2", "3", "4"]|)
   end
 
   feature "static form - has no A11y violations", %{session: session} do
@@ -37,9 +37,9 @@ defmodule E2eWeb.PinInputFormTest do
   feature "live form - fill pin then submit shows submitted pin", %{session: session} do
     session
     |> PinInput.goto_form(:live)
-    |> PinInput.fill_pin_input("1234")
+    |> PinInput.fill_pin_input("1234", :live)
     |> PinInput.submit_form(:live)
-    |> PinInput.see_flash("Submitted: pin=")
+    |> PinInput.see_flash(~S|["1", "2", "3", "4"]|)
   end
 
   feature "live form - has no A11y violations", %{session: session} do

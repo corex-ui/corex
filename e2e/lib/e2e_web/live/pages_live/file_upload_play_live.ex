@@ -37,11 +37,11 @@ defmodule E2eWeb.FileUploadPlayLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
-      <.demo_playground title="File Upload · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="File Upload · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle id="dir" on_value_change="control_changed" value={[@controls.dir]} />
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -49,7 +49,7 @@ defmodule E2eWeb.FileUploadPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -57,7 +57,7 @@ defmodule E2eWeb.FileUploadPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

@@ -125,6 +125,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   """
   use Mix.Task
 
+  alias Mix.Corex, as: Corex
+  alias Mix.Corex.Gen.Inputs
   alias Mix.Phoenix.{Context, Schema, Scope}
   alias Mix.Tasks.Phx.Gen
 
@@ -161,7 +163,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         {"", "", "", ""}
       end
 
-    layout_opts = layout_generators_opts(context, web_app_name(context))
+    layout_opts = Mix.Corex.layout_generators_opts()
 
     binding = [
       context: context,
@@ -170,8 +172,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       scope: schema.scope,
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
-      layout_themes: layout_themes?(layout_opts),
-      layout_locale: layout_locale?(layout_opts),
+      layout_locale: Mix.Corex.layout_locale_paths?(context.web_module, layout_opts),
       inputs: inputs(schema),
       socket_scope: socket_scope,
       context_scope_prefix: context_scope_prefix,
@@ -235,11 +236,14 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
 
+    gettext_mode = Mix.Corex.generators_gettext_mode()
+
     binding =
       Keyword.merge(binding,
         assigns: %{
           web_namespace: inspect(context.web_module),
-          gettext: true,
+          gettext: gettext_mode != false,
+          gettext_mode: gettext_mode,
           live: true,
           javascript: true
         }
@@ -250,17 +254,19 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
     if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
 
+    Mix.Corex.format_generated_files(files)
+
     context
   end
 
   defp print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
-    layout_opts = layout_generators_opts(context, web_app_name(context))
-    layout_locale = layout_locale?(layout_opts)
+    layout_opts = Corex.layout_generators_opts()
+    locale_scoped = Corex.locale_scoped_routes?(context.web_module, layout_opts)
     prefix = Module.concat(context.web_module, schema.web_namespace)
-    web_path = Mix.Corex.web_path(ctx_app)
+    web_path = Corex.web_path(ctx_app)
 
     scope_instruction =
-      if layout_locale do
+      if locale_scoped do
         "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex:"
       else
         "Add the live routes to your browser scope in #{web_path}/router.ex:"
@@ -325,179 +331,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     ]
   end
 
-  @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
-  def inputs(%Schema{} = schema) do
-    schema.attrs
-    |> Enum.reject(fn {_key, type} -> type == :map end)
-    |> Enum.map(fn
-      {key, :integer} ->
-        number_input_block(key, nil)
-
-      {key, :float} ->
-        number_input_block(key, 0.1)
-
-      {key, :decimal} ->
-        number_input_block(key, 0.1)
-
-      {key, :boolean} ->
-        checkbox_block(key)
-
-      {key, :text} ->
-        native_input_block("textarea", key, error_slot: true)
-
-      {key, :date} ->
-        date_picker_block(key)
-
-      {key, :time} ->
-        native_input_block("time", key, error_slot: true)
-
-      {key, :utc_datetime} ->
-        native_input_block("datetime-local", key, error_slot: true)
-
-      {key, :naive_datetime} ->
-        native_input_block("datetime-local", key, error_slot: true)
-
-      {key, {:array, _} = type} ->
-        native_input_select_multiple_block(key, type)
-
-      {key, {:enum, _}} ->
-        select_enum_block(schema, key)
-
-      {key, _} ->
-        native_input_block("text", key, error_slot: true)
-    end)
-  end
-
-  defp number_input_block(key, step) do
-    step_attr = if step, do: " step={0.1}", else: ""
-
-    ~s"""
-    <.number_input field={@form[#{inspect(key)}]} class="number-input"#{step_attr}>
-      <:label>#{label(key)}</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.number_input>
-    """
-  end
-
-  defp checkbox_block(key) do
-    ~s"""
-    <.checkbox field={@form[#{inspect(key)}]} class="checkbox">
-      <:label>#{label(key)}</:label>
-      <:indicator>
-        <.heroicon name="hero-check" />
-      </:indicator>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.checkbox>
-    """
-  end
-
-  defp date_picker_block(key) do
-    ~s"""
-    <.date_picker field={@form[#{inspect(key)}]} class="date-picker">
-      <:label>#{label(key)}</:label>
-      <:trigger>
-        <.heroicon name="hero-calendar" class="icon" />
-      </:trigger>
-      <:prev_trigger>
-        <.heroicon name="hero-chevron-left" class="icon" />
-      </:prev_trigger>
-      <:next_trigger>
-        <.heroicon name="hero-chevron-right" class="icon" />
-      </:next_trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.date_picker>
-    """
-  end
-
-  defp native_input_select_multiple_block(key, type) do
-    opts = default_options(type)
-    opts_inspect = inspect(opts)
-
-    ~s"""
-    <.native_input
-      field={@form[#{inspect(key)}]}
-      type="select"
-      multiple
-      options={#{opts_inspect}}
-      class="native-input"
-    >
-      <:label>#{label(key)}</:label>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.native_input>
-    """
-  end
-
-  defp select_enum_block(%Schema{} = schema, key) do
-    ~s"""
-    <.select
-      field={@form[#{inspect(key)}]}
-      class="select"
-      items={
-        Enum.map(Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)}), fn v ->
-          %{value: v, label: Phoenix.Naming.humanize(to_string(v))}
-        end)
-      }
-      translation={%Corex.Select.Translation{placeholder: "Choose a value"}}
-    >
-      <:label>#{label(key)}</:label>
-      <:trigger>
-        <.heroicon name="hero-chevron-down" />
-      </:trigger>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.select>
-    """
-  end
-
-  defp native_input_block(type, key, opts) do
-    error = if Keyword.get(opts, :error_slot, false), do: "\n  " <> error_slot(), else: ""
-
-    ~s"""
-    <.native_input
-      field={@form[#{inspect(key)}]}
-      type="#{type}"
-      class="native-input"
-    >
-      <:label>#{label(key)}</:label>#{error}
-    </.native_input>
-    """
-  end
-
-  defp error_slot do
-    ~s"""
-    <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    """
-  end
-
-  defp default_options({:array, :string}),
-    do: Enum.map([1, 2], &{"Option #{&1}", "option#{&1}"})
-
-  defp default_options({:array, :integer}),
-    do: Enum.map([1, 2], &{"#{&1}", &1})
-
-  defp default_options({:array, _}), do: []
-
-  defp label(key), do: Phoenix.Naming.humanize(to_string(key))
-
   defp scope_param(%{scope: nil}), do: ""
 
   defp scope_param(%{scope: %{route_prefix: route_prefix}}) when not is_nil(route_prefix),
@@ -519,36 +352,11 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   defp scope_assign_route_prefix(_), do: ""
 
-  defp web_app_name(%Context{} = context) do
-    context.web_module
-    |> inspect()
-    |> Phoenix.Naming.underscore()
-  end
-
-  defp layout_generators_opts(_context, _web_app_name) do
-    Application.get_env(:corex, :generators, [])[:layout] || []
-  end
-
-  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
   defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
-  defp layout_themes?(opts) do
-    layout_theme?(opts) and app_has_themes?()
-  end
-
-  defp app_has_themes? do
-    app = Mix.Project.config()[:app]
-    str = to_string(app)
-
-    root_app =
-      if String.ends_with?(str, "_web") do
-        String.to_atom(String.replace_suffix(str, "_web", ""))
-      else
-        app
-      end
-
-    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
-    is_list(themes)
+  @doc "Builds HEEx snippets for each schema attribute used by corex.gen.live templates."
+  def inputs(%Schema{} = schema) do
+    Inputs.inputs(schema, "@form")
   end
 end

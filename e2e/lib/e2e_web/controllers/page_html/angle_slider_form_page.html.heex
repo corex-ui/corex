@@ -6,44 +6,43 @@
 >
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="angle-slider-form-page"
-    title="Angle Slider · Form"
-    subtitle="Phoenix to_form/2, validation, and plain HTML"
+    title={~t"Angle Slider · Form"}
   >
     <.demo_section
-      id="angle-slider-form-changeset"
-      title="Phoenix Form (changeset)"
+      id="angle-slider-form-phoenix"
+      title={~t"Phoenix Form"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_changeset form={@form} />
+        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_phoenix form={@phoenix_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="angle-slider-form-validate"
-      title="Ecto Changeset (validation)"
+      id="angle-slider-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
         %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_validate form={@validate_form} />
+        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_ecto form={@ecto_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="angle-slider-form-controller"
-      title="Native form (plain HTML)"
+      id="angle-slider-form-native"
+      title={~t"Native HTML Form"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_elixir}
       ]}
     >
       <:preview>

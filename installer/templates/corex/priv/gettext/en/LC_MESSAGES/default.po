@@ -1,0 +1,73 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/app_web/components/layouts.ex
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Accessible and unstyled Phoenix components"
+msgstr "Accessible and unstyled Phoenix components"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex documentation on HexDocs"
+msgstr "Corex documentation on HexDocs"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Corex for Phoenix"
+msgstr "Corex for Phoenix"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex on GitHub"
+msgstr "Corex on GitHub"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Dark mode"
+msgstr "Dark mode"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Demo Site"
+msgstr "Demo Site"
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Hex Doc"
+msgstr "Hex Doc"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "Language"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Light mode"
+msgstr "Light mode"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theme"
+msgstr "Theme"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr "We lost the connection"
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We're trying to reconnect you..."
+msgstr "We're trying to reconnect you..."

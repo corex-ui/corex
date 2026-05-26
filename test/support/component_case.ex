@@ -9,14 +9,20 @@ defmodule CorexTest.ComponentCase do
       import Phoenix.LiveViewTest
       import CorexTest.Assertions
 
-      defp find_in_html(html, selector) do
+      defp parse_html_fragment(html) do
         case Floki.parse_fragment(to_string(html)) do
           {:ok, doc} ->
-            Floki.find(doc, selector)
+            doc
 
           {:error, reason} ->
             flunk("expected HTML fragment, got #{inspect(reason)}")
         end
+      end
+
+      defp find_in_html(html, selector) do
+        html
+        |> parse_html_fragment()
+        |> Floki.find(selector)
       end
 
       defp text_in_html(html) do

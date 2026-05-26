@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def minimal_code do
     ~S"""
-    <.checkbox id="checkbox-anatomy-minimal" class="checkbox">
+    <.checkbox class="checkbox">
       <:label>Option</:label>
     </.checkbox>
     """
@@ -19,7 +19,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def labeled_code do
     ~S"""
-    <.checkbox id="checkbox-anatomy-labeled" class="checkbox">
+    <.checkbox class="checkbox">
       <:label>Accept the terms</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -41,8 +41,16 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def invalid_code do
     ~S"""
-    <.checkbox id="checkbox-anatomy-invalid" class="checkbox" invalid errors={["Required"]}>
+    <.checkbox
+      class="checkbox checkbox--accent"
+      invalid
+      checked
+      errors={["Required"]}
+    >
       <:label>Subscribe</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -53,8 +61,17 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def invalid_example(assigns) do
     ~H"""
-    <.checkbox id="checkbox-anatomy-invalid" class="checkbox" invalid errors={["Required"]}>
+    <.checkbox
+      id="checkbox-anatomy-invalid"
+      class="checkbox checkbox--accent"
+      invalid
+      checked
+      errors={["Required"]}
+    >
       <:label>Subscribe</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -125,8 +142,8 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def styling_color_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-6 items-start">
-      <.checkbox id="checkbox-style-color-default" class="checkbox checkbox--selected" checked>
-        <:label>Selected</:label>
+      <.checkbox id="checkbox-style-color-default" class="checkbox" checked>
+        <:label>Default</:label>
         <:indicator>
           <.heroicon name="hero-check" />
         </:indicator>
@@ -269,7 +286,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def events_server_heex do
     ~S"""
     <.checkbox
-      id="checkbox-on-checked-change-server"
       class="checkbox"
       on_checked_change="checkbox_changed"
     >
@@ -282,11 +298,10 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("checkbox_changed", %{"id" => id, "checked" => checked}, socket) do
-      {:noreply, stream_insert(socket, :logs, %{id: id, checked: checked, time: DateTime.utc_now()}, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "checkbox_changed",
+      ~S|%{"id" => id, "checked" => checked} = params|
+    )
   end
 
   def events_client_heex do
@@ -322,7 +337,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def patterns_common_code do
     ~S"""
-    <.checkbox id="checkbox-pattern" class="checkbox">
+    <.checkbox class="checkbox">
       <:label>Option</:label>
     </.checkbox>
     """
@@ -344,7 +359,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       </:loading>
 
       <.checkbox
-        id="patterns-checkbox-async"
         class="checkbox"
         checked={checkbox.checked}
       >
@@ -376,7 +390,6 @@ defmodule E2eWeb.Demos.CheckboxDemo do
   def patterns_controlled_heex do
     ~S"""
     <.checkbox
-      id="patterns-checkbox-controlled"
       class="checkbox"
       controlled
       checked={@checked}
@@ -407,7 +420,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def indeterminate_code do
     ~S"""
-    <.checkbox id="checkbox-anatomy-indeterminate" class="checkbox" checked={:indeterminate}>
+    <.checkbox class="checkbox" checked={:indeterminate}>
       <:label>Select some rows</:label>
       <:indicator>
         <.heroicon name="hero-check" />
@@ -433,14 +446,125 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
-  def api_js_dispatch_code do
+  def api_js_dispatch_heex do
     ~S"""
-    document.getElementById("checkbox-api-dispatch")?.dispatchEvent(
-      new CustomEvent("corex:checkbox:set-checked", {
-        bubbles: true,
-        detail: { checked: true }
-      })
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:set-checked', { bubbles: false, detail: { checked: true } }))"
+      >
+        Set checked
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:set-checked', { bubbles: false, detail: { checked: false } }))"
+      >
+        Set unchecked
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('checkbox-api-dispatch')?.dispatchEvent(new CustomEvent('corex:checkbox:toggle-checked', { bubbles: false }))"
+      >
+        Toggle
+      </button>
+    </div>
+    <.checkbox id="checkbox-api-dispatch" class="checkbox">
+      <:label>Terms</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
+      <:indeterminate>
+        <.heroicon name="hero-minus" />
+      </:indeterminate>
+    </.checkbox>
+    """
+  end
+
+  def api_js_dispatch_js do
+    ~S"""
+    const el = document.getElementById("checkbox-api-dispatch");
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: true } })
     );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: false } })
+    );
+
+    el?.dispatchEvent(new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false }));
+    """
+  end
+
+  def api_js_dispatch_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("checkbox-api-dispatch");
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: true } })
+    );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:checkbox:set-checked", { bubbles: false, detail: { checked: false } })
+    );
+
+    el?.dispatchEvent(new CustomEvent("corex:checkbox:toggle-checked", { bubbles: false }));
+    """
+  end
+
+  def api_js_dispatch_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button
+        type="button"
+        class="button button--sm"
+        phx-click={
+          JS.dispatch("corex:checkbox:set-checked",
+            to: "#checkbox-api-dispatch",
+            detail: %{checked: true},
+            bubbles: false
+          )
+        }
+      >
+        Set checked
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        phx-click={
+          JS.dispatch("corex:checkbox:set-checked",
+            to: "#checkbox-api-dispatch",
+            detail: %{checked: false},
+            bubbles: false
+          )
+        }
+      >
+        Set unchecked
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        phx-click={
+          JS.dispatch("corex:checkbox:toggle-checked", to: "#checkbox-api-dispatch", bubbles: false)
+        }
+      >
+        Toggle
+      </button>
+    </div>
+    <.checkbox id="checkbox-api-dispatch" class="checkbox">
+      <:label>Terms</:label>
+      <:indicator>
+        <.heroicon name="hero-check" />
+      </:indicator>
+      <:indeterminate>
+        <.heroicon name="hero-minus" />
+      </:indeterminate>
+    </.checkbox>
     """
   end
 
@@ -487,17 +611,15 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
-  def form_doc_controller_changeset_heex do
+  def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
       :let={f}
       for={@form}
-      action={~p"/account/terms"}
+      action="/account/terms"
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="account-terms-acceptance">
+      <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -505,14 +627,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
     """
   end
 
-  def form_doc_controller_changeset_elixir do
+  def form_doc_controller_phoenix_elixir do
     ~S"""
     def account_terms_page(conn, _params) do
       changeset = MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{})
@@ -532,7 +654,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: terms=#{data.terms}")
-          |> redirect(to: ~p"/account")
+          |> redirect(to: "/account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -549,17 +671,15 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
-  def form_doc_controller_validate_heex do
+  def form_doc_controller_ecto_heex do
     ~S"""
     <.form
       :let={f}
       for={@form}
-      action={~p"/account/terms-strict"}
+      action="/account/terms"
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="account-terms-strict">
+      <.checkbox field={f[:terms]} class="checkbox">
         <:label>Accept terms (strict messages)</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -567,14 +687,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
         </:error>
       </.checkbox>
 
-      <.action type="submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
     """
   end
 
-  def form_doc_controller_validate_elixir do
+  def form_doc_controller_ecto_elixir do
     ~S"""
     def account_terms_strict_page(conn, _params) do
       changeset =
@@ -595,7 +715,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
           data = Ecto.Changeset.apply_changes(changeset)
           conn
           |> put_flash(:info, "Saved: terms=#{data.terms}")
-          |> redirect(to: ~p"/account")
+          |> redirect(to: "/account")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
@@ -612,190 +732,60 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     """
   end
 
-  def form_doc_native_heex do
+  def form_native_heex do
     ~S"""
     <form
-      action={~p"/register"}
+      action="/register"
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.checkbox
         name="user[accept_terms]"
         class="checkbox"
-        id="register-accept-terms"
       >
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" class="button button--accent w-full">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
 
-  def form_doc_live_changeset_heex do
+  def form_doc_controller_native_elixir do
     ~S"""
-    <.form
-      for={@form}
-      id={@form.id}
-      phx-change="validate"
-      phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-terms">
-        <:label>Accept terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
+    def register_create(conn, %{"user" => %{"accept_terms" => terms}}) do
+      checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
 
-      <.action type="submit" id="checkbox-form-live-submit" class="button button--accent w-full">
+      conn
+      |> put_flash(:info, "Submitted: terms=#{inspect(checked)}")
+      |> redirect(to: "/register")
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@phoenix_form} phx-submit="save_phoenix">
+      <.checkbox field={@phoenix_form[:terms]} class="checkbox" id="checkbox-live-form-phoenix-terms">
+        <:label>Accept terms</:label>
+      </.checkbox>
+      <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
     """
   end
 
-  def form_doc_live_changeset_elixir do
+  def form_doc_live_ecto_heex do
     ~S"""
-    def mount(_params, _session, socket) do
-      form =
-        %MyApp.Forms.Terms{}
-        |> MyApp.Forms.Terms.changeset(%{})
-        |> Phoenix.Component.to_form(as: :terms)
-
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def handle_event("validate", %{"terms" => params}, socket) do
-      changeset =
-        %MyApp.Forms.Terms{}
-        |> MyApp.Forms.Terms.changeset(params)
-        |> Map.put(:action, :validate)
-
-      {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms))}
-    end
-
-    def handle_event("save", %{"terms" => params}, socket) do
-      case MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, params) do
-        %Ecto.Changeset{valid?: true} = _changeset ->
-          {:noreply, assign(socket, :form, Phoenix.Component.to_form(MyApp.Forms.Terms.changeset(%MyApp.Forms.Terms{}, %{}), as: :terms))}
-
-        changeset ->
-          {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms))}
-      end
-    end
-    """
-  end
-
-  def form_doc_live_validate_heex do
-    ~S"""
-    <.form
-      for={@form}
-      id={@form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-strict">
+    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+      <.checkbox field={@ecto_form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
         <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.checkbox>
-
-      <.action type="submit" id="checkbox-form-live-strict-submit" class="button button--accent w-full">
-        Submit
-      </.action>
-    </.form>
-    """
-  end
-
-  def form_doc_live_validate_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      form =
-        %MyApp.Forms.Terms{}
-        |> MyApp.Forms.Terms.changeset_validate(%{})
-        |> Phoenix.Component.to_form(as: :terms_strict)
-
-      {:ok, assign(socket, :strict_form, form)}
-    end
-
-    def handle_event("validate_strict", %{"terms_strict" => params}, socket) do
-      changeset =
-        %MyApp.Forms.Terms{}
-        |> MyApp.Forms.Terms.changeset_validate(params)
-        |> Map.put(:action, :validate)
-
-      {:noreply,
-       assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms_strict))}
-    end
-
-    def handle_event("save_strict", %{"terms_strict" => params}, socket) do
-      case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
-        %Ecto.Changeset{valid?: true} = _changeset ->
-          {:noreply,
-           assign(
-             socket,
-             :strict_form,
-             Phoenix.Component.to_form(MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, %{}), as: :terms_strict)
-           )}
-
-        changeset ->
-          {:noreply, assign(socket, :strict_form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms_strict))}
-      end
-    end
-    """
-  end
-
-  def form_preview_live_changeset(assigns) do
-    ~H"""
-    <.form
-      for={@form}
-      id={@form.id}
-      phx-change="validate"
-      phx-submit="save"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-terms">
-        <:label>Accept terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
-
-      <.action type="submit" id="checkbox-form-live-submit" class="button button--accent w-full">
-        Submit
-      </.action>
-    </.form>
-    """
-  end
-
-  def form_preview_live_validate(assigns) do
-    ~H"""
-    <.form
-      for={@form}
-      id={@form.id}
-      phx-change="validate_strict"
-      phx-submit="save_strict"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
-      <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-live-strict">
-        <:label>Accept terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
-
-      <.action
-        type="submit"
-        id="checkbox-form-live-strict-submit"
-        class="button button--accent w-full"
-      >
+      <.action type="submit" id="checkbox-live-form-ecto-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -804,29 +794,20 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   attr(:form, :any, required: true)
 
-  def form_preview_controller_changeset(assigns) do
+  def form_preview_live_phoenix(assigns) do
     ~H"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/checkbox/form"}
-      method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
+      phx-submit="save_phoenix"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-changeset-terms">
-        <:label>Accept terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
-
-      <.action
-        type="submit"
-        id="checkbox-changeset-submit"
-        class="button button--accent w-full"
+      <.checkbox
+        field={@form[:terms]}
+        class="checkbox"
+        id="checkbox-live-form-phoenix-terms"
       >
+        <:label>Accept terms</:label>
+      </.checkbox>
+      <.action type="submit" id="checkbox-live-form-phoenix-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -835,29 +816,63 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   attr(:form, :any, required: true)
 
-  def form_preview_controller_validate(assigns) do
+  def form_preview_live_ecto(assigns) do
     ~H"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/checkbox/form"}
-      method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
+      phx-change="validate"
+      phx-submit="save"
     >
-      <.checkbox field={f[:terms]} class="checkbox" id="checkbox-validate-terms">
-        <:label>Accept terms (stricter messages)</:label>
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-live-form-ecto-terms">
+        <:label>Accept terms</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.checkbox>
+      <.action type="submit" id="checkbox-live-form-ecto-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
 
-      <.action
-        type="submit"
-        id="checkbox-validate-submit"
-        class="button button--accent w-full"
-      >
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/checkbox/form"}
+      method="post"
+    >
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-phoenix-terms">
+        <:label>Accept terms</:label>
+      </.checkbox>
+      <.action type="submit" id="checkbox-form-phoenix-submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_ecto(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/checkbox/form"}
+      method="post"
+    >
+      <.checkbox field={@form[:terms]} class="checkbox" id="checkbox-form-ecto-terms">
+        <:label>Accept terms</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.checkbox>
+      <.action type="submit" id="checkbox-form-ecto-submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -868,30 +883,116 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     _ = assigns
 
     ~H"""
-    <form
-      action={~p"/checkbox/form"}
-      method="post"
-      id="checkbox-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+    <form action={~p"/checkbox/form"} method="post" id="checkbox-form-native">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.checkbox
-        name="terms[terms]"
-        id="checkbox-form-native-terms"
-        class="checkbox"
-      >
+      <.checkbox name="user[accept_terms]" id="checkbox-form-native-terms" class="checkbox">
         <:label>Accept terms</:label>
       </.checkbox>
-      <.action type="submit" id="checkbox-form-submit" class="button button--accent w-full">
+      <.action type="submit" id="checkbox-form-native-submit" class="button button--accent">
         Submit
       </.action>
     </form>
     """
   end
 
-  def form_changeset_heex, do: form_doc_controller_changeset_heex()
-  def form_changeset_elixir, do: form_doc_controller_changeset_elixir()
-  def form_validate_heex, do: form_doc_controller_validate_heex()
-  def form_validate_elixir, do: form_doc_controller_validate_elixir()
-  def form_native_heex, do: form_doc_native_heex()
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.CheckboxFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"terms" => false},
+            as: :terms_phoenix,
+            id: "checkbox-live-form-phoenix"
+          )
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"terms_phoenix" => params}, socket) do
+        terms = Phoenix.HTML.Form.normalize_value("checkbox", params["terms"])
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"terms" => terms},
+             as: :terms_phoenix,
+             id: "checkbox-live-form-phoenix"
+           )
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.CheckboxFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :terms_ecto, id: "checkbox-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"terms_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :terms_ecto,
+             id: "checkbox-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"terms_ecto" => params}, socket) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params),
+                 as: :terms_ecto,
+                 id: "checkbox-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :terms_ecto,
+                 id: "checkbox-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
+
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_doc_controller_ecto_heex()
+  def form_ecto_elixir, do: form_doc_controller_ecto_elixir()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
 end

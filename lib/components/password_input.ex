@@ -2,21 +2,7 @@ defmodule Corex.PasswordInput do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Password Input](https://zagjs.com/components/react/password-input).
 
-  ## API
-
-  Client DOM dispatches:
-
-  - `corex:password-input:set-visible`  -  `detail.visible` boolean
-  - `corex:password-input:toggle-visible`
-  - `corex:password-input:focus`
-
-  Server pushes (from `set_visible/3`, `toggle_visible/2`, `focus/2`):
-
-  - `password_input_set_visible`  -  `%{"id" => id, "visible" => boolean}`
-  - `password_input_toggle_visible`  -  `%{"id" => id}`
-  - `password_input_focus`  -  `%{"id" => id}`
-
-  ## Examples
+  ## Anatomy
   <!-- tabs-open -->
 
   ### Minimal
@@ -45,9 +31,11 @@ defmodule Corex.PasswordInput do
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ## Form
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:password])}` when you want alert borders after validation.
 
   ### Controller
 
@@ -64,7 +52,7 @@ defmodule Corex.PasswordInput do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
+  <.form :let={f} for={@form} action={@action} method="post">
     <.password_input field={f[:password]} class="password-input">
       <:label>Password</:label>
       <:error :let={msg}>
@@ -122,7 +110,7 @@ defmodule Corex.PasswordInput do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
+      <.form for={@form} phx-change="validate">
         <.password_input field={@form[:password]} class="password-input">
           <:label>Password</:label>
           <:error :let={msg}>
@@ -138,7 +126,59 @@ defmodule Corex.PasswordInput do
   end
   ```
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.password_input>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_visible/2`](#set_visible/2) | Set visibility (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_visible/3`](#set_visible/3) | Set visibility (server) | `socket` |
+  | [`toggle_visible/1`](#toggle_visible/1) | Toggle visibility (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_visible/2`](#toggle_visible/2) | Toggle visibility (server) | `socket` |
+  | [`focus/1`](#focus/1) | Focus input (client) | `%Phoenix.LiveView.JS{}` |
+  | [`focus/2`](#focus/2) | Focus input (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.password_input>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_visibility_change="password_visibility_changed"` | Visibility toggles | `%{"id" => id, "visible" => boolean}` |
+
+  <!-- tabs-open -->
+
+  ### on_visibility_change
+
+  ```heex
+  <.password_input
+    class="password-input"
+    on_visibility_change="password_visibility_changed"
+  >
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("password_visibility_changed", %{"id" => _id, "visible" => visible}, socket) do
+    {:noreply, assign(socket, :password_visible, visible)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_visibility_change_client="password-visibility-changed"` | Visibility toggles | `id`, `visible` |
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -151,39 +191,44 @@ defmodule Corex.PasswordInput do
   [data-scope="password-input"][data-part="indicator"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `password-input` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/password-input.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.password_input>`).
 
-  ```heex
-  <.password_input class="password-input password-input--accent password-input--lg">
-    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-  </.password_input>
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `password-input` |
+  | Accent | `password-input password-input--accent` |
+  | Brand | `password-input password-input--brand` |
+  | Alert | `password-input password-input--alert` |
+  | Info | `password-input password-input--info` |
+  | Success | `password-input password-input--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `password-input password-input--sm` |
+  | MD | `password-input password-input--md` |
+  | LG | `password-input password-input--lg` |
+  | XL | `password-input password-input--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for PasswordInput component strings.
-
-    Without gettext: `translation={%PasswordInput.Translation{ toggle_visibility: "Toggle password visibility" }}`
-
-    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: Corex.Gettext.gettext("Toggle password visibility") }}`
-    """
-    defstruct [:toggle_visibility]
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.PasswordInput.Anatomy.{
     Control,
@@ -196,10 +241,13 @@ defmodule Corex.PasswordInput do
   }
 
   alias Corex.PasswordInput.Connect
+  alias Corex.PasswordInput.Translation
+  alias Phoenix.HTML.Form
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
+  attr(:value, :string, default: nil)
   attr(:visible, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
@@ -228,7 +276,7 @@ defmodule Corex.PasswordInput do
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
-      "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, invalid state, and errors from the form field"
+      "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, and errors from the form field. Pass `invalid` explicitly for alert styling."
   )
 
   attr(:rest, :global)
@@ -250,44 +298,37 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
-    assigns =
-      assigns
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:form, fn -> field.form.id end)
-      |> assign(field: nil)
-
-    password_input(assigns)
+    assigns
+    |> Corex.FormField.assign_form_field(field)
+    |> assign(:value, Form.normalize_value("password", field.value))
+    |> password_input()
   end
 
   def password_input(assigns) do
-    default_translation = %Translation{
-      toggle_visibility: Corex.Gettext.gettext("Toggle password visibility")
-    }
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "password-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
 
     ~H"""
     <div
       id={@id}
       phx-hook="PasswordInput"
       data-loading 
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-no-icon={if @visible_indicator == [] or @hidden_indicator == [], do: "", else: nil}
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
+        value: @value,
         visible: @visible,
         disabled: @disabled,
         invalid: @invalid,
@@ -303,7 +344,7 @@ defmodule Corex.PasswordInput do
         on_visibility_change_client: @on_visibility_change_client
       })}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
         <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, orientation: @orientation})} {Connect.label(%Label{id: @id, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
@@ -323,9 +364,11 @@ defmodule Corex.PasswordInput do
               disabled: @disabled,
               name: @name,
               form: @form,
+              form_field: @form_field,
               auto_complete: @auto_complete,
               orientation: @orientation
             })}
+            value={@value || ""}
           />
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}
@@ -340,22 +383,35 @@ defmodule Corex.PasswordInput do
           </button>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="password-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="password-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
     """
   end
 
-  defp merge_translation(nil, default), do: default
+  api_doc(~S"""
+  Set whether the password is visible from a control (`phx-click`).
 
-  defp merge_translation(partial, default) do
-    %Translation{
-      toggle_visibility: partial.toggle_visibility || default.toggle_visibility
-    }
-  end
+  ```heex
+  <.action phx-click={Corex.PasswordInput.set_visible("my-password-input", true)}>Reveal</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
 
-  @doc type: :api
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:set-visible", {
+      bubbles: false,
+      detail: { visible: true },
+    })
+  );
+  ```
+  """)
+
   def set_visible(password_input_id, visible)
       when is_binary(password_input_id) and is_boolean(visible) do
     JS.dispatch("corex:password-input:set-visible",
@@ -364,6 +420,25 @@ defmodule Corex.PasswordInput do
       bubbles: false
     )
   end
+
+  api_doc(~S"""
+  Set visibility from `handle_event`.
+
+  ```heex
+  <.action phx-click="reveal_pw">Reveal</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("reveal_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.set_visible(socket, "my-password-input", true)}
+  end
+  ```
+  """)
 
   def set_visible(socket, password_input_id, visible)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) and
@@ -374,7 +449,25 @@ defmodule Corex.PasswordInput do
     })
   end
 
-  @doc type: :api
+  api_doc(~S"""
+  Toggle visibility from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.PasswordInput.toggle_visible("my-password-input")}>Toggle</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:toggle-visible", { bubbles: false })
+  );
+  ```
+  """)
+
   def toggle_visible(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:toggle-visible",
       to: "##{password_input_id}",
@@ -382,15 +475,71 @@ defmodule Corex.PasswordInput do
     )
   end
 
+  api_doc(~S"""
+  Toggle visibility from `handle_event`.
+
+  ```heex
+  <.action phx-click="toggle_pw">Toggle</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("toggle_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.toggle_visible(socket, "my-password-input")}
+  end
+  ```
+  """)
+
   def toggle_visible(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do
     LiveView.push_event(socket, "password_input_toggle_visible", %{"id" => password_input_id})
   end
 
-  @doc type: :api
+  api_doc(~S"""
+  Focus the input from a control (`phx-click`).
+
+  ```heex
+  <.action phx-click={Corex.PasswordInput.focus("my-password-input")}>Focus</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```javascript
+  document.getElementById("my-password-input")?.dispatchEvent(
+    new CustomEvent("corex:password-input:focus", { bubbles: false })
+  );
+  ```
+  """)
+
   def focus(password_input_id) when is_binary(password_input_id) do
     JS.dispatch("corex:password-input:focus", to: "##{password_input_id}", bubbles: false)
   end
+
+  api_doc(~S"""
+  Focus the input from `handle_event`.
+
+  ```heex
+  <.action phx-click="focus_pw">Focus</.action>
+  <.password_input id="my-password-input" class="password-input" name="pw">
+    <:label>Password</:label>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  ```elixir
+  def handle_event("focus_pw", _, socket) do
+    {:noreply, Corex.PasswordInput.focus(socket, "my-password-input")}
+  end
+  ```
+  """)
 
   def focus(socket, password_input_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(password_input_id) do

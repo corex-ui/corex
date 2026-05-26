@@ -3,7 +3,9 @@
 @layer components {
   .number-input {
     width: 100%;
-    max-width: var(--container-6xs);
+    max-width: var(--container-5xs);
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .number-input[data-loading] [data-scope="number-input"][data-part="root"] {
@@ -13,13 +15,14 @@
   .number-input [data-scope="number-input"][data-part="root"] {
     @apply ui-root;
 
+    width: 100%;
+    min-width: 0;
     gap: var(--spacing-space);
     position: relative;
     padding-inline-end: var(--spacing-space);
   }
 
-  .number-input [data-scope="number-input"][data-part="root"][data-readonly],
-  .number-input [data-scope="number-input"][data-part="root"][data-read-only] {
+  .number-input [data-scope="number-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 
@@ -39,7 +42,7 @@
     @apply ui-input;
 
     flex: 1;
-    max-width: var(--container-5xs);
+    min-width: 0;
     min-height: var(--spacing-size);
     max-height: var(--spacing-size);
     box-sizing: border-box;
@@ -53,7 +56,7 @@
     flex-direction: column;
     flex-shrink: 0;
     gap: 0;
-    width: --spacing(11);
+    width: var(--spacing-size);
     min-height: var(--spacing-size);
     height: var(--spacing-size);
     max-height: var(--spacing-size);
@@ -100,12 +103,8 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
-  [data-scope="number-input"][data-part="control"] {
-    max-width: --value(--container-*, [length]);
-  }
-
   [data-part="trigger-group"] {
-    width: --spacing(11);
+    width: --value(--spacing-size-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
     height: --value(--spacing-size-*, [length]);
     max-height: --value(--spacing-size-*, [length]);
@@ -113,7 +112,6 @@
   }
 
   [data-scope="number-input"][data-part="input"] {
-    max-width: --value(--container-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
     min-height: --value(--spacing-size-*, [length]);

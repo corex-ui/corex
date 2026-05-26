@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="signature-anatomy-page"
-    title="Signature Pad · Anatomy"
-    subtitle="Clear control and optional label."
+    title={~t"Signature Pad · Anatomy"}
+    subtitle={~t"Clear control and optional label."}
   >
     <.demo_section
       id="signature-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.SignatureDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.SignatureDemo.minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="signature-anatomy-with-label"
-      title="With label"
+      title={~t"With label"}
       code={E2eWeb.Demos.SignatureDemo.with_label_code()}
     >
       <:preview><E2eWeb.Demos.SignatureDemo.with_label_example /></:preview>

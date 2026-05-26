@@ -42,12 +42,13 @@ defmodule E2eWeb.TooltipEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tooltip-events-page"
         title="Tooltip · Events"
         subtitle="Open change events (server + client)."
       >
         <.demo_section
-          id="tooltip-events"
+          id="tooltip-events-section"
           title="On open change (Server and client)"
           code_tabs={[
             %{
@@ -58,13 +59,13 @@ defmodule E2eWeb.TooltipEventsLive do
             },
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: E2eWeb.Demos.TooltipDemo.events_server_elixir()
             },
             %{
               value: "js",
-              label: "JS",
+              label: ~t"JS",
               language: :js,
               code: E2eWeb.Demos.TooltipDemo.events_client_listener_js()
             }

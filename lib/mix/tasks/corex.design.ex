@@ -35,7 +35,9 @@ defmodule Mix.Tasks.Corex.Design do
     force? = Keyword.get(opts, :force, false)
     designex? = Keyword.get(opts, :designex, false)
 
-    copy_tree!(priv, ["design", "corex"], Path.expand(Path.join("assets", "corex")), force?)
+    dest = Path.expand(Path.join("assets", "corex"))
+    copy_tree!(priv, ["design", "corex"], dest, force?)
+    write_design_version!(dest)
 
     if designex? do
       copy_tree!(
@@ -86,5 +88,15 @@ defmodule Mix.Tasks.Corex.Design do
         "#{Path.relative_to_cwd(src)} → #{Path.relative_to_cwd(dest)}"
       ])
     end
+  end
+
+  defp write_design_version!(dest) do
+    version =
+      case Application.spec(:corex, :vsn) do
+        nil -> "unknown"
+        vsn -> vsn |> to_string() |> String.trim_leading("v")
+      end
+
+    File.write!(Path.join(dest, "VERSION"), version <> "\n")
   end
 end

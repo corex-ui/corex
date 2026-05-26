@@ -7,9 +7,8 @@ defmodule Corex.NumberInput.Anatomy do
 
     defstruct [
       :id,
-      controlled: false,
+      form_field: false,
       value: nil,
-      default_value: nil,
       min: nil,
       max: nil,
       step: 1,
@@ -28,9 +27,8 @@ defmodule Corex.NumberInput.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            controlled: boolean(),
+            form_field: boolean(),
             value: String.t() | nil,
-            default_value: String.t() | nil,
             min: number() | nil,
             max: number() | nil,
             step: number(),
@@ -50,11 +48,13 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, dir: "ltr", orientation: "horizontal"]
+    defstruct [:id, dir: "ltr", orientation: "horizontal", read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -73,6 +73,8 @@ defmodule Corex.NumberInput.Anatomy do
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -94,6 +96,8 @@ defmodule Corex.NumberInput.Anatomy do
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -117,16 +121,19 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled, dir: "ltr", orientation: "horizontal"]
+    defstruct [:id, :disabled, required: false, dir: "ltr", orientation: "horizontal"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             disabled: boolean(),
+            required: boolean(),
             dir: String.t(),
             orientation: String.t()
           }
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -143,6 +150,7 @@ defmodule Corex.NumberInput.Anatomy do
       "pattern",
       "data-invalid",
       "data-disabled",
+      "data-scrubbing",
       "autocomplete",
       "autoComplete",
       "autoCorrect",
@@ -155,9 +163,11 @@ defmodule Corex.NumberInput.Anatomy do
       "aria-valuemax",
       "aria-valuenow",
       "aria-valuetext",
-      "data-scrubbing",
       "defaultValue",
-      "value"
+      "value",
+      "style",
+      "tabindex",
+      "tabIndex"
     ]
     def ignored_attrs, do: @ignored_attrs
   end
@@ -181,6 +191,8 @@ defmodule Corex.NumberInput.Anatomy do
           }
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -188,6 +200,7 @@ defmodule Corex.NumberInput.Anatomy do
       "data-disabled",
       "aria-label",
       "type",
+      "tabindex",
       "tabIndex",
       "aria-controls",
       "data-scrubbing",
@@ -208,6 +221,8 @@ defmodule Corex.NumberInput.Anatomy do
           }
 
     @ignored_attrs [
+      "data-scope",
+      "data-part",
       "id",
       "dir",
       "data-orientation",
@@ -215,6 +230,7 @@ defmodule Corex.NumberInput.Anatomy do
       "data-disabled",
       "aria-label",
       "type",
+      "tabindex",
       "tabIndex",
       "aria-controls",
       "data-scrubbing",

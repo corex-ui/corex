@@ -1,14 +1,31 @@
-# Tableau static + Corex: localize
+# Tableau Localize
 
-This guide is for a **[Tableau](https://hex.pm/packages/tableau)** site that already follows **[Tableau](tableau.html)** through design assets, ESM Esbuild, root layout, and `LiveSocket` hooks.
+## Introduction
 
-The Phoenix setup in **[Localize](localize.html)** resolves locale in the router and wraps routes in **`localize do … end`**. Static Tableau builds **locale into permalinks** at compile time:** **`/`** for the default locale, **`/<locale>/...`** elsewhere. **`locale.js`** persists the chosen locale for cross-tab UX and hydrates the language select; **`Gettext`** still drives **`gettext/1`** in templates.
+You add locales to a Tableau site that already follows [Tableau](tableau.html). Each locale gets its own permalink at build time (`/` for the default, `/<locale>/...` for others). Gettext drives copy; `locale.js` persists the visitor's choice and syncs the language `<.select>`.
 
-Dependencies for **`locale.js`** **`data-rtl-locales`**: derive RTL locale codes from the same source as **`MyApp.Locale.dir/1`** (template below filters locales where CLDR layout is **`:rtl`**).
+For Phoenix apps with `localize_web` and router scopes, see [Localize](localize.html).
 
----
+## Before you start
 
-### 1. Dependencies
+| Requirement | Notes |
+| ----------- | ----- |
+| [Tableau](tableau.html) | Design assets, ESM Esbuild, `use Corex`, `LiveSocket` |
+| `{:gettext, "~> 1.0"}` and `{:localize, "~> 0.26}` | CLDR display names and RTL |
+| `select.css` | For the language switcher |
+
+`localize_web` is not required for Tableau static sites.
+
+## How it works
+
+1. **Gettext** catalogs hold translated strings; `gettext/1` in templates reads the active locale.
+2. **Permalinks** encode locale in the URL path at compile time.
+3. **`locale.js`** reads `data-locale*` on `<html>`, updates `lang`/`dir`, and syncs the select.
+4. **`<.select redirect>`** navigates to the target path; `corex:set-locale` updates storage for cross-tab UX.
+
+<!-- tabs-open -->
+
+### Dependencies
 
 ```elixir
 def deps do
@@ -24,13 +41,11 @@ mix deps.get
 mix localize.download_locales en ar
 ```
 
-**`mix localize.download_locales`** fills the on-disk CLDR cache for **`Localize.Locale.get/3`** and **`Localize.Locale.display_name/2`**. Run it when the supported list changes; consider **`mix setup`**.
+Run `mix localize.download_locales` again when you add locales.
 
-> **`localize_web` is not required** in a Tableau site — its plugs and **`Localize.Routes`** are Phoenix-router only. Add it only if you want its HTML helpers.
+### Gettext
 
----
-
-### 2. Gettext backend and config
+`lib/my_app/gettext.ex`:
 
 ```elixir
 defmodule MyApp.Gettext do
@@ -44,7 +59,7 @@ defmodule MyApp.Gettext do
 end
 ```
 
-In **`config/config.exs`** (use literals; config runs before your modules compile):
+`config/config.exs`:
 
 ```elixir
 config :phoenix,
@@ -55,29 +70,23 @@ config :localize,
   supported_locales: ~w(en ar)a
 ```
 
-**`config :phoenix, :gettext_backend`** lets Corex components read default labels from your catalog.
+### Locale module
 
----
+Merge `site_name` with [Tableau Theming](tableau_theming.html) if you use themes.
 
-### 3. `MyApp.Config` (locale slice)
-
-Merge with **[Tableau static + Corex: theming](tableau_theming.html)** **`themes`** / **`site_name`** if you use that guide too.
+`lib/my_app/config.ex`:
 
 ```elixir
 defmodule MyApp.Config do
   @app :my_app
 
   def site_name, do: Application.get_env(@app, :site_name, "MyApp")
-
   def default_locale, do: MyApp.Gettext.default_locale()
-
   def locales, do: MyApp.Gettext.locales()
 end
 ```
 
----
-
-### 4. `MyApp.Locale`
+`lib/my_app/locale.ex`:
 
 ```elixir
 defmodule MyApp.Locale do
@@ -160,29 +169,28 @@ defmodule MyApp.Locale do
 end
 ```
 
----
+### Layout
 
-### 5. Root layout additions
+In `RootLayout`, add `use Gettext, backend: MyApp.Gettext` next to `use Corex`.
 
-In **`template/1`**, add **`use Gettext, backend: MyApp.Gettext`** next to **`use Corex`**. Resolve **`locale`** from **`assigns.page`**, apply **`Gettext.put_locale/2`** before **`~H`**, and enrich assigns (**`rtl_locales`** must agree with **`MyApp.Locale.dir/1`** for each listed code):
+In `template/1`, before `~H`:
 
 ```elixir
-def template(assigns) do
-  locale = MyApp.Locale.current(assigns.page)
-  Gettext.put_locale(MyApp.Gettext, MyApp.Locale.lang(locale))
+locale = MyApp.Locale.current(assigns.page)
+Gettext.put_locale(MyApp.Gettext, MyApp.Locale.lang(locale))
 
-  rtl_locales =
-    MyApp.Locale.locales()
-    |> Enum.filter(&(MyApp.Locale.dir(&1) == "rtl"))
-    |> Enum.join(",")
+rtl_locales =
+  MyApp.Locale.locales()
+  |> Enum.filter(&(MyApp.Locale.dir(&1) == "rtl"))
+  |> Enum.join(",")
 
-  assigns =
-    assigns
-    |> Map.put(:locale, locale)
-    |> Map.put(:rtl_locales, rtl_locales)
+assigns =
+  assigns
+  |> Map.put(:locale, locale)
+  |> Map.put(:rtl_locales, rtl_locales)
 ```
 
-Minimal **`<html>`** deltas (combine with **`data-theme`** / **`data-mode`** when you follow those guides):
+On `<html>` (combine with `data-theme` / `data-mode` when you use those guides):
 
 ```heex
 <html
@@ -195,15 +203,13 @@ Minimal **`<html>`** deltas (combine with **`data-theme`** / **`data-mode`** whe
 >
 ```
 
-If you publish under a subpath (**GitHub Pages** project sites), also set **`data-public-path-prefix`** to the pathname prefix (**without** trailing slash); **`locale.js`** strips it before reading the first segment. Omit both when serving from the domain root.
+For GitHub Pages project sites, set `data-public-path-prefix` to the pathname prefix without a trailing slash; `locale.js` strips it before reading the first path segment.
 
-Theming and mode **`<head>`** scripts stay **outside** this guide; see **[Tableau static + Corex: theming](tableau_theming.html)** and **[Tableau static + Corex: mode](tableau_mode.html)**.
+[Tableau Theming](tableau_theming.html) and [Tableau Mode](tableau_mode.html) head scripts stay in `<head>` as documented there.
 
----
+### locale.js
 
-### 6. `assets/js/locale.js`
-
-Self-contained (**`parseList`**, **`whenControlReady`**, **`firstDetailValue`** inlined):
+Create `assets/js/locale.js`:
 
 ```javascript
 ;(() => {
@@ -328,25 +334,17 @@ Self-contained (**`parseList`**, **`whenControlReady`**, **`firstDetailValue`** 
 })()
 ```
 
----
-
-### 7. `assets/js/site.js` additions
+### site.js
 
 ```javascript
 import "./locale.js"
 ```
 
-Register **Select** if not already present:
+Register `Select` in `hooks` if not already present.
 
-```javascript
-      Select: () => import("corex/select"),
-```
+### Pages
 
----
-
-### 8. Per-locale page modules
-
-One template module; **`Module.create/3`** emits one **`Tableau.Page`** per locale:
+One shared template; emit one `Tableau.Page` per locale:
 
 ```elixir
 defmodule MyApp.HomePage do
@@ -386,13 +384,11 @@ for locale <- MyApp.Config.locales() do
 end
 ```
 
-Repeat the **`for`** block for each page that should exist under every locale.
+Repeat the `for` block for each page that should exist under every locale.
 
----
+### Language select
 
-### 9. Language switcher HEEx
-
-**`redirect`** navigates to **`item.to`**; **`on_value_change_client="corex:set-locale"`** updates **`locale.js`** / **`localStorage`**. The authoritative locale remains the URL.
+`redirect` navigates to `item.to`. The URL is authoritative; `corex:set-locale` updates `localStorage` for other tabs.
 
 ```heex
 <.select
@@ -417,19 +413,19 @@ Repeat the **`for`** block for each page that should exist under every locale.
 </.select>
 ```
 
----
-
-### 10. Translate strings
+Extract and merge catalogs:
 
 ```bash
 mix gettext.extract
 mix gettext.merge priv/gettext
 ```
 
-Fill **`priv/gettext/<locale>/LC_MESSAGES/default.po`**.
+Fill `priv/gettext/<locale>/LC_MESSAGES/default.po`.
+
+<!-- tabs-close -->
 
 ## Related
 
-- [Tableau](tableau.html) — baseline Tableau + Corex setup.
-- [Localize](localize.html) — Phoenix **`localize_web`** and **`localize do`**.
-- [Tableau static + Corex: theming](tableau_theming.html) / [Tableau static + Corex: mode](tableau_mode.html) — combine when you want theme or mode alongside locales.
+- [Tableau](tableau.html) — baseline setup
+- [Localize](localize.html) — Phoenix `localize_web` and router scopes
+- [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html) — combine when needed

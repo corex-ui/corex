@@ -4,18 +4,18 @@ import type { ExpandedChangeDetails, SelectionChangeDetails } from "@zag-js/tree
 import { TreeView, type TreeNode } from "../components/tree-view";
 import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
 import {
-  readHeightAnimationOptions,
-  prepareInitialHeightState,
-  runOpenStateTransitionsHeight,
+  contentDatasetValue,
+  isJsAnimation,
+  prepareJsHeightInitialState,
+  runHeightOpenTransition,
 } from "../lib/animation";
 import { performRedirect, readDomItemRedirect } from "../lib/redirect";
 import {
   parseRespondTo,
-  emitResponse,
+  createValueEmitter,
   idMatches,
   readPayloadId,
   notifyChange,
-  type RespondTo,
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -37,24 +37,34 @@ type TreeViewHookState = {
   previousExpanded?: string[];
 };
 
-function readExpandedAttr(el: HTMLElement): string {
+export function readExpandedAttr(el: HTMLElement): string {
   return getBoolean(el, "controlled")
     ? (el.getAttribute("data-expanded-value") ?? "")
     : (el.getAttribute("data-default-expanded-value") ?? "");
 }
 
-function readSelectedAttr(el: HTMLElement): string {
+export function readSelectedAttr(el: HTMLElement): string {
   return getBoolean(el, "controlled")
     ? (el.getAttribute("data-selected-value") ?? "")
     : (el.getAttribute("data-default-selected-value") ?? "");
 }
 
-function parseRootNode(el: HTMLElement): TreeNode {
+export function parseRootNode(el: HTMLElement): TreeNode {
   const raw = el.dataset.tree;
   if (raw == null || raw === "") {
     throw new Error("TreeView: missing data-tree");
   }
   return JSON.parse(raw) as TreeNode;
+}
+
+const BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
+
+export function readTreeViewInteractionProps(el: HTMLElement) {
+  return {
+    selectionMode: getString<"single" | "multiple">(el, "selectionMode") ?? "single",
+    typeahead: el.dataset.typeahead !== "false",
+    dir: getDir(el),
+  };
 }
 
 const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
@@ -153,54 +163,33 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
           clientEventName: getString(el, "onExpandedChangeClient"),
         });
 
-        if (el.dataset.animation === "js") {
-          runOpenStateTransitionsHeight({
-            rootEl: el,
-            selector: '[data-scope="tree-view"][data-part="branch-content"]',
-            opts: readHeightAnimationOptions(el),
-            isOpen: (contentEl) => {
-              const value = contentEl.dataset.value;
-              return !!value && next.includes(value);
-            },
-          });
-        }
+        runHeightOpenTransition({
+          el,
+          selector: BRANCH_CONTENT_SELECTOR,
+          prevOpen: previousExpandedValue,
+          nextOpen: next,
+          resolveValue: contentDatasetValue,
+        });
       },
     });
     treeView.init();
     this.treeView = treeView;
 
-    if (el.dataset.animation === "js") {
-      const opts = readHeightAnimationOptions(el);
-      prepareInitialHeightState(el, '[data-scope="tree-view"][data-part="branch-content"]', opts);
-    }
+    prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
 
-    const emitSelectedValue = (respondTo: RespondTo) => {
-      const value = treeView.api.selectedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "tree-view-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
 
-    const emitExpandedValue = (respondTo: RespondTo) => {
-      const value = treeView.api.expandedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "tree_view_expanded_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "tree-view-expanded-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const emitSelectedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.selectedValue,
+      serverEventName: "tree_view_value_response",
+      domEventName: "tree-view-value",
+    });
+
+    const emitExpandedValue = createValueEmitter(hookApi, {
+      getValue: () => treeView.api.expandedValue,
+      serverEventName: "tree_view_expanded_value_response",
+      domEventName: "tree-view-expanded-value",
+    });
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -258,13 +247,14 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
   },
 
   beforeUpdate(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-      this.previousExpanded = getStringList(this.el, "expandedValue") ?? [];
+    const { el } = this;
+    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+      this.previousExpanded = getStringList(el, "expandedValue") ?? [];
     }
   },
 
   updated(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    const el = this.el;
+    const { el } = this;
     const tv = this.treeView;
     if (!tv) return;
 
@@ -275,16 +265,13 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     }
 
     const controlled = getBoolean(el, "controlled");
+    const interaction = readTreeViewInteractionProps(el);
     const selected = controlled
       ? (getStringList(el, "selectedValue") ?? [])
       : (getStringList(el, "defaultSelectedValue") ?? []);
     const expanded = controlled
       ? (getStringList(el, "expandedValue") ?? [])
       : (getStringList(el, "defaultExpandedValue") ?? []);
-
-    const selectionMode = getString<"single" | "multiple">(el, "selectionMode") ?? "single";
-    const typeahead = el.dataset.typeahead !== "false";
-    const dir = getDir(el);
 
     const expandedAttr = readExpandedAttr(el);
     const selectedAttr = readSelectedAttr(el);
@@ -293,42 +280,31 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     this.lastExpandedAttr = expandedAttr;
     this.lastSelectedAttr = selectedAttr;
 
-    if (controlled) {
-      const prevExpanded = this.previousExpanded ?? this.lastExpanded ?? [];
-      this.previousExpanded = undefined;
-      if (expandedAttrChanged) this.lastExpanded = expanded;
-      if (selectedAttrChanged) this.lastSelected = selected;
-      if (el.dataset.animation === "js") {
-        runOpenStateTransitionsHeight({
-          rootEl: el,
-          selector: '[data-scope="tree-view"][data-part="branch-content"]',
-          opts: readHeightAnimationOptions(el),
-          wasOpen: (contentEl) => {
-            const value = contentEl.dataset.value;
-            return !!value && prevExpanded.includes(value);
-          },
-          isOpen: (contentEl) => {
-            const value = contentEl.dataset.value;
-            return !!value && expanded.includes(value);
-          },
-        });
-      }
-      tv.updateProps({
-        expandedValue: expanded,
-        selectedValue: selected,
-        selectionMode,
-        typeahead,
-        dir,
-      });
-    } else {
-      tv.updateProps({
-        selectionMode,
-        typeahead,
-        dir,
-      });
+    if (!controlled) {
+      tv.updateProps(interaction);
       if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
       if (selectedAttrChanged) tv.api.setSelectedValue(selected);
+      return;
     }
+
+    const prevExpanded = this.previousExpanded ?? this.lastExpanded ?? [];
+    this.previousExpanded = undefined;
+    if (expandedAttrChanged) this.lastExpanded = expanded;
+    if (selectedAttrChanged) this.lastSelected = selected;
+
+    runHeightOpenTransition({
+      el,
+      selector: BRANCH_CONTENT_SELECTOR,
+      prevOpen: prevExpanded,
+      nextOpen: expanded,
+      resolveValue: contentDatasetValue,
+    });
+
+    tv.updateProps({
+      ...interaction,
+      expandedValue: expanded,
+      selectedValue: selected,
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TreeViewHookState) {

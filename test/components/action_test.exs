@@ -28,7 +28,7 @@ defmodule Corex.ActionTest do
           disabled: false
         )
 
-      assert [_] = find_in_html(result, ~s(button[aria-label="Close dialog"]))
+      assert [_] = find_in_html(result, ~S(button[aria-label="Close dialog"]))
     end
 
     test "renders disabled button" do

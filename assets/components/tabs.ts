@@ -2,7 +2,15 @@ import { connect, machine, type Props, type Api } from "@zag-js/tabs";
 import { VanillaMachine, type Attrs } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
-function tabsDomIds(rootId: string): NonNullable<Props["ids"]> {
+export type TabsDomIds = {
+  root: string;
+  list: string;
+  indicator: string;
+  content: (value: string) => string;
+  trigger: (value: string) => string;
+};
+
+export function tabsDomIds(rootId: string): TabsDomIds {
   return {
     root: `tabs-${rootId}-root`,
     list: `tabs-${rootId}-list`,

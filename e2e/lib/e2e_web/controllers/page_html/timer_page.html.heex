@@ -5,14 +5,15 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="timer-anatomy-page"
-    title="Timer · Anatomy"
-    subtitle="Display-only, controls, countdown, and tick interval."
+    title={~t"Timer · Anatomy"}
+    subtitle={~t"Display-only, controls, countdown, and tick interval."}
     heading_class="layout-heading"
   >
     <.demo_section
       id="timer-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.TimerDemo.anatomy_minimal_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_minimal_example /></:preview>
@@ -20,7 +21,7 @@
 
     <.demo_section
       id="timer-anatomy-with-triggers"
-      title="With triggers"
+      title={~t"With triggers"}
       code={E2eWeb.Demos.TimerDemo.anatomy_with_triggers_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_with_triggers_example /></:preview>
@@ -28,7 +29,7 @@
 
     <.demo_section
       id="timer-anatomy-countdown"
-      title="Countdown"
+      title={~t"Countdown"}
       code={E2eWeb.Demos.TimerDemo.anatomy_countdown_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_countdown_example /></:preview>
@@ -36,7 +37,7 @@
 
     <.demo_section
       id="timer-anatomy-collapse"
-      title="Leading-zero collapse"
+      title={~t"Leading-zero collapse"}
       code={E2eWeb.Demos.TimerDemo.anatomy_collapse_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_collapse_example /></:preview>
@@ -44,7 +45,7 @@
 
     <.demo_section
       id="timer-layout-segments"
-      title="Fixed segments"
+      title={~t"Fixed segments"}
       code={E2eWeb.Demos.TimerDemo.layout_segments_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.layout_segments_example /></:preview>
@@ -52,7 +53,7 @@
 
     <.demo_section
       id="timer-layout-separator"
-      title="Separator"
+      title={~t"Separator"}
       code={E2eWeb.Demos.TimerDemo.layout_separator_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.layout_separator_example /></:preview>
@@ -60,7 +61,7 @@
 
     <.demo_section
       id="timer-layout-translation"
-      title="Region label"
+      title={~t"Region label"}
       code={E2eWeb.Demos.TimerDemo.layout_translation_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.layout_translation_example /></:preview>
@@ -68,7 +69,7 @@
 
     <.demo_section
       id="timer-layout-unit-labels"
-      title="Unit labels"
+      title={~t"Unit labels"}
       code={E2eWeb.Demos.TimerDemo.layout_unit_labels_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.layout_unit_labels_example /></:preview>
@@ -76,7 +77,7 @@
 
     <.demo_section
       id="timer-layout-separator-labels"
-      title="Separator and unit labels"
+      title={~t"Separator and unit labels"}
       code={E2eWeb.Demos.TimerDemo.layout_separator_and_labels_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.layout_separator_and_labels_example /></:preview>
@@ -84,7 +85,7 @@
 
     <.demo_section
       id="timer-anatomy-interval"
-      title="Interval and auto start"
+      title={~t"Interval and auto start"}
       code={E2eWeb.Demos.TimerDemo.anatomy_timing_code()}
     >
       <:preview><E2eWeb.Demos.TimerDemo.anatomy_timing_example /></:preview>

@@ -8,7 +8,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "default_sqlite3_app", ["--database", "sqlite3"])
 
-        mix_run!(~w(corex.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(corex.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/default_sqlite3_app_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -34,7 +37,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "default_sqlite3_app", ["--database", "sqlite3"])
 
-        mix_run!(~w(phx.gen.json Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(phx.gen.json Blog Post posts title body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/default_sqlite3_app_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -60,7 +66,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "default_sqlite3_app", ["--database", "sqlite3"])
 
-        mix_run!(~w(corex.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
+        mix_run!(
+          ~w(corex.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted),
+          app_root_path
+        )
 
         modify_file(Path.join(app_root_path, "lib/default_sqlite3_app_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -81,5 +90,4 @@ defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
       end)
     end
   end
-
 end

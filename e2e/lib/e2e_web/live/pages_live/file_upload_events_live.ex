@@ -65,6 +65,7 @@ defmodule E2eWeb.FileUploadEventsLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="file-upload-events-page"
         title="File Upload · Events"
         subtitle="Subscribe to file changes from LiveView or the client."

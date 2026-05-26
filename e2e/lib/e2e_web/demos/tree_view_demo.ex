@@ -88,31 +88,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   defp styling_expanded, do: ["styling-lib", "styling-test"]
   defp styling_value, do: ["styling-lib-tree-view-ex"]
 
-  # --------------------------------------------------------------------------
-  # Shared items string (for rendered code panels). Mirrors the accordion
-  # `code_items_basic()` pattern – concatenated into each code snippet below so
-  # the displayed code is fully self-contained (no `E2e.TreeViewDemo.*` refs).
-  # --------------------------------------------------------------------------
-
-  defp code_anatomy_items do
-    ~S"""
-    Corex.Tree.new([
-          %{label: "lib", value: "lib", children: [
-            %{label: "tree_view.ex", value: "lib-tree-view-ex"},
-            %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
-          ]},
-          %{label: "test", value: "test", children: [
-            %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
-          ]},
-          %{label: "assets", value: "assets", children: [
-            %{label: "tree-view.ts", value: "assets-tree-view-ts"}
-          ]},
-          %{label: "mix.exs", value: "mix-exs"}
-        ])
-    """
-    |> String.trim_trailing("\n")
-  end
-
   defp code_api_items do
     ~S"""
     Corex.Tree.new([
@@ -149,14 +124,37 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   # --------------------------------------------------------------------------
 
   def anatomy_minimal_code do
-    """
+    ~S"""
     <.tree_view
-      id="tree-minimal"
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "Components", value: "components", children: [
+            %{label: "Accordion", value: "accordion"},
+            %{label: "Checkbox", value: "checkbox"},
+            %{label: "Tree view", value: "tree-view"}
+          ]},
+          %{label: "Form", value: "form"},
+          %{label: "Tree", value: "tree", children: [%{label: "Tree.Item", value: "tree-item"}]}
+        ])
+      }
     />
+    """
+  end
+
+  def anatomy_with_label_code do
+    ~S"""
+    <.tree_view
+      class="tree-view"
+      items={
+        Corex.Tree.new([
+          %{label: "Guides", value: "guides"},
+          %{label: "Reference", value: "reference"}
+        ])
+      }
+    >
+      <:label>My Documents</:label>
+    </.tree_view>
     """
   end
 
@@ -173,17 +171,25 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_with_indicator_code do
-    """
+    ~S"""
     <.tree_view
-      id="tree-with-indicator"
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "src", value: "src", children: [
+            %{label: "components", value: "components"},
+            %{label: "index.ts", value: "index.ts"}
+          ]},
+          %{label: "README.md", value: "readme"}
+        ])
+      }
     >
-      <:label>Corex</:label>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:branch_indicator :let={item}>
+        <.heroicon :if={item.children && item.children != []} name="hero-chevron-right" />
+      </:branch_indicator>
+      <:item_indicator>
+        <.heroicon name="hero-check" />
+      </:item_indicator>
     </.tree_view>
     """
   end
@@ -205,19 +211,26 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_custom_slots_code do
-    """
+    ~S"""
     <.tree_view
-      id="tree-custom-slots"
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "src", value: "src", children: [
+            %{label: "components", value: "components", children: [%{label: "tree-view.tsx", value: "tree-view.tsx"}]},
+            %{label: "main.ts", value: "main.ts"}
+          ]},
+          %{label: "README.md", value: "readme"}
+        ])
+      }
     >
-      <:label>Corex</:label>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      <:branch :let={branch}><.heroicon name="hero-folder" class="icon" />{branch.label}</:branch>
-      <:item :let={item}><.heroicon name="hero-document" class="icon" />{item.label}</:item>
+      <:label>Project</:label>
+      <:branch :let={item}>
+        <.heroicon name="hero-folder" /> {item.label}
+      </:branch>
+      <:item :let={item}>
+        <.heroicon name="hero-document" /> {item.label}
+      </:item>
     </.tree_view>
     """
   end
@@ -241,35 +254,36 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_compound_code do
-    """
+    ~S"""
     <.tree_view
       :let={ctx}
       compound
-      id="tree-compound"
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "Components", value: "components", children: [
+            %{label: "Accordion", value: "accordion"},
+            %{label: "Checkbox", value: "checkbox"}
+          ]},
+          %{label: "Form", value: "form"}
+        ])
+      }
     >
       <.tree_view_root ctx={ctx}>
-        <:label>Corex</:label>
-        <%= for item <- ctx.items do %>
-          <%= if item.children && item.children != [] do %>
-            <.tree_view_branch :let={branch} ctx={ctx} item={item}>
-              <.tree_view_branch_trigger branch={branch}>
-                {String.capitalize(item.label)}
-                <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-              </.tree_view_branch_trigger>
-              <.tree_view_branch_content branch={branch}>
-                <%= for child <- item.children do %>
-                  <.tree_view_item ctx={ctx} item={child} />
-                <% end %>
-              </.tree_view_branch_content>
-            </.tree_view_branch>
-          <% else %>
-            <.tree_view_item ctx={ctx} item={item} />
-          <% end %>
-        <% end %>
+        <:label>Project</:label>
+        <.tree_view_branch :let={branch} :for={item <- ctx.items} ctx={ctx} item={item}>
+          <.tree_view_branch_trigger branch={branch}>
+            {item.label}
+            <:indicator>
+              <.heroicon name="hero-chevron-right" />
+            </:indicator>
+          </.tree_view_branch_trigger>
+          <.tree_view_branch_content branch={branch}>
+            <.tree_view_item :for={child <- item.children || []} ctx={ctx} item={child}>
+              {child.label}
+            </.tree_view_item>
+          </.tree_view_branch_content>
+        </.tree_view_branch>
       </.tree_view_root>
     </.tree_view>
     """
@@ -676,63 +690,17 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
   end
 
-  def styling_mix_modifiers_example(assigns) do
-    ~H"""
-    <.tree_view
-      id="tree-styling-mix-brand"
-      class="tree-view tree-view--brand tree-view--sm tree-view--rounded-md max-w-xs"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-styling-mix-alert"
-      class="tree-view tree-view--alert tree-view--lg tree-view--text-lg tree-view--rounded-full max-w-sm"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view
-      id="tree-styling-mix-success"
-      class="tree-view tree-view--success tree-view--xl tree-view--text-xl tree-view--rounded-lg max-w-md"
-      expanded_value={styling_expanded()}
-      value={styling_value()}
-      items={styling_items()}
-    >
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    """
-  end
-
-  def styling_mix_modifiers_code do
-    items = code_styling_items()
-
-    """
-    <.tree_view class="tree-view tree-view--brand tree-view--sm tree-view--rounded-md max-w-xs" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view class="tree-view tree-view--alert tree-view--lg tree-view--text-lg tree-view--rounded-full max-w-sm" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    <.tree_view class="tree-view tree-view--success tree-view--xl tree-view--text-xl tree-view--rounded-lg max-w-md" items={#{items}}>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-    </.tree_view>
-    """
-  end
-
   # --------------------------------------------------------------------------
   # API  -  Set Expanded
   # --------------------------------------------------------------------------
+
+  defp api_expanded_lib, do: ["repo-corex", "repo-lib"]
 
   def api_set_expanded_client_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
       <.action
-        phx-click={Corex.TreeView.set_expanded_value(@id, ["repo-lib"])}
+        phx-click={Corex.TreeView.set_expanded_value(@id, api_expanded_lib())}
         class="button button--sm"
       >
         Expand lib
@@ -750,7 +718,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_expanded_client_heex do
     """
-    <.action phx-click={Corex.TreeView.set_expanded_value("tree-api-set-expanded-client", ["repo-lib"])}>Expand lib</.action>
+    <.action phx-click={Corex.TreeView.set_expanded_value("tree-api-set-expanded-client", ["repo-corex", "repo-lib"])}>Expand lib</.action>
     <.action phx-click={Corex.TreeView.set_expanded_value("tree-api-set-expanded-client", [])}>Collapse all</.action>
     <.tree_view id="tree-api-set-expanded-client" class="tree-view" expanded_value={[]} items={#{code_api_items()}}>
       <:label>Corex</:label>
@@ -766,7 +734,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         phx-click={
           JS.dispatch("corex:tree-view:set-expanded-value",
             to: "##{@id}",
-            detail: %{value: ["repo-lib"]},
+            detail: %{value: ["repo-corex", "repo-lib"]},
             bubbles: false
           )
         }
@@ -796,7 +764,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_expanded_js_heex do
     """
-    <.action phx-click={JS.dispatch("corex:tree-view:set-expanded-value", to: "#tree-api-set-expanded-js", detail: %{value: ["repo-lib"]}, bubbles: false)}>Expand lib</.action>
+    <.action phx-click={JS.dispatch("corex:tree-view:set-expanded-value", to: "#tree-api-set-expanded-js", detail: %{value: ["repo-corex", "repo-lib"]}, bubbles: false)}>Expand lib</.action>
     <.action phx-click={JS.dispatch("corex:tree-view:set-expanded-value", to: "#tree-api-set-expanded-js", detail: %{value: []}, bubbles: false)}>Collapse all</.action>
     <.tree_view id="tree-api-set-expanded-js" class="tree-view" expanded_value={[]} items={#{code_api_items()}}>
       <:label>Corex</:label>
@@ -811,7 +779,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     el?.dispatchEvent(
       new CustomEvent("corex:tree-view:set-expanded-value", {
         bubbles: false,
-        detail: { value: ["repo-lib"] },
+        detail: { value: ["repo-corex", "repo-lib"] },
       })
     );
     el?.dispatchEvent(
@@ -825,7 +793,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_expanded_js_ts do
     ~S"""
-    const el = document.getElementById("tree-api-set-expanded-js");
+    const el: HTMLElement | null = document.getElementById("tree-api-set-expanded-js");
     const setExpanded = (value: string[]) =>
       el?.dispatchEvent(
         new CustomEvent("corex:tree-view:set-expanded-value", {
@@ -833,7 +801,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
           detail: { value },
         })
       );
-    setExpanded(["repo-lib"]);
+    setExpanded(["repo-corex", "repo-lib"]);
     setExpanded([]);
     """
   end
@@ -841,7 +809,9 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_set_expanded_server_example(assigns) do
     ~H"""
     <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={@event} value="repo-lib" class="button button--sm">Expand lib</.action>
+      <.action phx-click={@event} value="repo-corex,repo-lib" class="button button--sm">
+        Expand lib
+      </.action>
       <.action phx-click={@event} value="" class="button button--sm">Collapse all</.action>
     </div>
     <.tree_view id={@id} class="tree-view" expanded_value={[]} items={@items}>
@@ -853,7 +823,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_expanded_server_heex do
     """
-    <.action phx-click="tree_api_set_expanded" value="repo-lib">Expand lib</.action>
+    <.action phx-click="tree_api_set_expanded" value="repo-corex,repo-lib">Expand lib</.action>
     <.action phx-click="tree_api_set_expanded" value="">Collapse all</.action>
     <.tree_view id="tree-api-set-expanded-server" class="tree-view" expanded_value={[]} items={#{code_api_items()}}>
       <:label>Corex</:label>
@@ -888,7 +858,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         Clear
       </.action>
     </div>
-    <.tree_view id={@id} class="tree-view" expanded_value={["repo-lib"]} items={@items}>
+    <.tree_view id={@id} class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={@items}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -899,7 +869,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
     <.action phx-click={Corex.TreeView.set_selected_value("tree-api-set-selected-client", ["repo-lib-tree-view-ex"])}>Select tree_view.ex</.action>
     <.action phx-click={Corex.TreeView.set_selected_value("tree-api-set-selected-client", [])}>Clear</.action>
-    <.tree_view id="tree-api-set-selected-client" class="tree-view" expanded_value={["repo-lib"]} items={#{code_api_items()}}>
+    <.tree_view id="tree-api-set-selected-client" class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={#{code_api_items()}}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -934,7 +904,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
         Clear
       </.action>
     </div>
-    <.tree_view id={@id} class="tree-view" expanded_value={["repo-lib"]} items={@items}>
+    <.tree_view id={@id} class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={@items}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -945,7 +915,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
     <.action phx-click={JS.dispatch("corex:tree-view:set-selected-value", to: "#tree-api-set-selected-js", detail: %{value: ["repo-lib-tree-view-ex"]}, bubbles: false)}>Select tree_view.ex</.action>
     <.action phx-click={JS.dispatch("corex:tree-view:set-selected-value", to: "#tree-api-set-selected-js", detail: %{value: []}, bubbles: false)}>Clear</.action>
-    <.tree_view id="tree-api-set-selected-js" class="tree-view" expanded_value={["repo-lib"]} items={#{code_api_items()}}>
+    <.tree_view id="tree-api-set-selected-js" class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={#{code_api_items()}}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -972,7 +942,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def api_set_selected_js_ts do
     ~S"""
-    const el = document.getElementById("tree-api-set-selected-js");
+    const el: HTMLElement | null = document.getElementById("tree-api-set-selected-js");
     const setSelected = (value: string[]) =>
       el?.dispatchEvent(
         new CustomEvent("corex:tree-view:set-selected-value", {
@@ -993,7 +963,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       </.action>
       <.action phx-click={@event} value="" class="button button--sm">Clear</.action>
     </div>
-    <.tree_view id={@id} class="tree-view" expanded_value={["repo-lib"]} items={@items}>
+    <.tree_view id={@id} class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={@items}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -1004,7 +974,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     """
     <.action phx-click="tree_api_set_selected" value="repo-lib-tree-view-ex">Select tree_view.ex</.action>
     <.action phx-click="tree_api_set_selected" value="">Clear</.action>
-    <.tree_view id="tree-api-set-selected-server" class="tree-view" expanded_value={["repo-lib"]} items={#{code_api_items()}}>
+    <.tree_view id="tree-api-set-selected-server" class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={#{code_api_items()}}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -1029,7 +999,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click={@event} class="button button--sm">Get expanded</.action>
     </div>
-    <.tree_view id={@id} class="tree-view" expanded_value={["repo-lib"]} items={@items}>
+    <.tree_view id={@id} class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={@items}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -1039,7 +1009,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_get_expanded_server_heex do
     """
     <.action phx-click="tree_api_get_expanded">Get expanded</.action>
-    <.tree_view id="tree-api-get-expanded-server" class="tree-view" expanded_value={["repo-lib"]} items={#{code_api_items()}}>
+    <.tree_view id="tree-api-get-expanded-server" class="tree-view" expanded_value={["repo-corex", "repo-lib"]} items={#{code_api_items()}}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -1049,12 +1019,12 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_get_expanded_server_elixir do
     ~S"""
     def handle_event("tree_api_get_expanded", _params, socket) do
-      {:noreply, push_event(socket, "tree_view_expanded_value", %{})}
+      {:noreply, Corex.TreeView.expanded_value(socket, "tree-api-get-expanded-server", respond_to: :server)}
     end
 
     def handle_event("tree_view_expanded_value_response", %{"id" => id, "value" => value}, socket) do
       desc = "#{id}\n#{inspect(value)}"
-      {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "tree_expanded", desc, :info, 5000)}
+      {:noreply, Corex.Toast.create(socket, "layout-toast", "tree_expanded", desc, :info, duration: 5000)}
     end
     """
   end
@@ -1067,7 +1037,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view
       id={@id}
       class="tree-view"
-      expanded_value={["repo-lib"]}
+      expanded_value={["repo-corex", "repo-lib"]}
       value={["repo-lib-tree-view-ex"]}
       items={@items}
     >
@@ -1080,7 +1050,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_get_selected_server_heex do
     """
     <.action phx-click="tree_api_get_selected">Get selected</.action>
-    <.tree_view id="tree-api-get-selected-server" class="tree-view" expanded_value={["repo-lib"]} value={["repo-lib-tree-view-ex"]} items={#{code_api_items()}}>
+    <.tree_view id="tree-api-get-selected-server" class="tree-view" expanded_value={["repo-corex", "repo-lib"]} value={["repo-lib-tree-view-ex"]} items={#{code_api_items()}}>
       <:label>Corex</:label>
       <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
     </.tree_view>
@@ -1090,12 +1060,12 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def api_get_selected_server_elixir do
     ~S"""
     def handle_event("tree_api_get_selected", _params, socket) do
-      {:noreply, push_event(socket, "tree_view_selected_value", %{})}
+      {:noreply, Corex.TreeView.value(socket, "tree-api-get-selected-server", respond_to: :server)}
     end
 
-    def handle_event("tree_view_selected_value_response", %{"id" => id, "value" => value}, socket) do
+    def handle_event("tree_view_value_response", %{"id" => id, "value" => value}, socket) do
       desc = "#{id}\n#{inspect(value)}"
-      {:noreply, Corex.Toast.push_toast(socket, "layout-toast", "tree_selected", desc, :info, 5000)}
+      {:noreply, Corex.Toast.create(socket, "layout-toast", "tree_selected", desc, :info, duration: 5000)}
     end
     """
   end
@@ -1130,7 +1100,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def events_server_heex do
     """
     <.tree_view
-      id="tree-events-server"
       class="tree-view"
       items={#{code_api_items()}}
       on_expanded_change="tree_server_expanded"
@@ -1143,21 +1112,10 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, socket |> stream(:server_logs, [])}
-    end
-
-    def handle_event("tree_server_expanded", %{"id" => id, "expandedValue" => expanded}, socket) do
-      log = new_log("server", id, "expanded", expanded)
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("tree_server_selection", %{"id" => id} = payload, socket) do
-      log = new_log("server", id, "selection", Map.drop(payload, ["id"]))
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"tree_server_expanded", ~S|%{"id" => id, "expandedValue" => expanded} = params|},
+      {"tree_server_selection", ~S|%{"id" => id} = params|}
+    ])
   end
 
   def events_client_heex do
@@ -1165,7 +1123,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     <.tree_view
       id="tree-events-client"
       class="tree-view"
-      expanded_value={["repo-lib"]}
+      expanded_value={["repo-corex", "repo-lib"]}
       items={#{code_api_items()}}
       on_expanded_change_client="tree-view-expanded-client"
       on_selection_change_client="tree-view-selection-client"
@@ -1220,7 +1178,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   def animation_playground_heex do
     """
     <.tree_view
-      id="tree-animation-playground"
       class="tree-view"
       animation="js"
       animation_options={
@@ -1319,7 +1276,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     Corex.Tree.new([
       %{
         label: "Accordion",
-        value: ~p"/accordion/anatomy",
+        value: "nav-branch-accordion",
         children: [
           %{label: "Structure", value: ~p"/accordion/anatomy"},
           %{label: "Playground", value: ~p"/accordion/playground"}
@@ -1327,7 +1284,7 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       },
       %{
         label: "Tree view",
-        value: ~p"/tree-view/anatomy",
+        value: "nav-branch-tree-view",
         children: [
           %{label: "Structure", value: ~p"/tree-view/anatomy"},
           %{label: "Playground", value: ~p"/tree-view/playground"}
@@ -1336,34 +1293,34 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     ])
   end
 
-  def patterns_redirect_expanded, do: [~p"/accordion/anatomy"]
+  def patterns_redirect_expanded, do: ["nav-branch-accordion", "nav-branch-tree-view"]
+
   def patterns_redirect_value, do: [~p"/tree-view/anatomy"]
 
   def patterns_redirect_heex do
-    ~S"""
+    """
     <.tree_view
-      id="patterns-tree-redirect"
       class="tree-view"
       redirect
       on_selection_change="patterns_tree_redirect_nav"
-      expanded_value={[~p"/accordion/anatomy"]}
-      value={[~p"/tree-view/anatomy"]}
+      expanded_value={["nav-branch-accordion", "nav-branch-tree-view"]}
+      value={[#{inspect(~p"/tree-view/anatomy")}]}
       items={
         Corex.Tree.new([
           %{
             label: "Accordion",
-            value: ~p"/accordion/anatomy",
+            value: "nav-branch-accordion",
             children: [
-              %{label: "Structure", value: ~p"/accordion/anatomy"},
-              %{label: "Playground", value: ~p"/accordion/playground"}
+              %{label: "Structure", value: #{inspect(~p"/accordion/anatomy")}},
+              %{label: "Playground", value: #{inspect(~p"/accordion/playground")}}
             ]
           },
           %{
             label: "Tree view",
-            value: ~p"/tree-view/anatomy",
+            value: "nav-branch-tree-view",
             children: [
-              %{label: "Structure", value: ~p"/tree-view/anatomy"},
-              %{label: "Playground", value: ~p"/tree-view/playground"}
+              %{label: "Structure", value: #{inspect(~p"/tree-view/anatomy")}},
+              %{label: "Playground", value: #{inspect(~p"/tree-view/playground")}}
             ]
           }
         ])

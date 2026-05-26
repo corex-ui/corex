@@ -58,7 +58,7 @@ function createTooltipCallbacks(
   return { onOpenChange, onTriggerValueChange };
 }
 
-function getCloseDelay(el: HTMLElement): number | undefined {
+export function getCloseDelay(el: HTMLElement): number | undefined {
   const interactive = getBoolean(el, "interactive");
   const raw = getNumber(el, "closeDelay");
   if (interactive && (raw === undefined || raw === 0)) return 400;
@@ -118,7 +118,6 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
 
     this.tooltip?.updateProps({
       id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),

@@ -1,18 +1,18 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
+} from "./chunks/chunk-EPNQR235.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+} from "./chunks/chunk-VJGUNSK5.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
 import {
   idMatches,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -32,7 +32,7 @@ import {
   isFunction,
   isLeftClick,
   queryAll
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tooltip@1.40.0/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
 var anatomy = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
@@ -782,7 +782,6 @@ var TooltipHook = {
     const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
     this.tooltip?.updateProps({
       id: el.id,
-      defaultOpen: getBoolean(el, "defaultOpen"),
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),
@@ -813,5 +812,6 @@ var TooltipHook = {
   }
 };
 export {
-  TooltipHook as Tooltip
+  TooltipHook as Tooltip,
+  getCloseDelay
 };

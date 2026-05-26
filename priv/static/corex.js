@@ -120,7 +120,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-EE44DOTL.mjs
+  // ../priv/static/chunks/chunk-EWT2BP2N.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -143,6 +143,20 @@ var Corex = (() => {
   }
   function canPushEvent(liveSocket) {
     return !liveSocket.main.isDead && liveSocket.main.isConnected();
+  }
+  function associateInputWithFormIfOutside(input, hookEl) {
+    const formId = getString(hookEl, "form");
+    if (!formId) return;
+    if (hookEl.closest("form") !== null) return;
+    input.setAttribute("form", formId);
+  }
+  function syncInputFormAssociation(input, hookEl) {
+    if (!input) return;
+    if (hookEl.closest("form") !== null) {
+      input.removeAttribute("form");
+    } else {
+      associateInputWithFormIfOutside(input, hookEl);
+    }
   }
   function toArray(v2) {
     if (v2 == null) return [];
@@ -284,8 +298,8 @@ var Corex = (() => {
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
-  function joinStatePath(parts31) {
-    return parts31.join(STATE_DELIMITER);
+  function joinStatePath(parts34) {
+    return parts34.join(STATE_DELIMITER);
   }
   function isAbsoluteStatePath(value) {
     return value.includes(STATE_DELIMITER);
@@ -302,7 +316,7 @@ var Corex = (() => {
   function appendStatePath(base, segment) {
     return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
   }
-  function buildStateIndex(machine31) {
+  function buildStateIndex(machine34) {
     const index = /* @__PURE__ */ new Map();
     const idIndex = /* @__PURE__ */ new Map();
     const visit2 = (basePath, state2) => {
@@ -328,32 +342,32 @@ var Corex = (() => {
         visit2(childPath, childState);
       }
     };
-    for (const [topKey, topState] of Object.entries(machine31.states)) {
+    for (const [topKey, topState] of Object.entries(machine34.states)) {
       if (!topState) continue;
       visit2(topKey, topState);
     }
     return { index, idIndex };
   }
-  function ensureStateIndex(machine31) {
-    const cached = stateIndexCache.get(machine31);
+  function ensureStateIndex(machine34) {
+    const cached = stateIndexCache.get(machine34);
     if (cached) return cached;
-    const { index, idIndex } = buildStateIndex(machine31);
-    stateIndexCache.set(machine31, index);
-    stateIdIndexCache.set(machine31, idIndex);
+    const { index, idIndex } = buildStateIndex(machine34);
+    stateIndexCache.set(machine34, index);
+    stateIdIndexCache.set(machine34, idIndex);
     return index;
   }
-  function getStatePathById(machine31, stateId) {
+  function getStatePathById(machine34, stateId) {
     var _a4;
-    ensureStateIndex(machine31);
-    return (_a4 = stateIdIndexCache.get(machine31)) == null ? void 0 : _a4.get(stateId);
+    ensureStateIndex(machine34);
+    return (_a4 = stateIdIndexCache.get(machine34)) == null ? void 0 : _a4.get(stateId);
   }
   function toSegments(value) {
     if (!value) return [];
     return String(value).split(STATE_DELIMITER).filter(Boolean);
   }
-  function getStateChain(machine31, state2) {
+  function getStateChain(machine34, state2) {
     if (!state2) return [];
-    const stateIndex = ensureStateIndex(machine31);
+    const stateIndex = ensureStateIndex(machine34);
     const segments = toSegments(state2);
     const chain = [];
     const statePath = [];
@@ -366,8 +380,8 @@ var Corex = (() => {
     }
     return chain;
   }
-  function resolveAbsoluteStateValue(machine31, value) {
-    const stateIndex = ensureStateIndex(machine31);
+  function resolveAbsoluteStateValue(machine34, value) {
+    const stateIndex = ensureStateIndex(machine34);
     const segments = toSegments(value);
     if (!segments.length) return value;
     const resolved = [];
@@ -387,48 +401,48 @@ var Corex = (() => {
     }
     return resolvedPath;
   }
-  function hasStatePath(machine31, value) {
-    const stateIndex = ensureStateIndex(machine31);
+  function hasStatePath(machine34, value) {
+    const stateIndex = ensureStateIndex(machine34);
     return stateIndex.has(value);
   }
-  function resolveStateValue(machine31, value, source) {
+  function resolveStateValue(machine34, value, source) {
     const stateValue = String(value);
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
-      const statePath = getStatePathById(machine31, stateId);
+      const statePath = getStatePathById(machine34, stateId);
       ensure(statePath, () => `[zag-js] Unknown state id: "${stateId}"`);
-      return resolveAbsoluteStateValue(machine31, statePath);
+      return resolveAbsoluteStateValue(machine34, statePath);
     }
     if (isChildTarget(stateValue) && source) {
       const childPath = appendStatePath(source, stateValue.slice(1));
-      return resolveAbsoluteStateValue(machine31, childPath);
+      return resolveAbsoluteStateValue(machine34, childPath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
       for (let index = sourceSegments.length - 1; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
-        if (hasStatePath(machine31, candidate)) return resolveAbsoluteStateValue(machine31, candidate);
+        if (hasStatePath(machine34, candidate)) return resolveAbsoluteStateValue(machine34, candidate);
       }
-      if (hasStatePath(machine31, stateValue)) return resolveAbsoluteStateValue(machine31, stateValue);
+      if (hasStatePath(machine34, stateValue)) return resolveAbsoluteStateValue(machine34, stateValue);
     }
-    return resolveAbsoluteStateValue(machine31, stateValue);
+    return resolveAbsoluteStateValue(machine34, stateValue);
   }
-  function findTransition(machine31, state2, eventType) {
+  function findTransition(machine34, state2, eventType) {
     var _a4, _b;
-    const chain = getStateChain(machine31, state2);
+    const chain = getStateChain(machine34, state2);
     for (let index = chain.length - 1; index >= 0; index--) {
       const transitionMap = (_a4 = chain[index]) == null ? void 0 : _a4.state.on;
       const transition = transitionMap == null ? void 0 : transitionMap[eventType];
       if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
     }
-    const rootTransitionMap = machine31.on;
+    const rootTransitionMap = machine34.on;
     return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
   }
-  function getExitEnterStates(machine31, prevState, nextState, reenter) {
+  function getExitEnterStates(machine34, prevState, nextState, reenter) {
     var _a4, _b, _c, _d;
-    const prevChain = prevState ? getStateChain(machine31, prevState) : [];
-    const nextChain = getStateChain(machine31, nextState);
+    const prevChain = prevState ? getStateChain(machine34, prevState) : [];
+    const nextChain = getStateChain(machine34, nextState);
     let commonIndex = 0;
     while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a4 = prevChain[commonIndex]) == null ? void 0 : _a4.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
       commonIndex += 1;
@@ -446,8 +460,8 @@ var Corex = (() => {
     if (!current) return false;
     return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
   }
-  function hasTag(machine31, state2, tag) {
-    return getStateChain(machine31, state2).some((item) => {
+  function hasTag(machine34, state2, tag) {
+    return getStateChain(machine34, state2).some((item) => {
       var _a4;
       return (_a4 = item.state.tags) == null ? void 0 : _a4.includes(tag);
     });
@@ -488,6 +502,14 @@ var Corex = (() => {
         };
       }
     };
+  }
+  function isCaretAtStart(input) {
+    if (!input) return false;
+    try {
+      return input.selectionStart === 0 && input.selectionEnd === 0;
+    } catch (e2) {
+      return input.value === "";
+    }
   }
   function setCaretToEnd(input) {
     if (!input) return;
@@ -1780,9 +1802,9 @@ var Corex = (() => {
       }
     };
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_EE44DOTL = __esm({
-    "../priv/static/chunks/chunk-EE44DOTL.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd2, first, last, has, add, remove, removeAt, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isNumber, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, toChar, hash, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_EWT2BP2N = __esm({
+    "../priv/static/chunks/chunk-EWT2BP2N.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1809,7 +1831,11 @@ var Corex = (() => {
       };
       getBoolean = (element, attrName) => {
         const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return element.hasAttribute(`data-${dashName}`);
+        const key = `data-${dashName}`;
+        if (!element.hasAttribute(key)) return false;
+        const raw = element.getAttribute(key);
+        if (raw === "false" || raw === "0") return false;
+        return true;
       };
       getBooleanValue = (element, attrName) => {
         const raw = element.dataset[attrName];
@@ -1836,6 +1862,7 @@ var Corex = (() => {
       has = (v2, t2) => v2.indexOf(t2) !== -1;
       add = (v2, ...items) => v2.concat(items);
       remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
+      removeAt = (v2, i2) => v2.filter((_2, idx) => idx !== i2);
       uniq = (v2) => Array.from(new Set(v2));
       diff = (a2, b2) => {
         const set = new Set(b2);
@@ -1879,6 +1906,7 @@ var Corex = (() => {
       isBoolean = (v2) => v2 === true || v2 === false;
       isObjectLike = (v2) => v2 != null && typeof v2 === "object";
       isObject = (v2) => isObjectLike(v2) && !isArray(v2);
+      isNumber = (v2) => typeof v2 === "number" && !Number.isNaN(v2);
       isString = (v2) => typeof v2 === "string";
       isFunction = (v2) => typeof v2 === "function";
       isNull = (v2) => v2 == null;
@@ -2318,9 +2346,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine31, userProps = {}) {
+        constructor(machine34, userProps = {}) {
           var _a4, _b, _c;
-          __publicField2(this, "machine", machine31);
+          __publicField2(this, "machine", machine34);
           __publicField2(this, "scope");
           __publicField2(this, "context");
           __publicField2(this, "prop");
@@ -2466,11 +2494,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a5, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props = (_b2 = (_a5 = machine31.props) == null ? void 0 : _a5.call(machine31, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            const props = (_b2 = (_a5 = machine34.props) == null ? void 0 : _a5.call(machine34, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
             return props[key];
           };
           this.prop = prop;
-          const context = (_a4 = machine31.context) == null ? void 0 : _a4.call(machine31, {
+          const context = (_a4 = machine34.context) == null ? void 0 : _a4.call(machine34, {
             prop,
             bindable,
             scope: this.scope,
@@ -2511,8 +2539,8 @@ var Corex = (() => {
           };
           this.context = ctx;
           const computed = (key) => {
-            ensure(machine31.computed, () => `[zag-js] No computed object found on machine`);
-            return machine31.computed[key]({
+            ensure(machine34.computed, () => `[zag-js] No computed object found on machine`);
+            return machine34.computed[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2522,10 +2550,10 @@ var Corex = (() => {
             });
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine31.refs) == null ? void 0 : _b.call(machine31, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine34.refs) == null ? void 0 : _b.call(machine34, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: resolveStateValue(machine31, machine31.initialState({ prop })),
+            defaultValue: resolveStateValue(machine34, machine34.initialState({ prop })),
             onChange: (nextState, prevState) => {
               var _a5, _b2;
               const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a5 = this.transition) == null ? void 0 : _a5.reenter);
@@ -2545,8 +2573,8 @@ var Corex = (() => {
                 if (cleanup) this.effects.set(item.path, cleanup);
               });
               if (prevState === INIT_STATE) {
-                this.action(machine31.entry);
-                const cleanup = this.effect(machine31.effects);
+                this.action(machine34.entry);
+                const cleanup = this.effect(machine34.effects);
                 if (cleanup) this.effects.set(INIT_STATE, cleanup);
               }
               entering.forEach((item) => {
@@ -2682,9 +2710,6 @@ var Corex = (() => {
           __publicField(this, "spreadProps", (el, props) => {
             spreadProps(el, props, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props) => {
-            this.machine.updateProps(props);
-          });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
@@ -2692,22 +2717,25 @@ var Corex = (() => {
           this.machine = this.initMachine(props);
           this.api = this.initApi();
         }
+        updateProps(props) {
+          this.machine.updateProps(props);
+        }
         zagConnect(connectFn) {
           return connectFn(this.machine.service, normalizeProps);
         }
       };
-      createAnatomy = (name, parts31 = []) => ({
+      createAnatomy = (name, parts34 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts31)) {
+          if (isEmpty(parts34)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts31, ...values]),
-        omit: (...values) => createAnatomy(name, parts31.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts31),
-        keys: () => parts31,
-        build: () => [...new Set(parts31)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts34, ...values]),
+        omit: (...values) => createAnatomy(name, parts34.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts34),
+        keys: () => parts34,
+        build: () => [...new Set(parts34)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -2725,7 +2753,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-WG2KNE4C.mjs
+  // ../priv/static/chunks/chunk-XI7CXJ3V.mjs
   function readRequiredAttrString(el, dataAttr2, label) {
     const raw = el.getAttribute(dataAttr2);
     if (raw === null) {
@@ -2858,6 +2886,50 @@ var Corex = (() => {
       runHeightPanelAnimation(el, nowOpen, opts, blockRoot);
     });
   }
+  function isJsAnimation(el) {
+    return el.dataset.animation === "js";
+  }
+  function isInOpenValueList(value, openValues) {
+    return !!value && openValues.includes(value);
+  }
+  function contentDatasetValue(contentEl) {
+    return contentEl.dataset.value;
+  }
+  function closestPartValue(itemSelector) {
+    return (contentEl) => {
+      var _a4;
+      return (_a4 = contentEl.closest(itemSelector)) == null ? void 0 : _a4.dataset.value;
+    };
+  }
+  function runHeightOpenTransition(args) {
+    const { el, selector, prevOpen, nextOpen, resolveValue } = args;
+    if (!isJsAnimation(el)) return;
+    runOpenStateTransitionsHeight({
+      rootEl: el,
+      selector,
+      opts: readHeightAnimationOptions(el),
+      wasOpen: (node) => isInOpenValueList(resolveValue(node), prevOpen),
+      isOpen: (node) => isInOpenValueList(resolveValue(node), nextOpen)
+    });
+  }
+  function runHeightOpenToValues(args) {
+    const { el, selector, openValues, resolveValue } = args;
+    if (!isJsAnimation(el)) return;
+    runOpenStateTransitionsHeight({
+      rootEl: el,
+      selector,
+      opts: readHeightAnimationOptions(el),
+      isOpen: (node) => isInOpenValueList(resolveValue(node), openValues)
+    });
+  }
+  function prepareJsHeightInitialState(el, selector) {
+    if (!isJsAnimation(el)) return;
+    prepareInitialHeightState(el, selector, readHeightAnimationOptions(el));
+  }
+  function prepareJsScaleInitialState(el, selector, closedStyleFor) {
+    if (!isJsAnimation(el)) return;
+    prepareInitialScaleState(el, selector, readScaleAnimationOptions(el), closedStyleFor);
+  }
   function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
     targetEl.getAnimations().forEach((a2) => a2.cancel());
     const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;
@@ -2961,24 +3033,238 @@ var Corex = (() => {
     return anim;
   }
   var rootPointerBlockCount;
-  var init_chunk_WG2KNE4C = __esm({
-    "../priv/static/chunks/chunk-WG2KNE4C.mjs"() {
+  var init_chunk_XI7CXJ3V = __esm({
+    "../priv/static/chunks/chunk-XI7CXJ3V.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
     }
   });
 
-  // ../priv/static/chunks/chunk-FBXRLPHX.mjs
+  // ../priv/static/chunks/chunk-VL4ETB3G.mjs
+  function fractionDigitsForStep(step) {
+    var _a4;
+    if (!Number.isFinite(step) || step === Math.trunc(step)) {
+      return null;
+    }
+    const frac = (_a4 = step.toString().split(".")[1]) == null ? void 0 : _a4.replace(/0+$/, "");
+    if (!frac) return null;
+    return Math.min(frac.length, MAX_FRACTION_DIGITS);
+  }
+  function formatOptionsFromStep(step) {
+    const digits = fractionDigitsForStep(step);
+    if (digits === null) {
+      return { useGrouping: true };
+    }
+    return {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: 0,
+      useGrouping: true
+    };
+  }
+  function mergeFormatOptions(step) {
+    return formatOptionsFromStep(step);
+  }
+  function formatSubmitOptions(step) {
+    return __spreadProps(__spreadValues({}, formatOptionsFromStep(step)), { useGrouping: false });
+  }
+  function formatSubmitValue(value, step) {
+    if (value === void 0 || value === null) return "";
+    const trimmed = String(value).trim();
+    if (trimmed === "") return "";
+    const n2 = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+    if (Number.isNaN(n2)) return trimmed.replace(/,/g, "");
+    return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n2);
+  }
+  function formatDisplayValue(value, step) {
+    if (value === void 0 || value === null) return "";
+    const trimmed = String(value).trim();
+    if (trimmed === "") return "";
+    const n2 = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+    if (Number.isNaN(n2)) return trimmed;
+    return new Intl.NumberFormat("en-US", mergeFormatOptions(step)).format(n2);
+  }
   function readStringControlledZagProps(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+    return mountStringBinding(el, valueKey, defaultKey);
   }
-  function readStringControlledZagUpdate(el, valueKey, defaultKey) {
-    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  function readStringControlledZagUpdate(el, valueKey, _defaultKey) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: z(getString(el, valueKey)) };
   }
-  function readNumberControlledZagProps(el) {
-    const step = getNumber(el, "step");
-    return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
+  function getJsonStringList(el, datasetKey) {
+    const raw = el.dataset[datasetKey];
+    if (raw === void 0) return void 0;
+    if (!raw || raw.trim() === "") return [];
+    const trimmed = raw.trim();
+    if (!trimmed.startsWith("[")) return void 0;
+    try {
+      const v2 = JSON.parse(trimmed);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function readFormFieldServerPaths(el, datasetKey = "defaultPaths") {
+    if (!getBoolean(el, "formField")) {
+      return void 0;
+    }
+    const json = getJsonStringList(el, datasetKey);
+    if (json !== void 0) return json;
+    const raw = el.dataset[datasetKey];
+    if (!raw) return [];
+    return raw.split("\n").map((line) => line.trim()).filter(Boolean);
+  }
+  function readBooleanControlledZagUpdate(el, openKey, _defaultOpenKey) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { open: getBoolean(el, openKey) };
+  }
+  function isZagValueControlled(el) {
+    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  }
+  function readDatasetStringList(el, datasetKey) {
+    var _a4, _b;
+    return (_b = (_a4 = getJsonStringList(el, datasetKey)) != null ? _a4 : getStringList(el, datasetKey)) != null ? _b : [];
+  }
+  function readUpdatedServerStringList(el) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: readDatasetStringList(el, "value") };
+  }
+  function mountStringListBinding(el) {
+    if (getBoolean(el, "formField")) {
+      return { defaultValue: readDatasetStringList(el, "value") };
+    }
+    if (getBoolean(el, "controlled")) {
+      return { value: readDatasetStringList(el, "value") };
+    }
+    return { defaultValue: readDatasetStringList(el, "defaultValue") };
+  }
+  function readUpdatedServerString(el, lastServerValue) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    const raw = getString(el, "value");
+    if (getBoolean(el, "formField") && raw === lastServerValue) {
+      return {};
+    }
+    return { value: z(raw) };
+  }
+  function mountStringBinding(el, valueKey, defaultKey) {
+    if (getBoolean(el, "formField")) {
+      return { defaultValue: z(getString(el, valueKey)) };
+    }
+    if (getBoolean(el, "controlled")) {
+      return { value: z(getString(el, valueKey)) };
+    }
+    return { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function isZagCheckedControlled(el) {
+    return getBoolean(el, "controlled") || getBoolean(el, "formField");
+  }
+  function readUpdatedServerChecked(el) {
+    if (!isZagCheckedControlled(el)) {
+      return {};
+    }
+    return { checked: getCheckedState(el, "checked") };
+  }
+  function mountCheckedBinding(el) {
+    if (getBoolean(el, "formField")) {
+      return { defaultChecked: getCheckedState(el, "checked") };
+    }
+    if (getBoolean(el, "controlled")) {
+      return { checked: getCheckedState(el, "checked") };
+    }
+    return { defaultChecked: getCheckedState(el, "defaultChecked") };
+  }
+  function readDatasetTagsList(el, datasetKey) {
+    const raw = datasetKey === "tags" ? el.dataset.tags : el.dataset.defaultTags;
+    if (!raw || raw.trim() === "") return [];
+    try {
+      const v2 = JSON.parse(raw);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function readUpdatedServerTags(el) {
+    if (!isZagValueControlled(el)) {
+      return {};
+    }
+    return { value: readDatasetTagsList(el, "tags") };
+  }
+  function mountTagsBinding(el) {
+    if (isZagValueControlled(el)) {
+      return { value: readDatasetTagsList(el, "tags") };
+    }
+    return { defaultValue: readDatasetTagsList(el, "defaultTags") };
+  }
+  function numberInputStep(el) {
+    var _a4;
+    return (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+  }
+  function readUpdatedServerNumber(el, lastServerValue) {
+    const step = numberInputStep(el);
+    const base = { step };
+    if (getBoolean(el, "controlled")) {
+      const raw = getString(el, "value");
+      if (raw === void 0 || raw === "") {
+        return base;
+      }
+      return __spreadProps(__spreadValues({}, base), {
+        value: formatDisplayValue(raw, step),
+        nextServerValue: raw
+      });
+    }
+    if (getBoolean(el, "formField")) {
+      const raw = getString(el, "value");
+      if (raw === void 0 || raw === "") {
+        return base;
+      }
+      if (raw === lastServerValue) {
+        return base;
+      }
+      return __spreadProps(__spreadValues({}, base), {
+        value: formatDisplayValue(raw, step),
+        nextServerValue: raw
+      });
+    }
+    return base;
+  }
+  function mountNumberBinding(el) {
+    const step = numberInputStep(el);
+    if (getBoolean(el, "controlled")) {
+      const raw = getString(el, "value");
+      const value = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
+      return { value, step };
+    }
+    if (getBoolean(el, "formField")) {
+      const raw = getString(el, "value");
+      const defaultValue2 = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
+      return { defaultValue: defaultValue2, step };
+    }
+    const rawDefault = getString(el, "defaultValue");
+    const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
+    return { defaultValue, step };
+  }
+  function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey) {
+    return readUpdatedServerStringList(el);
+  }
+  function readPressedControlledZagUpdate(el) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { pressed: getBoolean(el, "pressed") };
+  }
+  function readEditControlledZagUpdate(el) {
+    if (!getBoolean(el, "controlled")) {
+      return {};
+    }
+    return { edit: getBoolean(el, "edit") };
   }
   function readBooleanControlledZagProps(el, openKey, defaultOpenKey) {
     return getBoolean(el, "controlled") ? { open: getBoolean(el, openKey) } : { defaultOpen: getBoolean(el, defaultOpenKey) };
@@ -2986,18 +3272,19 @@ var Corex = (() => {
   function readControlledOrDefaultBoolean(el, openKey, defaultOpenKey) {
     return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
   }
-  function readStringListControlledZagProps(el, valueKey, defaultValueKey) {
-    return getBoolean(el, "controlled") ? { value: getStringList(el, valueKey) } : { defaultValue: getStringList(el, defaultValueKey) };
+  function readStringListControlledZagProps(el, _valueKey, _defaultValueKey) {
+    return mountStringListBinding(el);
   }
   function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
     var _a4;
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
-  var z;
-  var init_chunk_FBXRLPHX = __esm({
-    "../priv/static/chunks/chunk-FBXRLPHX.mjs"() {
+  var MAX_FRACTION_DIGITS, z;
+  var init_chunk_VL4ETB3G = __esm({
+    "../priv/static/chunks/chunk-VL4ETB3G.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
+      MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -3039,7 +3326,13 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-LIWT33BG.mjs
+  // ../priv/static/chunks/chunk-2WCNJX5P.mjs
+  function checkedChangePayload(el, details) {
+    return {
+      id: el.id,
+      checked: details.checked
+    };
+  }
   function parseRespondTo(source) {
     var _a4, _b, _c;
     if (source && typeof source === "object") {
@@ -3060,6 +3353,23 @@ var Corex = (() => {
     const c2 = (_a4 = o2.checked) != null ? _a4 : o2["checked"];
     if (c2 === true || c2 === "true" || c2 === 1) return true;
     if (c2 === false || c2 === "false" || c2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadPressed(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const p2 = (_a4 = o2.pressed) != null ? _a4 : o2["pressed"];
+    if (p2 === true || p2 === "true" || p2 === 1) return true;
+    if (p2 === false || p2 === "false" || p2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadStringArray(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const v2 = (_a4 = o2.value) != null ? _a4 : o2["value"];
+    if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
   function readPayloadVisible(payload) {
@@ -3108,6 +3418,22 @@ var Corex = (() => {
       );
     }
   }
+  function createValueEmitter(hook, options) {
+    return (respondTo) => {
+      const value = options.getValue();
+      const payload = { id: hook.el.id, value };
+      emitResponse({
+        respondTo,
+        canPushServer: hook.canPushServer(),
+        pushEvent: hook.pushEvent,
+        serverEventName: options.serverEventName,
+        serverPayload: payload,
+        el: hook.el,
+        domEventName: options.domEventName,
+        domDetail: payload
+      });
+    };
+  }
   function emitResponse(args) {
     const {
       respondTo,
@@ -3131,8 +3457,8 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_LIWT33BG = __esm({
-    "../priv/static/chunks/chunk-LIWT33BG.mjs"() {
+  var init_chunk_2WCNJX5P = __esm({
+    "../priv/static/chunks/chunk-2WCNJX5P.mjs"() {
       "use strict";
     }
   });
@@ -3140,7 +3466,8 @@ var Corex = (() => {
   // ../priv/static/accordion.mjs
   var accordion_exports = {};
   __export(accordion_exports, {
-    Accordion: () => AccordionHook
+    Accordion: () => AccordionHook,
+    readAccordionLayoutProps: () => readAccordionLayoutProps
   });
   function connect(service, normalize) {
     const { send, context, prop, scope, computed } = service;
@@ -3282,16 +3609,25 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, Accordion, AccordionHook;
+  function readAccordionLayoutProps(el) {
+    return {
+      id: el.id,
+      collapsible: getBoolean(el, "collapsible"),
+      multiple: getBoolean(el, "multiple"),
+      orientation: getString(el, "orientation"),
+      dir: getDir(el)
+    };
+  }
+  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, Accordion, ITEM_CONTENT_SELECTOR, ITEM_SELECTOR, resolveAccordionValue, AccordionHook;
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
       init_chunk_JDGMEOQK();
-      init_chunk_WG2KNE4C();
-      init_chunk_FBXRLPHX();
+      init_chunk_XI7CXJ3V();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3508,6 +3844,9 @@ var Corex = (() => {
           }
         }
       };
+      ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"]';
+      ITEM_SELECTOR = '[data-scope="accordion"][data-part="item"]';
+      resolveAccordionValue = closestPartValue(ITEM_SELECTOR);
       AccordionHook = {
         mounted() {
           const el = this.el;
@@ -3543,18 +3882,12 @@ var Corex = (() => {
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
-              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
-                runOpenStateTransitionsHeight({
-                  rootEl: el,
-                  selector: '[data-scope="accordion"][data-part="item-content"]',
-                  opts: readHeightAnimationOptions(el),
-                  isOpen: (contentEl) => {
-                    const itemEl = contentEl.closest(
-                      '[data-scope="accordion"][data-part="item"]'
-                    );
-                    const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                    return !!value && next2.includes(value);
-                  }
+              if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
+                runHeightOpenToValues({
+                  el,
+                  selector: ITEM_CONTENT_SELECTOR,
+                  openValues: next2,
+                  resolveValue: resolveAccordionValue
                 });
               }
             },
@@ -3572,36 +3905,18 @@ var Corex = (() => {
           }));
           accordion.init();
           this.accordion = accordion;
-          if (el.dataset.animation === "js") {
-            const opts = readHeightAnimationOptions(el);
-            prepareInitialHeightState(el, '[data-scope="accordion"][data-part="item-content"]', opts);
-          }
-          const emitValue = (respondTo) => {
-            const value = accordion.api.value;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
-              serverEventName: "accordion_value_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "accordion-value",
-              domDetail: { id: el.id, value }
-            });
-          };
-          const emitFocusedValue = (respondTo) => {
-            const value = accordion.api.focusedValue;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
-              serverEventName: "accordion_focused_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "accordion-focused",
-              domDetail: { id: el.id, value }
-            });
-          };
+          prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
+          const hookApi = { el, pushEvent, canPushServer: canPush };
+          const emitValue = createValueEmitter(hookApi, {
+            getValue: () => accordion.api.value,
+            serverEventName: "accordion_value_response",
+            domEventName: "accordion-value"
+          });
+          const emitFocusedValue = createValueEmitter(hookApi, {
+            getValue: () => accordion.api.focusedValue,
+            serverEventName: "accordion_focused_response",
+            domEventName: "accordion-focused"
+          });
           const emitItemState = (itemValue2, disabled, respondTo) => {
             const props = { value: itemValue2, disabled };
             const state2 = accordion.api.getItemState(props);
@@ -3669,48 +3984,31 @@ var Corex = (() => {
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-            this.previousValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousValue = (_a4 = getStringList(el, "value")) != null ? _a4 : [];
           }
         },
         updated() {
-          var _a4, _b, _c, _d;
-          const controlled = getBoolean(this.el, "controlled");
-          if (controlled) {
-            const nextValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
-            const prevValue = (_c = (_b = this.previousValue) != null ? _b : this.lastValue) != null ? _c : [];
-            this.previousValue = void 0;
-            this.lastValue = nextValue;
-            if (this.el.dataset.animation === "js") {
-              runOpenStateTransitionsHeight({
-                rootEl: this.el,
-                selector: '[data-scope="accordion"][data-part="item-content"]',
-                opts: readHeightAnimationOptions(this.el),
-                wasOpen: (contentEl) => {
-                  const itemEl = contentEl.closest(
-                    '[data-scope="accordion"][data-part="item"]'
-                  );
-                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                  return !!value && prevValue.includes(value);
-                },
-                isOpen: (contentEl) => {
-                  const itemEl = contentEl.closest(
-                    '[data-scope="accordion"][data-part="item"]'
-                  );
-                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                  return !!value && nextValue.includes(value);
-                }
-              });
-            }
+          var _a4, _b, _c, _d, _e;
+          const { el } = this;
+          const layout = readAccordionLayoutProps(el);
+          if (!getBoolean(el, "controlled")) {
+            (_a4 = this.accordion) == null ? void 0 : _a4.updateProps(layout);
+            return;
           }
-          (_d = this.accordion) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readStringListControlledZagProps(this.el, "value", "defaultValue")), {
-            collapsible: getBoolean(this.el, "collapsible"),
-            multiple: getBoolean(this.el, "multiple"),
-            orientation: getString(this.el, "orientation"),
-            dir: getDir(this.el)
-          }));
+          const nextValue = (_b = getStringList(el, "value")) != null ? _b : [];
+          const prevValue = (_d = (_c = this.previousValue) != null ? _c : this.lastValue) != null ? _d : [];
+          this.previousValue = void 0;
+          this.lastValue = nextValue;
+          runHeightOpenTransition({
+            el,
+            selector: ITEM_CONTENT_SELECTOR,
+            prevOpen: prevValue,
+            nextOpen: nextValue,
+            resolveValue: resolveAccordionValue
+          });
+          (_e = this.accordion) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { value: nextValue }));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -3719,6 +4017,27 @@ var Corex = (() => {
           (_c = this.accordion) == null ? void 0 : _c.destroy();
         }
       };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-4SRF4GX7.mjs
+  function hiddenInputPropsWithoutValue(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultValue;
+    delete rest.value;
+    return rest;
+  }
+  function syncHiddenInputValue(inputEl, hostEl, value, spreadProps2, hiddenProps) {
+    if (Object.keys(hiddenProps).length > 0) {
+      spreadProps2(inputEl, hiddenInputPropsWithoutValue(hiddenProps));
+    }
+    inputEl.value = value;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  var init_chunk_4SRF4GX7 = __esm({
+    "../priv/static/chunks/chunk-4SRF4GX7.mjs"() {
+      "use strict";
+      init_chunk_EWT2BP2N();
     }
   });
 
@@ -3850,7 +4169,8 @@ var Corex = (() => {
   // ../priv/static/angle-slider.mjs
   var angle_slider_exports = {};
   __export(angle_slider_exports, {
-    AngleSlider: () => AngleSliderHook
+    AngleSlider: () => AngleSliderHook,
+    valueChangePayload: () => valueChangePayload
   });
   function getPointAngle(rect, point, reference = rect.center) {
     const x2 = point.x - reference.x;
@@ -4103,12 +4423,13 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
+      init_chunk_4SRF4GX7();
       init_chunk_QB2YSZP6();
-      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4326,7 +4647,15 @@ var Corex = (() => {
           const hiddenInputEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="hidden-input"]'
           );
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl instanceof HTMLInputElement) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              String(this.api.value),
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+          }
           const controlEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="control"]'
           );
@@ -4367,9 +4696,9 @@ var Corex = (() => {
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
-          }, readNumberControlledZagProps(el)), {
+          }, mountNumberBinding(el)), {
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             dir: getDir(el),
@@ -4443,15 +4772,17 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.angleSlider) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readNumberControlledZagProps(this.el)), {
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            invalid: getBoolean(this.el, "invalid"),
-            name: getString(this.el, "name"),
-            dir: getDir(this.el)
+          const el = this.el;
+          const zag = this.angleSlider;
+          const valuePatch = readUpdatedServerNumber(el);
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readonly"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            dir: getDir(el)
           }));
         },
         destroyed() {
@@ -4467,7 +4798,8 @@ var Corex = (() => {
   // ../priv/static/avatar.mjs
   var avatar_exports = {};
   __export(avatar_exports, {
-    Avatar: () => AvatarHook
+    Avatar: () => AvatarHook,
+    statusPayload: () => statusPayload
   });
   function connect3(service, normalize) {
     const { state: state2, send, prop, scope } = service;
@@ -4525,8 +4857,8 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4752,7 +5084,11 @@ var Corex = (() => {
   // ../priv/static/carousel.mjs
   var carousel_exports = {};
   __export(carousel_exports, {
-    Carousel: () => CarouselHook
+    Carousel: () => CarouselHook,
+    fromZagPage: () => fromZagPage,
+    readCorexPage: () => readCorexPage,
+    readInstant: () => readInstant,
+    toZagPage: () => toZagPage
   });
   function connect4(service, normalize) {
     const { state: state2, context, computed, send, scope, prop } = service;
@@ -5180,6 +5516,17 @@ var Corex = (() => {
     }
     return snapPoints;
   }
+  function toZagPage(page) {
+    if (page == null) return void 0;
+    return Math.max(0, page - 1);
+  }
+  function fromZagPage(page) {
+    return page + 1;
+  }
+  function readCorexPage(el, attr) {
+    const dataKey = attr === "page" ? "page" : "defaultPage";
+    return toZagPage(getNumber(el, dataKey));
+  }
   function readInstant(detail) {
     if (detail && typeof detail === "object" && "instant" in detail) {
       const v2 = detail.instant;
@@ -5193,8 +5540,8 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5783,6 +6130,10 @@ var Corex = (() => {
         initApi() {
           return this.zagConnect(connect4);
         }
+        updateProps(props) {
+          super.updateProps(props);
+          this.machine.service.send({ type: "SNAP.REFRESH" });
+        }
         render() {
           var _a4;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="carousel"][data-part="root"]')) != null ? _a4 : this.el;
@@ -5800,7 +6151,10 @@ var Corex = (() => {
             const itemEl = this.el.querySelector(
               `[data-scope="carousel"][data-part="item"][data-index="${i2}"]`
             );
-            if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i2 }));
+            if (itemEl) {
+              this.spreadProps(itemEl, this.api.getItemProps({ index: i2 }));
+              this.syncSlideInert(itemEl);
+            }
           }
           const prevTriggerEl = this.el.querySelector(
             '[data-scope="carousel"][data-part="prev-trigger"]'
@@ -5831,6 +6185,9 @@ var Corex = (() => {
           );
           if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
         }
+        syncSlideInert(itemEl) {
+          itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
+        }
       };
       CarouselHook = {
         mounted() {
@@ -5845,7 +6202,7 @@ var Corex = (() => {
           const zag = new Carousel(el, __spreadProps(__spreadValues({
             id: el.id,
             slideCount
-          }, controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") }), {
+          }, controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") }), {
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -5865,7 +6222,7 @@ var Corex = (() => {
                 pushEvent,
                 payload: {
                   id: el.id,
-                  page: details.page,
+                  page: fromZagPage(details.page),
                   pageSnapPoint: details.pageSnapPoint
                 },
                 serverEventName: getString(el, "onPageChange"),
@@ -5916,7 +6273,7 @@ var Corex = (() => {
           (_a4 = this.carousel) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
             slideCount
-          }, controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") }), {
+          }, controlled ? { page: readCorexPage(this.el, "page") } : {}), {
             dir: getDir(this.el),
             orientation: getString(this.el, "orientation"),
             slidesPerPage: getNumber(this.el, "slidesPerPage"),
@@ -5941,7 +6298,26 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-CTFBPAMI.mjs
+  // ../priv/static/chunks/chunk-G73IV5JU.mjs
+  function hiddenInputPropsWithoutChecked(props) {
+    const rest = __spreadValues({}, props);
+    delete rest.defaultChecked;
+    delete rest.checked;
+    return rest;
+  }
+  function syncCheckableHiddenInput(inputEl, hostEl, checked, spreadProps2, hiddenInputProps) {
+    spreadProps2(inputEl, hiddenInputPropsWithoutChecked(hiddenInputProps));
+    inputEl.checked = checked;
+    syncInputFormAssociation(inputEl, hostEl);
+  }
+  var init_chunk_G73IV5JU = __esm({
+    "../priv/static/chunks/chunk-G73IV5JU.mjs"() {
+      "use strict";
+      init_chunk_EWT2BP2N();
+    }
+  });
+
+  // ../priv/static/chunks/chunk-V4PB2O2G.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -6060,10 +6436,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_CTFBPAMI = __esm({
-    "../priv/static/chunks/chunk-CTFBPAMI.mjs"() {
+  var init_chunk_V4PB2O2G = __esm({
+    "../priv/static/chunks/chunk-V4PB2O2G.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -6114,7 +6490,8 @@ var Corex = (() => {
   // ../priv/static/checkbox.mjs
   var checkbox_exports = {};
   __export(checkbox_exports, {
-    Checkbox: () => CheckboxHook
+    Checkbox: () => CheckboxHook,
+    checkedChangePayload: () => checkedChangePayload
   });
   function connect5(service, normalize) {
     const { send, context, prop, computed, scope } = service;
@@ -6228,20 +6605,16 @@ var Corex = (() => {
   function isChecked(checked) {
     return isIndeterminate(checked) ? false : !!checked;
   }
-  function checkedChangePayload(el, details) {
-    return {
-      id: el.id,
-      checked: details.checked
-    };
-  }
   var anatomy5, parts5, getRootId5, getLabelId2, getControlId2, getHiddenInputId2, getRootEl3, getHiddenInputEl2, not2, machine5, Checkbox, CheckboxHook;
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
+      init_chunk_G73IV5JU();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6413,8 +6786,14 @@ var Corex = (() => {
           const inputEl = rootEl.querySelector(
             ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
           );
-          if (inputEl) {
-            this.spreadProps(inputEl, this.api.getHiddenInputProps());
+          if (inputEl instanceof HTMLInputElement) {
+            syncCheckableHiddenInput(
+              inputEl,
+              this.el,
+              this.api.checked === true,
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
           }
           const labelEl = rootEl.querySelector(
             ':scope > [data-scope="checkbox"][data-part="label"]'
@@ -6443,7 +6822,7 @@ var Corex = (() => {
           const canPush = () => canPushEvent(this.liveSocket);
           const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") } : { defaultChecked: getCheckedState(el, "defaultChecked") }), {
+          }, mountCheckedBinding(el)), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -6451,7 +6830,7 @@ var Corex = (() => {
             dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             onCheckedChange: (details) => {
               notifyChange({
                 el,
@@ -6461,6 +6840,16 @@ var Corex = (() => {
                 serverEventName: getString(el, "onCheckedChange"),
                 clientEventName: getString(el, "onCheckedChangeClient")
               });
+              const input = el.querySelector(
+                '[data-scope="checkbox"][data-part="hidden-input"]'
+              );
+              if (input) {
+                queueMicrotask(() => {
+                  input.checked = details.checked === true;
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+              }
             }
           }));
           zagCheckbox.init();
@@ -6485,36 +6874,53 @@ var Corex = (() => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             zagCheckbox.api.toggleChecked();
           });
+          const emitCheckedState = (respondTo, serverEventName, domEventName, value) => {
+            const detail = { id: el.id, value };
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName,
+              serverPayload: detail,
+              el,
+              domEventName,
+              domDetail: detail
+            });
+          };
           registry.add("checkbox_checked", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            if (!canPush()) return;
-            this.pushEvent("checkbox_checked_response", {
-              id: el.id,
-              value: zagCheckbox.api.checked
-            });
+            emitCheckedState(
+              parseRespondTo(payload),
+              "checkbox_checked_response",
+              "corex:checkbox:checked",
+              zagCheckbox.api.checked
+            );
           });
           registry.add("checkbox_focused", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            if (!canPush()) return;
-            this.pushEvent("checkbox_focused_response", {
-              id: el.id,
-              value: zagCheckbox.api.focused
-            });
+            emitCheckedState(
+              parseRespondTo(payload),
+              "checkbox_focused_response",
+              "corex:checkbox:focused",
+              zagCheckbox.api.focused
+            );
           });
           registry.add("checkbox_disabled", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            if (!canPush()) return;
-            this.pushEvent("checkbox_disabled_response", {
-              id: el.id,
-              value: zagCheckbox.api.disabled
-            });
+            emitCheckedState(
+              parseRespondTo(payload),
+              "checkbox_disabled_response",
+              "corex:checkbox:disabled",
+              zagCheckbox.api.disabled
+            );
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.checkbox) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          const zagCheckbox = this.checkbox;
+          if (!zagCheckbox) return;
+          zagCheckbox.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") } : { defaultChecked: getCheckedState(this.el, "defaultChecked") }), {
+          }, readUpdatedServerChecked(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -6522,7 +6928,7 @@ var Corex = (() => {
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly")
+            readOnly: getBoolean(this.el, "readonly")
           }));
         },
         destroyed() {
@@ -6535,7 +6941,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6Y5IFYJF.mjs
+  // ../priv/static/chunks/chunk-VHCQWARJ.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -6558,10 +6964,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_6Y5IFYJF = __esm({
-    "../priv/static/chunks/chunk-6Y5IFYJF.mjs"() {
+  var init_chunk_VHCQWARJ = __esm({
+    "../priv/static/chunks/chunk-VHCQWARJ.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6624,7 +7030,8 @@ var Corex = (() => {
   // ../priv/static/clipboard.mjs
   var clipboard_exports = {};
   __export(clipboard_exports, {
-    Clipboard: () => ClipboardHook
+    Clipboard: () => ClipboardHook,
+    copyPayload: () => copyPayload
   });
   function createNode(doc, text) {
     const node = doc.createElement("pre");
@@ -6645,9 +7052,9 @@ var Corex = (() => {
     }
     selection.removeAllRanges();
     const doc = node.ownerDocument;
-    const range = doc.createRange();
-    range.selectNodeContents(node);
-    selection.addRange(range);
+    const range2 = doc.createRange();
+    range2.selectNodeContents(node);
+    selection.addRange(range2);
     doc.execCommand("copy");
     selection.removeAllRanges();
     return Promise.resolve();
@@ -6731,14 +7138,17 @@ var Corex = (() => {
       }
     };
   }
+  function copyPayload(el, value) {
+    return { id: el.id, value };
+  }
   var anatomy6, parts6, getRootId6, getInputId, getLabelId3, getInputEl, writeToClipboard, machine6, Clipboard, ClipboardHook;
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_6Y5IFYJF();
+      init_chunk_VHCQWARJ();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6913,7 +7323,7 @@ var Corex = (() => {
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value },
+                payload: copyPayload(el, value),
                 serverEventName: getString(el, "onCopy"),
                 clientEventName: getString(el, "onCopyClient")
               });
@@ -6950,8 +7360,7 @@ var Corex = (() => {
           var _a4;
           (_a4 = this.clipboard) == null ? void 0 : _a4.updateProps({
             id: this.el.id,
-            timeout: getNumber(this.el, "timeout"),
-            defaultValue: getString(this.el, "defaultValue")
+            timeout: getNumber(this.el, "timeout")
           });
         },
         destroyed() {
@@ -6964,46 +7373,11 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/code.mjs
-  var code_exports = {};
-  __export(code_exports, {
-    Code: () => CodeHook
-  });
-  var CodeHook;
-  var init_code = __esm({
-    "../priv/static/code.mjs"() {
-      "use strict";
-      CodeHook = {
-        mounted() {
-          if (this.el.tagName === "PRE") {
-            this._scrollTop = this.el.scrollTop;
-            this._scrollLeft = this.el.scrollLeft;
-          }
-        },
-        beforeUpdate() {
-          if (this.el.tagName === "PRE") {
-            this._scrollTop = this.el.scrollTop;
-            this._scrollLeft = this.el.scrollLeft;
-          }
-        },
-        updated() {
-          var _a4, _b;
-          if (this.el.tagName !== "PRE") return;
-          const st = (_a4 = this._scrollTop) != null ? _a4 : 0;
-          const sl = (_b = this._scrollLeft) != null ? _b : 0;
-          requestAnimationFrame(() => {
-            this.el.scrollTop = st;
-            this.el.scrollLeft = sl;
-          });
-        }
-      };
-    }
-  });
-
   // ../priv/static/collapsible.mjs
   var collapsible_exports = {};
   __export(collapsible_exports, {
-    Collapsible: () => CollapsibleHook
+    Collapsible: () => CollapsibleHook,
+    openChangePayload: () => openChangePayload
   });
   function connect7(service, normalize) {
     const { state: state2, send, context, scope, prop } = service;
@@ -7097,11 +7471,11 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -7376,22 +7750,26 @@ var Corex = (() => {
           return this.zagConnect(connect7);
         }
         render() {
+          const orientation = this.el.dataset.orientation;
           const rootEl = this.el.querySelector(
             '[data-scope="collapsible"][data-part="root"]'
           );
           if (rootEl) {
             this.spreadProps(rootEl, this.api.getRootProps());
+            if (orientation) rootEl.dataset.orientation = orientation;
             const triggerEl = rootEl.querySelector(
               '[data-scope="collapsible"][data-part="trigger"]'
             );
             if (triggerEl) {
               this.spreadProps(triggerEl, this.api.getTriggerProps());
+              if (orientation) triggerEl.dataset.orientation = orientation;
             }
             const contentEl = rootEl.querySelector(
               '[data-scope="collapsible"][data-part="content"]'
             );
             if (contentEl) {
               this.spreadProps(contentEl, this.api.getContentProps());
+              if (orientation) contentEl.dataset.orientation = orientation;
             }
           }
         }
@@ -7463,7 +7841,7 @@ var Corex = (() => {
           var _a4;
           (_a4 = this.collapsible) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, readBooleanControlledZagProps(this.el, "open", "defaultOpen")), {
+          }, readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")), {
             disabled: getBoolean(this.el, "disabled"),
             dir: getDir(this.el)
           }));
@@ -7475,6 +7853,26 @@ var Corex = (() => {
           (_c = this.collapsible) == null ? void 0 : _c.destroy();
         }
       };
+    }
+  });
+
+  // ../priv/static/chunks/chunk-FUVA3DRB.mjs
+  function hasArraySubmitName(el) {
+    return getString(el, "submitName") !== void 0;
+  }
+  function stripZagSubmitNames(el, scope, parts34 = ["hidden-input"]) {
+    if (!hasArraySubmitName(el)) return;
+    for (const part of parts34) {
+      const node = el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`);
+      if (!node) continue;
+      node.removeAttribute("name");
+      node.removeAttribute("form");
+    }
+  }
+  var init_chunk_FUVA3DRB = __esm({
+    "../priv/static/chunks/chunk-FUVA3DRB.mjs"() {
+      "use strict";
+      init_chunk_EWT2BP2N();
     }
   });
 
@@ -7531,7 +7929,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-NMOLO6CB.mjs
+  // ../priv/static/chunks/chunk-EPNQR235.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8895,10 +9293,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
-  var init_chunk_NMOLO6CB = __esm({
-    "../priv/static/chunks/chunk-NMOLO6CB.mjs"() {
+  var init_chunk_EPNQR235 = __esm({
+    "../priv/static/chunks/chunk-EPNQR235.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -9033,7 +9431,7 @@ var Corex = (() => {
             const arrowDimensions = yield platform2.getDimensions(element);
             const isYAxis = axis === "y";
             const minProp = isYAxis ? "top" : "left";
-            const maxProp = isYAxis ? "bottom" : "right";
+            const maxProp2 = isYAxis ? "bottom" : "right";
             const clientProp = isYAxis ? "clientHeight" : "clientWidth";
             const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
             const startDiff = coords[axis] - rects.reference[axis];
@@ -9045,7 +9443,7 @@ var Corex = (() => {
             const centerToReference = endDiff / 2 - startDiff / 2;
             const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
             const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
-            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
+            const maxPadding = min2(paddingObject[maxProp2], largestPossiblePadding);
             const min$1 = minPadding;
             const max22 = clientSize - arrowDimensions[length] - maxPadding;
             const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
@@ -9608,7 +10006,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-B7AHHTCM.mjs
+  // ../priv/static/chunks/chunk-4QMNVH3P.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -9833,17 +10231,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_B7AHHTCM = __esm({
-    "../priv/static/chunks/chunk-B7AHHTCM.mjs"() {
+  var init_chunk_4QMNVH3P = __esm({
+    "../priv/static/chunks/chunk-4QMNVH3P.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunks/chunk-MLVURBKI.mjs
+  // ../priv/static/chunks/chunk-57TWBSTW.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10002,11 +10400,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_MLVURBKI = __esm({
-    "../priv/static/chunks/chunk-MLVURBKI.mjs"() {
+  var init_chunk_57TWBSTW = __esm({
+    "../priv/static/chunks/chunk-57TWBSTW.mjs"() {
       "use strict";
-      init_chunk_B7AHHTCM();
-      init_chunk_EE44DOTL();
+      init_chunk_4QMNVH3P();
+      init_chunk_EWT2BP2N();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10130,7 +10528,156 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-YM6Q7RBK.mjs
+  // ../priv/static/chunks/chunk-VMKNATWC.mjs
+  function reapplyLiveViewValueInputUsage(input) {
+    const p2 = input;
+    if (!p2.phxPrivate) p2.phxPrivate = {};
+    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  }
+  function notifyPhoenixFormChange(input, value, options = {}) {
+    var _a4;
+    if (String(input.value) !== String(value)) {
+      input.value = value;
+    }
+    (_a4 = options.onTouched) == null ? void 0 : _a4.call(options);
+    if (options.markUsed === false) {
+      return;
+    }
+    reapplyLiveViewValueInputUsage(input);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    if (options.change !== false) {
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+  function queueLiveViewFormInputSync(input, getValue, onTouched) {
+    queueMicrotask(() => {
+      notifyPhoenixFormChange(input, getValue(), { onTouched });
+    });
+  }
+  var PHX_HAS_FOCUSED;
+  var init_chunk_VMKNATWC = __esm({
+    "../priv/static/chunks/chunk-VMKNATWC.mjs"() {
+      "use strict";
+      PHX_HAS_FOCUSED = "phx-has-focused";
+    }
+  });
+
+  // ../priv/static/chunks/chunk-WDSYQCT6.mjs
+  function isFormFieldUsed(el, userTouched = false) {
+    return userTouched || getBoolean(el, "fieldUsed") === true;
+  }
+  function padValues(values, fixedLength) {
+    const out = values.map((v2) => String(v2));
+    while (out.length < fixedLength) out.push("");
+    return out.slice(0, fixedLength);
+  }
+  function createArrayInput(scope, submitName, hostEl, value, empty) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.setAttribute("data-scope", scope);
+    input.setAttribute("data-part", "array-input");
+    if (empty) input.setAttribute("data-empty", "true");
+    if (submitName) {
+      input.name = submitName;
+      associateInputWithFormIfOutside(input, hostEl);
+    }
+    input.value = value;
+    return input;
+  }
+  function syncArrayInputsInPlace(container, scope, submitName, hostEl, values, fieldTouched) {
+    var _a4;
+    const existing = Array.from(
+      container.querySelectorAll(`[data-scope="${scope}"][data-part="array-input"]`)
+    );
+    if (values.length === 0) {
+      existing.forEach((node) => node.remove());
+      const empty = createArrayInput(scope, fieldTouched ? submitName : void 0, hostEl, "", true);
+      container.appendChild(empty);
+      return empty;
+    }
+    const emptyNodes = existing.filter((n2) => n2.hasAttribute("data-empty"));
+    emptyNodes.forEach((n2) => n2.remove());
+    let valueNodes = existing.filter((n2) => !n2.hasAttribute("data-empty"));
+    while (valueNodes.length < values.length) {
+      const input = createArrayInput(scope, submitName, hostEl, "", false);
+      container.appendChild(input);
+      valueNodes = Array.from(
+        container.querySelectorAll(
+          `[data-scope="${scope}"][data-part="array-input"]:not([data-empty])`
+        )
+      );
+    }
+    while (valueNodes.length > values.length) {
+      const last2 = valueNodes[valueNodes.length - 1];
+      last2 == null ? void 0 : last2.remove();
+      valueNodes = valueNodes.slice(0, -1);
+    }
+    valueNodes.forEach((input, index) => {
+      var _a5;
+      input.value = (_a5 = values[index]) != null ? _a5 : "";
+    });
+    return (_a4 = valueNodes[valueNodes.length - 1]) != null ? _a4 : null;
+  }
+  function syncArrayHiddenInputsForPhoenix(el, values, options = {}) {
+    var _a4, _b, _c, _d;
+    const scope = (_a4 = options.scope) != null ? _a4 : "tags-input";
+    const submitName = (_b = options.submitName) != null ? _b : getString(el, "submitName");
+    if (!submitName) return;
+    const fixedLength = options.fixedLength;
+    const normalized = fixedLength !== void 0 ? padValues(values, fixedLength) : values.map((v2) => String(v2));
+    const fieldTouched = isFormFieldUsed(el, options.fieldTouched === true);
+    let container = el.querySelector(
+      `[data-scope="${scope}"][data-part="array-inputs"]`
+    );
+    if (!container) {
+      const root = (_c = el.querySelector(`[data-scope="${scope}"][data-part="root"]`)) != null ? _c : el;
+      container = document.createElement("div");
+      container.setAttribute("data-scope", scope);
+      container.setAttribute("data-part", "array-inputs");
+      container.setAttribute("phx-update", "ignore");
+      container.id = `${scope}:${el.id}:array-inputs`;
+      root.prepend(container);
+    }
+    const notifyInput = syncArrayInputsInPlace(
+      container,
+      scope,
+      submitName,
+      el,
+      normalized,
+      fieldTouched
+    );
+    if (fieldTouched) {
+      container.querySelectorAll(
+        `[data-scope="${scope}"][data-part="array-input"][name="${CSS.escape(submitName)}"]`
+      ).forEach((input) => reapplyLiveViewValueInputUsage(input));
+    }
+    const notifyLiveView = (_d = options.notifyLiveView) != null ? _d : false;
+    if (!notifyLiveView || !notifyInput) return;
+    queueMicrotask(() => {
+      var _a5;
+      (_a5 = options.onTouched) == null ? void 0 : _a5.call(options);
+      notifyPhoenixFormChange(notifyInput, notifyInput.value, { onTouched: void 0 });
+    });
+  }
+  function bindArrayFieldSubmitIntent(hostEl, onPrepareSubmit) {
+    const form = hostEl.closest("form");
+    if (!form) return () => {
+    };
+    const handler = () => {
+      onPrepareSubmit();
+    };
+    form.addEventListener("submit", handler, { capture: true });
+    return () => form.removeEventListener("submit", handler, { capture: true });
+  }
+  var init_chunk_WDSYQCT6 = __esm({
+    "../priv/static/chunks/chunk-WDSYQCT6.mjs"() {
+      "use strict";
+      init_chunk_VMKNATWC();
+      init_chunk_EWT2BP2N();
+    }
+  });
+
+  // ../priv/static/chunks/chunk-VJGUNSK5.mjs
   function readFlipAttr(el) {
     const raw = el.dataset.positionFlip;
     if (raw == null) return void 0;
@@ -10156,9 +10703,10 @@ var Corex = (() => {
     const offsetMainAxis = getNumber(el, "positionOffsetMainAxis");
     const offsetCrossAxis = getNumber(el, "positionOffsetCrossAxis");
     if (offsetMainAxis !== void 0 || offsetCrossAxis !== void 0) {
-      options.offset = {};
-      if (offsetMainAxis !== void 0) options.offset.mainAxis = offsetMainAxis;
-      if (offsetCrossAxis !== void 0) options.offset.crossAxis = offsetCrossAxis;
+      const offset3 = {};
+      if (offsetMainAxis !== void 0) offset3.mainAxis = offsetMainAxis;
+      if (offsetCrossAxis !== void 0) offset3.crossAxis = offsetCrossAxis;
+      options.offset = offset3;
     }
     const flip3 = readFlipAttr(el);
     if (flip3 !== void 0) options.flip = flip3;
@@ -10174,45 +10722,14 @@ var Corex = (() => {
     if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
     return Object.keys(options).length > 0 ? options : void 0;
   }
-  var init_chunk_YM6Q7RBK = __esm({
-    "../priv/static/chunks/chunk-YM6Q7RBK.mjs"() {
+  var init_chunk_VJGUNSK5 = __esm({
+    "../priv/static/chunks/chunk-VJGUNSK5.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
     }
   });
 
-  // ../priv/static/chunks/chunk-PWLG55J6.mjs
-  function itemValue(item) {
-    var _a4;
-    return (_a4 = item.value) != null ? _a4 : "";
-  }
-  function zagListCollectionConfig(items, hasGroups) {
-    if (hasGroups) {
-      return {
-        items,
-        itemToValue: (item) => itemValue(item),
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => {
-          var _a4;
-          return (_a4 = item.group) != null ? _a4 : "";
-        }
-      };
-    }
-    return {
-      items,
-      itemToValue: (item) => itemValue(item),
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => !!item.disabled
-    };
-  }
-  var init_chunk_PWLG55J6 = __esm({
-    "../priv/static/chunks/chunk-PWLG55J6.mjs"() {
-      "use strict";
-    }
-  });
-
-  // ../priv/static/chunks/chunk-P32UGRVU.mjs
+  // ../priv/static/chunks/chunk-4PIYPYVK.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -10612,10 +11129,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_P32UGRVU = __esm({
-    "../priv/static/chunks/chunk-P32UGRVU.mjs"() {
+  var init_chunk_4PIYPYVK = __esm({
+    "../priv/static/chunks/chunk-4PIYPYVK.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -11612,6 +12129,877 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunks/chunk-OAGPTRUC.mjs
+  function connect8(service, normalize) {
+    const { context, prop, scope, computed, send, refs } = service;
+    const disabled = prop("disabled");
+    const collection22 = prop("collection");
+    const layout = isGridCollection(collection22) ? "grid" : "list";
+    const focused = context.get("focused");
+    const focusVisible = refs.get("focusVisible") && focused;
+    const inputState = refs.get("inputState");
+    const value = context.get("value");
+    const selectedItems = computed("selectedItems");
+    const highlightedValue = context.get("highlightedValue");
+    const highlightedItem = context.get("highlightedItem");
+    const isTypingAhead = computed("isTypingAhead");
+    const interactive = computed("isInteractive");
+    const ariaActiveDescendant = highlightedValue ? getItemId3(scope, highlightedValue) : void 0;
+    function getItemState(props) {
+      const itemDisabled = collection22.getItemDisabled(props.item);
+      const value2 = collection22.getItemValue(props.item);
+      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
+      const highlighted = highlightedValue === value2;
+      return {
+        value: value2,
+        disabled: Boolean(disabled || itemDisabled),
+        focused: highlighted && focused,
+        focusVisible: highlighted && focusVisible,
+        // deprecated
+        highlighted: highlighted && (inputState.focused ? focused : focusVisible),
+        selected: context.get("value").includes(value2)
+      };
+    }
+    return {
+      empty: value.length === 0,
+      highlightedItem,
+      highlightedValue,
+      clearHighlightedValue() {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+      },
+      selectedItems,
+      hasSelectedItems: computed("hasSelectedItems"),
+      value,
+      valueAsString: computed("valueAsString"),
+      collection: collection22,
+      disabled: !!disabled,
+      selectValue(value2) {
+        send({ type: "ITEM.SELECT", value: value2 });
+      },
+      setValue(value2) {
+        send({ type: "VALUE.SET", value: value2 });
+      },
+      selectAll() {
+        if (!computed("multiple")) {
+          throw new Error("[zag-js] Cannot select all items in a single-select listbox");
+        }
+        send({ type: "VALUE.SET", value: collection22.getValues() });
+      },
+      highlightValue(value2) {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
+      },
+      highlightFirst() {
+        send({ type: "HIGHLIGHT.FIRST" });
+      },
+      highlightLast() {
+        send({ type: "HIGHLIGHT.LAST" });
+      },
+      highlightNext() {
+        send({ type: "HIGHLIGHT.NEXT" });
+      },
+      highlightPrevious() {
+        send({ type: "HIGHLIGHT.PREV" });
+      },
+      clearValue(value2) {
+        if (value2) {
+          send({ type: "ITEM.CLEAR", value: value2 });
+        } else {
+          send({ type: "VALUE.CLEAR" });
+        }
+      },
+      getItemState,
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.root.attrs), {
+          dir: prop("dir"),
+          id: getRootId8(scope),
+          "data-orientation": prop("orientation"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getInputProps(props = {}) {
+        var _a4;
+        const keyboardPriority = (_a4 = props.keyboardPriority) != null ? _a4 : "caret";
+        return normalize.input(__spreadProps(__spreadValues({}, parts8.input.attrs), {
+          dir: prop("dir"),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          autoComplete: "off",
+          autoCorrect: "off",
+          "aria-haspopup": "listbox",
+          "aria-controls": getContentId2(scope),
+          "aria-autocomplete": "list",
+          "aria-activedescendant": ariaActiveDescendant,
+          spellCheck: false,
+          enterKeyHint: "go",
+          onFocus() {
+            queueMicrotask(() => {
+              send({ type: "INPUT.FOCUS", autoHighlight: !!(props == null ? void 0 : props.autoHighlight) });
+            });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR", src: "input" });
+          },
+          onInput(event) {
+            if (!(props == null ? void 0 : props.autoHighlight)) return;
+            if (event.currentTarget.value.trim()) return;
+            queueMicrotask(() => {
+              send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const nativeEvent = getNativeEvent(event);
+            const forwardEvent = () => {
+              var _a5;
+              event.preventDefault();
+              const win = scope.getWin();
+              const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
+              (_a5 = getContentEl2(scope)) == null ? void 0 : _a5.dispatchEvent(keyboardEvent);
+            };
+            switch (nativeEvent.key) {
+              case "ArrowLeft":
+              case "ArrowRight": {
+                if (!isGridCollection(collection22)) return;
+                if (event.ctrlKey) return;
+                if (keyboardPriority !== "navigate") return;
+                forwardEvent();
+                break;
+              }
+              case "Home":
+              case "End": {
+                if (keyboardPriority !== "navigate") return;
+                if (highlightedValue == null && event.shiftKey) return;
+                forwardEvent();
+                break;
+              }
+              case "ArrowDown":
+              case "ArrowUp": {
+                forwardEvent();
+                break;
+              }
+              case "Enter":
+                if (highlightedValue != null) {
+                  event.preventDefault();
+                  send({ type: "ITEM.CLICK", value: highlightedValue });
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getLabelId4(scope)
+        }, parts8.label.attrs), {
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getValueTextProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.valueText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getItemProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getItemId3(scope, itemState.value),
+          role: "option"
+        }, parts8.item.attrs), {
+          dir: prop("dir"),
+          "data-value": itemState.value,
+          "aria-selected": itemState.selected,
+          "data-selected": dataAttr(itemState.selected),
+          "data-layout": layout,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-orientation": prop("orientation"),
+          "data-highlighted": dataAttr(itemState.highlighted),
+          "data-disabled": dataAttr(itemState.disabled),
+          "aria-disabled": ariaAttr(itemState.disabled),
+          onPointerMove(event) {
+            if (!props.highlightOnHover) return;
+            if (itemState.disabled || event.pointerType !== "mouse") return;
+            if (itemState.highlighted) return;
+            send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
+          },
+          onMouseDown(event) {
+            var _a4;
+            event.preventDefault();
+            (_a4 = getContentEl2(scope)) == null ? void 0 : _a4.focus();
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (isDownloadingEvent(event)) return;
+            if (isOpeningInNewTab(event)) return;
+            if (isContextMenuEvent(event)) return;
+            if (itemState.disabled) return;
+            send({
+              type: "ITEM.CLICK",
+              value: itemState.value,
+              shiftKey: event.shiftKey,
+              anchorValue: highlightedValue,
+              metaKey: isCtrlOrMetaKey(event)
+            });
+          }
+        }));
+      },
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-disabled": dataAttr(itemState.disabled),
+          "data-highlighted": dataAttr(itemState.highlighted)
+        }));
+      },
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemIndicator.attrs), {
+          "aria-hidden": true,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          hidden: !itemState.selected
+        }));
+      },
+      getItemGroupLabelProps(props) {
+        const { htmlFor } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
+          id: getItemGroupLabelId(scope, htmlFor),
+          dir: prop("dir"),
+          role: "presentation"
+        }));
+      },
+      getItemGroupProps(props) {
+        const { id } = props;
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-orientation": prop("orientation"),
+          "data-empty": dataAttr(collection22.size === 0),
+          id: getItemGroupId2(scope, id),
+          "aria-labelledby": getItemGroupLabelId(scope, id),
+          role: "group",
+          dir: prop("dir")
+        }));
+      },
+      getContentProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getContentId2(scope),
+          role: "listbox"
+        }, parts8.content.attrs), {
+          "data-activedescendant": ariaActiveDescendant,
+          "aria-activedescendant": ariaActiveDescendant,
+          "data-orientation": prop("orientation"),
+          "aria-multiselectable": computed("multiple") ? true : void 0,
+          "aria-labelledby": getLabelId4(scope),
+          tabIndex: 0,
+          "data-layout": layout,
+          "data-empty": dataAttr(collection22.size === 0),
+          style: {
+            "--column-count": isGridCollection(collection22) ? collection22.columnCount : 1
+          },
+          onFocus() {
+            send({ type: "CONTENT.FOCUS" });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR" });
+          },
+          onKeyDown(event) {
+            if (!interactive) return;
+            const target = getEventTarget(event);
+            if (!contains(event.currentTarget, getEventTarget(event))) return;
+            const shiftKey = event.shiftKey;
+            const keyMap2 = {
+              ArrowUp(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getPreviousRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getPreviousValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowDown(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getNextRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getNextValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowLeft() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getPreviousValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowRight() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getNextValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Home(event2) {
+                if (isEditableElement(target)) return;
+                event2.preventDefault();
+                let nextValue = collection22.firstValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              End(event2) {
+                if (isEditableElement(target)) return;
+                event2.preventDefault();
+                let nextValue = collection22.lastValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Enter() {
+                send({ type: "ITEM.CLICK", value: highlightedValue });
+              },
+              a(event2) {
+                if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
+                  event2.preventDefault();
+                  send({ type: "VALUE.SET", value: collection22.getValues() });
+                }
+              },
+              Space(event2) {
+                var _a4;
+                if (isTypingAhead && prop("typeahead")) {
+                  send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
+                } else {
+                  (_a4 = keyMap2.Enter) == null ? void 0 : _a4.call(keyMap2, event2);
+                }
+              },
+              Escape(event2) {
+                if (prop("deselectable") && value.length > 0) {
+                  event2.preventDefault();
+                  event2.stopPropagation();
+                  send({ type: "VALUE.CLEAR" });
+                }
+              }
+            };
+            const exec = keyMap2[getEventKey(event)];
+            if (exec) {
+              exec(event);
+              return;
+            }
+            if (isEditableElement(target)) return;
+            if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
+              send({ type: "CONTENT.TYPEAHEAD", key: event.key });
+              event.preventDefault();
+            }
+          }
+        }));
+      }
+    };
+  }
+  function invokeOnSelect(current, next2, onSelect) {
+    const added = diff2(next2, current);
+    for (const item of added) {
+      onSelect == null ? void 0 : onSelect({ value: item });
+    }
+  }
+  function itemValue(item) {
+    var _a4;
+    return (_a4 = item.value) != null ? _a4 : "";
+  }
+  function zagListCollectionConfig(items, hasGroups) {
+    if (hasGroups) {
+      return {
+        items,
+        itemToValue: (item) => itemValue(item),
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a4;
+          return (_a4 = item.group) != null ? _a4 : "";
+        }
+      };
+    }
+    return {
+      items,
+      itemToValue: (item) => itemValue(item),
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    };
+  }
+  function buildCollection(items, hasGroups) {
+    return collection(zagListCollectionConfig(items, hasGroups));
+  }
+  var anatomy8, parts8, collection, gridCollection, getRootId8, getContentId2, getLabelId4, getItemId3, getItemGroupId2, getItemGroupLabelId, getContentEl2, getItemEl, guards, createMachine2, or, machine8, diff2;
+  var init_chunk_OAGPTRUC = __esm({
+    "../priv/static/chunks/chunk-OAGPTRUC.mjs"() {
+      "use strict";
+      init_chunk_4PIYPYVK();
+      init_chunk_V4PB2O2G();
+      init_chunk_EWT2BP2N();
+      anatomy8 = createAnatomy("listbox").parts(
+        "label",
+        "input",
+        "item",
+        "itemText",
+        "itemIndicator",
+        "itemGroup",
+        "itemGroupLabel",
+        "content",
+        "root",
+        "valueText"
+      );
+      parts8 = anatomy8.build();
+      collection = (options) => {
+        return new ListCollection(options);
+      };
+      collection.empty = () => {
+        return new ListCollection({ items: [] });
+      };
+      gridCollection = (options) => {
+        return new GridCollection(options);
+      };
+      gridCollection.empty = () => {
+        return new GridCollection({ items: [], columnCount: 0 });
+      };
+      getRootId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `listbox:${ctx.id}`;
+      };
+      getContentId2 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `listbox:${ctx.id}:content`;
+      };
+      getLabelId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `listbox:${ctx.id}:label`;
+      };
+      getItemId3 = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
+      };
+      getItemGroupId2 = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroup) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group:${id}`;
+      };
+      getItemGroupLabelId = (ctx, id) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
+      };
+      getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
+      getItemEl = (ctx, id) => ctx.getById(getItemId3(ctx, id));
+      ({ guards, createMachine: createMachine2 } = setup());
+      ({ or } = guards);
+      machine8 = createMachine2({
+        props({ props }) {
+          return __spreadValues({
+            loopFocus: false,
+            composite: true,
+            defaultValue: [],
+            multiple: false,
+            typeahead: true,
+            collection: collection.empty(),
+            orientation: "vertical",
+            selectionMode: "single"
+          }, props);
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          var _a4, _b;
+          const initialValue = (_b = (_a4 = prop("value")) != null ? _a4 : prop("defaultValue")) != null ? _b : [];
+          const initialSelectedItems = prop("collection").findMany(initialValue);
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              isEqual,
+              onChange(value) {
+                var _a5, _b2;
+                const context = getContext();
+                const collection22 = prop("collection");
+                const selectedItemMap = context.get("selectedItemMap");
+                const proposed = deriveSelectionState({
+                  values: value,
+                  collection: collection22,
+                  selectedItemMap
+                });
+                const effectiveValue = (_a5 = prop("value")) != null ? _a5 : value;
+                const effective = effectiveValue === value ? proposed : deriveSelectionState({
+                  values: effectiveValue,
+                  collection: collection22,
+                  selectedItemMap: proposed.nextSelectedItemMap
+                });
+                context.set("selectedItemMap", effective.nextSelectedItemMap);
+                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
+              }
+            })),
+            highlightedValue: bindable2(() => ({
+              defaultValue: prop("defaultHighlightedValue") || null,
+              value: prop("highlightedValue"),
+              sync: true,
+              onChange(value) {
+                var _a5;
+                (_a5 = prop("onHighlightChange")) == null ? void 0 : _a5({
+                  highlightedValue: value,
+                  highlightedItem: prop("collection").find(value),
+                  highlightedIndex: prop("collection").indexOf(value)
+                });
+              }
+            })),
+            highlightedItem: bindable2(() => ({
+              defaultValue: null
+            })),
+            selectedItemMap: bindable2(() => {
+              return {
+                defaultValue: createSelectedItemMap({
+                  selectedItems: initialSelectedItems,
+                  collection: prop("collection")
+                })
+              };
+            }),
+            focused: bindable2(() => ({
+              sync: true,
+              defaultValue: false
+            }))
+          };
+        },
+        refs() {
+          return {
+            typeahead: __spreadValues({}, getByTypeahead.defaultOptions),
+            focusVisible: false,
+            inputState: { autoHighlight: false, focused: false }
+          };
+        },
+        computed: {
+          hasSelectedItems: ({ context }) => context.get("value").length > 0,
+          isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
+          isInteractive: ({ prop }) => !prop("disabled"),
+          selection: ({ context, prop }) => {
+            const selection = new Selection(context.get("value"));
+            selection.selectionMode = prop("selectionMode");
+            selection.deselectable = !!prop("deselectable");
+            return selection;
+          },
+          multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
+          selectedItems: ({ context, prop }) => resolveSelectedItems({
+            values: context.get("value"),
+            collection: prop("collection"),
+            selectedItemMap: context.get("selectedItemMap")
+          }),
+          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
+        },
+        initialState() {
+          return "idle";
+        },
+        watch({ context, prop, track, action }) {
+          track([() => context.get("value").toString()], () => {
+            action(["syncSelectedItems"]);
+          });
+          track([() => context.get("highlightedValue")], () => {
+            action(["syncHighlightedItem"]);
+          });
+          track([() => prop("collection").toString()], () => {
+            action(["syncHighlightedValue"]);
+          });
+        },
+        effects: ["trackFocusVisible"],
+        on: {
+          "HIGHLIGHTED_VALUE.SET": {
+            actions: ["setHighlightedItem"]
+          },
+          "ITEM.SELECT": {
+            actions: ["selectItem"]
+          },
+          "ITEM.CLEAR": {
+            actions: ["clearItem"]
+          },
+          "VALUE.SET": {
+            actions: ["setSelectedItems"]
+          },
+          "VALUE.CLEAR": {
+            actions: ["clearSelectedItems"]
+          },
+          "HIGHLIGHT.FIRST": {
+            actions: ["highlightFirstValue"]
+          },
+          "HIGHLIGHT.LAST": {
+            actions: ["highlightLastValue"]
+          },
+          "HIGHLIGHT.NEXT": {
+            actions: ["highlightNextValue"]
+          },
+          "HIGHLIGHT.PREV": {
+            actions: ["highlightPreviousValue"]
+          }
+        },
+        states: {
+          idle: {
+            effects: ["scrollToHighlightedItem"],
+            on: {
+              "INPUT.FOCUS": {
+                actions: ["setFocused", "setInputState"]
+              },
+              "CONTENT.FOCUS": [
+                {
+                  guard: or("hasSelectedValue", "hasHighlightedValue"),
+                  actions: ["setFocused"]
+                },
+                {
+                  actions: ["setFocused", "setDefaultHighlightedValue"]
+                }
+              ],
+              "CONTENT.BLUR": {
+                actions: ["clearFocused", "clearInputState"]
+              },
+              "ITEM.CLICK": {
+                actions: ["setHighlightedItem", "selectHighlightedItem"]
+              },
+              "CONTENT.TYPEAHEAD": {
+                actions: ["setFocused", "highlightMatchingItem"]
+              },
+              "ITEM.POINTER_MOVE": {
+                actions: ["highlightItem"]
+              },
+              "ITEM.POINTER_LEAVE": {
+                actions: ["clearHighlightedItem"]
+              },
+              NAVIGATE: {
+                actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            hasSelectedValue: ({ context }) => context.get("value").length > 0,
+            hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
+          },
+          effects: {
+            trackFocusVisible: ({ scope, refs }) => {
+              var _a4;
+              return trackFocusVisible({
+                root: (_a4 = scope.getRootNode) == null ? void 0 : _a4.call(scope),
+                onChange(details) {
+                  refs.set("focusVisible", details.isFocusVisible);
+                }
+              });
+            },
+            scrollToHighlightedItem({ context, prop, scope }) {
+              const exec = (immediate) => {
+                const highlightedValue = context.get("highlightedValue");
+                if (highlightedValue == null) return;
+                const modality = getInteractionModality();
+                if (modality === "pointer") return;
+                const contentEl2 = getContentEl2(scope);
+                const scrollToIndexFn = prop("scrollToIndexFn");
+                if (scrollToIndexFn) {
+                  const highlightedIndex = prop("collection").indexOf(highlightedValue);
+                  scrollToIndexFn == null ? void 0 : scrollToIndexFn({
+                    index: highlightedIndex,
+                    immediate,
+                    getElement() {
+                      return getItemEl(scope, highlightedValue);
+                    }
+                  });
+                  return;
+                }
+                const itemEl = getItemEl(scope, highlightedValue);
+                scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+              };
+              raf(() => {
+                setInteractionModality("virtual");
+                exec(true);
+              });
+              const contentEl = () => getContentEl2(scope);
+              return observeAttributes(contentEl, {
+                defer: true,
+                attributes: ["data-activedescendant"],
+                callback() {
+                  exec(false);
+                }
+              });
+            }
+          },
+          actions: {
+            selectHighlightedItem({ context, prop, event, computed }) {
+              var _a4;
+              const value = (_a4 = event.value) != null ? _a4 : context.get("highlightedValue");
+              const collection22 = prop("collection");
+              if (value == null || !collection22.has(value)) return;
+              const selection = computed("selection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              } else {
+                const next2 = selection.select(collection22, value, event.metaKey);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            selectWithKeyboard({ context, prop, event, computed }) {
+              const selection = computed("selection");
+              const collection22 = prop("collection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+                return;
+              }
+              if (prop("selectOnHighlight")) {
+                const next2 = selection.replaceSelection(collection22, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            highlightItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            highlightMatchingItem({ context, prop, event, refs }) {
+              const value = prop("collection").search(event.key, {
+                state: refs.get("typeahead"),
+                currentValue: context.get("highlightedValue")
+              });
+              if (value == null) return;
+              context.set("highlightedValue", value);
+            },
+            setHighlightedItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            highlightFirstValue({ context, prop }) {
+              var _a4;
+              context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
+            },
+            highlightLastValue({ context, prop }) {
+              var _a4;
+              context.set("highlightedValue", (_a4 = prop("collection").lastValue) != null ? _a4 : null);
+            },
+            highlightNextValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getNextRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getNextValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.firstValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
+            },
+            highlightPreviousValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getPreviousRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getPreviousValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.lastValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
+            },
+            clearHighlightedItem({ context }) {
+              context.set("highlightedValue", null);
+            },
+            selectItem({ context, prop, event, computed }) {
+              const collection22 = prop("collection");
+              const selection = computed("selection");
+              const next2 = selection.select(collection22, event.value);
+              invokeOnSelect(selection, next2, prop("onSelect"));
+              context.set("value", Array.from(next2));
+            },
+            clearItem({ context, event, computed }) {
+              const selection = computed("selection");
+              const value = selection.deselect(event.value);
+              context.set("value", Array.from(value));
+            },
+            setSelectedItems({ context, event }) {
+              context.set("value", event.value);
+            },
+            clearSelectedItems({ context }) {
+              context.set("value", []);
+            },
+            syncSelectedItems({ context, prop }) {
+              const next2 = deriveSelectionState({
+                values: context.get("value"),
+                collection: prop("collection"),
+                selectedItemMap: context.get("selectedItemMap")
+              });
+              context.set("selectedItemMap", next2.nextSelectedItemMap);
+            },
+            syncHighlightedItem({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
+              context.set("highlightedItem", highlightedItem);
+            },
+            syncHighlightedValue({ context, prop, refs }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const { autoHighlight } = refs.get("inputState");
+              if (autoHighlight) {
+                queueMicrotask(() => {
+                  var _a4;
+                  context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
+                });
+                return;
+              }
+              if (highlightedValue != null && !collection22.has(highlightedValue)) {
+                queueMicrotask(() => {
+                  context.set("highlightedValue", null);
+                });
+              }
+            },
+            setFocused({ context }) {
+              context.set("focused", true);
+            },
+            setDefaultHighlightedValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const firstValue = collection22.firstValue;
+              if (firstValue != null) {
+                context.set("highlightedValue", firstValue);
+              }
+            },
+            clearFocused({ context }) {
+              context.set("focused", false);
+            },
+            setInputState({ refs, event }) {
+              refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
+            },
+            clearInputState({ refs }) {
+              refs.set("inputState", { autoHighlight: false, focused: false });
+            }
+          }
+        }
+      });
+      diff2 = (a2, b2) => {
+        const result = new Set(a2);
+        for (const item of b2) result.delete(item);
+        return result;
+      };
+    }
+  });
+
   // ../priv/static/chunks/chunk-FOQSALVP.mjs
   function readDomItemRedirect(itemEl, fallback2) {
     if (!itemEl) {
@@ -11658,9 +13046,14 @@ var Corex = (() => {
   // ../priv/static/combobox.mjs
   var combobox_exports = {};
   __export(combobox_exports, {
-    Combobox: () => ComboboxHook
+    Combobox: () => ComboboxHook,
+    comboboxValueBinding: () => mountStringListBinding,
+    formatComboboxHiddenValue: () => formatComboboxHiddenValue,
+    selectedItemLabel: () => selectedItemLabel,
+    syncComboboxHiddenInputForPhoenix: () => syncComboboxHiddenInputForPhoenix,
+    syncVisibleInputAttribute: () => syncVisibleInputAttribute
   });
-  function connect8(service, normalize) {
+  function connect9(service, normalize) {
     const { context, prop, state: state2, send, scope, computed, event } = service;
     const translations = prop("translations");
     const collection22 = prop("collection");
@@ -11738,18 +13131,18 @@ var Corex = (() => {
         send({ type: nextOpen ? "OPEN" : "CLOSE", src: reason });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.root.attrs), {
           dir: prop("dir"),
-          id: getRootId8(scope),
+          id: getRootId9(scope),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts8.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts9.label.attrs), {
           dir: prop("dir"),
           htmlFor: getInputId2(scope),
-          id: getLabelId4(scope),
+          id: getLabelId5(scope),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -11764,7 +13157,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.control.attrs), {
           dir: prop("dir"),
           id: getControlId3(scope),
           "data-state": open ? "open" : "closed",
@@ -11774,14 +13167,14 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId(scope),
           style: popperStyles.floating
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts8.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts9.input.attrs), {
           dir: prop("dir"),
           "aria-invalid": ariaAttr(invalid),
           "data-invalid": dataAttr(invalid),
@@ -11801,10 +13194,10 @@ var Corex = (() => {
           role: "combobox",
           defaultValue: context.get("inputValue"),
           "aria-autocomplete": computed("autoComplete") ? "both" : "list",
-          "aria-controls": getContentId2(scope),
+          "aria-controls": getContentId3(scope),
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
-          "aria-activedescendant": highlightedValue ? getItemId3(scope, highlightedValue) : void 0,
+          "aria-activedescendant": highlightedValue ? getItemId4(scope, highlightedValue) : void 0,
           onClick(event2) {
             if (event2.defaultPrevented) return;
             if (!prop("openOnClick")) return;
@@ -11864,7 +13257,7 @@ var Corex = (() => {
                   event3.preventDefault();
                 }
                 if (highlightedValue == null) return;
-                const itemEl = getItemEl(scope, highlightedValue);
+                const itemEl = getItemEl2(scope, highlightedValue);
                 if (isAnchorElement(itemEl)) {
                   (_a4 = prop("navigate")) == null ? void 0 : _a4({ value: highlightedValue, node: itemEl, href: itemEl.href });
                 }
@@ -11881,7 +13274,7 @@ var Corex = (() => {
         }));
       },
       getTriggerProps(props = {}) {
-        return normalize.button(__spreadProps(__spreadValues({}, parts8.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId2(scope),
           "aria-haspopup": composite ? "listbox" : "dialog",
@@ -11890,7 +13283,7 @@ var Corex = (() => {
           "aria-label": translations.triggerLabel,
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
-          "aria-controls": open ? getContentId2(scope) : void 0,
+          "aria-controls": open ? getContentId3(scope) : void 0,
           disabled,
           "data-invalid": dataAttr(invalid),
           "data-focusable": dataAttr(props.focusable),
@@ -11936,15 +13329,15 @@ var Corex = (() => {
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.content.attrs), {
           dir: prop("dir"),
-          id: getContentId2(scope),
+          id: getContentId3(scope),
           role: !composite ? "dialog" : "listbox",
           tabIndex: -1,
           hidden: !open,
           "data-state": open ? "open" : "closed",
           "data-placement": context.get("currentPlacement"),
-          "aria-labelledby": getLabelId4(scope),
+          "aria-labelledby": getLabelId5(scope),
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
           "data-empty": dataAttr(collection22.size === 0),
           onPointerDown(event2) {
@@ -11954,15 +13347,15 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.list.attrs), {
           role: !composite ? "listbox" : void 0,
           "data-empty": dataAttr(collection22.size === 0),
-          "aria-labelledby": getLabelId4(scope),
+          "aria-labelledby": getLabelId5(scope),
           "aria-multiselectable": prop("multiple") && !composite ? true : void 0
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts8.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.clearTrigger.attrs), {
           dir: prop("dir"),
           id: getClearTriggerId(scope),
           type: "button",
@@ -11987,9 +13380,9 @@ var Corex = (() => {
       getItemProps(props) {
         const itemState = getItemState(props);
         const value = itemState.value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.item.attrs), {
           dir: prop("dir"),
-          id: getItemId3(scope, value),
+          id: getItemId4(scope, value),
           role: "option",
           tabIndex: -1,
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -12022,7 +13415,7 @@ var Corex = (() => {
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemText.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
@@ -12033,7 +13426,7 @@ var Corex = (() => {
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts8.itemIndicator.attrs), {
+        }, parts9.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
@@ -12041,19 +13434,19 @@ var Corex = (() => {
       },
       getItemGroupProps(props) {
         const { id } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemGroup.attrs), {
           dir: prop("dir"),
-          id: getItemGroupId2(scope, id),
-          "aria-labelledby": getItemGroupLabelId(scope, id),
+          id: getItemGroupId3(scope, id),
+          "aria-labelledby": getItemGroupLabelId2(scope, id),
           "data-empty": dataAttr(collection22.size === 0),
           role: "group"
         }));
       },
       getItemGroupLabelProps(props) {
         const { htmlFor } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemGroupLabel.attrs), {
           dir: prop("dir"),
-          id: getItemGroupLabelId(scope, htmlFor),
+          id: getItemGroupLabelId2(scope, htmlFor),
           role: "presentation"
         }));
       }
@@ -12062,18 +13455,33 @@ var Corex = (() => {
   function getOpenChangeReason(event) {
     return (event.previousEvent || event).src;
   }
-  function comboboxValueBinding(el) {
-    var _a4, _b;
-    const controlled = getBoolean(el, "controlled");
-    if (controlled) {
-      return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
-    }
-    return { defaultValue: (_b = getStringList(el, "defaultValue")) != null ? _b : [] };
-  }
-  function comboboxValueBindingForUpdate(el) {
+  function formatComboboxHiddenValue(el, values) {
     var _a4;
-    if (!getBoolean(el, "controlled")) return {};
-    return { value: (_a4 = getStringList(el, "value")) != null ? _a4 : [] };
+    const list = values.map((v2) => String(v2));
+    return list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
+  }
+  function syncComboboxHiddenInputForPhoenix(el, values, onTouched) {
+    const submitName = getString(el, "submitName");
+    if (submitName && getBoolean(el, "multiple")) {
+      syncArrayHiddenInputsForPhoenix(el, values, {
+        onTouched,
+        scope: "combobox",
+        submitName,
+        notifyLiveView: true
+      });
+      return;
+    }
+    const hidden = el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (!hidden) return;
+    queueLiveViewFormInputSync(hidden, () => formatComboboxHiddenValue(el, values), onTouched);
+  }
+  function reapplyComboboxHiddenInputUsage(el) {
+    const hidden = el.querySelector(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (hidden) reapplyLiveViewValueInputUsage(hidden);
   }
   function selectedItemLabel(items) {
     const first2 = items == null ? void 0 : items[0];
@@ -12084,7 +13492,7 @@ var Corex = (() => {
     const visible = el.querySelector('[data-scope="combobox"][data-part="input"]');
     if (visible) visible.setAttribute("value", value);
   }
-  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox) {
+  function buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -12100,7 +13508,7 @@ var Corex = (() => {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       positioning: readPositioningOptions(el),
       onOpenChange: (details) => {
@@ -12135,7 +13543,7 @@ var Corex = (() => {
         });
       },
       onValueChange: (details) => {
-        var _a4, _b;
+        var _a4;
         const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
         if (redirectOn && firstValue) {
           const itemEl = el.querySelector(
@@ -12143,18 +13551,8 @@ var Corex = (() => {
           );
           performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
-        {
-          const hidden = el.querySelector(
-            '[data-scope="combobox"][data-part="hidden-input"]'
-          );
-          if (hidden) {
-            const list = details.value.map((v2) => String(v2));
-            hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
-            hidden.dispatchEvent(new Event("input", { bubbles: true }));
-            hidden.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-        (_b = getCombobox()) == null ? void 0 : _b.restoreFilteredOptions();
+        syncComboboxHiddenInputForPhoenix(el, details.value, markFieldTouched);
+        (_a4 = getCombobox()) == null ? void 0 : _a4.restoreFilteredOptions();
         syncVisibleInputAttribute(el, selectedItemLabel(details.items));
         notifyChange({
           el,
@@ -12171,30 +13569,34 @@ var Corex = (() => {
       }
     };
   }
-  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox) {
-    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox));
+  function comboboxMachineDomPropsForUpdate(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched) {
+    const rest = __spreadValues({}, buildComboboxProps(el, pushEvent, canPush, liveSocket, getCombobox, markFieldTouched));
     delete rest.onOpenChange;
     delete rest.onInputValueChange;
     delete rest.onValueChange;
     return rest;
   }
-  var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, Combobox, ComboboxHook;
+  var anatomy9, parts9, collection2, getRootId9, getLabelId5, getControlId3, getInputId2, getContentId3, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId3, getItemGroupLabelId2, getItemId4, getContentEl3, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl2, focusInputEl, focusTriggerEl, guards2, createMachine3, choose, and2, not3, machine9, Combobox, ComboboxHook;
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
+      init_chunk_FUVA3DRB();
       init_chunk_7BZGUIUZ();
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
-      init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_EPNQR235();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_VJGUNSK5();
+      init_chunk_OAGPTRUC();
+      init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy8 = createAnatomy("combobox").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy9 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
         "content",
@@ -12210,18 +13612,18 @@ var Corex = (() => {
         "positioner",
         "trigger"
       );
-      parts8 = anatomy8.build();
-      collection = (options) => {
+      parts9 = anatomy9.build();
+      collection2 = (options) => {
         return new ListCollection(options);
       };
-      collection.empty = () => {
+      collection2.empty = () => {
         return new ListCollection({ items: [] });
       };
-      getRootId8 = (ctx) => {
+      getRootId9 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `combobox:${ctx.id}`;
       };
-      getLabelId4 = (ctx) => {
+      getLabelId5 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `combobox:${ctx.id}:label`;
       };
@@ -12233,7 +13635,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `combobox:${ctx.id}:input`;
       };
-      getContentId2 = (ctx) => {
+      getContentId3 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `combobox:${ctx.id}:content`;
       };
@@ -12249,28 +13651,28 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.clearTrigger) != null ? _b : `combobox:${ctx.id}:clear-btn`;
       };
-      getItemGroupId2 = (ctx, id) => {
+      getItemGroupId3 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroup) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `combobox:${ctx.id}:optgroup:${id}`;
       };
-      getItemGroupLabelId = (ctx, id) => {
+      getItemGroupLabelId2 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `combobox:${ctx.id}:optgroup-label:${id}`;
       };
-      getItemId3 = (ctx, id) => {
+      getItemId4 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `combobox:${ctx.id}:option:${id}`;
       };
-      getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
+      getContentEl3 = (ctx) => ctx.getById(getContentId3(ctx));
       getInputEl2 = (ctx) => ctx.getById(getInputId2(ctx));
       getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
       getControlEl2 = (ctx) => ctx.getById(getControlId3(ctx));
       getTriggerEl = (ctx) => ctx.getById(getTriggerId2(ctx));
       getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
-      getItemEl = (ctx, value) => {
+      getItemEl2 = (ctx, value) => {
         if (value == null) return null;
         const selector = `[role=option][data-value="${CSS.escape(value)}"]`;
-        return query(getContentEl2(ctx), selector);
+        return query(getContentEl3(ctx), selector);
       };
       focusInputEl = (ctx) => {
         const inputEl = getInputEl2(ctx);
@@ -12284,9 +13686,9 @@ var Corex = (() => {
         if (ctx.isActiveElement(triggerEl)) return;
         triggerEl == null ? void 0 : triggerEl.focus({ preventScroll: true });
       };
-      ({ guards, createMachine: createMachine2, choose } = setup());
-      ({ and: and2, not: not3 } = guards);
-      machine8 = createMachine2({
+      ({ guards: guards2, createMachine: createMachine3, choose } = setup());
+      ({ and: and2, not: not3 } = guards2);
+      machine9 = createMachine3({
         props({ props }) {
           return __spreadProps(__spreadValues({
             loopFocus: true,
@@ -12304,7 +13706,7 @@ var Corex = (() => {
             navigate({ node }) {
               clickIfLink(node);
             },
-            collection: collection.empty()
+            collection: collection2.empty()
           }, props), {
             positioning: __spreadValues({
               placement: "bottom",
@@ -12912,7 +14314,7 @@ var Corex = (() => {
             },
             trackDismissableLayer({ send, prop, scope }) {
               if (prop("disableLayer")) return;
-              const contentEl = () => getContentEl2(scope);
+              const contentEl = () => getContentEl3(scope);
               return trackDismissableElement(contentEl, {
                 type: "listbox",
                 defer: true,
@@ -12957,18 +14359,18 @@ var Corex = (() => {
                 if (modality === "pointer") return;
                 const highlightedValue = context.get("highlightedValue");
                 if (!highlightedValue) return;
-                const contentEl = getContentEl2(scope);
+                const contentEl = getContentEl3(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
                   const highlightedIndex = prop("collection").indexOf(highlightedValue);
                   scrollToIndexFn({
                     index: highlightedIndex,
                     immediate,
-                    getElement: () => getItemEl(scope, highlightedValue)
+                    getElement: () => getItemEl2(scope, highlightedValue)
                   });
                   return;
                 }
-                const itemEl = getItemEl(scope, highlightedValue);
+                const itemEl = getItemEl2(scope, highlightedValue);
                 const raf_cleanup = raf(() => {
                   scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
                 });
@@ -13028,15 +14430,15 @@ var Corex = (() => {
               nextTick(() => {
                 const highlightedValue = context.get("highlightedValue");
                 if (highlightedValue == null) return;
-                const itemEl = getItemEl(scope, highlightedValue);
-                const contentEl = getContentEl2(scope);
+                const itemEl = getItemEl2(scope, highlightedValue);
+                const contentEl = getContentEl3(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
                   const highlightedIndex = prop("collection").indexOf(highlightedValue);
                   scrollToIndexFn({
                     index: highlightedIndex,
                     immediate: true,
-                    getElement: () => getItemEl(scope, highlightedValue)
+                    getElement: () => getItemEl2(scope, highlightedValue)
                   });
                   return;
                 }
@@ -13143,10 +14545,10 @@ var Corex = (() => {
                 scrollToIndexFn({
                   index: 0,
                   immediate: true,
-                  getElement: () => getItemEl(scope, firstValue)
+                  getElement: () => getItemEl2(scope, firstValue)
                 });
               } else {
-                const contentEl = getContentEl2(scope);
+                const contentEl = getContentEl3(scope);
                 if (!contentEl) return;
                 contentEl.scrollTop = 0;
               }
@@ -13162,7 +14564,7 @@ var Corex = (() => {
               (_a4 = prop("onOpenChange")) == null ? void 0 : _a4({ open: false, reason, value: context.get("value") });
             },
             highlightFirstItem({ context, prop, scope }) {
-              const exec = getContentEl2(scope) ? queueMicrotask : raf;
+              const exec = getContentEl3(scope) ? queueMicrotask : raf;
               exec(() => {
                 const value = prop("collection").firstValue;
                 if (value) context.set("highlightedValue", value);
@@ -13173,7 +14575,7 @@ var Corex = (() => {
               action(["highlightFirstItem"]);
             },
             highlightLastItem({ context, prop, scope }) {
-              const exec = getContentEl2(scope) ? queueMicrotask : raf;
+              const exec = getContentEl3(scope) ? queueMicrotask : raf;
               exec(() => {
                 const value = prop("collection").lastValue;
                 if (value) context.set("highlightedValue", value);
@@ -13303,12 +14705,12 @@ var Corex = (() => {
         }
         getCollection() {
           const items = this.activeItems();
-          return collection(zagListCollectionConfig(items, this.hasGroups));
+          return collection2(zagListCollectionConfig(items, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = () => this.getCollection();
-          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             },
@@ -13341,7 +14743,7 @@ var Corex = (() => {
           }));
         }
         initApi() {
-          return this.zagConnect(connect8);
+          return this.zagConnect(connect9);
         }
         getItemValue(item) {
           var _a4, _b;
@@ -13479,10 +14881,32 @@ var Corex = (() => {
             }
           });
         }
+        hiddenInputValue() {
+          var _a4, _b;
+          let values = ((_a4 = this.api.value) != null ? _a4 : []).map(String);
+          if (values.length === 0) {
+            const fallback2 = this.el.dataset.defaultValue;
+            if (fallback2) values = fallback2.split(",").filter(Boolean);
+          }
+          const multiple = this.el.hasAttribute("data-multiple");
+          return values.length === 0 ? "" : multiple ? values.join(",") : (_b = values[0]) != null ? _b : "";
+        }
         render() {
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
+          const hiddenInput = this.el.querySelector(
+            '[data-scope="combobox"][data-part="hidden-input"]'
+          );
+          if (hiddenInput) {
+            const valueStr = this.hiddenInputValue();
+            if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+            if (getString(this.el, "submitName")) {
+              hiddenInput.removeAttribute("name");
+              hiddenInput.removeAttribute("form");
+            }
+          }
+          stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
           [
             "label",
             "control",
@@ -13504,15 +14928,32 @@ var Corex = (() => {
       };
       ComboboxHook = {
         mounted() {
-          var _a4;
+          var _a4, _b;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          const hook = this;
+          hook.fieldTouched = false;
+          const markFieldTouched = () => {
+            hook.fieldTouched = true;
+          };
           const itemsJson = (_a4 = el.getAttribute("data-items")) != null ? _a4 : "[]";
           const allItems = JSON.parse(itemsJson);
           const hasGroups = allItems.some((item) => Boolean(item.group));
+          const defaultValues = (_b = getStringList(el, "defaultValue")) != null ? _b : [];
+          if (defaultValues.length > 0) {
+            hook.fieldTouched = true;
+            queueMicrotask(() => reapplyComboboxHiddenInputUsage(el));
+          }
           let comboboxRef;
-          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket, () => comboboxRef)), comboboxValueBinding(el));
+          const props = __spreadValues(__spreadValues({}, buildComboboxProps(
+            el,
+            pushEvent,
+            canPush,
+            this.liveSocket,
+            () => comboboxRef,
+            markFieldTouched
+          )), mountStringListBinding(el));
           const combobox = new Combobox(el, props, allItems, hasGroups);
           comboboxRef = combobox;
           combobox.init();
@@ -13533,6 +14974,7 @@ var Corex = (() => {
         updated() {
           var _a4;
           if (!this.combobox) return;
+          const valuePatch = readUpdatedServerStringList(this.el);
           const newItemsJson = (_a4 = this.el.getAttribute("data-items")) != null ? _a4 : "[]";
           if (newItemsJson !== this.lastItemsJson) {
             this.lastItemsJson = newItemsJson;
@@ -13548,10 +14990,19 @@ var Corex = (() => {
             pushEvent,
             canPush,
             this.liveSocket,
-            () => this.combobox
-          )), comboboxValueBindingForUpdate(this.el)));
+            () => this.combobox,
+            () => {
+              this.fieldTouched = true;
+            }
+          )), valuePatch));
           if (this.combobox.api.open) {
             this.combobox.api.reposition();
+          }
+          if ("value" in valuePatch) {
+            syncComboboxHiddenInputForPhoenix(this.el, valuePatch.value, void 0);
+            reapplyComboboxHiddenInputUsage(this.el);
+            const label = selectedItemLabel(valuePatch.value.map((v2) => ({ value: v2, label: v2 })));
+            syncVisibleInputAttribute(this.el, label);
           }
         },
         destroyed() {
@@ -13567,7 +15018,8 @@ var Corex = (() => {
   // ../priv/static/color-picker.mjs
   var color_picker_exports = {};
   __export(color_picker_exports, {
-    ColorPicker: () => ColorPickerHook
+    ColorPicker: () => ColorPickerHook,
+    readValueProps: () => readValueProps
   });
   function getColorAreaGradient(color, options) {
     const { xChannel, yChannel, dir: dirProp = "ltr" } = options;
@@ -13709,7 +15161,7 @@ var Corex = (() => {
       return "left";
     }
   }
-  function connect9(service, normalize) {
+  function connect10(service, normalize) {
     const { context, send, prop, computed, state: state2, scope } = service;
     const value = context.get("value");
     const format = context.get("format");
@@ -13780,9 +15232,9 @@ var Corex = (() => {
         send({ type: "VALUE.SET", value: color, src: "set-alpha" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.root.attrs), {
           dir: prop("dir"),
-          id: getRootId9(scope),
+          id: getRootId10(scope),
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
           "data-invalid": dataAttr(invalid),
@@ -13792,9 +15244,9 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.label.attrs), {
           dir: prop("dir"),
-          id: getLabelId5(scope),
+          id: getLabelId6(scope),
           htmlFor: getHiddenInputId3(scope),
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
@@ -13809,7 +15261,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.control.attrs), {
           id: getControlId4(scope),
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
@@ -13820,13 +15272,13 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts9.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.trigger.attrs), {
           id: getTriggerId3(scope),
           dir: prop("dir"),
           disabled,
           "aria-label": `select color. current color is ${valueAsString}`,
-          "aria-controls": getContentId3(scope),
-          "aria-labelledby": getLabelId5(scope),
+          "aria-controls": getContentId4(scope),
+          "aria-labelledby": getLabelId6(scope),
           "aria-haspopup": prop("inline") ? void 0 : "dialog",
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
@@ -13850,15 +15302,15 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.positioner.attrs), {
           id: getPositionerId2(scope),
           dir: prop("dir"),
           style: popperStyles.floating
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.content.attrs), {
-          id: getContentId3(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.content.attrs), {
+          id: getContentId4(scope),
           dir: prop("dir"),
           role: prop("inline") ? void 0 : "dialog",
           tabIndex: -1,
@@ -13868,7 +15320,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused)
@@ -13881,7 +15333,7 @@ var Corex = (() => {
           yChannel,
           dir: prop("dir")
         });
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.area.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.area.attrs), {
           id: getAreaId(scope),
           role: "group",
           "data-invalid": dataAttr(invalid),
@@ -13910,7 +15362,7 @@ var Corex = (() => {
           yChannel,
           dir: prop("dir")
         });
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.areaBackground.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.areaBackground.attrs), {
           id: getAreaGradientId(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
@@ -13932,7 +15384,7 @@ var Corex = (() => {
         const xValue = areaValue.getChannelValue(xChannel);
         const yValue = areaValue.getChannelValue(yChannel);
         const color = areaValue.withChannelValue("alpha", 1).toString("css");
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.areaThumb.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.areaThumb.attrs), {
           id: getAreaThumbId(scope),
           dir: prop("dir"),
           tabIndex: disabled ? void 0 : 0,
@@ -13999,7 +15451,7 @@ var Corex = (() => {
       },
       getTransparencyGridProps(props = {}) {
         const { size: size3 = "12px" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.transparencyGrid.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.transparencyGrid.attrs), {
           style: {
             "--size": size3,
             width: "100%",
@@ -14016,7 +15468,7 @@ var Corex = (() => {
       },
       getChannelSliderProps(props) {
         const { orientation = "horizontal", channel, format: format2 } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSlider.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.channelSlider.attrs), {
           "data-channel": channel,
           "data-orientation": orientation,
           role: "presentation",
@@ -14037,7 +15489,7 @@ var Corex = (() => {
       getChannelSliderTrackProps(props) {
         const { orientation = "horizontal", channel, format: format2 } = props;
         const normalizedValue = format2 ? value.toFormat(format2) : areaValue;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderTrack.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.channelSliderTrack.attrs), {
           id: getChannelSliderTrackId(scope, channel),
           role: "group",
           "data-channel": channel,
@@ -14056,7 +15508,7 @@ var Corex = (() => {
       },
       getChannelSliderLabelProps(props) {
         const { channel } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.channelSliderLabel.attrs), {
           "data-channel": channel,
           onClick(event) {
             var _a4;
@@ -14072,7 +15524,7 @@ var Corex = (() => {
         }));
       },
       getChannelSliderValueTextProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderValueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.channelSliderValueText.attrs), {
           "data-channel": props.channel
         }));
       },
@@ -14085,7 +15537,7 @@ var Corex = (() => {
         const isRtl = prop("dir") === "rtl";
         const finalOffset = orientation === "horizontal" && isRtl ? 1 - offset3 : offset3;
         const placementStyles = orientation === "horizontal" ? { left: `${finalOffset * 100}%`, top: "50%" } : { top: `${offset3 * 100}%`, left: "50%" };
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderThumb.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.channelSliderThumb.attrs), {
           id: getChannelSliderThumbId(scope, channel),
           role: "slider",
           "aria-label": channel,
@@ -14155,7 +15607,7 @@ var Corex = (() => {
         const { channel } = props;
         const isTextField = channel === "hex" || channel === "css";
         const channelRange = getChannelRange(value, channel);
-        return normalize.input(__spreadProps(__spreadValues({}, parts9.channelInput.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts10.channelInput.attrs), {
           dir: prop("dir"),
           type: isTextField ? "text" : "number",
           "data-channel": channel,
@@ -14218,7 +15670,7 @@ var Corex = (() => {
         });
       },
       getEyeDropperTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts9.eyeDropperTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.eyeDropperTrigger.attrs), {
           type: "button",
           dir: prop("dir"),
           disabled,
@@ -14233,14 +15685,14 @@ var Corex = (() => {
         }));
       },
       getSwatchGroupProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.swatchGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.swatchGroup.attrs), {
           role: "group"
         }));
       },
       getSwatchTriggerState,
       getSwatchTriggerProps(props) {
         const swatchState = getSwatchTriggerState(props);
-        return normalize.button(__spreadProps(__spreadValues({}, parts9.swatchTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.swatchTrigger.attrs), {
           disabled: swatchState.disabled,
           dir: prop("dir"),
           type: "button",
@@ -14260,7 +15712,7 @@ var Corex = (() => {
       },
       getSwatchIndicatorProps(props) {
         const swatchState = getSwatchTriggerState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.swatchIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.swatchIndicator.attrs), {
           dir: prop("dir"),
           hidden: !swatchState.checked
         }));
@@ -14269,7 +15721,7 @@ var Corex = (() => {
         const { respectAlpha = true } = props;
         const swatchState = getSwatchTriggerState(props);
         const color = swatchState.value.toString(respectAlpha ? "css" : "hex");
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.swatch.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.swatch.attrs), {
           dir: prop("dir"),
           "data-state": swatchState.checked ? "checked" : "unchecked",
           "data-value": swatchState.valueAsString,
@@ -14281,7 +15733,7 @@ var Corex = (() => {
         }));
       },
       getFormatTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts9.formatTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.formatTrigger.attrs), {
           dir: prop("dir"),
           type: "button",
           "aria-label": `change color format to ${getNextFormat(format)}`,
@@ -14293,7 +15745,7 @@ var Corex = (() => {
         }));
       },
       getFormatSelectProps() {
-        return normalize.select(__spreadProps(__spreadValues({}, parts9.formatSelect.attrs), {
+        return normalize.select(__spreadProps(__spreadValues({}, parts10.formatSelect.attrs), {
           "aria-label": "change color format",
           dir: prop("dir"),
           defaultValue: prop("format"),
@@ -14337,6 +15789,16 @@ var Corex = (() => {
     if (!selectEl) return;
     raf(() => setElementValue(selectEl, format));
   }
+  function readColorValueBinding(el) {
+    const binding = mountStringBinding(el, "value", "defaultValue");
+    if ("value" in binding && binding.value) {
+      return { value: parse(binding.value) };
+    }
+    if ("defaultValue" in binding && binding.defaultValue) {
+      return { defaultValue: parse(binding.defaultValue) };
+    }
+    return {};
+  }
   function syncColorHiddenAndNotify(el, valueAsString) {
     if (valueAsString === void 0) {
       return;
@@ -14354,18 +15816,20 @@ var Corex = (() => {
     const defaultVal = getString(el, "defaultValue");
     return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
   }
-  var anatomy9, parts9, __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, getRootId9, getLabelId5, getHiddenInputId3, getControlId4, getTriggerId3, getContentId3, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl3, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine9, ColorPicker, ColorPickerHook;
+  var anatomy10, parts10, __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, getRootId10, getLabelId6, getHiddenInputId3, getControlId4, getTriggerId3, getContentId4, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl4, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine10, ColorPicker, ColorPickerHook;
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy9 = createAnatomy("color-picker", [
+      init_chunk_EPNQR235();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_VJGUNSK5();
+      init_chunk_VL4ETB3G();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy10 = createAnatomy("color-picker", [
         "root",
         "label",
         "control",
@@ -14391,7 +15855,7 @@ var Corex = (() => {
         "formatTrigger",
         "formatSelect"
       ]);
-      parts9 = anatomy9.build();
+      parts10 = anatomy10.build();
       __defProp6 = Object.defineProperty;
       __defNormalProp6 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField6 = (obj, key, value) => __defNormalProp6(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -15040,11 +16504,11 @@ var Corex = (() => {
       normalizeColor = (v2) => {
         return typeof v2 === "string" ? parseColor(v2) : v2;
       };
-      getRootId9 = (ctx) => {
+      getRootId10 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `color-picker:${ctx.id}`;
       };
-      getLabelId5 = (ctx) => {
+      getLabelId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `color-picker:${ctx.id}:label`;
       };
@@ -15060,7 +16524,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `color-picker:${ctx.id}:trigger`;
       };
-      getContentId3 = (ctx) => {
+      getContentId4 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `color-picker:${ctx.id}:content`;
       };
@@ -15092,7 +16556,7 @@ var Corex = (() => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.channelSliderThumb) == null ? void 0 : _b.call(_a4, channel)) != null ? _c : `color-picker:${ctx.id}:slider-thumb:${channel}`;
       };
-      getContentEl3 = (ctx) => ctx.getById(getContentId3(ctx));
+      getContentEl4 = (ctx) => ctx.getById(getContentId4(ctx));
       getAreaThumbEl = (ctx) => ctx.getById(getAreaThumbId(ctx));
       getChannelSliderThumbEl = (ctx, channel) => ctx.getById(getChannelSliderThumbId(ctx, channel));
       getFormatSelectEl = (ctx) => ctx.getById(getFormatSelectId(ctx));
@@ -15122,7 +16586,7 @@ var Corex = (() => {
       };
       getChannelInputEls = (ctx) => {
         return [
-          ...queryAll(getContentEl3(ctx), "input[data-channel]"),
+          ...queryAll(getContentEl4(ctx), "input[data-channel]"),
           ...queryAll(getControlEl3(ctx), "input[data-channel]")
         ];
       };
@@ -15167,7 +16631,7 @@ var Corex = (() => {
         return hash2;
       };
       DEFAULT_COLOR = parse("#000000");
-      machine9 = createMachine({
+      machine10 = createMachine({
         props({ props }) {
           var _a4, _b;
           const color = (_b = (_a4 = props.value) != null ? _a4 : props.defaultValue) != null ? _b : DEFAULT_COLOR;
@@ -15515,7 +16979,7 @@ var Corex = (() => {
             },
             trackDismissableElement({ context, scope, prop, send }) {
               if (prop("inline")) return;
-              const getContentEl22 = () => getContentEl3(scope);
+              const getContentEl22 = () => getContentEl4(scope);
               return trackDismissableElement(getContentEl22, {
                 type: "popover",
                 exclude: getTriggerEl2(scope),
@@ -15560,7 +17024,7 @@ var Corex = (() => {
             disableTextSelection({ scope }) {
               return disableTextSelection({
                 doc: scope.getDoc(),
-                target: getContentEl3(scope)
+                target: getContentEl4(scope)
               });
             }
           },
@@ -15686,14 +17150,14 @@ var Corex = (() => {
             },
             setChannelToMax({ context, event }) {
               const value = context.get("value");
-              const range = value.getChannelRange(event.channel);
-              const color = value.withChannelValue(event.channel, range.maxValue);
+              const range2 = value.getChannelRange(event.channel);
+              const color = value.withChannelValue(event.channel, range2.maxValue);
               context.set("value", color);
             },
             setChannelToMin({ context, event }) {
               const value = context.get("value");
-              const range = value.getChannelRange(event.channel);
-              const color = value.withChannelValue(event.channel, range.minValue);
+              const range2 = value.getChannelRange(event.channel);
+              const color = value.withChannelValue(event.channel, range2.minValue);
               context.set("value", color);
             },
             focusAreaThumb({ scope }) {
@@ -15712,7 +17176,7 @@ var Corex = (() => {
               if (!prop("openAutoFocus")) return;
               raf(() => {
                 const element = getInitialFocus({
-                  root: getContentEl3(scope),
+                  root: getContentEl4(scope),
                   getInitialEl: prop("initialFocusEl")
                 });
                 element == null ? void 0 : element.focus({ preventScroll: true });
@@ -15752,18 +17216,27 @@ var Corex = (() => {
       ColorPicker = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine9, props);
+          return new VanillaMachine(machine10, props);
         }
         initApi() {
-          return this.zagConnect(connect9);
+          return this.zagConnect(connect10);
         }
         render() {
+          var _a4;
           const rootEl = this.el.querySelector('[data-part="root"]');
           if (rootEl) this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector('[data-part="label"]');
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
           const hiddenInputEl = this.el.querySelector('[data-part="hidden-input"]');
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              (_a4 = this.api.valueAsString) != null ? _a4 : "",
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+          }
           const controlEl = this.el.querySelector('[data-part="control"]');
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           const triggerEl = this.el.querySelector('[data-part="trigger"]');
@@ -15881,7 +17354,7 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const valueProps = readValueProps(el);
+          const valueProps = readColorValueBinding(el);
           const zag = new ColorPicker(el, __spreadProps(__spreadValues({
             id: el.id
           }, valueProps), {
@@ -15892,7 +17365,7 @@ var Corex = (() => {
             openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el),
@@ -15991,20 +17464,24 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a4;
           const el = this.el;
-          const valueProps = readValueProps(el);
-          (_a4 = this.colorPicker) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, valueProps), {
+          const zag = this.colorPicker;
+          const valuePatch = readUpdatedServerString(el);
+          const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({}, parsed), {
             name: getString(el, "name"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
             positioning: readPositioningOptions(el)
           }));
+          if ("value" in valuePatch && valuePatch.value) {
+            syncColorHiddenAndNotify(el, valuePatch.value);
+          }
         },
         destroyed() {
           var _a4;
@@ -16022,7 +17499,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-5QA23UMN.mjs
+  // ../priv/static/chunks/chunk-RNYQBUAX.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -16037,17 +17514,20 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_5QA23UMN = __esm({
-    "../priv/static/chunks/chunk-5QA23UMN.mjs"() {
+  var init_chunk_RNYQBUAX = __esm({
+    "../priv/static/chunks/chunk-RNYQBUAX.mjs"() {
       "use strict";
-      init_chunk_EE44DOTL();
+      init_chunk_EWT2BP2N();
     }
   });
 
   // ../priv/static/date-picker.mjs
   var date_picker_exports = {};
   __export(date_picker_exports, {
-    DatePicker: () => DatePickerHook
+    DatePicker: () => DatePickerHook,
+    resolveCloseOnSelect: () => resolveCloseOnSelect,
+    syncDatePickerValueInput: () => syncDatePickerValueInput,
+    valueToIsoString: () => valueToIsoString
   });
   function $09ec6a572d60460f$export$842a2cf37af977e1(amount, numerator) {
     return amount - numerator * Math.floor(amount / numerator);
@@ -17045,9 +18525,9 @@ var Corex = (() => {
     const julianPrevWeek1 = prevWeek1Monday.calendar.toJulianDay(prevWeek1Monday);
     return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
   }
-  function getYearsRange(range) {
+  function getYearsRange(range2) {
     const years = [];
-    for (let year = range.from; year <= range.to; year += 1) years.push(year);
+    for (let year = range2.from; year <= range2.to; year += 1) years.push(year);
     return years;
   }
   function getDefaultYearRange(referenceDate, min4, max3) {
@@ -17335,7 +18815,7 @@ var Corex = (() => {
   function eachView(cb) {
     views.forEach((view) => cb(view));
   }
-  function connect10(service, normalize) {
+  function connect11(service, normalize) {
     const { state: state2, context, prop, send, computed, scope } = service;
     const startValue = context.get("startValue");
     const endValue = computed("endValue");
@@ -17381,8 +18861,8 @@ var Corex = (() => {
     }
     function getYears() {
       const defaultRange = getDefaultYearRange(focusedValue, min4, max3);
-      const range = getYearsRange(defaultRange);
-      return range.map((year) => ({
+      const range2 = getYearsRange(defaultRange);
+      return range2.map((year) => ({
         label: year.toString(),
         value: year,
         disabled: !isValueWithinRange(year, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year)
@@ -17630,9 +19110,9 @@ var Corex = (() => {
         send({ type: "GOTO.PREV", view: context.get("view") });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.root.attrs), {
           dir: prop("dir"),
-          id: getRootId10(scope),
+          id: getRootId11(scope),
           "data-state": open ? "open" : "closed",
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
@@ -17641,8 +19121,8 @@ var Corex = (() => {
       },
       getLabelProps(props = {}) {
         const { index = 0 } = props;
-        return normalize.label(__spreadProps(__spreadValues({}, parts10.label.attrs), {
-          id: getLabelId6(scope, index),
+        return normalize.label(__spreadProps(__spreadValues({}, parts11.label.attrs), {
+          id: getLabelId7(scope, index),
           dir: prop("dir"),
           htmlFor: getInputId3(scope, index),
           "data-state": open ? "open" : "closed",
@@ -17652,7 +19132,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.control.attrs), {
           dir: prop("dir"),
           id: getControlId5(scope),
           "data-disabled": dataAttr(disabled),
@@ -17660,18 +19140,18 @@ var Corex = (() => {
         }));
       },
       getRangeTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.rangeText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.rangeText.attrs), {
           dir: prop("dir")
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.content.attrs), {
           hidden: !open,
           dir: prop("dir"),
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-inline": dataAttr(prop("inline")),
-          id: getContentId4(scope),
+          id: getContentId5(scope),
           tabIndex: -1,
           role: "application",
           "aria-roledescription": "datepicker",
@@ -17681,7 +19161,7 @@ var Corex = (() => {
       getTableProps(props = {}) {
         const { view = "day", columns = view === "day" ? 7 : 4 } = props;
         const uid = getTableId2(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.table.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.table.attrs), {
           role: "grid",
           "data-columns": columns,
           "aria-roledescription": getRoleDescription(view),
@@ -17754,7 +19234,7 @@ var Corex = (() => {
       },
       getTableHeadProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableHead.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableHead.attrs), {
           "aria-hidden": true,
           dir: prop("dir"),
           "data-view": view,
@@ -17763,7 +19243,7 @@ var Corex = (() => {
       },
       getTableHeaderProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableHeader.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableHeader.attrs), {
           dir: prop("dir"),
           "data-view": view,
           "data-disabled": dataAttr(disabled)
@@ -17771,14 +19251,14 @@ var Corex = (() => {
       },
       getTableBodyProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableBody.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableBody.attrs), {
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
       getTableRowProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableRow.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableRow.attrs), {
           "aria-disabled": ariaAttr(disabled),
           "data-disabled": dataAttr(disabled),
           "data-view": view
@@ -17786,7 +19266,7 @@ var Corex = (() => {
       },
       getWeekNumberHeaderCellProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCell.attrs), {
           scope: "col",
           "aria-label": translations.weekColumnHeader,
           "data-view": view,
@@ -17798,7 +19278,7 @@ var Corex = (() => {
         var _a4;
         const { weekIndex, week } = props;
         const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCell.attrs), {
           role: "rowheader",
           "aria-label": (_a4 = translations.weekNumberCell) == null ? void 0 : _a4.call(translations, weekNumber),
           "data-view": "day",
@@ -17811,7 +19291,7 @@ var Corex = (() => {
       getDayTableCellProps(props) {
         const { value } = props;
         const cellState = getDayTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCell.attrs), {
           role: "gridcell",
           "aria-disabled": ariaAttr(!cellState.selectable),
           "aria-selected": cellState.selected || cellState.inRange,
@@ -17823,7 +19303,7 @@ var Corex = (() => {
       getDayTableCellTriggerProps(props) {
         const { value } = props;
         const cellState = getDayTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
           dir: prop("dir"),
@@ -17864,7 +19344,7 @@ var Corex = (() => {
       getMonthTableCellProps(props) {
         const { value, columns } = props;
         const cellState = getMonthTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
           role: "gridcell",
@@ -17877,7 +19357,7 @@ var Corex = (() => {
       getMonthTableCellTriggerProps(props) {
         const { value } = props;
         const cellState = getMonthTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
           dir: prop("dir"),
@@ -17914,7 +19394,7 @@ var Corex = (() => {
       getYearTableCellProps(props) {
         const { value, columns } = props;
         const cellState = getYearTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
           role: "gridcell",
@@ -17927,7 +19407,7 @@ var Corex = (() => {
       getYearTableCellTriggerProps(props) {
         const { value } = props;
         const cellState = getYearTableCellState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
           dir: prop("dir"),
@@ -17963,7 +19443,7 @@ var Corex = (() => {
       getNextTriggerProps(props = {}) {
         const { view = "day" } = props;
         const isDisabled = disabled || !computed("isNextVisibleRangeValid");
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.nextTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.nextTrigger.attrs), {
           dir: prop("dir"),
           id: getNextTriggerId2(scope, view),
           type: "button",
@@ -17979,7 +19459,7 @@ var Corex = (() => {
       getPrevTriggerProps(props = {}) {
         const { view = "day" } = props;
         const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.prevTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.prevTrigger.attrs), {
           dir: prop("dir"),
           id: getPrevTriggerId2(scope, view),
           type: "button",
@@ -17993,7 +19473,7 @@ var Corex = (() => {
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.clearTrigger.attrs), {
           id: getClearTriggerId2(scope),
           dir: prop("dir"),
           type: "button",
@@ -18006,13 +19486,13 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.trigger.attrs), {
           id: getTriggerId4(scope),
           dir: prop("dir"),
           type: "button",
           "data-placement": currentPlacement,
           "aria-label": translations.trigger(open),
-          "aria-controls": getContentId4(scope),
+          "aria-controls": getContentId5(scope),
           "data-state": open ? "open" : "closed",
           "data-placeholder-shown": dataAttr(empty),
           "aria-haspopup": "grid",
@@ -18026,14 +19506,14 @@ var Corex = (() => {
       },
       getViewProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.view.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.view.attrs), {
           "data-view": view,
           hidden: context.get("view") !== view
         }));
       },
       getViewTriggerProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.viewTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.viewTrigger.attrs), {
           "data-view": view,
           dir: prop("dir"),
           id: getViewTriggerId(scope, view),
@@ -18049,14 +19529,14 @@ var Corex = (() => {
       },
       getViewControlProps(props = {}) {
         const { view = "day" } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.viewControl.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.viewControl.attrs), {
           "data-view": view,
           dir: prop("dir")
         }));
       },
       getInputProps(props = {}) {
         const { index = 0, fixOnBlur = true } = props;
-        return normalize.input(__spreadProps(__spreadValues({}, parts10.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts11.input.attrs), {
           id: getInputId3(scope, index),
           autoComplete: "off",
           autoCorrect: "off",
@@ -18116,7 +19596,7 @@ var Corex = (() => {
         }));
       },
       getMonthSelectProps() {
-        return normalize.select(__spreadProps(__spreadValues({}, parts10.monthSelect.attrs), {
+        return normalize.select(__spreadProps(__spreadValues({}, parts11.monthSelect.attrs), {
           id: getMonthSelectId(scope),
           "aria-label": translations.monthSelect,
           disabled,
@@ -18128,7 +19608,7 @@ var Corex = (() => {
         }));
       },
       getYearSelectProps() {
-        return normalize.select(__spreadProps(__spreadValues({}, parts10.yearSelect.attrs), {
+        return normalize.select(__spreadProps(__spreadValues({}, parts11.yearSelect.attrs), {
           id: getYearSelectId(scope),
           disabled,
           "aria-label": translations.yearSelect,
@@ -18142,7 +19622,7 @@ var Corex = (() => {
       getPositionerProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPositionerId3(scope)
-        }, parts10.positioner.attrs), {
+        }, parts11.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
@@ -18150,7 +19630,7 @@ var Corex = (() => {
       getPresetTriggerProps(props) {
         const value = Array.isArray(props.value) ? props.value : getDateRangePreset(props.value, locale, timeZone);
         const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.presetTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.presetTrigger.attrs), {
           "aria-label": translations.presetTrigger(valueAsString),
           type: "button",
           onClick(event) {
@@ -18269,9 +19749,44 @@ var Corex = (() => {
       }
     }
   }
+  function isDateLike(d2) {
+    return typeof d2 === "object" && d2 !== null && "year" in d2 && "month" in d2 && "day" in d2 && typeof d2.year === "number" && typeof d2.month === "number" && typeof d2.day === "number";
+  }
   function valueToIsoString(d2) {
     if (d2 == null) return "";
+    if (typeof d2 === "string") {
+      const trimmed = d2.trim();
+      if (trimmed === "") return "";
+      try {
+        return parse2(trimmed).toString();
+      } catch (e2) {
+        return trimmed;
+      }
+    }
+    if (isDateLike(d2)) {
+      const { year, month, day } = d2;
+      const mm = String(month).padStart(2, "0");
+      const dd = String(day).padStart(2, "0");
+      return `${year}-${mm}-${dd}`;
+    }
     return String(d2);
+  }
+  function isoListFromValues(values) {
+    return (values == null ? void 0 : values.length) ? values.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+  }
+  function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
+    const hiddenInput = el.querySelector(
+      '[data-scope="date-picker"][data-part="value-input"]'
+    );
+    if (!hiddenInput) return;
+    if (hiddenInput.value !== isoStr) {
+      hiddenInput.value = isoStr;
+    }
+    if (notifyForm) {
+      notifyPhoenixFormChange(hiddenInput, isoStr);
+    } else {
+      notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+    }
   }
   function resolveZagDatePickerTranslations(el) {
     const raw = el.dataset.translation;
@@ -18288,20 +19803,23 @@ var Corex = (() => {
   function resolveCloseOnSelect(el) {
     return getBoolean(el, "closeOnSelect");
   }
-  var anatomy10, parts10, $93635573935797de$var$EPOCH, $93635573935797de$var$daysInMonth, $93635573935797de$export$80ee6245ec4f29ec, $d2ca8165c9aa885a$export$7a5acbd77d414bd9, $ad063034c8620db8$var$DAY_MAP, $ad063034c8620db8$var$localTimeZone, $ad063034c8620db8$var$localTimeZoneOverride, $ad063034c8620db8$var$cachedRegions, $ad063034c8620db8$var$cachedWeekInfo, $ad063034c8620db8$var$WEEKEND_DATA, $d07e34cce18680fd$var$formattersByTimeZone, $d07e34cce18680fd$var$DAYMILLIS, $435a2ceaa8778ed8$var$ONE_HOUR, $58246871e4652552$var$DATE_RE, $58246871e4652552$var$ABSOLUTE_RE, $58246871e4652552$var$requiredDurationTimeGroups, $58246871e4652552$var$requiredDurationGroups, _type, _a, $2aaf608024c21ca1$export$99faa760c7908e4f, _type2, _a2, $2aaf608024c21ca1$export$ca871e8dbb80966f, _type3, _a3, $2aaf608024c21ca1$export$d3b7288e7994edea, $12a3c853105e5a70$var$formatterCache, $12a3c853105e5a70$export$ad991b66133851cf, $12a3c853105e5a70$var$hour12Preferences, $12a3c853105e5a70$var$_hasBuggyHour12Behavior, $12a3c853105e5a70$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId6, getRootId10, getTableId, getContentId4, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl4, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and4, machine10, normalizeValue, preserveTime, pickViewLabel, formatWeek, DatePicker, DatePickerHook;
+  var anatomy11, parts11, $93635573935797de$var$EPOCH, $93635573935797de$var$daysInMonth, $93635573935797de$export$80ee6245ec4f29ec, $d2ca8165c9aa885a$export$7a5acbd77d414bd9, $ad063034c8620db8$var$DAY_MAP, $ad063034c8620db8$var$localTimeZone, $ad063034c8620db8$var$localTimeZoneOverride, $ad063034c8620db8$var$cachedRegions, $ad063034c8620db8$var$cachedWeekInfo, $ad063034c8620db8$var$WEEKEND_DATA, $d07e34cce18680fd$var$formattersByTimeZone, $d07e34cce18680fd$var$DAYMILLIS, $435a2ceaa8778ed8$var$ONE_HOUR, $58246871e4652552$var$DATE_RE, $58246871e4652552$var$ABSOLUTE_RE, $58246871e4652552$var$requiredDurationTimeGroups, $58246871e4652552$var$requiredDurationGroups, _type, _a, $2aaf608024c21ca1$export$99faa760c7908e4f, _type2, _a2, $2aaf608024c21ca1$export$ca871e8dbb80966f, _type3, _a3, $2aaf608024c21ca1$export$d3b7288e7994edea, $12a3c853105e5a70$var$formatterCache, $12a3c853105e5a70$export$ad991b66133851cf, $12a3c853105e5a70$var$hour12Preferences, $12a3c853105e5a70$var$_hasBuggyHour12Behavior, $12a3c853105e5a70$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId7, getRootId11, getTableId, getContentId5, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl5, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and4, machine11, normalizeValue, preserveTime, pickViewLabel, formatWeek, DatePicker, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
-      init_chunk_7BZGUIUZ();
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
+      init_chunk_RNYQBUAX();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy10 = createAnatomy("date-picker").parts(
+      init_chunk_7BZGUIUZ();
+      init_chunk_EPNQR235();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_VJGUNSK5();
+      init_chunk_VL4ETB3G();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy11 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
         "control",
@@ -18327,7 +19845,7 @@ var Corex = (() => {
         "viewTrigger",
         "yearSelect"
       );
-      parts10 = anatomy10.build();
+      parts11 = anatomy11.build();
       $93635573935797de$var$EPOCH = 1721426;
       $93635573935797de$var$daysInMonth = {
         standard: [
@@ -18867,11 +20385,11 @@ var Corex = (() => {
       isValidYear = (year) => year != null && year.length === 4;
       isValidMonth = (month) => month != null && parseFloat(month) <= 12;
       isValidDay = (day) => day != null && parseFloat(day) <= 31;
-      getLabelId6 = (ctx, index) => {
+      getLabelId7 = (ctx, index) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) == null ? void 0 : _b.call(_a4, index)) != null ? _c : `datepicker:${ctx.id}:label:${index}`;
       };
-      getRootId10 = (ctx) => {
+      getRootId11 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `datepicker:${ctx.id}`;
       };
@@ -18879,7 +20397,7 @@ var Corex = (() => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.table) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `datepicker:${ctx.id}:table:${id}`;
       };
-      getContentId4 = (ctx) => {
+      getContentId5 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `datepicker:${ctx.id}:content`;
       };
@@ -18927,9 +20445,9 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.yearSelect) != null ? _b : `datepicker:${ctx.id}:year-select`;
       };
-      getFocusedCell = (ctx, view) => query(getContentEl4(ctx), `[data-part=table-cell-trigger][data-view=${view}][data-focus]:not([data-outside-range])`);
+      getFocusedCell = (ctx, view) => query(getContentEl5(ctx), `[data-part=table-cell-trigger][data-view=${view}][data-focus]:not([data-outside-range])`);
       getTriggerEl3 = (ctx) => ctx.getById(getTriggerId4(ctx));
-      getContentEl4 = (ctx) => ctx.getById(getContentId4(ctx));
+      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
       getInputEls = (ctx) => queryAll(getControlEl4(ctx), `[data-part=input]`);
       getYearSelectEl = (ctx) => ctx.getById(getYearSelectId(ctx));
       getMonthSelectEl = (ctx) => ctx.getById(getMonthSelectId(ctx));
@@ -19035,7 +20553,7 @@ var Corex = (() => {
         }
       );
       ({ and: and4 } = createGuards());
-      machine10 = createMachine({
+      machine11 = createMachine({
         props({ props }) {
           const locale = props.locale || "en-US";
           const timeZone = props.timeZone || "UTC";
@@ -19692,7 +21210,7 @@ var Corex = (() => {
             },
             trackDismissableElement({ scope, send, context, prop }) {
               if (prop("inline")) return;
-              const getContentEl22 = () => getContentEl4(scope);
+              const getContentEl22 = () => getContentEl5(scope);
               return trackDismissableElement(getContentEl22, {
                 type: "popover",
                 defer: true,
@@ -19753,10 +21271,10 @@ var Corex = (() => {
               (_a4 = refs.get("announcer")) == null ? void 0 : _a4.announce(formatted);
             },
             disableTextSelection({ scope }) {
-              disableTextSelection({ target: getContentEl4(scope), doc: scope.getDoc() });
+              disableTextSelection({ target: getContentEl5(scope), doc: scope.getDoc() });
             },
             enableTextSelection({ scope }) {
-              restoreTextSelection({ doc: scope.getDoc(), target: getContentEl4(scope) });
+              restoreTextSelection({ doc: scope.getDoc(), target: getContentEl5(scope) });
             },
             focusFirstSelectedDate(params) {
               const { context } = params;
@@ -19984,14 +21502,14 @@ var Corex = (() => {
             },
             focusFirstYear(params) {
               const { context } = params;
-              const range = getDecadeRange(context.get("focusedValue").year);
-              const nextValue = context.get("focusedValue").set({ year: range[0] });
+              const range2 = getDecadeRange(context.get("focusedValue").year);
+              const nextValue = context.get("focusedValue").set({ year: range2[0] });
               setFocusedValue(params, nextValue);
             },
             focusLastYear(params) {
               const { context } = params;
-              const range = getDecadeRange(context.get("focusedValue").year);
-              const nextValue = context.get("focusedValue").set({ year: range[range.length - 1] });
+              const range2 = getDecadeRange(context.get("focusedValue").year);
+              const nextValue = context.get("focusedValue").set({ year: range2[range2.length - 1] });
               setFocusedValue(params, nextValue);
             },
             setActiveIndex({ context, event }) {
@@ -20255,10 +21773,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine10, props);
+          return new VanillaMachine(machine11, props);
         }
         initApi() {
-          return this.zagConnect(connect10);
+          return this.zagConnect(connect11);
         }
         render() {
           const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
@@ -20377,6 +21895,8 @@ var Corex = (() => {
       DatePickerHook = {
         mounted() {
           const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
           const canPush = () => canPushEvent(this.liveSocket);
@@ -20386,14 +21906,20 @@ var Corex = (() => {
           const parseOne = (v2) => v2 ? parse2(v2) : void 0;
           const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
+          }, (() => {
+            const binding = mountStringListBinding(el);
+            if ("value" in binding) {
+              return { value: parseList(binding.value) };
+            }
+            return { defaultValue: parseList(binding.defaultValue) };
+          })()), {
             defaultFocusedValue: parseOne(getString(el, "focusedValue")),
             defaultView: getString(el, "defaultView"),
             dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -20412,19 +21938,26 @@ var Corex = (() => {
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)), {
             onValueChange: (details) => {
-              var _a4;
-              const isoStr = ((_a4 = details.value) == null ? void 0 : _a4.length) ? details.value.map((d2) => valueToIsoString(d2)).filter(Boolean).join(",") : "";
-              const hiddenInput = el.querySelector(`#${el.id}-value`);
-              if (hiddenInput && hiddenInput.value !== isoStr) {
-                hiddenInput.value = isoStr;
-                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+              const isoList = isoListFromValues(details.value);
+              const submitName = getString(el, "submitName");
+              if (submitName) {
+                syncArrayHiddenInputsForPhoenix(el, isoList, {
+                  scope: "date-picker",
+                  submitName,
+                  notifyLiveView: hook.allowFormNotify === true
+                });
+              } else {
+                const isoStr = isoList.length > 0 ? isoList.join(",") : "";
+                syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
               }
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: isoStr || null },
+                payload: {
+                  id: el.id,
+                  value: isoList.length > 0 ? isoList.join(",") : null
+                },
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
@@ -20471,6 +22004,20 @@ var Corex = (() => {
           }));
           datePickerInstance.init();
           this.datePicker = datePickerInstance;
+          queueMicrotask(() => {
+            const submitName = getString(el, "submitName");
+            const isoList = isoListFromValues(datePickerInstance.api.value);
+            if (submitName) {
+              syncArrayHiddenInputsForPhoenix(el, isoList, {
+                scope: "date-picker",
+                submitName,
+                notifyLiveView: false
+              });
+            } else {
+              syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
+            }
+            hook.allowFormNotify = true;
+          });
           this.handlers = [];
           this.handlers.push(
             this.handleEvent(
@@ -20492,23 +22039,18 @@ var Corex = (() => {
           el.addEventListener("corex:date-picker:set-value", this.onSetValue);
         },
         updated() {
-          var _a4;
           const el = this.el;
+          const zag = this.datePicker;
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const focusedStr = getString(el, "focusedValue");
-          const controlled = getBoolean(el, "controlled");
-          const valueList = getStringList(el, "value");
-          (_a4 = this.datePicker) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadProps(__spreadValues({}, controlled ? {
-            value: (valueList != null ? valueList : []).map((x2) => parse2(x2))
-          } : {}), {
-            defaultFocusedValue: focusedStr ? parse2(focusedStr) : void 0,
-            defaultView: getString(el, "defaultView"),
+          const valuePatch = readUpdatedServerStringList(el);
+          const parsedValue = "value" in valuePatch ? { value: valuePatch.value.map((x2) => parse2(x2)) } : {};
+          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadProps(__spreadValues({}, parsedValue), {
             dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
@@ -20525,6 +22067,12 @@ var Corex = (() => {
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)));
+          if (!getString(el, "submitName")) {
+            queueMicrotask(() => {
+              const isoStr = "value" in valuePatch ? valuePatch.value.join(",") : isoListFromValues(zag == null ? void 0 : zag.api.value).join(",");
+              syncDatePickerValueInput(el, isoStr, false);
+            });
+          }
         },
         destroyed() {
           var _a4;
@@ -20545,9 +22093,10 @@ var Corex = (() => {
   // ../priv/static/dialog.mjs
   var dialog_exports = {};
   __export(dialog_exports, {
-    Dialog: () => DialogHook
+    Dialog: () => DialogHook,
+    readDialogLayoutProps: () => readDialogLayoutProps
   });
-  function connect11(service, normalize) {
+  function connect12(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const ariaLabel = prop("aria-label");
     const open = state2.matches("open");
@@ -20566,7 +22115,7 @@ var Corex = (() => {
       getTriggerProps(props = {}) {
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
-        return normalize.button(__spreadProps(__spreadValues({}, parts11.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts12.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId5(scope, value),
           "data-ownedby": scope.id,
@@ -20575,7 +22124,7 @@ var Corex = (() => {
           type: "button",
           "aria-expanded": value == null ? open : open && current,
           "data-state": open ? "open" : "closed",
-          "aria-controls": getContentId5(scope),
+          "aria-controls": getContentId6(scope),
           "data-current": dataAttr(current),
           onClick(event) {
             if (event.defaultPrevented) return;
@@ -20585,7 +22134,7 @@ var Corex = (() => {
         }));
       },
       getBackdropProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.backdrop.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.backdrop.attrs), {
           dir: prop("dir"),
           hidden: !open,
           id: getBackdropId(scope),
@@ -20593,7 +22142,7 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId4(scope),
           style: compact({
@@ -20603,11 +22152,11 @@ var Corex = (() => {
       },
       getContentProps() {
         const rendered = context.get("rendered");
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.content.attrs), {
           dir: prop("dir"),
           role: prop("role"),
           hidden: !open,
-          id: getContentId5(scope),
+          id: getContentId6(scope),
           tabIndex: -1,
           "data-state": open ? "open" : "closed",
           "aria-modal": prop("modal"),
@@ -20620,19 +22169,19 @@ var Corex = (() => {
         }));
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.title.attrs), {
           dir: prop("dir"),
           id: getTitleId(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.description.attrs), {
           dir: prop("dir"),
           id: getDescriptionId(scope)
         }));
       },
       getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts11.closeTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts12.closeTrigger.attrs), {
           dir: prop("dir"),
           id: getCloseTriggerId(scope),
           type: "button",
@@ -20755,25 +22304,51 @@ var Corex = (() => {
     return "Dialog";
   }
   function syncDialogContentAriaRefs(rootEl, contentEl) {
-    var _a4;
+    var _a4, _b;
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if (!((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim())) {
+      contentEl.removeAttribute("aria-labelledby");
+      const label = dialogInitialAriaLabel(rootEl);
+      if (label) {
+        contentEl.setAttribute("aria-label", label);
+      } else {
+        contentEl.removeAttribute("aria-label");
+      }
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
     const descriptionEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="description"]'
     );
-    if (!((_a4 = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _a4.trim())) {
+    if (!((_b = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _b.trim())) {
       contentEl.removeAttribute("aria-describedby");
     }
   }
-  function getDialogUpdatePropsFromEl(el) {
-    return __spreadProps(__spreadValues({
-      id: el.id
-    }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
+  function resolveFocusElement(root, id) {
+    if (!id) return null;
+    const scoped = root.querySelector(`#${CSS.escape(id)}`);
+    if (scoped) return scoped;
+    const byId = document.getElementById(id);
+    if (byId && root.contains(byId)) return byId;
+    return null;
+  }
+  function readDialogLayoutProps(el) {
+    var _a4;
+    const role = (_a4 = getString(el, "role", ["dialog", "alertdialog"])) != null ? _a4 : "dialog";
+    const initialFocusId = getString(el, "initialFocus");
+    const finalFocusId = getString(el, "finalFocus");
+    return {
+      id: el.id,
+      role,
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getDir(el)
-    });
+      dir: getDir(el),
+      initialFocusEl: initialFocusId ? () => resolveFocusElement(el, initialFocusId) : void 0,
+      finalFocusEl: finalFocusId ? () => resolveFocusElement(el, finalFocusId) : void 0
+    };
   }
   function runDialogScaleTransitions(el, isOpen) {
     const opts = readScaleAnimationOptions(el);
@@ -20783,18 +22358,22 @@ var Corex = (() => {
     if (backdrop) runScaleAnimation(backdrop, isOpen, opts, blockRoot);
     if (content) runScaleAnimation(content, isOpen, opts, blockRoot);
   }
-  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
+  function runDialogScaleIfJs(el, isOpen) {
+    if (!isJsAnimation(el)) return;
+    runDialogScaleTransitions(el, isOpen);
+  }
+  var anatomy12, parts12, getPositionerId4, getBackdropId, getContentId6, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl6, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine12, Dialog, DIALOG_SCALE_SELECTOR, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_WG2KNE4C();
-      init_chunk_FBXRLPHX();
+      init_chunk_XI7CXJ3V();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy11 = createAnatomy("dialog").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy12 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
         "positioner",
@@ -20803,7 +22382,7 @@ var Corex = (() => {
         "description",
         "closeTrigger"
       );
-      parts11 = anatomy11.build();
+      parts12 = anatomy12.build();
       getPositionerId4 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
@@ -20812,7 +22391,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.backdrop) != null ? _b : `dialog:${ctx.id}:backdrop`;
       };
-      getContentId5 = (ctx) => {
+      getContentId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `dialog:${ctx.id}:content`;
       };
@@ -20834,7 +22413,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.closeTrigger) != null ? _b : `dialog:${ctx.id}:close`;
       };
-      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
+      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
       getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
       getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
       getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
@@ -21540,7 +23119,7 @@ var Corex = (() => {
       delay = (fn) => setTimeout(fn, 0);
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
       LOCK_CLASSNAME = "data-scroll-lock";
-      machine11 = createMachine({
+      machine12 = createMachine({
         props({ props, scope }) {
           const alertDialog = props.role === "alertdialog";
           const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
@@ -21655,7 +23234,7 @@ var Corex = (() => {
           },
           effects: {
             trackDismissableElement({ scope, send, prop }) {
-              const getContentEl22 = () => getContentEl5(scope);
+              const getContentEl22 = () => getContentEl6(scope);
               return trackDismissableElement(getContentEl22, {
                 type: "dialog",
                 defer: true,
@@ -21690,7 +23269,7 @@ var Corex = (() => {
             },
             trapFocus({ scope, prop, context }) {
               if (!prop("trapFocus")) return;
-              const contentEl = () => getContentEl5(scope);
+              const contentEl = () => getContentEl6(scope);
               return trapFocus(contentEl, {
                 preventScroll: true,
                 returnFocusOnDeactivate: !!prop("restoreFocus"),
@@ -21713,7 +23292,7 @@ var Corex = (() => {
             },
             hideContentBelow({ scope, prop }) {
               if (!prop("modal")) return;
-              const getElements4 = () => [getContentEl5(scope)];
+              const getElements4 = () => [getContentEl6(scope)];
               return ariaHidden(getElements4, { defer: true });
             }
           },
@@ -21722,7 +23301,7 @@ var Corex = (() => {
               if (prop("trapFocus")) return;
               raf(() => {
                 const element = getInitialFocus({
-                  root: getContentEl5(scope),
+                  root: getContentEl6(scope),
                   getInitialEl: prop("initialFocusEl")
                 });
                 element == null ? void 0 : element.focus({ preventScroll: true });
@@ -21738,7 +23317,7 @@ var Corex = (() => {
             },
             syncZIndex({ scope }) {
               raf(() => {
-                const contentEl = getContentEl5(scope);
+                const contentEl = getContentEl6(scope);
                 if (!contentEl) return;
                 const styles = getComputedStyle2(contentEl);
                 const elems = [getPositionerEl4(scope), getBackdropEl(scope)];
@@ -21772,10 +23351,10 @@ var Corex = (() => {
       Dialog = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine11, props);
+          return new VanillaMachine(machine12, props);
         }
         initApi() {
-          return this.zagConnect(connect11);
+          return this.zagConnect(connect12);
         }
         render() {
           var _a4;
@@ -21829,6 +23408,7 @@ var Corex = (() => {
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
+      DIALOG_SCALE_SELECTOR = '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]';
       DialogHook = {
         mounted() {
           const el = this.el;
@@ -21836,20 +23416,15 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           self2.lastOpen = readControlledOrDefaultBoolean(el, "open", "defaultOpen");
-          const dialog = new Dialog(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, readBooleanControlledZagProps(el, "open", "defaultOpen")), {
-            modal: getBoolean(el, "modal"),
-            closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-            closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-            preventScroll: getBoolean(el, "preventScroll"),
-            restoreFocus: getBoolean(el, "restoreFocus"),
-            dir: getDir(el),
+          const dialog = new Dialog(el, __spreadProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(el)), readBooleanControlledZagProps(el, "open", "defaultOpen")), {
             "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
               var _a4;
-              const previousOpen = (_a4 = self2.lastOpen) != null ? _a4 : false;
-              self2.lastOpen = details.open;
+              const controlled = getBoolean(el, "controlled");
+              const previousOpen = controlled ? readControlledOrDefaultBoolean(el, "open", "defaultOpen") : (_a4 = self2.lastOpen) != null ? _a4 : false;
+              if (!controlled) {
+                self2.lastOpen = details.open;
+              }
               const payload = {
                 id: el.id,
                 open: details.open,
@@ -21863,24 +23438,16 @@ var Corex = (() => {
                 serverEventName: getString(el, "onOpenChange"),
                 clientEventName: getString(el, "onOpenChangeClient")
               });
-              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+              if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
                 runDialogScaleTransitions(el, details.open);
               }
             }
           }));
           dialog.init();
           this.dialog = dialog;
-          if (el.dataset.animation === "js") {
-            const opts = readScaleAnimationOptions(el);
-            prepareInitialScaleState(
-              el,
-              '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
-              opts,
-              (sub) => {
-                if (sub.dataset.part === "backdrop") return { scale: false };
-              }
-            );
-          }
+          prepareJsScaleInitialState(el, DIALOG_SCALE_SELECTOR, (sub) => {
+            if (sub.dataset.part === "backdrop") return { scale: false };
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:dialog:set-open", (event) => {
@@ -21904,23 +23471,32 @@ var Corex = (() => {
             });
           });
         },
-        updated() {
-          var _a4, _b, _c;
-          const el = this.el;
-          const controlled = getBoolean(el, "controlled");
-          if (controlled) {
-            const nextOpen = (_a4 = getBoolean(el, "open")) != null ? _a4 : false;
-            const prevOpen = (_b = this.lastOpen) != null ? _b : false;
-            this.lastOpen = nextOpen;
-            if (el.dataset.animation === "js" && nextOpen !== prevOpen) {
-              runDialogScaleTransitions(el, nextOpen);
-            }
+        beforeUpdate() {
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousOpen = getBoolean(el, "open");
           }
-          (_c = this.dialog) == null ? void 0 : _c.updateProps(getDialogUpdatePropsFromEl(el));
+        },
+        updated() {
+          var _a4, _b, _c, _d, _e;
+          const { el } = this;
+          const layout = readDialogLayoutProps(el);
+          if (!getBoolean(el, "controlled")) {
+            (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(layout);
+            return;
+          }
+          const nextOpen = (_b = getBoolean(el, "open")) != null ? _b : false;
+          const prevOpen = (_d = (_c = this.previousOpen) != null ? _c : this.lastOpen) != null ? _d : false;
+          this.previousOpen = void 0;
+          this.lastOpen = nextOpen;
+          (_e = this.dialog) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({}, layout), { open: nextOpen }));
+          if (nextOpen !== prevOpen) {
+            runDialogScaleIfJs(el, nextOpen);
+          }
         },
         destroyed() {
           var _a4, _b, _c, _d;
-          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(getDialogUpdatePropsFromEl(this.el));
+          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({}, readDialogLayoutProps(this.el)), readBooleanControlledZagUpdate(this.el, "open", "defaultOpen")));
           (_b = this.domRegistry) == null ? void 0 : _b.teardown();
           (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
           (_d = this.dialog) == null ? void 0 : _d.destroy();
@@ -21932,9 +23508,10 @@ var Corex = (() => {
   // ../priv/static/editable.mjs
   var editable_exports = {};
   __export(editable_exports, {
-    Editable: () => EditableHook
+    Editable: () => EditableHook,
+    dataDefaultValue: () => dataDefaultValue
   });
-  function connect12(service, normalize) {
+  function connect13(service, normalize) {
     var _a4;
     const { state: state2, context, send, prop, scope, computed } = service;
     const disabled = !!prop("disabled");
@@ -21974,13 +23551,13 @@ var Corex = (() => {
         send({ type: "SUBMIT" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts12.root.attrs), {
-          id: getRootId11(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+          id: getRootId12(scope),
           dir: prop("dir")
         }));
       },
       getAreaProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts12.area.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.area.attrs), {
           id: getAreaId2(scope),
           dir: prop("dir"),
           style: autoResize ? { display: "inline-grid" } : void 0,
@@ -21990,8 +23567,8 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts12.label.attrs), {
-          id: getLabelId7(scope),
+        return normalize.label(__spreadProps(__spreadValues({}, parts13.label.attrs), {
+          id: getLabelId8(scope),
           dir: prop("dir"),
           htmlFor: getInputId4(scope),
           "data-focus": dataAttr(editing),
@@ -22005,7 +23582,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts12.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts13.input.attrs), {
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.input,
           name: prop("name"),
@@ -22068,7 +23645,7 @@ var Corex = (() => {
       getPreviewProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPreviewId(scope)
-        }, parts12.preview.attrs), {
+        }, parts13.preview.attrs), {
           dir: prop("dir"),
           "data-placeholder-shown": dataAttr(empty),
           "aria-readonly": ariaAttr(readOnly),
@@ -22109,7 +23686,7 @@ var Corex = (() => {
         }));
       },
       getEditTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts12.editTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.editTrigger.attrs), {
           id: getEditTriggerId(scope),
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.edit,
@@ -22126,12 +23703,12 @@ var Corex = (() => {
       getControlProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getControlId6(scope)
-        }, parts12.control.attrs), {
+        }, parts13.control.attrs), {
           dir: prop("dir")
         }));
       },
       getSubmitTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts12.submitTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.submitTrigger.attrs), {
           dir: prop("dir"),
           id: getSubmitTriggerId(scope),
           "aria-label": translations == null ? void 0 : translations.submit,
@@ -22146,7 +23723,7 @@ var Corex = (() => {
         }));
       },
       getCancelTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts12.cancelTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.cancelTrigger.attrs), {
           dir: prop("dir"),
           "aria-label": translations == null ? void 0 : translations.cancel,
           id: getCancelTriggerId(scope),
@@ -22166,15 +23743,66 @@ var Corex = (() => {
     var _a4;
     return (_a4 = getString(el, "defaultValue")) != null ? _a4 : "";
   }
-  var anatomy12, parts12, getRootId11, getAreaId2, getLabelId7, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine12, Editable, EditableHook;
+  function formValueInput(el) {
+    return el.querySelector(`#${el.id}-value`);
+  }
+  function syncEditableFormValue(el, value, options = {}) {
+    const hidden = formValueInput(el);
+    if (hidden) {
+      notifyPhoenixFormChange(hidden, value, options);
+      return;
+    }
+    const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
+    if (inputEl) {
+      notifyPhoenixFormChange(inputEl, value, options);
+    }
+  }
+  function notifyEditableValueChange(el, pushEvent, canPush, value, hook) {
+    syncEditableFormValue(el, value, {
+      markUsed: hook.allowFormNotify === true
+    });
+    notifyChange({
+      el,
+      canPushServer: canPush(),
+      pushEvent,
+      payload: {
+        id: el.id,
+        value
+      },
+      serverEventName: getString(el, "onValueChange"),
+      clientEventName: getString(el, "onValueChangeClient")
+    });
+  }
+  function bindFormSubmitSync(el, zag) {
+    const form = el.closest("form");
+    if (!form) return () => {
+    };
+    const onSubmit = () => {
+      var _a4;
+      if (!zag.api.editing) return;
+      const inputEl = el.querySelector(
+        '[data-scope="editable"][data-part="input"]'
+      );
+      syncEditableFormValue(el, (_a4 = inputEl == null ? void 0 : inputEl.value) != null ? _a4 : zag.api.value, { markUsed: false });
+    };
+    form.addEventListener("submit", onSubmit, true);
+    return () => form.removeEventListener("submit", onSubmit, true);
+  }
+  function zagName(el) {
+    if (formValueInput(el)) return void 0;
+    return getString(el, "name");
+  }
+  var anatomy13, parts13, getRootId12, getAreaId2, getLabelId8, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine13, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_B7AHHTCM();
+      init_chunk_4QMNVH3P();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy12 = createAnatomy("editable").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy13 = createAnatomy("editable").parts(
         "root",
         "area",
         "label",
@@ -22185,8 +23813,8 @@ var Corex = (() => {
         "cancelTrigger",
         "control"
       );
-      parts12 = anatomy12.build();
-      getRootId11 = (ctx) => {
+      parts13 = anatomy13.build();
+      getRootId12 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `editable:${ctx.id}`;
       };
@@ -22194,7 +23822,7 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.area) != null ? _b : `editable:${ctx.id}:area`;
       };
-      getLabelId7 = (ctx) => {
+      getLabelId8 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `editable:${ctx.id}:label`;
       };
@@ -22227,7 +23855,7 @@ var Corex = (() => {
       getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
       getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
       getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
-      machine12 = createMachine({
+      machine13 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             activationMode: "focus",
@@ -22458,21 +24086,30 @@ var Corex = (() => {
       Editable = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine12, props);
+          return new VanillaMachine(machine13, props);
         }
         initApi() {
-          return this.zagConnect(connect12);
+          return this.zagConnect(connect13);
         }
         render() {
           var _a4;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="editable"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
           const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
           if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
           const labelEl = this.el.querySelector(
             '[data-scope="editable"][data-part="label"]'
           );
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const formValueEl = this.el.querySelector(`#${this.el.id}-value`);
+          if (formValueEl) {
+            formValueEl.value = this.api.value;
+            syncInputFormAssociation(formValueEl, this.el);
+          }
           const inputEl = this.el.querySelector(
             '[data-scope="editable"][data-part="input"]'
           );
@@ -22497,50 +24134,45 @@ var Corex = (() => {
       };
       EditableHook = {
         mounted() {
+          var _a4, _b;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
-          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
-            id: el.id,
-            defaultValue: dataDefaultValue(el),
+          this.allowFormNotify = false;
+          const valueBinding = mountStringBinding(el, "value", "defaultValue");
+          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+            id: el.id
+          }, "value" in valueBinding ? { value: (_a4 = valueBinding.value) != null ? _a4 : "" } : { defaultValue: (_b = valueBinding.defaultValue) != null ? _b : "" }), {
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagName(el),
+            form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
-          }, placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+          }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
             onValueChange: (details) => {
-              const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
-              if (inputEl) {
-                inputEl.value = details.value;
-                inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-                inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-              notifyChange({
-                el,
-                canPushServer: canPush(),
-                pushEvent,
-                payload: {
-                  id: el.id,
-                  value: details.value
-                },
-                serverEventName: getString(el, "onValueChange"),
-                clientEventName: getString(el, "onValueChangeClient")
-              });
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
+            },
+            onValueCommit: (details) => {
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
             }
           }));
           zag.init();
           this.editable = zag;
+          queueMicrotask(() => {
+            syncEditableFormValue(el, zag.api.value, { markUsed: false });
+            this.allowFormNotify = true;
+          });
+          this.unbindFormSubmit = bindFormSubmitSync(el, zag);
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:editable:set-value", (event) => {
-            var _a4;
-            const raw = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            var _a5;
+            const raw = (_a5 = event.detail) == null ? void 0 : _a5.value;
             zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
           });
           const registry = createHookHandleEventRegistry(this);
@@ -22551,28 +24183,31 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
+          var _a4, _b;
           const el = this.el;
-          const dv = dataDefaultValue(el);
-          if (this.editable && !this.editable.api.editing && dv !== this.editable.api.value) {
-            this.editable.api.setValue(dv);
-          }
-          (_a4 = this.editable) == null ? void 0 : _a4.updateProps(__spreadValues({
+          const valuePatch = readUpdatedServerString(el);
+          const editPatch = readEditControlledZagUpdate(el);
+          const props = __spreadValues({
             id: el.id,
             disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagName(el),
+            form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
-          }, getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
+          }, editPatch);
+          if (!((_a4 = this.editable) == null ? void 0 : _a4.api.editing) && "value" in valuePatch) {
+            Object.assign(props, valuePatch);
+          }
+          (_b = this.editable) == null ? void 0 : _b.updateProps(props);
         },
         destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.editable) == null ? void 0 : _c.destroy();
+          var _a4, _b, _c, _d;
+          (_a4 = this.unbindFormSubmit) == null ? void 0 : _a4.call(this);
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.editable) == null ? void 0 : _d.destroy();
         }
       };
     }
@@ -22581,7 +24216,10 @@ var Corex = (() => {
   // ../priv/static/file-upload.mjs
   var file_upload_exports = {};
   __export(file_upload_exports, {
-    FileUpload: () => FileUploadHook
+    FileUpload: () => FileUploadHook,
+    fileAcceptPayload: () => fileAcceptPayload,
+    fileChangePayload: () => fileChangePayload,
+    fileRejectPayload: () => fileRejectPayload
   });
   function isMIMEType(v2) {
     return v2 === "audio/*" || v2 === "video/*" || v2 === "image/*" || v2 === "text/*" || /\w+\/[-+.\w]+/g.test(v2);
@@ -22723,7 +24361,7 @@ var Corex = (() => {
     const interactive = element.closest(INTERACTIVE_SELECTOR);
     return interactive != container && contains(container, interactive);
   }
-  function connect13(service, normalize) {
+  function connect14(service, normalize) {
     const { state: state2, send, prop, computed, scope, context } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -22788,16 +24426,16 @@ var Corex = (() => {
         return true;
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
           dir: prop("dir"),
-          id: getRootId12(scope),
+          id: getRootId13(scope),
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
           "data-dragging": dataAttr(dragging)
         }));
       },
       getDropzoneProps(props = {}) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.dropzone.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.dropzone.attrs), {
           dir: prop("dir"),
           id: getDropzoneId(scope),
           tabIndex: disabled || readOnly || props.disableClick ? void 0 : 0,
@@ -22873,7 +24511,7 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts14.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId6(scope),
           disabled: disabled || readOnly,
@@ -22918,7 +24556,7 @@ var Corex = (() => {
       },
       getItemGroupProps(props = {}) {
         const { type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroup.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-type": type
@@ -22926,16 +24564,16 @@ var Corex = (() => {
       },
       getItemProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.item.attrs), {
           dir: prop("dir"),
-          id: getItemId4(scope, getFileId(file)),
+          id: getItemId5(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
           "data-type": type
         }));
       },
       getItemNameProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemName.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemName.attrs), {
           dir: prop("dir"),
           id: getItemNameId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -22944,7 +24582,7 @@ var Corex = (() => {
       },
       getItemSizeTextProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemSizeText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemSizeText.attrs), {
           dir: prop("dir"),
           id: getItemSizeTextId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -22953,7 +24591,7 @@ var Corex = (() => {
       },
       getItemPreviewProps(props) {
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemPreview.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemPreview.attrs), {
           dir: prop("dir"),
           id: getItemPreviewId(scope, getFileId(file)),
           "data-disabled": dataAttr(disabled),
@@ -22967,7 +24605,7 @@ var Corex = (() => {
         if (!isImage) {
           throw new Error("Preview Image is only supported for image files");
         }
-        return normalize.img(__spreadProps(__spreadValues({}, parts13.itemPreviewImage.attrs), {
+        return normalize.img(__spreadProps(__spreadValues({}, parts14.itemPreviewImage.attrs), {
           alt: (_a4 = translations.itemPreview) == null ? void 0 : _a4.call(translations, file),
           src: url,
           "data-disabled": dataAttr(disabled),
@@ -22977,7 +24615,7 @@ var Corex = (() => {
       getItemDeleteTriggerProps(props) {
         var _a4;
         const { file, type = DEFAULT_ITEM_TYPE } = props;
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.itemDeleteTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts14.itemDeleteTrigger.attrs), {
           dir: prop("dir"),
           id: getItemDeleteTriggerId(scope, getFileId(file)),
           type: "button",
@@ -22993,16 +24631,16 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts13.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts14.label.attrs), {
           dir: prop("dir"),
-          id: getLabelId8(scope),
+          id: getLabelId9(scope),
           htmlFor: getHiddenInputId4(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required)
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts14.clearTrigger.attrs), {
           dir: prop("dir"),
           type: "button",
           disabled: disabled || readOnly,
@@ -23038,6 +24676,24 @@ var Corex = (() => {
   function fileKeyFor(file) {
     return zagFileId(`${file.name}-${file.size}`);
   }
+  function labelFieldNameFor(fieldName) {
+    if (fieldName.includes("[")) {
+      return fieldName.replace(/\[([^\]]+)\]$/, "[$1_label]");
+    }
+    return `${fieldName}_label`;
+  }
+  function setInputFiles2(inputEl, files) {
+    try {
+      if (typeof window.DataTransfer !== "undefined") {
+        const dataTransfer = new window.DataTransfer();
+        for (const file of files) {
+          dataTransfer.items.add(file);
+        }
+        inputEl.files = dataTransfer.files;
+      }
+    } catch (e2) {
+    }
+  }
   function fileChangePayload(el, details) {
     var _a4, _b;
     const first2 = details.acceptedFiles[0];
@@ -23045,6 +24701,7 @@ var Corex = (() => {
       id: el.id,
       acceptedCount: details.acceptedFiles.length,
       rejectedCount: details.rejectedFiles.length,
+      acceptedNames: details.acceptedFiles.map((file) => file.name),
       firstAcceptedName: (_a4 = first2 == null ? void 0 : first2.name) != null ? _a4 : null,
       firstAcceptedType: (_b = first2 == null ? void 0 : first2.type) != null ? _b : null
     };
@@ -23061,14 +24718,16 @@ var Corex = (() => {
       count: details.files.length
     };
   }
-  var anatomy13, parts13, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId12, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId8, getItemId4, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine13, ACCEPTED, FileUpload, FileUploadHook;
+  var anatomy14, parts14, getItemEntry, isDirectoryEntry, isFileEntry, addRelativePath, getFileEntries, getDirectoryFiles, isValidMIME, isFileEqual, isDefined, mimeTypes, mimeTypesMap, getNumberFormatter, bitPrefixes, bytePrefixes, formatBytes, getRootId13, getDropzoneId, getHiddenInputId4, getTriggerId6, getLabelId9, getItemId5, getItemNameId, getItemSizeTextId, getItemPreviewId, getItemDeleteTriggerId, getFileId, getRootEl4, getHiddenInputEl4, getDropzoneEl, DEFAULT_ITEM_TYPE, INTERACTIVE_SELECTOR, machine14, ACCEPTED, FileUpload, FileUploadHook;
   var init_file_upload = __esm({
     "../priv/static/file-upload.mjs"() {
       "use strict";
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy13 = createAnatomy("file-upload").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy14 = createAnatomy("file-upload").parts(
         "root",
         "dropzone",
         "item",
@@ -23082,7 +24741,7 @@ var Corex = (() => {
         "trigger",
         "clearTrigger"
       );
-      parts13 = anatomy13.build();
+      parts14 = anatomy14.build();
       getItemEntry = (item) => typeof item.getAsEntry === "function" ? item.getAsEntry() : typeof item.webkitGetAsEntry === "function" ? item.webkitGetAsEntry() : null;
       isDirectoryEntry = (entry) => entry.isDirectory;
       isFileEntry = (entry) => entry.isFile;
@@ -23174,7 +24833,7 @@ var Corex = (() => {
           unitDisplay
         });
       };
-      getRootId12 = (ctx) => {
+      getRootId13 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `file:${ctx.id}`;
       };
@@ -23190,11 +24849,11 @@ var Corex = (() => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.trigger) != null ? _b : `file:${ctx.id}:trigger`;
       };
-      getLabelId8 = (ctx) => {
+      getLabelId9 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `file:${ctx.id}:label`;
       };
-      getItemId4 = (ctx, id) => {
+      getItemId5 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item:${id}`;
       };
@@ -23215,12 +24874,12 @@ var Corex = (() => {
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemDeleteTrigger) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `file:${ctx.id}:item-delete:${id}`;
       };
       getFileId = (file) => hash(`${file.name}-${file.size}`);
-      getRootEl4 = (ctx) => ctx.getById(getRootId12(ctx));
+      getRootEl4 = (ctx) => ctx.getById(getRootId13(ctx));
       getHiddenInputEl4 = (ctx) => ctx.getById(getHiddenInputId4(ctx));
       getDropzoneEl = (ctx) => ctx.getById(getDropzoneId(ctx));
       DEFAULT_ITEM_TYPE = "accepted";
       INTERACTIVE_SELECTOR = "button, a[href], input:not([type='file']), select, textarea, [tabindex], [contenteditable]";
-      machine13 = createMachine({
+      machine14 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             minFileSize: 0,
@@ -23411,10 +25070,10 @@ var Corex = (() => {
                   context.set("rejectedFiles", rejectedFiles);
                 }
               };
-              const transform = prop("transformFiles");
-              if (transform) {
+              const transform2 = prop("transformFiles");
+              if (transform2) {
                 context.set("transforming", true);
-                transform(acceptedFiles).then(set).catch((err) => {
+                transform2(acceptedFiles).then(set).catch((err) => {
                   warn(`[zag-js/file-upload] error transforming files
 ${err}`);
                 }).finally(() => {
@@ -23452,10 +25111,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine13, props);
+          return new VanillaMachine(machine14, props);
         }
         initApi() {
-          return this.zagConnect(connect13);
+          return this.zagConnect(connect14);
         }
         cleanupPreviews() {
           for (const cleanup of this.previewCleanup.values()) cleanup();
@@ -23556,7 +25215,62 @@ ${err}`);
               );
             }
           }
+          this.syncFormSubmitInputs();
           this.touchSentinel();
+        }
+        syncFormSubmitInputs() {
+          const fileInput = this.el.querySelector(
+            '[data-scope="file-upload"][data-part="hidden-input"]'
+          );
+          const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
+          const files = this.api.acceptedFiles;
+          const name = this.el.dataset.name;
+          if (fileInput) {
+            setInputFiles2(fileInput, files);
+          }
+          this.syncAcceptedNamesHidden(name, files);
+          if (!sentinel) return;
+          if (files.length > 0) {
+            sentinel.disabled = true;
+            sentinel.removeAttribute("name");
+            return;
+          }
+          sentinel.disabled = false;
+          if (name) {
+            sentinel.setAttribute("name", name);
+          }
+        }
+        syncAcceptedNamesHidden(fieldName, files) {
+          var _a4;
+          if (!fieldName) return;
+          const labelFieldName = labelFieldNameFor(fieldName);
+          const region = (_a4 = this.el.querySelector('[data-scope="file-upload"][data-part="region"]')) != null ? _a4 : this.el;
+          let labelInput = region.querySelector(
+            '[data-scope="file-upload"][data-part="accepted-names-hidden"]'
+          );
+          if (!labelInput) {
+            labelInput = document.createElement("input");
+            labelInput.type = "hidden";
+            labelInput.setAttribute("data-scope", "file-upload");
+            labelInput.setAttribute("data-part", "accepted-names-hidden");
+            region.appendChild(labelInput);
+          }
+          const names = files.map((file) => file.name).filter(Boolean).join(", ");
+          if (names === "") {
+            labelInput.disabled = true;
+            labelInput.removeAttribute("name");
+            labelInput.value = "";
+            return;
+          }
+          labelInput.disabled = false;
+          labelInput.name = labelFieldName;
+          labelInput.value = names;
+          const formId = this.el.dataset.form;
+          if (formId) {
+            labelInput.setAttribute("form", formId);
+          } else {
+            labelInput.removeAttribute("form");
+          }
         }
         touchSentinel() {
           const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
@@ -23675,7 +25389,7 @@ ${err}`);
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             name: getString(el, "name"),
             dir: getDir(el),
@@ -23721,6 +25435,9 @@ ${err}`);
           zag.init();
           this.fileUpload = zag;
           this.handlers = [];
+          this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            zag.syncFormSubmitInputs();
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:file-upload:clear-files", () => {
@@ -23753,7 +25470,7 @@ ${err}`);
             id: this.el.id,
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readOnly"),
+            readOnly: getBoolean(this.el, "readonly"),
             required: getBoolean(this.el, "required"),
             name: getString(this.el, "name"),
             dir: getDir(this.el),
@@ -23767,14 +25484,15 @@ ${err}`);
           });
         },
         destroyed() {
-          var _a4, _b, _c, _d;
+          var _a4, _b, _c, _d, _e;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
           }
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.fileUpload) == null ? void 0 : _c.cleanupPreviews();
-          (_d = this.fileUpload) == null ? void 0 : _d.destroy();
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.fileUpload) == null ? void 0 : _d.cleanupPreviews();
+          (_e = this.fileUpload) == null ? void 0 : _e.destroy();
         }
       };
     }
@@ -23783,7 +25501,10 @@ ${err}`);
   // ../priv/static/floating-panel.mjs
   var floating_panel_exports = {};
   __export(floating_panel_exports, {
-    FloatingPanel: () => FloatingPanelHook
+    FloatingPanel: () => FloatingPanelHook,
+    buildAnchorProps: () => buildAnchorProps,
+    parsePoint: () => parsePoint,
+    parseSize: () => parseSize
   });
   function getCacheComputedStyle(el) {
     if (!styleCache2.has(el)) {
@@ -23910,9 +25631,9 @@ ${err}`);
       height: finalPoint.y - initialPoint.y
     };
   }
-  function transformRect(rect, transform, normalized = true) {
-    const p1 = transform.applyTo({ x: rect.minX, y: rect.minY });
-    const p2 = transform.applyTo({ x: rect.maxX, y: rect.maxY });
+  function transformRect(rect, transform2, normalized = true) {
+    const p1 = transform2.applyTo({ x: rect.minX, y: rect.minY });
+    const p2 = transform2.applyTo({ x: rect.maxX, y: rect.maxY });
     return createRectFromPoints(p1, p2, normalized);
   }
   function getResizeAxisStyle(axis) {
@@ -23977,7 +25698,7 @@ ${err}`);
         throw new Error(`Invalid axis: ${axis}`);
     }
   }
-  function connect14(service, normalize) {
+  function connect15(service, normalize) {
     const { state: state2, send, scope, prop, computed, context } = service;
     const open = state2.hasTag("open");
     const dragging = state2.matches("open.dragging");
@@ -24019,14 +25740,14 @@ ${err}`);
         send({ type: "RESTORE" });
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts14.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts15.trigger.attrs), {
           dir: prop("dir"),
           type: "button",
           disabled: prop("disabled"),
           id: getTriggerId7(scope),
           "data-state": open ? "open" : "closed",
           "data-dragging": dataAttr(dragging),
-          "aria-controls": getContentId6(scope),
+          "aria-controls": getContentId7(scope),
           onClick(event) {
             if (event.defaultPrevented) return;
             if (prop("disabled")) return;
@@ -24036,7 +25757,7 @@ ${err}`);
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId5(scope),
           style: {
@@ -24051,12 +25772,12 @@ ${err}`);
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.content.attrs), {
           dir: prop("dir"),
           role: "dialog",
           tabIndex: 0,
           hidden: !open,
-          id: getContentId6(scope),
+          id: getContentId7(scope),
           "aria-labelledby": getTitleId2(scope),
           "data-state": open ? "open" : "closed",
           "data-dragging": dataAttr(dragging),
@@ -24104,7 +25825,7 @@ ${err}`);
         }));
       },
       getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts14.closeTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts15.closeTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "aria-label": "Close Window",
@@ -24134,7 +25855,7 @@ ${err}`);
             hidden: !isStaged
           })
         });
-        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts14.stageTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts15.stageTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
           "data-stage": props.stage
@@ -24153,7 +25874,7 @@ ${err}`);
         }));
       },
       getResizeTriggerProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.resizeTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.resizeTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canResize),
           "data-axis": props.axis,
@@ -24182,7 +25903,7 @@ ${err}`);
         }));
       },
       getDragTriggerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.dragTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.dragTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canDrag),
           onPointerDown(event) {
@@ -24221,7 +25942,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.control.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(prop("disabled")),
           "data-stage": context.get("stage"),
@@ -24231,13 +25952,13 @@ ${err}`);
         }));
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.title.attrs), {
           dir: prop("dir"),
           id: getTitleId2(scope)
         }));
       },
       getHeaderProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.header.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.header.attrs), {
           dir: prop("dir"),
           id: getHeaderId(scope),
           "data-dragging": dataAttr(dragging),
@@ -24249,7 +25970,7 @@ ${err}`);
         }));
       },
       getBodyProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.body.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.body.attrs), {
           dir: prop("dir"),
           "data-dragging": dataAttr(dragging),
           "data-minimized": dataAttr(isMinimized),
@@ -24347,17 +26068,17 @@ ${err}`);
     const getAnchorPosition = defaultPosition == null && positioning ? (details) => anchorPointFromPositioning(positioning, details, defaultSize, getDir(el)) : void 0;
     return { defaultPosition, getAnchorPosition };
   }
-  var anatomy14, parts14, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine14, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
+  var anatomy15, parts15, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId7, getPositionerId5, getContentId7, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl7, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine15, FloatingPanel, FALLBACK_DEFAULT_SIZE, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_YM6Q7RBK();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
+      init_chunk_VJGUNSK5();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy14 = createAnatomy("floating-panel").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy15 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
         "content",
@@ -24370,7 +26091,7 @@ ${err}`);
         "closeTrigger",
         "control"
       );
-      parts14 = anatomy14.build();
+      parts15 = anatomy15.build();
       AffineTransform = class _AffineTransform {
         constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
           __publicField4(this, "m00");
@@ -24597,7 +26318,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.positioner) != null ? _b : `float:${ctx.id}:positioner`;
       };
-      getContentId6 = (ctx) => {
+      getContentId7 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `float:${ctx.id}:content`;
       };
@@ -24611,7 +26332,7 @@ ${err}`);
       };
       getTriggerEl4 = (ctx) => ctx.getById(getTriggerId7(ctx));
       getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
-      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
+      getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
       getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
       getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
         let boundaryRect;
@@ -24667,7 +26388,7 @@ ${err}`);
       };
       FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
       FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
-      machine14 = createMachine({
+      machine15 = createMachine({
         props({ props }) {
           ensureProps(props, ["id"], "floating-panel");
           return __spreadProps(__spreadValues({
@@ -24937,7 +26658,7 @@ ${err}`);
             trackPanelStack({ context, scope }) {
               const unsub = subscribe(panelStack, () => {
                 context.set("isTopmost", panelStack.isTopmost(scope.id));
-                const contentEl = getContentEl6(scope);
+                const contentEl = getContentEl7(scope);
                 if (!contentEl) return;
                 const index = panelStack.indexOf(scope.id);
                 if (index === -1) return;
@@ -25176,7 +26897,7 @@ ${err}`);
             setInitialFocus({ scope, prop }) {
               raf(() => {
                 var _a4, _b;
-                const element = (_b = (_a4 = prop("initialFocusEl")) == null ? void 0 : _a4()) != null ? _b : getContentEl6(scope);
+                const element = (_b = (_a4 = prop("initialFocusEl")) == null ? void 0 : _a4()) != null ? _b : getContentEl7(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -25189,10 +26910,10 @@ ${err}`);
       FloatingPanel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine14, props);
+          return new VanillaMachine(machine15, props);
         }
         initApi() {
-          return this.zagConnect(connect14);
+          return this.zagConnect(connect15);
         }
         render() {
           const triggerEl = this.el.querySelector(
@@ -25347,7 +27068,6 @@ ${err}`);
             id: el.id,
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
-            defaultPosition: anchorProps.defaultPosition,
             getAnchorPosition: anchorProps.getAnchorPosition
           });
         },
@@ -25366,399 +27086,9 @@ ${err}`);
   // ../priv/static/listbox.mjs
   var listbox_exports = {};
   __export(listbox_exports, {
-    Listbox: () => ListboxHook
+    Listbox: () => ListboxHook,
+    buildCollection: () => buildCollection
   });
-  function connect15(service, normalize) {
-    const { context, prop, scope, computed, send, refs } = service;
-    const disabled = prop("disabled");
-    const collection22 = prop("collection");
-    const layout = isGridCollection(collection22) ? "grid" : "list";
-    const focused = context.get("focused");
-    const focusVisible = refs.get("focusVisible") && focused;
-    const inputState = refs.get("inputState");
-    const value = context.get("value");
-    const selectedItems = computed("selectedItems");
-    const highlightedValue = context.get("highlightedValue");
-    const highlightedItem = context.get("highlightedItem");
-    const isTypingAhead = computed("isTypingAhead");
-    const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId5(scope, highlightedValue) : void 0;
-    function getItemState(props) {
-      const itemDisabled = collection22.getItemDisabled(props.item);
-      const value2 = collection22.getItemValue(props.item);
-      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
-      const highlighted = highlightedValue === value2;
-      return {
-        value: value2,
-        disabled: Boolean(disabled || itemDisabled),
-        focused: highlighted && focused,
-        focusVisible: highlighted && focusVisible,
-        // deprecated
-        highlighted: highlighted && (inputState.focused ? focused : focusVisible),
-        selected: context.get("value").includes(value2)
-      };
-    }
-    return {
-      empty: value.length === 0,
-      highlightedItem,
-      highlightedValue,
-      clearHighlightedValue() {
-        send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
-      },
-      selectedItems,
-      hasSelectedItems: computed("hasSelectedItems"),
-      value,
-      valueAsString: computed("valueAsString"),
-      collection: collection22,
-      disabled: !!disabled,
-      selectValue(value2) {
-        send({ type: "ITEM.SELECT", value: value2 });
-      },
-      setValue(value2) {
-        send({ type: "VALUE.SET", value: value2 });
-      },
-      selectAll() {
-        if (!computed("multiple")) {
-          throw new Error("[zag-js] Cannot select all items in a single-select listbox");
-        }
-        send({ type: "VALUE.SET", value: collection22.getValues() });
-      },
-      highlightValue(value2) {
-        send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
-      },
-      highlightFirst() {
-        send({ type: "HIGHLIGHT.FIRST" });
-      },
-      highlightLast() {
-        send({ type: "HIGHLIGHT.LAST" });
-      },
-      highlightNext() {
-        send({ type: "HIGHLIGHT.NEXT" });
-      },
-      highlightPrevious() {
-        send({ type: "HIGHLIGHT.PREV" });
-      },
-      clearValue(value2) {
-        if (value2) {
-          send({ type: "ITEM.CLEAR", value: value2 });
-        } else {
-          send({ type: "VALUE.CLEAR" });
-        }
-      },
-      getItemState,
-      getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
-          dir: prop("dir"),
-          id: getRootId13(scope),
-          "data-orientation": prop("orientation"),
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getInputProps(props = {}) {
-        var _a4;
-        const keyboardPriority = (_a4 = props.keyboardPriority) != null ? _a4 : "caret";
-        return normalize.input(__spreadProps(__spreadValues({}, parts15.input.attrs), {
-          dir: prop("dir"),
-          disabled,
-          "data-disabled": dataAttr(disabled),
-          autoComplete: "off",
-          autoCorrect: "off",
-          "aria-haspopup": "listbox",
-          "aria-controls": getContentId7(scope),
-          "aria-autocomplete": "list",
-          "aria-activedescendant": ariaActiveDescendant,
-          spellCheck: false,
-          enterKeyHint: "go",
-          onFocus() {
-            queueMicrotask(() => {
-              send({ type: "INPUT.FOCUS", autoHighlight: !!(props == null ? void 0 : props.autoHighlight) });
-            });
-          },
-          onBlur() {
-            send({ type: "CONTENT.BLUR", src: "input" });
-          },
-          onInput(event) {
-            if (!(props == null ? void 0 : props.autoHighlight)) return;
-            if (event.currentTarget.value.trim()) return;
-            queueMicrotask(() => {
-              send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
-            });
-          },
-          onKeyDown(event) {
-            if (event.defaultPrevented) return;
-            if (isComposingEvent(event)) return;
-            const nativeEvent = getNativeEvent(event);
-            const forwardEvent = () => {
-              var _a5;
-              event.preventDefault();
-              const win = scope.getWin();
-              const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
-              (_a5 = getContentEl7(scope)) == null ? void 0 : _a5.dispatchEvent(keyboardEvent);
-            };
-            switch (nativeEvent.key) {
-              case "ArrowLeft":
-              case "ArrowRight": {
-                if (!isGridCollection(collection22)) return;
-                if (event.ctrlKey) return;
-                if (keyboardPriority !== "navigate") return;
-                forwardEvent();
-                break;
-              }
-              case "Home":
-              case "End": {
-                if (keyboardPriority !== "navigate") return;
-                if (highlightedValue == null && event.shiftKey) return;
-                forwardEvent();
-                break;
-              }
-              case "ArrowDown":
-              case "ArrowUp": {
-                forwardEvent();
-                break;
-              }
-              case "Enter":
-                if (highlightedValue != null) {
-                  event.preventDefault();
-                  send({ type: "ITEM.CLICK", value: highlightedValue });
-                }
-                break;
-              default:
-                break;
-            }
-          }
-        }));
-      },
-      getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({
-          dir: prop("dir"),
-          id: getLabelId9(scope)
-        }, parts15.label.attrs), {
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.valueText.attrs), {
-          dir: prop("dir"),
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getItemProps(props) {
-        const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({
-          id: getItemId5(scope, itemState.value),
-          role: "option"
-        }, parts15.item.attrs), {
-          dir: prop("dir"),
-          "data-value": itemState.value,
-          "aria-selected": itemState.selected,
-          "data-selected": dataAttr(itemState.selected),
-          "data-layout": layout,
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          "data-orientation": prop("orientation"),
-          "data-highlighted": dataAttr(itemState.highlighted),
-          "data-disabled": dataAttr(itemState.disabled),
-          "aria-disabled": ariaAttr(itemState.disabled),
-          onPointerMove(event) {
-            if (!props.highlightOnHover) return;
-            if (itemState.disabled || event.pointerType !== "mouse") return;
-            if (itemState.highlighted) return;
-            send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
-          },
-          onMouseDown(event) {
-            var _a4;
-            event.preventDefault();
-            (_a4 = getContentEl7(scope)) == null ? void 0 : _a4.focus();
-          },
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            if (isDownloadingEvent(event)) return;
-            if (isOpeningInNewTab(event)) return;
-            if (isContextMenuEvent(event)) return;
-            if (itemState.disabled) return;
-            send({
-              type: "ITEM.CLICK",
-              value: itemState.value,
-              shiftKey: event.shiftKey,
-              anchorValue: highlightedValue,
-              metaKey: isCtrlOrMetaKey(event)
-            });
-          }
-        }));
-      },
-      getItemTextProps(props) {
-        const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemText.attrs), {
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          "data-disabled": dataAttr(itemState.disabled),
-          "data-highlighted": dataAttr(itemState.highlighted)
-        }));
-      },
-      getItemIndicatorProps(props) {
-        const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemIndicator.attrs), {
-          "aria-hidden": true,
-          "data-state": itemState.selected ? "checked" : "unchecked",
-          hidden: !itemState.selected
-        }));
-      },
-      getItemGroupLabelProps(props) {
-        const { htmlFor } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemGroupLabel.attrs), {
-          id: getItemGroupLabelId2(scope, htmlFor),
-          dir: prop("dir"),
-          role: "presentation"
-        }));
-      },
-      getItemGroupProps(props) {
-        const { id } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemGroup.attrs), {
-          "data-disabled": dataAttr(disabled),
-          "data-orientation": prop("orientation"),
-          "data-empty": dataAttr(collection22.size === 0),
-          id: getItemGroupId3(scope, id),
-          "aria-labelledby": getItemGroupLabelId2(scope, id),
-          role: "group",
-          dir: prop("dir")
-        }));
-      },
-      getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({
-          dir: prop("dir"),
-          id: getContentId7(scope),
-          role: "listbox"
-        }, parts15.content.attrs), {
-          "data-activedescendant": ariaActiveDescendant,
-          "aria-activedescendant": ariaActiveDescendant,
-          "data-orientation": prop("orientation"),
-          "aria-multiselectable": computed("multiple") ? true : void 0,
-          "aria-labelledby": getLabelId9(scope),
-          tabIndex: 0,
-          "data-layout": layout,
-          "data-empty": dataAttr(collection22.size === 0),
-          style: {
-            "--column-count": isGridCollection(collection22) ? collection22.columnCount : 1
-          },
-          onFocus() {
-            send({ type: "CONTENT.FOCUS" });
-          },
-          onBlur() {
-            send({ type: "CONTENT.BLUR" });
-          },
-          onKeyDown(event) {
-            if (!interactive) return;
-            const target = getEventTarget(event);
-            if (!contains(event.currentTarget, getEventTarget(event))) return;
-            const shiftKey = event.shiftKey;
-            const keyMap2 = {
-              ArrowUp(event2) {
-                let nextValue = null;
-                if (isGridCollection(collection22) && highlightedValue) {
-                  nextValue = collection22.getPreviousRowValue(highlightedValue);
-                } else if (highlightedValue) {
-                  nextValue = collection22.getPreviousValue(highlightedValue);
-                }
-                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                  nextValue = collection22.lastValue;
-                }
-                if (!nextValue) return;
-                event2.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowDown(event2) {
-                let nextValue = null;
-                if (isGridCollection(collection22) && highlightedValue) {
-                  nextValue = collection22.getNextRowValue(highlightedValue);
-                } else if (highlightedValue) {
-                  nextValue = collection22.getNextValue(highlightedValue);
-                }
-                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                  nextValue = collection22.firstValue;
-                }
-                if (!nextValue) return;
-                event2.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowLeft() {
-                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
-                let nextValue = highlightedValue ? collection22.getPreviousValue(highlightedValue) : null;
-                if (!nextValue && prop("loopFocus")) {
-                  nextValue = collection22.lastValue;
-                }
-                if (!nextValue) return;
-                event.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              ArrowRight() {
-                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
-                let nextValue = highlightedValue ? collection22.getNextValue(highlightedValue) : null;
-                if (!nextValue && prop("loopFocus")) {
-                  nextValue = collection22.firstValue;
-                }
-                if (!nextValue) return;
-                event.preventDefault();
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              Home(event2) {
-                if (isEditableElement(target)) return;
-                event2.preventDefault();
-                let nextValue = collection22.firstValue;
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              End(event2) {
-                if (isEditableElement(target)) return;
-                event2.preventDefault();
-                let nextValue = collection22.lastValue;
-                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
-              },
-              Enter() {
-                send({ type: "ITEM.CLICK", value: highlightedValue });
-              },
-              a(event2) {
-                if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
-                  event2.preventDefault();
-                  send({ type: "VALUE.SET", value: collection22.getValues() });
-                }
-              },
-              Space(event2) {
-                var _a4;
-                if (isTypingAhead && prop("typeahead")) {
-                  send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
-                } else {
-                  (_a4 = keyMap2.Enter) == null ? void 0 : _a4.call(keyMap2, event2);
-                }
-              },
-              Escape(event2) {
-                if (prop("deselectable") && value.length > 0) {
-                  event2.preventDefault();
-                  event2.stopPropagation();
-                  send({ type: "VALUE.CLEAR" });
-                }
-              }
-            };
-            const exec = keyMap2[getEventKey(event)];
-            if (exec) {
-              exec(event);
-              return;
-            }
-            if (isEditableElement(target)) return;
-            if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
-              send({ type: "CONTENT.TYPEAHEAD", key: event.key });
-              event.preventDefault();
-            }
-          }
-        }));
-      }
-    };
-  }
-  function invokeOnSelect(current, next2, onSelect) {
-    const added = diff2(next2, current);
-    for (const item of added) {
-      onSelect == null ? void 0 : onSelect({ value: item });
-    }
-  }
-  function buildCollection(items, hasGroups) {
-    return collection2(zagListCollectionConfig(items, hasGroups));
-  }
   function listboxZagPropsBase(el, liveSocket, pushEvent) {
     const redirectOn = getBoolean(el, "redirect");
     return {
@@ -25794,463 +27124,18 @@ ${err}`);
       }
     };
   }
-  var anatomy15, parts15, collection2, gridCollection, getRootId13, getContentId7, getLabelId9, getItemId5, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine15, diff2, Listbox, ListboxHook;
+  var Listbox, ListboxHook;
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_OAGPTRUC();
+      init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy15 = createAnatomy("listbox").parts(
-        "label",
-        "input",
-        "item",
-        "itemText",
-        "itemIndicator",
-        "itemGroup",
-        "itemGroupLabel",
-        "content",
-        "root",
-        "valueText"
-      );
-      parts15 = anatomy15.build();
-      collection2 = (options) => {
-        return new ListCollection(options);
-      };
-      collection2.empty = () => {
-        return new ListCollection({ items: [] });
-      };
-      gridCollection = (options) => {
-        return new GridCollection(options);
-      };
-      gridCollection.empty = () => {
-        return new GridCollection({ items: [], columnCount: 0 });
-      };
-      getRootId13 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `listbox:${ctx.id}`;
-      };
-      getContentId7 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.content) != null ? _b : `listbox:${ctx.id}:content`;
-      };
-      getLabelId9 = (ctx) => {
-        var _a4, _b;
-        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `listbox:${ctx.id}:label`;
-      };
-      getItemId5 = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
-      };
-      getItemGroupId3 = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroup) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group:${id}`;
-      };
-      getItemGroupLabelId2 = (ctx, id) => {
-        var _a4, _b, _c;
-        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemGroupLabel) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
-      };
-      getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
-      getItemEl2 = (ctx, id) => ctx.getById(getItemId5(ctx, id));
-      ({ guards: guards2, createMachine: createMachine3 } = setup());
-      ({ or } = guards2);
-      machine15 = createMachine3({
-        props({ props }) {
-          return __spreadValues({
-            loopFocus: false,
-            composite: true,
-            defaultValue: [],
-            multiple: false,
-            typeahead: true,
-            collection: collection2.empty(),
-            orientation: "vertical",
-            selectionMode: "single"
-          }, props);
-        },
-        context({ prop, bindable: bindable2, getContext }) {
-          var _a4, _b;
-          const initialValue = (_b = (_a4 = prop("value")) != null ? _a4 : prop("defaultValue")) != null ? _b : [];
-          const initialSelectedItems = prop("collection").findMany(initialValue);
-          return {
-            value: bindable2(() => ({
-              defaultValue: prop("defaultValue"),
-              value: prop("value"),
-              isEqual,
-              onChange(value) {
-                var _a5, _b2;
-                const context = getContext();
-                const collection22 = prop("collection");
-                const selectedItemMap = context.get("selectedItemMap");
-                const proposed = deriveSelectionState({
-                  values: value,
-                  collection: collection22,
-                  selectedItemMap
-                });
-                const effectiveValue = (_a5 = prop("value")) != null ? _a5 : value;
-                const effective = effectiveValue === value ? proposed : deriveSelectionState({
-                  values: effectiveValue,
-                  collection: collection22,
-                  selectedItemMap: proposed.nextSelectedItemMap
-                });
-                context.set("selectedItemMap", effective.nextSelectedItemMap);
-                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
-              }
-            })),
-            highlightedValue: bindable2(() => ({
-              defaultValue: prop("defaultHighlightedValue") || null,
-              value: prop("highlightedValue"),
-              sync: true,
-              onChange(value) {
-                var _a5;
-                (_a5 = prop("onHighlightChange")) == null ? void 0 : _a5({
-                  highlightedValue: value,
-                  highlightedItem: prop("collection").find(value),
-                  highlightedIndex: prop("collection").indexOf(value)
-                });
-              }
-            })),
-            highlightedItem: bindable2(() => ({
-              defaultValue: null
-            })),
-            selectedItemMap: bindable2(() => {
-              return {
-                defaultValue: createSelectedItemMap({
-                  selectedItems: initialSelectedItems,
-                  collection: prop("collection")
-                })
-              };
-            }),
-            focused: bindable2(() => ({
-              sync: true,
-              defaultValue: false
-            }))
-          };
-        },
-        refs() {
-          return {
-            typeahead: __spreadValues({}, getByTypeahead.defaultOptions),
-            focusVisible: false,
-            inputState: { autoHighlight: false, focused: false }
-          };
-        },
-        computed: {
-          hasSelectedItems: ({ context }) => context.get("value").length > 0,
-          isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
-          isInteractive: ({ prop }) => !prop("disabled"),
-          selection: ({ context, prop }) => {
-            const selection = new Selection(context.get("value"));
-            selection.selectionMode = prop("selectionMode");
-            selection.deselectable = !!prop("deselectable");
-            return selection;
-          },
-          multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
-          selectedItems: ({ context, prop }) => resolveSelectedItems({
-            values: context.get("value"),
-            collection: prop("collection"),
-            selectedItemMap: context.get("selectedItemMap")
-          }),
-          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
-        },
-        initialState() {
-          return "idle";
-        },
-        watch({ context, prop, track, action }) {
-          track([() => context.get("value").toString()], () => {
-            action(["syncSelectedItems"]);
-          });
-          track([() => context.get("highlightedValue")], () => {
-            action(["syncHighlightedItem"]);
-          });
-          track([() => prop("collection").toString()], () => {
-            action(["syncHighlightedValue"]);
-          });
-        },
-        effects: ["trackFocusVisible"],
-        on: {
-          "HIGHLIGHTED_VALUE.SET": {
-            actions: ["setHighlightedItem"]
-          },
-          "ITEM.SELECT": {
-            actions: ["selectItem"]
-          },
-          "ITEM.CLEAR": {
-            actions: ["clearItem"]
-          },
-          "VALUE.SET": {
-            actions: ["setSelectedItems"]
-          },
-          "VALUE.CLEAR": {
-            actions: ["clearSelectedItems"]
-          },
-          "HIGHLIGHT.FIRST": {
-            actions: ["highlightFirstValue"]
-          },
-          "HIGHLIGHT.LAST": {
-            actions: ["highlightLastValue"]
-          },
-          "HIGHLIGHT.NEXT": {
-            actions: ["highlightNextValue"]
-          },
-          "HIGHLIGHT.PREV": {
-            actions: ["highlightPreviousValue"]
-          }
-        },
-        states: {
-          idle: {
-            effects: ["scrollToHighlightedItem"],
-            on: {
-              "INPUT.FOCUS": {
-                actions: ["setFocused", "setInputState"]
-              },
-              "CONTENT.FOCUS": [
-                {
-                  guard: or("hasSelectedValue", "hasHighlightedValue"),
-                  actions: ["setFocused"]
-                },
-                {
-                  actions: ["setFocused", "setDefaultHighlightedValue"]
-                }
-              ],
-              "CONTENT.BLUR": {
-                actions: ["clearFocused", "clearInputState"]
-              },
-              "ITEM.CLICK": {
-                actions: ["setHighlightedItem", "selectHighlightedItem"]
-              },
-              "CONTENT.TYPEAHEAD": {
-                actions: ["setFocused", "highlightMatchingItem"]
-              },
-              "ITEM.POINTER_MOVE": {
-                actions: ["highlightItem"]
-              },
-              "ITEM.POINTER_LEAVE": {
-                actions: ["clearHighlightedItem"]
-              },
-              NAVIGATE: {
-                actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
-              }
-            }
-          }
-        },
-        implementations: {
-          guards: {
-            hasSelectedValue: ({ context }) => context.get("value").length > 0,
-            hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
-          },
-          effects: {
-            trackFocusVisible: ({ scope, refs }) => {
-              var _a4;
-              return trackFocusVisible({
-                root: (_a4 = scope.getRootNode) == null ? void 0 : _a4.call(scope),
-                onChange(details) {
-                  refs.set("focusVisible", details.isFocusVisible);
-                }
-              });
-            },
-            scrollToHighlightedItem({ context, prop, scope }) {
-              const exec = (immediate) => {
-                const highlightedValue = context.get("highlightedValue");
-                if (highlightedValue == null) return;
-                const modality = getInteractionModality();
-                if (modality === "pointer") return;
-                const contentEl2 = getContentEl7(scope);
-                const scrollToIndexFn = prop("scrollToIndexFn");
-                if (scrollToIndexFn) {
-                  const highlightedIndex = prop("collection").indexOf(highlightedValue);
-                  scrollToIndexFn == null ? void 0 : scrollToIndexFn({
-                    index: highlightedIndex,
-                    immediate,
-                    getElement() {
-                      return getItemEl2(scope, highlightedValue);
-                    }
-                  });
-                  return;
-                }
-                const itemEl = getItemEl2(scope, highlightedValue);
-                scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
-              };
-              raf(() => {
-                setInteractionModality("virtual");
-                exec(true);
-              });
-              const contentEl = () => getContentEl7(scope);
-              return observeAttributes(contentEl, {
-                defer: true,
-                attributes: ["data-activedescendant"],
-                callback() {
-                  exec(false);
-                }
-              });
-            }
-          },
-          actions: {
-            selectHighlightedItem({ context, prop, event, computed }) {
-              var _a4;
-              const value = (_a4 = event.value) != null ? _a4 : context.get("highlightedValue");
-              const collection22 = prop("collection");
-              if (value == null || !collection22.has(value)) return;
-              const selection = computed("selection");
-              if (event.shiftKey && computed("multiple") && event.anchorValue) {
-                const next2 = selection.extendSelection(collection22, event.anchorValue, value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              } else {
-                const next2 = selection.select(collection22, value, event.metaKey);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              }
-            },
-            selectWithKeyboard({ context, prop, event, computed }) {
-              const selection = computed("selection");
-              const collection22 = prop("collection");
-              if (event.shiftKey && computed("multiple") && event.anchorValue) {
-                const next2 = selection.extendSelection(collection22, event.anchorValue, event.value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-                return;
-              }
-              if (prop("selectOnHighlight")) {
-                const next2 = selection.replaceSelection(collection22, event.value);
-                invokeOnSelect(selection, next2, prop("onSelect"));
-                context.set("value", Array.from(next2));
-              }
-            },
-            highlightItem({ context, event }) {
-              context.set("highlightedValue", event.value);
-            },
-            highlightMatchingItem({ context, prop, event, refs }) {
-              const value = prop("collection").search(event.key, {
-                state: refs.get("typeahead"),
-                currentValue: context.get("highlightedValue")
-              });
-              if (value == null) return;
-              context.set("highlightedValue", value);
-            },
-            setHighlightedItem({ context, event }) {
-              context.set("highlightedValue", event.value);
-            },
-            highlightFirstValue({ context, prop }) {
-              var _a4;
-              context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
-            },
-            highlightLastValue({ context, prop }) {
-              var _a4;
-              context.set("highlightedValue", (_a4 = prop("collection").lastValue) != null ? _a4 : null);
-            },
-            highlightNextValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              let nextValue = null;
-              if (isGridCollection(collection22) && highlightedValue) {
-                nextValue = collection22.getNextRowValue(highlightedValue);
-              } else if (highlightedValue) {
-                nextValue = collection22.getNextValue(highlightedValue);
-              }
-              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                nextValue = collection22.firstValue;
-              }
-              if (!nextValue) return;
-              context.set("highlightedValue", nextValue);
-            },
-            highlightPreviousValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              let nextValue = null;
-              if (isGridCollection(collection22) && highlightedValue) {
-                nextValue = collection22.getPreviousRowValue(highlightedValue);
-              } else if (highlightedValue) {
-                nextValue = collection22.getPreviousValue(highlightedValue);
-              }
-              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
-                nextValue = collection22.lastValue;
-              }
-              if (!nextValue) return;
-              context.set("highlightedValue", nextValue);
-            },
-            clearHighlightedItem({ context }) {
-              context.set("highlightedValue", null);
-            },
-            selectItem({ context, prop, event, computed }) {
-              const collection22 = prop("collection");
-              const selection = computed("selection");
-              const next2 = selection.select(collection22, event.value);
-              invokeOnSelect(selection, next2, prop("onSelect"));
-              context.set("value", Array.from(next2));
-            },
-            clearItem({ context, event, computed }) {
-              const selection = computed("selection");
-              const value = selection.deselect(event.value);
-              context.set("value", Array.from(value));
-            },
-            setSelectedItems({ context, event }) {
-              context.set("value", event.value);
-            },
-            clearSelectedItems({ context }) {
-              context.set("value", []);
-            },
-            syncSelectedItems({ context, prop }) {
-              const next2 = deriveSelectionState({
-                values: context.get("value"),
-                collection: prop("collection"),
-                selectedItemMap: context.get("selectedItemMap")
-              });
-              context.set("selectedItemMap", next2.nextSelectedItemMap);
-            },
-            syncHighlightedItem({ context, prop }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
-              context.set("highlightedItem", highlightedItem);
-            },
-            syncHighlightedValue({ context, prop, refs }) {
-              const collection22 = prop("collection");
-              const highlightedValue = context.get("highlightedValue");
-              const { autoHighlight } = refs.get("inputState");
-              if (autoHighlight) {
-                queueMicrotask(() => {
-                  var _a4;
-                  context.set("highlightedValue", (_a4 = prop("collection").firstValue) != null ? _a4 : null);
-                });
-                return;
-              }
-              if (highlightedValue != null && !collection22.has(highlightedValue)) {
-                queueMicrotask(() => {
-                  context.set("highlightedValue", null);
-                });
-              }
-            },
-            setFocused({ context }) {
-              context.set("focused", true);
-            },
-            setDefaultHighlightedValue({ context, prop }) {
-              const collection22 = prop("collection");
-              const firstValue = collection22.firstValue;
-              if (firstValue != null) {
-                context.set("highlightedValue", firstValue);
-              }
-            },
-            clearFocused({ context }) {
-              context.set("focused", false);
-            },
-            setInputState({ refs, event }) {
-              refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
-            },
-            clearInputState({ refs }) {
-              refs.set("inputState", { autoHighlight: false, focused: false });
-            }
-          }
-        }
-      });
-      diff2 = (a2, b2) => {
-        const result = new Set(a2);
-        for (const item of b2) result.delete(item);
-        return result;
-      };
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       Listbox = class extends Component {
         constructor(el, props) {
           var _a4;
@@ -26267,19 +27152,19 @@ ${err}`);
           this._options = Array.isArray(options) ? options : [];
         }
         getCollection() {
-          return collection2(zagListCollectionConfig(this.options, this.hasGroups));
+          return collection(zagListCollectionConfig(this.options, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine15, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             }
           }));
         }
         initApi() {
-          return this.zagConnect(connect15);
+          return this.zagConnect(connect8);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -26393,7 +27278,7 @@ ${err}`);
           this.listbox.setOptions(newItems);
           this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
             collection: this.listbox.getCollection()
-          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
+          }), readStringListControlledZagUpdate(this.el, "value", "defaultValue")));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -26408,7 +27293,8 @@ ${err}`);
   // ../priv/static/marquee.mjs
   var marquee_exports = {};
   __export(marquee_exports, {
-    Marquee: () => MarqueeHook
+    Marquee: () => MarqueeHook,
+    readMarqueeProps: () => readMarqueeProps
   });
   function connect16(service, normalize) {
     const { scope, send, context, computed, prop } = service;
@@ -26584,8 +27470,8 @@ ${err}`);
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy16 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts16 = anatomy16.build();
       dom = {
@@ -27001,7 +27887,8 @@ ${err}`);
   // ../priv/static/menu.mjs
   var menu_exports = {};
   __export(menu_exports, {
-    Menu: () => MenuHook
+    Menu: () => MenuHook,
+    findImmediateParentMenuHookEl: () => findImmediateParentMenuHookEl
   });
   function mergeProps(...args) {
     let result = {};
@@ -27600,14 +28487,15 @@ ${err}`);
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
-      init_chunk_FOQSALVP();
       init_chunk_QB2YSZP6();
-      init_chunk_CTFBPAMI();
-      init_chunk_EE44DOTL();
+      init_chunk_EPNQR235();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_VJGUNSK5();
+      init_chunk_FOQSALVP();
+      init_chunk_V4PB2O2G();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy17 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -28718,10 +29606,16 @@ ${err}`);
                 '[data-scope="menu"][data-part="item-group"]'
               );
               itemGroups.forEach((groupEl) => {
+                var _a4;
                 if (!this.isOwnElement(groupEl)) return;
-                const groupId = groupEl.id;
-                if (groupId) {
-                  this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+                const groupId = (_a4 = groupEl.dataset.id) != null ? _a4 : "";
+                if (!groupId) return;
+                this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+                const labelEl = groupEl.querySelector(
+                  '[data-scope="menu"][data-part="item-group-label"]'
+                );
+                if (labelEl) {
+                  this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
                 }
               });
               const separators = contentEl.querySelectorAll(
@@ -28750,32 +29644,24 @@ ${err}`);
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
           const buildOnSelect = () => (details) => {
-            var _a4, _b;
+            var _a4;
             if (getBoolean(el, "redirect") && details.value) {
               const itemEl = el.querySelector(
                 `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
               );
               performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
             }
-            const eventName = getString(el, "onSelect");
-            if (eventName && canPushEvent(liveSocket)) {
-              pushEvent(eventName, {
+            notifyChange({
+              el,
+              canPushServer: canPushEvent(liveSocket),
+              pushEvent,
+              payload: {
                 id: el.id,
                 value: (_a4 = details.value) != null ? _a4 : null
-              });
-            }
-            const eventNameClient = getString(el, "onSelectClient");
-            if (eventNameClient) {
-              el.dispatchEvent(
-                new CustomEvent(eventNameClient, {
-                  bubbles: true,
-                  detail: {
-                    id: el.id,
-                    value: (_b = details.value) != null ? _b : null
-                  }
-                })
-              );
-            }
+              },
+              serverEventName: getString(el, "onSelect"),
+              clientEventName: getString(el, "onSelectClient")
+            });
           };
           const menu = new Menu(el, {
             id: el.id.replace(/^menu:/, ""),
@@ -28788,26 +29674,18 @@ ${err}`);
             positioning: readPositioningOptions(el),
             onSelect: buildOnSelect(),
             onOpenChange: (details) => {
-              var _a4, _b;
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && canPushEvent(liveSocket)) {
-                pushEvent(eventName, {
+              var _a4;
+              notifyChange({
+                el,
+                canPushServer: canPushEvent(liveSocket),
+                pushEvent,
+                payload: {
                   id: el.id,
                   open: (_a4 = details.open) != null ? _a4 : false
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: (_b = details.open) != null ? _b : false
-                    }
-                  })
-                );
-              }
+                },
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
             }
           });
           menu.init();
@@ -28900,7 +29778,10 @@ ${err}`);
   // ../priv/static/number-input.mjs
   var number_input_exports = {};
   __export(number_input_exports, {
-    NumberInput: () => NumberInputHook
+    NumberInput: () => NumberInputHook,
+    buildMachineProps: () => buildMachineProps,
+    machineState: () => machineState,
+    syncNumberInputValueInput: () => syncNumberInputValueInput
   });
   function recordCursor(inputEl, scope) {
     if (!inputEl || !scope.isActiveElement(inputEl)) return;
@@ -29363,14 +30244,134 @@ ${err}`);
   function $6c7bd7858deea686$var$escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
+  function machineState(api) {
+    return {
+      focused: api.focused,
+      invalid: api.invalid,
+      empty: api.empty,
+      value: api.value,
+      valueAsNumber: api.valueAsNumber
+    };
+  }
+  function submitValueForHost(el, valueAsNumber) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
+    return formatSubmitValue(valueAsNumber, step);
+  }
+  function canonicalDatasetValue(el) {
+    var _a4, _b;
+    return (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "";
+  }
+  function hiddenSubmitValue(el, displayValue, valueAsNumber) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+      return submitValueForHost(el, valueAsNumber);
+    }
+    const canonical = canonicalDatasetValue(el);
+    if (canonical !== "") {
+      return formatSubmitValue(canonical, step);
+    }
+    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "");
+    if (stripped === "") return "";
+    return formatSubmitValue(stripped, step);
+  }
+  function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
+    const valueInput = el.querySelector(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    const v2 = hiddenSubmitValue(el, value, valueAsNumber);
+    const changed = valueInput.value !== v2;
+    if (changed) valueInput.value = v2;
+    syncInputFormAssociation(valueInput, el);
+    if (notifyForm && (changed || v2 !== "")) {
+      reapplyLiveViewValueInputUsage(valueInput);
+      valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+      valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+  function setZagValue(zag, value) {
+    var _a4;
+    const step = (_a4 = getNumber(zag.el, "step")) != null ? _a4 : 1;
+    if (typeof value === "number") {
+      if (Number.isNaN(value)) return;
+      zag.machine.service.send({
+        type: "VALUE.SET",
+        value: formatDisplayValue(value, step)
+      });
+      return;
+    }
+    const trimmed = value.trim();
+    if (trimmed === "") return;
+    zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
+  }
+  function buildMachineProps(el, pushEvent, canPush) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    return __spreadProps(__spreadValues({
+      id: el.id
+    }, mountNumberBinding(el)), {
+      min: getNumber(el, "min"),
+      max: getNumber(el, "max"),
+      step,
+      formatOptions: mergeFormatOptions(step),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readonly"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+      dir: getDir(el),
+      onValueChange: (details) => {
+        var _a5;
+        if (details.value !== void 0) {
+          syncNumberInputValueInput(el, (_a5 = details.value) != null ? _a5 : "", true, details.valueAsNumber);
+        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            valueAsNumber: details.valueAsNumber
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      }
+    });
+  }
+  function numberInputPropsForUpdate(el) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    return {
+      id: el.id,
+      min: getNumber(el, "min"),
+      max: getNumber(el, "max"),
+      step,
+      formatOptions: mergeFormatOptions(step),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readonly"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+      dir: getDir(el)
+    };
+  }
   var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
+      init_chunk_RNYQBUAX();
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
       anatomy18 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -30181,7 +31182,7 @@ ${err}`);
           return this.zagConnect(connect18);
         }
         render() {
-          var _a4;
+          var _a4, _b, _c, _d, _e;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="number-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -30199,7 +31200,16 @@ ${err}`);
           const inputEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="input"]'
           );
-          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          if (inputEl instanceof HTMLInputElement) {
+            const visibleProps = __spreadValues({}, this.api.getInputProps());
+            delete visibleProps.name;
+            delete visibleProps.form;
+            this.spreadProps(inputEl, visibleProps);
+            const formatted = (_b = this.api.value) != null ? _b : "";
+            if (inputEl.value !== formatted) {
+              inputEl.value = formatted;
+            }
+          }
           const decrementEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="decrement-trigger"]'
           );
@@ -30208,82 +31218,854 @@ ${err}`);
             '[data-scope="number-input"][data-part="increment-trigger"]'
           );
           if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+          const valueInputEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInputEl instanceof HTMLInputElement) {
+            const step = (_c = getNumber(this.el, "step")) != null ? _c : 1;
+            const n2 = this.api.valueAsNumber;
+            const canonical = (_e = (_d = getString(this.el, "value")) != null ? _d : getString(this.el, "defaultValue")) != null ? _e : "";
+            const submit = Number.isFinite(n2) && !Number.isNaN(n2) ? formatSubmitValue(n2, step) : canonical;
+            syncHiddenInputValue(
+              valueInputEl,
+              this.el,
+              submit,
+              (el, props) => this.spreadProps(el, props),
+              {}
+            );
+          }
         }
       };
       NumberInputHook = {
         mounted() {
-          var _a4;
+          var _a4, _b, _c;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const controlled = getBoolean(el, "controlled");
-          const zag = new NumberInput(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, controlled ? { value: (_a4 = getString(el, "value")) != null ? _a4 : "" } : { defaultValue: getString(el, "defaultValue") }), {
-            min: getNumber(el, "min"),
-            max: getNumber(el, "max"),
-            step: getNumber(el, "step"),
-            disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readOnly"),
-            invalid: getBoolean(el, "invalid"),
-            required: getBoolean(el, "required"),
-            allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
-            dir: getDir(el),
-            onValueChange: (details) => {
-              var _a5;
-              if (details.value !== void 0) {
-                const valueInput = el.querySelector(
-                  '[data-scope="number-input"][data-part="value-input"]'
-                );
-                if (valueInput) {
-                  valueInput.value = (_a5 = details.value) != null ? _a5 : "";
-                  valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-                  valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
-              notifyChange({
-                el,
-                canPushServer: canPush(),
-                pushEvent,
-                payload: {
-                  id: el.id,
-                  value: details.value,
-                  valueAsNumber: details.valueAsNumber
-                },
-                serverEventName: getString(el, "onValueChange"),
-                clientEventName: getString(el, "onValueChangeClient")
-              });
-            }
-          }));
+          const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
           zag.init();
           this.numberInput = zag;
+          this.lastServerValue = (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : void 0;
+          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+          syncNumberInputValueInput(el, (_c = zag.api.value) != null ? _c : "", true, zag.api.valueAsNumber);
+          const valueInput = el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            queueLiveViewFormInputSync(valueInput, () => initialSubmit);
+          }
+          const emitState = (respondTo) => {
+            const snapshot2 = machineState(zag.api);
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "number_input_state_response",
+              serverPayload: __spreadValues({ id: el.id }, snapshot2),
+              el,
+              domEventName: "number-input-state",
+              domDetail: __spreadValues({ id: el.id }, snapshot2)
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add(
+            "corex:number-input:set-value",
+            (event) => {
+              var _a5;
+              const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
+              if (typeof v2 === "number" && !Number.isNaN(v2)) setZagValue(zag, v2);
+              else if (typeof v2 === "string") setZagValue(zag, v2);
+            }
+          );
+          domRegistry.add("corex:number-input:clear-value", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:number-input:increment", () => {
+            zag.api.increment();
+          });
+          domRegistry.add("corex:number-input:decrement", () => {
+            zag.api.decrement();
+          });
+          domRegistry.add("corex:number-input:set-to-min", () => {
+            zag.api.setToMin();
+          });
+          domRegistry.add("corex:number-input:set-to-max", () => {
+            zag.api.setToMax();
+          });
+          domRegistry.add("corex:number-input:focus", () => {
+            zag.api.focus();
+          });
+          domRegistry.add("corex:number-input:state", (event) => {
+            emitState(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("number_input_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
+              setZagValue(zag, payload.value);
+            }
+          });
+          registry.add("number_input_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("number_input_increment", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.increment();
+          });
+          registry.add("number_input_decrement", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.decrement();
+          });
+          registry.add("number_input_set_to_min", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setToMin();
+          });
+          registry.add("number_input_set_to_max", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setToMax();
+          });
+          registry.add("number_input_focus", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.focus();
+          });
+          registry.add("number_input_state", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitState(parseRespondTo(payload));
+          });
         },
         updated() {
-          var _a4, _b;
-          const next2 = {
-            id: this.el.id,
-            min: getNumber(this.el, "min"),
-            max: getNumber(this.el, "max"),
-            step: getNumber(this.el, "step"),
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            allowMouseWheel: getBoolean(this.el, "allowMouseWheel"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            dir: getDir(this.el)
-          };
-          if (getBoolean(this.el, "controlled")) {
-            next2.value = (_a4 = getString(this.el, "value")) != null ? _a4 : "";
+          const el = this.el;
+          const zag = this.numberInput;
+          const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
+          if (valuePatch.nextServerValue !== void 0) {
+            this.lastServerValue = valuePatch.nextServerValue;
           }
-          (_b = this.numberInput) == null ? void 0 : _b.updateProps(next2);
+          const zagPatch = __spreadValues({}, valuePatch);
+          delete zagPatch.nextServerValue;
+          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), zagPatch));
+          queueMicrotask(() => {
+            var _a4, _b, _c;
+            if (zag && "value" in zagPatch) {
+              syncNumberInputValueInput(el, String((_a4 = zagPatch.value) != null ? _a4 : ""), false, zag.api.valueAsNumber);
+            } else if (zag) {
+              syncNumberInputValueInput(
+                el,
+                (_c = (_b = zag.api.value) != null ? _b : getString(el, "defaultValue")) != null ? _c : "",
+                false,
+                zag.api.valueAsNumber
+              );
+            }
+            const visible = el.querySelector(
+              '[data-scope="number-input"][data-part="input"]'
+            );
+            if (visible) {
+              if (!getBoolean(el, "readonly")) {
+                visible.readOnly = false;
+                visible.removeAttribute("readonly");
+              }
+              if (!getBoolean(el, "disabled")) {
+                visible.disabled = false;
+                visible.removeAttribute("disabled");
+              }
+            }
+            const triggers = el.querySelectorAll(
+              '[data-scope="number-input"][data-part="increment-trigger"], [data-scope="number-input"][data-part="decrement-trigger"]'
+            );
+            triggers.forEach((trigger) => {
+              if (trigger.hasAttribute("data-disabled")) return;
+              trigger.disabled = false;
+              trigger.removeAttribute("disabled");
+            });
+          });
         },
         destroyed() {
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.numberInput) == null ? void 0 : _c.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/pagination.mjs
+  var pagination_exports = {};
+  __export(pagination_exports, {
+    Pagination: () => PaginationHook,
+    readPayloadPage: () => readPayloadPage,
+    readPayloadPageSize: () => readPayloadPageSize
+  });
+  function connect19(service, normalize) {
+    const { send, scope, prop, computed, context } = service;
+    const totalPages = computed("totalPages");
+    const page = context.get("page");
+    const pageSize = context.get("pageSize");
+    const translations = prop("translations");
+    const count = prop("count");
+    const getPageUrl = prop("getPageUrl");
+    const type = prop("type");
+    const previousPage = computed("previousPage");
+    const nextPage = computed("nextPage");
+    const pageRange = computed("pageRange");
+    const isFirstPage = page === 1;
+    const isLastPage = page >= totalPages;
+    const pages = getTransformedRange({
+      page,
+      totalPages,
+      siblingCount: prop("siblingCount"),
+      boundaryCount: prop("boundaryCount")
+    });
+    return {
+      count,
+      page,
+      pageSize,
+      totalPages,
+      pages,
+      previousPage,
+      nextPage,
+      pageRange,
+      slice(data) {
+        return data.slice(pageRange.start, pageRange.end);
+      },
+      setPageSize(size3) {
+        send({ type: "SET_PAGE_SIZE", size: size3 });
+      },
+      setPage(page2) {
+        send({ type: "SET_PAGE", page: page2 });
+      },
+      goToNextPage() {
+        send({ type: "NEXT_PAGE" });
+      },
+      goToPrevPage() {
+        send({ type: "PREVIOUS_PAGE" });
+      },
+      goToFirstPage() {
+        send({ type: "FIRST_PAGE" });
+      },
+      goToLastPage() {
+        send({ type: "LAST_PAGE" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getRootId15(scope)
+        }, parts19.root.attrs), {
+          dir: prop("dir"),
+          "aria-label": translations.rootLabel
+        }));
+      },
+      getEllipsisProps(props) {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getEllipsisId(scope, props.index)
+        }, parts19.ellipsis.attrs), {
+          dir: prop("dir")
+        }));
+      },
+      getItemProps(props) {
+        var _a4;
+        const index = props.value;
+        const isCurrentPage = index === page;
+        return normalize.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          id: getItemId7(scope, index)
+        }, parts19.item.attrs), {
+          dir: prop("dir"),
+          "data-index": index,
+          "data-selected": dataAttr(isCurrentPage),
+          "aria-current": isCurrentPage ? "page" : void 0,
+          "aria-label": (_a4 = translations.itemLabel) == null ? void 0 : _a4.call(translations, { page: index, totalPages }),
+          onClick() {
+            send({ type: "SET_PAGE", page: index });
+          }
+        }), type === "button" && { type: "button" }), type === "link" && getPageUrl && {
+          href: getPageUrl({ page: index, pageSize })
+        }));
+      },
+      getPrevTriggerProps() {
+        return normalize.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          id: getPrevTriggerId3(scope)
+        }, parts19.prevTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(isFirstPage),
+          "aria-label": translations.prevTriggerLabel,
+          onClick() {
+            send({ type: "PREVIOUS_PAGE" });
+          }
+        }), type === "button" && { disabled: isFirstPage, type: "button" }), type === "link" && getPageUrl && previousPage && {
+          href: getPageUrl({ page: previousPage, pageSize })
+        }));
+      },
+      getFirstTriggerProps() {
+        return normalize.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          id: getFirstTriggerId(scope)
+        }, parts19.firstTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(isFirstPage),
+          "aria-label": translations.firstTriggerLabel,
+          onClick() {
+            send({ type: "FIRST_PAGE" });
+          }
+        }), type === "button" && { disabled: isFirstPage, type: "button" }), type === "link" && getPageUrl && {
+          href: getPageUrl({ page: 1, pageSize })
+        }));
+      },
+      getNextTriggerProps() {
+        return normalize.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          id: getNextTriggerId3(scope)
+        }, parts19.nextTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(isLastPage),
+          "aria-label": translations.nextTriggerLabel,
+          onClick() {
+            send({ type: "NEXT_PAGE" });
+          }
+        }), type === "button" && { disabled: isLastPage, type: "button" }), type === "link" && getPageUrl && nextPage && {
+          href: getPageUrl({ page: nextPage, pageSize })
+        }));
+      },
+      getLastTriggerProps() {
+        return normalize.element(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
+          id: getLastTriggerId(scope)
+        }, parts19.lastTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(isLastPage),
+          "aria-label": translations.lastTriggerLabel,
+          onClick() {
+            send({ type: "LAST_PAGE" });
+          }
+        }), type === "button" && { disabled: isLastPage, type: "button" }), type === "link" && getPageUrl && {
+          href: getPageUrl({ page: totalPages, pageSize })
+        }));
+      }
+    };
+  }
+  function uniquePaginationTranslations(el, translations) {
+    var _a4;
+    const label = ((_a4 = translations == null ? void 0 : translations.rootLabel) == null ? void 0 : _a4.trim()) || "Pagination";
+    return __spreadProps(__spreadValues({}, translations), {
+      rootLabel: `${label} (${el.id})`
+    });
+  }
+  function parsePaginationTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) return void 0;
+    try {
+      const o2 = JSON.parse(raw);
+      const translations = {};
+      if (typeof o2.rootLabel === "string" && o2.rootLabel.length > 0) {
+        translations.rootLabel = o2.rootLabel;
+      }
+      if (typeof o2.prevTriggerLabel === "string" && o2.prevTriggerLabel.length > 0) {
+        translations.prevTriggerLabel = o2.prevTriggerLabel;
+      }
+      if (typeof o2.nextTriggerLabel === "string" && o2.nextTriggerLabel.length > 0) {
+        translations.nextTriggerLabel = o2.nextTriggerLabel;
+      }
+      if (typeof o2.itemLabel === "string" && o2.itemLabel.length > 0) {
+        const tpl = o2.itemLabel;
+        translations.itemLabel = (details) => tpl.replace("%{page}", String(details.page)).replace("%{total_pages}", String(details.totalPages));
+      }
+      return Object.keys(translations).length > 0 ? translations : void 0;
+    } catch (e2) {
+      return void 0;
+    }
+  }
+  function applyPhoenixLinkAttrs(rootEl, anchorEl) {
+    if (getString(rootEl, "type") !== "link") return;
+    if (anchorEl.tagName !== "A") return;
+    const redirect = getString(rootEl, "redirect", ["href", "patch", "navigate"]);
+    if (redirect === "patch") {
+      anchorEl.setAttribute("data-phx-link", "patch");
+      anchorEl.setAttribute("data-phx-link-state", "push");
+    } else if (redirect === "navigate") {
+      anchorEl.setAttribute("data-phx-link", "redirect");
+      anchorEl.setAttribute("data-phx-link-state", "push");
+    } else {
+      anchorEl.removeAttribute("data-phx-link");
+      anchorEl.removeAttribute("data-phx-link-state");
+    }
+  }
+  function applyPhoenixLinkAttrsToNavigableParts(rootEl) {
+    const selectors = [
+      '[data-scope="pagination"][data-part="item"]',
+      '[data-scope="pagination"][data-part="prev-trigger"]',
+      '[data-scope="pagination"][data-part="next-trigger"]'
+    ];
+    for (const selector of selectors) {
+      rootEl.querySelectorAll(selector).forEach((el) => {
+        applyPhoenixLinkAttrs(rootEl, el);
+      });
+    }
+  }
+  function buildGetPageUrl(el) {
+    var _a4, _b;
+    const triggerType = getString(el, "type");
+    const base = el.dataset.to;
+    if (triggerType !== "link" || !base) return void 0;
+    const pageParam = (_a4 = el.dataset.pageParam) != null ? _a4 : "page";
+    const pageSizeParam = (_b = el.dataset.pageSizeParam) != null ? _b : "page_size";
+    return ({ page, pageSize }) => {
+      const sep = base.includes("?") ? "&" : "?";
+      return `${base}${sep}${encodeURIComponent(pageParam)}=${page}&${encodeURIComponent(pageSizeParam)}=${pageSize}`;
+    };
+  }
+  function readPayloadPage(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const page = (_a4 = o2.page) != null ? _a4 : o2["page"];
+    return typeof page === "number" ? page : void 0;
+  }
+  function readPayloadPageSize(payload) {
+    var _a4, _b;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const pageSize = (_b = (_a4 = o2.page_size) != null ? _a4 : o2.pageSize) != null ? _b : o2["page_size"];
+    return typeof pageSize === "number" ? pageSize : void 0;
+  }
+  function paginationPropsBase(el, pushEvent, canPush) {
+    var _a4, _b;
+    const triggerType = (_a4 = getString(el, "type", ["button", "link"])) != null ? _a4 : "button";
+    const count = (_b = getNumber(el, "count")) != null ? _b : 0;
+    return {
+      id: el.id,
+      count,
+      siblingCount: getNumber(el, "siblingCount"),
+      boundaryCount: getNumber(el, "boundaryCount"),
+      dir: getDir(el),
+      type: triggerType,
+      translations: uniquePaginationTranslations(el, parsePaginationTranslations(el)),
+      getPageUrl: buildGetPageUrl(el),
+      onPageChange: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, page: details.page, page_size: details.pageSize },
+          serverEventName: getString(el, "onPageChange"),
+          clientEventName: getString(el, "onPageChangeClient")
+        });
+      },
+      onPageSizeChange: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, page_size: details.pageSize },
+          serverEventName: getString(el, "onPageSizeChange"),
+          clientEventName: getString(el, "onPageSizeChangeClient")
+        });
+      }
+    };
+  }
+  function buildPaginationProps(el, pushEvent, canPush) {
+    var _a4, _b;
+    const controlled = getBoolean(el, "controlled");
+    const controlledPageSize = getBoolean(el, "controlledPageSize");
+    return __spreadValues(__spreadValues(__spreadValues({}, paginationPropsBase(el, pushEvent, canPush)), controlled ? { page: getNumber(el, "page") } : { defaultPage: (_a4 = getNumber(el, "defaultPage")) != null ? _a4 : getNumber(el, "page") }), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {
+      defaultPageSize: (_b = getNumber(el, "defaultPageSize")) != null ? _b : getNumber(el, "pageSize")
+    });
+  }
+  function buildPaginationPropsForUpdate(el, pushEvent, canPush) {
+    const controlled = getBoolean(el, "controlled");
+    const controlledPageSize = getBoolean(el, "controlledPageSize");
+    const base = paginationPropsBase(el, pushEvent, canPush);
+    delete base.onPageChange;
+    delete base.onPageSizeChange;
+    return __spreadValues(__spreadValues(__spreadValues({}, base), controlled ? { page: getNumber(el, "page") } : {}), controlledPageSize ? { pageSize: getNumber(el, "pageSize") } : {});
+  }
+  var anatomy19, parts19, getRootId15, getFirstTriggerId, getPrevTriggerId3, getNextTriggerId3, getLastTriggerId, getEllipsisId, getItemId7, range, transform, ELLIPSIS, getRange, getTransformedRange, machine19, clampPage, Pagination, PaginationHook;
+  var init_pagination = __esm({
+    "../priv/static/pagination.mjs"() {
+      "use strict";
+      init_chunk_RNYQBUAX();
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy19 = createAnatomy("pagination").parts(
+        "root",
+        "item",
+        "ellipsis",
+        "firstTrigger",
+        "prevTrigger",
+        "nextTrigger",
+        "lastTrigger"
+      );
+      parts19 = anatomy19.build();
+      getRootId15 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `pagination:${ctx.id}`;
+      };
+      getFirstTriggerId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.firstTrigger) != null ? _b : `pagination:${ctx.id}:first`;
+      };
+      getPrevTriggerId3 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.prevTrigger) != null ? _b : `pagination:${ctx.id}:prev`;
+      };
+      getNextTriggerId3 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.nextTrigger) != null ? _b : `pagination:${ctx.id}:next`;
+      };
+      getLastTriggerId = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.lastTrigger) != null ? _b : `pagination:${ctx.id}:last`;
+      };
+      getEllipsisId = (ctx, index) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.ellipsis) == null ? void 0 : _b.call(_a4, index)) != null ? _c : `pagination:${ctx.id}:ellipsis:${index}`;
+      };
+      getItemId7 = (ctx, page) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, page)) != null ? _c : `pagination:${ctx.id}:item:${page}`;
+      };
+      range = (start, end) => {
+        let length = end - start + 1;
+        return Array.from({ length }, (_2, idx) => idx + start);
+      };
+      transform = (items) => {
+        return items.map((value) => {
+          if (isNumber(value)) return { type: "page", value };
+          return { type: "ellipsis" };
+        });
+      };
+      ELLIPSIS = "ellipsis";
+      getRange = (ctx) => {
+        const { page, totalPages, siblingCount, boundaryCount = 1 } = ctx;
+        if (totalPages <= 0) return [];
+        if (totalPages === 1) return [1];
+        const firstPageIndex = 1;
+        const lastPageIndex = totalPages;
+        const leftSiblingIndex = Math.max(page - siblingCount, firstPageIndex);
+        const rightSiblingIndex = Math.min(page + siblingCount, lastPageIndex);
+        const totalPageNumbers = Math.min(siblingCount * 2 + 3 + boundaryCount * 2, totalPages);
+        if (totalPages <= totalPageNumbers) {
+          return range(firstPageIndex, lastPageIndex);
+        }
+        const itemCount = totalPageNumbers - 1 - boundaryCount;
+        const showLeftEllipsis = leftSiblingIndex > firstPageIndex + boundaryCount + 1 && Math.abs(leftSiblingIndex - firstPageIndex) > boundaryCount + 1;
+        const showRightEllipsis = rightSiblingIndex < lastPageIndex - boundaryCount - 1 && Math.abs(lastPageIndex - rightSiblingIndex) > boundaryCount + 1;
+        let pages = [];
+        if (!showLeftEllipsis && showRightEllipsis) {
+          const leftRange = range(1, itemCount);
+          pages.push(...leftRange, ELLIPSIS);
+          pages.push(...range(lastPageIndex - boundaryCount + 1, lastPageIndex));
+        } else if (showLeftEllipsis && !showRightEllipsis) {
+          pages.push(...range(firstPageIndex, firstPageIndex + boundaryCount - 1));
+          pages.push(ELLIPSIS);
+          const rightRange = range(lastPageIndex - itemCount + 1, lastPageIndex);
+          pages.push(...rightRange);
+        } else if (showLeftEllipsis && showRightEllipsis) {
+          pages.push(...range(firstPageIndex, firstPageIndex + boundaryCount - 1));
+          pages.push(ELLIPSIS);
+          const middleRange = range(leftSiblingIndex, rightSiblingIndex);
+          pages.push(...middleRange);
+          pages.push(ELLIPSIS);
+          pages.push(...range(lastPageIndex - boundaryCount + 1, lastPageIndex));
+        } else {
+          pages.push(...range(firstPageIndex, lastPageIndex));
+        }
+        for (let i2 = 0; i2 < pages.length; i2++) {
+          if (pages[i2] === ELLIPSIS) {
+            const prevPage = isNumber(pages[i2 - 1]) ? pages[i2 - 1] : 0;
+            const nextPage = isNumber(pages[i2 + 1]) ? pages[i2 + 1] : totalPages + 1;
+            if (nextPage - prevPage === 2) {
+              pages[i2] = prevPage + 1;
+            }
+          }
+        }
+        return pages;
+      };
+      getTransformedRange = (ctx) => transform(getRange(ctx));
+      machine19 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            defaultPageSize: 10,
+            siblingCount: 1,
+            boundaryCount: 1,
+            defaultPage: 1,
+            type: "button",
+            count: 1
+          }, props), {
+            translations: __spreadValues({
+              rootLabel: "pagination",
+              firstTriggerLabel: "first page",
+              prevTriggerLabel: "previous page",
+              nextTriggerLabel: "next page",
+              lastTriggerLabel: "last page",
+              itemLabel({ page, totalPages }) {
+                const isLastPage = totalPages > 1 && page === totalPages;
+                return `${isLastPage ? "last page, " : ""}page ${page}`;
+              }
+            }, props.translations)
+          });
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          return {
+            page: bindable2(() => ({
+              value: prop("page"),
+              defaultValue: prop("defaultPage"),
+              onChange(value) {
+                var _a4;
+                const context = getContext();
+                (_a4 = prop("onPageChange")) == null ? void 0 : _a4({ page: value, pageSize: context.get("pageSize") });
+              }
+            })),
+            pageSize: bindable2(() => ({
+              value: prop("pageSize"),
+              defaultValue: prop("defaultPageSize"),
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onPageSizeChange")) == null ? void 0 : _a4({ pageSize: value });
+              }
+            }))
+          };
+        },
+        watch({ track, context, action }) {
+          track([() => context.get("pageSize")], () => {
+            action(["setPageIfNeeded"]);
+          });
+        },
+        computed: {
+          totalPages: memo(
+            ({ prop, context }) => [context.get("pageSize"), prop("count")],
+            ([pageSize, count]) => Math.ceil(count / pageSize)
+          ),
+          pageRange: memo(
+            ({ context, prop }) => [context.get("page"), context.get("pageSize"), prop("count")],
+            ([page, pageSize, count]) => {
+              const start = (page - 1) * pageSize;
+              return { start, end: Math.min(start + pageSize, count) };
+            }
+          ),
+          previousPage: ({ context }) => context.get("page") === 1 ? null : context.get("page") - 1,
+          nextPage: ({ context, computed }) => context.get("page") === computed("totalPages") ? null : context.get("page") + 1,
+          isValidPage: ({ context, computed }) => context.get("page") >= 1 && context.get("page") <= computed("totalPages")
+        },
+        on: {
+          SET_PAGE: {
+            guard: "isValidPage",
+            actions: ["setPage"]
+          },
+          SET_PAGE_SIZE: {
+            actions: ["setPageSize"]
+          },
+          FIRST_PAGE: {
+            actions: ["goToFirstPage"]
+          },
+          LAST_PAGE: {
+            actions: ["goToLastPage"]
+          },
+          PREVIOUS_PAGE: {
+            guard: "canGoToPrevPage",
+            actions: ["goToPrevPage"]
+          },
+          NEXT_PAGE: {
+            guard: "canGoToNextPage",
+            actions: ["goToNextPage"]
+          }
+        },
+        states: {
+          idle: {}
+        },
+        implementations: {
+          guards: {
+            isValidPage: ({ event, computed }) => event.page >= 1 && event.page <= computed("totalPages"),
+            isValidCount: ({ context, event }) => context.get("page") > event.count,
+            canGoToNextPage: ({ context, computed }) => context.get("page") < computed("totalPages"),
+            canGoToPrevPage: ({ context }) => context.get("page") > 1
+          },
+          actions: {
+            setPage({ context, event, computed }) {
+              const page = clampPage(event.page, computed("totalPages"));
+              context.set("page", page);
+            },
+            setPageSize({ context, event }) {
+              context.set("pageSize", event.size);
+            },
+            goToFirstPage({ context }) {
+              context.set("page", 1);
+            },
+            goToLastPage({ context, computed }) {
+              context.set("page", computed("totalPages"));
+            },
+            goToPrevPage({ context, computed }) {
+              context.set("page", (prev2) => clampPage(prev2 - 1, computed("totalPages")));
+            },
+            goToNextPage({ context, computed }) {
+              context.set("page", (prev2) => clampPage(prev2 + 1, computed("totalPages")));
+            },
+            setPageIfNeeded({ context, computed }) {
+              if (computed("isValidPage")) return;
+              context.set("page", 1);
+            }
+          }
+        }
+      });
+      clampPage = (page, totalPages) => Math.min(Math.max(page, 1), totalPages);
+      Pagination = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine19, props);
+        }
+        initApi() {
+          return this.zagConnect(connect19);
+        }
+        render() {
+          const rootEl = this.el.querySelector(
+            '[data-scope="pagination"][data-part="root"]'
+          );
+          if (rootEl) this.spreadProps(rootEl, this.api.getRootProps());
+          const prevEl = this.el.querySelector(
+            '[data-scope="pagination"][data-part="prev-trigger"]'
+          );
+          if (prevEl) this.spreadProps(prevEl, this.api.getPrevTriggerProps());
+          const nextEl = this.el.querySelector(
+            '[data-scope="pagination"][data-part="next-trigger"]'
+          );
+          if (nextEl) this.spreadProps(nextEl, this.api.getNextTriggerProps());
+          this.syncPages();
+          applyPhoenixLinkAttrsToNavigableParts(this.el);
+        }
+        directPageElements(list) {
+          return Array.from(list.querySelectorAll(':scope > [data-pagination-part="page"]'));
+        }
+        syncPages() {
+          var _a4, _b;
+          const nextLi = this.el.querySelector('[data-pagination-part="next"]');
+          const list = nextLi == null ? void 0 : nextLi.parentElement;
+          if (!list || !nextLi) return;
+          const ellipsisTemplate = this.el.querySelector(
+            "[data-pagination-ellipsis-template]"
+          );
+          const ellipsisHtml = (_a4 = ellipsisTemplate == null ? void 0 : ellipsisTemplate.innerHTML) != null ? _a4 : "&#8230;";
+          const triggerType = (_b = getString(this.el, "type")) != null ? _b : "button";
+          const pages = this.api.pages;
+          let items = this.directPageElements(list);
+          while (items.length > pages.length) {
+            items[items.length - 1].remove();
+            items = this.directPageElements(list);
+          }
+          for (let index = 0; index < pages.length; index++) {
+            const page = pages[index];
+            items = this.directPageElements(list);
+            let li = items[index];
+            if (!li) {
+              li = document.createElement("li");
+              li.setAttribute("data-pagination-part", "page");
+              list.insertBefore(li, nextLi);
+              items = this.directPageElements(list);
+              li = items[index];
+            }
+            const itemEl = li.querySelector('[data-scope="pagination"][data-part="item"]');
+            const ellipsisEl = li.querySelector(
+              '[data-scope="pagination"][data-part="ellipsis"]'
+            );
+            if (page.type === "page") {
+              if (ellipsisEl) ellipsisEl.remove();
+              let control = itemEl;
+              if (!control) {
+                control = triggerType === "link" ? document.createElement("a") : document.createElement("button");
+                if (control instanceof HTMLButtonElement) control.type = "button";
+                li.appendChild(control);
+              }
+              const label = String(page.value);
+              if (control.textContent !== label) control.textContent = label;
+              this.spreadProps(control, this.api.getItemProps(page));
+              applyPhoenixLinkAttrs(this.el, control);
+            } else {
+              if (itemEl) itemEl.remove();
+              let span = ellipsisEl;
+              if (!span) {
+                span = document.createElement("span");
+                span.innerHTML = ellipsisHtml;
+                li.appendChild(span);
+              }
+              this.spreadProps(span, this.api.getEllipsisProps({ index }));
+            }
+          }
+        }
+      };
+      PaginationHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const pagination = new Pagination(el, buildPaginationProps(el, pushEvent, canPush));
+          pagination.init();
+          this.pagination = pagination;
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:pagination:set-page", (event) => {
+            var _a4;
+            const page = (_a4 = event.detail) == null ? void 0 : _a4.page;
+            if (typeof page === "number") pagination.api.setPage(page);
+          });
+          domRegistry.add(
+            "corex:pagination:set-page-size",
+            (event) => {
+              var _a4;
+              const pageSize = (_a4 = event.detail) == null ? void 0 : _a4.page_size;
+              if (typeof pageSize === "number") pagination.api.setPageSize(pageSize);
+            }
+          );
+          domRegistry.add("corex:pagination:go-to-next-page", () => {
+            pagination.api.goToNextPage();
+          });
+          domRegistry.add("corex:pagination:go-to-prev-page", () => {
+            pagination.api.goToPrevPage();
+          });
+          domRegistry.add("corex:pagination:go-to-first-page", () => {
+            pagination.api.goToFirstPage();
+          });
+          domRegistry.add("corex:pagination:go-to-last-page", () => {
+            pagination.api.goToLastPage();
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("pagination_set_page", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const page = readPayloadPage(payload);
+            if (page != null) pagination.api.setPage(page);
+          });
+          registry.add("pagination_set_page_size", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const pageSize = readPayloadPageSize(payload);
+            if (pageSize != null) pagination.api.setPageSize(pageSize);
+          });
+          registry.add("pagination_go_to_next_page", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            pagination.api.goToNextPage();
+          });
+          registry.add("pagination_go_to_prev_page", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            pagination.api.goToPrevPage();
+          });
+          registry.add("pagination_go_to_first_page", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            pagination.api.goToFirstPage();
+          });
+          registry.add("pagination_go_to_last_page", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            pagination.api.goToLastPage();
+          });
+        },
+        updated() {
           var _a4;
-          (_a4 = this.numberInput) == null ? void 0 : _a4.destroy();
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          (_a4 = this.pagination) == null ? void 0 : _a4.updateProps(buildPaginationPropsForUpdate(this.el, pushEvent, canPush));
+        },
+        destroyed() {
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.pagination) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -30292,9 +32074,10 @@ ${err}`);
   // ../priv/static/password-input.mjs
   var password_input_exports = {};
   __export(password_input_exports, {
-    PasswordInput: () => PasswordInputHook
+    PasswordInput: () => PasswordInputHook,
+    visibilityChangePayload: () => visibilityChangePayload
   });
-  function connect19(service, normalize) {
+  function connect20(service, normalize) {
     const { scope, prop, context } = service;
     const visible = context.get("visible");
     const disabled = !!prop("disabled");
@@ -30318,7 +32101,7 @@ ${err}`);
         service.send({ type: "VISIBILITY.SET", value: !visible });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -30326,7 +32109,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts19.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
           htmlFor: getInputId6(scope),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -30335,7 +32118,7 @@ ${err}`);
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts19.input.attrs), {
+        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts20.input.attrs), {
           id: getInputId6(scope),
           autoCapitalize: "off",
           name: prop("name"),
@@ -30354,7 +32137,7 @@ ${err}`);
       },
       getVisibilityTriggerProps() {
         var _a4;
-        return normalize.button(__spreadProps(__spreadValues({}, parts19.visibilityTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts20.visibilityTrigger.attrs), {
           type: "button",
           tabIndex: -1,
           "aria-controls": getInputId6(scope),
@@ -30373,7 +32156,7 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.indicator.attrs), {
           "aria-hidden": true,
           "data-state": visible ? "visible" : "hidden",
           "data-disabled": dataAttr(disabled),
@@ -30382,7 +32165,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
@@ -30390,14 +32173,18 @@ ${err}`);
       }
     };
   }
-  var anatomy19, parts19, getInputId6, getInputEl5, passwordManagerProps, machine19, PasswordInput, PasswordInputHook;
+  function visibilityChangePayload(el, details) {
+    return { id: el.id, visible: details.visible };
+  }
+  var anatomy20, parts20, getInputId6, getInputEl5, passwordManagerProps, machine20, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy19 = createAnatomy("password-input").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy20 = createAnatomy("password-input").parts(
         "root",
         "input",
         "label",
@@ -30405,7 +32192,7 @@ ${err}`);
         "indicator",
         "visibilityTrigger"
       );
-      parts19 = anatomy19.build();
+      parts20 = anatomy20.build();
       getInputId6 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `p-input-${ctx.id}-input`;
@@ -30423,7 +32210,7 @@ ${err}`);
         // Proton Pass
         "data-protonpass-ignore": "true"
       };
-      machine19 = createMachine({
+      machine20 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             id: uuid(),
@@ -30509,10 +32296,10 @@ ${err}`);
       PasswordInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine19, props);
+          return new VanillaMachine(machine20, props);
         }
         initApi() {
-          return this.zagConnect(connect19);
+          return this.zagConnect(connect20);
         }
         render() {
           var _a4;
@@ -30550,7 +32337,7 @@ ${err}`);
             defaultVisible: getBoolean(el, "defaultVisible"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
             name: getString(el, "name"),
@@ -30561,7 +32348,7 @@ ${err}`);
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, visible: details.visible },
+                payload: visibilityChangePayload(el, details),
                 serverEventName: getString(el, "onVisibilityChange"),
                 clientEventName: getString(el, "onVisibilityChangeClient")
               });
@@ -30604,16 +32391,26 @@ ${err}`);
         },
         updated() {
           var _a4;
-          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            required: getBoolean(this.el, "required"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            dir: getDir(this.el)
-          });
+          const el = this.el;
+          const valuePatch = readUpdatedServerString(el);
+          (_a4 = this.passwordInput) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            readOnly: getBoolean(el, "readonly"),
+            required: getBoolean(el, "required"),
+            name: getString(el, "name"),
+            dir: getDir(el)
+          }));
+          if ("value" in valuePatch && valuePatch.value !== null) {
+            const input = el.querySelector(
+              '[data-scope="password-input"][data-part="input"]'
+            );
+            if (input && input.value !== valuePatch.value) {
+              input.value = valuePatch.value;
+            }
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -30631,7 +32428,13 @@ ${err}`);
   // ../priv/static/pin-input.mjs
   var pin_input_exports = {};
   __export(pin_input_exports, {
-    PinInput: () => PinInputHook
+    PinInput: () => PinInputHook,
+    padToCount: () => padToCount,
+    parseValueWithEmpties: () => parseValueWithEmpties,
+    readDefaultValueList: () => readDefaultValueList,
+    readPinValueList: () => readPinValueList,
+    readUpdatedPinValue: () => readUpdatedPinValue,
+    syncPinInputFormForPhoenix: () => syncPinInputFormForPhoenix
   });
   function isValidType(type, value) {
     var _a4;
@@ -30643,7 +32446,7 @@ ${err}`);
     const regex = new RegExp(pattern, "g");
     return regex.test(value);
   }
-  function connect20(service, normalize) {
+  function connect21(service, normalize) {
     const { send, context, computed, prop, scope } = service;
     const complete = computed("isValueComplete");
     const disabled = !!prop("disabled");
@@ -30678,8 +32481,8 @@ ${err}`);
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({
           dir: prop("dir")
-        }, parts20.root.attrs), {
-          id: getRootId15(scope),
+        }, parts21.root.attrs), {
+          id: getRootId16(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
           "data-complete": dataAttr(complete),
@@ -30687,7 +32490,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts21.label.attrs), {
           dir: prop("dir"),
           htmlFor: getHiddenInputId5(scope),
           id: getLabelId11(scope),
@@ -30719,7 +32522,7 @@ ${err}`);
         });
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.control.attrs), {
           dir: prop("dir"),
           id: getControlId7(scope)
         }));
@@ -30730,7 +32533,7 @@ ${err}`);
         const inputType = prop("type") === "numeric" ? "tel" : "text";
         const valueLength = computed("valueLength");
         const tabbableIndex = focusedIndex !== -1 ? focusedIndex : Math.min(computed("filledValueLength"), valueLength - 1);
-        return normalize.input(__spreadProps(__spreadValues({}, parts20.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts21.input.attrs), {
           dir: prop("dir"),
           disabled,
           tabIndex: index === tabbableIndex ? 0 : -1,
@@ -30739,7 +32542,7 @@ ${err}`);
           "data-filled": dataAttr(context.get("value")[index] !== ""),
           id: getInputId7(scope, index.toString()),
           "data-index": index,
-          "data-ownedby": getRootId15(scope),
+          "data-ownedby": getRootId16(scope),
           "aria-label": (_a4 = translations == null ? void 0 : translations.inputLabel) == null ? void 0 : _a4.call(translations, index, computed("valueLength")),
           inputMode: prop("otp") || prop("type") === "numeric" ? "numeric" : "text",
           "aria-invalid": ariaAttr(invalid),
@@ -30850,7 +32653,7 @@ ${err}`);
           },
           onBlur(event) {
             const target = event.relatedTarget;
-            if (isHTMLElement(target) && target.dataset.ownedby === getRootId15(scope)) return;
+            if (isHTMLElement(target) && target.dataset.ownedby === getRootId16(scope)) return;
             send({ type: "INPUT.BLUR", index });
           }
         }));
@@ -30879,41 +32682,83 @@ ${err}`);
     while (copy.length < count) copy.push("");
     return copy.slice(0, count);
   }
-  function readDefaultValueList(el, count) {
-    const raw = el.dataset.defaultValue;
+  function readPinValueList(el, datasetKey, count) {
+    const json = getJsonStringList(el, datasetKey);
+    if (json !== void 0) return padToCount(json, count);
+    const raw = el.dataset[datasetKey];
     if (raw === void 0 || raw === "") {
-      return [];
+      return padToCount([], count);
     }
     return padToCount(parseValueWithEmpties(raw), count);
   }
-  function buildMachineProps(el, pushEvent, canPush) {
-    const count = getNumber(el, "count");
-    return {
+  function readDefaultValueList(el, count) {
+    return readPinValueList(el, "defaultValue", count);
+  }
+  function padStringListBinding(el, count) {
+    const binding = mountStringListBinding(el);
+    if ("value" in binding) {
+      return { value: padToCount(binding.value, count) };
+    }
+    return { defaultValue: padToCount(binding.defaultValue, count) };
+  }
+  function readUpdatedPinValue(el, count) {
+    const patch = readUpdatedServerStringList(el);
+    if (!("value" in patch)) return {};
+    return { value: padToCount(patch.value, count) };
+  }
+  function syncPinInputFormForPhoenix(el, values, onTouched, opts = {}) {
+    var _a4;
+    const submitName = getString(el, "submitName");
+    const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+    if (submitName) {
+      syncArrayHiddenInputsForPhoenix(el, values, {
+        onTouched,
+        scope: "pin-input",
+        submitName,
+        fixedLength: count,
+        notifyLiveView: opts.notifyLiveView,
+        fieldTouched: opts.notifyLiveView === true
+      });
+      return;
+    }
+    const hiddenInput = el.querySelector(
+      '[data-scope="pin-input"][data-part="hidden-input"]'
+    );
+    if (!hiddenInput) return;
+    if (opts.notifyLiveView === false) {
+      notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched, markUsed: false });
+      return;
+    }
+    notifyPhoenixFormChange(hiddenInput, values.join(""), { onTouched });
+  }
+  function zagNameForForm(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
+  }
+  function buildMachineProps2(el, pushEvent, canPush, allowFormNotify) {
+    var _a4;
+    const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+    return __spreadProps(__spreadValues({
       id: el.id,
-      count,
-      defaultValue: readDefaultValueList(el, count != null ? count : 0),
+      count
+    }, padStringListBinding(el, count)), {
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       mask: getBoolean(el, "mask"),
       otp: getBoolean(el, "otp"),
       blurOnComplete: getBoolean(el, "blurOnComplete"),
       selectOnFocus: getBoolean(el, "selectOnFocus"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagNameForForm(el),
+      form: getString(el, "submitName") ? void 0 : getString(el, "form"),
       dir: getDir(el),
       type: getString(el, "type"),
       placeholder: getString(el, "placeholder"),
       onValueChange: (details) => {
-        const hiddenInput = el.querySelector(
-          '[data-scope="pin-input"][data-part="hidden-input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.value = details.valueAsString;
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncPinInputFormForPhoenix(el, details.value, void 0, {
+          notifyLiveView: (allowFormNotify == null ? void 0 : allowFormNotify()) === true
+        });
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -30941,19 +32786,24 @@ ${err}`);
           clientEventName: getString(el, "onValueCompleteClient")
         });
       }
-    };
+    });
   }
-  var anatomy20, parts20, getRootId15, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, choose3, createMachine5, machine20, PinInput, PinInputHook;
+  var anatomy21, parts21, getRootId16, getInputId7, getHiddenInputId5, getLabelId11, getControlId7, getRootEl5, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl5, setInputValue, REGEX, choose3, createMachine5, machine21, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
+      init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
+      init_chunk_FUVA3DRB();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy20 = createAnatomy("pinInput").parts("root", "label", "input", "control");
-      parts20 = anatomy20.build();
-      getRootId15 = (ctx) => {
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy21 = createAnatomy("pinInput").parts("root", "label", "input", "control");
+      parts21 = anatomy21.build();
+      getRootId16 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `pin-input:${ctx.id}`;
       };
@@ -30973,9 +32823,9 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `pin-input:${ctx.id}:control`;
       };
-      getRootEl5 = (ctx) => ctx.getById(getRootId15(ctx));
+      getRootEl5 = (ctx) => ctx.getById(getRootId16(ctx));
       getInputEls2 = (ctx) => {
-        const ownerId = CSS.escape(getRootId15(ctx));
+        const ownerId = CSS.escape(getRootId16(ctx));
         const selector = `input[data-ownedby=${ownerId}]`;
         return queryAll(getRootEl5(ctx), selector);
       };
@@ -30992,7 +32842,7 @@ ${err}`);
         alphanumeric: /^[a-zA-Z0-9]+$/i
       };
       ({ choose: choose3, createMachine: createMachine5 } = setup());
-      machine20 = createMachine5({
+      machine21 = createMachine5({
         props({ props }) {
           return __spreadProps(__spreadValues({
             placeholder: "\u25CB",
@@ -31292,13 +33142,13 @@ ${err}`);
       PinInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine20, props);
+          return new VanillaMachine(machine21, props);
         }
         initApi() {
-          return this.zagConnect(connect20);
+          return this.zagConnect(connect21);
         }
         render() {
-          var _a4;
+          var _a4, _b;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="pin-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -31308,7 +33158,20 @@ ${err}`);
           const hiddenInputEl = this.el.querySelector(
             '[data-scope="pin-input"][data-part="hidden-input"]'
           );
-          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          if (hiddenInputEl instanceof HTMLInputElement) {
+            syncHiddenInputValue(
+              hiddenInputEl,
+              this.el,
+              (_b = this.api.valueAsString) != null ? _b : "",
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
+            if (getString(this.el, "submitName")) {
+              hiddenInputEl.removeAttribute("name");
+              hiddenInputEl.removeAttribute("form");
+            }
+          }
+          stripZagSubmitNames(this.el, "pin-input");
           const controlEl = this.el.querySelector(
             '[data-scope="pin-input"][data-part="control"]'
           );
@@ -31324,11 +33187,22 @@ ${err}`);
       PinInputHook = {
         mounted() {
           const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush));
-          zag.init();
-          this.pinInput = zag;
+          const allowFormNotify = () => hook.allowFormNotify === true;
+          const zag = new PinInput(el, buildMachineProps2(el, pushEvent, canPush, allowFormNotify));
+          try {
+            zag.init();
+            this.pinInput = zag;
+          } finally {
+            el.removeAttribute("data-loading");
+          }
+          queueMicrotask(() => {
+            syncPinInputFormForPhoenix(el, zag.api.value, void 0, { notifyLiveView: false });
+            hook.allowFormNotify = true;
+          });
           const emitValue = (respondTo) => {
             const api = zag.api;
             const value = api.value;
@@ -31375,25 +33249,30 @@ ${err}`);
         updated() {
           var _a4;
           const el = this.el;
-          const count = getNumber(el, "count");
-          (_a4 = this.pinInput) == null ? void 0 : _a4.updateProps({
+          const zag = this.pinInput;
+          const count = (_a4 = getNumber(el, "count")) != null ? _a4 : 0;
+          const valuePatch = readUpdatedPinValue(el, count);
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
             id: el.id,
-            count,
-            defaultValue: readDefaultValueList(el, count != null ? count : 0),
+            count
+          }, valuePatch), {
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             mask: getBoolean(el, "mask"),
             otp: getBoolean(el, "otp"),
             blurOnComplete: getBoolean(el, "blurOnComplete"),
             selectOnFocus: getBoolean(el, "selectOnFocus"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagNameForForm(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
             dir: getDir(el),
             type: getString(el, "type"),
             placeholder: getString(el, "placeholder")
-          });
+          }));
+          if ("value" in valuePatch) {
+            syncPinInputFormForPhoenix(el, valuePatch.value, void 0, { notifyLiveView: false });
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -31408,9 +33287,10 @@ ${err}`);
   // ../priv/static/radio-group.mjs
   var radio_group_exports = {};
   __export(radio_group_exports, {
-    RadioGroup: () => RadioGroupHook
+    RadioGroup: () => RadioGroupHook,
+    valueChangePayload: () => valueChangePayload2
   });
-  function connect21(service, normalize) {
+  function connect22(service, normalize) {
     const { context, send, computed, prop, scope } = service;
     const groupDisabled = computed("isDisabled");
     const groupInvalid = prop("invalid");
@@ -31456,9 +33336,9 @@ ${err}`);
         send({ type: "SET_VALUE", value: null, isTrusted: false });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
           role: "radiogroup",
-          id: getRootId16(scope),
+          id: getRootId17(scope),
           "aria-labelledby": getLabelId12(scope),
           "aria-required": prop("required") || void 0,
           "aria-disabled": groupDisabled || void 0,
@@ -31475,7 +33355,7 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts21.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.label.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           "data-disabled": dataAttr(groupDisabled),
@@ -31488,9 +33368,9 @@ ${err}`);
       getItemState,
       getItemProps(props) {
         const itemState = getItemState(props);
-        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts21.item.attrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts22.item.attrs), {
           dir: prop("dir"),
-          id: getItemId7(scope, props.value),
+          id: getItemId8(scope, props.value),
           htmlFor: getItemHiddenInputId(scope, props.value)
         }), getItemDataAttrs(props)), {
           onPointerMove() {
@@ -31523,14 +33403,14 @@ ${err}`);
         }));
       },
       getItemTextProps(props) {
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts21.itemText.attrs), {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts22.itemText.attrs), {
           dir: prop("dir"),
           id: getItemLabelId(scope, props.value)
         }), getItemDataAttrs(props)));
       },
       getItemControlProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts21.itemControl.attrs), {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts22.itemControl.attrs), {
           dir: prop("dir"),
           id: getItemControlId(scope, props.value),
           "data-active": dataAttr(itemState.active),
@@ -31540,7 +33420,7 @@ ${err}`);
       getItemHiddenInputProps(props) {
         const itemState = getItemState(props);
         return normalize.input({
-          "data-ownedby": getRootId16(scope),
+          "data-ownedby": getRootId17(scope),
           id: getItemHiddenInputId(scope, props.value),
           type: "radio",
           name: prop("name") || prop("id"),
@@ -31587,7 +33467,7 @@ ${err}`);
         const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId2(scope)
-        }, parts21.indicator.attrs), {
+        }, parts22.indicator.attrs), {
           dir: prop("dir"),
           hidden: context.get("value") == null || isRectEmpty(rect),
           "data-disabled": dataAttr(groupDisabled),
@@ -31613,22 +33493,54 @@ ${err}`);
       }
     };
   }
+  function isCorexFormField(el) {
+    return getBoolean(el, "formField");
+  }
+  function setHostDataInvalid(el, invalid) {
+    if (invalid) {
+      el.setAttribute("data-invalid", "");
+    } else {
+      el.removeAttribute("data-invalid");
+    }
+  }
+  function setScopeErrorsVisible(el, scope, visible) {
+    el.querySelectorAll(`[data-scope="${scope}"][data-part="error"]`).forEach((node) => {
+      node.hidden = !visible;
+    });
+  }
+  function clearCorexFormFieldFeedback(el, scope) {
+    setHostDataInvalid(el, false);
+    setScopeErrorsVisible(el, scope, false);
+  }
+  function hasCorexFormFieldValue(value) {
+    return value != null && value !== "";
+  }
+  function syncRadioGroupValueInputForPhoenix(el, value, options = {}) {
+    const valueInput = el.querySelector(
+      '[data-scope="radio-group"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    notifyPhoenixFormChange(valueInput, value != null ? value : "", options);
+  }
   function valueChangePayload2(el, details) {
     return {
       id: el.id,
       value: details.value
     };
   }
-  var anatomy21, parts21, getRootId16, getLabelId12, getItemId7, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl6, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine21, RadioGroup, RadioGroupHook;
+  var anatomy22, parts22, getRootId17, getLabelId12, getItemId8, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl6, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine22, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_G73IV5JU();
       init_chunk_PE34YET2();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy21 = createAnatomy("radio-group").parts(
+      init_chunk_VMKNATWC();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy22 = createAnatomy("radio-group").parts(
         "root",
         "label",
         "item",
@@ -31636,8 +33548,8 @@ ${err}`);
         "itemControl",
         "indicator"
       );
-      parts21 = anatomy21.build();
-      getRootId16 = (ctx) => {
+      parts22 = anatomy22.build();
+      getRootId17 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `radio-group:${ctx.id}`;
       };
@@ -31645,7 +33557,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `radio-group:${ctx.id}:label`;
       };
-      getItemId7 = (ctx, value) => {
+      getItemId8 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `radio-group:${ctx.id}:radio:${value}`;
       };
@@ -31665,7 +33577,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.indicator) != null ? _b : `radio-group:${ctx.id}:indicator`;
       };
-      getRootEl6 = (ctx) => ctx.getById(getRootId16(ctx));
+      getRootEl6 = (ctx) => ctx.getById(getRootId17(ctx));
       getItemHiddenInputEl = (ctx, value) => ctx.getById(getItemHiddenInputId(ctx, value));
       getIndicatorEl2 = (ctx) => ctx.getById(getIndicatorId2(ctx));
       getFirstEnabledInputEl = (ctx) => {
@@ -31677,13 +33589,13 @@ ${err}`);
         return (_a4 = getRootEl6(ctx)) == null ? void 0 : _a4.querySelector("input:not(:disabled):checked");
       };
       getInputEls3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId16(ctx));
+        const ownerId = CSS.escape(getRootId17(ctx));
         const selector = `input[type=radio][data-ownedby='${ownerId}']:not([disabled])`;
         return queryAll(getRootEl6(ctx), selector);
       };
       getRadioEl = (ctx, value) => {
         if (!value) return;
-        return ctx.getById(getItemId7(ctx, value));
+        return ctx.getById(getItemId8(ctx, value));
       };
       getOffsetRect = (el) => {
         var _a4, _b, _c, _d;
@@ -31696,7 +33608,7 @@ ${err}`);
       };
       isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ not: not7 } = createGuards());
-      machine21 = createMachine({
+      machine22 = createMachine({
         props({ props }) {
           return __spreadValues({
             orientation: "vertical"
@@ -31877,10 +33789,10 @@ ${err}`);
       RadioGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine21, props);
+          return new VanillaMachine(machine22, props);
         }
         initApi() {
-          return this.zagConnect(connect21);
+          return this.zagConnect(connect22);
         }
         render() {
           var _a4;
@@ -31923,20 +33835,26 @@ ${err}`);
             const hiddenInputEl = itemEl.querySelector(
               '[data-scope="radio-group"][data-part="item-hidden-input"]'
             );
-            if (hiddenInputEl)
+            if (hiddenInputEl instanceof HTMLInputElement) {
               this.spreadProps(
                 hiddenInputEl,
-                this.api.getItemHiddenInputProps({
-                  value,
-                  disabled,
-                  invalid
-                })
+                hiddenInputPropsWithoutChecked(
+                  this.api.getItemHiddenInputProps({
+                    value,
+                    disabled,
+                    invalid
+                  })
+                )
               );
+              hiddenInputEl.checked = this.api.value === value;
+              syncInputFormAssociation(hiddenInputEl, this.el);
+            }
           });
         }
       };
       RadioGroupHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
@@ -31948,16 +33866,38 @@ ${err}`);
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
-              const checked = el.querySelector(
-                '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+              const selected = details.value;
+              if (isCorexFormField(el)) {
+                this.lastServerValue = selected != null ? selected : void 0;
+              }
+              el.querySelectorAll(
+                '[data-scope="radio-group"][data-part="item-hidden-input"]'
+              ).forEach((input) => {
+                const on = input.value === selected;
+                if (input.checked !== on) input.checked = on;
+                syncInputFormAssociation(input, el);
+              });
+              syncRadioGroupValueInputForPhoenix(el, selected);
+              if (isCorexFormField(el) && hasCorexFormFieldValue(selected)) {
+                clearCorexFormFieldFeedback(el, "radio-group");
+                zag.updateProps({ invalid: false });
+              }
+              const valueInput2 = el.querySelector(
+                '[data-scope="radio-group"][data-part="value-input"]'
               );
-              if (checked) {
-                checked.dispatchEvent(new Event("input", { bubbles: true }));
-                checked.dispatchEvent(new Event("change", { bubbles: true }));
+              if (!valueInput2) {
+                const checked = el.querySelector(
+                  '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+                );
+                if (checked) {
+                  reapplyLiveViewValueInputUsage(checked);
+                  checked.dispatchEvent(new Event("input", { bubbles: true }));
+                  checked.dispatchEvent(new Event("change", { bubbles: true }));
+                }
               }
               notifyChange({
                 el,
@@ -31971,25 +33911,90 @@ ${err}`);
           }));
           zag.init();
           this.radioGroup = zag;
+          this.lastServerValue = (_a4 = getString(el, "value")) != null ? _a4 : void 0;
+          queueMicrotask(() => {
+            var _a5;
+            if (!isCorexFormField(el)) return;
+            syncRadioGroupValueInputForPhoenix(el, (_a5 = zag.api.value) != null ? _a5 : null, { markUsed: false });
+          });
+          const valueInput = el.querySelector(
+            '[data-scope="radio-group"][data-part="value-input"]'
+          );
+          if (valueInput) syncInputFormAssociation(valueInput, el);
+          const emitValue = (respondTo) => {
+            const value = zag.api.value;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "radio_group_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "radio-group-value",
+              domDetail: { id: el.id, value }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:radio-group:set-value", (event) => {
+            zag.api.setValue(event.detail.value);
+          });
+          domRegistry.add("corex:radio-group:clear-value", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:radio-group:focus", () => {
+            zag.api.focus();
+          });
+          domRegistry.add("corex:radio-group:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("radio_group_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setValue(payload.value);
+          });
+          registry.add("radio_group_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("radio_group_focus", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.focus();
+          });
+          registry.add("radio_group_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
         },
         updated() {
-          var _a4;
-          (_a4 = this.radioGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form"),
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            orientation: getString(this.el, "orientation"),
-            dir: getDir(this.el)
+          var _a4, _b;
+          const el = this.el;
+          const zag = this.radioGroup;
+          const valuePatch = readUpdatedServerString(el, this.lastServerValue);
+          if ("value" in valuePatch) {
+            this.lastServerValue = (_a4 = valuePatch.value) != null ? _a4 : void 0;
+          }
+          zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
+            id: el.id
+          }, valuePatch), {
+            name: getString(el, "name"),
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            readOnly: getBoolean(el, "readonly"),
+            orientation: getString(el, "orientation"),
+            dir: getDir(el)
           }));
+          if ("value" in valuePatch) {
+            syncRadioGroupValueInputForPhoenix(el, (_b = valuePatch.value) != null ? _b : null, { markUsed: false });
+          }
         },
         destroyed() {
-          var _a4;
-          (_a4 = this.radioGroup) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.radioGroup) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -31998,9 +34003,14 @@ ${err}`);
   // ../priv/static/select.mjs
   var select_exports = {};
   __export(select_exports, {
-    Select: () => SelectHook
+    Select: () => SelectHook,
+    buildCollection: () => buildCollection2,
+    formatSelectHiddenValue: () => formatSelectHiddenValue,
+    reapplySelectInteractiveState: () => reapplySelectInteractiveState,
+    syncSelectHiddenInputForPhoenix: () => syncSelectHiddenInputForPhoenix,
+    syncSelectHiddenSelectForPhoenix: () => syncSelectHiddenSelectForPhoenix
   });
-  function connect22(service, normalize) {
+  function connect23(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
     const translations = prop("translations");
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
@@ -32017,7 +34027,7 @@ ${err}`);
     const currentPlacement = context.get("currentPlacement");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId8(scope, highlightedValue) : void 0;
+    const ariaActiveDescendant = highlightedValue ? getItemId9(scope, highlightedValue) : void 0;
     function getItemState(props) {
       const _disabled = collection22.getItemDisabled(props.item);
       const value = collection22.getItemValue(props.item);
@@ -32081,9 +34091,9 @@ ${err}`);
       },
       getItemState,
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.root.attrs), {
           dir: prop("dir"),
-          id: getRootId17(scope),
+          id: getRootId18(scope),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
         }));
@@ -32092,7 +34102,7 @@ ${err}`);
         return normalize.label(__spreadProps(__spreadValues({
           dir: prop("dir"),
           id: getLabelId13(scope)
-        }, parts22.label.attrs), {
+        }, parts23.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -32107,7 +34117,7 @@ ${err}`);
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.control.attrs), {
           dir: prop("dir"),
           id: getControlId8(scope),
           "data-state": open ? "open" : "closed",
@@ -32117,7 +34127,7 @@ ${err}`);
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -32138,7 +34148,7 @@ ${err}`);
           "aria-invalid": invalid,
           "aria-required": required,
           "aria-labelledby": getLabelId13(scope)
-        }, parts22.trigger.attrs), {
+        }, parts23.trigger.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -32205,7 +34215,7 @@ ${err}`);
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.indicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
           "data-state": open ? "open" : "closed",
@@ -32217,9 +34227,9 @@ ${err}`);
       getItemProps(props) {
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
-          id: getItemId8(scope, itemState.value),
+          id: getItemId9(scope, itemState.value),
           role: "option"
-        }, parts22.item.attrs), {
+        }, parts23.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -32250,7 +34260,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getItemState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
@@ -32260,14 +34270,14 @@ ${err}`);
         const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts22.itemIndicator.attrs), {
+        }, parts23.itemIndicator.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
       getItemGroupLabelProps(props) {
         const { htmlFor } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemGroupLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemGroupLabel.attrs), {
           id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
@@ -32275,7 +34285,7 @@ ${err}`);
       },
       getItemGroupProps(props) {
         const { id } = props;
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.itemGroup.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getItemGroupId4(scope, id),
           "aria-labelledby": getItemGroupLabelId3(scope, id),
@@ -32284,7 +34294,7 @@ ${err}`);
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts22.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts23.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
           "aria-label": translations.clearTriggerLabel,
@@ -32330,7 +34340,7 @@ ${err}`);
         });
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId7(scope),
           style: popperStyles.floating
@@ -32342,7 +34352,7 @@ ${err}`);
           dir: prop("dir"),
           id: getContentId9(scope),
           role: composite ? "listbox" : "dialog"
-        }, parts22.content.attrs), {
+        }, parts23.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-activedescendant": ariaActiveDescendant,
@@ -32403,7 +34413,7 @@ ${err}`);
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.list.attrs), {
           tabIndex: 0,
           role: !composite ? "listbox" : void 0,
           "aria-labelledby": getTriggerId9(scope),
@@ -32418,10 +34428,58 @@ ${err}`);
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a4 = event.previousEvent) == null ? void 0 : _a4.restoreFocus;
     return v2 == null || !!v2;
   }
+  function selectHiddenSelectForForm(el) {
+    const hiddenSelect = el.querySelector(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
+    if (!hiddenSelect) return null;
+    const formArrayName = getString(el, "hiddenSelectName");
+    if (formArrayName) {
+      hiddenSelect.name = formArrayName;
+      hiddenSelect.disabled = false;
+      return hiddenSelect;
+    }
+    if (!hiddenSelect.name) return null;
+    return hiddenSelect;
+  }
+  function formatSelectHiddenValue(el, values) {
+    var _a4;
+    const list = values.map((v2) => String(v2));
+    if (list.length === 0) return "";
+    if (getBoolean(el, "multiple") && selectHiddenSelectForForm(el)) return "";
+    return getBoolean(el, "multiple") ? list.join(",") : (_a4 = list[0]) != null ? _a4 : "";
+  }
+  function syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched) {
+    const valueSet = new Set(values.map(String));
+    Array.from(hiddenSelect.options).forEach((option) => {
+      if (option.value === "") {
+        option.selected = false;
+        return;
+      }
+      option.selected = valueSet.has(option.value);
+    });
+    queueMicrotask(() => {
+      onTouched == null ? void 0 : onTouched();
+      hiddenSelect.dispatchEvent(new Event("input", { bubbles: true }));
+      hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  function syncSelectHiddenInputForPhoenix(el, values, onTouched) {
+    const hiddenSelect = selectHiddenSelectForForm(el);
+    if (hiddenSelect && getBoolean(el, "multiple")) {
+      syncSelectHiddenSelectForPhoenix(hiddenSelect, values, onTouched);
+      return;
+    }
+    const valueInput = el.querySelector(
+      '[data-scope="select"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    queueLiveViewFormInputSync(valueInput, () => formatSelectHiddenValue(el, values), onTouched);
+  }
   function buildCollection2(items, hasGroups) {
     return collection3(zagListCollectionConfig(items, hasGroups));
   }
-  function selectZagPropsBase(el, liveSocket, pushEvent, canPush) {
+  function selectZagPropsBase(el, liveSocket, pushEvent, canPush, markFieldTouched) {
     const redirectOn = getBoolean(el, "redirect");
     return {
       id: el.id,
@@ -32433,7 +34491,7 @@ ${err}`);
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       form: getString(el, "form"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       deselectable: getBoolean(el, "deselectable"),
       positioning: readPositioningOptions(el),
@@ -32445,14 +34503,7 @@ ${err}`);
           );
           performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
         }
-        const valueInput = el.querySelector(
-          '[data-scope="select"][data-part="value-input"]'
-        );
-        if (valueInput && getBoolean(el, "controlled")) {
-          valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
+        syncSelectHiddenInputForPhoenix(el, details.value, markFieldTouched);
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -32468,23 +34519,32 @@ ${err}`);
       }
     };
   }
-  var anatomy22, parts22, collection3, getRootId17, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId8, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine22, Select, SelectHook;
+  function reapplySelectInteractiveState(el) {
+    el.removeAttribute("data-loading");
+    if (getBoolean(el, "disabled") || getBoolean(el, "readonly")) return;
+    const trigger = el.querySelector('[data-scope="select"][data-part="trigger"]');
+    if (!trigger || getBoolean(trigger, "disabled")) return;
+    trigger.disabled = false;
+    trigger.removeAttribute("disabled");
+  }
+  var anatomy23, parts23, collection3, getRootId18, getContentId9, getTriggerId9, getClearTriggerId3, getLabelId13, getControlId8, getItemId9, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine23, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_YM6Q7RBK();
-      init_chunk_PWLG55J6();
-      init_chunk_P32UGRVU();
+      init_chunk_EPNQR235();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_VMKNATWC();
+      init_chunk_VJGUNSK5();
+      init_chunk_OAGPTRUC();
+      init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
-      init_chunk_CTFBPAMI();
-      init_chunk_FBXRLPHX();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy22 = createAnatomy("select").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy23 = createAnatomy("select").parts(
         "label",
         "positioner",
         "trigger",
@@ -32501,14 +34561,14 @@ ${err}`);
         "control",
         "valueText"
       );
-      parts22 = anatomy22.build();
+      parts23 = anatomy23.build();
       collection3 = (options) => {
         return new ListCollection(options);
       };
       collection3.empty = () => {
         return new ListCollection({ items: [] });
       };
-      getRootId17 = (ctx) => {
+      getRootId18 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `select:${ctx.id}`;
       };
@@ -32532,7 +34592,7 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `select:${ctx.id}:control`;
       };
-      getItemId8 = (ctx, id) => {
+      getItemId9 = (ctx, id) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, id)) != null ? _c : `select:${ctx.id}:option:${id}`;
       };
@@ -32559,13 +34619,13 @@ ${err}`);
       getPositionerEl7 = (ctx) => ctx.getById(getPositionerId7(ctx));
       getItemEl4 = (ctx, id) => {
         if (id == null) return null;
-        return ctx.getById(getItemId8(ctx, id));
+        return ctx.getById(getItemId9(ctx, id));
       };
       getSelectedValues = (el) => {
         return el.multiple ? Array.from(el.selectedOptions, (o2) => o2.value) : el.value ? [el.value] : [];
       };
       ({ and: and8, not: not8, or: or3 } = createGuards());
-      machine22 = createMachine({
+      machine23 = createMachine({
         props({ props }) {
           var _a4;
           return __spreadProps(__spreadValues({
@@ -33305,14 +35365,14 @@ ${err}`);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine22, __spreadProps(__spreadValues({}, props), {
+          return new VanillaMachine(machine23, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             }
           }));
         }
         initApi() {
-          return this.zagConnect(connect22);
+          return this.zagConnect(connect23);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -33355,21 +35415,51 @@ ${err}`);
           });
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d;
           const root = (_a4 = this.el.querySelector('[data-scope="select"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(root, this.api.getRootProps());
           const valueInput = this.el.querySelector(
             '[data-scope="select"][data-part="value-input"]'
           );
+          const formArrayName = getString(this.el, "hiddenSelectName");
           if (valueInput) {
-            const valueStr = ((_b = this.api.value) == null ? void 0 : _b.length) ? this.api.value.map(String).join(",") : "";
-            valueInput.value = valueStr;
+            syncInputFormAssociation(valueInput, this.el);
+            if (valueInput.name && !formArrayName) {
+              const valueStr = ((_b = this.api.value) == null ? void 0 : _b.length) ? this.api.value.map(String).join(",") : "";
+              valueInput.value = valueStr;
+            }
           }
           const hiddenSelect = this.el.querySelector(
             '[data-scope="select"][data-part="hidden-select"]'
           );
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+            if (formArrayName) {
+              hiddenSelect.name = formArrayName;
+              hiddenSelect.disabled = false;
+              const valueSet = new Set(((_c = this.api.value) != null ? _c : []).map(String));
+              Array.from(hiddenSelect.options).forEach((option) => {
+                if (option.value === "") {
+                  option.selected = false;
+                  return;
+                }
+                option.selected = valueSet.has(option.value);
+              });
+              if (valueInput) valueInput.removeAttribute("name");
+            } else if (hiddenSelect.name) {
+              const valueSet = new Set(((_d = this.api.value) != null ? _d : []).map(String));
+              Array.from(hiddenSelect.options).forEach((option) => {
+                if (option.value === "") {
+                  option.selected = false;
+                  return;
+                }
+                option.selected = valueSet.has(option.value);
+              });
+            } else {
+              hiddenSelect.disabled = true;
+              hiddenSelect.removeAttribute("name");
+            }
+            syncInputFormAssociation(hiddenSelect, this.el);
           }
           ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
@@ -33403,14 +35493,35 @@ ${err}`);
       };
       SelectHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          const hook = this;
+          hook.fieldTouched = false;
+          const markFieldTouched = () => {
+            hook.fieldTouched = true;
+          };
+          const defaultValues = (_a4 = getStringList(el, "defaultValue")) != null ? _a4 : [];
+          if (defaultValues.length > 0) {
+            hook.fieldTouched = true;
+            queueMicrotask(() => {
+              const hiddenSelect = selectHiddenSelectForForm(el);
+              if (hiddenSelect && getBoolean(el, "multiple")) {
+                syncSelectHiddenSelectForPhoenix(hiddenSelect, defaultValues);
+                return;
+              }
+              const valueInput = el.querySelector(
+                '[data-scope="select"][data-part="value-input"]'
+              );
+              if (valueInput) reapplyLiveViewValueInputUsage(valueInput);
+            });
+          }
           const allItems = JSON.parse(el.dataset.items || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush)), {
+          const selectComponent = new Select(el, __spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(el, this.liveSocket, pushEvent, canPush, markFieldTouched)), {
             collection: buildCollection2(allItems, hasGroups)
-          }), readStringListControlledZagProps(el, "value", "defaultValue")));
+          }), mountStringListBinding(el)));
           selectComponent.hasGroups = hasGroups;
           selectComponent.setOptions(allItems);
           selectComponent.init();
@@ -33438,15 +35549,35 @@ ${err}`);
         },
         updated() {
           if (!this.select) return;
+          const valuePatch = readUpdatedServerStringList(this.el);
           const newItems = JSON.parse(this.el.dataset.items || "[]");
           const hasGroups = newItems.some((item) => Boolean(item.group));
           this.select.hasGroups = hasGroups;
           this.select.setOptions(newItems);
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush)), {
+          this.select.updateProps(__spreadValues(__spreadProps(__spreadValues({}, selectZagPropsBase(this.el, this.liveSocket, pushEvent, canPush, () => {
+            this.fieldTouched = true;
+          })), {
             collection: this.select.getCollection()
-          }), readStringListControlledZagProps(this.el, "value", "defaultValue")));
+          }), valuePatch));
+          queueMicrotask(() => {
+            reapplySelectInteractiveState(this.el);
+            if (!("value" in valuePatch) || !this.select) return;
+            const values = valuePatch.value;
+            const hiddenSelect = selectHiddenSelectForForm(this.el);
+            if (hiddenSelect && getBoolean(this.el, "multiple")) {
+              syncSelectHiddenSelectForPhoenix(hiddenSelect, values);
+              return;
+            }
+            const valueInput = this.el.querySelector(
+              '[data-scope="select"][data-part="value-input"]'
+            );
+            if (!valueInput) return;
+            const v2 = formatSelectHiddenValue(this.el, values);
+            if (valueInput.value !== v2) valueInput.value = v2;
+            reapplyLiveViewValueInputUsage(valueInput);
+          });
         },
         destroyed() {
           var _a4, _b, _c;
@@ -33466,9 +35597,11 @@ ${err}`);
   // ../priv/static/signature-pad.mjs
   var signature_pad_exports = {};
   __export(signature_pad_exports, {
-    SignaturePad: () => SignaturePadHook
+    SignaturePad: () => SignaturePadHook,
+    buildDrawingOptions: () => buildDrawingOptions,
+    parsePathsFromDataset: () => parsePathsFromDataset
   });
-  function connect23(service, normalize) {
+  function connect24(service, normalize) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
     const empty = computed("isEmpty");
@@ -33489,7 +35622,7 @@ ${err}`);
         return getDataUrl2(scope, { type, quality });
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts23.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts24.label.attrs), {
           id: getLabelId14(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required),
@@ -33503,13 +35636,13 @@ ${err}`);
         }));
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
           "data-disabled": dataAttr(disabled),
-          id: getRootId18(scope)
+          id: getRootId19(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.control.attrs), {
           tabIndex: disabled ? void 0 : 0,
           id: getControlId9(scope),
           role: "application",
@@ -33545,7 +35678,7 @@ ${err}`);
         }));
       },
       getSegmentProps() {
-        return normalize.svg(__spreadProps(__spreadValues({}, parts23.segment.attrs), {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts24.segment.attrs), {
           style: {
             position: "absolute",
             top: 0,
@@ -33558,17 +35691,17 @@ ${err}`);
         }));
       },
       getSegmentPathProps(props) {
-        return normalize.path(__spreadProps(__spreadValues({}, parts23.segmentPath.attrs), {
+        return normalize.path(__spreadProps(__spreadValues({}, parts24.segmentPath.attrs), {
           d: props.path
         }));
       },
       getGuideProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.guide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.guide.attrs), {
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts23.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts24.clearTrigger.attrs), {
           type: "button",
           "aria-label": translations.clearTrigger,
           hidden: !context.get("paths").length || drawing,
@@ -33784,14 +35917,11 @@ ${err}`);
     return result;
   }
   function parsePathsFromDataset(el, key) {
+    const json = getJsonStringList(el, key);
+    if (json !== void 0) return json;
     const raw = el.dataset[key];
     if (!raw) return [];
     return raw.split("\n").map((line) => line.trim()).filter(Boolean);
-  }
-  function reapplyLiveViewValueInputUsage(input) {
-    const p2 = input;
-    if (!p2.phxPrivate) p2.phxPrivate = {};
-    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
   }
   function buildDrawingOptions(el) {
     const o2 = {
@@ -33806,31 +35936,49 @@ ${err}`);
     if (easing) o2.easing = easing;
     return o2;
   }
-  function queueFormBubblingInputForPhoenix2(el, getValue, opts) {
-    queueMicrotask(() => {
-      const input = el.querySelector(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (!input) {
-        return;
-      }
-      const v2 = getValue();
-      if (String(input.value) !== String(v2)) {
-        input.value = v2;
-      }
-      opts.onPadTouched();
-      reapplyLiveViewValueInputUsage(input);
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      input.dispatchEvent(new Event("change", { bubbles: true }));
-    });
+  function zagNameForForm2(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
   }
-  var anatomy23, parts23, getRootId18, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine23, SignaturePad, PHX_HAS_FOCUSED, SignaturePadHook;
+  function syncSignatureFormForPhoenix(el, paths, opts) {
+    var _a4;
+    const submitName = getString(el, "submitName");
+    const fieldTouched = opts.fieldTouched === true;
+    if (submitName) {
+      syncArrayHiddenInputsForPhoenix(el, paths, {
+        onTouched: opts.onPadTouched,
+        scope: "signature-pad",
+        submitName,
+        notifyLiveView: (_a4 = opts.notifyLiveView) != null ? _a4 : true,
+        fieldTouched
+      });
+      return;
+    }
+    const input = el.querySelector(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    if (opts.notifyLiveView === false) {
+      input.value = paths.length > 0 ? paths.join("\n") : "";
+      return;
+    }
+    queueLiveViewFormInputSync(
+      input,
+      () => paths.length > 0 ? paths.join("\n") : "",
+      opts.onPadTouched
+    );
+  }
+  var anatomy24, parts24, getRootId19, getControlId9, getLabelId14, getHiddenInputId6, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine24, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy23 = createAnatomy("signature-pad").parts(
+      init_chunk_FUVA3DRB();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy24 = createAnatomy("signature-pad").parts(
         "root",
         "control",
         "segment",
@@ -33839,8 +35987,8 @@ ${err}`);
         "clearTrigger",
         "label"
       );
-      parts23 = anatomy23.build();
-      getRootId18 = (ctx) => {
+      parts24 = anatomy24.build();
+      getRootId19 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `signature-${ctx.id}`;
       };
@@ -33872,7 +36020,7 @@ ${err}`);
       F = [0, 0];
       z2 = R;
       average = (a2, b2) => (a2 + b2) / 2;
-      machine23 = createMachine({
+      machine24 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
@@ -34009,6 +36157,11 @@ ${err}`);
           __publicField(this, "imageURL", "");
           __publicField(this, "paths", []);
           __publicField(this, "name");
+          __publicField(this, "applyPartDir", (el) => {
+            if (el instanceof HTMLElement) {
+              el.setAttribute("dir", getDir(this.el));
+            }
+          });
           __publicField(this, "syncPaths", () => {
             const segment = this.el.querySelector(
               '[data-scope="signature-pad"][data-part="segment"]'
@@ -34047,7 +36200,7 @@ ${err}`);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           this.name = props.name;
-          return new VanillaMachine(machine23, props);
+          return new VanillaMachine(machine24, props);
         }
         setName(name) {
           this.name = name;
@@ -34056,7 +36209,7 @@ ${err}`);
           this.paths = paths;
         }
         initApi() {
-          return this.zagConnect(connect23);
+          return this.zagConnect(connect24);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -34064,27 +36217,41 @@ ${err}`);
           );
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
+          this.applyPartDir(rootEl);
           const label = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="label"]'
           );
-          if (label) this.spreadProps(label, this.api.getLabelProps());
+          if (label) {
+            this.spreadProps(label, this.api.getLabelProps());
+            this.applyPartDir(label);
+          }
           const control = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="control"]'
           );
-          if (control) this.spreadProps(control, this.api.getControlProps());
+          if (control) {
+            this.spreadProps(control, this.api.getControlProps());
+            this.applyPartDir(control);
+          }
           const segment = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="segment"]'
           );
-          if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+          if (segment) {
+            this.spreadProps(segment, this.api.getSegmentProps());
+            this.applyPartDir(segment);
+          }
           const guide = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="guide"]'
           );
-          if (guide) this.spreadProps(guide, this.api.getGuideProps());
+          if (guide) {
+            this.spreadProps(guide, this.api.getGuideProps());
+            this.applyPartDir(guide);
+          }
           const clearBtn = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="clear-trigger"]'
           );
           if (clearBtn) {
             this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+            this.applyPartDir(clearBtn);
           }
           const hiddenInput = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="hidden-input"]'
@@ -34096,14 +36263,18 @@ ${err}`);
                 value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
               })
             );
+            this.applyPartDir(hiddenInput);
+            if (getString(this.el, "submitName")) {
+              hiddenInput.removeAttribute("name");
+              hiddenInput.removeAttribute("form");
+            }
           }
+          stripZagSubmitNames(this.el, "signature-pad");
           this.syncPaths();
         }
       };
-      PHX_HAS_FOCUSED = "phx-has-focused";
       SignaturePadHook = {
         mounted() {
-          var _a4;
           const el = this.el;
           const hook = this;
           const pushEvent = this.pushEvent.bind(this);
@@ -34112,32 +36283,19 @@ ${err}`);
             hook.padTouched = true;
           };
           const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
-          {
-            const input = el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (String((_a4 = input == null ? void 0 : input.value) != null ? _a4 : "") !== "" || defaultPaths.length > 0) {
-              hook.padTouched = true;
-              queueMicrotask(() => {
-                const i2 = el.querySelector(
-                  '[data-scope="signature-pad"][data-part="hidden-input"]'
-                );
-                if (i2) reapplyLiveViewValueInputUsage(i2);
-              });
-            }
-          }
           const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
-            name: getString(el, "name")
+            name: zagNameForForm2(el),
+            dir: getDir(el)
           }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
             drawing: buildDrawingOptions(el),
             onDrawEnd: (details) => {
               signaturePad.setPaths(details.paths);
-              queueFormBubblingInputForPhoenix2(
-                el,
-                () => details.paths.length > 0 ? details.paths.join("\n") : "",
-                { onPadTouched: markTouched }
-              );
+              syncSignatureFormForPhoenix(el, details.paths, {
+                onPadTouched: markTouched,
+                notifyLiveView: true,
+                fieldTouched: true
+              });
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
@@ -34166,11 +36324,34 @@ ${err}`);
           }));
           signaturePad.init();
           this.signaturePad = signaturePad;
+          const syncForm = (paths, opts) => {
+            syncSignatureFormForPhoenix(el, paths, {
+              onPadTouched: () => {
+              },
+              notifyLiveView: opts.notifyLiveView,
+              fieldTouched: isFormFieldUsed(el, hook.padTouched || opts.fieldTouched === true)
+            });
+          };
+          queueMicrotask(() => {
+            if (!hook.padTouched) {
+              syncForm(defaultPaths, { notifyLiveView: false, fieldTouched: false });
+            }
+          });
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            var _a4;
+            hook.padTouched = true;
+            const paths = (_a4 = signaturePad.api.paths) != null ? _a4 : [];
+            syncForm(paths.length > 0 ? paths : [], { notifyLiveView: false, fieldTouched: true });
+          });
           this.onClear = (event) => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
-            queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
+            syncSignatureFormForPhoenix(el, [], {
+              onPadTouched: markTouched,
+              notifyLiveView: true,
+              fieldTouched: true
+            });
           };
           el.addEventListener("corex:signature-pad:clear", this.onClear);
           this.handlers = [];
@@ -34178,36 +36359,37 @@ ${err}`);
             this.handleEvent("signature_pad_clear", (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               signaturePad.api.clear();
-              queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
+              syncSignatureFormForPhoenix(el, [], {
+                onPadTouched: markTouched,
+                notifyLiveView: true,
+                fieldTouched: true
+              });
             })
           );
         },
         updated() {
           var _a4, _b;
           const el = this.el;
-          const name = getString(el, "name");
-          if (name) {
-            (_a4 = this.signaturePad) == null ? void 0 : _a4.setName(name);
-          }
-          (_b = this.signaturePad) == null ? void 0 : _b.updateProps({
+          (_a4 = this.signaturePad) == null ? void 0 : _a4.updateProps({
             id: el.id,
-            name,
+            name: zagNameForForm2(el),
+            dir: getDir(el),
             drawing: buildDrawingOptions(el)
           });
-          if (!this.padTouched) {
-            return;
+          const serverPaths = readFormFieldServerPaths(el);
+          if (serverPaths !== void 0 && !this.padTouched) {
+            (_b = this.signaturePad) == null ? void 0 : _b.setPaths(serverPaths);
+            syncSignatureFormForPhoenix(el, serverPaths, {
+              onPadTouched: () => {
+              },
+              notifyLiveView: false,
+              fieldTouched: isFormFieldUsed(el, this.padTouched)
+            });
           }
-          queueMicrotask(() => {
-            const input = this.el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (input) {
-              reapplyLiveViewValueInputUsage(input);
-            }
-          });
         },
         destroyed() {
-          var _a4;
+          var _a4, _b;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
           if (this.onClear) {
             this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
           }
@@ -34216,7 +36398,7 @@ ${err}`);
               this.removeHandleEvent(handler);
             }
           }
-          (_a4 = this.signaturePad) == null ? void 0 : _a4.destroy();
+          (_b = this.signaturePad) == null ? void 0 : _b.destroy();
         }
       };
     }
@@ -34225,9 +36407,10 @@ ${err}`);
   // ../priv/static/switch.mjs
   var switch_exports = {};
   __export(switch_exports, {
-    Switch: () => SwitchHook
+    Switch: () => SwitchHook,
+    checkedChangePayload: () => checkedChangePayload
   });
-  function connect24(service, normalize) {
+  function connect25(service, normalize) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -34258,9 +36441,9 @@ ${err}`);
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts24.root.attrs), dataAttrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts25.root.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getRootId19(scope),
+          id: getRootId20(scope),
           htmlFor: getHiddenInputId7(scope),
           onPointerMove() {
             if (disabled) return;
@@ -34284,20 +36467,20 @@ ${err}`);
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.label.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts25.label.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getLabelId15(scope)
         }));
       },
       getThumbProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.thumb.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts25.thumb.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getThumbId2(scope),
           "aria-hidden": true
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts24.control.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts25.control.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getControlId10(scope),
           "aria-hidden": true
@@ -34335,23 +36518,19 @@ ${err}`);
       }
     };
   }
-  function checkedChangePayload2(el, details) {
-    return {
-      id: el.id,
-      checked: details.checked
-    };
-  }
-  var anatomy24, parts24, getRootId19, getLabelId15, getThumbId2, getControlId10, getHiddenInputId7, getRootEl7, getHiddenInputEl6, not9, machine24, Switch, SwitchHook;
+  var anatomy25, parts25, getRootId20, getLabelId15, getThumbId2, getControlId10, getHiddenInputId7, getRootEl7, getHiddenInputEl6, not9, machine25, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_CTFBPAMI();
+      init_chunk_G73IV5JU();
+      init_chunk_V4PB2O2G();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy24 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-      parts24 = anatomy24.build();
-      getRootId19 = (ctx) => {
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy25 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+      parts25 = anatomy25.build();
+      getRootId20 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `switch:${ctx.id}`;
       };
@@ -34371,10 +36550,10 @@ ${err}`);
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `switch:${ctx.id}:input`;
       };
-      getRootEl7 = (ctx) => ctx.getById(getRootId19(ctx));
+      getRootEl7 = (ctx) => ctx.getById(getRootId20(ctx));
       getHiddenInputEl6 = (ctx) => ctx.getById(getHiddenInputId7(ctx));
       ({ not: not9 } = createGuards());
-      machine24 = createMachine({
+      machine25 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultChecked: false,
@@ -34516,10 +36695,10 @@ ${err}`);
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine24, props);
+          return new VanillaMachine(machine25, props);
         }
         initApi() {
-          return this.zagConnect(connect24);
+          return this.zagConnect(connect25);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -34528,8 +36707,14 @@ ${err}`);
           const inputEl = rootEl.querySelector(
             ':scope > [data-scope="switch"][data-part="hidden-input"]'
           );
-          if (inputEl) {
-            this.spreadProps(inputEl, this.api.getHiddenInputProps());
+          if (inputEl instanceof HTMLInputElement) {
+            syncCheckableHiddenInput(
+              inputEl,
+              this.el,
+              this.api.checked === true,
+              (el, props) => this.spreadProps(el, props),
+              this.api.getHiddenInputProps()
+            );
           }
           rootEl.querySelectorAll(':scope > [data-scope="switch"][data-part="label"]').forEach((labelEl) => {
             this.spreadProps(labelEl, this.api.getLabelProps());
@@ -34555,7 +36740,13 @@ ${err}`);
           const canPush = () => canPushEvent(this.liveSocket);
           const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") === true } : { defaultChecked: getCheckedState(el, "defaultChecked") === true }), {
+          }, (() => {
+            const binding = mountCheckedBinding(el);
+            if ("checked" in binding) {
+              return { checked: binding.checked === true };
+            }
+            return { defaultChecked: binding.defaultChecked === true };
+          })()), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -34563,16 +36754,26 @@ ${err}`);
             dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
-            readOnly: getBoolean(el, "readOnly"),
+            readOnly: getBoolean(el, "readonly"),
             onCheckedChange: (details) => {
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: checkedChangePayload2(el, details),
+                payload: checkedChangePayload(el, details),
                 serverEventName: getString(el, "onCheckedChange"),
                 clientEventName: getString(el, "onCheckedChangeClient")
               });
+              const input = el.querySelector(
+                '[data-scope="switch"][data-part="hidden-input"]'
+              );
+              if (input) {
+                queueMicrotask(() => {
+                  input.checked = details.checked === true;
+                  input.dispatchEvent(new Event("input", { bubbles: true }));
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                });
+              }
             }
           }));
           zagSwitch.init();
@@ -34623,10 +36824,11 @@ ${err}`);
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.zagSwitch) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          const zagSwitch = this.zagSwitch;
+          if (!zagSwitch) return;
+          zagSwitch.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") === true } : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }), {
+          }, readUpdatedServerChecked(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -34634,7 +36836,7 @@ ${err}`);
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly")
+            readOnly: getBoolean(this.el, "readonly")
           }));
         },
         destroyed() {
@@ -34647,12 +36849,1531 @@ ${err}`);
     }
   });
 
+  // ../priv/static/tags-input.mjs
+  var tags_input_exports = {};
+  __export(tags_input_exports, {
+    TagsInput: () => TagsInputHook,
+    blurBehavior: () => blurBehavior,
+    maxProp: () => maxProp,
+    parseJsonTags: () => parseJsonTags,
+    readPlaceholderFromMainInput: () => readPlaceholderFromMainInput
+  });
+  function connect26(service, normalize) {
+    const { state: state2, send, computed, prop, scope, context } = service;
+    const interactive = computed("isInteractive");
+    const disabled = !!prop("disabled");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const invalid = prop("invalid") || computed("isOverflowing");
+    const translations = prop("translations");
+    const focused = state2.hasTag("focused");
+    const editingTag = state2.matches("editing:tag");
+    const empty = computed("count") === 0;
+    function getItemState(options) {
+      const id = getItemId10(scope, options);
+      const editedTagId = context.get("editedTagId");
+      const highlightedTagId = context.get("highlightedTagId");
+      return {
+        id,
+        editing: editingTag && editedTagId === id,
+        highlighted: id === highlightedTagId,
+        disabled: Boolean(options.disabled || disabled)
+      };
+    }
+    return {
+      empty,
+      inputValue: context.get("inputValue"),
+      value: context.get("value"),
+      valueAsString: computed("valueAsString"),
+      count: computed("count"),
+      atMax: computed("isAtMax"),
+      setValue(value) {
+        send({ type: "SET_VALUE", value });
+      },
+      clearValue(id) {
+        if (id) {
+          send({ type: "CLEAR_TAG", id });
+        } else {
+          send({ type: "CLEAR_VALUE" });
+        }
+      },
+      addValue(value) {
+        send({ type: "ADD_TAG", value });
+      },
+      setValueAtIndex(index, value) {
+        send({ type: "SET_VALUE_AT_INDEX", index, value });
+      },
+      setInputValue(value) {
+        send({ type: "SET_INPUT_VALUE", value });
+      },
+      clearInputValue() {
+        send({ type: "SET_INPUT_VALUE", value: "" });
+      },
+      focus() {
+        var _a4;
+        (_a4 = getInputEl6(scope)) == null ? void 0 : _a4.focus();
+      },
+      getItemState,
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir")
+        }, parts26.root.attrs), {
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-disabled": dataAttr(disabled),
+          "data-focus": dataAttr(focused),
+          "data-empty": dataAttr(empty),
+          id: getRootId21(scope),
+          onPointerDown() {
+            if (!interactive) return;
+            send({ type: "POINTER_DOWN" });
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts26.label.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-required": dataAttr(required),
+          id: getLabelId16(scope),
+          dir: prop("dir"),
+          htmlFor: getInputId8(scope)
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getControlId11(scope)
+        }, parts26.control.attrs), {
+          dir: prop("dir"),
+          tabIndex: readOnly ? 0 : void 0,
+          "data-disabled": dataAttr(disabled),
+          "data-readonly": dataAttr(readOnly),
+          "data-invalid": dataAttr(invalid),
+          "data-focus": dataAttr(focused)
+        }));
+      },
+      getInputProps() {
+        return normalize.input(__spreadProps(__spreadValues({}, parts26.input.attrs), {
+          dir: prop("dir"),
+          "data-invalid": dataAttr(invalid),
+          "aria-invalid": ariaAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-empty": dataAttr(empty),
+          maxLength: prop("maxLength"),
+          id: getInputId8(scope),
+          defaultValue: context.get("inputValue"),
+          autoComplete: "off",
+          autoCorrect: "off",
+          autoCapitalize: "none",
+          enterKeyHint: "done",
+          disabled: disabled || readOnly,
+          placeholder: empty ? prop("placeholder") : void 0,
+          onInput(event) {
+            const evt = getNativeEvent(event);
+            const value = event.currentTarget.value;
+            if (evt.inputType === "insertFromPaste") {
+              send({ type: "PASTE", value });
+              return;
+            }
+            if (endsWith(value, prop("delimiter"))) {
+              send({ type: "DELIMITER_KEY" });
+              return;
+            }
+            send({ type: "TYPE", value, key: evt.inputType });
+          },
+          onFocus() {
+            queueMicrotask(() => {
+              send({ type: "FOCUS" });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const target = event.currentTarget;
+            const isCombobox = target.getAttribute("role") === "combobox";
+            const isExpanded = target.ariaExpanded === "true";
+            const keyMap2 = {
+              ArrowDown() {
+                send({ type: "ARROW_DOWN" });
+              },
+              ArrowLeft() {
+                if (isCombobox && isExpanded) return;
+                send({ type: "ARROW_LEFT" });
+              },
+              ArrowRight(event2) {
+                if (context.get("highlightedTagId")) {
+                  event2.preventDefault();
+                }
+                if (isCombobox && isExpanded) return;
+                send({ type: "ARROW_RIGHT" });
+              },
+              Escape(event2) {
+                event2.preventDefault();
+                send({ type: "ESCAPE" });
+              },
+              Backspace() {
+                send({ type: "BACKSPACE" });
+              },
+              Delete() {
+                send({ type: "DELETE" });
+              },
+              Enter(event2) {
+                const hasHighlightedItem = target.getAttribute("aria-activedescendant");
+                if (isCombobox && isExpanded && hasHighlightedItem) return;
+                send({ type: "ENTER" });
+                event2.preventDefault();
+              }
+            };
+            const key = getEventKey(event, { dir: prop("dir") });
+            const exec = keyMap2[key];
+            if (exec) {
+              exec(event);
+              return;
+            }
+          }
+        }));
+      },
+      getHiddenInputProps() {
+        return normalize.input({
+          type: "text",
+          hidden: true,
+          name: prop("name"),
+          form: prop("form"),
+          disabled,
+          readOnly,
+          required: prop("required"),
+          id: getHiddenInputId8(scope),
+          defaultValue: computed("valueAsString")
+        });
+      },
+      getItemProps(props) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
+          dir: prop("dir"),
+          "data-value": props.value,
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getItemPreviewProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemPreview.attrs), {
+          id: itemState.id,
+          dir: prop("dir"),
+          hidden: itemState.editing,
+          "data-value": props.value,
+          "data-disabled": dataAttr(disabled),
+          "data-highlighted": dataAttr(itemState.highlighted),
+          onPointerDown(event) {
+            if (!interactive || itemState.disabled) return;
+            if (!isLeftClick(event)) return;
+            event.preventDefault();
+            send({ type: "POINTER_DOWN_TAG", id: itemState.id });
+          },
+          onDoubleClick() {
+            if (!interactive || itemState.disabled) return;
+            send({ type: "DOUBLE_CLICK_TAG", id: itemState.id });
+          }
+        }));
+      },
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-highlighted": dataAttr(itemState.highlighted)
+        }));
+      },
+      getItemInputProps(props) {
+        var _a4;
+        const itemState = getItemState(props);
+        return normalize.input(__spreadProps(__spreadValues({}, parts26.itemInput.attrs), {
+          dir: prop("dir"),
+          "aria-label": (_a4 = translations == null ? void 0 : translations.tagEdited) == null ? void 0 : _a4.call(translations, props.value),
+          disabled,
+          id: getItemInputId(scope, props),
+          tabIndex: -1,
+          hidden: !itemState.editing,
+          maxLength: prop("maxLength"),
+          defaultValue: itemState.editing ? context.get("editedTagValue") : "",
+          onInput(event) {
+            send({ type: "TAG_INPUT_TYPE", value: event.currentTarget.value });
+          },
+          onBlur(event) {
+            queueMicrotask(() => {
+              send({ type: "TAG_INPUT_BLUR", target: event.relatedTarget, id: itemState.id });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const keyMap2 = {
+              Enter() {
+                send({ type: "TAG_INPUT_ENTER" });
+              },
+              Escape() {
+                send({ type: "TAG_INPUT_ESCAPE" });
+              }
+            };
+            const exec = keyMap2[event.key];
+            if (exec) {
+              event.preventDefault();
+              exec(event);
+            }
+          }
+        }));
+      },
+      getItemDeleteTriggerProps(props) {
+        var _a4;
+        const itemState = getItemState(props);
+        return normalize.button(__spreadProps(__spreadValues({}, parts26.itemDeleteTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(itemState.disabled),
+          "aria-disabled": itemState.disabled,
+          "data-highlighted": dataAttr(itemState.highlighted),
+          id: getItemDeleteTriggerId2(scope, props),
+          type: "button",
+          disabled: itemState.disabled,
+          "aria-label": (_a4 = translations == null ? void 0 : translations.deleteTagTriggerLabel) == null ? void 0 : _a4.call(translations, props.value),
+          tabIndex: -1,
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (!interactive) {
+              event.preventDefault();
+            }
+          },
+          onPointerMove(event) {
+            if (!interactive) return;
+            setHoverIntent(event.currentTarget);
+          },
+          onPointerLeave(event) {
+            if (!interactive) return;
+            clearHoverIntent(event.currentTarget);
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            send({ type: "CLICK_DELETE_TAG", id: itemState.id });
+          }
+        }));
+      },
+      getClearTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts26.clearTrigger.attrs), {
+          dir: prop("dir"),
+          id: getClearTriggerId4(scope),
+          type: "button",
+          "data-readonly": dataAttr(readOnly),
+          disabled,
+          "aria-label": translations == null ? void 0 : translations.clearTriggerLabel,
+          hidden: empty,
+          onClick() {
+            if (!interactive) return;
+            send({ type: "CLEAR_VALUE" });
+          }
+        }));
+      }
+    };
+  }
+  function endsWith(str, del) {
+    if (!del) return false;
+    if (typeof del === "string") return str.endsWith(del);
+    return new RegExp(`${del.source}$`).test(str);
+  }
+  function getVisualStyles(node) {
+    if (!node) return;
+    const style = getComputedStyle2(node);
+    return "box-sizing:" + style.boxSizing + ";border-left:" + style.borderLeftWidth + " solid red;border-right:" + style.borderRightWidth + " solid red;font-family:" + style.fontFamily + ";font-feature-settings:" + style.fontFeatureSettings + ";font-kerning:" + style.fontKerning + ";font-size:" + style.fontSize + ";font-stretch:" + style.fontStretch + ";font-style:" + style.fontStyle + ";font-variant:" + style.fontVariant + ";font-variant-caps:" + style.fontVariantCaps + ";font-variant-ligatures:" + style.fontVariantLigatures + ";font-variant-numeric:" + style.fontVariantNumeric + ";font-weight:" + style.fontWeight + ";letter-spacing:" + style.letterSpacing + ";margin-left:" + style.marginLeft + ";margin-right:" + style.marginRight + ";padding-left:" + style.paddingLeft + ";padding-right:" + style.paddingRight + ";text-indent:" + style.textIndent + ";text-transform:" + style.textTransform;
+  }
+  function createGhostElement(doc) {
+    const el = doc.createElement("div");
+    el.id = "ghost";
+    el.style.cssText = "display:inline-block;height:0;overflow:hidden;position:absolute;top:0;visibility:hidden;white-space:nowrap;";
+    doc.body.appendChild(el);
+    return el;
+  }
+  function autoResizeInput(input) {
+    if (!input) return;
+    const doc = getDocument(input);
+    const win = getWindow(input);
+    const ghost = createGhostElement(doc);
+    const cssText = getVisualStyles(input);
+    if (cssText) ghost.style.cssText += cssText;
+    function resize() {
+      win.requestAnimationFrame(() => {
+        ghost.innerHTML = input.value;
+        const rect = win.getComputedStyle(ghost);
+        input == null ? void 0 : input.style.setProperty("width", rect.width);
+      });
+    }
+    resize();
+    input == null ? void 0 : input.addEventListener("input", resize);
+    input == null ? void 0 : input.addEventListener("change", resize);
+    return () => {
+      doc.body.removeChild(ghost);
+      input == null ? void 0 : input.removeEventListener("input", resize);
+      input == null ? void 0 : input.removeEventListener("change", resize);
+    };
+  }
+  function formatTagTemplate(template, tag) {
+    return template.split(TAG_PLACEHOLDER).join(tag);
+  }
+  function buildZagTagsInputTranslations(m2) {
+    var _a4, _b;
+    const deleteTemplate = (_a4 = m2.deleteTagTriggerLabel) != null ? _a4 : DEFAULT_DELETE_TEMPLATE;
+    const editTemplate = (_b = m2.tagEdited) != null ? _b : DEFAULT_TAG_EDITED_TEMPLATE;
+    return {
+      deleteTagTriggerLabel: (value) => formatTagTemplate(deleteTemplate, value),
+      tagEdited: (value) => formatTagTemplate(editTemplate, value)
+    };
+  }
+  function resolveZagTagsInputTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) {
+      return { translations: buildZagTagsInputTranslations({}) };
+    }
+    try {
+      const m2 = JSON.parse(raw);
+      return { translations: buildZagTagsInputTranslations(m2) };
+    } catch (e2) {
+      return { translations: buildZagTagsInputTranslations({}) };
+    }
+  }
+  function directItemElements(controlEl) {
+    return Array.from(
+      controlEl.querySelectorAll(':scope > [data-scope="tags-input"][data-part="item"]')
+    );
+  }
+  function itemInputIsEditing(input) {
+    if (!input) return false;
+    return !input.hidden;
+  }
+  function syncTagsArrayInputsForPhoenix(el, values, onTouched, opts = {}) {
+    syncArrayHiddenInputsForPhoenix(el, values, {
+      onTouched,
+      scope: "tags-input",
+      notifyLiveView: opts.notifyLiveView,
+      fieldTouched: opts.fieldTouched === true
+    });
+  }
+  function syncTagsInputFormForPhoenix(el, values, onTouched, opts = {}) {
+    syncTagsArrayInputsForPhoenix(el, values, onTouched, opts);
+  }
+  function parseJsonTags(el, key) {
+    const raw = el.dataset[key];
+    if (!raw || raw.trim() === "") return [];
+    try {
+      const v2 = JSON.parse(raw);
+      return Array.isArray(v2) && v2.every((x2) => typeof x2 === "string") ? v2 : [];
+    } catch (e2) {
+      return [];
+    }
+  }
+  function blurBehavior(el) {
+    return getString(el, "blurBehavior", ["add", "clear"]);
+  }
+  function maxProp(el) {
+    const n2 = getNumber(el, "max");
+    if (n2 === void 0) return void 0;
+    if (!Number.isFinite(n2) || n2 <= 0) return void 0;
+    return n2;
+  }
+  function readPlaceholderFromMainInput(hookEl) {
+    const input = hookEl.querySelector(
+      '[data-scope="tags-input"][data-part="input"]'
+    );
+    const v2 = input == null ? void 0 : input.getAttribute("placeholder");
+    return typeof v2 === "string" && v2 !== "" ? v2 : void 0;
+  }
+  function zagNameForForm3(el) {
+    if (getString(el, "submitName")) return void 0;
+    return getString(el, "name");
+  }
+  var anatomy26, parts26, getRootId21, getInputId8, getClearTriggerId4, getHiddenInputId8, getLabelId16, getControlId11, getItemId10, getItemDeleteTriggerId2, getItemInputId, getEditInputId, getEditInputEl, getItemEls2, getTagInputEl, getRootEl8, getInputEl6, getHiddenInputEl7, getTagElements, getFirstEl2, getLastEl2, getPrevEl2, getNextEl2, getTagElAtIndex, getIndexOfId, setHoverIntent, clearHoverIntent, dispatchInputEvent, and9, not10, or4, machine26, TAG_PLACEHOLDER, DEFAULT_DELETE_TEMPLATE, DEFAULT_TAG_EDITED_TEMPLATE, TagsInput, TagsInputHook;
+  var init_tags_input = __esm({
+    "../priv/static/tags-input.mjs"() {
+      "use strict";
+      init_chunk_7BZGUIUZ();
+      init_chunk_4QMNVH3P();
+      init_chunk_WDSYQCT6();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy26 = createAnatomy("tagsInput").parts(
+        "root",
+        "label",
+        "control",
+        "input",
+        "clearTrigger",
+        "item",
+        "itemPreview",
+        "itemInput",
+        "itemText",
+        "itemDeleteTrigger"
+      );
+      parts26 = anatomy26.build();
+      getRootId21 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tags-input:${ctx.id}`;
+      };
+      getInputId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.input) != null ? _b : `tags-input:${ctx.id}:input`;
+      };
+      getClearTriggerId4 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.clearBtn) != null ? _b : `tags-input:${ctx.id}:clear-btn`;
+      };
+      getHiddenInputId8 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.hiddenInput) != null ? _b : `tags-input:${ctx.id}:hidden-input`;
+      };
+      getLabelId16 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `tags-input:${ctx.id}:label`;
+      };
+      getControlId11 = (ctx) => {
+        var _a4, _b;
+        return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.control) != null ? _b : `tags-input:${ctx.id}:control`;
+      };
+      getItemId10 = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `tags-input:${ctx.id}:tag:${opt.value}:${opt.index}`;
+      };
+      getItemDeleteTriggerId2 = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemDeleteTrigger) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `${getItemId10(ctx, opt)}:delete-btn`;
+      };
+      getItemInputId = (ctx, opt) => {
+        var _a4, _b, _c;
+        return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.itemInput) == null ? void 0 : _b.call(_a4, opt)) != null ? _c : `${getItemId10(ctx, opt)}:input`;
+      };
+      getEditInputId = (id) => `${id}:input`;
+      getEditInputEl = (ctx, id) => ctx.getById(getEditInputId(id));
+      getItemEls2 = (ctx) => queryAll(getRootEl8(ctx), `[data-part=item]`);
+      getTagInputEl = (ctx, opt) => ctx.getById(getItemInputId(ctx, opt));
+      getRootEl8 = (ctx) => ctx.getById(getRootId21(ctx));
+      getInputEl6 = (ctx) => ctx.getById(getInputId8(ctx));
+      getHiddenInputEl7 = (ctx) => ctx.getById(getHiddenInputId8(ctx));
+      getTagElements = (ctx) => queryAll(getRootEl8(ctx), `[data-part=item-preview]:not([data-disabled])`);
+      getFirstEl2 = (ctx) => getTagElements(ctx)[0];
+      getLastEl2 = (ctx) => getTagElements(ctx)[getTagElements(ctx).length - 1];
+      getPrevEl2 = (ctx, id) => prevById(getTagElements(ctx), id, false);
+      getNextEl2 = (ctx, id) => nextById(getTagElements(ctx), id, false);
+      getTagElAtIndex = (ctx, index) => getTagElements(ctx)[index];
+      getIndexOfId = (ctx, id) => indexOfId(getTagElements(ctx), id);
+      setHoverIntent = (el) => {
+        const tagEl = el.closest("[data-part=item-preview]");
+        if (!tagEl) return;
+        tagEl.dataset.deleteIntent = "";
+      };
+      clearHoverIntent = (el) => {
+        const tagEl = el.closest("[data-part=item-preview]");
+        if (!tagEl) return;
+        delete tagEl.dataset.deleteIntent;
+      };
+      dispatchInputEvent = (ctx, value) => {
+        const inputEl = getHiddenInputEl7(ctx);
+        if (!inputEl) return;
+        dispatchInputValueEvent(inputEl, { value });
+      };
+      ({ and: and9, not: not10, or: or4 } = createGuards());
+      machine26 = createMachine({
+        props({ props }) {
+          return __spreadProps(__spreadValues({
+            dir: "ltr",
+            addOnPaste: false,
+            editable: true,
+            validate: () => true,
+            allowDuplicates: false,
+            delimiter: ",",
+            defaultValue: [],
+            defaultInputValue: "",
+            max: Infinity,
+            sanitizeValue: (value) => value.trim()
+          }, props), {
+            translations: __spreadValues({
+              clearTriggerLabel: "Clear all tags",
+              deleteTagTriggerLabel: (value) => `Delete tag ${value}`,
+              tagAdded: (value) => `Added tag ${value}`,
+              tagsPasted: (values) => `Pasted ${values.length} tags`,
+              tagEdited: (value) => `Editing tag ${value}. Press enter to save or escape to cancel.`,
+              tagUpdated: (value) => `Tag update to ${value}`,
+              tagDeleted: (value) => `Tag ${value} deleted`,
+              tagSelected: (value) => `Tag ${value} selected. Press enter to edit, delete or backspace to remove.`
+            }, props.translations)
+          });
+        },
+        initialState({ prop }) {
+          return prop("autoFocus") ? "focused:input" : "idle";
+        },
+        refs() {
+          return {
+            liveRegion: null,
+            log: { current: null, prev: null }
+          };
+        },
+        context({ bindable: bindable2, prop }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              isEqual,
+              hash(value) {
+                return value.join(", ");
+              },
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onValueChange")) == null ? void 0 : _a4({ value });
+              }
+            })),
+            inputValue: bindable2(() => ({
+              sync: true,
+              defaultValue: prop("defaultInputValue"),
+              value: prop("inputValue"),
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onInputValueChange")) == null ? void 0 : _a4({ inputValue: value });
+              }
+            })),
+            fieldsetDisabled: bindable2(() => ({ defaultValue: false })),
+            editedTagValue: bindable2(() => ({ defaultValue: "" })),
+            editedTagId: bindable2(() => ({ defaultValue: null })),
+            editedTagIndex: bindable2(() => ({
+              defaultValue: null,
+              sync: true
+            })),
+            highlightedTagId: bindable2(() => ({
+              defaultValue: null,
+              sync: true,
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onHighlightChange")) == null ? void 0 : _a4({ highlightedValue: value });
+              }
+            }))
+          };
+        },
+        computed: {
+          count: ({ context }) => context.get("value").length,
+          valueAsString: ({ context }) => context.hash("value"),
+          sanitizedInputValue: ({ context, prop }) => prop("sanitizeValue")(context.get("inputValue")),
+          isDisabled: ({ prop }) => !!prop("disabled"),
+          isInteractive: ({ prop }) => !(prop("readOnly") || !!prop("disabled")),
+          isAtMax: ({ context, prop }) => context.get("value").length === prop("max"),
+          isOverflowing: ({ context, prop }) => context.get("value").length > prop("max")
+        },
+        watch({ track, context, action, computed, refs }) {
+          track([() => context.get("editedTagValue")], () => {
+            action(["syncEditedTagInputValue"]);
+          });
+          track([() => context.get("inputValue")], () => {
+            action(["syncInputValue"]);
+          });
+          track([() => context.get("highlightedTagId")], () => {
+            action(["logHighlightedTag"]);
+          });
+          track([() => computed("isOverflowing")], () => {
+            action(["invokeOnInvalid"]);
+          });
+          track([() => JSON.stringify(refs.get("log"))], () => {
+            action(["announceLog"]);
+          });
+        },
+        effects: ["trackLiveRegion", "trackFormControlState"],
+        exit: ["clearLog"],
+        on: {
+          DOUBLE_CLICK_TAG: {
+            // internal: true,
+            guard: "isTagEditable",
+            target: "editing:tag",
+            actions: ["setEditedId"]
+          },
+          POINTER_DOWN_TAG: {
+            // internal: true,
+            target: "navigating:tag",
+            actions: ["highlightTag", "focusInput"]
+          },
+          CLICK_DELETE_TAG: {
+            target: "focused:input",
+            actions: ["deleteTag"]
+          },
+          SET_INPUT_VALUE: {
+            actions: ["setInputValue"]
+          },
+          SET_VALUE: {
+            actions: ["setValue"]
+          },
+          CLEAR_TAG: {
+            actions: ["deleteTag"]
+          },
+          SET_VALUE_AT_INDEX: {
+            actions: ["setValueAtIndex"]
+          },
+          CLEAR_VALUE: {
+            actions: ["clearTags", "clearInputValue", "focusInput"]
+          },
+          ADD_TAG: {
+            actions: ["addTag"]
+          },
+          INSERT_TAG: {
+            // (!isAtMax || allowOverflow) && !inputValueIsEmpty
+            guard: and9(or4(not10("isAtMax"), "allowOverflow"), not10("isInputValueEmpty")),
+            actions: ["addTag", "clearInputValue"]
+          },
+          EXTERNAL_BLUR: [
+            { guard: "addOnBlur", actions: ["raiseInsertTagEvent"] },
+            { guard: "clearOnBlur", actions: ["clearInputValue"] }
+          ]
+        },
+        states: {
+          idle: {
+            on: {
+              FOCUS: {
+                target: "focused:input"
+              },
+              POINTER_DOWN: {
+                guard: not10("hasHighlightedTag"),
+                target: "focused:input"
+              }
+            }
+          },
+          "focused:input": {
+            tags: ["focused"],
+            entry: ["focusInput", "clearHighlightedId"],
+            effects: ["trackInteractOutside"],
+            on: {
+              TYPE: {
+                actions: ["setInputValue"]
+              },
+              BLUR: [
+                {
+                  guard: "addOnBlur",
+                  target: "idle",
+                  actions: ["raiseInsertTagEvent"]
+                },
+                {
+                  guard: "clearOnBlur",
+                  target: "idle",
+                  actions: ["clearInputValue"]
+                },
+                { target: "idle" }
+              ],
+              ENTER: {
+                actions: ["raiseInsertTagEvent"]
+              },
+              DELIMITER_KEY: {
+                actions: ["raiseInsertTagEvent"]
+              },
+              ARROW_LEFT: {
+                guard: and9("hasTags", "isCaretAtStart"),
+                target: "navigating:tag",
+                actions: ["highlightLastTag"]
+              },
+              BACKSPACE: {
+                target: "navigating:tag",
+                guard: and9("hasTags", "isCaretAtStart"),
+                actions: ["highlightLastTag"]
+              },
+              DELETE: {
+                guard: "hasHighlightedTag",
+                actions: ["deleteHighlightedTag", "highlightTagAtIndex"]
+              },
+              PASTE: [
+                {
+                  guard: "addOnPaste",
+                  actions: ["setInputValue", "addTagFromPaste"]
+                },
+                {
+                  actions: ["setInputValue"]
+                }
+              ]
+            }
+          },
+          "navigating:tag": {
+            tags: ["focused"],
+            effects: ["trackInteractOutside"],
+            on: {
+              ARROW_RIGHT: [
+                {
+                  guard: and9("hasTags", "isCaretAtStart", not10("isLastTagHighlighted")),
+                  actions: ["highlightNextTag"]
+                },
+                { target: "focused:input" }
+              ],
+              ARROW_LEFT: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  actions: ["highlightPrevTag"]
+                }
+              ],
+              BLUR: {
+                target: "idle",
+                actions: ["clearHighlightedId"]
+              },
+              ENTER: {
+                guard: and9("isTagEditable", "hasHighlightedTag"),
+                target: "editing:tag",
+                actions: ["setEditedId", "focusEditedTagInput"]
+              },
+              ARROW_DOWN: {
+                target: "focused:input"
+              },
+              ESCAPE: {
+                target: "focused:input"
+              },
+              TYPE: {
+                target: "focused:input",
+                actions: ["setInputValue"]
+              },
+              BACKSPACE: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  guard: "isFirstTagHighlighted",
+                  actions: ["deleteHighlightedTag", "highlightFirstTag"]
+                },
+                {
+                  guard: "hasHighlightedTag",
+                  actions: ["deleteHighlightedTag", "highlightPrevTag"]
+                },
+                {
+                  actions: ["highlightLastTag"]
+                }
+              ],
+              DELETE: [
+                {
+                  guard: not10("isCaretAtStart"),
+                  target: "focused:input"
+                },
+                {
+                  target: "focused:input",
+                  actions: ["deleteHighlightedTag", "highlightTagAtIndex"]
+                }
+              ],
+              PASTE: [
+                {
+                  guard: "addOnPaste",
+                  target: "focused:input",
+                  actions: ["setInputValue", "addTagFromPaste"]
+                },
+                {
+                  target: "focused:input",
+                  actions: ["setInputValue"]
+                }
+              ]
+            }
+          },
+          "editing:tag": {
+            tags: ["editing", "focused"],
+            entry: ["focusEditedTagInput"],
+            effects: ["autoResize"],
+            on: {
+              TAG_INPUT_TYPE: {
+                actions: ["setEditedTagValue"]
+              },
+              TAG_INPUT_ESCAPE: {
+                target: "navigating:tag",
+                actions: ["clearEditedTagValue", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+              },
+              TAG_INPUT_BLUR: [
+                {
+                  guard: "isInputRelatedTarget",
+                  target: "navigating:tag",
+                  actions: ["clearEditedTagValue", "clearHighlightedId", "clearEditedId"]
+                },
+                {
+                  target: "idle",
+                  actions: ["clearEditedTagValue", "clearHighlightedId", "clearEditedId", "raiseExternalBlurEvent"]
+                }
+              ],
+              TAG_INPUT_ENTER: [
+                {
+                  guard: "isEditedTagEmpty",
+                  target: "navigating:tag",
+                  actions: ["deleteHighlightedTag", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+                },
+                {
+                  target: "navigating:tag",
+                  actions: ["submitEditedTagValue", "focusInput", "clearEditedId", "highlightTagAtIndex"]
+                }
+              ]
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isInputRelatedTarget: ({ scope, event }) => event.relatedTarget === getInputEl6(scope),
+            isAtMax: ({ computed }) => computed("isAtMax"),
+            hasHighlightedTag: ({ context }) => context.get("highlightedTagId") != null,
+            isFirstTagHighlighted: ({ context, scope }) => {
+              const value = context.get("value");
+              const firstItemId = getItemId10(scope, { value: value[0], index: 0 });
+              return firstItemId === context.get("highlightedTagId");
+            },
+            isEditedTagEmpty: ({ context, prop }) => prop("sanitizeValue")(context.get("editedTagValue")) === "",
+            isLastTagHighlighted: ({ context, scope }) => {
+              const value = context.get("value");
+              const lastIndex = value.length - 1;
+              const lastItemId = getItemId10(scope, { value: value[lastIndex], index: lastIndex });
+              return lastItemId === context.get("highlightedTagId");
+            },
+            isInputValueEmpty: ({ context, prop }) => prop("sanitizeValue")(context.get("inputValue")).length === 0,
+            hasTags: ({ context }) => context.get("value").length > 0,
+            allowOverflow: ({ prop }) => !!prop("allowOverflow"),
+            autoFocus: ({ prop }) => !!prop("autoFocus"),
+            addOnBlur: ({ prop }) => prop("blurBehavior") === "add",
+            clearOnBlur: ({ prop }) => prop("blurBehavior") === "clear",
+            addOnPaste: ({ prop }) => !!prop("addOnPaste"),
+            isTagEditable: ({ prop }) => !!prop("editable"),
+            isCaretAtStart: ({ scope }) => isCaretAtStart(getInputEl6(scope))
+          },
+          effects: {
+            trackInteractOutside({ scope, prop, send }) {
+              return trackInteractOutside(getInputEl6(scope), {
+                exclude(target) {
+                  const itemEls = getItemEls2(scope);
+                  return itemEls.some((el) => contains(el, target));
+                },
+                onFocusOutside: prop("onFocusOutside"),
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onInteractOutside(event) {
+                  var _a4;
+                  (_a4 = prop("onInteractOutside")) == null ? void 0 : _a4(event);
+                  if (event.defaultPrevented) return;
+                  send({ type: "BLUR", src: "interact-outside" });
+                }
+              });
+            },
+            trackFormControlState({ context, send, scope }) {
+              return trackFormControl(getHiddenInputEl7(scope), {
+                onFieldsetDisabledChange(disabled) {
+                  context.set("fieldsetDisabled", disabled);
+                },
+                onFormReset() {
+                  const value = context.initial("value");
+                  send({ type: "SET_VALUE", value, src: "form-reset" });
+                }
+              });
+            },
+            autoResize({ context, prop, scope }) {
+              let fn_cleanup;
+              queueMicrotask(() => {
+                const editedTagValue = context.get("editedTagValue");
+                const editedTagIndex = context.get("editedTagIndex");
+                if (!editedTagValue || editedTagIndex == null || !prop("editable")) return;
+                const inputEl = getTagInputEl(scope, {
+                  value: editedTagValue,
+                  index: editedTagIndex
+                });
+                fn_cleanup = autoResizeInput(inputEl);
+              });
+              return () => {
+                fn_cleanup == null ? void 0 : fn_cleanup();
+              };
+            },
+            trackLiveRegion({ scope, refs }) {
+              const liveRegion = createLiveRegion({
+                level: "assertive",
+                document: scope.getDoc()
+              });
+              refs.set("liveRegion", liveRegion);
+              return () => liveRegion.destroy();
+            }
+          },
+          actions: {
+            raiseInsertTagEvent({ send }) {
+              send({ type: "INSERT_TAG" });
+            },
+            raiseExternalBlurEvent({ send, event }) {
+              send({ type: "EXTERNAL_BLUR", id: event.id });
+            },
+            dispatchChangeEvent({ scope, computed }) {
+              dispatchInputEvent(scope, computed("valueAsString"));
+            },
+            highlightNextTag({ context, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const next2 = getNextEl2(scope, highlightedTagId);
+              context.set("highlightedTagId", (_a4 = next2 == null ? void 0 : next2.id) != null ? _a4 : null);
+            },
+            highlightFirstTag({ context, scope }) {
+              raf(() => {
+                var _a4;
+                const first2 = getFirstEl2(scope);
+                context.set("highlightedTagId", (_a4 = first2 == null ? void 0 : first2.id) != null ? _a4 : null);
+              });
+            },
+            highlightLastTag({ context, scope }) {
+              var _a4;
+              const last2 = getLastEl2(scope);
+              context.set("highlightedTagId", (_a4 = last2 == null ? void 0 : last2.id) != null ? _a4 : null);
+            },
+            highlightPrevTag({ context, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const prev2 = getPrevEl2(scope, highlightedTagId);
+              context.set("highlightedTagId", (_a4 = prev2 == null ? void 0 : prev2.id) != null ? _a4 : null);
+            },
+            highlightTag({ context, event }) {
+              context.set("highlightedTagId", event.id);
+            },
+            highlightTagAtIndex({ context, scope }) {
+              raf(() => {
+                const idx = context.get("editedTagIndex");
+                if (idx == null) return;
+                const tagEl = getTagElAtIndex(scope, idx);
+                if (tagEl == null) return;
+                context.set("highlightedTagId", tagEl.id);
+                context.set("editedTagIndex", null);
+              });
+            },
+            deleteTag({ context, scope, event, refs }) {
+              const index = getIndexOfId(scope, event.id);
+              const value = context.get("value")[index];
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "delete", value }
+              });
+              context.set("value", (prev2) => removeAt(prev2, index));
+            },
+            deleteHighlightedTag({ context, scope, refs }) {
+              const highlightedTagId = context.get("highlightedTagId");
+              if (highlightedTagId == null) return;
+              const index = getIndexOfId(scope, highlightedTagId);
+              context.set("editedTagIndex", index);
+              const value = context.get("value");
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "delete", value: value[index] }
+              });
+              context.set("value", (prev2) => removeAt(prev2, index));
+            },
+            setEditedId({ context, event, scope }) {
+              var _a4;
+              const highlightedTagId = context.get("highlightedTagId");
+              const editedTagId = (_a4 = event.id) != null ? _a4 : highlightedTagId;
+              context.set("editedTagId", editedTagId);
+              const index = getIndexOfId(scope, editedTagId);
+              const valueAtIndex = context.get("value")[index];
+              context.set("editedTagIndex", index);
+              context.set("editedTagValue", valueAtIndex);
+            },
+            clearEditedId({ context }) {
+              context.set("editedTagId", null);
+            },
+            clearEditedTagValue({ context }) {
+              context.set("editedTagValue", "");
+            },
+            setEditedTagValue({ context, event }) {
+              context.set("editedTagValue", event.value);
+            },
+            submitEditedTagValue({ context, scope, refs, prop }) {
+              const editedTagId = context.get("editedTagId");
+              if (!editedTagId) return;
+              const index = getIndexOfId(scope, editedTagId);
+              const editedTagValue = context.get("editedTagValue");
+              const value = context.get("value");
+              const hasDuplicate = value.some((item, idx) => idx !== index && item === editedTagValue);
+              if (!prop("allowDuplicates") && hasDuplicate) return;
+              if (value[index] === editedTagValue) return;
+              context.set("value", (prev2) => {
+                const nextValue = prev2.slice();
+                nextValue[index] = editedTagValue;
+                return nextValue;
+              });
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "update", value: editedTagValue }
+              });
+            },
+            setValueAtIndex({ context, event, refs, prop }) {
+              if (event.value) {
+                const value = context.get("value");
+                const hasDuplicate = value.some((item, idx) => idx !== event.index && item === event.value);
+                if (!prop("allowDuplicates") && hasDuplicate) return;
+                if (value[event.index] === event.value) return;
+                context.set("value", (prev2) => {
+                  const nextValue = prev2.slice();
+                  nextValue[event.index] = event.value;
+                  return nextValue;
+                });
+                const prevLog = refs.get("log");
+                refs.set("log", {
+                  prev: prevLog.current,
+                  current: { type: "update", value: event.value }
+                });
+              } else {
+                warn("You need to provide a value for the tag");
+              }
+            },
+            focusEditedTagInput({ context, scope }) {
+              raf(() => {
+                const editedTagId = context.get("editedTagId");
+                if (!editedTagId) return;
+                const editTagInputEl = getEditInputEl(scope, editedTagId);
+                editTagInputEl == null ? void 0 : editTagInputEl.select();
+              });
+            },
+            setInputValue({ context, event }) {
+              context.set("inputValue", event.value);
+            },
+            clearHighlightedId({ context }) {
+              context.set("highlightedTagId", null);
+            },
+            focusInput({ scope }) {
+              raf(() => {
+                var _a4;
+                (_a4 = getInputEl6(scope)) == null ? void 0 : _a4.focus();
+              });
+            },
+            clearInputValue({ context }) {
+              raf(() => {
+                context.set("inputValue", "");
+              });
+            },
+            syncInputValue({ context, scope }) {
+              const inputEl = getInputEl6(scope);
+              if (!inputEl) return;
+              setElementValue(inputEl, context.get("inputValue"));
+            },
+            syncEditedTagInputValue({ context, event, scope }) {
+              const id = context.get("editedTagId") || context.get("highlightedTagId") || event.id;
+              if (id == null) return;
+              const editTagInputEl = getEditInputEl(scope, id);
+              if (!editTagInputEl) return;
+              setElementValue(editTagInputEl, context.get("editedTagValue"));
+            },
+            addTag({ context, event, computed, prop, refs }) {
+              var _a4, _b, _c;
+              const inputValue = (_a4 = event.value) != null ? _a4 : computed("sanitizedInputValue");
+              const value = context.get("value");
+              const guard = (_b = prop("validate")) == null ? void 0 : _b({ inputValue, value: Array.from(value) });
+              if (guard) {
+                const nextValue = prop("allowDuplicates") ? value.concat(inputValue) : uniq(value.concat(inputValue));
+                context.set("value", nextValue);
+                const prevLog = refs.get("log");
+                refs.set("log", {
+                  prev: prevLog.current,
+                  current: { type: "add", value: inputValue }
+                });
+              } else {
+                (_c = prop("onValueInvalid")) == null ? void 0 : _c({ reason: "invalidTag" });
+              }
+            },
+            addTagFromPaste({ context, computed, prop, refs }) {
+              raf(() => {
+                var _a4, _b;
+                const inputValue = computed("sanitizedInputValue");
+                const value = context.get("value");
+                const sanitize2 = prop("sanitizeValue");
+                const guard = (_a4 = prop("validate")) == null ? void 0 : _a4({
+                  inputValue,
+                  value: Array.from(value)
+                });
+                if (guard) {
+                  const delimiter = prop("delimiter");
+                  const sanitizedValues = delimiter ? inputValue.split(delimiter).map(sanitize2) : [inputValue];
+                  const nextValue = prop("allowDuplicates") ? value.concat(...sanitizedValues) : uniq(value.concat(...sanitizedValues));
+                  context.set("value", nextValue);
+                  const prevLog = refs.get("log");
+                  refs.set("log", {
+                    prev: prevLog.current,
+                    current: { type: "paste", values: sanitizedValues }
+                  });
+                } else {
+                  (_b = prop("onValueInvalid")) == null ? void 0 : _b({ reason: "invalidTag" });
+                }
+                context.set("inputValue", "");
+              });
+            },
+            clearTags({ context, refs }) {
+              context.set("value", []);
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "clear" }
+              });
+            },
+            setValue({ context, event }) {
+              context.set("value", event.value);
+            },
+            invokeOnInvalid({ prop, computed }) {
+              var _a4;
+              if (computed("isOverflowing")) {
+                (_a4 = prop("onValueInvalid")) == null ? void 0 : _a4({ reason: "rangeOverflow" });
+              }
+            },
+            clearLog({ refs }) {
+              const log = refs.get("log");
+              log.prev = log.current = null;
+            },
+            logHighlightedTag({ refs, context, scope }) {
+              const highlightedTagId = context.get("highlightedTagId");
+              const log = refs.get("log");
+              if (highlightedTagId == null || !log.current) return;
+              const index = getIndexOfId(scope, highlightedTagId);
+              const value = context.get("value")[index];
+              const prevLog = refs.get("log");
+              refs.set("log", {
+                prev: prevLog.current,
+                current: { type: "select", value }
+              });
+            },
+            // queue logs with screen reader and get it announced
+            announceLog({ refs, prop }) {
+              const liveRegion = refs.get("liveRegion");
+              const translations = prop("translations");
+              const log = refs.get("log");
+              if (!log.current || liveRegion == null) return;
+              const region = liveRegion;
+              const { current, prev: prev2 } = log;
+              let msg;
+              switch (current.type) {
+                case "add":
+                  msg = translations.tagAdded(current.value);
+                  break;
+                case "delete":
+                  msg = translations.tagDeleted(current.value);
+                  break;
+                case "update":
+                  msg = translations.tagUpdated(current.value);
+                  break;
+                case "paste":
+                  msg = translations.tagsPasted(current.values);
+                  break;
+                case "select":
+                  msg = translations.tagSelected(current.value);
+                  if ((prev2 == null ? void 0 : prev2.type) === "delete") {
+                    msg = `${translations.tagDeleted(prev2.value)}. ${msg}`;
+                  } else if ((prev2 == null ? void 0 : prev2.type) === "update") {
+                    msg = `${translations.tagUpdated(prev2.value)}. ${msg}`;
+                  }
+                  break;
+                default:
+                  break;
+              }
+              if (msg) region.announce(msg);
+            }
+          }
+        }
+      });
+      TAG_PLACEHOLDER = "%{tag}";
+      DEFAULT_DELETE_TEMPLATE = "Delete tag %{tag}";
+      DEFAULT_TAG_EDITED_TEMPLATE = "Editing tag %{tag}. Press enter to save or escape to cancel.";
+      TagsInput = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine26, props);
+        }
+        initApi() {
+          return this.zagConnect(connect26);
+        }
+        spreadItemParts(itemEl, index, value) {
+          this.spreadProps(itemEl, this.api.getItemProps({ index, value }));
+          const previewEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-preview"]'
+          );
+          if (previewEl) this.spreadProps(previewEl, this.api.getItemPreviewProps({ index, value }));
+          const textEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-text"]'
+          );
+          if (textEl) this.spreadProps(textEl, this.api.getItemTextProps({ index, value }));
+          const delEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-delete-trigger"]'
+          );
+          if (delEl) {
+            while (delEl.childElementCount > 1) {
+              delEl.removeChild(delEl.lastElementChild);
+            }
+            this.spreadProps(delEl, this.api.getItemDeleteTriggerProps({ index, value }));
+          }
+          const itemInputEl = itemEl.querySelector(
+            '[data-scope="tags-input"][data-part="item-input"]'
+          );
+          if (itemInputEl) this.spreadProps(itemInputEl, this.api.getItemInputProps({ index, value }));
+          if (textEl && !itemInputIsEditing(itemInputEl)) {
+            textEl.textContent = value;
+          }
+        }
+        renderItems() {
+          var _a4, _b;
+          const controlEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="control"]'
+          );
+          if (!controlEl) return;
+          const mainInputEl = controlEl.querySelector(
+            ':scope > [data-scope="tags-input"][data-part="input"]'
+          );
+          if (!mainInputEl) return;
+          const templatesRoot = templatesContentRoot(this.el, "tags-input");
+          if (!templatesRoot) return;
+          const template = templatesRoot.querySelector(
+            '[data-scope="tags-input"][data-part="item"][data-template]'
+          );
+          if (!template) return;
+          const values = (_a4 = this.api.value) != null ? _a4 : [];
+          let items = directItemElements(controlEl);
+          while (items.length > values.length) {
+            items[items.length - 1].remove();
+            items = directItemElements(controlEl);
+          }
+          for (let index = 0; index < values.length; index++) {
+            const value = values[index];
+            items = directItemElements(controlEl);
+            let itemEl = items[index];
+            const isItem = (itemEl == null ? void 0 : itemEl.getAttribute("data-scope")) === "tags-input" && (itemEl == null ? void 0 : itemEl.getAttribute("data-part")) === "item";
+            if (!itemEl || !isItem) {
+              const fresh = template.cloneNode(true);
+              fresh.removeAttribute("data-template");
+              const ref = (_b = items[index]) != null ? _b : mainInputEl;
+              controlEl.insertBefore(fresh, ref);
+              items = directItemElements(controlEl);
+              itemEl = items[index];
+            }
+            const itemInputEl = itemEl.querySelector(
+              '[data-scope="tags-input"][data-part="item-input"]'
+            );
+            const editing = itemInputIsEditing(itemInputEl);
+            if (!editing && itemEl.dataset.value !== value) {
+              itemEl.dataset.value = value;
+            }
+            this.spreadItemParts(itemEl, index, value);
+          }
+        }
+        render() {
+          const rootEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="root"]'
+          );
+          if (!rootEl) return;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          this.renderItems();
+          const inputEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="input"]'
+          );
+          if (inputEl) {
+            this.spreadProps(inputEl, this.api.getInputProps());
+            if (getString(this.el, "submitName")) {
+              inputEl.removeAttribute("name");
+              inputEl.removeAttribute("form");
+            }
+          }
+          const hiddenEl = this.el.querySelector(
+            '[data-scope="tags-input"][data-part="hidden-input"]'
+          );
+          if (hiddenEl) {
+            this.spreadProps(hiddenEl, this.api.getHiddenInputProps());
+            hiddenEl.removeAttribute("name");
+            hiddenEl.removeAttribute("form");
+          }
+        }
+      };
+      TagsInputHook = {
+        mounted() {
+          const el = this.el;
+          const hook = this;
+          hook.allowFormNotify = false;
+          hook.fieldTouched = false;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const blur = blurBehavior(el);
+          const max3 = maxProp(el);
+          const delimiter = getString(el, "delimiter");
+          const placeholder = readPlaceholderFromMainInput(el);
+          const zag = new TagsInput(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
+            id: el.id
+          }, resolveZagTagsInputTranslations(el)), mountTagsBinding(el)), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readonly"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            name: zagNameForForm3(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
+            dir: getDir(el),
+            addOnPaste: getBoolean(el, "addOnPaste"),
+            allowDuplicates: getBoolean(el, "allowDuplicates"),
+            allowOverflow: getBoolean(el, "allowOverflow")
+          }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
+            autoFocus: getBoolean(el, "autoFocus")
+          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}), {
+            onValueChange: (details) => {
+              hook.fieldTouched = true;
+              syncTagsInputFormForPhoenix(el, details.value, void 0, {
+                notifyLiveView: hook.allowFormNotify === true,
+                fieldTouched: true
+              });
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: details.value },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
+            },
+            onInputValueChange: (details) => {
+              hook.fieldTouched = true;
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, inputValue: details.inputValue },
+                serverEventName: getString(el, "onInputValueChange"),
+                clientEventName: getString(el, "onInputValueChangeClient")
+              });
+            },
+            onHighlightChange: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, highlightedValue: details.highlightedValue },
+                serverEventName: getString(el, "onHighlightChange"),
+                clientEventName: getString(el, "onHighlightChangeClient")
+              });
+            },
+            onValueInvalid: (details) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, reason: details.reason },
+                serverEventName: getString(el, "onValueInvalid"),
+                clientEventName: getString(el, "onValueInvalidClient")
+              });
+            }
+          }));
+          zag.init();
+          this.tagsInput = zag;
+          const syncForm = (values, opts = {}) => {
+            syncTagsInputFormForPhoenix(el, values, void 0, {
+              notifyLiveView: opts.notifyLiveView,
+              fieldTouched: isFormFieldUsed(el, hook.fieldTouched === true)
+            });
+          };
+          queueMicrotask(() => {
+            if (!isFormFieldUsed(el, hook.fieldTouched === true)) {
+              syncForm(zag.api.value, { notifyLiveView: false });
+            }
+            hook.allowFormNotify = true;
+          });
+          hook.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+            hook.fieldTouched = true;
+            syncForm(zag.api.value, { notifyLiveView: false });
+          });
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:tags-input:set-value", (event) => {
+            var _a4;
+            const v2 = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string"))
+              zag.api.setValue(v2);
+          });
+          domRegistry.add("corex:tags-input:clear-value", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:tags-input:add-value", (event) => {
+            var _a4;
+            const tag = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (typeof tag === "string" && tag !== "") zag.api.addValue(tag);
+          });
+          domRegistry.add("corex:tags-input:remove-value", (event) => {
+            var _a4;
+            const tag = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            if (typeof tag !== "string" || tag === "") return;
+            zag.api.setValue(zag.api.value.filter((t2) => t2 !== tag));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("tags_input_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const v2 = readPayloadStringArray(payload);
+            if (v2) zag.api.setValue(v2);
+          });
+          registry.add("tags_input_clear_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("tags_input_add_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const tag = readPayloadValue(payload);
+            if (tag !== "") zag.api.addValue(tag);
+          });
+          registry.add("tags_input_remove_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const tag = readPayloadValue(payload);
+            if (tag === "") return;
+            zag.api.setValue(zag.api.value.filter((t2) => t2 !== tag));
+          });
+        },
+        updated() {
+          var _a4, _b;
+          const el = this.el;
+          const valuePatch = readUpdatedServerTags(el);
+          const blur = blurBehavior(el);
+          const max3 = maxProp(el);
+          const delimiter = getString(el, "delimiter");
+          const placeholder = readPlaceholderFromMainInput(el);
+          (_a4 = this.tagsInput) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
+            id: el.id
+          }, resolveZagTagsInputTranslations(el)), valuePatch), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readonly"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            name: zagNameForForm3(el),
+            form: getString(el, "submitName") ? void 0 : getString(el, "form"),
+            dir: getDir(el),
+            addOnPaste: getBoolean(el, "addOnPaste"),
+            allowDuplicates: getBoolean(el, "allowDuplicates"),
+            allowOverflow: getBoolean(el, "allowOverflow")
+          }), getBooleanValue(el, "editable") === void 0 ? {} : { editable: getBooleanValue(el, "editable") === true }), {
+            autoFocus: getBoolean(el, "autoFocus")
+          }), blur !== void 0 ? { blurBehavior: blur } : {}), max3 !== void 0 ? { max: max3 } : {}), delimiter !== void 0 && delimiter !== "" ? { delimiter } : {}), placeholder !== void 0 ? { placeholder } : {}));
+          if ("value" in valuePatch) {
+            syncTagsInputFormForPhoenix(el, valuePatch.value, void 0, {
+              notifyLiveView: false,
+              fieldTouched: isFormFieldUsed(el, this.fieldTouched === true)
+            });
+          }
+          (_b = this.tagsInput) == null ? void 0 : _b.render();
+        },
+        destroyed() {
+          var _a4, _b, _c, _d;
+          (_a4 = this.unbindSubmitIntent) == null ? void 0 : _a4.call(this);
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.tagsInput) == null ? void 0 : _d.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/tabs.mjs
   var tabs_exports = {};
   __export(tabs_exports, {
-    Tabs: () => TabsHook
+    Tabs: () => TabsHook,
+    tabsFocusChangePayload: () => tabsFocusChangePayload,
+    tabsValueChangePayload: () => tabsValueChangePayload
   });
-  function connect25(service, normalize) {
+  function connect27(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
@@ -34697,15 +38418,15 @@ ${err}`);
         (_a4 = getTriggerEl7(scope, value)) == null ? void 0 : _a4.focus();
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
-          id: getRootId20(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
+          id: getRootId22(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
           dir: prop("dir")
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -34758,7 +38479,7 @@ ${err}`);
       getTriggerProps(props) {
         const { value, disabled } = props;
         const triggerState = getTriggerState(props);
-        return normalize.button(__spreadProps(__spreadValues({}, parts25.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts27.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -34798,7 +38519,7 @@ ${err}`);
       getContentProps(props) {
         const { value } = props;
         const selected = context.get("value") === value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.content.attrs), {
           dir: prop("dir"),
           id: getContentId10(scope, value),
           tabIndex: composite ? 0 : -1,
@@ -34815,7 +38536,7 @@ ${err}`);
         const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
-        }, parts25.indicator.attrs), {
+        }, parts27.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: isRectEmpty2(rect),
@@ -34849,18 +38570,26 @@ ${err}`);
       trigger: (value) => `tabs-${rootId}-trigger-${value}`
     };
   }
-  var anatomy25, parts25, getRootId20, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine25, Tabs, TabsHook;
+  function tabsValueChangePayload(el, details) {
+    var _a4;
+    return { id: el.id, value: (_a4 = details.value) != null ? _a4 : null };
+  }
+  function tabsFocusChangePayload(el, details) {
+    var _a4;
+    return { id: el.id, value: (_a4 = details.focusedValue) != null ? _a4 : null };
+  }
+  var anatomy27, parts27, getRootId22, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine27, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_FBXRLPHX();
       init_chunk_PE34YET2();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy25 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts25 = anatomy25.build();
-      getRootId20 = (ctx) => {
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy27 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts27 = anatomy27.build();
+      getRootId22 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tabs:${ctx.id}`;
       };
@@ -34908,7 +38637,7 @@ ${err}`);
       };
       isRectEmpty2 = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ createMachine: createMachine6 } = setup());
-      machine25 = createMachine6({
+      machine27 = createMachine6({
         props({ props }) {
           return __spreadValues({
             dir: "ltr",
@@ -35209,10 +38938,10 @@ ${err}`);
         initMachine(props) {
           var _a4;
           const id = (_a4 = props.id) != null ? _a4 : this.el.id;
-          return new VanillaMachine(machine25, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          return new VanillaMachine(machine27, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
         }
         initApi() {
-          return this.zagConnect(connect25);
+          return this.zagConnect(connect27);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -35253,23 +38982,21 @@ ${err}`);
             orientation: getString(el, "orientation"),
             dir: getString(el, "dir"),
             onValueChange: (details) => {
-              var _a4;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.value) != null ? _a4 : null },
+                payload: tabsValueChangePayload(el, details),
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
             },
             onFocusChange: (details) => {
-              var _a4;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.focusedValue) != null ? _a4 : null },
+                payload: tabsFocusChangePayload(el, details),
                 serverEventName: getString(el, "onFocusChange"),
                 clientEventName: getString(el, "onFocusChangeClient")
               });
@@ -35309,7 +39036,7 @@ ${err}`);
           var _a4;
           (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, readStringControlledZagProps(this.el, "value", "defaultValue")), {
+          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
             orientation: getString(this.el, "orientation"),
             dir: getString(this.el, "dir")
           }));
@@ -35327,9 +39054,10 @@ ${err}`);
   // ../priv/static/timer.mjs
   var timer_exports = {};
   __export(timer_exports, {
-    Timer: () => TimerHook
+    Timer: () => TimerHook,
+    parseTimerTranslations: () => parseTimerTranslations
   });
-  function connect26(service, normalize) {
+  function connect28(service, normalize) {
     const { state: state2, send, computed, scope, prop } = service;
     const translations = prop("translations");
     const running = state2.matches("running");
@@ -35360,8 +39088,8 @@ ${err}`);
       },
       getRootProps() {
         return normalize.element(__spreadValues({
-          id: getRootId21(scope)
-        }, parts26.root.attrs));
+          id: getRootId23(scope)
+        }, parts28.root.attrs));
       },
       getAreaProps() {
         var _a4;
@@ -35370,14 +39098,14 @@ ${err}`);
           id: getAreaId3(scope),
           "aria-label": (_a4 = translations.areaLabel) == null ? void 0 : _a4.call(translations, time, formattedTime),
           "aria-atomic": true
-        }, parts26.area.attrs));
+        }, parts28.area.attrs));
       },
       getControlProps() {
-        return normalize.element(__spreadValues({}, parts26.control.attrs));
+        return normalize.element(__spreadValues({}, parts28.control.attrs));
       },
       getItemProps(props) {
         const value = time[props.type];
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.item.attrs), {
           "data-type": props.type,
           style: {
             "--value": value
@@ -35385,19 +39113,19 @@ ${err}`);
         }));
       },
       getItemLabelProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemLabel.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.itemLabel.attrs), {
           "data-type": props.type
         }));
       },
       getItemValueProps(props) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemValue.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.itemValue.attrs), {
           "data-type": props.type
         }));
       },
       getSeparatorProps() {
         return normalize.element(__spreadValues({
           "aria-hidden": true
-        }, parts26.separator.attrs));
+        }, parts28.separator.attrs));
       },
       getActionTriggerProps(props) {
         if (!validActions.has(props.action)) {
@@ -35405,7 +39133,7 @@ ${err}`);
             `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
-        return normalize.button(__spreadProps(__spreadValues({}, parts26.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts28.actionTrigger.attrs), {
           hidden: match(props.action, {
             start: () => running || paused,
             pause: () => !running,
@@ -35438,9 +39166,9 @@ ${err}`);
     };
   }
   function toPercent(value, minValue, maxValue) {
-    const range = maxValue - minValue;
-    if (range === 0) return 0;
-    return (value - minValue) / range;
+    const range2 = maxValue - minValue;
+    if (range2 === 0) return 0;
+    return (value - minValue) / range2;
   }
   function padStart(num, size3 = 2) {
     return num.toString().padStart(size3, "0");
@@ -35556,6 +39284,15 @@ ${err}`);
       }
     }
   }
+  function machineState2(api) {
+    return {
+      running: api.running,
+      paused: api.paused,
+      progressPercent: api.progressPercent,
+      time: api.time,
+      formattedTime: api.formattedTime
+    };
+  }
   function parseTimerTranslations(el) {
     const raw = el.dataset.translation;
     if (!raw) return void 0;
@@ -35570,15 +39307,70 @@ ${err}`);
     }
     return void 0;
   }
-  var anatomy26, parts26, getRootId21, getAreaId3, validActions, machine26, Timer2, TimerHook;
+  function buildTimerProps(el, pushEvent, canPush) {
+    return {
+      id: el.id,
+      countdown: getBoolean(el, "countdown"),
+      startMs: getNumber(el, "startMs"),
+      targetMs: getNumber(el, "targetMs"),
+      autoStart: getBoolean(el, "autoStart"),
+      interval: getNumber(el, "interval"),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
+      translations: parseTimerTranslations(el),
+      onTick: (details) => {
+        const eventName = getString(el, "onTick");
+        if (eventName && canPush()) {
+          pushEvent(eventName, {
+            value: details.value,
+            time: details.time,
+            formattedTime: details.formattedTime,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onTickClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value,
+                time: details.time,
+                formattedTime: details.formattedTime
+              }
+            })
+          );
+        }
+      },
+      onComplete: () => {
+        const eventName = getString(el, "onComplete");
+        if (eventName && canPush()) {
+          pushEvent(eventName, { id: el.id });
+        }
+        const eventNameClient = getString(el, "onCompleteClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: { id: el.id }
+            })
+          );
+        }
+      }
+    };
+  }
+  var anatomy28, parts28, getRootId23, getAreaId3, validActions, machine28, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_5QA23UMN();
-      init_chunk_6Y5IFYJF();
+      init_chunk_RNYQBUAX();
+      init_chunk_VHCQWARJ();
       init_chunk_PE34YET2();
-      init_chunk_EE44DOTL();
-      anatomy26 = createAnatomy("timer").parts(
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy28 = createAnatomy("timer").parts(
         "root",
         "area",
         "control",
@@ -35588,8 +39380,8 @@ ${err}`);
         "actionTrigger",
         "separator"
       );
-      parts26 = anatomy26.build();
-      getRootId21 = (ctx) => {
+      parts28 = anatomy28.build();
+      getRootId23 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `timer:${ctx.id}:root`;
       };
@@ -35598,7 +39390,7 @@ ${err}`);
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.area) != null ? _b : `timer:${ctx.id}:area`;
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
-      machine26 = createMachine({
+      machine28 = createMachine({
         props({ props }) {
           validateProps(props);
           return __spreadProps(__spreadValues({
@@ -35772,10 +39564,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine26, props);
+          return new VanillaMachine(machine28, props);
         }
         initApi() {
-          return this.zagConnect(connect26);
+          return this.zagConnect(connect28);
         }
         render() {
           var _a4;
@@ -35823,81 +39615,82 @@ ${err}`);
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const zag = new Timer2(el, {
-            id: el.id,
-            countdown: getBoolean(el, "countdown"),
-            startMs: getNumber(el, "startMs"),
-            targetMs: getNumber(el, "targetMs"),
-            autoStart: getBoolean(el, "autoStart"),
-            interval: getNumber(el, "interval"),
-            dir: getDir(el),
-            orientation: getString(el, "orientation"),
-            translations: parseTimerTranslations(el),
-            onTick: (details) => {
-              const eventName = getString(el, "onTick");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  value: details.value,
-                  time: details.time,
-                  formattedTime: details.formattedTime,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onTickClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: details.value,
-                      time: details.time,
-                      formattedTime: details.formattedTime
-                    }
-                  })
-                );
-              }
-            },
-            onComplete: () => {
-              const eventName = getString(el, "onComplete");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, { id: el.id });
-              }
-              const eventNameClient = getString(el, "onCompleteClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { id: el.id }
-                  })
-                );
-              }
-            }
-          });
+          const canPush = () => canPushEvent(this.liveSocket);
+          const zag = new Timer2(el, buildTimerProps(el, pushEvent, canPush));
           zag.init();
           this.timer = zag;
-          this.handlers = [];
+          const emitState = (respondTo) => {
+            const snapshot2 = machineState2(zag.api);
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "timer_state_response",
+              serverPayload: __spreadValues({ id: el.id }, snapshot2),
+              el,
+              domEventName: "timer-state",
+              domDetail: __spreadValues({ id: el.id }, snapshot2)
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:timer:start", () => {
+            zag.api.start();
+          });
+          domRegistry.add("corex:timer:pause", () => {
+            zag.api.pause();
+          });
+          domRegistry.add("corex:timer:resume", () => {
+            zag.api.resume();
+          });
+          domRegistry.add("corex:timer:reset", () => {
+            zag.api.reset();
+          });
+          domRegistry.add("corex:timer:restart", () => {
+            zag.api.restart();
+          });
+          domRegistry.add("corex:timer:state", (event) => {
+            emitState(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("timer_start", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.start();
+          });
+          registry.add("timer_pause", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.pause();
+          });
+          registry.add("timer_resume", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.resume();
+          });
+          registry.add("timer_reset", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.reset();
+          });
+          registry.add("timer_restart", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.restart();
+          });
+          registry.add("timer_state", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitState(parseRespondTo(payload));
+          });
         },
         updated() {
           var _a4;
-          (_a4 = this.timer) == null ? void 0 : _a4.updateProps({
-            id: this.el.id,
-            countdown: getBoolean(this.el, "countdown"),
-            startMs: getNumber(this.el, "startMs"),
-            targetMs: getNumber(this.el, "targetMs"),
-            autoStart: getBoolean(this.el, "autoStart"),
-            interval: getNumber(this.el, "interval"),
-            dir: getDir(this.el),
-            orientation: getString(this.el, "orientation"),
-            translations: parseTimerTranslations(this.el)
-          });
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          (_a4 = this.timer) == null ? void 0 : _a4.updateProps(buildTimerProps(el, pushEvent, canPush));
         },
         destroyed() {
-          var _a4;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a4 = this.timer) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.timer) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -35906,7 +39699,9 @@ ${err}`);
   // ../priv/static/toast.mjs
   var toast_exports = {};
   __export(toast_exports, {
-    Toast: () => ToastHook
+    Toast: () => ToastHook,
+    parseActionSpec: () => parseActionSpec,
+    parseSingleExecJsEffect: () => parseSingleExecJsEffect
   });
   function getToastDuration(duration, type) {
     var _a4;
@@ -36086,7 +39881,7 @@ ${err}`);
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.group.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           role: "region",
@@ -36127,7 +39922,7 @@ ${err}`);
       }
     };
   }
-  function connect27(service, normalize) {
+  function connect29(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
     const translations = prop("translations");
     const visible = state2.hasTag("visible");
@@ -36159,9 +39954,9 @@ ${err}`);
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
           dir: prop("dir"),
-          id: getRootId22(scope),
+          id: getRootId24(scope),
           "data-state": visible ? "open" : "closed",
           "data-type": type,
           "data-placement": placement,
@@ -36203,17 +39998,17 @@ ${err}`);
         });
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.title.attrs), {
           id: getTitleId3(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.description.attrs), {
           id: getDescriptionId2(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts27.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts29.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a4;
@@ -36226,7 +40021,7 @@ ${err}`);
       getCloseTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
           id: getCloseTriggerId2(scope)
-        }, parts27.closeTrigger.attrs), {
+        }, parts29.closeTrigger.attrs), {
           type: "button",
           "aria-label": translations == null ? void 0 : translations.closeTriggerLabel,
           onClick(event) {
@@ -36465,6 +40260,12 @@ ${err}`);
       collapse
     };
   }
+  function actionClassTokens(action) {
+    if (action == null || typeof action !== "object") return [];
+    const cn = action.className;
+    if (typeof cn !== "string") return [];
+    return cn.trim().split(/\s+/).filter(Boolean);
+  }
   function createToastGroup(container, options) {
     var _a4, _b, _c;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
@@ -36491,15 +40292,61 @@ ${err}`);
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy27, parts27, getRegionId, getRegionEl, getRootId22, getRootEl8, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine27, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
+  function asRecord(v2) {
+    return v2 != null && typeof v2 === "object" && !Array.isArray(v2) ? v2 : {};
+  }
+  function parseSingleExecJsEffect(raw) {
+    const o2 = asRecord(raw);
+    if (o2.kind !== "exec_js") return null;
+    const encoded = o2.encoded;
+    if (typeof encoded !== "string" || encoded.length === 0) return null;
+    return encoded;
+  }
+  function parseActionSpec(raw) {
+    const o2 = asRecord(raw);
+    const label = o2.label;
+    if (typeof label !== "string" || label.length === 0) return null;
+    const effectsRaw = o2.effects;
+    if (!Array.isArray(effectsRaw) || effectsRaw.length !== 1) return null;
+    const encoded = parseSingleExecJsEffect(effectsRaw[0]);
+    if (encoded == null) return null;
+    const spec = { label, encoded };
+    const className = o2.class;
+    if (typeof className === "string" && className.trim()) {
+      spec.className = className.trim();
+    }
+    return spec;
+  }
+  function buildZagAction(spec, rt) {
+    const action = {
+      label: spec.label,
+      onClick: () => {
+        rt.execJs(spec.encoded);
+      }
+    };
+    if (spec.className) action.className = spec.className;
+    return action;
+  }
+  function buildRuntime(self2) {
+    return {
+      pushEvent: (event, payload) => {
+        self2.pushEvent(event, payload != null ? payload : {});
+      },
+      execJs: (encoded) => {
+        self2.js().exec(encoded);
+      },
+      redirectCtx: { liveSocket: self2.liveSocket }
+    };
+  }
+  var anatomy29, parts29, getRegionId, getRegionEl, getRootId24, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine29, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_MLVURBKI();
-      init_chunk_B7AHHTCM();
-      init_chunk_6Y5IFYJF();
-      init_chunk_EE44DOTL();
-      anatomy27 = createAnatomy("toast").parts(
+      init_chunk_VHCQWARJ();
+      init_chunk_57TWBSTW();
+      init_chunk_4QMNVH3P();
+      init_chunk_EWT2BP2N();
+      anatomy29 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -36507,11 +40354,11 @@ ${err}`);
         "actionTrigger",
         "closeTrigger"
       );
-      parts27 = anatomy27.build();
+      parts29 = anatomy29.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
-      getRootId22 = (ctx) => `toast:${ctx.id}`;
-      getRootEl8 = (ctx) => ctx.getById(getRootId22(ctx));
+      getRootId24 = (ctx) => `toast:${ctx.id}`;
+      getRootEl9 = (ctx) => ctx.getById(getRootId24(ctx));
       getTitleId3 = (ctx) => `toast:${ctx.id}:title`;
       getDescriptionId2 = (ctx) => `toast:${ctx.id}:description`;
       getCloseTriggerId2 = (ctx) => `toast${ctx.id}:close`;
@@ -36525,7 +40372,7 @@ ${err}`);
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
       ({ guards: guards4, createMachine: createMachine22 } = setup());
-      ({ and: and9 } = guards4);
+      ({ and: and10 } = guards4);
       groupMachine = createMachine22({
         props({ props }) {
           return __spreadProps(__spreadValues({
@@ -36580,7 +40427,7 @@ ${err}`);
           },
           "REGION.BLUR": [
             {
-              guard: and9("isOverlapping", "isPointerOut"),
+              guard: and10("isOverlapping", "isPointerOut"),
               target: "overlap",
               actions: ["collapseToasts", "resumeToasts", "restoreFocusIfPointerOut"]
             },
@@ -36778,8 +40625,8 @@ ${err}`);
           }
         }
       });
-      ({ not: not10 } = createGuards());
-      machine27 = createMachine({
+      ({ not: not11 } = createGuards());
+      machine29 = createMachine({
         props({ props }) {
           ensureProps(props, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
@@ -36885,7 +40732,7 @@ ${err}`);
             tags: ["visible", "paused"],
             on: {
               RESUME: {
-                guard: not10("isLoadingType"),
+                guard: not11("isLoadingType"),
                 target: "visible",
                 actions: ["setCloseTimer"]
               },
@@ -36942,7 +40789,7 @@ ${err}`);
             trackHeight({ scope, prop }) {
               let cleanup;
               raf(() => {
-                const rootEl = getRootEl8(scope);
+                const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
                 const syncHeight = () => {
                   const originalHeight = rootEl.style.height;
@@ -36976,7 +40823,7 @@ ${err}`);
             },
             measureHeight({ scope, prop, context }) {
               queueMicrotask(() => {
-                const rootEl = getRootEl8(scope);
+                const rootEl = getRootEl9(scope);
                 if (!rootEl) return;
                 const originalHeight = rootEl.style.height;
                 rootEl.style.height = "auto";
@@ -37055,17 +40902,27 @@ ${err}`);
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
         constructor(el, props) {
-          var _a4;
+          var _a4, _b;
           super(el, props);
           __publicField(this, "parts");
+          __publicField(this, "latestProps");
+          __publicField(this, "hadAction", false);
           __publicField(this, "duration");
           __publicField(this, "showLoading");
+          __publicField(this, "updateProps", (props) => {
+            Object.assign(this.latestProps, props);
+            super.updateProps(
+              props
+            );
+          });
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
+          this.latestProps = props;
           this.duration = props.duration;
           this.showLoading = ((_a4 = props.meta) == null ? void 0 : _a4.loading) === true;
+          this.hadAction = Boolean((_b = props.action) == null ? void 0 : _b.label);
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.classList.add("toast-item");
@@ -37077,9 +40934,12 @@ ${err}`);
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
-          <button data-scope="toast" data-part="close-trigger"></button>
+          <button type="button" data-scope="toast" data-part="close-trigger"></button>
         </div>
         <div data-scope="toast" data-part="description"></div>
+        <div data-scope="toast" data-part="actions">
+          <button type="button" data-scope="toast" data-part="action-trigger" hidden></button>
+        </div>
       </div>
 
       <span data-scope="toast" data-part="ghost-after"></span>
@@ -37088,6 +40948,7 @@ ${err}`);
             title: this.el.querySelector('[data-part="title"]'),
             description: this.el.querySelector('[data-part="description"]'),
             close: this.el.querySelector('[data-part="close-trigger"]'),
+            action: this.el.querySelector('[data-part="action-trigger"]'),
             ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
             ghostAfter: this.el.querySelector('[data-part="ghost-after"]'),
             progressbar: this.el.querySelector('[data-part="progressbar"]'),
@@ -37096,13 +40957,13 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine27, props);
+          return new VanillaMachine(machine29, props);
         }
         initApi() {
-          return this.zagConnect(connect27);
+          return this.zagConnect(connect29);
         }
         render() {
-          var _a4, _b;
+          var _a4, _b, _c, _d, _e;
           this.spreadProps(this.el, this.api.getRootProps());
           this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
           this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
@@ -37133,6 +40994,32 @@ ${err}`);
           }
           this.spreadProps(this.parts.title, this.api.getTitleProps());
           this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+          const hasAction = Boolean((_c = this.latestProps.action) == null ? void 0 : _c.label);
+          if (this.hadAction && !hasAction) {
+            const next2 = document.createElement("button");
+            next2.type = "button";
+            next2.setAttribute("data-scope", "toast");
+            next2.setAttribute("data-part", "action-trigger");
+            next2.hidden = true;
+            this.parts.action.replaceWith(next2);
+            this.parts.action = next2;
+          }
+          this.hadAction = hasAction;
+          if (hasAction) {
+            this.parts.action.hidden = false;
+            this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+            const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
+            if (this.parts.action.innerHTML !== label) {
+              this.parts.action.innerHTML = label;
+            }
+            const extraClasses = actionClassTokens(this.latestProps.action);
+            if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
+          } else {
+            this.parts.action.hidden = true;
+            if (this.parts.action.innerHTML) {
+              this.parts.action.innerHTML = "";
+            }
+          }
           const duration = this.duration;
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
           if (isInfinity) {
@@ -37244,6 +41131,12 @@ ${err}`);
             }
             return duration;
           };
+          const parsePriority = (raw) => {
+            if (raw === void 0 || raw === null) return void 0;
+            const n2 = typeof raw === "string" ? parseInt(raw, 10) : raw;
+            if (!Number.isFinite(n2) || n2 < 1 || n2 > 8) return void 0;
+            return n2;
+          };
           const placement = (_a4 = getString(el, "placement", [
             "top-start",
             "top",
@@ -37295,19 +41188,70 @@ ${err}`);
               console.error("Failed to create flash error toast:", error);
             }
           }
+          const rt = buildRuntime(this);
+          const buildCreateOptions = (payload) => {
+            var _a5;
+            const spec = parseActionSpec(payload.action);
+            const base = __spreadValues({
+              title: (_a5 = payload.title) != null ? _a5 : "",
+              description: payload.description,
+              type: payload.type || "info",
+              id: payload.id || generateId(void 0, "toast"),
+              duration: parseDuration(payload.duration)
+            }, loadingMeta(payload.loading));
+            if (spec) {
+              base.action = buildZagAction(spec, rt);
+            }
+            const pr = parsePriority(payload.priority);
+            if (pr !== void 0) base.priority = pr;
+            return base;
+          };
+          const buildUpdatePatch = (payload) => {
+            const patch = {};
+            if (payload.title !== void 0) patch.title = payload.title;
+            if (payload.description !== void 0) patch.description = payload.description;
+            if (payload.type !== void 0) patch.type = payload.type;
+            if (payload.duration !== void 0) patch.duration = parseDuration(payload.duration);
+            if (payload.loading === true || payload.loading === "true") {
+              patch.meta = { loading: true };
+            } else if (payload.loading === false || payload.loading === "false") {
+              patch.meta = { loading: false };
+            }
+            const spec = parseActionSpec(payload.action);
+            if (spec) {
+              patch.action = buildZagAction(spec, rt);
+            } else if (payload.action === null) {
+              patch.action = void 0;
+            }
+            const pr = parsePriority(payload.priority);
+            if (pr !== void 0) patch.priority = pr;
+            return patch;
+          };
+          const handleDismissPayload = (payload) => {
+            const st = getToastStore(payload.groupId || this.groupId);
+            if (!st) return;
+            try {
+              st.dismiss(payload.id);
+            } catch (error) {
+              console.error("Failed to dismiss toast:", error);
+            }
+          };
+          const handleRemovePayload = (payload) => {
+            const st = getToastStore(payload.groupId || this.groupId);
+            if (!st) return;
+            try {
+              st.remove(payload.id);
+            } catch (error) {
+              console.error("Failed to remove toast:", error);
+            }
+          };
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("toast-create", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
+              const st = getToastStore(payload.groupId || this.groupId);
+              if (!st) return;
               try {
-                store22.create(__spreadValues({
-                  title: payload.title,
-                  description: payload.description,
-                  type: payload.type || "info",
-                  id: payload.id || generateId(void 0, "toast"),
-                  duration: parseDuration(payload.duration)
-                }, loadingMeta(payload.loading)));
+                st.create(buildCreateOptions(payload));
               } catch (error) {
                 console.error("Failed to create toast:", error);
               }
@@ -37315,48 +41259,59 @@ ${err}`);
           );
           this.handlers.push(
             this.handleEvent("toast-update", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
+              const st = getToastStore(payload.groupId || this.groupId);
+              if (!st || !payload.id) return;
               try {
-                store22.update(payload.id, {
-                  title: payload.title,
-                  description: payload.description,
-                  type: payload.type
-                });
+                st.update(payload.id, buildUpdatePatch(payload));
               } catch (error) {
                 console.error("Failed to update toast:", error);
               }
             })
           );
-          this.handlers.push(
-            this.handleEvent("toast-dismiss", (payload) => {
-              const store22 = getToastStore(payload.groupId || this.groupId);
-              if (!store22) return;
-              try {
-                store22.dismiss(payload.id);
-              } catch (error) {
-                console.error("Failed to dismiss toast:", error);
-              }
-            })
-          );
-          el.addEventListener("toast:create", (event) => {
+          this.handlers.push(this.handleEvent("toast-dismiss", handleDismissPayload));
+          this.handlers.push(this.handleEvent("toast-remove", handleRemovePayload));
+          const onToastCreate = (event) => {
             const { detail } = event;
-            const store22 = getToastStore(detail.groupId || this.groupId);
-            if (!store22) return;
+            const st = getToastStore(detail.groupId || this.groupId);
+            if (!st) return;
             try {
-              store22.create(__spreadValues({
-                title: detail.title,
-                description: detail.description,
-                type: detail.type || "info",
-                id: detail.id || generateId(void 0, "toast"),
-                duration: parseDuration(detail.duration)
-              }, loadingMeta(detail.loading)));
+              st.create(buildCreateOptions(detail));
             } catch (error) {
               console.error("Failed to create toast:", error);
             }
-          });
+          };
+          const onToastUpdate = (event) => {
+            const { detail } = event;
+            const st = getToastStore(detail.groupId || this.groupId);
+            if (!st || !detail.id) return;
+            try {
+              st.update(detail.id, buildUpdatePatch(detail));
+            } catch (error) {
+              console.error("Failed to update toast:", error);
+            }
+          };
+          const onToastDismiss = (event) => {
+            handleDismissPayload(event.detail);
+          };
+          const onToastRemove = (event) => {
+            handleRemovePayload(event.detail);
+          };
+          const domListeners = [];
+          const addDom = (name, fn) => {
+            el.addEventListener(name, fn);
+            domListeners.push({ el, name, fn });
+          };
+          this.domListeners = domListeners;
+          addDom("toast:create", onToastCreate);
+          addDom("toast:update", onToastUpdate);
+          addDom("toast:dismiss", onToastDismiss);
+          addDom("toast:remove", onToastRemove);
         },
         destroyed() {
+          var _a4;
+          for (const { el, name, fn } of (_a4 = this.domListeners) != null ? _a4 : []) {
+            el.removeEventListener(name, fn);
+          }
           if (this.handlers) {
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
@@ -37370,7 +41325,8 @@ ${err}`);
   // ../priv/static/tooltip.mjs
   var tooltip_exports = {};
   __export(tooltip_exports, {
-    Tooltip: () => TooltipHook
+    Tooltip: () => TooltipHook,
+    getCloseDelay: () => getCloseDelay
   });
   function createStore(initialState, compare = Object.is) {
     let state2 = __spreadValues({}, initialState);
@@ -37413,7 +41369,7 @@ ${err}`);
       snapshot: snapshot2
     };
   }
-  function connect28(service, normalize) {
+  function connect30(service, normalize) {
     const { state: state2, context, send, scope, prop, event: _event } = service;
     const id = prop("id");
     const hasAriaLabel = !!prop("aria-label");
@@ -37442,7 +41398,7 @@ ${err}`);
         const { value } = props;
         const current = value == null ? false : triggerValue === value;
         const triggerId = getTriggerId11(scope, value);
-        return normalize.button(__spreadProps(__spreadValues({}, parts28.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts30.trigger.attrs), {
           id: triggerId,
           "data-ownedby": scope.id,
           "data-value": value,
@@ -37511,13 +41467,13 @@ ${err}`);
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId2(scope)
-        }, parts28.arrow.attrs), {
+        }, parts30.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
@@ -37525,7 +41481,7 @@ ${err}`);
       getPositionerProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPositionerId8(scope)
-        }, parts28.positioner.attrs), {
+        }, parts30.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
@@ -37534,7 +41490,7 @@ ${err}`);
         const isCurrentTooltip = store.get("id") === id;
         const isPrevTooltip = store.get("prevId") === id;
         const instant = store.get("instant") && (open && isCurrentTooltip || isPrevTooltip);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts30.content.attrs), {
           dir: prop("dir"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -37595,17 +41551,17 @@ ${err}`);
     if (interactive && (raw === void 0 || raw === 0)) return 400;
     return raw;
   }
-  var anatomy28, parts28, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and10, not11, machine28, Tooltip, TooltipHook;
+  var anatomy30, parts30, getTriggerId11, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and11, not12, machine30, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_NMOLO6CB();
-      init_chunk_YM6Q7RBK();
-      init_chunk_CTFBPAMI();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy28 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
-      parts28 = anatomy28.build();
+      init_chunk_EPNQR235();
+      init_chunk_VJGUNSK5();
+      init_chunk_V4PB2O2G();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy30 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
+      parts30 = anatomy30.build();
       getTriggerId11 = (scope, value) => {
         var _a4;
         const customId = (_a4 = scope.ids) == null ? void 0 : _a4.trigger;
@@ -37634,8 +41590,8 @@ ${err}`);
         prevId: null,
         instant: false
       });
-      ({ and: and10, not: not11 } = createGuards());
-      machine28 = createMachine({
+      ({ and: and11, not: not12 } = createGuards());
+      machine30 = createMachine({
         initialState: ({ prop }) => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
@@ -37716,12 +41672,12 @@ ${err}`);
               },
               "pointer.move": [
                 {
-                  guard: and10("noVisibleTooltip", not11("hasPointerMoveOpened")),
+                  guard: and11("noVisibleTooltip", not12("hasPointerMoveOpened")),
                   target: "opening",
                   actions: ["setTriggerValue"]
                 },
                 {
-                  guard: not11("hasPointerMoveOpened"),
+                  guard: not12("hasPointerMoveOpened"),
                   target: "open",
                   actions: ["setPointerMoveOpened", "invokeOnOpen", "setTriggerValue"]
                 }
@@ -38046,10 +42002,10 @@ ${err}`);
       Tooltip = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine28, props);
+          return new VanillaMachine(machine30, props);
         }
         initApi() {
-          return this.zagConnect(connect28);
+          return this.zagConnect(connect30);
         }
         syncDom() {
           this.api = this.initApi();
@@ -38126,7 +42082,6 @@ ${err}`);
           const callbacks = createTooltipCallbacks(el, pushEvent, liveSocket);
           (_a4 = this.tooltip) == null ? void 0 : _a4.updateProps(__spreadValues({
             id: el.id,
-            defaultOpen: getBoolean(el, "defaultOpen"),
             disabled: getBoolean(el, "disabled"),
             dir: getDir(el),
             openDelay: getNumber(el, "openDelay"),
@@ -38160,12 +42115,208 @@ ${err}`);
     }
   });
 
+  // ../priv/static/toggle.mjs
+  var toggle_exports = {};
+  __export(toggle_exports, {
+    Toggle: () => ToggleHook,
+    pressedChangePayload: () => pressedChangePayload
+  });
+  function connect31(service, normalize) {
+    const { context, prop, send } = service;
+    const pressed = context.get("pressed");
+    return {
+      pressed,
+      disabled: !!prop("disabled"),
+      setPressed(value) {
+        send({ type: "PRESS.SET", value });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          type: "button"
+        }, parts31.root.attrs), {
+          disabled: prop("disabled"),
+          "aria-pressed": pressed,
+          "data-state": pressed ? "on" : "off",
+          "data-pressed": dataAttr(pressed),
+          "data-disabled": dataAttr(prop("disabled")),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (prop("disabled")) return;
+            send({ type: "PRESS.TOGGLE" });
+          }
+        }));
+      },
+      getIndicatorProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts31.indicator.attrs), {
+          "data-disabled": dataAttr(prop("disabled")),
+          "data-pressed": dataAttr(pressed),
+          "data-state": pressed ? "on" : "off"
+        }));
+      }
+    };
+  }
+  function pressedChangePayload(el, pressed) {
+    return {
+      id: el.id,
+      pressed
+    };
+  }
+  var anatomy31, parts31, machine31, Toggle, ToggleHook;
+  var init_toggle = __esm({
+    "../priv/static/toggle.mjs"() {
+      "use strict";
+      init_chunk_VL4ETB3G();
+      init_chunk_77HPO22C();
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy31 = createAnatomy("toggle", ["root", "indicator"]);
+      parts31 = anatomy31.build();
+      machine31 = createMachine({
+        props({ props }) {
+          return __spreadValues({
+            defaultPressed: false
+          }, props);
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            pressed: bindable2(() => ({
+              value: prop("pressed"),
+              defaultValue: prop("defaultPressed"),
+              onChange(value) {
+                var _a4;
+                (_a4 = prop("onPressedChange")) == null ? void 0 : _a4(value);
+              }
+            }))
+          };
+        },
+        initialState() {
+          return "idle";
+        },
+        on: {
+          "PRESS.TOGGLE": {
+            actions: ["togglePressed"]
+          },
+          "PRESS.SET": {
+            actions: ["setPressed"]
+          }
+        },
+        states: {
+          idle: {}
+        },
+        implementations: {
+          actions: {
+            togglePressed({ context }) {
+              context.set("pressed", !context.get("pressed"));
+            },
+            setPressed({ context, event }) {
+              context.set("pressed", event.value);
+            }
+          }
+        }
+      });
+      Toggle = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine31, props);
+        }
+        initApi() {
+          return this.zagConnect(connect31);
+        }
+        render() {
+          const rootEl = this.el.querySelector('[data-scope="toggle"][data-part="root"]');
+          if (!rootEl) return;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const indicatorEl = rootEl.querySelector(
+            ':scope > [data-scope="toggle"][data-part="indicator"]'
+          );
+          if (indicatorEl) {
+            this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+          }
+        }
+      };
+      ToggleHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const controlled = getBoolean(el, "controlled");
+          const pressedFromDataset = getBooleanValue(el, "pressed");
+          const defaultPressedFromDataset = getBooleanValue(el, "defaultPressed");
+          const zagToggle = new Toggle(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { pressed: pressedFromDataset === true } : { defaultPressed: defaultPressedFromDataset === true }), {
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            onPressedChange: (pressed) => {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: pressedChangePayload(el, pressed),
+                serverEventName: getString(el, "onPressedChange"),
+                clientEventName: getString(el, "onPressedChangeClient")
+              });
+            }
+          }));
+          zagToggle.init();
+          this.zagToggle = zagToggle;
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:toggle:set-pressed", (event) => {
+            var _a4;
+            const p2 = (_a4 = event.detail) == null ? void 0 : _a4.pressed;
+            if (typeof p2 === "boolean") zagToggle.api.setPressed(p2);
+          });
+          domRegistry.add("corex:toggle:toggle-pressed", () => {
+            zagToggle.api.setPressed(!zagToggle.api.pressed);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("toggle_set_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const pressed = readPayloadPressed(payload);
+            if (typeof pressed === "boolean") zagToggle.api.setPressed(pressed);
+          });
+          registry.add("toggle_toggle_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zagToggle.api.setPressed(!zagToggle.api.pressed);
+          });
+          registry.add("toggle_pressed", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("toggle_pressed_response", {
+              id: el.id,
+              value: zagToggle.api.pressed
+            });
+          });
+        },
+        updated() {
+          var _a4;
+          (_a4 = this.zagToggle) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, readPressedControlledZagUpdate(this.el)), {
+            disabled: getBoolean(this.el, "disabled"),
+            dir: getDir(this.el)
+          }));
+        },
+        destroyed() {
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.zagToggle) == null ? void 0 : _c.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/toggle-group.mjs
   var toggle_group_exports = {};
   __export(toggle_group_exports, {
-    ToggleGroup: () => ToggleGroupHook
+    ToggleGroup: () => ToggleGroupHook,
+    readToggleGroupPayloadValue: () => readToggleGroupPayloadValue,
+    valueChangePayload: () => valueChangePayload3
   });
-  function connect29(service, normalize) {
+  function connect32(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
@@ -38173,7 +42324,7 @@ ${err}`);
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
     function getItemState(props) {
-      const id = getItemId9(scope, props.value);
+      const id = getItemId11(scope, props.value);
       return {
         id,
         disabled: Boolean(props.disabled || disabled),
@@ -38187,8 +42338,8 @@ ${err}`);
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
-          id: getRootId23(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts32.root.attrs), {
+          id: getRootId25(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
           tabIndex: context.get("isTabbingBackward") ? -1 : 0,
@@ -38219,10 +42370,10 @@ ${err}`);
       getItemProps(props) {
         const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts29.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts32.item.attrs), {
           id: itemState.id,
           type: "button",
-          "data-ownedby": getRootId23(scope),
+          "data-ownedby": getRootId25(scope),
           "data-focus": dataAttr(itemState.focused),
           disabled: itemState.disabled,
           tabIndex: rovingFocus ? rovingTabIndex : void 0,
@@ -38296,7 +42447,7 @@ ${err}`);
       value: details.value
     };
   }
-  function readPayloadValue2(payload) {
+  function readToggleGroupPayloadValue(payload) {
     var _a4;
     if (!payload || typeof payload !== "object") return void 0;
     const o2 = payload;
@@ -38304,35 +42455,36 @@ ${err}`);
     if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
     return void 0;
   }
-  var anatomy29, parts29, getRootId23, getItemId9, getRootEl9, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine29, ToggleGroup, ToggleGroupHook;
+  var anatomy32, parts32, getRootId25, getItemId11, getRootEl10, getElements3, getFirstEl3, getLastEl3, getNextEl3, getPrevEl3, not13, and12, machine32, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy29 = createAnatomy("toggle-group").parts("root", "item");
-      parts29 = anatomy29.build();
-      getRootId23 = (ctx) => {
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy32 = createAnatomy("toggle-group").parts("root", "item");
+      parts32 = anatomy32.build();
+      getRootId25 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `toggle-group:${ctx.id}`;
       };
-      getItemId9 = (ctx, value) => {
+      getItemId11 = (ctx, value) => {
         var _a4, _b, _c;
         return (_c = (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.item) == null ? void 0 : _b.call(_a4, value)) != null ? _c : `toggle-group:${ctx.id}:${value}`;
       };
-      getRootEl9 = (ctx) => ctx.getById(getRootId23(ctx));
+      getRootEl10 = (ctx) => ctx.getById(getRootId25(ctx));
       getElements3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId23(ctx));
+        const ownerId = CSS.escape(getRootId25(ctx));
         const selector = `[data-ownedby='${ownerId}']:not([data-disabled])`;
-        return queryAll(getRootEl9(ctx), selector);
+        return queryAll(getRootEl10(ctx), selector);
       };
-      getFirstEl2 = (ctx) => first(getElements3(ctx));
-      getLastEl2 = (ctx) => last(getElements3(ctx));
-      getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
-      getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
-      ({ not: not12, and: and11 } = createGuards());
-      machine29 = createMachine({
+      getFirstEl3 = (ctx) => first(getElements3(ctx));
+      getLastEl3 = (ctx) => last(getElements3(ctx));
+      getNextEl3 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
+      getPrevEl3 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
+      ({ not: not13, and: and12 } = createGuards());
+      machine32 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultValue: [],
@@ -38389,7 +42541,7 @@ ${err}`);
             on: {
               "ROOT.FOCUS": {
                 target: "focused",
-                guard: not12(and11("isClickFocus", "isTabbingBackward")),
+                guard: not13(and12("isClickFocus", "isTabbingBackward")),
                 actions: ["focusFirstToggle", "clearClickFocus"]
               },
               "TOGGLE.FOCUS": {
@@ -38421,7 +42573,7 @@ ${err}`);
               },
               "TOGGLE.SHIFT_TAB": [
                 {
-                  guard: not12("isFirstToggleFocused"),
+                  guard: not13("isFirstToggleFocused"),
                   target: "idle",
                   actions: ["setIsTabbingBackward"]
                 },
@@ -38438,7 +42590,7 @@ ${err}`);
             isTabbingBackward: ({ context }) => context.get("isTabbingBackward"),
             isFirstToggleFocused: ({ context, scope }) => {
               var _a4;
-              return context.get("focusedId") === ((_a4 = getFirstEl2(scope)) == null ? void 0 : _a4.id);
+              return context.get("focusedId") === ((_a4 = getFirstEl3(scope)) == null ? void 0 : _a4.id);
             }
           },
           actions: {
@@ -38456,7 +42608,7 @@ ${err}`);
             },
             checkIfWithinToolbar({ context, scope }) {
               var _a4;
-              const closestToolbar = (_a4 = getRootEl9(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
+              const closestToolbar = (_a4 = getRootEl10(scope)) == null ? void 0 : _a4.closest("[role=toolbar]");
               context.set("isWithinToolbar", !!closestToolbar);
             },
             setFocusedId({ context, event }) {
@@ -38483,7 +42635,7 @@ ${err}`);
                 var _a4;
                 const focusedId = context.get("focusedId");
                 if (!focusedId) return;
-                (_a4 = getNextEl2(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getNextEl3(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusPrevToggle({ context, scope, prop }) {
@@ -38491,19 +42643,19 @@ ${err}`);
                 var _a4;
                 const focusedId = context.get("focusedId");
                 if (!focusedId) return;
-                (_a4 = getPrevEl2(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getPrevEl3(scope, focusedId, prop("loopFocus"))) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusFirstToggle({ scope }) {
               raf(() => {
                 var _a4;
-                (_a4 = getFirstEl2(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getFirstEl3(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             },
             focusLastToggle({ scope }) {
               raf(() => {
                 var _a4;
-                (_a4 = getLastEl2(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
+                (_a4 = getLastEl3(scope)) == null ? void 0 : _a4.focus({ preventScroll: true });
               });
             }
           }
@@ -38512,10 +42664,10 @@ ${err}`);
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine29, props);
+          return new VanillaMachine(machine32, props);
         }
         initApi() {
-          return this.zagConnect(connect29);
+          return this.zagConnect(connect32);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -38574,7 +42726,7 @@ ${err}`);
           this.handleRegistry = registry;
           registry.add("toggle-group_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            const value = readPayloadValue2(payload);
+            const value = readToggleGroupPayloadValue(payload);
             if (value) toggleGroup.api.setValue(value);
           });
           registry.add("toggle-group:value", (payload) => {
@@ -38588,7 +42740,7 @@ ${err}`);
         },
         updated() {
           var _a4;
-          (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+          (_a4 = this.toggleGroup) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({}, readStringListControlledZagUpdate(this.el, "value", "defaultValue")), {
             deselectable: getBoolean(this.el, "deselectable"),
             loopFocus: getBoolean(this.el, "loopFocus"),
             rovingFocus: getBoolean(this.el, "rovingFocus"),
@@ -38611,7 +42763,11 @@ ${err}`);
   // ../priv/static/tree-view.mjs
   var tree_view_exports = {};
   __export(tree_view_exports, {
-    TreeView: () => TreeViewHook
+    TreeView: () => TreeViewHook,
+    parseRootNode: () => parseRootNode,
+    readExpandedAttr: () => readExpandedAttr,
+    readSelectedAttr: () => readSelectedAttr,
+    readTreeViewInteractionProps: () => readTreeViewInteractionProps
   });
   function getCheckedState2(collection22, node, checkedValue) {
     const value = collection22.getNodeValue(node);
@@ -38643,7 +42799,7 @@ ${err}`);
     });
     return map2;
   }
-  function connect30(service, normalize) {
+  function connect33(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const translations = prop("translations");
@@ -38746,24 +42902,24 @@ ${err}`);
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.root.attrs), {
-          id: getRootId24(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.root.attrs), {
+          id: getRootId26(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.label.attrs), {
-          id: getLabelId16(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.label.attrs), {
+          id: getLabelId17(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
           "aria-label": translations.treeLabel,
-          "aria-labelledby": getLabelId16(scope),
+          "aria-labelledby": getLabelId17(scope),
           "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
           tabIndex: -1,
           onKeyDown(event) {
@@ -38867,7 +43023,7 @@ ${err}`);
       getNodeState,
       getItemProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
@@ -38908,7 +43064,7 @@ ${err}`);
       },
       getItemTextProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
@@ -38916,7 +43072,7 @@ ${err}`);
       },
       getItemIndicatorProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -38926,7 +43082,7 @@ ${err}`);
       },
       getBranchProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branch.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -38950,7 +43106,7 @@ ${err}`);
       },
       getBranchIndicatorProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -38961,7 +43117,7 @@ ${err}`);
       },
       getBranchTriggerProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -38978,7 +43134,7 @@ ${err}`);
       },
       getBranchControlProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchControl.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
@@ -39012,7 +43168,7 @@ ${err}`);
       },
       getBranchTextProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -39021,7 +43177,7 @@ ${err}`);
       },
       getBranchContentProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchContent.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -39033,14 +43189,14 @@ ${err}`);
       },
       getBranchIndentGuideProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.branchIndentGuide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
       getNodeCheckboxProps(props) {
         const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts30.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts33.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -39059,7 +43215,7 @@ ${err}`);
       },
       getNodeRenameInputProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.input(__spreadProps(__spreadValues({}, parts30.nodeRenameInput.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts33.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": translations.renameInputLabel,
@@ -39205,18 +43361,26 @@ ${err}`);
     }
     return JSON.parse(raw);
   }
-  var anatomy30, parts30, collection4, getRootId24, getLabelId16, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine30, TreeView, TreeViewHook;
+  function readTreeViewInteractionProps(el) {
+    var _a4;
+    return {
+      selectionMode: (_a4 = getString(el, "selectionMode")) != null ? _a4 : "single",
+      typeahead: el.dataset.typeahead !== "false",
+      dir: getDir(el)
+    };
+  }
+  var anatomy33, parts33, collection4, getRootId26, getLabelId17, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and13, machine33, TreeView, BRANCH_CONTENT_SELECTOR, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_P32UGRVU();
-      init_chunk_FOQSALVP();
       init_chunk_JDGMEOQK();
-      init_chunk_WG2KNE4C();
+      init_chunk_XI7CXJ3V();
+      init_chunk_4PIYPYVK();
+      init_chunk_FOQSALVP();
       init_chunk_77HPO22C();
-      init_chunk_LIWT33BG();
-      init_chunk_EE44DOTL();
-      anatomy30 = createAnatomy("tree-view").parts(
+      init_chunk_2WCNJX5P();
+      init_chunk_EWT2BP2N();
+      anatomy33 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -39233,18 +43397,18 @@ ${err}`);
         "root",
         "tree"
       );
-      parts30 = anatomy30.build();
+      parts33 = anatomy33.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
       collection4.empty = () => {
         return new TreeCollection({ rootNode: { children: [] } });
       };
-      getRootId24 = (ctx) => {
+      getRootId26 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.root) != null ? _b : `tree:${ctx.id}:root`;
       };
-      getLabelId16 = (ctx) => {
+      getLabelId17 = (ctx) => {
         var _a4, _b;
         return (_b = (_a4 = ctx.ids) == null ? void 0 : _a4.label) != null ? _b : `tree:${ctx.id}:label`;
       };
@@ -39265,8 +43429,8 @@ ${err}`);
       getRenameInputEl = (ctx, value) => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
-      ({ and: and12 } = createGuards());
-      machine30 = createMachine({
+      ({ and: and13 } = createGuards());
+      machine33 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             selectionMode: "single",
@@ -39393,7 +43557,7 @@ ${err}`);
           },
           "SELECTED.ALL": [
             {
-              guard: and12("isMultipleSelection", "moveFocus"),
+              guard: and13("isMultipleSelection", "moveFocus"),
               actions: ["selectAllNodes", "focusTreeLastNode"]
             },
             {
@@ -39424,7 +43588,7 @@ ${err}`);
           },
           "NODE.ARROW_DOWN": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
             },
             {
@@ -39433,7 +43597,7 @@ ${err}`);
           ],
           "NODE.ARROW_UP": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
             },
             {
@@ -39454,7 +43618,7 @@ ${err}`);
           ],
           "BRANCH_NODE.ARROW_RIGHT": [
             {
-              guard: and12("isBranchFocused", "isBranchExpanded"),
+              guard: and13("isBranchFocused", "isBranchExpanded"),
               actions: ["focusBranchFirstNode"]
             },
             {
@@ -39466,7 +43630,7 @@ ${err}`);
           },
           "NODE.HOME": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
             },
             {
@@ -39475,7 +43639,7 @@ ${err}`);
           ],
           "NODE.END": [
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
             },
             {
@@ -39484,11 +43648,11 @@ ${err}`);
           ],
           "NODE.CLICK": [
             {
-              guard: and12("isCtrlKey", "isMultipleSelection"),
+              guard: and13("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -39497,11 +43661,11 @@ ${err}`);
           ],
           "BRANCH_NODE.CLICK": [
             {
-              guard: and12("isCtrlKey", "isMultipleSelection"),
+              guard: and13("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and12("isShiftKey", "isMultipleSelection"),
+              guard: and13("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -39906,10 +44070,10 @@ ${err}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine30, __spreadValues({}, props));
+          return new VanillaMachine(machine33, __spreadValues({}, props));
         }
         initApi() {
-          return this.zagConnect(connect30);
+          return this.zagConnect(connect33);
         }
         getNodeAt(indexPath) {
           var _a4;
@@ -40003,6 +44167,7 @@ ${err}`);
           this.syncTree();
         }
       };
+      BRANCH_CONTENT_SELECTOR = '[data-scope="tree-view"][data-part="branch-content"]';
       TreeViewHook = {
         mounted() {
           var _a4, _b, _c, _d, _e, _f, _g, _h, _i;
@@ -40085,51 +44250,29 @@ ${err}`);
                 serverEventName: getString(el, "onExpandedChange"),
                 clientEventName: getString(el, "onExpandedChangeClient")
               });
-              if (el.dataset.animation === "js") {
-                runOpenStateTransitionsHeight({
-                  rootEl: el,
-                  selector: '[data-scope="tree-view"][data-part="branch-content"]',
-                  opts: readHeightAnimationOptions(el),
-                  isOpen: (contentEl) => {
-                    const value = contentEl.dataset.value;
-                    return !!value && next2.includes(value);
-                  }
-                });
-              }
+              runHeightOpenTransition({
+                el,
+                selector: BRANCH_CONTENT_SELECTOR,
+                prevOpen: previousExpandedValue,
+                nextOpen: next2,
+                resolveValue: contentDatasetValue
+              });
             }
           }));
           treeView.init();
           this.treeView = treeView;
-          if (el.dataset.animation === "js") {
-            const opts = readHeightAnimationOptions(el);
-            prepareInitialHeightState(el, '[data-scope="tree-view"][data-part="branch-content"]', opts);
-          }
-          const emitSelectedValue = (respondTo) => {
-            const value = treeView.api.selectedValue;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
-              serverEventName: "tree_view_value_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "tree-view-value",
-              domDetail: { id: el.id, value }
-            });
-          };
-          const emitExpandedValue = (respondTo) => {
-            const value = treeView.api.expandedValue;
-            emitResponse({
-              respondTo,
-              canPushServer: canPush(),
-              pushEvent,
-              serverEventName: "tree_view_expanded_value_response",
-              serverPayload: { id: el.id, value },
-              el,
-              domEventName: "tree-view-expanded-value",
-              domDetail: { id: el.id, value }
-            });
-          };
+          prepareJsHeightInitialState(el, BRANCH_CONTENT_SELECTOR);
+          const hookApi = { el, pushEvent, canPushServer: canPush };
+          const emitSelectedValue = createValueEmitter(hookApi, {
+            getValue: () => treeView.api.selectedValue,
+            serverEventName: "tree_view_value_response",
+            domEventName: "tree-view-value"
+          });
+          const emitExpandedValue = createValueEmitter(hookApi, {
+            getValue: () => treeView.api.expandedValue,
+            serverEventName: "tree_view_expanded_value_response",
+            domEventName: "tree-view-expanded-value"
+          });
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add(
@@ -40177,13 +44320,14 @@ ${err}`);
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-            this.previousExpanded = (_a4 = getStringList(this.el, "expandedValue")) != null ? _a4 : [];
+          const { el } = this;
+          if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+            this.previousExpanded = (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [];
           }
         },
         updated() {
-          var _a4, _b, _c, _d, _e, _f, _g;
-          const el = this.el;
+          var _a4, _b, _c, _d, _e, _f;
+          const { el } = this;
           const tv = this.treeView;
           if (!tv) return;
           const rawTree = el.dataset.tree;
@@ -40192,53 +44336,36 @@ ${err}`);
             tv.replaceRootNode(parseRootNode(el));
           }
           const controlled = getBoolean(el, "controlled");
+          const interaction = readTreeViewInteractionProps(el);
           const selected = controlled ? (_a4 = getStringList(el, "selectedValue")) != null ? _a4 : [] : (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
           const expanded = controlled ? (_c = getStringList(el, "expandedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultExpandedValue")) != null ? _d : [];
-          const selectionMode = (_e = getString(el, "selectionMode")) != null ? _e : "single";
-          const typeahead = el.dataset.typeahead !== "false";
-          const dir = getDir(el);
           const expandedAttr = readExpandedAttr(el);
           const selectedAttr = readSelectedAttr(el);
           const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
           const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
           this.lastExpandedAttr = expandedAttr;
           this.lastSelectedAttr = selectedAttr;
-          if (controlled) {
-            const prevExpanded = (_g = (_f = this.previousExpanded) != null ? _f : this.lastExpanded) != null ? _g : [];
-            this.previousExpanded = void 0;
-            if (expandedAttrChanged) this.lastExpanded = expanded;
-            if (selectedAttrChanged) this.lastSelected = selected;
-            if (el.dataset.animation === "js") {
-              runOpenStateTransitionsHeight({
-                rootEl: el,
-                selector: '[data-scope="tree-view"][data-part="branch-content"]',
-                opts: readHeightAnimationOptions(el),
-                wasOpen: (contentEl) => {
-                  const value = contentEl.dataset.value;
-                  return !!value && prevExpanded.includes(value);
-                },
-                isOpen: (contentEl) => {
-                  const value = contentEl.dataset.value;
-                  return !!value && expanded.includes(value);
-                }
-              });
-            }
-            tv.updateProps({
-              expandedValue: expanded,
-              selectedValue: selected,
-              selectionMode,
-              typeahead,
-              dir
-            });
-          } else {
-            tv.updateProps({
-              selectionMode,
-              typeahead,
-              dir
-            });
+          if (!controlled) {
+            tv.updateProps(interaction);
             if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
             if (selectedAttrChanged) tv.api.setSelectedValue(selected);
+            return;
           }
+          const prevExpanded = (_f = (_e = this.previousExpanded) != null ? _e : this.lastExpanded) != null ? _f : [];
+          this.previousExpanded = void 0;
+          if (expandedAttrChanged) this.lastExpanded = expanded;
+          if (selectedAttrChanged) this.lastSelected = selected;
+          runHeightOpenTransition({
+            el,
+            selector: BRANCH_CONTENT_SELECTOR,
+            prevOpen: prevExpanded,
+            nextOpen: expanded,
+            resolveValue: contentDatasetValue
+          });
+          tv.updateProps(__spreadProps(__spreadValues({}, interaction), {
+            expandedValue: expanded,
+            selectedValue: selected
+          }));
         },
         destroyed() {
           var _a4, _b, _c;
@@ -40423,10 +44550,17 @@ ${err}`);
     return {
       mounted() {
         return __async(this, null, function* () {
-          const mod2 = yield importFn();
-          const real = mod2[exportName];
-          this._realHook = real;
-          if (real == null ? void 0 : real.mounted) return real.mounted.call(this);
+          const el = this.el;
+          try {
+            const mod2 = yield importFn();
+            const real = mod2[exportName];
+            this._realHook = real;
+            if (real == null ? void 0 : real.mounted) {
+              yield real.mounted.call(this);
+            }
+          } finally {
+            el.removeAttribute("data-loading");
+          }
         });
       },
       updated() {
@@ -40460,7 +44594,6 @@ ${err}`);
     Carousel: createLazyHook(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
     Checkbox: createLazyHook(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
     Clipboard: createLazyHook(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
-    Code: createLazyHook(() => Promise.resolve().then(() => (init_code(), code_exports)), "Code"),
     Collapsible: createLazyHook(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
     Combobox: createLazyHook(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
     ColorPicker: createLazyHook(() => Promise.resolve().then(() => (init_color_picker(), color_picker_exports)), "ColorPicker"),
@@ -40473,16 +44606,19 @@ ${err}`);
     Marquee: createLazyHook(() => Promise.resolve().then(() => (init_marquee(), marquee_exports)), "Marquee"),
     Menu: createLazyHook(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
     NumberInput: createLazyHook(() => Promise.resolve().then(() => (init_number_input(), number_input_exports)), "NumberInput"),
+    Pagination: createLazyHook(() => Promise.resolve().then(() => (init_pagination(), pagination_exports)), "Pagination"),
     PasswordInput: createLazyHook(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),
     PinInput: createLazyHook(() => Promise.resolve().then(() => (init_pin_input(), pin_input_exports)), "PinInput"),
     RadioGroup: createLazyHook(() => Promise.resolve().then(() => (init_radio_group(), radio_group_exports)), "RadioGroup"),
     Select: createLazyHook(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
     SignaturePad: createLazyHook(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
     Switch: createLazyHook(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
+    TagsInput: createLazyHook(() => Promise.resolve().then(() => (init_tags_input(), tags_input_exports)), "TagsInput"),
     Tabs: createLazyHook(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
     Timer: createLazyHook(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
     Toast: createLazyHook(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
     Tooltip: createLazyHook(() => Promise.resolve().then(() => (init_tooltip(), tooltip_exports)), "Tooltip"),
+    Toggle: createLazyHook(() => Promise.resolve().then(() => (init_toggle(), toggle_exports)), "Toggle"),
     ToggleGroup: createLazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
     TreeView: createLazyHook(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };

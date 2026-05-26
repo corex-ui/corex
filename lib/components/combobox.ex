@@ -4,6 +4,8 @@ defmodule Corex.Combobox do
 
   Pass options with `Corex.List.new/1`. With `redirect`, use per-item `:to`, `:redirect` (`:href` | `:patch` | `:navigate` | `false`), and `:new_tab`; Zag runs single-select when `redirect` is true.
 
+  ## Anatomy
+
   <!-- tabs-open -->
 
   ### Minimal
@@ -121,13 +123,43 @@ defmodule Corex.Combobox do
       </.combobox>
   ```
 
-  ## Phoenix Form Integration
+  <!-- tabs-close -->
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. The combobox stays uncontrolled in the browser; merge hook-driven updates into changeset params when validating (see Angle Slider form docs). See the Select or NumberInput component docs for full controller and LiveView examples.
+  ## API
 
-  ### Server-side Filtering
+  Requires a stable `id` on `<.combobox>`.
 
-  Disable client filtering with `disabled={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+
+  ```heex
+  <.action phx-click={Corex.Combobox.set_value("combobox-api", ["fra"])} class="button button--sm">France</.action>
+  ```
+
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="combobox_value_changed"` | Selection changes | `%{"id" => id, "value" => values}` |
+  | `on_open_change="combobox_open_changed"` | Menu open state changes | `%{"id" => id, "open" => open}` |
+  | `on_input_value_change="combobox_search"` | Input text changes (server filter) | `%{"id" => id, "value" => string, "reason" => reason}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="combobox-value-changed"` | Selection changes | `id`, `value`, `items` |
+  | `on_open_change_client="combobox-open-changed"` | Menu open state changes | `id`, `open` |
+
+  ## Patterns
+
+  ### Server-side filtering
+
+  Disable client filtering with `filter={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
 
   ```heex
   defmodule MyAppWeb.CountryCombobox do
@@ -162,7 +194,6 @@ defmodule Corex.Combobox do
     def render(assigns) do
       ~H"""
       <.combobox
-        id="country-combobox"
         items={@items}
         filter={false}
         on_input_value_change="search"
@@ -174,11 +205,9 @@ defmodule Corex.Combobox do
   end
   ```
 
-  <!-- tabs-close -->
+  ## Style
 
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`:
 
   ```css
   [data-scope="combobox"][data-part="root"] {}
@@ -215,42 +244,27 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
-  ## Localization
+  ## Form
 
-  Default `placeholder`, `empty`, `trigger`, and `clear_selection` use English literals; at render
-  they are passed through the host gettext backend gettext/1 unless you set `translation`. Omit keys or use
-  `nil` to keep the built-in default for that field. Same pattern as `Corex.Select`.
+  Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+
+  ### Localization
+
+  Pass `translation={%Corex.Combobox.Translation{}}` for partial overrides. See [`Corex.Combobox.Translation`](`Corex.Combobox.Translation`) for defaults.
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for Combobox component strings.
-
-    Defaults are English literals (`"Select"`, `"No results"`); at render time Corex passes them
-    through the host gettext backend gettext/1 unless you override. Partial structs fill missing fields
-    the same way.
-
-    Override: `translation={%Corex.Combobox.Translation{placeholder: "Search…", empty: "Nothing found"}}`
-
-    Trigger and clear buttons use `translation.trigger` and `translation.clear_selection` (defaults **Open options** and **Clear selection**).
-
-    With explicit gettext at the call site: pass your app Gettext module's `gettext("…")` as the field value.
-    """
-    defstruct [:placeholder, :empty, :trigger, :clear_selection]
-  end
+  alias Corex.Combobox.Translation
 
   @doc type: :component
   use Phoenix.Component
 
+  import Corex.Api.Doc
+
   import Corex.Helpers,
-    only: [
-      validate_value!: 1,
-      normalize_items: 1,
-      has_groups?: 1,
-      normalize_groups: 1,
-      entry_value: 1
-    ]
+    only: [normalize_items: 1, has_groups?: 1, normalize_groups: 1, entry_value: 1]
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -297,12 +311,6 @@ defmodule Corex.Combobox do
       "Initial selected item values (list of strings or a single string); not updated by LiveView after mount"
   )
 
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "When true (e.g. LiveView playground), selection is driven from the server via `data-value` and the hook passes Zag `value` on updates. When false, only `data-default-value` is used for SSR and hook updates omit selection so client filter/typing stay stable."
-  )
-
   attr(:on_open_change, :string,
     default: nil,
     doc: "The server event name to trigger on open change"
@@ -318,11 +326,6 @@ defmodule Corex.Combobox do
   attr(:translation, Corex.Combobox.Translation,
     default: nil,
     doc: "Override translatable strings"
-  )
-
-  attr(:placeholder, :string,
-    default: nil,
-    doc: "Input placeholder; when nil, uses translation.placeholder"
   )
 
   attr(:always_submit_on_enter, :boolean,
@@ -369,6 +372,11 @@ defmodule Corex.Combobox do
   attr(:on_input_value_change, :string,
     default: nil,
     doc: "The server event name to trigger on input value change"
+  )
+
+  attr(:on_input_value_change_client, :string,
+    default: nil,
+    doc: "The client event name to trigger on input value change"
   )
 
   attr(:on_value_change, :string,
@@ -441,7 +449,6 @@ defmodule Corex.Combobox do
   )
 
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     items = normalize_items(assigns.items)
     raw_value = get_value(field.value)
     value = normalize_value_to_ids(items, raw_value)
@@ -449,19 +456,15 @@ defmodule Corex.Combobox do
 
     assigns
     |> assign(:items, items)
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:id, fn -> field.id end)
-    |> assign_new(:form, fn -> field.form.id end)
-    |> assign_new(:name, fn -> field.name end)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> combobox()
   end
 
   def combobox(assigns) do
-    translation = normalize_combobox_translation(assigns[:translation])
-    placeholder = assigns[:placeholder] || translation.placeholder
+    translation = Translation.resolve(assigns[:translation])
+    placeholder = translation.placeholder
     empty_text = translation.empty
 
     assigns =
@@ -469,8 +472,8 @@ defmodule Corex.Combobox do
       |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:controlled, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
       |> assign(:empty_text, empty_text)
@@ -485,6 +488,8 @@ defmodule Corex.Combobox do
 
     selected_label = get_selected_label(items, value_list)
 
+    array_form_submit = assigns.multiple && is_binary(assigns[:name])
+
     assigns =
       assigns
       |> assign(:items, items)
@@ -493,36 +498,70 @@ defmodule Corex.Combobox do
       |> assign(:value, value_list)
       |> assign(:selected_label, selected_label)
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+      |> then(fn a ->
+        if array_form_submit do
+          Corex.FormField.assign_list_submit(a)
+        else
+          assign(a, :submit_name, nil)
+        end
+      end)
 
     ~H"""
     <div id={@id} 
     phx-hook="Combobox" 
     data-loading
-    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading", "data-default-value"])}
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
     {@rest}
     {Connect.props(%Props{
-      id: @id, items: @items, placeholder: @placeholder, value: @value,
-      controlled: @controlled,
+      id: @id, items: @items, form_field: @form_field, placeholder: @placeholder, value: @value,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
       read_only: @read_only, required: @required,
-      on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
+      on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_input_value_change_client: @on_input_value_change_client, on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client,
       positioning: @positioning,
       redirect: @redirect,
-      disabled: @disabled, filter: @filter
+      disabled: @disabled, filter: @filter, submit_name: @submit_name
     })}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
+        <div
+          :if={@submit_name}
+          data-scope="combobox"
+          data-part="array-inputs"
+          phx-update="ignore"
+          id={"combobox:#{@id}:array-inputs"}
+        >
+          <input
+            :for={v <- @value}
+            type="hidden"
+            data-scope="combobox"
+            data-part="array-input"
+            name={@submit_name}
+            value={v}
+          />
+          <input
+            :if={@value == []}
+            type="hidden"
+            data-scope="combobox"
+            data-part="array-input"
+            data-empty
+            name={@submit_name}
+            value=""
+          />
+        </div>
       <input
-        type="hidden"
+        type="text"
+        hidden
+        aria-hidden="true"
+        autocomplete="off"
+        tabindex="-1"
         id={"#{@id}-hidden-value"}
-        name={@name}
-        form={@form}
+        name={if(@submit_name, do: nil, else: @name)}
         data-scope="combobox"
         data-part="hidden-input"
         value={@value_for_hidden_input}
         phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("#{@id}-hidden-value"))}
       />
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
         <div :if={!Enum.empty?(@label)} phx-mounted={Connect.ignore_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
@@ -578,7 +617,13 @@ defmodule Corex.Combobox do
           </div>
         </div>
       </div>
-      <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
+        data-scope="combobox"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
       <div style="display: none;" data-templates="combobox">
@@ -619,49 +664,6 @@ defmodule Corex.Combobox do
       </div>
     </div>
     """
-  end
-
-  defp normalize_combobox_translation(nil) do
-    %Translation{
-      placeholder: combobox_field(nil, "Select"),
-      empty: combobox_field(nil, "No results"),
-      trigger: combobox_field(nil, "Open options"),
-      clear_selection: combobox_field(nil, "Clear selection")
-    }
-  end
-
-  defp normalize_combobox_translation(%Translation{} = t) do
-    %Translation{
-      placeholder: combobox_field(t.placeholder, "Select"),
-      empty: combobox_field(t.empty, "No results"),
-      trigger: combobox_field(t.trigger, "Open options"),
-      clear_selection: combobox_field(t.clear_selection, "Clear selection")
-    }
-  end
-
-  defp normalize_combobox_translation(m) when is_map(m) do
-    sm = Map.new(m, fn {k, v} -> {to_string(k), v} end)
-    ph = Map.get(sm, "placeholder")
-    em = Map.get(sm, "empty")
-    tr = Map.get(sm, "trigger")
-    cl = Map.get(sm, "clear_selection")
-
-    normalize_combobox_translation(%Translation{
-      placeholder: ph,
-      empty: em,
-      trigger: tr,
-      clear_selection: cl
-    })
-  end
-
-  defp combobox_field(nil, msgid), do: Corex.Gettext.gettext(msgid)
-
-  defp combobox_field(s, msgid) when is_binary(s) do
-    case String.trim(s) do
-      "" -> Corex.Gettext.gettext(msgid)
-      ^msgid -> Corex.Gettext.gettext(msgid)
-      trimmed -> trimmed
-    end
   end
 
   defp item_attrs(id, entry, dir, orientation) do
@@ -756,38 +758,72 @@ defmodule Corex.Combobox do
   defp value_for_hidden_input(value_list, false), do: Elixir.List.first(value_list)
   defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
 
-  @doc type: :api
-  @doc """
-  Sets combobox selection from the client. Dispatches `corex:combobox:set-value` on the hook root.
-  """
+  api_doc(~S"""
+  Set selected value(s) from a control (`phx-click`). Pass a list, comma-separated string, or single value (normalized like the component).
+
+  ```heex
+  <.action phx-click={Corex.Combobox.set_value("my-combobox", "bel")}>Belgium</.action>
+  <.combobox
+    id="my-combobox"
+    class="combobox"
+    translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "None"}}
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
+  ```
+
+  ```javascript
+  document.getElementById("my-combobox")?.dispatchEvent(
+    new CustomEvent("corex:combobox:set-value", {
+      bubbles: false,
+      detail: { value: ["bel"] },
+    })
+  );
+  ```
+  """)
+
   def set_value(combobox_id, value) when is_binary(combobox_id) do
     JS.dispatch("corex:combobox:set-value",
       to: "##{combobox_id}",
-      detail: %{value: normalize_combobox_set_value!(value)},
+      detail: %{value: Corex.Helpers.normalize_string_list_value!(value)},
       bubbles: false
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets combobox selection from the server via `push_event` (`combobox_set_value`).
-  """
+  api_doc(~S"""
+  Set selection from `handle_event`. Pushes `combobox_set_value`.
+
+  ```heex
+  <.action phx-click="pick_bel" phx-value-value="bel">Belgium</.action>
+  <.combobox
+    id="my-combobox"
+    class="combobox"
+    translation={%Corex.Combobox.Translation{placeholder: "Country", empty: "None"}}
+    items={Corex.List.new([
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.combobox>
+  ```
+
+  ```elixir
+  def handle_event("pick_bel", %{"value" => v}, socket) do
+    {:noreply, Corex.Combobox.set_value(socket, "my-combobox", v)}
+  end
+  ```
+  """)
+
   def set_value(socket, combobox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) do
     LiveView.push_event(socket, "combobox_set_value", %{
       id: combobox_id,
-      value: normalize_combobox_set_value!(value)
+      value: Corex.Helpers.normalize_string_list_value!(value)
     })
   end
-
-  defp normalize_combobox_set_value!(value) when is_list(value), do: validate_value!(value)
-
-  defp normalize_combobox_set_value!(value) when is_binary(value) do
-    case String.trim(value) do
-      "" -> []
-      trimmed -> trimmed |> String.split(",", trim: true) |> validate_value!()
-    end
-  end
-
-  defp normalize_combobox_set_value!(value), do: validate_value!(Elixir.List.wrap(value))
 end

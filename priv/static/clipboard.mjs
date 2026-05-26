@@ -1,6 +1,6 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-6Y5IFYJF.mjs";
+} from "./chunks/chunk-VHCQWARJ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -9,7 +9,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -21,7 +21,7 @@ import {
   getString,
   getWindow,
   setElementValue
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
@@ -290,6 +290,9 @@ var Clipboard = class extends Component {
 };
 
 // hooks/clipboard.ts
+function copyPayload(el, value) {
+  return { id: el.id, value };
+}
 var ClipboardHook = {
   mounted() {
     const el = this.el;
@@ -306,7 +309,7 @@ var ClipboardHook = {
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value },
+          payload: copyPayload(el, value),
           serverEventName: getString(el, "onCopy"),
           clientEventName: getString(el, "onCopyClient")
         });
@@ -340,8 +343,7 @@ var ClipboardHook = {
   updated() {
     this.clipboard?.updateProps({
       id: this.el.id,
-      timeout: getNumber(this.el, "timeout"),
-      defaultValue: getString(this.el, "defaultValue")
+      timeout: getNumber(this.el, "timeout")
     });
   },
   destroyed() {
@@ -351,5 +353,6 @@ var ClipboardHook = {
   }
 };
 export {
-  ClipboardHook as Clipboard
+  ClipboardHook as Clipboard,
+  copyPayload
 };

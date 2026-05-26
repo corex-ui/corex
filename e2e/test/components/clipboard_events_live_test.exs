@@ -4,7 +4,7 @@ defmodule E2eWeb.ClipboardEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "clipboard_copied inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/clipboard/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/clipboard/events", on_error: :warn)
 
     html =
       render_click(view, "clipboard_copied", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.ClipboardEventsLiveTest do
         "value" => "info@netoum.com"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

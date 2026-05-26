@@ -46,7 +46,7 @@ defmodule E2eWeb.DataTablePatternState do
         List.delete(cur, row_key)
       end
 
-    all? = length(selected) == length(rows) and length(rows) > 0
+    all? = match?([_ | _], rows) and length(selected) == length(rows)
 
     socket
     |> assign(selected_k, selected)

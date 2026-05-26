@@ -1,0 +1,45 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    path={@path}
+    id="radio-group-styling-page"
+    title={~t"Radio Group · Style"}
+    subtitle={
+      ~t"Semantic colors, density steps, and width utilities via modifier classes on the radio group."
+    }
+  >
+    <.demo_section
+      id="radio-group-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-styling-max-width"
+      title={~t"Max Width"}
+      code={E2eWeb.Demos.RadioGroupDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

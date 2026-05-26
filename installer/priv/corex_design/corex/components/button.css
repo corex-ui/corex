@@ -38,4 +38,12 @@
   &:active {
     background-color: --value(--color-*-active, [color]);
   }
+
+  &:disabled,
+  &[data-disabled],
+  &[disabled] {
+    background-color: --value(--color-*-muted, [color]);
+    color: --value(--color-*-ink, [color]);
+    cursor: not-allowed;
+  }
 }

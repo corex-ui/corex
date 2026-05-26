@@ -63,6 +63,27 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/Required/
     end
 
+    test "renders open combobox" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Combobox.combobox
+              id="cb-open"
+              open
+              value="a"
+              items={Corex.List.new([%{label: "A", value: "a"}, %{label: "B", value: "b"}])}
+            >
+              <:trigger>Pick</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-part="positioner")
+    end
+
     test "Connect.props with filter false sets data-filter to nil" do
       assigns =
         Map.merge(ConnectProps.default_combobox(), %{
@@ -178,7 +199,7 @@ defmodule Corex.ComboboxTest do
         )
 
       assert html =~
-               ~r/<input\b(?=[^>]*\btype="hidden")(?=[^>]*\bname="user\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
+               ~r/<input\b(?=[^>]*\btype="text")(?=[^>]*\bname="user\[currency\]")(?=[^>]*\bvalue="eur")[^>]*\bdata-part="hidden-input"/
 
       assert html =~
                ~r/<input\b(?=[^>]*\bdata-part="hidden-input")[^>]*\bphx-mounted="[^"]*ignore_attrs[^"]*value/
@@ -313,25 +334,10 @@ defmodule Corex.ComboboxTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when uncontrolled" do
-      assigns = %{
-        id: "test-combobox",
-        items: [%{value: "a", label: "A"}],
-        controlled: false,
-        value: [],
-        dir: "ltr"
-      }
-
-      result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      refute Map.has_key?(result, "id")
-      assert result["data-items"]
-    end
-
     test "returns props with data-default-value for selection" do
       assigns = %{
         id: "test-combobox",
         items: [%{value: "a", label: "A"}],
-        controlled: false,
         value: ["a"],
         dir: "ltr"
       }
@@ -339,21 +345,7 @@ defmodule Corex.ComboboxTest do
       result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
       assert result["data-default-value"] == "a"
       assert result["data-value"] == nil
-    end
-
-    test "returns props with data-value when controlled" do
-      assigns = %{
-        id: "test-combobox",
-        items: [%{value: "a", label: "A"}],
-        controlled: true,
-        value: ["a"],
-        dir: "ltr"
-      }
-
-      result = Connect.props(Map.merge(ConnectProps.default_combobox(), assigns))
-      assert result["data-value"] == "a"
-      assert result["data-default-value"] == nil
-      assert result["data-controlled"] == ""
+      assert result["data-controlled"] == nil
     end
   end
 end

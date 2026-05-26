@@ -11,7 +11,7 @@ defmodule E2eWeb.ToastPlayLive do
     %{label: "Error", value: "error"}
   ]
 
-  @toast_types ~w(info success error)
+  @toast_types ~W(info success error)
 
   @toast_field_types %{
     title: :string,
@@ -84,7 +84,11 @@ defmodule E2eWeb.ToastPlayLive do
   end
 
   defp normalize_toast_params(params) do
-    case Map.get(params, "duration") do
+    normalize_field_param(params, "duration")
+  end
+
+  defp normalize_field_param(params, key) do
+    case Map.get(params, key) do
       nil ->
         params
 
@@ -92,8 +96,8 @@ defmodule E2eWeb.ToastPlayLive do
         s = v |> to_string() |> String.trim()
 
         if s == "",
-          do: Map.delete(params, "duration"),
-          else: Map.put(params, "duration", s)
+          do: Map.delete(params, key),
+          else: Map.put(params, key, s)
     end
   end
 
@@ -130,7 +134,14 @@ defmodule E2eWeb.ToastPlayLive do
     type_atom = toast_type_atom(ty)
     opts = if loading?, do: [loading: true], else: []
 
-    Corex.Toast.push_toast(socket, "layout-toast", title, message, type_atom, duration, opts)
+    Corex.Toast.create(
+      socket,
+      "layout-toast",
+      title,
+      message,
+      type_atom,
+      Keyword.merge([duration: duration], opts)
+    )
   end
 
   defp toast_type_atom("success"), do: :success
@@ -147,6 +158,7 @@ defmodule E2eWeb.ToastPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="toast-playground"
         title="Toast · Playground"
         heading_class="layout-heading"
@@ -156,19 +168,28 @@ defmodule E2eWeb.ToastPlayLive do
           <div class="flex w-full max-w-lg flex-col gap-size">
             <.form
               for={@form}
-              id={@form.id}
               phx-change="validate_toast"
               phx-submit="create_toast"
               class="flex flex-col gap-space"
             >
-              <.native_input field={@form[:title]} type="text" class="native-input w-full" required>
+              <.native_input
+                field={@form[:title]}
+                type="text"
+                class="native-input native-input--sm w-full"
+                required
+              >
                 <:label>Title</:label>
               </.native_input>
-              <.native_input field={@form[:message]} type="text" class="native-input w-full" required>
+              <.native_input
+                field={@form[:message]}
+                type="text"
+                class="native-input native-input--sm w-full"
+                required
+              >
                 <:label>Message</:label>
               </.native_input>
               <.select
-                class="select select--accent w-full"
+                class="select select--sm w-full"
                 field={@form[:type]}
                 items={@type_items}
               >
@@ -180,7 +201,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.number_input
                 id="toast-playground-duration"
                 field={@form[:duration]}
-                class="number-input w-full"
+                class="number-input number-input--sm w-full"
                 min={0.0}
                 step={1.0}
                 required
@@ -193,11 +214,11 @@ defmodule E2eWeb.ToastPlayLive do
                   <.heroicon name="hero-chevron-up" class="icon" />
                 </:increment_trigger>
               </.number_input>
-              <.switch field={@form[:loading]} class="switch">
+              <.switch field={@form[:loading]} class="switch switch--sm">
                 <:label>Loading</:label>
               </.switch>
               <footer class="flex w-full justify-end">
-                <.action type="submit" class="button button--accent">Create toast</.action>
+                <.action type="submit" class="button button--sm button--accent">Create toast</.action>
               </footer>
             </.form>
           </div>

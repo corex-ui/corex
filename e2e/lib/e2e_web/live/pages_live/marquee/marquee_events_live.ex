@@ -28,7 +28,8 @@ defmodule E2eWeb.MarqueeEventsLive do
     {:ok, socket}
   end
 
-  def handle_event("pause_changed", %{"paused" => paused, "id" => id}, socket) do
+  def handle_event("pause_changed", %{"id" => id} = params, socket) do
+    paused = parse_bool(Map.get(params, "paused"))
     log = new_log("server", id, inspect(%{kind: "pause_changed", paused: paused}))
     {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
@@ -58,6 +59,12 @@ defmodule E2eWeb.MarqueeEventsLive do
     {:noreply, stream_insert(socket, :client_logs, log, at: 0)}
   end
 
+  defp parse_bool(true), do: true
+  defp parse_bool(false), do: false
+  defp parse_bool("true"), do: true
+  defp parse_bool("false"), do: false
+  defp parse_bool(_), do: false
+
   defp new_log(source, dom_id, value) do
     %{
       id: "#{System.unique_integer([:positive])}",
@@ -80,16 +87,17 @@ defmodule E2eWeb.MarqueeEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="marquee-events-page"
-        title="Marquee · Event"
-        subtitle="Pause, loop, and completion from LiveView or DOM events."
+        title={~t"Marquee · Event"}
+        subtitle={~t"Pause, loop, and completion from LiveView or DOM events."}
       >
         <.demo_section
-          id="marquee-events-server"
-          title="On Pause Change / On Loop Complete / On Complete (Server)"
+          id="marquee-events-server-section"
+          title={~t"On Pause Change / On Loop Complete / On Complete (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -102,11 +110,11 @@ defmodule E2eWeb.MarqueeEventsLive do
                 on_complete="complete"
                 loop_count={3}
                 items={[
-                  %{name: "Apple", logo: "🍎"},
-                  %{name: "Banana", logo: "🍌"},
-                  %{name: "Cherry", logo: "🍒"},
-                  %{name: "Grape", logo: "🍇"},
-                  %{name: "Lemon", logo: "🍋"}
+                  %{name: ~t"Apple", logo: "🍎"},
+                  %{name: ~t"Banana", logo: "🍌"},
+                  %{name: ~t"Cherry", logo: "🍒"},
+                  %{name: ~t"Grape", logo: "🍇"},
+                  %{name: ~t"Lemon", logo: "🍋"}
                 ]}
                 duration={12}
                 spacing="2rem"
@@ -135,12 +143,12 @@ defmodule E2eWeb.MarqueeEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="marquee-events-client"
-          title="On Pause Change / On Loop Complete / On Complete (Client)"
+          id="marquee-events-client-section"
+          title={~t"On Pause Change / On Loop Complete / On Complete (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>
@@ -153,11 +161,11 @@ defmodule E2eWeb.MarqueeEventsLive do
                 on_complete_client="marquee-complete-client"
                 loop_count={3}
                 items={[
-                  %{name: "Apple", logo: "🍎"},
-                  %{name: "Banana", logo: "🍌"},
-                  %{name: "Cherry", logo: "🍒"},
-                  %{name: "Grape", logo: "🍇"},
-                  %{name: "Lemon", logo: "🍋"}
+                  %{name: ~t"Apple", logo: "🍎"},
+                  %{name: ~t"Banana", logo: "🍌"},
+                  %{name: ~t"Cherry", logo: "🍒"},
+                  %{name: ~t"Grape", logo: "🍇"},
+                  %{name: ~t"Lemon", logo: "🍋"}
                 ]}
                 duration={12}
                 spacing="2rem"

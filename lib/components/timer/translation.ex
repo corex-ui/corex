@@ -1,19 +1,19 @@
 defmodule Corex.Timer.Translation do
   @moduledoc """
-  Strings for Zag timer [`translations`](https://zagjs.com/components/react/timer): `areaLabel` on the timer region.
+  Translatable strings for [`Corex.Timer`](Corex.Timer.html).
 
-  Without gettext: `translation={%Corex.Timer.Translation{area_label: "Countdown"}}`
+  Pass `translation={%Corex.Timer.Translation{}}` to override any field. Omitted fields use gettext defaults (see table).
 
-  With gettext: `translation={%Corex.Timer.Translation{area_label: Corex.Gettext.gettext("Countdown")}}`
+  | Field | Default | Used for |
+  | ----- | ------- | -------- |
+  | `area_label` | Timer | Timer region `aria-label` |
+
+  Partial override example:
+
+      translation={%Corex.Timer.Translation{area_label: Corex.Gettext.gettext("Countdown")}}
   """
 
-  defstruct [:area_label]
-
-  @type t :: %__MODULE__{
-          area_label: String.t() | nil
-        }
-
-  def to_camel_map(%__MODULE__{} = t) do
-    %{"areaLabel" => t.area_label}
-  end
+  use Corex.Translation,
+    camel_keys: [area_label: "areaLabel"],
+    fields: [area_label: "Timer"]
 end

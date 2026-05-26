@@ -1,195 +1,141 @@
 defmodule E2eWeb.TreeViewModel do
-  import ExUnit.Assertions
-  import Wallaby.Query
-
   use E2eWeb.Model, component: "tree-view"
 
-  @anatomy_sections ~w(
-    tree-anatomy-minimal
-    tree-anatomy-with-indicator
-    tree-anatomy-custom-slots
-    tree-anatomy-compound
+  import Wallaby.Query
+
+  @anatomy_sections ~W(
+    tree-view-anatomy-minimal
+    tree-view-anatomy-with-indicator
+    tree-view-anatomy-custom-slots
+    tree-view-anatomy-compound
   )
+
+  @anatomy_section_to_host_id %{
+    "tree-view-anatomy-minimal" => "tree-minimal",
+    "tree-view-anatomy-with-indicator" => "tree-with-indicator",
+    "tree-view-anatomy-custom-slots" => "tree-custom-slots",
+    "tree-view-anatomy-compound" => "tree-compound"
+  }
 
   def anatomy_section_ids, do: @anatomy_sections
 
-  def prepare_lazy_tree_view(session), do: session
+  def host_id_for_anatomy_section(section_id),
+    do: Map.fetch!(@anatomy_section_to_host_id, section_id)
 
-  def wait_until_css_match_count(session, css_selector, opts \\ [])
-      when is_binary(css_selector) do
-    timeout_ms = Keyword.get(opts, :timeout, 20_000)
-    min = Keyword.get(opts, :minimum, 1)
-    deadline = System.monotonic_time(:millisecond) + timeout_ms
-    script = "return document.querySelectorAll(" <> Jason.encode!(css_selector) <> ").length;"
-    wait_until_script_count(session, script, min, deadline)
+  def valid_dom_id?(dom_id) do
+    String.match?(dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(dom_id) > 0
   end
 
-  defp wait_until_script_count(session, script, min, deadline) do
-    me = self()
-    ref = make_ref()
+  def wait_host_tree_view_ready(session, host_dom_id, opts \\ []) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
 
-    _ =
-      Wallaby.Browser.execute_script(
-        session,
-        script,
-        [],
-        fn v -> send(me, {ref, :count, script_count(v)}) end
-      )
+    timeout = Keyword.get(opts, :timeout)
 
-    n =
-      receive do
-        {^ref, :count, x} -> x
-      after
-        5_000 -> 0
-      end
+    q =
+      css(~s|##{host_dom_id}[phx-hook="TreeView"]:not([data-loading])|, visible: :any)
 
-    if n >= min do
-      session
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
-        flunk(
-          "wait_until_script_count: expected count >= #{min}, last #{n}, script #{String.slice(script, 0, 160)}"
-        )
-      else
-        Process.sleep(150)
-        wait_until_script_count(session, script, min, deadline)
-      end
+    case timeout do
+      nil -> assert_has(session, q)
+      max_ms when is_integer(max_ms) and max_ms > 0 -> wait_for_has(session, q, timeout: max_ms)
     end
-  end
 
-  defp script_count(v) when is_integer(v), do: v
-  defp script_count(v) when is_float(v), do: trunc(v)
-
-  defp script_count(v) when is_binary(v) do
-    case Integer.parse(v) do
-      {i, _} -> i
-      :error -> 0
-    end
-  end
-
-  defp script_count(_), do: 0
-
-  def wait_section_tree_view_ready(session, section_dom_id, opts \\ []) do
-    q = css(~s(##{section_dom_id} [data-part="branch-control"]))
-
-    timeout_ms = Keyword.get(opts, :timeout, 20_000)
-    interval_ms = Keyword.get(opts, :interval, 100)
-    deadline = System.monotonic_time(:millisecond) + timeout_ms
-    wait_until_has_loop(session, q, deadline, interval_ms)
-  end
-
-  defp wait_until_has_loop(session, %Wallaby.Query{} = query, deadline, interval_ms) do
-    if Wallaby.Browser.has?(session, query) do
-      session
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
-        flunk("expected element #{inspect(query)}, timeout after #{deadline}")
-      else
-        Process.sleep(interval_ms)
-        wait_until_has_loop(session, query, deadline, interval_ms)
-      end
-    end
-  end
-
-  defp branch_control_query(section_dom_id) do
-    css(~s(##{section_dom_id} [data-part="branch-control"]), at: 0)
-  end
-
-  def first_branch_state(session, section_dom_id) do
-    el = find(session, branch_control_query(section_dom_id))
-    Wallaby.Element.attr(el, "data-state")
-  end
-
-  def click_first_branch(session, section_dom_id) do
-    click(session, branch_control_query(section_dom_id))
     session
   end
 
-  def assert_first_branch_toggles(session, section_dom_id) do
-    before = first_branch_state(session, section_dom_id)
+  def wait_section_tree_view_ready(session, section_dom_id, opts \\ []) do
+    if not valid_dom_id?(section_dom_id), do: raise(ArgumentError, "invalid section dom id")
 
-    session = click_first_branch(session, section_dom_id)
+    timeout = Keyword.get(opts, :timeout)
 
-    flipped = if before == "open", do: "closed", else: "open"
+    q =
+      css(
+        ~s|section##{section_dom_id} [phx-hook="TreeView"]:not([data-loading])|,
+        visible: :any
+      )
 
-    assert_has(
+    case timeout do
+      nil -> assert_has(session, q)
+      max_ms when is_integer(max_ms) and max_ms > 0 -> wait_for_has(session, q, timeout: max_ms)
+    end
+
+    session
+  end
+
+  def click_first_branch_control_in_host(session, host_dom_id) do
+    click(
       session,
       css(
-        ~s(##{section_dom_id} [data-part="branch-control"][data-state="#{flipped}"]),
-        count: :any,
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-control"]|,
+        at: 0,
         visible: :any
       )
     )
 
-    after_state = first_branch_state(session, section_dom_id)
-    assert before != after_state
     session
   end
 
-  def click_expand_lib_api(session) do
-    script = """
-    (function(){
-      var el = document.getElementById("tree-api-set-expanded-client");
-      if (!el) return;
-      el.dispatchEvent(
-        new CustomEvent("corex:tree-view:set-expanded-value", {
-          bubbles: false,
-          detail: { value: ["repo-lib"] }
-        })
-      );
-    })();
-    """
+  def wait_branch_content_open_in_host(session, host_dom_id, branch_value, opts \\ []) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
 
-    _ = Wallaby.Browser.execute_script(session, script, [], fn _ -> nil end)
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-content"][data-value="#{branch_value}"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
+
     session
   end
 
-  def lib_expanded_in?(session, tree_id) do
-    sel = ~s([id="tree:#{tree_id}:node:repo-lib"])
+  def wait_any_branch_content_open_in_host(session, host_dom_id, opts \\ []) do
+    wait_for_has(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-content"][data-state="open"]|,
+        visible: :any
+      ),
+      opts
+    )
 
-    script = """
-    return (function(){
-      var el = document.querySelector(#{Jason.encode!(sel)});
-      return !!(el && el.getAttribute("data-state") === "open");
-    })();
-    """
+    session
+  end
 
-    # Fixed: Use dom_script_bool pattern from original
-    me = self()
-    ref = make_ref()
-
-    _ =
-      Wallaby.Browser.execute_script(
-        session,
-        script,
-        [],
-        fn v -> send(me, {ref, :v, v}) end
+  def any_branch_content_open_in_host?(session, host_dom_id) do
+    has?(
+      session,
+      css(
+        ~s|##{host_dom_id} [data-scope="tree-view"][data-part="branch-content"][data-state="open"]|,
+        visible: :any
       )
-
-    receive do
-      {^ref, :v, true} -> true
-      {^ref, :v, "true"} -> true
-      {^ref, :v, _} -> false
-    after
-      3_000 -> false
-    end
+    )
   end
 
-  def click_events_server_first_branch(session) do
-    script = """
-    (function(){
-      var section = document.getElementById("tree-view-events-server");
-      if (!section) return;
-      var b = section.querySelector("[data-part=branch-control]");
-      if (b) b.click();
-    })();
-    """
+  def click_in_section(session, section_id, button_label)
+      when is_binary(section_id) and is_binary(button_label) do
+    if String.contains?(button_label, "'") or String.contains?(button_label, "\"") do
+      raise ArgumentError, "click_in_section/3 label must not include quotes"
+    end
 
-    _ = Wallaby.Browser.execute_script(session, script, [], fn _ -> nil end)
+    click(
+      session,
+      xpath("(//*[@id=\'#{section_id}\']//button[normalize-space(.)=\'#{button_label}\'])[1]")
+    )
+
     session
   end
 
-  def events_server_log_has_row?(session) do
-    has?(session, css("#tree-events-log-server tr[data-part=row]"))
+  def wait_patterns_page(session) do
+    assert_has(session, css("#tree-view-patterns-page", visible: :any))
+    session
+  end
+
+  def tree_view_events_server_log_has_row?(session) do
+    has?(session, css("#tree-events-log-server tr[data-part='row']", visible: :any))
+  end
+
+  def tree_view_events_client_log_has_row?(session) do
+    has?(session, css("#tree-events-log-client tr[data-part='row']", visible: :any))
   end
 end

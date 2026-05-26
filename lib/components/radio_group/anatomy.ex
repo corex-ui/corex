@@ -7,6 +7,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       value: nil,
       controlled: false,
       name: nil,
@@ -23,6 +24,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             controlled: boolean(),
             name: String.t() | nil,
@@ -40,7 +42,7 @@ defmodule Corex.RadioGroup.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :orientation, :has_label]
+    defstruct [:id, :dir, :orientation, :has_label, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -178,6 +180,33 @@ defmodule Corex.RadioGroup.Anatomy do
       "data-focus-visible",
       "aria-hidden"
     ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ValueInput do
+    @moduledoc false
+    defstruct [:id, :dir, :orientation]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "data-orientation",
+      "dir",
+      "name",
+      "value",
+      "type",
+      "hidden",
+      "aria-hidden",
+      "tabindex",
+      "data-focus",
+      "data-focus-visible"
+    ]
+
     def ignored_attrs, do: @ignored_attrs
   end
 

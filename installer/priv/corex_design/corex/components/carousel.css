@@ -9,7 +9,6 @@
     width: 100%;
     max-width: var(--container-md);
     max-height: var(--container-md);
-
   }
 
   .carousel [data-scope="carousel"][data-part="root"] {
@@ -19,9 +18,10 @@
     aspect-ratio: 4/3;
     overflow: hidden;
     min-height: 0;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     justify-content: center;
     position: relative;
+    border-radius: var(--radius-md);
   }
 
   .carousel [data-scope="carousel"][data-part="control"] {
@@ -29,7 +29,7 @@
     position: absolute;
     flex-direction: column;
     width: auto;
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     overflow: hidden;
     gap: var(--spacing-space);
     justify-content: center;
@@ -47,10 +47,23 @@
   }
 
   .carousel [data-scope="carousel"][data-part="prev-trigger"],
-  .carousel [data-scope="carousel"][data-part="next-trigger"],
+  .carousel [data-scope="carousel"][data-part="next-trigger"] {
+    @apply ui-trigger ui-trigger--square;
+    min-height: calc(var(--spacing-size-md) * 0.8);
+    min-width: calc(var(--spacing-size-md) * 0.8);
+    padding: 0;
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      visibility: hidden;
+    }
+  }
+
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
-    @apply ui-trigger ui-trigger--square ui-trigger--sm;
-    min-height: --spacing(6);
+    @apply ui-trigger ui-trigger--square;
+    min-height: var(--spacing-size-md);
+    min-width: var(--spacing-size-md);
     padding: 0;
 
     &:disabled,
@@ -79,10 +92,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background-color: var(--color-ui);
+    min-width: 0;
+    min-height: 0;
+    align-self: stretch;
   }
 
   .carousel [data-scope="carousel"][data-part="item"] img {
@@ -126,13 +138,13 @@
   .carousel [data-scope="carousel"][data-part="indicator"] {
     @apply ui-trigger ui-trigger--circle;
 
-    min-height: --spacing(4);
-    min-width: --spacing(4);
+    min-height: var(--spacing-space);
+    min-width: var(--spacing-space);
     padding: 0;
   }
 
   .carousel [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-accent);
+    background-color: var(--color-selected);
   }
 
   .carousel
@@ -149,7 +161,6 @@
 }
 
 @utility carousel--* {
-
   [data-scope="carousel"][data-part="root"] {
     gap: --value(--spacing-space-*, [length]);
   }
@@ -163,40 +174,67 @@
   [data-scope="carousel"][data-part="next-trigger"],
   [data-scope="carousel"][data-part="prev-trigger"],
   [data-scope="carousel"][data-part="autoplay-trigger"] {
-    gap: --value(--spacing-space-*, [length]);
-    
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    background-color: --value(--color-ui, [color]);
-    color: --value(--color-ink, [color]);
-    border-color: --value(--color-border, [color]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+    border-color: --value(--color-*, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:hover,
   [data-scope="carousel"][data-part="prev-trigger"]:hover,
   [data-scope="carousel"][data-part="autoplay-trigger"]:hover {
-    background-color: --value(--color-ui-hover, [color]);
+    background-color: --value(--color-*-hover, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:active,
   [data-scope="carousel"][data-part="prev-trigger"]:active,
   [data-scope="carousel"][data-part="autoplay-trigger"]:active {
-    background-color: --value(--color-ui-active, [color]);
+    background-color: --value(--color-*-active, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="prev-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="autoplay-trigger"]:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ink, [color]);
-  }
-
-  [data-scope="carousel"][data-part="indicator"] {
-    min-height: calc(--value(--spacing-*, [length]) * 4);
-    min-width: calc(--value(--spacing-*, [length]) * 4);
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
   }
 
   [data-scope="carousel"][data-part="indicator"][data-current] {
     background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+    border-color: --value(--color-*, [color]);
+  }
+
+  [data-scope="carousel"][data-part="next-trigger"],
+  [data-scope="carousel"][data-part="prev-trigger"] {
+    min-height: calc(--value(--spacing-size-*, [length]) * 0.8);
+    min-width: calc(--value(--spacing-size-*, [length]) * 0.8);
+    font-size: calc(--value(--text-*, [length]) * 0.8);
+    line-height: calc(--value(--text-*--line-height, [length]) * 0.8);
+  }
+
+  [data-scope="carousel"][data-part="autoplay-trigger"] {
+    min-height: calc(--value(--spacing-size-*, [length]) * 0.8);
+    min-width: calc(--value(--spacing-size-*, [length]) * 0.8);
+    font-size: calc(--value(--text-*, [length]) * 0.8);
+    line-height: calc(--value(--text-*--line-height, [length]) * 0.8);
+  }
+
+  [data-scope="carousel"][data-part="indicator"] {
+    min-height: calc(--value(--spacing-size-*, [length]) * 0.25);
+    min-width: calc(--value(--spacing-size-*, [length]) * 0.25);
+  }
+}
+
+@utility carousel--rounded-* {
+  [data-scope="carousel"][data-part="root"],
+  [data-scope="carousel"][data-part="item-group"],
+  [data-scope="carousel"][data-part="item"],
+  [data-scope="carousel"][data-part="item"] img,
+  [data-scope="carousel"][data-part="control"],
+  [data-scope="carousel"][data-part="prev-trigger"],
+  [data-scope="carousel"][data-part="next-trigger"],
+  [data-scope="carousel"][data-part="autoplay-trigger"],
+  [data-scope="carousel"][data-part="indicator"] {
+    border-radius: --value(--radius-*, [length]);
   }
 }

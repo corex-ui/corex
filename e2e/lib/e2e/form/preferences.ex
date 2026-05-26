@@ -9,12 +9,12 @@ defmodule E2e.Form.Preferences do
   def changeset(preferences, attrs \\ %{}) do
     preferences
     |> cast(attrs, [:notifications])
-    |> validate_required([:notifications])
+    |> validate_acceptance(:notifications)
   end
 
   def changeset_validate(preferences, attrs \\ %{}) do
     preferences
     |> cast(attrs, [:notifications])
-    |> validate_required([:notifications], message: "can't be blank")
+    |> validate_acceptance(:notifications, message: "must be accepted to continue")
   end
 end

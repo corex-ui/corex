@@ -5,14 +5,15 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="collapsible-anatomy-page"
-    title="Collapsible"
-    subtitle="Toggle content visibility."
+    title={~t"Collapsible"}
+    subtitle={~t"Toggle content visibility."}
     heading_class="layout-heading"
   >
     <.demo_section
       id="collapsible-anatomy-basic"
-      title="Basic"
+      title={~t"Basic"}
       code={E2eWeb.Demos.CollapsibleDemo.anatomy_basic_code()}
     >
       <:preview>
@@ -22,7 +23,7 @@
 
     <.demo_section
       id="collapsible-anatomy-with-indicator"
-      title="With indicator"
+      title={~t"With indicator"}
       code={E2eWeb.Demos.CollapsibleDemo.with_indicator_code()}
     >
       <:preview>
@@ -32,7 +33,7 @@
 
     <.demo_section
       id="collapsible-anatomy-custom-slots"
-      title="Custom slots"
+      title={~t"Custom slots"}
       code={E2eWeb.Demos.CollapsibleDemo.custom_slots_code()}
     >
       <:preview>

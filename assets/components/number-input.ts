@@ -1,6 +1,9 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { getNumber, getString } from "../lib/util";
+import { formatSubmitValue } from "../lib/number-input-format";
+import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class NumberInput extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +39,16 @@ export class NumberInput extends Component<Props, Api> {
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="input"]'
     );
-    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    if (inputEl instanceof HTMLInputElement) {
+      const visibleProps = { ...(this.api.getInputProps() as Record<string, unknown>) };
+      delete visibleProps.name;
+      delete visibleProps.form;
+      this.spreadProps(inputEl, visibleProps);
+      const formatted = this.api.value ?? "";
+      if (inputEl.value !== formatted) {
+        inputEl.value = formatted;
+      }
+    }
 
     const decrementEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="decrement-trigger"]'
@@ -47,5 +59,23 @@ export class NumberInput extends Component<Props, Api> {
       '[data-scope="number-input"][data-part="increment-trigger"]'
     );
     if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+
+    const valueInputEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="number-input"][data-part="value-input"]'
+    );
+    if (valueInputEl instanceof HTMLInputElement) {
+      const step = getNumber(this.el, "step") ?? 1;
+      const n = this.api.valueAsNumber;
+      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
+      const submit =
+        Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
+      syncHiddenInputValue(
+        valueInputEl,
+        this.el,
+        submit,
+        (el, props) => this.spreadProps(el, props),
+        {}
+      );
+    }
   }
 }

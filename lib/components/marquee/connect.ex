@@ -39,7 +39,7 @@ defmodule Corex.Marquee.Connect do
       "data-spacing" => assigns.spacing,
       "data-auto-fill" => get_boolean(assigns.auto_fill),
       "data-pause-on-interaction" => get_boolean(assigns.pause_on_interaction),
-      "data-default-paused" => get_boolean(assigns.default_paused),
+      "data-default-paused" => get_boolean(assigns.paused),
       "data-delay" => to_string(assigns.delay),
       "data-loop-count" => to_string(assigns.loop_count),
       "data-reverse" => get_boolean(assigns.reverse),
@@ -60,7 +60,7 @@ defmodule Corex.Marquee.Connect do
       "display:flex;flex-direction:#{if(orient == "vertical", do: "column", else: "row")};position:relative;overflow:hidden;width:100%;contain:layout style paint;--marquee-duration:#{assigns.duration}s;--marquee-spacing:#{assigns.spacing};--marquee-delay:#{assigns.delay}s;--marquee-loop-count:#{loop_val};--marquee-translate:#{assigns.translate}"
 
     aria_label = Map.get(assigns, :aria_label) || "Marquee: #{assigns.id}"
-    paused? = Map.get(assigns, :default_paused, false)
+    paused? = Map.get(assigns, :paused, false)
 
     base =
       %{

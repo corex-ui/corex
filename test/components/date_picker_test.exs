@@ -4,6 +4,7 @@ defmodule Corex.DatePickerTest do
 
   alias Corex.DatePicker
   alias Corex.DatePicker.Connect
+  alias Corex.DatePicker.Translation, as: DatePickerTranslation
 
   describe "date_picker/1" do
     test "renders" do
@@ -12,6 +13,37 @@ defmodule Corex.DatePickerTest do
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
       assert html =~ ~r/phx-mounted=/
+    end
+  end
+
+  describe "date_picker/1 open rendering" do
+    test "renders open picker with triggers and errors" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <DatePicker.date_picker
+              id="dp-open"
+              open
+              controlled
+              value="2024-06-15"
+              invalid
+              errors={["Invalid date"]}
+            >
+              <:label>Date</:label>
+              <:trigger>Pick</:trigger>
+              <:prev_trigger>Prev</:prev_trigger>
+              <:next_trigger>Next</:next_trigger>
+              <:error :let={msg}>{msg}</:error>
+            </DatePicker.date_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Invalid date"
+      assert html =~ ~S(data-part="positioner")
+      assert html =~ "Prev"
     end
   end
 
@@ -73,7 +105,8 @@ defmodule Corex.DatePickerTest do
           %{form: form}
         )
 
-      assert html1 =~ "data-default-value=\"2025-01-01\""
+      assert html1 =~ "data-scope=\"date-picker\""
+      assert html1 =~ "name=\"user[d1]\""
 
       html2 =
         render_component(
@@ -86,6 +119,53 @@ defmodule Corex.DatePickerTest do
         )
 
       assert html2 =~ "data-scope=\"date-picker\""
+    end
+  end
+
+  describe "format_value/2" do
+    test "formats single Date as ISO" do
+      assert DatePicker.format_value("single", ~D[2024-06-01]) == "2024-06-01"
+    end
+
+    test "formats multiple dates as comma-separated ISO" do
+      assert DatePicker.format_value("multiple", [~D[2024-06-01], ~D[2024-06-15]]) ==
+               "2024-06-01, 2024-06-15"
+    end
+
+    test "formats range from comma string" do
+      assert DatePicker.format_value("range", "2024-01-01,2024-06-30") ==
+               "2024-01-01, 2024-06-30"
+    end
+
+    test "does not use inspect for Date structs" do
+      refute DatePicker.format_value("single", ~D[2024-06-01]) =~ "~D"
+    end
+  end
+
+  describe "cast_params/2" do
+    test "casts single from value key" do
+      assert DatePicker.cast_params("single", %{"value" => "2024-06-01"}) == %{
+               "date" => "2024-06-01"
+             }
+    end
+
+    test "casts multiple from comma string" do
+      assert DatePicker.cast_params("multiple", %{"value" => "2024-06-01, 2024-06-15"}) == %{
+               "dates" => ["2024-06-01", "2024-06-15"]
+             }
+    end
+
+    test "casts range from list" do
+      assert DatePicker.cast_params("range", %{"date_range" => ["2024-01-01", "2024-06-30"]}) ==
+               %{
+                 "date_range" => ["2024-01-01", "2024-06-30"]
+               }
+    end
+
+    test "casts range from comma string via value key" do
+      assert DatePicker.cast_params("range", %{"value" => "2024-01-01,2024-06-30"}) == %{
+               "date_range" => ["2024-01-01", "2024-06-30"]
+             }
     end
   end
 
@@ -171,7 +251,7 @@ defmodule Corex.DatePickerTest do
         locale: "en",
         time_zone: "UTC",
         dir: "ltr",
-        translation: Corex.DatePicker.default_translation()
+        translation: DatePickerTranslation.resolve(nil)
       }
 
       result = Connect.props(Map.merge(default_props(), assigns))
@@ -180,10 +260,8 @@ defmodule Corex.DatePickerTest do
     end
 
     test "props/1 encodes translation open_calendar, close_calendar, and input in data-translation JSON" do
-      base = DatePicker.default_translation()
-
       translation =
-        struct!(base, %{
+        DatePickerTranslation.resolve(%DatePickerTranslation{
           open_calendar: "Pick a date",
           close_calendar: "Pick a date",
           input: "Event date"
@@ -238,6 +316,27 @@ defmodule Corex.DatePickerTest do
       assert result["data-default-value"] == nil
       assert result["data-value"] == "2025-02-22"
     end
+
+    test "props/1 includes client event attribute names when set" do
+      result =
+        Connect.props(
+          Map.merge(default_props(), %{
+            id: "test-dp",
+            controlled: false,
+            value: nil,
+            locale: nil,
+            time_zone: nil,
+            dir: "ltr",
+            on_focus_change_client: "focus_client",
+            on_view_change_client: "view_client",
+            on_visible_range_change_client: "range_client"
+          })
+        )
+
+      assert result["data-on-focus-change-client"] == "focus_client"
+      assert result["data-on-view-change-client"] == "view_client"
+      assert result["data-on-visible-range-change-client"] == "range_client"
+    end
   end
 
   defp default_props do
@@ -266,6 +365,9 @@ defmodule Corex.DatePickerTest do
       on_visible_range_change: nil,
       on_open_change: nil,
       on_value_change_client: nil,
+      on_focus_change_client: nil,
+      on_view_change_client: nil,
+      on_visible_range_change_client: nil,
       on_open_change_client: nil,
       max_selected_dates: nil,
       translation: nil

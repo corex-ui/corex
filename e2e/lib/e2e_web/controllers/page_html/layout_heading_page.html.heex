@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="layout-heading-anatomy-page"
-    title="Layout Heading Anatomy"
-    subtitle="Page headings with title, subtitle, and actions."
+    title={~t"Layout Heading Anatomy"}
+    subtitle={~t"Page headings with title, subtitle, and actions."}
   >
     <.demo_section
       id="layout-heading-title-only"
-      title="Title only"
+      title={~t"Title only"}
       code={E2eWeb.Demos.LayoutHeadingDemo.title_only_code()}
     >
       <:preview><E2eWeb.Demos.LayoutHeadingDemo.title_only_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="layout-heading-title-subtitle"
-      title="Title and subtitle"
+      title={~t"Title and subtitle"}
       code={E2eWeb.Demos.LayoutHeadingDemo.title_and_subtitle_code()}
     >
       <:preview><E2eWeb.Demos.LayoutHeadingDemo.title_and_subtitle_example /></:preview>
@@ -27,7 +28,7 @@
 
     <.demo_section
       id="layout-heading-with-actions"
-      title="With actions"
+      title={~t"With actions"}
       code={E2eWeb.Demos.LayoutHeadingDemo.with_actions_code()}
     >
       <:preview><E2eWeb.Demos.LayoutHeadingDemo.with_actions_example /></:preview>

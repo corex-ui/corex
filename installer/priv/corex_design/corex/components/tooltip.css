@@ -6,6 +6,10 @@
     z-index: 20;
   }
 
+  .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
+    z-index: 50;
+  }
+
   .tooltip[data-loading] > * {
     @apply ui-loading;
   }
@@ -29,10 +33,11 @@
   .tooltip [data-scope="tooltip"][data-part="content"] {
     @apply ui-content;
 
-    padding: --spacing(4);
+    padding: var(--spacing-space);
     max-width: var(--container-5xs);
     position: relative;
     z-index: 1;
+    background-color: var(--color-ui);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-ui);
   }
@@ -66,10 +71,15 @@
     background: --value(--color-*, [color]);
     color: --value(--color-*-ink, [color]);
     border-color: --value(--color-border, [color]);
+    max-width: --value(--container-*, [length]);
+    padding: --value(--spacing-space-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="tooltip"][data-part="arrow"] {
     --arrow-background: --value(--color-*, [color]);
+    --arrow-size: calc(--value(--spacing-space-*, [length]) * 0.25);
   }
 
   [data-scope="tooltip"][data-part="arrow-tip"] {
@@ -82,16 +92,5 @@
   [data-scope="tooltip"][data-part="content"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-  }
-}
-
-@utility tooltip--size-* {
-  [data-scope="tooltip"][data-part="content"] {
-    max-width: --value(--container-*, [length]);
-    padding: --value(--spacing-space-*, [length]);
-  }
-
-  [data-scope="tooltip"][data-part="arrow"] {
-    --arrow-size: calc(--value(--spacing-space-*, [length]) * 0.25);
   }
 }

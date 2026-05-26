@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="switch-anatomy-page"
-    title="Switch · Anatomy"
-    subtitle="Minimal uses aria_label only; add <:label> for visible text (errors on the Form page)."
+    title={~t"Switch · Anatomy"}
+    subtitle={
+      ~t"Minimal uses aria_label only; add <:label> for visible text (errors on the Form page)."
+    }
   >
     <.demo_section
       id="switch-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.SwitchDemo.minimal_code()}
     >
       <:preview>
@@ -21,7 +24,7 @@
 
     <.demo_section
       id="switch-anatomy-labeled"
-      title="With label"
+      title={~t"With label"}
       code={E2eWeb.Demos.SwitchDemo.with_label_code()}
     >
       <:preview>

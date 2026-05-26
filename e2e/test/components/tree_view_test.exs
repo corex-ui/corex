@@ -2,59 +2,91 @@ defmodule E2eWeb.TreeViewTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
-  import Wallaby.Query
-
+  alias E2eWeb.ComponentBehaviorSpec
   alias E2eWeb.TreeViewModel, as: TreeView
 
-  @tag :skip
-  feature "anatomy  -  each section toggles first branch", %{session: session} do
-    session =
-      session
-      |> TreeView.visit_ready("/en/tree-view/anatomy", css("#tree-view-anatomy-page"))
-      |> TreeView.wait_section_tree_view_ready("tree-anatomy-minimal", timeout: 20_000)
-      |> TreeView.prepare_lazy_tree_view()
+  @moduletag :tree_view
 
-    Enum.reduce(TreeView.anatomy_section_ids(), session, fn section_id, sess ->
-      TreeView.assert_first_branch_toggles(sess, section_id)
-    end)
+  setup do
+    Localize.put_locale(:en)
+    :ok
   end
 
-  @tag :skip
-  feature "api  -  Expand lib expands lib branch", %{session: session} do
-    session =
+  describe "anatomy" do
+    feature "minimal  -  first branch expands", %{session: session} do
+      host = "tree-minimal"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :anatomy)
+        |> TreeView.wait_host_tree_view_ready(host)
+        |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
+
+      assert TreeView.any_branch_content_open_in_host?(session, host)
+    end
+
+    feature "with indicator  -  first branch expands", %{session: session} do
+      host = "tree-with-indicator"
+
       session
-      |> TreeView.visit_ready("/en/tree-view/api", css("#tree-view-api-page"))
-      |> TreeView.wait_until_css_match_count(
-        "#tree-view-api-set-expanded-client [data-part=branch-control]",
-        timeout: 25_000
-      )
-      |> TreeView.prepare_lazy_tree_view()
-
-    refute TreeView.lib_expanded_in?(session, "tree-api-set-expanded-client")
-
-    session
-    |> TreeView.click_expand_lib_api()
-
-    assert TreeView.lib_expanded_in?(session, "tree-api-set-expanded-client")
+      |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :anatomy)
+      |> TreeView.wait_host_tree_view_ready(host)
+      |> TreeView.wait_any_branch_content_open_in_host(host, timeout: 8_000)
+    end
   end
 
-  @tag :skip
-  feature "events  -  server tree view logs a row", %{session: session} do
-    session =
+  describe "api" do
+    feature "set expanded (binding)  -  Expand lib opens branch", %{session: session} do
+      host = "tree-api-set-expanded-client"
+
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :api)
+        |> TreeView.wait_host_tree_view_ready(host)
+
+      refute TreeView.any_branch_content_open_in_host?(session, host)
+
       session
-      |> TreeView.visit_ready("/en/tree-view/events", css("#tree-view-events-page"))
-      |> TreeView.wait_until_css_match_count(
-        "#tree-view-events-server [data-part=branch-control]",
-        timeout: 25_000
-      )
-      |> TreeView.prepare_lazy_tree_view()
+      |> TreeView.click_in_section("tree-view-api-set-expanded-client", "Expand lib")
+      |> TreeView.wait_branch_content_open_in_host(host, "repo-lib", timeout: 8_000)
+    end
 
-    refute TreeView.events_server_log_has_row?(session)
+    feature "set expanded (server)  -  Expand lib opens branch", %{session: session} do
+      host = "tree-api-set-expanded-server"
 
-    session =
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :api)
+        |> TreeView.prepare_live_form()
+        |> TreeView.wait_host_tree_view_ready(host)
+
       session
-      |> TreeView.click_events_server_first_branch()
+      |> TreeView.click_in_section("tree-view-api-set-expanded-server", "Expand lib")
+      |> TreeView.wait_branch_content_open_in_host(host, "repo-lib", timeout: 8_000)
+    end
+  end
 
-    assert TreeView.events_server_log_has_row?(session)
+  describe "events" do
+    feature "server  -  branch click appends log row", %{session: session} do
+      session =
+        session
+        |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :events)
+        |> TreeView.prepare_live_form()
+        |> TreeView.wait_host_tree_view_ready("tree-events-server")
+
+      before = TreeView.log_row_count(session, "tree-events-log-server")
+
+      session
+      |> TreeView.click_first_branch_control_in_host("tree-events-server")
+      |> TreeView.wait_log_rows_grew("tree-events-log-server", before, timeout: 10_000)
+    end
+  end
+
+  describe "patterns" do
+    feature "patterns page mounts", %{session: session} do
+      session
+      |> ComponentBehaviorSpec.visit_ready(TreeView, :tree_view, :patterns)
+      |> TreeView.wait_patterns_page()
+    end
   end
 end

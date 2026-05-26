@@ -1,9 +1,7 @@
-Code.require_file("mix_helper.exs", __DIR__)
-
 defmodule Corex.New.PatchesTest do
   use ExUnit.Case, async: false
 
-  import MixHelper
+  import Corex.New.MixHelper
 
   alias Corex.New.Patches
 
@@ -57,6 +55,15 @@ defmodule Corex.New.PatchesTest do
         alias Phoenix.LiveView.JS
         alias MyAppWeb.Layouts
         unquote(verified_routes())
+      end
+    end
+
+    defp verified_routes do
+      quote do
+        use Phoenix.VerifiedRoutes,
+          endpoint: MyAppWeb.Endpoint,
+          router: MyAppWeb.Router,
+          statics: MyAppWeb.static_paths()
       end
     end
   end
@@ -199,12 +206,126 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "skips localize_web when dependency is already present" do
+      mix_exs =
+        @stock_mix_exs
+        |> String.replace(
+          "{:phoenix_live_view, \"~> 1.1.0\"}",
+          "{:phoenix_live_view, \"~> 1.1.0\"},\n      {:localize_web, \"~> 0.5\"}"
+        )
+
+      in_tmp(:patch_mix_exs_lang_present, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), lang: true)
+        body = File.read!("mix.exs")
+        assert length(String.split(body, "{:localize_web,")) == 2
+      end)
+    end
+
     test "uses a path dep when --dev is given" do
       in_tmp(:patch_mix_exs_dev, fn ->
         File.write!("mix.exs", @stock_mix_exs)
         Patches.patch_mix_exs(File.cwd!(), dev: "../corex")
         body = File.read!("mix.exs")
         assert body =~ ~s({:corex, [path: "../corex", override: true]})
+      end)
+    end
+
+    test "adds designex to single-line assets.deploy aliases" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
+        end
+
+        defp deps do
+          [{:phoenix, "~> 1.8.0"}]
+        end
+
+        defp aliases do
+          [
+            "assets.build": ["compile", "tailwind my_app"],
+            "assets.deploy": ["tailwind my_app --minify", "phx.digest"]
+          ]
+        end
+      end
+      """
+
+      in_tmp(:patch_designex_deploy_single_line, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        body = File.read!("mix.exs")
+        assert body =~ ~s("assets.deploy": ["designex corex", "tailwind my_app --minify")
+      end)
+    end
+
+    test "adds designex to multiline assets.deploy aliases" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
+        end
+
+        defp deps do
+          [{:phoenix, "~> 1.8.0"}]
+        end
+
+        defp aliases do
+          [
+            "assets.build": ["compile", "tailwind my_app"],
+            "assets.deploy": [
+              "compile",
+              "tailwind my_app --minify",
+              "phx.digest"
+            ]
+          ]
+        end
+      end
+      """
+
+      in_tmp(:patch_designex_deploy_multiline, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        body = File.read!("mix.exs")
+        assert body =~ "\"compile\", \"designex corex\", \"tailwind my_app --minify\""
+      end)
+    end
+
+    test "adds designex to multiline assets.build aliases" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :my_app, version: "0.1.0", aliases: aliases(), deps: deps()]
+        end
+
+        defp deps do
+          [{:phoenix, "~> 1.8.0"}]
+        end
+
+        defp aliases do
+          [
+            "assets.build": [
+              "compile",
+              "tailwind my_app"
+            ],
+            "assets.deploy": ["tailwind my_app --minify", "phx.digest"]
+          ]
+        end
+      end
+      """
+
+      in_tmp(:patch_mix_exs_designex_multiline, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), designex: true)
+        body = File.read!("mix.exs")
+        assert body =~ "\"compile\", \"designex corex\""
+        assert body =~ "\"assets.deploy\": [\"designex corex\""
       end)
     end
 
@@ -224,6 +345,22 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_mix_exs(File.cwd!(), designex: true)
         body2 = File.read!("mix.exs")
         assert Regex.scan(~r/"designex corex"/, body2) |> length() == 2
+      end)
+    end
+
+    test "skips json_polyfill when dependency is already listed" do
+      mix_exs =
+        @stock_mix_exs
+        |> String.replace(
+          "{:phoenix_live_view, \"~> 1.1.0\"}",
+          "{:phoenix_live_view, \"~> 1.1.0\"},\n      {:json_polyfill, \"~> 0.2 or ~> 1.0\"}"
+        )
+
+      in_tmp(:patch_json_present, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), lang: true)
+        body = File.read!("mix.exs")
+        assert length(String.split(body, "{:json_polyfill")) == 2
       end)
     end
 
@@ -335,7 +472,42 @@ defmodule Corex.New.PatchesTest do
     end
   end
 
-  describe "patch_web_module/2" do
+  describe "patch_verified_routes_path_prefixes!/3" do
+    test "adds path_prefixes" do
+      in_tmp(:patch_verified_routes_lang, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb,
+          lang: true,
+          otp_app: :my_app
+        )
+
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
+      end)
+    end
+
+    test "is idempotent" do
+      in_tmp(:patch_verified_routes_idempotent, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        opts = [lang: true, otp_app: :my_app]
+
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb, opts)
+        Patches.patch_verified_routes_path_prefixes!(File.cwd!(), MyAppWeb, opts)
+
+        body = File.read!("lib/my_app_web.ex")
+        assert [_, _] = String.split(body, "path_prefixes:", parts: 2)
+      end)
+    end
+  end
+
+  describe "patch_web_module/3" do
     test "adds `use Corex` in html_helpers once" do
       in_tmp(:patch_web_module, fn ->
         File.mkdir_p!("lib")
@@ -348,6 +520,20 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_web_module(File.cwd!(), MyAppWeb)
         body2 = File.read!("lib/my_app_web.ex")
         assert length(String.split(body2, "use Corex")) == 2
+      end)
+    end
+
+    test "adds path_prefixes when lang is enabled" do
+      in_tmp(:patch_web_module_lang, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/locale.ex", "defmodule MyAppWeb.Locale do\nend\n")
+        File.write!("lib/my_app_web.ex", @stock_web_ex)
+
+        Patches.patch_web_module(File.cwd!(), MyAppWeb, lang: true, otp_app: :my_app)
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "use Corex"
+        assert body =~ "path_prefixes: [{MyAppWeb.Locale, :current, []}]"
       end)
     end
   end
@@ -367,6 +553,7 @@ defmodule Corex.New.PatchesTest do
         assert body =~ "use Localize.Routes"
         assert body =~ "Localize.Plug.PutLocale"
         assert body =~ ~s(scope "/:locale")
+        refute body =~ ~s(scope "/:locale",,)
       end)
     end
 
@@ -380,6 +567,43 @@ defmodule Corex.New.PatchesTest do
 
         body = File.read!("lib/my_app_web/router.ex")
         assert length(String.split(body, "plug MyAppWeb.Plugs.Mode")) == 2
+      end)
+    end
+
+    test "inserts mode plug after localize plugs when lang was already applied" do
+      in_tmp(:patch_router_mode_after_lang, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/router.ex", @stock_router_ex)
+
+        Patches.patch_router(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_router(File.cwd!(), MyAppWeb, mode: true)
+
+        body = File.read!("lib/my_app_web/router.ex")
+        assert body =~ "Localize.Plug.PutSession"
+        assert body =~ "plug MyAppWeb.Plugs.Mode"
+      end)
+    end
+
+    test "leaves router unchanged when lang cannot duplicate locale scope" do
+      router_without_scope = """
+      defmodule MyAppWeb.Router do
+        use MyAppWeb, :router
+
+        pipeline :browser do
+          plug :accepts, ["html"]
+          plug :fetch_live_flash
+        end
+      end
+      """
+
+      in_tmp(:patch_router_no_scope, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/router.ex", router_without_scope)
+
+        Patches.patch_router(File.cwd!(), MyAppWeb, lang: true)
+        body = File.read!("lib/my_app_web/router.ex")
+        assert body =~ "use Localize.Routes"
+        refute body =~ ~s(scope "/:locale")
       end)
     end
 
@@ -450,6 +674,22 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "skips themes config when themes key already exists" do
+      in_tmp(:patch_config_themes_present, fn ->
+        File.mkdir_p!("config")
+
+        File.write!(
+          "config/config.exs",
+          @stock_config_exs <> "\nconfig :my_app, themes: [\"neo\"]\n"
+        )
+
+        Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, theme: true, themes: ["uno"])
+        body = File.read!("config/config.exs")
+        refute body =~ "uno"
+        assert body =~ "themes: [\"neo\"]"
+      end)
+    end
+
     test "adds themes and localize config when flags enabled" do
       in_tmp(:patch_config_themes_lang, fn ->
         File.mkdir_p!("config")
@@ -467,7 +707,27 @@ defmodule Corex.New.PatchesTest do
         assert body =~ ~s(themes: ["neo", "uno"])
         assert body =~ "config :localize"
         assert body =~ "default_locale: :en"
-        assert body =~ "supported_locales: [:en, :ar]"
+        assert body =~ "supported_locales: [:en, :fr, :ar]"
+      end)
+    end
+
+    test "adds config :corex generators with stable layout key order" do
+      in_tmp(:patch_config_corex_generators, fn ->
+        File.mkdir_p!("config")
+        File.write!("config/config.exs", @stock_config_exs)
+
+        Patches.patch_config_exs(
+          File.cwd!(),
+          otp_app: :my_app,
+          lang: true,
+          mode: true,
+          theme: true
+        )
+
+        body = File.read!("config/config.exs")
+        assert body =~ "config :corex"
+        assert body =~ "gettext: :sigils"
+        assert body =~ "layout: [locale: true, mode: true, theme: true]"
       end)
     end
 
@@ -487,6 +747,50 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
         body2 = File.read!("config/config.exs")
         assert Regex.scan(~r/config :designex/, body2) |> length() == 1
+      end)
+    end
+  end
+
+  describe "patch_gettext_backend/3" do
+    test "injects locales when gettext backend exists" do
+      in_tmp(:patch_gettext, fn ->
+        File.mkdir_p!("lib/my_app_web")
+
+        File.write!(
+          "lib/my_app_web/gettext.ex",
+          "defmodule MyAppWeb.Gettext do\n  use Gettext.Backend, otp_app: :my_app, default_locale: \"en\"\nend\n"
+        )
+
+        Patches.patch_gettext_backend(File.cwd!(), MyAppWeb, lang: true)
+        body = File.read!("lib/my_app_web/gettext.ex")
+        assert body =~ "locales: ~w(en fr ar)"
+      end)
+    end
+  end
+
+  describe "patch_page_controller_test/2" do
+    test "adds layout assertion to page controller test" do
+      in_tmp(:patch_page_test, fn ->
+        path = "test/my_app_web/controllers/page_controller_test.exs"
+        File.mkdir_p!(Path.dirname(path))
+
+        File.write!(
+          path,
+          """
+          defmodule MyAppWeb.PageControllerTest do
+            use MyAppWeb.ConnCase
+
+            test "GET /", %{conn: conn} do
+              conn = get(conn, ~p"/")
+              assert html_response(conn, 200) =~ "Peace of mind from prototype to production"
+            end
+          end
+          """
+        )
+
+        Patches.patch_page_controller_test(File.cwd!(), MyAppWeb)
+        body = File.read!(path)
+        assert body =~ "Corex for Phoenix"
       end)
     end
   end

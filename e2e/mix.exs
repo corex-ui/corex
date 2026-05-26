@@ -10,6 +10,7 @@ defmodule E2e.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      usage_rules: usage_rules(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
@@ -21,7 +22,7 @@ defmodule E2e.MixProject do
   def application do
     [
       mod: {E2e.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ecto, :ecto_sql]
     ]
   end
 
@@ -43,6 +44,7 @@ defmodule E2e.MixProject do
       {:phoenix, "~> 1.8.3"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
+      {:db_connection, "~> 2.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -64,11 +66,12 @@ defmodule E2e.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
+      {:gettext_sigils, "~> 0.5.1"},
       {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
       {:color, "~> 0.11"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"},
+      {:bandit, "~> 1.11"},
       {:corex, path: "../../corex"},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
@@ -76,12 +79,21 @@ defmodule E2e.MixProject do
       {:makeup_eex, "~> 2.0"},
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
+      {:makeup_syntect, "~> 0.1"},
+      {:mdex, "~> 0.11"},
+      {:floki, "~> 0.38"},
+      {:yaml_elixir, "~> 2.9"},
+      {:html_entities, "~> 0.5"},
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:usage_rules, "~> 1.1", only: :dev},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ] ++ maybe_json_polyfill()
   end
 
@@ -91,6 +103,15 @@ defmodule E2e.MixProject do
     else
       [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
     end
+  end
+
+  defp usage_rules do
+    [
+      skills: [
+        location: ".cursor/skills",
+        package_skills: [:corex]
+      ]
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
@@ -136,7 +157,19 @@ defmodule E2e.MixProject do
         "esbuild e2e --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      lint: [
+        "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
+        "credo --strict"
+      ],
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "lint",
+        "test"
+      ]
     ]
   end
 end

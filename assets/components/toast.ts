@@ -15,6 +15,13 @@ import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getDir } from "../lib/util";
 
+export function actionClassTokens(action: unknown): string[] {
+  if (action == null || typeof action !== "object") return [];
+  const cn = (action as { className?: unknown }).className;
+  if (typeof cn !== "string") return [];
+  return cn.trim().split(/\s+/).filter(Boolean);
+}
+
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
@@ -29,11 +36,15 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
     title: HTMLElement;
     description: HTMLElement;
     close: HTMLElement;
+    action: HTMLElement;
     ghostBefore: HTMLElement;
     ghostAfter: HTMLElement;
     progressbar: HTMLElement;
     loadingSpinner: HTMLElement;
   };
+
+  private latestProps: ToastItemProps<T>;
+  private hadAction = false;
 
   duration?: number | string;
   showLoading: boolean;
@@ -41,8 +52,10 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
   constructor(el: HTMLElement, props: ToastItemProps<T>) {
     super(el, props);
 
+    this.latestProps = props;
     this.duration = props.duration;
     this.showLoading = props.meta?.loading === true;
+    this.hadAction = Boolean(props.action?.label);
 
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
@@ -56,9 +69,12 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
         <div data-scope="toast" data-part="header">
           <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
           <div data-scope="toast" data-part="title"></div>
-          <button data-scope="toast" data-part="close-trigger"></button>
+          <button type="button" data-scope="toast" data-part="close-trigger"></button>
         </div>
         <div data-scope="toast" data-part="description"></div>
+        <div data-scope="toast" data-part="actions">
+          <button type="button" data-scope="toast" data-part="action-trigger" hidden></button>
+        </div>
       </div>
 
       <span data-scope="toast" data-part="ghost-after"></span>
@@ -68,12 +84,20 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       title: this.el.querySelector('[data-part="title"]')!,
       description: this.el.querySelector('[data-part="description"]')!,
       close: this.el.querySelector('[data-part="close-trigger"]')!,
+      action: this.el.querySelector('[data-part="action-trigger"]') as HTMLElement,
       ghostBefore: this.el.querySelector('[data-part="ghost-before"]')!,
       ghostAfter: this.el.querySelector('[data-part="ghost-after"]')!,
       progressbar: this.el.querySelector('[data-part="progressbar"]')!,
       loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')!,
     };
   }
+
+  updateProps = (props: Partial<ToastItemProps<T>> & Record<string, unknown>) => {
+    Object.assign(this.latestProps, props);
+    super.updateProps(
+      props as Props<T> & { parent: unknown; index: number; meta?: { loading?: boolean } }
+    );
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props<T>): VanillaMachine<any> {
@@ -127,6 +151,34 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
 
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+
+    const hasAction = Boolean(this.latestProps.action?.label);
+    if (this.hadAction && !hasAction) {
+      const next = document.createElement("button");
+      next.type = "button";
+      next.setAttribute("data-scope", "toast");
+      next.setAttribute("data-part", "action-trigger");
+      next.hidden = true;
+      this.parts.action.replaceWith(next);
+      this.parts.action = next as HTMLElement;
+    }
+    this.hadAction = hasAction;
+
+    if (hasAction) {
+      this.parts.action.hidden = false;
+      this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
+      const label = this.latestProps.action?.label ?? "";
+      if (this.parts.action.innerHTML !== label) {
+        this.parts.action.innerHTML = label;
+      }
+      const extraClasses = actionClassTokens(this.latestProps.action);
+      if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
+    } else {
+      this.parts.action.hidden = true;
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
+      }
+    }
 
     const duration = this.duration;
     const isInfinity =
@@ -308,4 +360,8 @@ export function updateToast(id: string, options: Partial<Props>, groupId?: strin
 
 export function dismissToast(id: string, groupId?: string) {
   getToastStore(groupId)?.dismiss(id);
+}
+
+export function removeToast(id: string, groupId?: string) {
+  getToastStore(groupId)?.remove(id);
 }

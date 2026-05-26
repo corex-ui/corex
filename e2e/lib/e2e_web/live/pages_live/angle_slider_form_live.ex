@@ -3,28 +3,31 @@ defmodule E2eWeb.AngleSliderFormLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
+  alias Corex.Toast
   alias E2e.Form.AngleSliderForm
   alias E2eWeb.Demos.AngleSliderDemo
-  alias Corex.Toast
+
+  @phoenix_form_id "angle-slider-live-form-phoenix"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Angle Slider form")
+     |> assign(:page_title, "Angle Slider · Form")
      |> assign(:form_ecto, AngleSliderDemo.form_ecto())
-     |> assign(:live_basic_heex, AngleSliderDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, AngleSliderDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, AngleSliderDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, AngleSliderDemo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, AngleSliderDemo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, AngleSliderDemo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, AngleSliderDemo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, AngleSliderDemo.form_doc_live_ecto_elixir())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    basic_form =
-      %AngleSliderForm{}
-      |> AngleSliderForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :angle_slider_basic, id: "angle-slider-basic-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"angle" => "0"},
+        as: :angle_slider_phoenix,
+        id: @phoenix_form_id
+      )
 
     validate_form =
       %AngleSliderForm{}
@@ -35,85 +38,26 @@ defmodule E2eWeb.AngleSliderFormLive do
       )
 
     socket
-    |> assign(:basic_form, basic_form)
+    |> assign(:phoenix_form, phoenix_form)
     |> assign(:validate_form, validate_form)
   end
 
   @impl true
-  def handle_event("validate_basic", params, socket) do
-    rparams = Map.get(params, "angle_slider_basic", %{})
-
-    changeset =
-      %AngleSliderForm{}
-      |> AngleSliderForm.changeset(rparams)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"angle_slider_phoenix" => params}, socket) do
+    angle = params["angle"] || ""
 
     {:noreply,
      socket
+     |> Toast.create("layout-toast", "Submitted", "Submitted: angle=#{angle}", :info,
+       duration: 5000
+     )
      |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :angle_slider_basic,
-         id: "angle-slider-basic-form"
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"angle" => angle},
+         as: :angle_slider_phoenix,
+         id: @phoenix_form_id
        )
      )}
-  end
-
-  @impl true
-  def handle_event("angle_changed_basic", %{"value" => value}, socket) do
-    angle = parse_float(value)
-    params = %{"angle" => to_string(angle)}
-
-    changeset =
-      %AngleSliderForm{}
-      |> AngleSliderForm.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :basic_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :angle_slider_basic,
-         id: "angle-slider-basic-form"
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save_basic", params, socket) do
-    rparams = Map.get(params, "angle_slider_basic", %{})
-
-    case AngleSliderForm.changeset(%AngleSliderForm{}, rparams) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: angle=#{data.angle}"
-
-        {:noreply,
-         socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(AngleSliderForm.changeset(%AngleSliderForm{}, rparams),
-             as: :angle_slider_basic,
-             id: "angle-slider-basic-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         socket
-         |> assign(
-           :basic_form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :angle_slider_basic,
-             id: "angle-slider-basic-form"
-           )
-         )}
-    end
   end
 
   @impl true
@@ -170,7 +114,7 @@ defmodule E2eWeb.AngleSliderFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
            :validate_form,
            Phoenix.Component.to_form(
@@ -196,12 +140,18 @@ defmodule E2eWeb.AngleSliderFormLive do
 
   defp parse_float(value) when is_number(value), do: value * 1.0
 
+  defp parse_float(value) when is_binary(value) do
+    case Float.parse(value) do
+      {num, _} -> num
+      :error -> 0.0
+    end
+  end
+
+  defp parse_float(_), do: 0.0
+
   @impl true
   def render(assigns) do
-    assigns =
-      assigns
-      |> assign(:basic_angle_value, get_angle_from_form(assigns.basic_form))
-      |> assign(:validate_angle_value, get_angle_from_form(assigns.validate_form))
+    assigns = assign(assigns, :validate_angle_value, get_angle_from_form(assigns.validate_form))
 
     ~H"""
     <Layouts.app
@@ -211,34 +161,30 @@ defmodule E2eWeb.AngleSliderFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-form-live-page"
-        title="Angle Slider form"
-        subtitle="Live View Form"
+        title={~t"Angle Slider form"}
       >
         <.demo_section
-          id="angle-slider-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="angle-slider-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <AngleSliderDemo.form_preview_live_changeset
-              form={@basic_form}
-              angle_value={@basic_angle_value}
-            />
+            <AngleSliderDemo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="angle-slider-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="angle-slider-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>

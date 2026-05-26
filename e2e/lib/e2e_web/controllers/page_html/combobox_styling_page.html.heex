@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="combobox-styling-page"
-    title="Combobox · Styling"
-    subtitle="Semantic colors, density, and width utilities on the combobox root."
+    title={~t"Combobox · Styling"}
+    subtitle={~t"Semantic colors, density, and width utilities on the combobox root."}
   >
     <.demo_section
       id="combobox-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.ComboboxDemo.styling_size_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="combobox-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.ComboboxDemo.styling_color_code()}
     >
       <:preview>
@@ -31,7 +32,7 @@
 
     <.demo_section
       id="combobox-styling-max-width"
-      title="Max width"
+      title={~t"Max width"}
       code={E2eWeb.Demos.ComboboxDemo.styling_max_width_code()}
     >
       <:preview>

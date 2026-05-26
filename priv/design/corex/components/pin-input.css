@@ -13,7 +13,7 @@
   .pin-input [data-scope="pin-input"][data-part="root"] {
     @apply ui-root;
 
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     position: relative;
     padding-inline-end: var(--spacing-space);
   }
@@ -23,8 +23,7 @@
     pointer-events: none;
   }
 
-  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly],
-  .pin-input [data-scope="pin-input"][data-part="root"][data-read-only] {
+  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly] {
     @apply ui-readonly;
   }
 
@@ -33,7 +32,7 @@
   }
 
   .pin-input [data-scope="pin-input"][data-part="label"][data-invalid] {
-    color: var(--color-alert);
+    color: var(--color-ink-alert);
   }
 
   .pin-input [data-scope="pin-input"][data-part="label"][data-disabled] {
@@ -41,7 +40,7 @@
   }
 
   .pin-input [data-scope="pin-input"][data-part="label"][data-complete] {
-    color: var(--color-success);
+    color: var(--color-ink-success);
   }
 
   .pin-input [data-scope="pin-input"][data-part="label"][data-readonly] {
@@ -51,35 +50,125 @@
   .pin-input [data-scope="pin-input"][data-part="control"] {
     display: flex;
     flex-flow: row nowrap;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
     align-items: center;
-    margin-inline: auto;
+    justify-content: flex-start;
   }
 
   .pin-input [data-scope="pin-input"][data-part="input"] {
     @apply ui-input;
 
-    height: --spacing(11);
-    width: --spacing(11);
+    height: var(--spacing-size);
+    width: var(--spacing-size);
     flex-shrink: 0;
     text-align: center;
+    padding-inline: 0;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"]:focus {
+    background-color: var(--color-root);
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-filled]:not([data-complete]) {
+    background-color: var(--color-ui-hover);
   }
 
   .pin-input [data-scope="pin-input"][data-part="input"][data-complete] {
-    color: var(--color-success-ink);
-    background-color: var(--color-success);
-    border-color: var(--color-border);
+    color: var(--color-ink);
+    background-color: var(--color-ui);
+    border-color: var(--color-success);
+    box-shadow: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-complete]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-success);
   }
 
   .pin-input [data-scope="pin-input"][data-part="input"][data-invalid] {
-    color: var(--color-alert-ink);
-    background-color: var(--color-alert);
-    border-color: var(--color-border);
+    color: var(--color-ink);
+    background-color: var(--color-ui);
+    border-color: var(--color-alert);
+    box-shadow: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-invalid]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-alert);
+    outline: none;
   }
 
   .pin-input [data-scope="pin-input"][data-part="input"][data-disabled] {
     color: var(--color-ink-muted);
     background-color: var(--color-ui-muted);
     cursor: not-allowed;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="error"] {
+    @apply ui-error;
+  }
+}
+
+@utility pin-input--* {
+  [data-scope="pin-input"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="control"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="pin-input"][data-part="input"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    height: --value(--spacing-size-*, [length]);
+    width: --value(--spacing-size-*, [length]);
+    border-color: --value(--color-border, [color]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink-*, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"]:hover {
+    background-color: --value(--color-ui-hover, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"]:focus {
+    background-color: var(--color-root);
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-filled]:not([data-complete]) {
+    background-color: --value(--color-ui-hover, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-complete] {
+    color: --value(--color-ink-*, [color]);
+    background-color: --value(--color-ui, [color]);
+    border-color: --value(--color-*, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-complete]:focus {
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-invalid] {
+    border-color: var(--color-alert);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink-*, [color]);
+  }
+
+  [data-scope="pin-input"][data-part="input"][data-invalid]:focus {
+    box-shadow: inset 0 0 0 2px var(--color-alert);
+  }
+}
+
+@utility pin-input--rounded-* {
+  [data-scope="pin-input"][data-part="input"] {
+    border-radius: --value(--radius-*, [length]);
   }
 }

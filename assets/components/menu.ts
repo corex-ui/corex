@@ -109,9 +109,16 @@ export class Menu extends Component<Props, Api> {
         itemGroups.forEach((groupEl) => {
           if (!this.isOwnElement(groupEl)) return;
 
-          const groupId = groupEl.id;
-          if (groupId) {
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          const groupId = groupEl.dataset.id ?? "";
+          if (!groupId) return;
+
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+
+          const labelEl = groupEl.querySelector<HTMLElement>(
+            '[data-scope="menu"][data-part="item-group-label"]'
+          );
+          if (labelEl) {
+            this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
           }
         });
 

@@ -4,7 +4,7 @@ defmodule E2eWeb.CheckboxEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "checkbox_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/checkbox/events")
+    {view, _html} = live_ok!(conn, ~p"/checkbox/events")
 
     html =
       render_click(view, "checkbox_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.CheckboxEventsLiveTest do
         "checked" => true
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

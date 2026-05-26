@@ -99,10 +99,10 @@ defmodule Mix.Tasks.Corex.New do
     mcp: :boolean
   ]
 
-  @reserved_app_names ~w(server table)
+  @reserved_app_names ~W(server table)
 
   @impl true
-  def run([version]) when version in ~w(-v --version) do
+  def run([version]) when version in ~W(-v --version) do
     Mix.shell().info("Corex installer v#{@version}")
   end
 
@@ -124,7 +124,9 @@ defmodule Mix.Tasks.Corex.New do
     Cli.validate_phx_new_flags!(opts)
 
     version_task =
-      unless opts[:no_version_check] do
+      if opts[:no_version_check] == true or argv == [] or opts[:dev] do
+        nil
+      else
         get_latest_version("corex_new")
       end
 
@@ -206,6 +208,7 @@ defmodule Mix.Tasks.Corex.New do
     Generate.run(install_dir, generate_opts)
 
     PostGenerate.copy_cached_build(phx_root)
+
     PostGenerate.init_git(phx_root)
     PostGenerate.prompt_install(phx_root, install_dir, opts)
   end
@@ -308,7 +311,7 @@ defmodule Mix.Tasks.Corex.New do
             Enum.max(versions, Version)
           end
         rescue
-          e -> {:error, e}
+          _ -> {:error, :rescue}
         catch
           :exit, _ -> {:error, :exit}
         end
@@ -338,7 +341,7 @@ defmodule Mix.Tasks.Corex.New do
              options
            ) do
         {:ok, {{_, 200, _}, _headers, body}} ->
-          {:ok, Jason.decode!(body)}
+          {:ok, JSON.decode!(body)}
 
         {:ok, {{_, status, _}, _, _}} ->
           {:error, status}
@@ -348,6 +351,6 @@ defmodule Mix.Tasks.Corex.New do
       end
     end
   else
-    defp get_latest_version(_), do: nil
+    defp get_latest_version(_package), do: nil
   end
 end

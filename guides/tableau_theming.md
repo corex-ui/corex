@@ -1,16 +1,30 @@
-# Tableau static + Corex: theming
+# Tableau Theming
 
-This guide is for a **[Tableau](https://hex.pm/packages/tableau)** site that already follows **[Tableau](tableau.html)** through design assets, ESM Esbuild, root layout, and `LiveSocket` hooks. It adds **multi-theme** support: `data-theme`, a before-paint inline script, a **theme** `<.select>`, and **`theme.js`** for `localStorage` and `corex:set-theme`.
+## Introduction
 
-Static HTML cannot run Phoenix’s theme plug on each request; the ideas in **[Theming](theming.html)** (cookie, `data-theme` from the server) translate here to **build-time defaults plus client reconciliation**. You can still share the same token bundles as a Phoenix app.
+You add a multi-theme picker to a Tableau site that already follows [Tableau](tableau.html). Visitors get `data-theme` on `<html>`, a before-paint script, a Corex `<.select>`, and `theme.js` for `localStorage` and `corex:set-theme`.
 
-Prerequisites: **`{:jason, "~> 1.0"}`** (or another JSON encoder) in **`mix.exs`** for `Jason.encode!/1` in **`head_script`**.
+For Phoenix apps with `Plugs.Theme` and cookies, see [Theming](theming.html).
 
----
+## Before you start
 
-### 1. App config
+| Requirement | Notes |
+| ----------- | ----- |
+| [Tableau](tableau.html) | Design assets, ESM Esbuild, `use Corex`, `LiveSocket` |
+| `{:jason, "~> 1.0"}` | For `Jason.encode!/1` in `head_script/0` |
 
-In **`config/config.exs`**:
+## How it works
+
+1. **Config** lists allowed theme names; CSS must `@import` each theme file you expose.
+2. **`head_script/0`** runs in `<head>` and sets `data-theme` from `localStorage` before paint.
+3. **`theme.js`** syncs the picker after hydration and listens for `corex:set-theme`.
+4. **`<.select id="theme-switcher">`** dispatches `corex:set-theme` on change.
+
+<!-- tabs-open -->
+
+### Config
+
+In `config/config.exs`:
 
 ```elixir
 config :my_app,
@@ -19,13 +33,11 @@ config :my_app,
   default_theme: "neo"
 ```
 
-Expose only themes you **`@import`** in CSS. The first entry in **`themes`** is a safe fallback when nothing is stored yet.
+Only list themes you import in CSS. The first entry in `themes` is the fallback when nothing is stored.
 
----
+### Elixir
 
-### 2. `MyApp.Config` (theme slice)
-
-If you already have **`MyApp.Config`**, merge **`themes`**, **`default_theme`**, and **`site_name`** into it. Otherwise add:
+`lib/my_app/config.ex` (merge with locale fields if you use [Tableau Localize](tableau_localize.html)):
 
 ```elixir
 defmodule MyApp.Config do
@@ -41,9 +53,7 @@ defmodule MyApp.Config do
 end
 ```
 
----
-
-### 3. `MyApp.Theme`
+`lib/my_app/theme.ex`:
 
 ```elixir
 defmodule MyApp.Theme do
@@ -85,11 +95,9 @@ defmodule MyApp.Theme do
 end
 ```
 
----
+### CSS
 
-### 4. CSS imports
-
-Add **`select.css`** plus every theme CSS file you listed in config (see **[Tableau](tableau.html) §4** for the base imports):
+Add `select.css` and each theme file to `assets/css/site.css` (after the [Tableau](tableau.html) baseline imports):
 
 ```css
 @import "../corex/components/select.css";
@@ -99,19 +107,17 @@ Add **`select.css`** plus every theme CSS file you listed in config (see **[Tabl
 @import "../corex/theme/leo.css";
 ```
 
-Skip the extra **`@import`s** if you only ship **`neo`**.
+Skip extra `@import`s if you only ship `neo`.
 
----
+### Layout
 
-### 5. Root layout additions
-
-In **`template/1`**, put **`@theme`** on assigns (defaulting through **`MyApp.Theme.current/1`**):
+In `RootLayout.template/1`, before `~H`:
 
 ```elixir
 assigns = Map.put(assigns, :theme, MyApp.Theme.current(assigns))
 ```
 
-Add attributes and the head script inside the existing **`<html>`** / **`<head>`** from **[Tableau](tableau.html)**:
+On `<html>`:
 
 ```heex
 <html
@@ -123,18 +129,17 @@ Add attributes and the head script inside the existing **`<html>`** / **`<head>`
 >
 ```
 
+In `<head>`, before stylesheets if you want the earliest paint (after charset/viewport is fine):
+
 ```heex
-<head>
-  {MyApp.Theme.head_script()}
+{MyApp.Theme.head_script()}
 ```
 
-Use **`lang`**, **`dir`**, and Gettext-driven copy from **[Tableau static + Corex: localize](tableau_localize.html)** when you add locales.
+When you add [Tableau Localize](tableau_localize.html), set `lang` and `dir` from your locale module instead of fixed `en` / `ltr`.
 
----
+### theme.js
 
-### 6. `assets/js/theme.js`
-
-Self-contained module (no separate shared file). It keeps the theme `<.select>` in sync after hydration.
+Create `assets/js/theme.js`:
 
 ```javascript
 ;(() => {
@@ -212,30 +217,43 @@ Self-contained module (no separate shared file). It keeps the theme `<.select>` 
 })()
 ```
 
----
+### site.js
 
-### 7. `assets/js/site.js` additions
-
-At the **top** of **`site.js`** (before `LiveSocket`):
+At the top of `assets/js/site.js`:
 
 ```javascript
 import "./theme.js"
 ```
 
-Register the **Select** hook:
+Register `Select` in `hooks`:
 
 ```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
+import { hooks } from "corex/hooks"
+import "./theme.js"
+
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
+
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: { _csrf_token: csrfToken },
+  hooks: {
     ...hooks({
       Select: () => import("corex/select"),
       Accordion: () => import("corex/accordion"),
     }),
+  },
+})
+
+liveSocket.connect()
 ```
 
----
+### Picker
 
-### 8. Theme picker HEEx
-
-Place where you want the control; **`id="theme-switcher"`** must match **`theme.js`**.
+Place in your header or toolbar. `id="theme-switcher"` must match `theme.js`.
 
 ```heex
 <.select
@@ -260,10 +278,10 @@ Place where you want the control; **`id="theme-switcher"`** must match **`theme.
 </.select>
 ```
 
-With Gettext, replace placeholder and labels with **`gettext/1`** as in **[Tableau static + Corex: localize](tableau_localize.html)**.
+<!-- tabs-close -->
 
 ## Related
 
-- [Tableau](tableau.html) — baseline Tableau + Corex setup.
-- [Tableau static + Corex: mode](tableau_mode.html) — **`data-mode`** and toggle (order **`Theme.head_script`** then **`Mode.head_script`** in `<head>` when both are used).
-- [Theming](theming.html) — Phoenix plugs and cookies.
+- [Tableau](tableau.html) — baseline setup
+- [Tableau Mode](tableau_mode.html) — `data-mode`; call `Theme.head_script()` then `Mode.head_script()` in `<head>` when both are used
+- [Theming](theming.html) — Phoenix plug and cookie flow

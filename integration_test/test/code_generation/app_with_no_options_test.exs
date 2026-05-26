@@ -30,9 +30,15 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
       port = run_phx_server(app_root_path)
 
       :inets.start()
-      {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
-      assert response.status_code == 200
-      assert response.body =~ "Corex"
+
+      case request_with_retries("http://localhost:#{port}", 45) do
+        {:ok, response} ->
+          assert response.status_code == 200
+          assert response.body =~ "Corex"
+
+        other ->
+          flunk("expected HTTP 200, got #{inspect(other)}")
+      end
 
       assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex")) >
                @epoch

@@ -18,6 +18,7 @@ defmodule E2eWeb.DocsPlaceholder do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id={@demo_page_id}
         title={"#{@docs_title} #{@docs_section}"}
         subtitle={@docs_section}

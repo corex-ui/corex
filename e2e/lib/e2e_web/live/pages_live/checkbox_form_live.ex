@@ -7,84 +7,54 @@ defmodule E2eWeb.CheckboxFormLive do
   alias E2e.Form.Terms
   alias E2eWeb.Demos.CheckboxDemo
 
+  @phoenix_form_id "checkbox-live-form-phoenix"
+  @ecto_form_id "checkbox-live-form-ecto"
+
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Checkbox form")
+     |> assign(:page_title, "Checkbox · Form")
      |> assign(:form_ecto, CheckboxDemo.form_ecto())
-     |> assign(:live_basic_heex, CheckboxDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, CheckboxDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, CheckboxDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, CheckboxDemo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, CheckboxDemo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, CheckboxDemo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, CheckboxDemo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, CheckboxDemo.form_doc_live_ecto_elixir())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    form =
-      %Terms{}
-      |> Terms.changeset(%{})
-      |> Phoenix.Component.to_form(as: :terms, id: "checkbox-live-form")
+    phoenix_form =
+      Phoenix.Component.to_form(%{"terms" => false},
+        as: :terms_phoenix,
+        id: @phoenix_form_id
+      )
 
-    strict_form =
+    ecto_form =
       %Terms{}
       |> Terms.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :terms_strict, id: "checkbox-strict-form-live")
+      |> Phoenix.Component.to_form(as: :terms_ecto, id: @ecto_form_id)
 
     socket
-    |> assign(:form, form)
-    |> assign(:strict_form, strict_form)
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
-  def handle_event("validate", %{"terms" => params}, socket) do
-    changeset =
-      %Terms{}
-      |> Terms.changeset(params)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"terms_phoenix" => params}, socket) do
+    terms = Phoenix.HTML.Form.normalize_value("checkbox", params["terms"])
 
     {:noreply,
-     assign(
-       socket,
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :terms,
-         id: "checkbox-live-form"
+     socket
+     |> Toast.create("layout-toast", "Submitted", "terms=#{terms}", :info, duration: 5000)
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"terms" => terms},
+         as: :terms_phoenix,
+         id: @phoenix_form_id
        )
      )}
   end
 
-  def handle_event("save", %{"terms" => params}, socket) do
-    case Terms.changeset(%Terms{}, params) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: terms=#{data.terms}"
-
-        {:noreply,
-         socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(Terms.changeset(%Terms{}, params),
-             as: :terms,
-             id: "checkbox-live-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         assign(
-           socket,
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :terms,
-             id: "checkbox-live-form"
-           )
-         )}
-    end
-  end
-
-  def handle_event("validate_strict", %{"terms_strict" => params}, socket) do
+  def handle_event("validate", %{"terms_ecto" => params}, socket) do
     changeset =
       %Terms{}
       |> Terms.changeset_validate(params)
@@ -93,16 +63,16 @@ defmodule E2eWeb.CheckboxFormLive do
     {:noreply,
      assign(
        socket,
-       :strict_form,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :terms_strict,
-         id: "checkbox-strict-form-live"
+         as: :terms_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
-  def handle_event("save_strict", %{"terms_strict" => params}, socket) do
+  def handle_event("save", %{"terms_ecto" => params}, socket) do
     case Terms.changeset_validate(%Terms{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
@@ -110,13 +80,13 @@ defmodule E2eWeb.CheckboxFormLive do
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
              Terms.changeset_validate(%Terms{}, params),
-             as: :terms_strict,
-             id: "checkbox-strict-form-live"
+             as: :terms_ecto,
+             id: @ecto_form_id
            )
          )}
 
@@ -124,11 +94,11 @@ defmodule E2eWeb.CheckboxFormLive do
         {:noreply,
          assign(
            socket,
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :terms_strict,
-             id: "checkbox-strict-form-live"
+             as: :terms_ecto,
+             id: @ecto_form_id
            )
          )}
     end
@@ -143,35 +113,34 @@ defmodule E2eWeb.CheckboxFormLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-form-live-page"
-        title="Checkbox · Form"
-        subtitle="Live View form"
+        title={~t"Checkbox · Form"}
       >
         <.demo_section
-          id="checkbox-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="checkbox-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <CheckboxDemo.form_preview_live_changeset form={@form} />
+            <CheckboxDemo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="checkbox-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="checkbox-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
-            <CheckboxDemo.form_preview_live_validate form={@strict_form} />
+            <CheckboxDemo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

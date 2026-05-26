@@ -43,24 +43,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_placement_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
-        <:trigger>Bottom</:trigger>
-        <:content>Tooltip below</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
-        <:trigger>Top</:trigger>
-        <:content>Tooltip above</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
-        <:trigger>Left</:trigger>
-        <:content>Tooltip on the left</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
-        <:trigger>Right</:trigger>
-        <:content>Tooltip on the right</:content>
-      </.tooltip>
-    </div>
+    <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+      <:trigger>Bottom</:trigger>
+      <:content>Tooltip below</:content>
+    </.tooltip>
     """
   end
 
@@ -138,7 +124,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def patterns_multi_trigger_heex do
     ~S"""
     <.tooltip
-      id="tooltip-pattern-users"
       class="tooltip"
       show_arrow={false}
       on_trigger_value_change="tooltip_pattern_trigger_value"
@@ -234,7 +219,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
     ~S"""
     <div class="flex flex-col gap-2 items-start w-full max-w-xl">
       <.tooltip
-        id="tooltip-pattern-profile-link-multi-tool"
         class="tooltip"
         show_arrow={false}
         trigger_tag={:span}
@@ -358,7 +342,12 @@ defmodule E2eWeb.Demos.TooltipDemo do
   end
 
   def api_set_open_client_js_ts do
-    api_set_open_client_js_js()
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("tooltip-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:tooltip:set-open", { bubbles: false, detail: { open: true } })
+    );
+    """
   end
 
   def api_set_open_client_js_example(assigns) do
@@ -453,7 +442,7 @@ defmodule E2eWeb.Demos.TooltipDemo do
       <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", true)} class="button button--sm">Open</.action>
       <.action phx-click={Corex.Tooltip.set_open("tooltip-patterns-set-open", false)} class="button button--sm">Close</.action>
     </div>
-    <.tooltip id="tooltip-patterns-set-open" class="tooltip">
+    <.tooltip class="tooltip">
       <:trigger>Hover or buttons</:trigger>
       <:content>Open state from Corex.Tooltip.set_open/2</:content>
     </.tooltip>
@@ -502,7 +491,6 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def events_server_heex do
     ~S"""
     <.tooltip
-      id="tooltip-events"
       class="tooltip"
       on_open_change="tooltip_open_changed"
       on_open_change_client="tooltip-open-changed"
@@ -514,12 +502,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def handle_event("tooltip_open_changed", %{"open" => open, "id" => id}, socket) do
-      _ = {open, id}
-      {:noreply, socket}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "tooltip_open_changed",
+      ~S|%{"open" => open, "id" => id} = params|
+    )
   end
 
   def events_client_listener_js do
@@ -606,21 +592,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
   def styling_size_code do
     ~S"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--size-sm">
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--size-sm</:content>
+        <:content>tooltip--sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-md">
+      <.tooltip class="tooltip tooltip--md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--size-md</:content>
+        <:content>tooltip--md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-lg">
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--size-lg</:content>
+        <:content>tooltip--lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-xl">
+      <.tooltip class="tooltip tooltip--xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--size-xl</:content>
+        <:content>tooltip--xl</:content>
       </.tooltip>
     </div>
     """
@@ -631,21 +617,21 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
     ~H"""
     <div class="layout__row flex-wrap gap-2">
-      <.tooltip class="tooltip tooltip--size-sm">
+      <.tooltip class="tooltip tooltip--sm">
         <:trigger>Sm</:trigger>
-        <:content>tooltip--size-sm</:content>
+        <:content>tooltip--sm</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-md">
+      <.tooltip class="tooltip tooltip--md">
         <:trigger>Md</:trigger>
-        <:content>tooltip--size-md</:content>
+        <:content>tooltip--md</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-lg">
+      <.tooltip class="tooltip tooltip--lg">
         <:trigger>Lg</:trigger>
-        <:content>tooltip--size-lg</:content>
+        <:content>tooltip--lg</:content>
       </.tooltip>
-      <.tooltip class="tooltip tooltip--size-xl">
+      <.tooltip class="tooltip tooltip--xl">
         <:trigger>Xl</:trigger>
-        <:content>tooltip--size-xl</:content>
+        <:content>tooltip--xl</:content>
       </.tooltip>
     </div>
     """

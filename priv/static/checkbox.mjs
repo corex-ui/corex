@@ -1,17 +1,27 @@
 import {
+  syncCheckableHiddenInput
+} from "./chunks/chunk-G73IV5JU.mjs";
+import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  mountCheckedBinding,
+  readUpdatedServerChecked
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
 import {
+  checkedChangePayload,
+  emitResponse,
   idMatches,
   notifyChange,
+  parseRespondTo,
   readPayloadChecked,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -22,7 +32,6 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
-  getCheckedState,
   getDir,
   getEventTarget,
   getString,
@@ -30,7 +39,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
@@ -317,8 +326,14 @@ var Checkbox = class extends Component {
     const inputEl = rootEl.querySelector(
       ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
     );
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    if (inputEl instanceof HTMLInputElement) {
+      syncCheckableHiddenInput(
+        inputEl,
+        this.el,
+        this.api.checked === true,
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps()
+      );
     }
     const labelEl = rootEl.querySelector(
       ':scope > [data-scope="checkbox"][data-part="label"]'
@@ -342,12 +357,6 @@ var Checkbox = class extends Component {
 };
 
 // hooks/checkbox.ts
-function checkedChangePayload(el, details) {
-  return {
-    id: el.id,
-    checked: details.checked
-  };
-}
 var CheckboxHook = {
   mounted() {
     const el = this.el;
@@ -355,7 +364,7 @@ var CheckboxHook = {
     const canPush = () => canPushEvent(this.liveSocket);
     const zagCheckbox = new Checkbox(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") } : { defaultChecked: getCheckedState(el, "defaultChecked") },
+      ...mountCheckedBinding(el),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -363,7 +372,7 @@ var CheckboxHook = {
       dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       onCheckedChange: (details) => {
         notifyChange({
           el,
@@ -373,6 +382,16 @@ var CheckboxHook = {
           serverEventName: getString(el, "onCheckedChange"),
           clientEventName: getString(el, "onCheckedChangeClient")
         });
+        const input = el.querySelector(
+          '[data-scope="checkbox"][data-part="hidden-input"]'
+        );
+        if (input) {
+          queueMicrotask(() => {
+            input.checked = details.checked === true;
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+          });
+        }
       }
     });
     zagCheckbox.init();
@@ -397,35 +416,53 @@ var CheckboxHook = {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       zagCheckbox.api.toggleChecked();
     });
+    const emitCheckedState = (respondTo, serverEventName, domEventName, value) => {
+      const detail = { id: el.id, value };
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName,
+        serverPayload: detail,
+        el,
+        domEventName,
+        domDetail: detail
+      });
+    };
     registry.add("checkbox_checked", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_checked_response", {
-        id: el.id,
-        value: zagCheckbox.api.checked
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_checked_response",
+        "corex:checkbox:checked",
+        zagCheckbox.api.checked
+      );
     });
     registry.add("checkbox_focused", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_focused_response", {
-        id: el.id,
-        value: zagCheckbox.api.focused
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_focused_response",
+        "corex:checkbox:focused",
+        zagCheckbox.api.focused
+      );
     });
     registry.add("checkbox_disabled", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
-      if (!canPush()) return;
-      this.pushEvent("checkbox_disabled_response", {
-        id: el.id,
-        value: zagCheckbox.api.disabled
-      });
+      emitCheckedState(
+        parseRespondTo(payload),
+        "checkbox_disabled_response",
+        "corex:checkbox:disabled",
+        zagCheckbox.api.disabled
+      );
     });
   },
   updated() {
-    this.checkbox?.updateProps({
+    const zagCheckbox = this.checkbox;
+    if (!zagCheckbox) return;
+    zagCheckbox.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") } : { defaultChecked: getCheckedState(this.el, "defaultChecked") },
+      ...readUpdatedServerChecked(this.el),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
@@ -433,7 +470,7 @@ var CheckboxHook = {
       dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly")
+      readOnly: getBoolean(this.el, "readonly")
     });
   },
   destroyed() {
@@ -443,5 +480,6 @@ var CheckboxHook = {
   }
 };
 export {
-  CheckboxHook as Checkbox
+  CheckboxHook as Checkbox,
+  checkedChangePayload
 };

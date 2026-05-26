@@ -43,16 +43,17 @@ defmodule E2eWeb.AngleSliderPatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="angle-slider-patterns-page"
-        title="Angle Slider · Pattern"
-        subtitle="Common ways to structure Angle Slider state and data flows."
+        title={~t"Angle Slider · Pattern"}
+        subtitle={~t"Common ways to structure Angle Slider state and data flows."}
       >
         <.demo_section
           id="angle-slider-patterns-async"
-          title="Async"
+          title={~t"Async"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @async_heex_full},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @async_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex_full},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
           ]}
         >
           <:preview>
@@ -75,10 +76,10 @@ defmodule E2eWeb.AngleSliderPatternsLive do
 
         <.demo_section
           id="angle-slider-patterns-controlled"
-          title="Controlled (LiveView)"
+          title={~t"Controlled (LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @controlled_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @controlled_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @controlled_elixir}
           ]}
         >
           <:preview>

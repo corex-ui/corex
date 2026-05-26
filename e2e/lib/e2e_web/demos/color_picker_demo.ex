@@ -10,8 +10,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def minimal_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-minimal"
-      label="Pick a color"
+      value="rgb(25, 9, 192, 0.9)"
+      label="Select Color (RGBA)"
+      presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
       class="color-picker"
     />
     """
@@ -30,7 +31,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_value_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-with-value"
       value="#22c55e"
       label="Initial value"
       class="color-picker"
@@ -52,7 +52,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_positioning_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-positioning"
       value="#3b82f6"
       label="Placement and gutter"
       positioning={%Corex.Positioning{placement: "left-start", gutter: 12}}
@@ -78,7 +77,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def with_presets_code do
     ~S"""
     <.color_picker
-      id="color-picker-anatomy-with-preset"
       value="#3b82f6"
       label="Presets + picker"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -106,7 +104,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#3b82f6")} class="button button--sm">Set blue</.action>
     </div>
     <.color_picker
-      id="color-picker-api-value-c"
       value="#3b82f6"
       label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -144,7 +141,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action phx-click="cp_api_s_value" phx-value-color="#3b82f6" class="button button--sm">Set blue</.action>
     </div>
     <.color_picker
-      id="color-picker-api-value-s"
       value="#3b82f6"
       label="Set the color (Server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -164,7 +160,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def events_server_value_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-sv"
       value="#3b82f6"
       label="Value (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -175,18 +170,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   def events_server_value_elixir do
-    ~S"""
-    def handle_event("cp_ev_server_value", %{"id" => id, "valueAsString" => value}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(value)}
-      {:noreply, stream_insert(socket, :server_v_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "cp_ev_server_value",
+      ~S|%{"id" => id, "valueAsString" => value} = params|
+    )
   end
 
   def events_server_open_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-so"
       value="#3b82f6"
       label="Open (server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -197,18 +189,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   def events_server_open_elixir do
-    ~S"""
-    def handle_event("cp_ev_server_open", %{"id" => id, "open" => open}, socket) do
-      log = %{time: "12:00:00", source: "server", value: inspect(open)}
-      {:noreply, stream_insert(socket, :server_o_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handler_snippet(
+      "cp_ev_server_open",
+      ~S|%{"id" => id, "open" => open} = params|
+    )
   end
 
   def events_client_value_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-cv"
       value="#3b82f6"
       label="Value (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -239,7 +228,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def events_client_open_heex do
     ~S"""
     <.color_picker
-      id="color-picker-ev-co"
       value="#3b82f6"
       label="Open (client only)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -274,46 +262,101 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       import Ecto.Changeset
 
       embedded_schema do
-    field :color, :string, default: "#3b82f6"
-    end
+        field :color, :string, default: "#3b82f6"
+      end
 
-    def changeset(form, attrs \\ %{}) do
-    form
-    |> cast(attrs, [:color])
-    |> validate_required([:color])
-    end
+      def changeset(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:color])
+        |> validate_required([:color])
+      end
 
-    def changeset_validate(form, attrs \\ %{}) do
-    form
-    |> cast(attrs, [:color])
-    |> validate_required([:color])
-    |> validate_alpha_max_50()
-    end
+      def changeset_validate(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:color])
+        |> validate_required([:color])
+        |> validate_alpha_max_50()
+      end
 
-    defp validate_alpha_max_50(changeset) do
-    case get_field(changeset, :color) do
-      nil ->
-        changeset
-
-      value ->
-        case Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value) do
-          [_, a] ->
-            case Float.parse(a) do
-              {float_val, _} ->
-                if float_val > 0.5 do
-                  add_error(changeset, :color, "maximum alpha allowed is 50%")
-                else
-                  changeset
-                end
-
-              :error ->
-                changeset
-            end
-          _ ->
-            changeset
+      defp validate_alpha_max_50(changeset) do
+        with value when is_binary(value) <- get_field(changeset, :color),
+             [_, alpha] <-
+               Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
+             {float_val, _} <- Float.parse(alpha),
+             true <- float_val > 0.5 do
+          add_error(changeset, :color, "maximum alpha allowed is 50%")
+        else
+          _ -> changeset
         end
       end
     end
+    """
+  end
+
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      :let={f}
+      for={@form}
+      action="/color-picker/form"
+      method="post"
+    >
+      <.color_picker
+        field={f[:color]}
+        label="Color"
+        class="color-picker"
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def color_picker_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+          as: :color_picker_phoenix,
+          id: "color-picker-form-phoenix"
+        )
+
+      render(conn, :color_picker_form_page, phoenix_form: phoenix_form)
+    end
+
+    def color_picker_form_submit(conn, params) do
+      if is_map(params["color_picker_phoenix"]) do
+        color = params["color_picker_phoenix"]["color"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: color=#{inspect(color)}")
+        |> redirect(to: "/color-picker/form")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.color_picker
+        name={@form[:color].name}
+        value={@form[:color].value || "#3b82f6"}
+        label="Color"
+        class="color-picker"
+      />
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
     """
   end
 
@@ -323,18 +366,15 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-changeset"
         value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-changeset-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -345,13 +385,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     def color_picker_form_page(conn, _params) do
       form =
-        %E2e.Form.ColorPickerForm{}
-        |> E2e.Form.ColorPickerForm.changeset(%{})
+        %MyApp.Form.ColorPickerForm{}
+        |> MyApp.Form.ColorPickerForm.changeset(%{})
         |> Phoenix.Component.to_form(as: :color_picker_changeset, id: "color-picker-changeset-form")
 
       validate_form =
-        %E2e.Form.ColorPickerForm{}
-        |> E2e.Form.ColorPickerForm.changeset_validate(%{})
+        %MyApp.Form.ColorPickerForm{}
+        |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
         |> Phoenix.Component.to_form(
           as: :color_picker_validate,
           id: "color-picker-validate-form"
@@ -361,7 +401,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     end
 
     def color_picker_form_create(conn, %{"color_picker_changeset" => params}) do
-      case E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           data = Ecto.Changeset.apply_changes(changeset)
           conn
@@ -375,8 +415,8 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
             Phoenix.Component.to_form(changeset, as: :color_picker_changeset, id: "color-picker-changeset-form")
 
           validate_form =
-            %E2e.Form.ColorPickerForm{}
-            |> E2e.Form.ColorPickerForm.changeset_validate(%{})
+            %MyApp.Form.ColorPickerForm{}
+            |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
             |> Phoenix.Component.to_form(
               as: :color_picker_validate,
               id: "color-picker-validate-form"
@@ -391,21 +431,24 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_validate_heex do
     ~S"""
     <.form
+      :let={f}
       for={@form}
-      action={~p"/color-picker/form"}
+      action="/color-picker/form"
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
-        name={@form[:color].name}
-        id="color-picker-validate"
-        value={@form[:color].value || "#3b82f6"}
+        field={f[:color]}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-validate-submit" class="button button--accent w-full">
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -414,29 +457,38 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_validate_elixir do
     ~S"""
+    def color_picker_form_validate_page(conn, _params) do
+      changeset =
+        MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, %{})
+
+      form =
+        Phoenix.Component.to_form(changeset,
+          as: :color_picker_validate,
+          id: "color-picker-validate-form"
+        )
+
+      render(conn, :color_picker_form_page, form: form)
+    end
+
     def color_picker_form_validate_create(conn, %{"color_picker_validate" => params}) do
-      case E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           data = Ecto.Changeset.apply_changes(changeset)
+
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: ~p"/settings")
+          |> redirect(to: "/settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
 
-          validate_form =
-            Phoenix.Component.to_form(changeset, as: :color_picker_validate, id: "color-picker-validate-form")
-
           form =
-            %E2e.Form.ColorPickerForm{}
-            |> E2e.Form.ColorPickerForm.changeset(%{})
-            |> Phoenix.Component.to_form(
-              as: :color_picker_changeset,
-              id: "color-picker-changeset-form"
+            Phoenix.Component.to_form(changeset,
+              as: :color_picker_validate,
+              id: "color-picker-validate-form"
             )
 
-          render(conn, :color_picker_form_page, form: form, validate_form: validate_form)
+          render(conn, :color_picker_form_page, form: form)
       end
     end
     """
@@ -445,45 +497,52 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_native_heex do
     ~S"""
     <form
-      action={~p"/color-picker/form"}
+      action="/color-picker/form"
       method="post"
-      id="color-picker-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
         name="color_picker_form[color]"
-        id="color-picker-form-native"
         value="#3b82f6"
         label="Color"
         class="color-picker"
       />
-      <.action type="submit" id="color-picker-form-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
     """
   end
 
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+      conn
+      |> put_flash(:info, "Submitted: color=#{color}")
+      |> redirect(to: "/color-picker/form")
+    end
+    """
+  end
+
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
   def form_doc_live_changeset_heex do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-live-basic"
         value={@color}
         label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-basic-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -493,10 +552,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_live_changeset_elixir do
     ~S"""
     def handle_event("save_basic", %{"color_picker_basic" => params}, socket) do
-      case E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           _data = Ecto.Changeset.apply_changes(changeset)
-          new_form = Phoenix.Component.to_form(E2e.Form.ColorPickerForm.changeset(%E2e.Form.ColorPickerForm{}, params),
+          new_form = Phoenix.Component.to_form(MyApp.Form.ColorPickerForm.changeset(%MyApp.Form.ColorPickerForm{}, params),
             as: :color_picker_basic,
             id: "color-picker-basic-form"
           )
@@ -519,21 +578,19 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.color_picker
         name={@form[:color].name}
-        id="color-picker-live-validate"
         value={@color}
         label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
       />
       <.color_form_errors form={@form} />
-      <.action type="submit" id="color-picker-validate-form-live-submit" class="button button--accent w-full">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -543,11 +600,11 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_live_validate_elixir do
     ~S"""
     def handle_event("save_validate", %{"color_picker_validate" => params}, socket) do
-      case E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params) do
+      case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           new_form =
             Phoenix.Component.to_form(
-              E2e.Form.ColorPickerForm.changeset_validate(%E2e.Form.ColorPickerForm{}, params),
+              MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params),
               as: :color_picker_validate,
               id: "color-picker-validate-form-live"
             )
@@ -597,21 +654,23 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-changeset"
-        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-changeset-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -627,21 +686,23 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-validate"
-        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -657,7 +718,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       action={~p"/color-picker/form"}
       method="post"
       id="color-picker-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
@@ -670,7 +730,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action
         type="submit"
         id="color-picker-form-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -685,24 +745,26 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-live-basic"
-        value={@color}
         label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-basic-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -711,34 +773,186 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   attr(:form, :any, required: true)
-  attr(:color, :string, required: true)
 
   def form_preview_live_validate(assigns) do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-live-validate"
-        value={@color}
         label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-form-live-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
     </.form>
+    """
+  end
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      action={~p"/color-picker/form"}
+      method="post"
+    >
+      <.color_picker
+        field={@form[:color]}
+        label="Color"
+        class="color-picker"
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.color_picker
+        field={@form[:color]}
+        label="Color"
+        class="color-picker"
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.ColorPickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"color" => "#ff0000"}, as: :color_picker_phoenix, id: "color-picker-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"color_picker_phoenix" => params}, socket) do
+        color = params["color"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"color" => color}, as: :color_picker_phoenix, id: "color-picker-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.ColorPickerFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Form.ColorPickerForm{}
+          |> MyApp.Form.ColorPickerForm.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :color_picker_ecto, id: "color-picker-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"color_picker_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Form.ColorPickerForm{}
+          |> MyApp.Form.ColorPickerForm.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :color_picker_ecto,
+             id: "color-picker-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"color_picker_ecto" => params}, socket) do
+        case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params),
+                 as: :color_picker_ecto,
+                 id: "color-picker-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :color_picker_ecto,
+                 id: "color-picker-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
     """
   end
 end

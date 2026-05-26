@@ -43,7 +43,11 @@ defmodule E2eWeb.PasswordInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Password Input · Playground" heading_class="layout-heading">
+      <.demo_playground
+        path={@path}
+        title="Password Input · Playground"
+        heading_class="layout-heading"
+      >
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -52,7 +56,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
           />
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -60,7 +64,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -68,7 +72,7 @@ defmodule E2eWeb.PasswordInputPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

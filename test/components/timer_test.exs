@@ -4,6 +4,7 @@ defmodule Corex.TimerTest do
   import Phoenix.Component
   import Corex.Timer, only: [timer: 1]
 
+  alias Corex.Timer
   alias Corex.Timer.Connect
 
   describe "timer/1" do
@@ -33,7 +34,7 @@ defmodule Corex.TimerTest do
           %{}
         )
 
-      refute html =~ ~s(data-part="separator")
+      refute html =~ ~S(data-part="separator")
     end
   end
 
@@ -60,6 +61,186 @@ defmodule Corex.TimerTest do
       assigns = %{id: "test-timer"}
       result = Connect.control(assigns)
       assert result["id"] == "timer:test-timer:control"
+    end
+  end
+
+  describe "timer_skeleton/1" do
+    test "renders skeleton markup" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.Timer.timer_skeleton id="timer-sk" />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "timer-skeleton"
+      assert html =~ ~S(data-timer-segment)
+    end
+  end
+
+  describe "segments validation" do
+    test "raises when segments is empty" do
+      assert_raise ArgumentError, ~r/must not be empty/, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="t-empty-seg" start_ms={1000} segments={[]} />
+            """
+          end,
+          %{}
+        )
+      end
+    end
+
+    test "raises for invalid segment atom" do
+      assert_raise ArgumentError, ~r/subset of/, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="t-bad-seg" start_ms={1000} segments={[:weeks]} />
+            """
+          end,
+          %{}
+        )
+      end
+    end
+
+    test "raises when segments are out of order" do
+      assert_raise ArgumentError, ~r/must follow order/, fn ->
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="t-order-seg" start_ms={1000} segments={[:minutes, :hours]} />
+            """
+          end,
+          %{}
+        )
+      end
+    end
+  end
+
+  describe "collapse and segments rendering" do
+    test "renders with custom segments and collapse_leading_zeros" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer
+              id="t-segments"
+              start_ms={3_661_000}
+              countdown
+              collapse_leading_zeros
+              segments={[:hours, :minutes, :seconds]}
+            />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-timer-segment)
+      assert html =~ ~S(data-type="hours")
+    end
+
+    test "renders countdown with collapse default" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <.timer id="t-collapse" start_ms={86_400_000} countdown collapse_leading_zeros={false} />
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-scope="timer")
+    end
+  end
+
+  describe "start/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.start("t1")
+    end
+  end
+
+  describe "start/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.start(socket, "t1")
+    end
+  end
+
+  describe "pause/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.pause("t1")
+    end
+  end
+
+  describe "pause/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.pause(socket, "t1")
+    end
+  end
+
+  describe "resume/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.resume("t1")
+    end
+  end
+
+  describe "resume/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.resume(socket, "t1")
+    end
+  end
+
+  describe "reset/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.reset("t1")
+    end
+  end
+
+  describe "reset/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.reset(socket, "t1")
+    end
+  end
+
+  describe "restart/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.restart("t1")
+    end
+  end
+
+  describe "restart/2" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.restart(socket, "t1")
+    end
+  end
+
+  describe "state/1" do
+    test "returns JS" do
+      assert %Phoenix.LiveView.JS{} = Timer.state("t1")
+    end
+  end
+
+  describe "state/2" do
+    test "returns JS with opts" do
+      assert %Phoenix.LiveView.JS{} = Timer.state("t1", respond_to: :client)
+    end
+  end
+
+  describe "state/3" do
+    test "pushes event" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert %Phoenix.LiveView.Socket{} = Timer.state(socket, "t1")
+      assert %Phoenix.LiveView.Socket{} = Timer.state(socket, "t1", respond_to: :both)
     end
   end
 end

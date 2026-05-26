@@ -2,7 +2,7 @@
 
 ![Hex.pm License](https://img.shields.io/hexpm/l/corex)
 ![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
-[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
+[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=main)](https://coveralls.io/github/corex-ui/corex?branch=main)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
 
@@ -14,12 +14,6 @@
 - **LiveView-native.** Update props at runtime without resetting component state.
 - **Truly unstyled.** Bring your own CSS or opt into Corex Design tokens, themes and modes.
 - **Accessible by default.** Keyboard, focus and ARIA wired in by Zag.js state machines.
-
-> #### Beta Stage {: .neutral}
->
-> Corex is under active development
-> The public API is stabilizing for most of the components
-> Please report any issues on [GitHub](https://github.com/corex-ui/corex).
 
 ## New Corex application
 
@@ -38,7 +32,7 @@ mix corex.new my_app
 
 By default Corex Design will be installed. You can use `--no-design` to opt out.
 
-By default the installer also adds the **`plug Corex.MCP`** hook for development and test (see [MCP](mcp.html)); use **`--no-mcp`** if you do not want it.
+By default the installer adds **`plug Corex.MCP`** in `:dev` and `:test` only (see [MCP](mcp.html)); never enable it in `:prod`. Use **`--no-mcp`** if you do not want it.
 
 If you want the full feature set:
 
@@ -50,7 +44,7 @@ Run **`mix help corex.new`** or see **`Mix.Tasks.Corex.New`** in Hexdocs for eve
 
 ## Existing Phoenix application
 
-Follow the [manual installation guide](manual_installation.html)
+Add Corex to a Phoenix app you already have in the [manual installation guide](manual_installation.html).
 
 ## Try your first component
 
@@ -84,13 +78,17 @@ Every Corex component exposes JS commands for client-side control and matching `
 </.action>
 ```
 
-See [API](api.html) and [Events](events.html) for how helpers, `on_*`, and browser events fit together.
+Each component documents **API** and **Events** on its Hexdocs page (helpers, `on_*`, and browser events).
 
-- [API](api.html) control components from LiveView, HEEx, or JavaScript.
-- [Events](events.html) `on_*`, client events, and hook responses.
+## Become a sponsor
+
+Corex is open source. If you rely on it in production or want to help sustain development, consider [becoming a sponsor on GitHub](https://github.com/sponsors/corex-ui).
+
 - [MCP](mcp.html) Corex MCP for AI tooling in development.
 - [Dark mode](dark_mode.html) light/dark wiring after `--mode`.
 - [Theming](theming.html) theme picker after `--theme`.
 - [Localize](localize.html) locales and routes after `--lang`.
 - [Production](production.html) prod build and run.
+- [Design](design.html) optional Corex Design System (tokens, themes, modifiers).
 - [Manual installation](manual_installation.html) add Corex to an existing Phoenix app.
+- [Tableau](tableau.html) Corex on static Tableau sites; optional [Tableau Theming](tableau_theming.html), [Tableau Mode](tableau_mode.html), [Tableau Localize](tableau_localize.html).

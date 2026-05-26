@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="collapsible-styling-page"
-    title="Collapsible · Styling"
-    subtitle="Density and trigger colors via modifier classes on the collapsible root."
+    title={~t"Collapsible · Styling"}
+    subtitle={~t"Density and trigger colors via modifier classes on the collapsible root."}
   >
     <.demo_section
       id="collapsible-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.CollapsibleDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +22,7 @@
 
     <.demo_section
       id="collapsible-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.CollapsibleDemo.styling_size_code()}
     >
       <:preview>

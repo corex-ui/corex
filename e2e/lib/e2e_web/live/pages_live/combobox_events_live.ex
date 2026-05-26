@@ -82,16 +82,17 @@ defmodule E2eWeb.ComboboxEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="combobox-events-page"
-        title="Combobox · Event"
-        subtitle="Subscribe to value changes from LiveView or the client."
+        title={~t"Combobox · Event"}
+        subtitle={~t"Subscribe to value changes from LiveView or the client."}
       >
         <.demo_section
           id="combobox-events-server-doc"
-          title="On Value Change (Server)"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -99,7 +100,7 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-server-field"
                 class="combobox"
-                placeholder="Select"
+                placeholder={~t"Select"}
                 items={@items}
                 on_value_change="combobox_changed"
               >
@@ -125,11 +126,11 @@ defmodule E2eWeb.ComboboxEventsLive do
 
         <.demo_section
           id="combobox-events-client-doc"
-          title="On Value Change (Client)"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>
@@ -137,7 +138,7 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-client-field"
                 class="combobox"
-                placeholder="Select"
+                placeholder={~t"Select"}
                 items={@items}
                 on_value_change_client="combobox-changed"
               >
@@ -184,10 +185,10 @@ defmodule E2eWeb.ComboboxEventsLive do
 
         <.demo_section
           id="combobox-events-open-server-doc"
-          title="On Open Change (Server)"
+          title={~t"On Open Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @open_server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @open_server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @open_server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @open_server_elixir}
           ]}
         >
           <:preview>
@@ -195,7 +196,7 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-open-server-field"
                 class="combobox"
-                placeholder="Select"
+                placeholder={~t"Select"}
                 items={@items}
                 on_open_change="combobox_open_changed"
               >
@@ -221,10 +222,10 @@ defmodule E2eWeb.ComboboxEventsLive do
 
         <.demo_section
           id="combobox-events-open-client-doc"
-          title="On Open Change (Client)"
+          title={~t"On Open Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @open_client_heex},
-            %{value: "js", label: "JS", language: :js, code: @open_client_js}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @open_client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @open_client_js}
           ]}
         >
           <:preview>
@@ -232,7 +233,7 @@ defmodule E2eWeb.ComboboxEventsLive do
               <.combobox
                 id="combobox-events-open-client-field"
                 class="combobox"
-                placeholder="Select"
+                placeholder={~t"Select"}
                 items={@items}
                 on_open_change_client="combobox-open-changed"
               >

@@ -2,12 +2,12 @@ defmodule Corex.FloatingPanel do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Floating Panel](https://zagjs.com/components/react/floating-panel).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
   ```heex
-  <.floating_panel id="my-floating-panel" class="floating-panel">
+  <.floating_panel class="floating-panel">
     <:trigger class="button button--ghost button--sm">
       <span data-closed>Open panel</span>
       <span data-open>Close panel</span>
@@ -48,7 +48,38 @@ defmodule Corex.FloatingPanel do
 
   Optional **`positioning={%Corex.Positioning{}}`** sets **`data-position-*`** for the client hook. When **`position`** is omitted, the hook passes Zag **`getAnchorPosition`** from placement and boundary (e.g. **`placement: "bottom-start"`** and **`gutter: 16`** for a bottom corner). Do not rely on both **`position`** and **`positioning`** for the same panel; prefer **`position`** for explicit pixels, **`positioning`** for placement rules.
 
-  ## Styling
+  ## API
+
+  Requires a stable `id` on `<.floating_panel>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.floating_panel>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_open_change="panel_open_changed"` | Open state changes | `%{"id" => id, "open" => boolean}` |
+  | `on_position_change="panel_position_changed"` | Position changes | `%{"id" => id, ...}` |
+  | `on_size_change="panel_size_changed"` | Size changes | `%{"id" => id, ...}` |
+  | `on_stage_change="panel_stage_changed"` | Stage changes | `%{"id" => id, ...}` |
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_open_change_client="panel-open-changed"` | Open state changes | `id`, `open` |
+  | `on_position_change_client="panel-position-changed"` | Position changes | `id`, ... |
+  | `on_size_change_client="panel-size-changed"` | Size changes | `id`, ... |
+  | `on_stage_change_client="panel-stage-changed"` | Stage changes | `id`, ... |
+
+  ## Style
 
   Use data attributes to target elements:
 
@@ -92,19 +123,10 @@ defmodule Corex.FloatingPanel do
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for FloatingPanel component strings.
-
-    Without gettext: `translation={%FloatingPanel.Translation{ close: "Close window" }}`
-
-    With gettext: `translation={%FloatingPanel.Translation{ close: Corex.Gettext.gettext("Close window") }}`
-    """
-    defstruct [:minimize, :maximize, :restore, :close]
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.FloatingPanel.Anatomy.{
     Body,
@@ -123,14 +145,14 @@ defmodule Corex.FloatingPanel do
   }
 
   alias Corex.FloatingPanel.Connect
-  alias Corex.Gettext
+  alias Corex.FloatingPanel.Translation
   alias Corex.Point
   alias Corex.Positioning
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  @resize_axes ~w(n e w s ne se sw nw)
-  @stages ~w(minimized maximized default)
+  @resize_axes ~W(n e w s ne se sw nw)
+  @stages ~W(minimized maximized default)
 
   attr(:id, :string, required: false, doc: "The id of the floating panel")
   attr(:draggable, :boolean, default: true, doc: "Whether the panel can be dragged")
@@ -175,6 +197,18 @@ defmodule Corex.FloatingPanel do
     doc: "Server event when stage (minimized/maximized) changes"
   )
 
+  attr(:on_position_change_client, :string,
+    default: nil,
+    doc: "Client event when position changes"
+  )
+
+  attr(:on_size_change_client, :string, default: nil, doc: "Client event when size changes")
+
+  attr(:on_stage_change_client, :string,
+    default: nil,
+    doc: "Client event when stage (minimized/maximized) changes"
+  )
+
   attr(:translation, Corex.FloatingPanel.Translation,
     default: nil,
     doc: "Override translatable strings"
@@ -211,19 +245,13 @@ defmodule Corex.FloatingPanel do
   end
 
   def floating_panel(assigns) do
-    default_translation = %Translation{
-      minimize: Gettext.gettext("Minimize window"),
-      maximize: Gettext.gettext("Maximize window"),
-      restore: Gettext.gettext("Restore window"),
-      close: Gettext.gettext("Close window")
-    }
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "floating-panel-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
       |> assign(:default_position, Point.to_map(assigns.position))
@@ -256,8 +284,11 @@ defmodule Corex.FloatingPanel do
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         on_position_change: @on_position_change,
+        on_position_change_client: @on_position_change_client,
         on_size_change: @on_size_change,
-        on_stage_change: @on_stage_change
+        on_size_change_client: @on_size_change_client,
+        on_stage_change: @on_stage_change,
+        on_stage_change_client: @on_stage_change_client
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
@@ -307,14 +338,29 @@ defmodule Corex.FloatingPanel do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the panel open state from the browser. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set open state from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
+  <.floating_panel id="my-floating-panel" class="floating-panel">
+    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:content><p>Content.</p></:content>
+  </.floating_panel>
+  ```
 
-      <.action phx-click={Corex.FloatingPanel.set_open("my-floating-panel", true)}>Open</.action>
-  """
+  ```javascript
+  document.getElementById("my-floating-panel")?.dispatchEvent(
+    new CustomEvent("corex:floating-panel:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
   def set_open(floating_panel_id, open)
       when is_binary(floating_panel_id) and is_boolean(open) do
     JS.dispatch("corex:floating-panel:set-open",
@@ -324,16 +370,26 @@ defmodule Corex.FloatingPanel do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the panel open state from the server. Pushes a LiveView hook event.
+  api_doc(~S"""
+  Set open state from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="open_panel">Open</.action>
+  <.floating_panel id="my-floating-panel" class="floating-panel">
+    <:trigger class="button button--ghost button--sm"><span>Open</span></:trigger>
+    <:title>Panel</:title>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+    <:content><p>Content.</p></:content>
+  </.floating_panel>
+  ```
 
-      def handle_event("open_panel", _, socket) do
-        {:noreply, Corex.FloatingPanel.set_open(socket, "my-floating-panel", true)}
-      end
-  """
+  ```elixir
+  def handle_event("open_panel", _, socket) do
+    {:noreply, Corex.FloatingPanel.set_open(socket, "my-floating-panel", true)}
+  end
+  ```
+  """)
+
   def set_open(socket, floating_panel_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(floating_panel_id) and
              is_boolean(open) do
@@ -341,16 +397,5 @@ defmodule Corex.FloatingPanel do
       floating_panel_id: floating_panel_id,
       open: open
     })
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      minimize: partial.minimize || default.minimize,
-      maximize: partial.maximize || default.maximize,
-      restore: partial.restore || default.restore,
-      close: partial.close || default.close
-    }
   end
 end

@@ -13,6 +13,11 @@ export class Carousel extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
+  updateProps(props: Partial<Props>) {
+    super.updateProps(props);
+    this.machine.service.send({ type: "SNAP.REFRESH" });
+  }
+
   render(): void {
     const rootEl =
       this.el.querySelector<HTMLElement>('[data-scope="carousel"][data-part="root"]') ?? this.el;
@@ -33,7 +38,10 @@ export class Carousel extends Component<Props, Api> {
       const itemEl = this.el.querySelector<HTMLElement>(
         `[data-scope="carousel"][data-part="item"][data-index="${i}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i } as ItemProps));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ index: i } as ItemProps));
+        this.syncSlideInert(itemEl);
+      }
     }
 
     const prevTriggerEl = this.el.querySelector<HTMLElement>(
@@ -69,5 +77,9 @@ export class Carousel extends Component<Props, Api> {
       '[data-scope="carousel"][data-part="progress-text"]'
     );
     if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
+  }
+
+  private syncSlideInert(itemEl: HTMLElement): void {
+    itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
   }
 }

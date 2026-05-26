@@ -5,13 +5,22 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="native-input-anatomy-page"
-    title="Native Input Anatomy"
-    subtitle="Native HTML inputs with shared layout, optional icons, and grouped types."
+    title={~t"Native Input Anatomy"}
+    subtitle={~t"Native HTML inputs with shared layout, optional icons, and grouped types."}
   >
     <.demo_section
+      id="native-input-anatomy-all"
+      title={~t"All types"}
+      code={E2eWeb.Demos.NativeInputDemo.anatomy_all_code()}
+    >
+      <:preview><E2eWeb.Demos.NativeInputDemo.anatomy_all_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
       id="native-input-anatomy-text"
-      title="Text"
+      title={~t"Text"}
       code={E2eWeb.Demos.NativeInputDemo.anatomy_text_code()}
     >
       <:preview><E2eWeb.Demos.NativeInputDemo.anatomy_text_example /></:preview>
@@ -19,7 +28,7 @@
 
     <.demo_section
       id="native-input-anatomy-date-time"
-      title="Date & time"
+      title={~t"Date & time"}
       code={E2eWeb.Demos.NativeInputDemo.anatomy_date_time_code()}
     >
       <:preview><E2eWeb.Demos.NativeInputDemo.anatomy_date_time_example /></:preview>
@@ -27,7 +36,7 @@
 
     <.demo_section
       id="native-input-anatomy-multiple"
-      title="Multiple"
+      title={~t"Multiple"}
       code={E2eWeb.Demos.NativeInputDemo.anatomy_multiple_code()}
     >
       <:preview><E2eWeb.Demos.NativeInputDemo.anatomy_multiple_example /></:preview>
@@ -35,7 +44,7 @@
 
     <.demo_section
       id="native-input-anatomy-other"
-      title="Other"
+      title={~t"Other"}
       code={E2eWeb.Demos.NativeInputDemo.anatomy_other_code()}
     >
       <:preview><E2eWeb.Demos.NativeInputDemo.anatomy_other_example /></:preview>

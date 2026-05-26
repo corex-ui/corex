@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="marquee-anatomy-page"
-    title="Marquee Anatomy"
-    subtitle="Minimal markup, custom item slots, and image-based items."
+    title={~t"Marquee Anatomy"}
+    subtitle={~t"Minimal markup, custom item slots, and image-based items."}
   >
     <.demo_section
       id="marquee-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.MarqueeDemo.anatomy_minimal_code()}
     >
       <:preview><E2eWeb.Demos.MarqueeDemo.anatomy_minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="marquee-anatomy-custom-slots"
-      title="Custom Slots"
+      title={~t"Custom Slots"}
       code={E2eWeb.Demos.MarqueeDemo.anatomy_custom_slots_code()}
     >
       <:preview><E2eWeb.Demos.MarqueeDemo.anatomy_custom_slots_example /></:preview>
@@ -27,7 +28,7 @@
 
     <.demo_section
       id="marquee-anatomy-with-images"
-      title="With Images"
+      title={~t"With Images"}
       code={E2eWeb.Demos.MarqueeDemo.anatomy_with_images_code()}
     >
       <:preview><E2eWeb.Demos.MarqueeDemo.anatomy_with_images_example /></:preview>

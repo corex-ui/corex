@@ -5,17 +5,50 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="editable-styling-page"
-    title="Editable · Style"
-    subtitle="Density via modifier classes on the editable root."
+    title={~t"Editable · Style"}
+    subtitle={
+      ~t"Semantic colors, density, corner radius, and width via modifier classes on the editable root."
+    }
   >
     <.demo_section
+      id="editable-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.EditableDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
       id="editable-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.EditableDemo.styling_size_code()}
     >
       <:preview>
         <E2eWeb.Demos.EditableDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-styling-radius"
+      title={~t"Radius"}
+      code={E2eWeb.Demos.EditableDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.EditableDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.EditableDemo.styling_max_width_example />
       </:preview>
     </.demo_section>
   </.demo_page>

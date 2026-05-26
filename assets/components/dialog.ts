@@ -13,6 +13,19 @@ export function dialogInitialAriaLabel(rootEl: HTMLElement): string | undefined 
 }
 
 function syncDialogContentAriaRefs(rootEl: HTMLElement, contentEl: HTMLElement): void {
+  const titleEl = rootEl.querySelector<HTMLElement>('[data-scope="dialog"][data-part="title"]');
+  if (!titleEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-labelledby");
+    const label = dialogInitialAriaLabel(rootEl);
+    if (label) {
+      contentEl.setAttribute("aria-label", label);
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
+  } else {
+    contentEl.removeAttribute("aria-label");
+  }
+
   const descriptionEl = rootEl.querySelector<HTMLElement>(
     '[data-scope="dialog"][data-part="description"]'
   );

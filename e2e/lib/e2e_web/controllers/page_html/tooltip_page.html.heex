@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="tooltip-anatomy-page"
-    title="Tooltip · Anatomy"
-    subtitle="Minimal usage, arrow, placement, and Corex.Positioning."
+    title={~t"Tooltip · Anatomy"}
+    subtitle={~t"Minimal usage, arrow, placement, and Corex.Positioning."}
   >
     <.demo_section
       id="tooltip-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.TooltipDemo.anatomy_minimal_code()}
     >
       <:preview><E2eWeb.Demos.TooltipDemo.anatomy_minimal_example /></:preview>
@@ -19,7 +20,7 @@
 
     <.demo_section
       id="tooltip-anatomy-with-arrow"
-      title="With arrow"
+      title={~t"With arrow"}
       code={E2eWeb.Demos.TooltipDemo.anatomy_with_arrow_code()}
     >
       <:preview><E2eWeb.Demos.TooltipDemo.anatomy_with_arrow_example /></:preview>
@@ -27,7 +28,7 @@
 
     <.demo_section
       id="tooltip-anatomy-placement"
-      title="Placement"
+      title={~t"Placement"}
       code={E2eWeb.Demos.TooltipDemo.anatomy_placement_code()}
     >
       <:preview><E2eWeb.Demos.TooltipDemo.anatomy_placement_example /></:preview>
@@ -35,7 +36,7 @@
 
     <.demo_section
       id="tooltip-anatomy-positioning"
-      title="Positioning"
+      title={~t"Positioning"}
       code={E2eWeb.Demos.TooltipDemo.anatomy_positioning_code()}
     >
       <:preview><E2eWeb.Demos.TooltipDemo.anatomy_positioning_example /></:preview>

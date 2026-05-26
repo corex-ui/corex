@@ -2,17 +2,17 @@ defmodule Corex.Clipboard do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Clipboard](https://zagjs.com/components/react/clipboard).
 
-  Value is **uncontrolled** from the server’s perspective: set `value` for the initial string to copy; use `Corex.Clipboard.set_value/2` or the hook’s `corex:clipboard:set-value` event to change it on the client.
+  Set `value` for the initial string to copy. Use `Corex.Clipboard.set_value/2` or `corex:clipboard:set-value` to change it on the client.
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
-  ### Basic Usage
+  ### Minimal
 
   ```heex
-  <.clipboard id="my-clipboard" value="Text to copy">
-    <:label>Copy to clipboard</:label>
+  <.clipboard class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
     <:copy>
       <.heroicon name="hero-clipboard" />
     </:copy>
@@ -22,14 +22,58 @@ defmodule Corex.Clipboard do
   </.clipboard>
   ```
 
-  ### With Callback
+  ### Trigger only
 
   ```heex
   <.clipboard
-    id="my-clipboard"
-    value="Text to copy"
-    on_copy="clipboard_copied">
-    <:label>Copy to clipboard</:label>
+    class="clipboard"
+    value="https://example.com/share"
+    input={false}
+    trigger_aria_label="Copy link"
+  >
+    <:copy>
+      <.heroicon name="hero-clipboard" />
+    </:copy>
+    <:copied>
+      <.heroicon name="hero-check" />
+    </:copied>
+  </.clipboard>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.clipboard>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`copy/1`](#copy/1) | Copy current value (client) | `%Phoenix.LiveView.JS{}` |
+  | [`copy/2`](#copy/2) | Copy current value (server) | `socket` |
+  | [`set_value/2`](#set_value/2) | Set value to copy (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set value to copy (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.clipboard>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_copy="clipboard_copied"` | User copies | `%{"id" => id, "value" => value}` |
+
+  <!-- tabs-open -->
+
+  ### on_copy
+
+  ```heex
+  <.clipboard
+    class="clipboard"
+    value="info@netoum.com"
+    on_copy="clipboard_copied"
+  >
+    <:label>Copy</:label>
     <:copy>
       <.heroicon name="hero-clipboard" />
     </:copy>
@@ -40,49 +84,22 @@ defmodule Corex.Clipboard do
   ```
 
   ```elixir
-  def handle_event("clipboard_copied", %{"value" => value}, socket) do
-    {:noreply, put_flash(socket, :info, "Copied: #{value}")}
+  def handle_event("clipboard_copied", %{"value" => value, "id" => _id}, socket) do
+    {:noreply, assign(socket, :last_copied, value)}
   end
   ```
-
-  ### Trigger only (`input={false}`)
-
-  ```heex
-  <.clipboard id="share-link" value={@url} input={false} trigger_aria_label="Copy link">
-    <:copy><.heroicon name="hero-clipboard" /></:copy>
-    <:copied><.heroicon name="hero-check" /></:copied>
-  </.clipboard>
-  ```
-
-  ### Custom trigger body
-
-  You can still use **`<:trigger>`** for extra markup after the copy/copied surfaces (or alone if you style idle/copied yourself).
 
   <!-- tabs-close -->
 
-  ## API Control
+  ### Client events
 
-  In order to use the API, you must use an id on the component
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_copy_client="clipboard-copied"` | User copies | `id`, `value` |
 
-  ***Client-side***
+  ## Style
 
-  ```heex
-  <button phx-click={Corex.Clipboard.copy("my-clipboard", "Text to copy")}>
-    Copy Text
-  </button>
-  ```
-
-  ***Server-side***
-
-  ```elixir
-  def handle_event("copy_text", _, socket) do
-    {:noreply, Corex.Clipboard.copy(socket, "my-clipboard", "Text to copy")}
-  end
-  ```
-
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `clipboard.css`, then set `class="clipboard"` on `<.clipboard>`.
 
   ```css
   [data-scope="clipboard"][data-part="root"] {}
@@ -93,25 +110,44 @@ defmodule Corex.Clipboard do
   [data-scope="clipboard"][data-part="copied"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `clipboard` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/clipboard.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.clipboard>`).
 
-  ```heex
-  <.clipboard class="clipboard clipboard--accent clipboard--lg">
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `clipboard` |
+  | Accent | `clipboard clipboard--accent` |
+  | Brand | `clipboard clipboard--brand` |
+  | Alert | `clipboard clipboard--alert` |
+  | Info | `clipboard clipboard--info` |
+  | Success | `clipboard clipboard--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `clipboard clipboard--sm` |
+  | MD | `clipboard clipboard--md` |
+  | LG | `clipboard clipboard--lg` |
+  | XL | `clipboard clipboard--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Clipboard.Anatomy.{Control, Copied, Copy, Input, Label, Props, Root, Trigger}
   alias Corex.Clipboard.Connect
@@ -281,16 +317,25 @@ defmodule Corex.Clipboard do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Copies the current clipboard value to clipboard from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Copy the component's current value from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Clipboard.copy("my-clipboard")}>Copy</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
 
-      <button phx-click={Corex.Clipboard.copy("my-clipboard")}>
-        Copy
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-clipboard")?.dispatchEvent(
+    new CustomEvent("corex:clipboard:copy", { bubbles: false })
+  );
+  ```
+  """)
+
   def copy(clipboard_id) when is_binary(clipboard_id) do
     JS.dispatch("corex:clipboard:copy",
       to: "##{clipboard_id}",
@@ -298,17 +343,25 @@ defmodule Corex.Clipboard do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Copies the current clipboard value to clipboard from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Copy the current value from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="copy_email">Copy</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
 
-      def handle_event("copy_clipboard", _params, socket) do
-        socket = Corex.Clipboard.copy(socket, "my-clipboard")
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("copy_email", _, socket) do
+    {:noreply, Corex.Clipboard.copy(socket, "my-clipboard")}
+  end
+  ```
+  """)
+
   def copy(socket, clipboard_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) do
     LiveView.push_event(socket, "clipboard_copy", %{
@@ -316,16 +369,28 @@ defmodule Corex.Clipboard do
     })
   end
 
-  @doc type: :api
-  @doc """
-  Sets the clipboard value from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set the string to copy from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Clipboard.set_value("my-clipboard", "next@example.com")}>Load</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
 
-      <button phx-click={Corex.Clipboard.set_value("my-clipboard", "New value")}>
-        Set Value
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-clipboard")?.dispatchEvent(
+    new CustomEvent("corex:clipboard:set-value", {
+      bubbles: false,
+      detail: { value: "next@example.com" },
+    })
+  );
+  ```
+  """)
+
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
     JS.dispatch("corex:clipboard:set-value",
       to: "##{clipboard_id}",
@@ -334,17 +399,25 @@ defmodule Corex.Clipboard do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the clipboard value from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Set the value to copy from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="load_clipboard" phx-value-value="next@example.com">Load</.action>
+  <.clipboard id="my-clipboard" class="clipboard" value="hello@example.com">
+    <:label>Email</:label>
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
 
-      def handle_event("set_clipboard_value", _params, socket) do
-        socket = Corex.Clipboard.set_value(socket, "my-clipboard", "New value")
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("load_clipboard", %{"value" => value}, socket) do
+    {:noreply, Corex.Clipboard.set_value(socket, "my-clipboard", value)}
+  end
+  ```
+  """)
+
   def set_value(socket, clipboard_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) and
              is_binary(value) do

@@ -9,6 +9,8 @@ import {
 } from "@zag-js/combobox";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripZagSubmitNames } from "../lib/form-field-array-submit";
+import { getString } from "../lib/util";
 import { itemValue, zagListCollectionConfig } from "../lib/list-collection";
 import { templatesContentRoot } from "../lib/util";
 
@@ -278,10 +280,34 @@ export class Combobox extends Component<Props, Api> {
       });
   }
 
+  private hiddenInputValue(): string {
+    let values = (this.api.value ?? []).map(String);
+    if (values.length === 0) {
+      const fallback = this.el.dataset.defaultValue;
+      if (fallback) values = fallback.split(",").filter(Boolean);
+    }
+    const multiple = this.el.hasAttribute("data-multiple");
+    return values.length === 0 ? "" : multiple ? values.join(",") : (values[0] ?? "");
+  }
+
   render(): void {
     const root = this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
+
+    const hiddenInput = this.el.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="hidden-input"]'
+    );
+    if (hiddenInput) {
+      const valueStr = this.hiddenInputValue();
+      if (hiddenInput.value !== valueStr) hiddenInput.value = valueStr;
+      if (getString(this.el, "submitName")) {
+        hiddenInput.removeAttribute("name");
+        hiddenInput.removeAttribute("form");
+      }
+    }
+
+    stripZagSubmitNames(this.el, "combobox", ["hidden-input", "input"]);
 
     [
       "label",

@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="angle-slider-anatomy-page"
-    title="Angle Slider Anatomy"
-    subtitle="Explore the default structure, slot customization, and compound mode for the angle slider."
+    title={~t"Angle Slider Anatomy"}
+    subtitle={
+      ~t"Explore the default structure, slot customization, and compound mode for the angle slider."
+    }
   >
     <.demo_section
       id="angle-slider-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.AngleSliderDemo.minimal_code()}
     >
       <:preview>
@@ -21,7 +24,7 @@
 
     <.demo_section
       id="angle-slider-anatomy-with-label"
-      title="With label"
+      title={~t"With label"}
       code={E2eWeb.Demos.AngleSliderDemo.with_label_code()}
     >
       <:preview>
@@ -31,7 +34,7 @@
 
     <.demo_section
       id="angle-slider-anatomy-custom-slots"
-      title="Custom slot"
+      title={~t"Custom slot"}
       code={E2eWeb.Demos.AngleSliderDemo.custom_slots_code()}
     >
       <:preview>
@@ -41,7 +44,7 @@
 
     <.demo_section
       id="angle-slider-anatomy-compound"
-      title="Compound"
+      title={~t"Compound"}
       code={E2eWeb.Demos.AngleSliderDemo.compound_code()}
     >
       <:preview>

@@ -5,13 +5,14 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="avatar-styling-page"
-    title="Avatar Style"
-    subtitle="Modifiers for color and size on the fallback and frame."
+    title={~t"Avatar · Style"}
+    subtitle={~t"Modifiers for color, size, and corner radius on the fallback and frame."}
   >
     <.demo_section
       id="avatar-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.AvatarDemo.styling_color_code()}
     >
       <:preview>
@@ -21,11 +22,21 @@
 
     <.demo_section
       id="avatar-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.AvatarDemo.styling_size_code()}
     >
       <:preview>
         <E2eWeb.Demos.AvatarDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="avatar-styling-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.AvatarDemo.styling_rounded_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AvatarDemo.styling_rounded_example />
       </:preview>
     </.demo_section>
   </.demo_page>

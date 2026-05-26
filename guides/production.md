@@ -1,8 +1,24 @@
 # Production
 
-Corex is built to be production-ready: every component compiles to plain HEEx + ESM JavaScript, the JS bundle is split per-component so unused hooks are never shipped, and the design CSS layers are the same files you used in development. This guide covers building and running your app with Corex in a local production environment. A full deployment guide is coming.
+## Introduction
 
-## 1. Environment
+You build and run a Phoenix app with Corex in production locally. Corex ships as plain HEEx plus ESM JavaScript; `mix assets.deploy` minifies and digests the same CSS and per-hook chunks you use in development.
+
+## Before you start
+
+| Requirement | Notes |
+| ----------- | ----- |
+| `SECRET_KEY_BASE` | `mix phx.gen.secret` |
+| Database URL | Production or local stand-in |
+| ESM Esbuild | `--format=esm --splitting` from [Manual installation](manual_installation.html) |
+
+## How it works
+
+1. `MIX_ENV=prod mix compile` builds the release artifacts.
+2. `mix assets.deploy` runs Tailwind and Esbuild with `--minify`, then digests files under `priv/static`.
+3. With splitting enabled, you get an entry chunk plus one chunk per lazy hook under `priv/static/assets/js/`.
+
+## Steps
 
 Generate a secret:
 
@@ -10,31 +26,23 @@ Generate a secret:
 mix phx.gen.secret
 ```
 
-Create a `.env` file at the root of your project (and add it to `.gitignore`). Set your secret and database  -  for local testing you can point at the dev database:
+Set environment variables (example `.env`, add to `.gitignore`):
 
 ```bash
 export SECRET_KEY_BASE="__YOUR_SECRET__"
 export DATABASE_URL="ecto://postgres:postgres@localhost/my_app_dev"
 ```
 
-Load it in your shell:
-
 ```bash
 source .env
-```
-
-## 2. Build and run
-
-Three commands compile, build the digested assets (CSS + ESM JS), and start the server:
-
-```bash
 MIX_ENV=prod mix compile
 MIX_ENV=prod mix assets.deploy
 MIX_ENV=prod mix phx.server
 ```
 
-`mix assets.deploy` runs Tailwind and Esbuild with `--minify` and then digests the output. Because the Corex JS bundle is built with `--format=esm --splitting`, you'll see one entry chunk plus a per-component chunk under `priv/static/assets/js/`.
-
 Visit [http://localhost:4000/](http://localhost:4000/).
 
-Open your browser's Network tab to inspect the digested asset filenames and confirm each component chunk only loads when that component appears on a page.
+## Related
+
+- [Manual installation](manual_installation.html) — Esbuild ESM setup
+- [Design](design.html) — CSS you import is the same in prod

@@ -1,14 +1,6 @@
 import {
-  getPlacement,
-  getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
-import {
-  trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
-import {
-  readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+  syncHiddenInputValue
+} from "./chunks/chunk-4SRF4GX7.mjs";
 import {
   clampValue,
   getPercentValue,
@@ -18,10 +10,25 @@ import {
   toFixedNumber
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
+  getPlacement,
+  getPlacementStyles
+} from "./chunks/chunk-EPNQR235.mjs";
+import {
+  trackDismissableElement
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
+import {
+  readPositioningOptions
+} from "./chunks/chunk-VJGUNSK5.mjs";
+import {
+  mountStringBinding,
+  readUpdatedServerString
+} from "./chunks/chunk-VL4ETB3G.mjs";
+import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -50,7 +57,7 @@ import {
   trackPointerMove,
   tryCatch,
   visuallyHiddenStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+color-picker@1.40.0/node_modules/@zag-js/color-picker/dist/color-picker.anatomy.mjs
 var anatomy = createAnatomy("color-picker", [
@@ -2222,7 +2229,15 @@ var ColorPicker = class extends Component {
     const labelEl = this.el.querySelector('[data-part="label"]');
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
     const hiddenInputEl = this.el.querySelector('[data-part="hidden-input"]');
-    if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+    if (hiddenInputEl) {
+      syncHiddenInputValue(
+        hiddenInputEl,
+        this.el,
+        this.api.valueAsString ?? "",
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps()
+      );
+    }
     const controlEl = this.el.querySelector('[data-part="control"]');
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
     const triggerEl = this.el.querySelector('[data-part="trigger"]');
@@ -2337,6 +2352,16 @@ var ColorPicker = class extends Component {
 };
 
 // hooks/color-picker.ts
+function readColorValueBinding(el) {
+  const binding = mountStringBinding(el, "value", "defaultValue");
+  if ("value" in binding && binding.value) {
+    return { value: parse(binding.value) };
+  }
+  if ("defaultValue" in binding && binding.defaultValue) {
+    return { defaultValue: parse(binding.defaultValue) };
+  }
+  return {};
+}
 function syncColorHiddenAndNotify(el, valueAsString) {
   if (valueAsString === void 0) {
     return;
@@ -2359,7 +2384,7 @@ var ColorPickerHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
-    const valueProps = readValueProps(el);
+    const valueProps = readColorValueBinding(el);
     const zag = new ColorPicker(el, {
       id: el.id,
       ...valueProps,
@@ -2370,7 +2395,7 @@ var ColorPickerHook = {
       openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
       positioning: readPositioningOptions(el),
@@ -2470,19 +2495,24 @@ var ColorPickerHook = {
   },
   updated() {
     const el = this.el;
-    const valueProps = readValueProps(el);
-    this.colorPicker?.updateProps({
-      ...valueProps,
+    const zag = this.colorPicker;
+    const valuePatch = readUpdatedServerString(el);
+    const parsed = "value" in valuePatch && valuePatch.value ? { value: parse(valuePatch.value) } : {};
+    zag?.updateProps({
+      ...parsed,
       name: getString(el, "name"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
       positioning: readPositioningOptions(el)
     });
+    if ("value" in valuePatch && valuePatch.value) {
+      syncColorHiddenAndNotify(el, valuePatch.value);
+    }
   },
   destroyed() {
     if (this.onSetValue) {
@@ -2497,5 +2527,6 @@ var ColorPickerHook = {
   }
 };
 export {
-  ColorPickerHook as ColorPicker
+  ColorPickerHook as ColorPicker,
+  readValueProps
 };

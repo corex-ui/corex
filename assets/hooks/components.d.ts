@@ -21,9 +21,6 @@ declare module "corex/checkbox" {
 declare module "corex/clipboard" {
   export const Clipboard: CorexHook;
 }
-declare module "corex/code" {
-  export const Code: CorexHook;
-}
 declare module "corex/collapsible" {
   export const Collapsible: CorexHook;
 }
@@ -60,6 +57,9 @@ declare module "corex/menu" {
 declare module "corex/number-input" {
   export const NumberInput: CorexHook;
 }
+declare module "corex/pagination" {
+  export const Pagination: CorexHook;
+}
 declare module "corex/password-input" {
   export const PasswordInput: CorexHook;
 }
@@ -81,11 +81,17 @@ declare module "corex/switch" {
 declare module "corex/tabs" {
   export const Tabs: CorexHook;
 }
+declare module "corex/tags-input" {
+  export const TagsInput: CorexHook;
+}
 declare module "corex/timer" {
   export const Timer: CorexHook;
 }
 declare module "corex/toast" {
   export const Toast: CorexHook;
+}
+declare module "corex/toggle" {
+  export const Toggle: CorexHook;
 }
 declare module "corex/toggle-group" {
   export const ToggleGroup: CorexHook;

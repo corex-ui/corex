@@ -2,6 +2,8 @@ defmodule Corex.RadioGroup.Connect do
   @moduledoc false
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.RadioGroup.Anatomy.{
     Indicator,
     Item,
@@ -10,30 +12,44 @@ defmodule Corex.RadioGroup.Connect do
     ItemText,
     Label,
     Props,
-    Root
+    Root,
+    ValueInput
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+  import Corex.Helpers, only: [get_boolean: 1, controlled_string_value: 2, maybe_put: 3]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    zag_controlled = form_field || controlled
+    value_dataset = FormField.dataset_default_string(assigns.value)
+
+    {value_str, default_value_str} =
+      if zag_controlled do
+        {value_dataset, nil}
+      else
+        controlled_string_value(controlled, assigns.value)
+      end
+
     %{
       "id" => assigns.id,
-      "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
-      "data-default-value" => if(assigns.controlled, do: nil, else: assigns.value),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-value" => value_str,
+      "data-default-value" => default_value_str,
+      "data-controlled" => get_boolean(controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   @spec root(Root.t()) :: map()
@@ -45,7 +61,8 @@ defmodule Corex.RadioGroup.Connect do
       "dir" => Map.get(assigns, :dir),
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "radio-group:#{assigns.id}",
-      "style" => "position:relative;"
+      "style" => "position:relative;",
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
 
     if assigns.has_label do
@@ -161,13 +178,35 @@ defmodule Corex.RadioGroup.Connect do
     )
   end
 
+  @spec value_input(ValueInput.t()) :: map()
+  def value_input(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "type" => "hidden",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "tabindex" => "-1",
+      "data-scope" => "radio-group",
+      "data-part" => "value-input",
+      "dir" => assigns.dir,
+      "data-orientation" => orientation,
+      "id" => "radio-group:#{assigns.id}:value-input"
+    }
+  end
+
+  def ignore_value_input(assigns) do
+    JS.ignore_attributes(ValueInput.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:value-input")
+    )
+  end
+
   @spec item_hidden_input(ItemHiddenInput.t()) :: map()
   def item_hidden_input(assigns) do
     %{
       "data-scope" => "radio-group",
       "data-part" => "item-hidden-input",
       "type" => "radio",
-      "name" => assigns.name,
       "form" => assigns.form,
       "value" => assigns.value,
       "checked" => get_boolean(assigns.checked),
@@ -181,6 +220,7 @@ defmodule Corex.RadioGroup.Connect do
       "style" =>
         "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
+    |> maybe_put("name", assigns.name)
   end
 
   def ignore_item_hidden_input(assigns) do

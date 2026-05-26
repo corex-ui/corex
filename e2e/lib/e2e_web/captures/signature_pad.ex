@@ -2,18 +2,18 @@ defmodule CorexWeb.SignaturePad do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.SignaturePad
   alias Corex.Heroicon
+  alias Corex.SignaturePad
 
   capture variants: [
             basic: %{
               class: "signature-pad",
-              clear_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" />)}]
+              clear_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}]
             },
             with_label: %{
               class: "signature-pad",
               label: [%{inner_block: "Sign here"}],
-              clear_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" />)}]
+              clear_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" />)}]
             }
           ]
 

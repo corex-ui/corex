@@ -210,6 +210,7 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-part" => "item-group",
+      "data-id" => assigns.group_id,
       "id" => "menu:#{assigns.id}:group:#{assigns.group_id}",
       "role" => "group",
       "aria-labelledby" => "menu:#{assigns.id}:group-label:#{assigns.group_id}",

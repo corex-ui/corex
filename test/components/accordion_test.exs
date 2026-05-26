@@ -9,7 +9,7 @@ defmodule Corex.AccordionTest do
   describe "accordion/1" do
     test "renders with items" do
       items = Corex.Content.new([%{label: "T1", content: "C1"}])
-      html = render_component(&Accordion.accordion/1, items: items)
+      html = render_component(&Accordion.accordion/1, id: "test-accordion", items: items)
       assert html =~ ~r/data-scope="accordion"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r//
@@ -129,8 +129,8 @@ defmodule Corex.AccordionTest do
       assert html =~ "Ind A"
       assert html =~ "Trigger B"
       assert html =~ "Content B"
-      assert html =~ ~s(data-value="lorem")
-      assert html =~ ~s(data-value="duis")
+      assert html =~ ~S(data-value="lorem")
+      assert html =~ ~S(data-value="duis")
     end
 
     test "manual mode raises when only :trigger slots are provided" do

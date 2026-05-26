@@ -5,132 +5,91 @@ defmodule E2eWeb.PasswordInputFormLive do
 
   alias Corex.Toast
   alias E2e.Form.PasswordInputForm
-  alias E2eWeb.Demos.PasswordInputDemo
+  alias E2eWeb.Demos.PasswordInputDemo, as: Demo
+
+  @phoenix_form_id "password-input-live-form-phoenix"
+  @ecto_form_id "password-input-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Password Input form")
-     |> assign(:form_ecto, PasswordInputDemo.form_ecto())
-     |> assign(:live_basic_heex, PasswordInputDemo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, PasswordInputDemo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, PasswordInputDemo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, PasswordInputDemo.form_doc_live_validate_elixir())
+     |> assign(:page_title, "Password Input · Form")
+     |> assign(:form_ecto, Demo.form_ecto())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
      |> assign_forms()}
   end
 
   defp assign_forms(socket) do
-    form =
-      %PasswordInputForm{}
-      |> PasswordInputForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :password_input_live, id: "password-input-live-form")
-
-    strict_form =
-      %PasswordInputForm{}
-      |> PasswordInputForm.changeset_validate(%{})
-      |> Phoenix.Component.to_form(
-        as: :password_input_strict,
-        id: "password-input-strict-form-live"
+    phoenix_form =
+      Phoenix.Component.to_form(%{"password" => ""},
+        as: :password_input_phoenix,
+        id: @phoenix_form_id
       )
 
+    ecto_form =
+      %PasswordInputForm{}
+      |> PasswordInputForm.changeset_validate(%{})
+      |> Phoenix.Component.to_form(as: :password_input_ecto, id: @ecto_form_id)
+
     socket
-    |> assign(:form, form)
-    |> assign(:strict_form, strict_form)
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
   @impl true
-  def handle_event("validate", params, socket) do
-    rparams = Map.get(params, "password_input_live", %{})
-
-    changeset =
-      %PasswordInputForm{}
-      |> PasswordInputForm.changeset(rparams)
-      |> Map.put(:action, :validate)
+  def handle_event("save_phoenix", %{"password_input_phoenix" => params}, socket) do
+    password = params["password"] || ""
 
     {:noreply,
-     assign(
-       socket,
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :password_input_live,
-         id: "password-input-live-form"
+     socket
+     |> Toast.create("layout-toast", "Submitted", "password=***", :info, duration: 5000)
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"password" => password},
+         as: :password_input_phoenix,
+         id: @phoenix_form_id
        )
      )}
   end
 
   @impl true
-  def handle_event("save", params, socket) do
-    rparams = Map.get(params, "password_input_live", %{})
-
-    case PasswordInputForm.changeset(%PasswordInputForm{}, rparams) do
-      %Ecto.Changeset{valid?: true} ->
-        message = "Submitted: password=***"
-
-        {:noreply,
-         socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(PasswordInputForm.changeset(%PasswordInputForm{}, %{}),
-             as: :password_input_live,
-             id: "password-input-live-form"
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         assign(
-           socket,
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :password_input_live,
-             id: "password-input-live-form"
-           )
-         )}
-    end
-  end
-
-  @impl true
-  def handle_event("validate_strict", params, socket) do
-    rparams = Map.get(params, "password_input_strict", %{})
-
+  def handle_event("validate", %{"password_input_ecto" => params}, socket) do
     changeset =
       %PasswordInputForm{}
-      |> PasswordInputForm.changeset_validate(rparams)
+      |> PasswordInputForm.changeset_validate(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
      assign(
        socket,
-       :strict_form,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :password_input_strict,
-         id: "password-input-strict-form-live"
+         as: :password_input_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
   @impl true
-  def handle_event("save_strict", params, socket) do
-    rparams = Map.get(params, "password_input_strict", %{})
-
-    case PasswordInputForm.changeset_validate(%PasswordInputForm{}, rparams) do
-      %Ecto.Changeset{valid?: true} ->
-        message = "Submitted: password=***"
+  def handle_event("save", %{"password_input_ecto" => params}, socket) do
+    case PasswordInputForm.changeset_validate(%PasswordInputForm{}, params) do
+      %Ecto.Changeset{valid?: true} = _changeset ->
+        message = "password=***"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
-             PasswordInputForm.changeset_validate(%PasswordInputForm{}, %{}),
-             as: :password_input_strict,
-             id: "password-input-strict-form-live"
+             PasswordInputForm.changeset_validate(%PasswordInputForm{}, params),
+             as: :password_input_ecto,
+             id: @ecto_form_id
            )
          )}
 
@@ -138,11 +97,11 @@ defmodule E2eWeb.PasswordInputFormLive do
         {:noreply,
          assign(
            socket,
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :password_input_strict,
-             id: "password-input-strict-form-live"
+             as: :password_input_ecto,
+             id: @ecto_form_id
            )
          )}
     end
@@ -151,42 +110,32 @@ defmodule E2eWeb.PasswordInputFormLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      mode={@mode}
-      theme={@theme}
-      path={@path}
-    >
-      <.demo_page
-        id="password-input-form-live-page"
-        title="Password Input · Form"
-        subtitle="Live View form"
-      >
+    <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+      <.demo_page path={@path} id="password-input-form-live-page" title={~t"Password Input · Form"}>
         <.demo_section
-          id="password-input-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="password-input-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <PasswordInputDemo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="password-input-live-form-validate"
-          title="Ecto Changeset (validation)"
+          id="password-input-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
-            <PasswordInputDemo.form_preview_live_validate form={@strict_form} />
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

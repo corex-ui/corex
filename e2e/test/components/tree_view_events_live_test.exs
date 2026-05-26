@@ -4,7 +4,7 @@ defmodule E2eWeb.TreeViewEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "tree_server_expanded inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/tree-view/events")
+    {view, _html} = live_ok!(conn, ~p"/tree-view/events")
 
     html =
       render_click(view, "tree_server_expanded", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.TreeViewEventsLiveTest do
         "expandedValue" => ["repo-corex"]
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

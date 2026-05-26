@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="tree-view-styling-page"
-    title="Tree view · Style"
-    subtitle="Semantic colors, density steps, radius, and text utilities via modifier classes on the tree view."
+    title={~t"Tree view · Style"}
+    subtitle={
+      ~t"Semantic colors, density steps, radius, and text utilities via modifier classes on the tree view."
+    }
   >
     <.demo_section
       id="tree-view-styling-color"
-      title="Color"
+      title={~t"Color"}
       code={E2eWeb.Demos.TreeViewDemo.styling_color_code()}
     >
       <:preview>
@@ -21,7 +24,7 @@
 
     <.demo_section
       id="tree-view-styling-size"
-      title="Size"
+      title={~t"Size"}
       code={E2eWeb.Demos.TreeViewDemo.styling_size_code()}
     >
       <:preview>
@@ -31,7 +34,7 @@
 
     <.demo_section
       id="tree-view-styling-text"
-      title="Text"
+      title={~t"Text"}
       code={E2eWeb.Demos.TreeViewDemo.styling_text_code()}
     >
       <:preview>
@@ -41,7 +44,7 @@
 
     <.demo_section
       id="tree-view-styling-radius"
-      title="Radius"
+      title={~t"Radius"}
       code={E2eWeb.Demos.TreeViewDemo.styling_radius_code()}
     >
       <:preview>
@@ -51,21 +54,11 @@
 
     <.demo_section
       id="tree-view-styling-max-width"
-      title="Max Width"
+      title={~t"Max Width"}
       code={E2eWeb.Demos.TreeViewDemo.styling_max_width_code()}
     >
       <:preview>
         <E2eWeb.Demos.TreeViewDemo.styling_max_width_example />
-      </:preview>
-    </.demo_section>
-
-    <.demo_section
-      id="tree-view-styling-mix-modifiers"
-      title="Mix modifiers"
-      code={E2eWeb.Demos.TreeViewDemo.styling_mix_modifiers_code()}
-    >
-      <:preview>
-        <E2eWeb.Demos.TreeViewDemo.styling_mix_modifiers_example />
       </:preview>
     </.demo_section>
   </.demo_page>

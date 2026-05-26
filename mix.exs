@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-beta.5"
+  @version "0.1.0-rc.0"
   @elixir_requirement "~> 1.17"
 
   def project do
@@ -22,7 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 85
+        threshold: 90
       ]
     ]
   end
@@ -39,8 +39,9 @@ defmodule Corex.MixProject do
     ]
   end
 
-  defp elixirc_paths_base(:test), do: ["lib", "installer/lib", "test/support"]
+  defp elixirc_paths_base(:test), do: ["lib", "test/support", "test/mix"]
   defp elixirc_paths_base(:docs), do: ["lib", "installer/lib"]
+  defp elixirc_paths_base(:dev), do: ["lib", "test/mix"]
   defp elixirc_paths_base(_), do: ["lib"]
 
   defp deps do
@@ -49,19 +50,20 @@ defmodule Corex.MixProject do
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0"},
-      {:esbuild, "~> 0.8", only: :dev},
+      {:esbuild, "~> 0.8", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: [:dev, :docs], runtime: false},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},
       {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
       {:makeup_syntect, "~> 0.1.0", only: [:dev, :test, :docs], optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:ex_slop, "~> 0.1", only: [:dev, :test], runtime: false}
+      {:ex_slop, "~> 0.4.1", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -80,11 +82,16 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch",
       "archive.build": &raise_on_archive_build/1,
-      "pre.publish": [
+      lint: [
         "format --check-formatted",
+        "compile --force --warnings-as-errors",
+        "compile --force --warnings-as-errors --env test",
+        "corex.doc_parity --sections anatomy --components checkbox,switch,select,combobox,accordion,tabs,dialog,action,navigate",
         "credo --strict",
         "sobelow --exit"
       ],
+      "release.check": ["lint", "test", "assets.build"],
+      "pre.publish": ["release.check"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
@@ -126,7 +133,10 @@ defmodule Corex.MixProject do
   end
 
   defp package do
-    files = ~w(lib priv mix.exs package.json README.md .formatter.exs)
+    files = ~w(
+      lib priv mix.exs package.json README.md CHANGELOG.md LICENSE .formatter.exs
+      usage-rules.md usage-rules
+    )
 
     [
       maintainers: ["Karim Semmoud"],
@@ -145,8 +155,8 @@ defmodule Corex.MixProject do
       extras: [
         "guides/installation.md",
         "guides/manual_installation.md",
-        "guides/api.md",
-        "guides/events.md",
+        "guides/design.md",
+        "guides/forms.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
         "guides/tableau_mode.md",
@@ -155,7 +165,10 @@ defmodule Corex.MixProject do
         "guides/theming.md",
         "guides/localize.md",
         "guides/MCP.md",
-        "guides/production.md"
+        "guides/usage_rules.md",
+        "guides/production.md",
+        "guides/configuration.md",
+        "guides/update.md"
       ],
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -169,17 +182,20 @@ defmodule Corex.MixProject do
         {:Introduction,
          [
            "guides/installation.md",
-           "guides/manual_installation.md"
+           "guides/manual_installation.md",
+           "guides/design.md"
          ]},
         {:Guides,
          [
-           "guides/api.md",
-           "guides/events.md",
+           "guides/forms.md",
            "guides/MCP.md",
+           "guides/usage_rules.md",
            "guides/dark_mode.md",
            "guides/theming.md",
            "guides/localize.md",
-           "guides/production.md"
+           "guides/production.md",
+           "guides/configuration.md",
+           "guides/update.md"
          ]},
         {"Tableau Guides",
          [
@@ -223,6 +239,7 @@ defmodule Corex.MixProject do
         Corex.NativeInput,
         Corex.Navigate,
         Corex.NumberInput,
+        Corex.Pagination,
         Corex.PasswordInput,
         Corex.PinInput,
         Corex.RadioGroup,
@@ -232,16 +249,22 @@ defmodule Corex.MixProject do
         Corex.Tabs,
         Corex.Timer,
         Corex.Toast,
+        Corex.Toggle,
+        Corex.TagsInput,
         Corex.ToggleGroup,
         Corex.Tooltip,
         Corex.TreeView
       ],
+      Form: [
+        Corex.FormField
+      ],
       Content: [
         Corex.Content,
-        Corex.Content.Item
+        Corex.Content.Item,
+        Corex.Image
       ],
       DataList: [
-        Corex.DataList.Item
+        Corex.Content.Item
       ],
       List: [
         Corex.List,
@@ -252,6 +275,7 @@ defmodule Corex.MixProject do
         Corex.Tree.Item
       ],
       Flash: [
+        Corex.Flash,
         Corex.Flash.Info,
         Corex.Flash.Error
       ],
@@ -282,9 +306,11 @@ defmodule Corex.MixProject do
         Corex.FileUpload.Translation,
         Corex.FloatingPanel.Translation,
         Corex.NumberInput.Translation,
+        Corex.Pagination.Translation,
         Corex.PasswordInput.Translation,
         Corex.PinInput.Translation,
         Corex.Select.Translation,
+        Corex.TagsInput.Translation,
         Corex.Timer.Translation,
         Corex.Toast.Translation
       ]

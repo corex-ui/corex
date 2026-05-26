@@ -11,16 +11,22 @@ config :phoenix,
   trim_on_html_eex_engine: false,
   sort_verified_routes_query_params: true
 
-if Mix.env() == :dev do
+if Mix.env() in [:dev, :test] do
   corex_externals =
-    ~w(accordion angle-slider avatar carousel checkbox clipboard code collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input password-input pin-input radio-group select signature-pad switch tabs timer toast toggle-group tooltip tree-view)
+    ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog editable file-upload floating-panel listbox marquee menu number-input pagination password-input pin-input radio-group select signature-pad switch tabs tags-input timer toast toggle toggle-group tooltip tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
+
+  node_path = [
+    Path.expand("../deps", __DIR__),
+    Path.expand("../node_modules", __DIR__),
+    Mix.Project.build_path()
+  ]
 
   esbuild = fn args ->
     [
       args: ~w(./hooks/corex --bundle) ++ args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
   end
 
@@ -28,7 +34,7 @@ if Mix.env() == :dev do
     [
       args: ~w(./hooks/hooks --bundle) ++ args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
   end
 
@@ -40,7 +46,6 @@ if Mix.env() == :dev do
       ./hooks/carousel.ts
       ./hooks/checkbox.ts
       ./hooks/clipboard.ts
-      ./hooks/code.ts
       ./hooks/collapsible.ts
       ./hooks/combobox.ts
       ./hooks/color-picker.ts
@@ -53,16 +58,19 @@ if Mix.env() == :dev do
       ./hooks/marquee.ts
       ./hooks/menu.ts
       ./hooks/number-input.ts
+      ./hooks/pagination.ts
       ./hooks/password-input.ts
       ./hooks/pin-input.ts
       ./hooks/radio-group.ts
       ./hooks/select.ts
       ./hooks/signature-pad.ts
       ./hooks/switch.ts
+      ./hooks/tags-input.ts
       ./hooks/tabs.ts
       ./hooks/timer.ts
       ./hooks/toast.ts
       ./hooks/tooltip.ts
+      ./hooks/toggle.ts
       ./hooks/toggle-group.ts
       ./hooks/tree-view.ts
     )
@@ -93,6 +101,6 @@ if Mix.env() == :dev do
     hooks: [
       args: hooks_args,
       cd: Path.expand("../assets", __DIR__),
-      env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+      env: %{"NODE_PATH" => node_path}
     ]
 end

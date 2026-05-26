@@ -22,7 +22,10 @@ type AvatarHookState = {
   lastSrc?: string;
 };
 
-function statusPayload(el: HTMLElement, details: StatusChangeDetails): Record<string, unknown> {
+export function statusPayload(
+  el: HTMLElement,
+  details: StatusChangeDetails
+): Record<string, unknown> {
   return { id: el.id, status: details.status };
 }
 

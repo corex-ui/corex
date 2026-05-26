@@ -7,19 +7,21 @@ defmodule E2eWeb.UserControllerTest do
     name: "some name",
     country: "some country",
     birth_date: "1990-01-15",
-    signature: "/path/to/signature.png",
+    signature: ["M0,0L1,1Z"],
     terms: true,
     level: 5,
-    currency: "eur"
+    currency: "eur",
+    tags: ["alpha", "beta"]
   }
   @update_attrs %{
     name: "some updated name",
     country: "some updated country",
     birth_date: "1995-06-20",
-    signature: "/path/to/updated-signature.png",
+    signature: ["M0,0L1,1Z"],
     terms: true,
     level: 3,
-    currency: "usd"
+    currency: "usd",
+    tags: ["gamma", "delta"]
   }
   @invalid_attrs %{
     name: nil,
@@ -28,7 +30,8 @@ defmodule E2eWeb.UserControllerTest do
     signature: nil,
     terms: nil,
     level: nil,
-    currency: nil
+    currency: nil,
+    tags: nil
   }
 
   describe "index" do
@@ -67,7 +70,11 @@ defmodule E2eWeb.UserControllerTest do
 
     test "renders form for editing chosen user", %{conn: conn, user: user} do
       conn = get(conn, ~p"/users/#{user}/edit")
-      assert html_response(conn, 200) =~ "Edit User"
+      html = html_response(conn, 200)
+
+      assert html =~ "Edit User"
+      assert html =~ "role=\"alertdialog\""
+      assert html =~ "user-delete-#{user.id}"
     end
   end
 
@@ -85,6 +92,19 @@ defmodule E2eWeb.UserControllerTest do
     test "renders errors when data is invalid", %{conn: conn, user: user} do
       conn = put(conn, ~p"/users/#{user}", user: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit User"
+    end
+  end
+
+  describe "show user" do
+    setup [:create_user]
+
+    test "renders show page with delete dialog", %{conn: conn, user: user} do
+      conn = get(conn, ~p"/users/#{user}")
+      html = html_response(conn, 200)
+
+      assert html =~ "User #{user.id}"
+      assert html =~ "role=\"alertdialog\""
+      assert html =~ "user-delete-#{user.id}"
     end
   end
 

@@ -4,7 +4,7 @@ defmodule E2eWeb.SelectEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "select_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/select/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/select/events", on_error: :warn)
 
     html =
       render_click(view, "select_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.SelectEventsLiveTest do
         "value" => "fra"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

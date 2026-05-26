@@ -3,7 +3,12 @@
 @layer components {
   .link {
     @apply ui-link;
-   }
+    color: var(--color-link);
+    text-decoration-line: underline;
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: from-font;
+    overflow: visible;
+  }
 
   .link.link--skip {
     position: fixed;
@@ -34,7 +39,7 @@
   }
 }
 @utility link--* {
-  color: --value(--color-ink-*, [color]);
+  color: --value(--color-ink, [color]);
   font-size: --value(--text-*, [length]);
   line-height: --value(--text-*--line-height, [length]);
   

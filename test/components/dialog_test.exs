@@ -3,8 +3,9 @@ defmodule Corex.DialogTest do
 
   alias Corex.Animation.Scale
   alias Corex.Dialog
-  alias Corex.Dialog.Anatomy.Props
+  alias Corex.Dialog.Anatomy.{CloseTrigger, Props}
   alias Corex.Dialog.Connect
+  alias Corex.Dialog.Translation, as: DialogTranslation
 
   describe "dialog/1" do
     test "renders" do
@@ -119,7 +120,7 @@ defmodule Corex.DialogTest do
 
   describe "Connect.content/2" do
     test "returns content attributes when open (instant)" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: true}
+      assigns = %{id: "test-dialog", dir: "ltr", open: true, role: "dialog"}
       result = Connect.content(assigns, "instant")
       assert result["id"] == "dialog:test-dialog:content"
       assert result["role"] == "dialog"
@@ -127,8 +128,47 @@ defmodule Corex.DialogTest do
       refute Map.has_key?(result, "hidden")
     end
 
+    test "uses aria-label when no title" do
+      assigns = %{
+        id: "test-dialog",
+        dir: "ltr",
+        open: false,
+        role: "dialog",
+        has_title: false,
+        has_description: false,
+        label: "Confirm"
+      }
+
+      result = Connect.content(assigns, "instant")
+      assert result["aria-label"] == "Confirm"
+      refute Map.has_key?(result, "aria-labelledby")
+      refute Map.has_key?(result, "aria-describedby")
+    end
+
+    test "uses aria-labelledby and aria-describedby when title and description present" do
+      assigns = %{
+        id: "test-dialog",
+        dir: "ltr",
+        open: true,
+        role: "dialog",
+        has_title: true,
+        has_description: true
+      }
+
+      result = Connect.content(assigns, "instant")
+      assert result["aria-labelledby"] == "dialog:test-dialog:title"
+      assert result["aria-describedby"] == "dialog:test-dialog:description"
+      refute Map.has_key?(result, "aria-label")
+    end
+
+    test "returns alertdialog role when set" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: true, role: "alertdialog"}
+      result = Connect.content(assigns, "instant")
+      assert result["role"] == "alertdialog"
+    end
+
     test "returns content with hidden when closed and animation is instant" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, role: "dialog"}
       result = Connect.content(assigns, "instant")
       assert result["hidden"] == ""
       assert result["data-state"] == "closed"
@@ -186,20 +226,39 @@ defmodule Corex.DialogTest do
     end
 
     test "embeds default dialog accessible name for client-side Zag props" do
-      m = Connect.props(%Props{id: "d3", animation: "instant"})
-      assert is_binary(m["data-dialog-default-label"])
-      assert m["data-dialog-default-label"] != ""
+      m =
+        Connect.props(%Props{
+          id: "d3",
+          animation: "instant",
+          label: DialogTranslation.resolve(nil).label
+        })
+
+      assert m["data-dialog-default-label"] == "Dialog"
     end
 
-    test "honours dialog_default_label in props when set" do
+    test "honours label in props when set" do
       m =
         Connect.props(%Props{
           id: "d4",
           animation: "instant",
-          dialog_default_label: "Custom"
+          label: "Custom"
         })
 
       assert m["data-dialog-default-label"] == "Custom"
+    end
+
+    test "emits role and initial_focus data attributes" do
+      m =
+        Connect.props(%Props{
+          id: "d5",
+          role: "alertdialog",
+          initial_focus: "cancel-btn",
+          final_focus: "dialog:d5:trigger"
+        })
+
+      assert m["data-role"] == "alertdialog"
+      assert m["data-initial-focus"] == "cancel-btn"
+      assert m["data-final-focus"] == "dialog:d5:trigger"
     end
   end
 
@@ -223,11 +282,11 @@ defmodule Corex.DialogTest do
 
   describe "Connect.close_trigger/1" do
     test "returns close trigger attributes" do
-      assigns = %{id: "test-dialog", dir: "ltr"}
+      assigns = %CloseTrigger{id: "test-dialog", dir: "ltr", open: false, aria_label: "Close"}
       result = Connect.close_trigger(assigns)
       assert result["id"] == "dialog:test-dialog:close-trigger"
       assert result["data-part"] == "close-trigger"
-      assert result["aria-label"] == "Close dialog"
+      assert result["aria-label"] == "Close"
     end
   end
 

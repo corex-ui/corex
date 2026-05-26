@@ -1,17 +1,32 @@
 import {
-  isFocusVisible,
-  trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
-import {
-  readStringControlledZagProps,
-  readStringControlledZagUpdate
-} from "./chunks/chunk-FBXRLPHX.mjs";
+  hiddenInputPropsWithoutChecked
+} from "./chunks/chunk-G73IV5JU.mjs";
 import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
-  notifyChange
-} from "./chunks/chunk-LIWT33BG.mjs";
+  notifyPhoenixFormChange,
+  reapplyLiveViewValueInputUsage
+} from "./chunks/chunk-VMKNATWC.mjs";
+import {
+  isFocusVisible,
+  trackFocusVisible
+} from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  readStringControlledZagProps,
+  readUpdatedServerString
+} from "./chunks/chunk-VL4ETB3G.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -29,9 +44,10 @@ import {
   isSafari,
   queryAll,
   resizeObserverBorderBox,
+  syncInputFormAssociation,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+radio-group@1.40.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
@@ -511,20 +527,56 @@ var RadioGroup = class extends Component {
       const hiddenInputEl = itemEl.querySelector(
         '[data-scope="radio-group"][data-part="item-hidden-input"]'
       );
-      if (hiddenInputEl)
+      if (hiddenInputEl instanceof HTMLInputElement) {
         this.spreadProps(
           hiddenInputEl,
-          this.api.getItemHiddenInputProps({
-            value,
-            disabled,
-            invalid
-          })
+          hiddenInputPropsWithoutChecked(
+            this.api.getItemHiddenInputProps({
+              value,
+              disabled,
+              invalid
+            })
+          )
         );
+        hiddenInputEl.checked = this.api.value === value;
+        syncInputFormAssociation(hiddenInputEl, this.el);
+      }
     });
   }
 };
 
+// lib/form-field-feedback.ts
+function isCorexFormField(el) {
+  return getBoolean(el, "formField");
+}
+function setHostDataInvalid(el, invalid) {
+  if (invalid) {
+    el.setAttribute("data-invalid", "");
+  } else {
+    el.removeAttribute("data-invalid");
+  }
+}
+function setScopeErrorsVisible(el, scope, visible) {
+  el.querySelectorAll(`[data-scope="${scope}"][data-part="error"]`).forEach((node) => {
+    node.hidden = !visible;
+  });
+}
+function clearCorexFormFieldFeedback(el, scope) {
+  setHostDataInvalid(el, false);
+  setScopeErrorsVisible(el, scope, false);
+}
+function hasCorexFormFieldValue(value) {
+  return value != null && value !== "";
+}
+
 // hooks/radio-group.ts
+function syncRadioGroupValueInputForPhoenix(el, value, options = {}) {
+  const valueInput = el.querySelector(
+    '[data-scope="radio-group"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  notifyPhoenixFormChange(valueInput, value ?? "", options);
+}
 function valueChangePayload(el, details) {
   return {
     id: el.id,
@@ -544,16 +596,38 @@ var RadioGroupHook = {
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       onValueChange: (details) => {
-        const checked = el.querySelector(
-          '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+        const selected = details.value;
+        if (isCorexFormField(el)) {
+          this.lastServerValue = selected ?? void 0;
+        }
+        el.querySelectorAll(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]'
+        ).forEach((input) => {
+          const on = input.value === selected;
+          if (input.checked !== on) input.checked = on;
+          syncInputFormAssociation(input, el);
+        });
+        syncRadioGroupValueInputForPhoenix(el, selected);
+        if (isCorexFormField(el) && hasCorexFormFieldValue(selected)) {
+          clearCorexFormFieldFeedback(el, "radio-group");
+          zag.updateProps({ invalid: false });
+        }
+        const valueInput2 = el.querySelector(
+          '[data-scope="radio-group"][data-part="value-input"]'
         );
-        if (checked) {
-          checked.dispatchEvent(new Event("input", { bubbles: true }));
-          checked.dispatchEvent(new Event("change", { bubbles: true }));
+        if (!valueInput2) {
+          const checked = el.querySelector(
+            '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+          );
+          if (checked) {
+            reapplyLiveViewValueInputUsage(checked);
+            checked.dispatchEvent(new Event("input", { bubbles: true }));
+            checked.dispatchEvent(new Event("change", { bubbles: true }));
+          }
         }
         notifyChange({
           el,
@@ -567,25 +641,90 @@ var RadioGroupHook = {
     });
     zag.init();
     this.radioGroup = zag;
-  },
-  updated() {
-    this.radioGroup?.updateProps({
-      id: this.el.id,
-      ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      disabled: getBoolean(this.el, "disabled"),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      orientation: getString(this.el, "orientation"),
-      dir: getDir(this.el)
+    this.lastServerValue = getString(el, "value") ?? void 0;
+    queueMicrotask(() => {
+      if (!isCorexFormField(el)) return;
+      syncRadioGroupValueInputForPhoenix(el, zag.api.value ?? null, { markUsed: false });
+    });
+    const valueInput = el.querySelector(
+      '[data-scope="radio-group"][data-part="value-input"]'
+    );
+    if (valueInput) syncInputFormAssociation(valueInput, el);
+    const emitValue = (respondTo) => {
+      const value = zag.api.value;
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "radio_group_value_response",
+        serverPayload: { id: el.id, value },
+        el,
+        domEventName: "radio-group-value",
+        domDetail: { id: el.id, value }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:radio-group:set-value", (event) => {
+      zag.api.setValue(event.detail.value);
+    });
+    domRegistry.add("corex:radio-group:clear-value", () => {
+      zag.api.clearValue();
+    });
+    domRegistry.add("corex:radio-group:focus", () => {
+      zag.api.focus();
+    });
+    domRegistry.add("corex:radio-group:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("radio_group_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(payload.value);
+    });
+    registry.add("radio_group_clear_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.clearValue();
+    });
+    registry.add("radio_group_focus", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.focus();
+    });
+    registry.add("radio_group_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
     });
   },
+  updated() {
+    const el = this.el;
+    const zag = this.radioGroup;
+    const valuePatch = readUpdatedServerString(el, this.lastServerValue);
+    if ("value" in valuePatch) {
+      this.lastServerValue = valuePatch.value ?? void 0;
+    }
+    zag?.updateProps({
+      id: el.id,
+      ...valuePatch,
+      name: getString(el, "name"),
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readonly"),
+      orientation: getString(el, "orientation"),
+      dir: getDir(el)
+    });
+    if ("value" in valuePatch) {
+      syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
+    }
+  },
   destroyed() {
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.radioGroup?.destroy();
   }
 };
 export {
-  RadioGroupHook as RadioGroup
+  RadioGroupHook as RadioGroup,
+  valueChangePayload
 };

@@ -6,44 +6,43 @@
 >
   <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
   <.demo_page
+    path={@path}
     id="combobox-form-page"
-    title="Combobox · Form"
-    subtitle="Phoenix to_form/2, stricter validation, and plain HTML"
+    title={~t"Combobox · Form"}
   >
     <.demo_section
-      id="combobox-form-changeset"
-      title="Phoenix Form (changeset)"
+      id="combobox-form-phoenix"
+      title={~t"Phoenix Form"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.ComboboxDemo.form_preview_controller_changeset form={@form} />
+        <E2eWeb.Demos.ComboboxDemo.form_preview_controller_phoenix form={@phoenix_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="combobox-form-validate"
-      title="Ecto changeset (validation)"
+      id="combobox-form-ecto"
+      title={~t"Phoenix Form + Ecto"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
         %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.ComboboxDemo.form_preview_controller_validate validate_form={@validate_form} />
+        <E2eWeb.Demos.ComboboxDemo.form_preview_controller_ecto form={@ecto_form} />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="combobox-form-controller"
-      title="Native form (plain HTML)"
+      id="combobox-form-native"
+      title={~t"Native HTML Form"}
       code_tabs={[
         %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_elixir}
       ]}
     >
       <:preview>

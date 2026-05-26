@@ -27,9 +27,7 @@ defmodule Corex.Carousel.Connect do
     base = %{
       "id" => assigns.id,
       "data-slide-count" => to_string(assigns.slide_count),
-      "data-page" => if(assigns.controlled, do: to_string(assigns.page), else: nil),
-      "data-default-page" => if(assigns.controlled, do: nil, else: to_string(assigns.page)),
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-page" => to_string(assigns.page),
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
       "data-loop" => get_boolean(assigns.loop),
@@ -225,13 +223,13 @@ defmodule Corex.Carousel.Connect do
 
   @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
-    page = Map.get(assigns, :page, 0)
+    page = Map.get(assigns, :page, 1)
 
     %{
       "data-scope" => "carousel",
       "data-part" => "indicator",
       "data-index" => to_string(assigns.index),
-      "data-current" => get_boolean(assigns.index == page),
+      "data-current" => get_boolean(assigns.index + 1 == page),
       "data-orientation" => assigns.orientation || "horizontal",
       "type" => "button",
       "id" => "carousel:#{assigns.id}:indicator:#{assigns.index}"

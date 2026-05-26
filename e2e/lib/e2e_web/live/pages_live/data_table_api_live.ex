@@ -18,6 +18,7 @@ defmodule E2eWeb.DataTableApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="data-table-api-page"
         title="Data Table · API"
         subtitle="Data table is render-only."

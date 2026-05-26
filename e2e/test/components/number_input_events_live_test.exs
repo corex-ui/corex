@@ -4,7 +4,7 @@ defmodule E2eWeb.NumberInputEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "number_input_changed inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/number-input/events", on_error: :warn)
+    {view, _html} = live_ok!(conn, ~p"/number-input/events", on_error: :warn)
 
     html =
       render_click(view, "number_input_changed", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.NumberInputEventsLiveTest do
         "value" => 3
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

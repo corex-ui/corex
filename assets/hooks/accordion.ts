@@ -10,12 +10,15 @@ import {
   readStringListControlledZagProps,
 } from "../lib/read-props";
 import {
-  readHeightAnimationOptions,
-  prepareInitialHeightState,
-  runOpenStateTransitionsHeight,
+  closestPartValue,
+  isJsAnimation,
+  prepareJsHeightInitialState,
+  runHeightOpenToValues,
+  runHeightOpenTransition,
 } from "../lib/animation";
 import {
   parseRespondTo,
+  createValueEmitter,
   emitResponse,
   idMatches,
   readPayloadId,
@@ -33,6 +36,20 @@ type AccordionHookState = {
   lastValue?: string[];
   previousValue?: string[];
 };
+
+const ITEM_CONTENT_SELECTOR = '[data-scope="accordion"][data-part="item-content"]';
+const ITEM_SELECTOR = '[data-scope="accordion"][data-part="item"]';
+const resolveAccordionValue = closestPartValue(ITEM_SELECTOR);
+
+export function readAccordionLayoutProps(el: HTMLElement) {
+  return {
+    id: el.id,
+    collapsible: getBoolean(el, "collapsible"),
+    multiple: getBoolean(el, "multiple"),
+    orientation: getString<Orientation>(el, "orientation"),
+    dir: getDir(el),
+  };
+}
 
 const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & AccordionHookState) {
@@ -72,18 +89,13 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient"),
         });
-        if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
-          runOpenStateTransitionsHeight({
-            rootEl: el,
-            selector: '[data-scope="accordion"][data-part="item-content"]',
-            opts: readHeightAnimationOptions(el),
-            isOpen: (contentEl) => {
-              const itemEl = contentEl.closest<HTMLElement>(
-                '[data-scope="accordion"][data-part="item"]'
-              );
-              const value = itemEl?.dataset.value;
-              return !!value && next.includes(value);
-            },
+
+        if (isJsAnimation(el) && !getBoolean(el, "controlled")) {
+          runHeightOpenToValues({
+            el,
+            selector: ITEM_CONTENT_SELECTOR,
+            openValues: next,
+            resolveValue: resolveAccordionValue,
           });
         }
       },
@@ -102,38 +114,21 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
     accordion.init();
     this.accordion = accordion;
 
-    if (el.dataset.animation === "js") {
-      const opts = readHeightAnimationOptions(el);
-      prepareInitialHeightState(el, '[data-scope="accordion"][data-part="item-content"]', opts);
-    }
+    prepareJsHeightInitialState(el, ITEM_CONTENT_SELECTOR);
 
-    const emitValue = (respondTo: RespondTo) => {
-      const value = accordion.api.value;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_value_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "accordion-value",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const hookApi = { el, pushEvent, canPushServer: canPush };
 
-    const emitFocusedValue = (respondTo: RespondTo) => {
-      const value = accordion.api.focusedValue;
-      emitResponse({
-        respondTo,
-        canPushServer: canPush(),
-        pushEvent,
-        serverEventName: "accordion_focused_response",
-        serverPayload: { id: el.id, value } as Record<string, unknown>,
-        el,
-        domEventName: "accordion-focused",
-        domDetail: { id: el.id, value } as Record<string, unknown>,
-      });
-    };
+    const emitValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.value,
+      serverEventName: "accordion_value_response",
+      domEventName: "accordion-value",
+    });
+
+    const emitFocusedValue = createValueEmitter(hookApi, {
+      getValue: () => accordion.api.focusedValue,
+      serverEventName: "accordion_focused_response",
+      domEventName: "accordion-focused",
+    });
 
     const emitItemState = (itemValue: string, disabled: boolean, respondTo: RespondTo) => {
       const props: ItemProps = { value: itemValue, disabled };
@@ -212,49 +207,36 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   },
 
   beforeUpdate(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
-      this.previousValue = getStringList(this.el, "value") ?? [];
+    const { el } = this;
+    if (getBoolean(el, "controlled") && isJsAnimation(el)) {
+      this.previousValue = getStringList(el, "value") ?? [];
     }
   },
 
   updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    const controlled = getBoolean(this.el, "controlled");
-    if (controlled) {
-      const nextValue = getStringList(this.el, "value") ?? [];
-      const prevValue = this.previousValue ?? this.lastValue ?? [];
-      this.previousValue = undefined;
-      this.lastValue = nextValue;
-      if (this.el.dataset.animation === "js") {
-        runOpenStateTransitionsHeight({
-          rootEl: this.el,
-          selector: '[data-scope="accordion"][data-part="item-content"]',
-          opts: readHeightAnimationOptions(this.el),
-          wasOpen: (contentEl) => {
-            const itemEl = contentEl.closest<HTMLElement>(
-              '[data-scope="accordion"][data-part="item"]'
-            );
-            const value = itemEl?.dataset.value;
-            return !!value && prevValue.includes(value);
-          },
-          isOpen: (contentEl) => {
-            const itemEl = contentEl.closest<HTMLElement>(
-              '[data-scope="accordion"][data-part="item"]'
-            );
-            const value = itemEl?.dataset.value;
-            return !!value && nextValue.includes(value);
-          },
-        });
-      }
+    const { el } = this;
+    const layout = readAccordionLayoutProps(el);
+
+    if (!getBoolean(el, "controlled")) {
+      this.accordion?.updateProps(layout as Props);
+      return;
     }
 
-    this.accordion?.updateProps({
-      id: this.el.id,
-      ...readStringListControlledZagProps(this.el, "value", "defaultValue"),
-      collapsible: getBoolean(this.el, "collapsible"),
-      multiple: getBoolean(this.el, "multiple"),
-      orientation: getString<Orientation>(this.el, "orientation"),
-      dir: getDir(this.el),
-    } as Props);
+    const nextValue = getStringList(el, "value") ?? [];
+    const prevValue = this.previousValue ?? this.lastValue ?? [];
+
+    this.previousValue = undefined;
+    this.lastValue = nextValue;
+
+    runHeightOpenTransition({
+      el,
+      selector: ITEM_CONTENT_SELECTOR,
+      prevOpen: prevValue,
+      nextOpen: nextValue,
+      resolveValue: resolveAccordionValue,
+    });
+
+    this.accordion?.updateProps({ ...layout, value: nextValue } as Props);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & AccordionHookState) {

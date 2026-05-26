@@ -1,13 +1,14 @@
 defmodule Corex.Carousel.Utils do
   @moduledoc false
 
+  alias Corex.Image
+
   def merge_attr_defaults(assigns) when is_map(assigns) do
     defaults = %{
       aria_label: nil,
       items: nil,
       item_count: nil,
-      page: 0,
-      controlled: false,
+      page: 1,
       dir: "ltr",
       orientation: "horizontal",
       slides_per_page: 1,
@@ -34,7 +35,7 @@ defmodule Corex.Carousel.Utils do
     slide_count = resolved_slide_count(assigns, items)
     slides_per_page = Map.get(assigns, :slides_per_page) || 1
     total_pages = total_pages_for(slide_count, slides_per_page)
-    page = Map.get(assigns, :page) || 0
+    page = Map.get(assigns, :page) || 1
     loop = Map.get(assigns, :loop, false)
 
     prev_disabled = prev_nav_disabled?(loop, page)
@@ -56,9 +57,33 @@ defmodule Corex.Carousel.Utils do
     div(slide_count + slides_per_page - 1, slides_per_page)
   end
 
-  defp prev_nav_disabled?(loop, page), do: !loop and page <= 0
+  defp prev_nav_disabled?(loop, page), do: !loop and page <= 1
 
   defp next_nav_disabled?(loop, page, total_pages) do
-    !loop and (total_pages == 0 or page >= total_pages - 1)
+    !loop and (total_pages == 0 or page >= total_pages)
+  end
+
+  def item_slot?(assigns) when is_map(assigns) do
+    case Map.get(assigns, :item) do
+      [_ | _] -> true
+      _ -> false
+    end
+  end
+
+  def validate_items!(items, has_item_slot) when is_list(items) do
+    if has_item_slot do
+      :ok
+    else
+      Enum.each(items, &validate_image_item!/1)
+    end
+  end
+
+  defp validate_image_item!(%Image{}), do: :ok
+
+  defp validate_image_item!(item) do
+    raise ArgumentError,
+          "carousel items must be %Corex.Image{} when no <:item> slot is set. " <>
+            "Use Corex.Image.new(src, alt: ...) or add <:item :let={item}> for custom slides. " <>
+            "Got: #{inspect(item)}"
   end
 end

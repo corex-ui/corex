@@ -11,7 +11,7 @@ defmodule Corex.Navigate do
   it renders `<.link>`, exposed here as named attrs so call sites stay explicit. Any other link
   attributes go through `rest`.
 
-  ## Examples
+  ## Anatomy
 
   ```heex
       <.navigate to="/about">About</.navigate>
@@ -30,7 +30,7 @@ defmodule Corex.Navigate do
       </.navigate>
     ```
 
-  ## Styling
+  ## Style
 
   If you wish to use the default Corex styling, you can use the `link` class on the component.
   This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.
@@ -74,6 +74,11 @@ defmodule Corex.Navigate do
   attr(:aria_label, :string,
     default: nil,
     doc: "Required for icon-only links, describes the link to screen readers"
+  )
+
+  attr(:title, :string,
+    default: nil,
+    doc: "Native tooltip on hover; defaults to aria_label when omitted"
   )
 
   attr(:replace, :boolean,
@@ -125,6 +130,7 @@ defmodule Corex.Navigate do
       assigns
       |> assign(:method_attrs, method_attrs)
       |> assign(:replace_attrs, replace_attrs)
+      |> assign(:title, assigns.title || assigns.aria_label)
 
     ~H"""
     <.link
@@ -133,6 +139,7 @@ defmodule Corex.Navigate do
       patch={@type == "patch" && @to}
       download={@download}
       aria-label={@aria_label}
+      title={@title}
       {@replace_attrs}
       {@method_attrs}
       target={@external && "_blank"}

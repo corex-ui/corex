@@ -11,24 +11,68 @@
       <.navigate
         to={~p"/users"}
         type="navigate"
-        class="button button--sm button--square"
-        aria_label={gettext("Previous page")}
+        class="button"
+        aria_label={~t"Back to list"}
+        title={~t"Back to list"}
       >
         <.heroicon name="hero-arrow-left" />
       </.navigate>
       <.navigate
         to={~p"/users/#{@user}/edit?return_to=show"}
         type="navigate"
-        class="button button--accent button--sm"
+        class="button button--accent button--square"
+        aria_label={~t"Edit user"}
       >
-        <.heroicon name="hero-pencil-square" /> Edit user
+        <.heroicon name="hero-pencil-square" />
+        <span class="sr-only">{~t"Edit user"}</span>
       </.navigate>
+      <.dialog
+        id={"user-delete-#{@user.id}"}
+        class="dialog"
+        role="alertdialog"
+        modal
+        close_on_interact_outside={false}
+        initial_focus={"user-delete-#{@user.id}-cancel"}
+        final_focus={"dialog:user-delete-#{@user.id}:trigger"}
+      >
+        <:trigger
+          class="button button--alert button--square"
+          aria_label="Delete user"
+          title="Delete user"
+        >
+          <.heroicon name="hero-trash" />
+        </:trigger>
+        <:title>Delete user?</:title>
+        <:description>This action cannot be undone.</:description>
+        <:content>
+          <div class="flex flex-wrap justify-end gap-2 mt-4">
+            <.action
+              id={"user-delete-#{@user.id}-cancel"}
+              phx-click={Corex.Dialog.set_open("user-delete-#{@user.id}", false)}
+              class="button button--sm button--ghost"
+            >
+              Cancel
+            </.action>
+            <.navigate
+              id={"user-delete-#{@user.id}-confirm"}
+              to={~p"/users/#{@user}"}
+              method="delete"
+              class="button button--sm button--alert"
+            >
+              Delete
+            </.navigate>
+          </div>
+        </:content>
+      </.dialog>
     </:actions>
   </.layout_heading>
 
   <.data_list class="data-list max-w-md">
-    <:item :for={field <- fields(@user)} title={label(field)}>
+    <:label :for={field <- fields(@user)} value={Atom.to_string(field)}>
+      {label(field)}
+    </:label>
+    <:content :for={field <- fields(@user)} value={Atom.to_string(field)}>
       <.record_field_value record={@user} field={field} />
-    </:item>
+    </:content>
   </.data_list>
 </Layouts.app>

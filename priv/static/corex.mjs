@@ -146,10 +146,17 @@ function animateScaleClose(el, opts) {
 function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
-      const mod = await importFn();
-      const real = mod[exportName];
-      this._realHook = real;
-      if (real?.mounted) return real.mounted.call(this);
+      const el = this.el;
+      try {
+        const mod = await importFn();
+        const real = mod[exportName];
+        this._realHook = real;
+        if (real?.mounted) {
+          await real.mounted.call(this);
+        }
+      } finally {
+        el.removeAttribute("data-loading");
+      }
     },
     updated() {
       this._realHook?.updated?.call(this);
@@ -177,7 +184,6 @@ var Hooks = {
   Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
   Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
   Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
-  Code: createLazyHook(() => import("corex/code"), "Code"),
   Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
   Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
   ColorPicker: createLazyHook(() => import("corex/color-picker"), "ColorPicker"),
@@ -190,16 +196,19 @@ var Hooks = {
   Marquee: createLazyHook(() => import("corex/marquee"), "Marquee"),
   Menu: createLazyHook(() => import("corex/menu"), "Menu"),
   NumberInput: createLazyHook(() => import("corex/number-input"), "NumberInput"),
+  Pagination: createLazyHook(() => import("corex/pagination"), "Pagination"),
   PasswordInput: createLazyHook(() => import("corex/password-input"), "PasswordInput"),
   PinInput: createLazyHook(() => import("corex/pin-input"), "PinInput"),
   RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),
   Select: createLazyHook(() => import("corex/select"), "Select"),
   SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
   Switch: createLazyHook(() => import("corex/switch"), "Switch"),
+  TagsInput: createLazyHook(() => import("corex/tags-input"), "TagsInput"),
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
   Timer: createLazyHook(() => import("corex/timer"), "Timer"),
   Toast: createLazyHook(() => import("corex/toast"), "Toast"),
   Tooltip: createLazyHook(() => import("corex/tooltip"), "Tooltip"),
+  Toggle: createLazyHook(() => import("corex/toggle"), "Toggle"),
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };

@@ -1,12 +1,32 @@
 defmodule E2eWeb.SwitchModel do
   use E2eWeb.Model, component: "switch"
 
-  @anatomy_sections ~w(
+  @anatomy_sections ~W(
     switch-anatomy-minimal
     switch-anatomy-labeled
   )
 
   def anatomy_section_ids, do: @anatomy_sections
+
+  def wait_playground_switch_ready(session) do
+    assert_has(
+      session,
+      css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any)
+    )
+
+    session
+  end
+
+  def wait_patterns_page(session) do
+    assert_has(session, css("#switch-patterns-page", visible: :any))
+    session
+  end
+
+  def click_playground_switch_control(session) do
+    session
+    |> assert_has(css("#switch-playground[phx-hook='Switch']:not([data-loading])", visible: :any))
+    |> click(css("#switch-playground [data-scope='switch'][data-part='control']", visible: :any))
+  end
 
   def click_control_in_section(session, section_dom_id) do
     session
@@ -40,21 +60,52 @@ defmodule E2eWeb.SwitchModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def wait_switch_host_ready(session, host_dom_id) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
+      raise ArgumentError, "invalid switch host dom id"
+    end
+
+    wait_ready(session, "##{host_dom_id}")
+  end
+
   def click_switch(session, mode \\ :static) do
-    host_id =
+    host_dom_id =
       case mode do
-        :live -> "#switch-form-live-notifications"
-        _ -> "#switch-form-changeset"
+        :live -> "switch-live-form-ecto_notifications"
+        _ -> "switch-form-phoenix_notifications"
       end
 
-    session
-    |> click(css("#{host_id} [data-scope='switch'][data-part='control']"))
-    |> assert_has(
+    session =
+      session
+      |> wait_switch_host_ready(host_dom_id)
+      |> click_switch_control(host_dom_id)
+
+    wait_for_has(
+      session,
       css(
-        "#{host_id} [data-scope='switch'][data-part='root'][data-state='checked']",
+        "##{host_dom_id} [data-scope='switch'][data-part='root'][data-state='checked']",
         visible: :any
-      )
+      ),
+      timeout: 10_000
     )
+
+    session
+  end
+
+  def click_switch_control(session, host_dom_id) when is_binary(host_dom_id) do
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const control = host?.querySelector('[data-scope="switch"][data-part="control"]');
+        if (!control) throw new Error("switch control not found");
+        control.click();
+        """,
+        [host_dom_id]
+      )
+
+    session
   end
 
   def press_space_on_switch(session) do
@@ -71,11 +122,11 @@ defmodule E2eWeb.SwitchModel do
     case mode do
       :live ->
         session
-        |> assert_has(css("#switch-live-form-changeset [phx-hook='Switch']:not([data-loading])"))
-        |> click(css("#switch-live-form-changeset #switch-form-live-submit"))
+        |> assert_has(css("#switch-live-form-ecto [phx-hook='Switch']:not([data-loading])"))
+        |> click(css("#switch-live-form-ecto-submit"))
 
       _ ->
-        click(session, css("#switch-changeset-submit"))
+        click(session, css("#switch-form-phoenix-submit"))
     end
   end
 

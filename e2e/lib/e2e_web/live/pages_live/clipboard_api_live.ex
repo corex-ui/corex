@@ -41,12 +41,13 @@ defmodule E2eWeb.ClipboardApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="clipboard-api-page"
         title="Clipboard · API"
         subtitle="Client bindings, JS and server API."
       >
         <.demo_section
-          id="clipboard-api-client"
+          id="clipboard-api-client-section"
           title="Copy and set value (Client Binding)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.client_binding},
@@ -59,7 +60,7 @@ defmodule E2eWeb.ClipboardApiLive do
         </.demo_section>
 
         <.demo_section
-          id="clipboard-api-server"
+          id="clipboard-api-server-section"
           title="Copy and set value (Server)"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.server_preview_heex},
@@ -94,7 +95,7 @@ defmodule E2eWeb.ClipboardApiLive do
         </.demo_section>
 
         <.demo_section
-          id="clipboard-api-dispatch"
+          id="clipboard-api-dispatch-section"
           title="Copy (Client JS)"
           code_tabs={[
             %{

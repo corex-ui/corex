@@ -87,7 +87,9 @@ defmodule E2eWeb.PinInputApiLive do
     desc = "#{id}\nvalue=#{inspect(value)} valueAsString=#{s}"
 
     {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "pin_input_value_response", desc, :info, 5000)}
+     Corex.Toast.create(socket, "layout-toast", "pin_input_value_response", desc, :info,
+       duration: 5000
+     )}
   end
 
   @impl true
@@ -100,6 +102,7 @@ defmodule E2eWeb.PinInputApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="pin-input-api-page"
         title="Pin Input · API"
         subtitle="Set, read, and clear the pin from LiveView, client bindings, or a (Client JS)."
@@ -188,7 +191,7 @@ defmodule E2eWeb.PinInputApiLive do
         </.demo_section>
         <.demo_section
           id="pin-input-api-clear-server"
-          title="Clear (Server)"
+          title="Clear"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.clear_server_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.clear_server_elixir}

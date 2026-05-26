@@ -1,13 +1,13 @@
 defmodule E2eWeb.AccordionPlayLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, playground_dir_toggle: 1]
 
   alias Corex.Accordion
 
   @accordion_id "my-accordion"
 
-  defp item_values, do: ~w(lorem duis donec)
+  defp item_values, do: ~W(lorem duis donec)
 
   defp accordion_items(controls) do
     disabled = Map.get(controls, :disabled_items, [])
@@ -28,19 +28,19 @@ defmodule E2eWeb.AccordionPlayLive do
       %{
         value: "lorem",
         label: t1,
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+        content: ~t"Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
         disabled: "lorem" in disabled
       },
       %{
         value: "duis",
         label: t2,
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
+        content: ~t"Nullam eget vestibulum ligula, at interdum tellus.",
         disabled: "duis" in disabled
       },
       %{
         value: "donec",
         label: t3,
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+        content: ~t"Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: "donec" in disabled
       }
     ])
@@ -83,16 +83,14 @@ defmodule E2eWeb.AccordionPlayLive do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: value})
-     |> sync_items()
-     |> push_playground_accordion_value()}
+     |> sync_items()}
   end
 
   def handle_event("disabled_items_changed", _params, socket) do
     {:noreply,
      socket
      |> update(:controls, &%{&1 | disabled_items: []})
-     |> sync_items()
-     |> push_playground_accordion_value()}
+     |> sync_items()}
   end
 
   defp update_control(socket, "orientation", value) do
@@ -152,17 +150,10 @@ defmodule E2eWeb.AccordionPlayLive do
   end
 
   defp playground_accordion_reset_value(controls) do
-    order = item_values()
-    disabled = Map.get(controls, :disabled_items, [])
-    enabled = Enum.filter(order, &(&1 not in disabled))
-
     if controls.multiple do
-      enabled
+      item_values()
     else
-      case enabled do
-        [] -> []
-        [first | _] -> [first]
-      end
+      [hd(item_values())]
     end
   end
 
@@ -177,29 +168,29 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp disabled_select_items do
     [
-      %{label: "Lorem", value: "lorem"},
-      %{label: "Duis", value: "duis"},
-      %{label: "Donec", value: "donec"}
+      %{label: ~t"Lorem", value: "lorem"},
+      %{label: ~t"Duis", value: "duis"},
+      %{label: ~t"Donec", value: "donec"}
     ]
   end
 
   defp accordion_color_items do
     [
-      %{label: "Default", value: "default"},
-      %{label: "Accent", value: "accent"},
-      %{label: "Brand", value: "brand"},
-      %{label: "Alert", value: "alert"},
-      %{label: "Info", value: "info"},
-      %{label: "Success", value: "success"}
+      %{label: ~t"Default", value: "default"},
+      %{label: ~t"Accent", value: "accent"},
+      %{label: ~t"Brand", value: "brand"},
+      %{label: ~t"Alert", value: "alert"},
+      %{label: ~t"Info", value: "info"},
+      %{label: ~t"Success", value: "success"}
     ]
   end
 
   defp accordion_size_items do
     [
-      %{label: "SM", value: "sm"},
-      %{label: "MD", value: "md"},
-      %{label: "LG", value: "lg"},
-      %{label: "XL", value: "xl"}
+      %{label: ~t"SM", value: "sm"},
+      %{label: ~t"MD", value: "md"},
+      %{label: ~t"LG", value: "lg"},
+      %{label: ~t"XL", value: "xl"}
     ]
   end
 
@@ -213,119 +204,122 @@ defmodule E2eWeb.AccordionPlayLive do
       mode={@mode}
       theme={@theme}
     >
-      <.demo_playground
+      <.demo_page
+        path={@path}
+        id="accordion-play-page"
         title="Accordion · Playground"
-        heading_class="layout-heading"
       >
-        <:controls>
-          <.playground_dir_toggle
-            id="dir"
-            on_value_change="control_changed"
-            value={[@controls.dir]}
-          />
+        <.demo_playground id="accordion-playground">
+          <:controls>
+            <.playground_dir_toggle
+              id="dir"
+              on_value_change="control_changed"
+              value={[@controls.dir]}
+            />
 
-          <.toggle_group
-            class="toggle-group toggle-group--sm max-w-7xs"
-            id="orientation"
-            on_value_change="control_changed"
-            multiple={false}
-            deselectable={false}
-            value={[@controls.orientation]}
-          >
-            <:item value="vertical" aria_label="Vertical orientation">
-              <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
-            </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
-              <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
-            </:item>
-          </.toggle_group>
+            <.toggle_group
+              class="toggle-group toggle-group--sm max-w-7xs"
+              id="orientation"
+              on_value_change="control_changed"
+              multiple={false}
+              deselectable={false}
+              value={[@controls.orientation]}
+            >
+              <:item value="vertical" aria_label="Vertical orientation">
+                <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
+              </:item>
+              <:item value="horizontal" aria_label="Horizontal orientation">
+                <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
+              </:item>
+            </.toggle_group>
 
-          <.select
-            id="playground-disabled-items"
-            class="select select--accent w-4xs"
-            multiple
-            deselectable={true}
-            close_on_select={false}
-            value={@controls.disabled_items}
-            items={@disabled_select_items}
-            on_value_change="disabled_items_changed"
-            translation={%Corex.Select.Translation{placeholder: "Select items"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Disabled items</:label>
-          </.select>
+            <.select
+              id="playground-disabled-items"
+              class="select select--sm w-4xs"
+              multiple
+              deselectable={true}
+              close_on_select={false}
+              value={@controls.disabled_items}
+              items={@disabled_select_items}
+              on_value_change="disabled_items_changed"
+              translation={%Corex.Select.Translation{placeholder: "Select items"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Disabled items</:label>
+            </.select>
 
-          <.switch
-            class="switch"
-            id={"playground-collapsible-#{@controls.multiple}"}
-            checked={@controls.collapsible}
-            on_checked_change="control_changed"
-          >
-            <:label>Collapsible</:label>
-          </.switch>
+            <.switch
+              class="switch switch--sm"
+              id={"playground-collapsible-#{@controls.multiple}"}
+              checked={@controls.collapsible}
+              on_checked_change="control_changed"
+            >
+              <:label>Collapsible</:label>
+            </.switch>
 
-          <.switch
-            class="switch"
-            id="multiple"
-            checked={@controls.multiple}
-            on_checked_change="control_changed"
-          >
-            <:label>Multiple</:label>
-          </.switch>
+            <.switch
+              class="switch switch--sm"
+              id="multiple"
+              checked={@controls.multiple}
+              on_checked_change="control_changed"
+            >
+              <:label>Multiple</:label>
+            </.switch>
 
-          <.select
-            id="accordion-color"
-            class="select select--accent  w-4xs"
-            value={[@controls.color]}
-            deselectable={false}
-            items={@accordion_color_items}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "Color"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Color</:label>
-          </.select>
+            <.select
+              id="accordion-color"
+              class="select select--sm w-4xs"
+              value={[@controls.color]}
+              deselectable={false}
+              items={@accordion_color_items}
+              on_value_change="control_changed"
+              translation={%Corex.Select.Translation{placeholder: "Color"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Color</:label>
+            </.select>
 
-          <.select
-            id="accordion-size"
-            class="select select--accent w-4xs"
-            value={[@controls.size]}
-            deselectable={false}
-            items={@accordion_size_items}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "Size"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Size</:label>
-          </.select>
-        </:controls>
-        <:canvas>
-          <.accordion
-            id="my-accordion"
-            class={[
-              "accordion",
-              @controls.color != "default" && "accordion--#{@controls.color}",
-              "accordion--#{@controls.size}"
-            ]}
-            value={~w(lorem duis donec)}
-            items={@items}
-            collapsible={@controls.multiple or @controls.collapsible}
-            multiple={@controls.multiple}
-            orientation={@controls.orientation}
-            dir={@controls.dir}
-          >
-            <:content :let={item}>
-              <p class="break-words">{item.content}</p>
-            </:content>
-            <:indicator>
-              <.heroicon name="hero-chevron-right" />
-            </:indicator>
-          </.accordion>
-        </:canvas>
-      </.demo_playground>
+            <.select
+              id="accordion-size"
+              class="select select--sm w-4xs"
+              value={[@controls.size]}
+              deselectable={false}
+              items={@accordion_size_items}
+              on_value_change="control_changed"
+              translation={%Corex.Select.Translation{placeholder: "Size"}}
+              positioning={%Corex.Positioning{same_width: true}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Size</:label>
+            </.select>
+          </:controls>
+          <:canvas>
+            <.accordion
+              id="my-accordion"
+              class={[
+                "accordion",
+                @controls.color != "default" && "accordion--#{@controls.color}",
+                "accordion--#{@controls.size}"
+              ]}
+              value={~W(lorem duis donec)}
+              items={@items}
+              collapsible={@controls.multiple or @controls.collapsible}
+              multiple={@controls.multiple}
+              orientation={@controls.orientation}
+              dir={@controls.dir}
+            >
+              <:content :let={item}>
+                <p class="break-words">{item.content}</p>
+              </:content>
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.accordion>
+          </:canvas>
+        </.demo_playground>
+      </.demo_page>
     </Layouts.app>
     """
   end

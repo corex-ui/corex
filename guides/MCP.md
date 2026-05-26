@@ -1,26 +1,25 @@
 # Corex MCP
 
-Corex ships a self-hosted [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server. Your running Phoenix app exposes the component registry and docs to tools such as Cursor, Claude Desktop, or VS Code, without an external SaaS.
+## Introduction
 
-The server builds on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix) (Apache License 2.0).
+You expose Corex component metadata to AI tools (Cursor, Claude Desktop, VS Code) from your running app. The MCP server is self-hosted—no external SaaS.
 
-## 1. Install Corex
+Built on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix) (Apache-2.0).
 
-```elixir
-def deps do
-  [
-    {:corex, "~> 0.1.0-beta.5"}
-  ]
-end
-```
+Do not enable MCP in production. The tools are read-only, but the endpoint still widens your attack surface. Use it only while developing locally (or in `:test` when generated apps include it for CI).
 
-```bash
-mix deps.get
-```
+## Before you start
 
-## 2. Mount the MCP plug
+| Requirement | Notes |
+| ----------- | ----- |
+| `{:corex, "~> 0.1.0-rc.0"}` | In `mix.exs` |
+| Running HTTP server | Phoenix endpoint or Tableau Bandit child |
 
-In `lib/my_app_web/endpoint.ex`, add `plug Corex.MCP` **after** `Plug.Static` and **before** the `if code_reloading? do` block.
+<!-- tabs-open -->
+
+### Phoenix endpoint
+
+Add `plug Corex.MCP` in `lib/my_app_web/endpoint.ex` **after** `Plug.Static` and **before** the code reloader block:
 
 ```elixir
 if Mix.env() == :dev do
@@ -28,21 +27,13 @@ if Mix.env() == :dev do
 end
 ```
 
-## 3. Run the app
+Start the app. MCP is available at `http://localhost:4000/corex/mcp` (adjust host and port).
 
-MCP listens on the same host and port as Phoenix (for example `http://localhost:4000`). Start the server before connecting a client.
-
-## 4. Configure your MCP client
-
-Use `http://localhost:4000/corex/mcp` (adjust host and port to match your app).
-
-### Cursor
-
-Project file `.cursor/mcp.json`:
+**Cursor** — `.cursor/mcp.json`:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "corex": {
       "url": "http://localhost:4000/corex/mcp"
     }
@@ -50,9 +41,7 @@ Project file `.cursor/mcp.json`:
 }
 ```
 
-### Claude Desktop
-
-In `~/Library/Application Support/Claude/claude_desktop_config.json`, under `mcpServers`:
+**Claude Desktop** — `claude_desktop_config.json`:
 
 ```json
 {
@@ -67,59 +56,27 @@ In `~/Library/Application Support/Claude/claude_desktop_config.json`, under `mcp
 }
 ```
 
-### VS Code
+### Tableau Bandit
 
-In `settings.json`:
+Tableau has no Phoenix endpoint. Run MCP on a separate Bandit port—see [Tableau](tableau.html) (MCP section).
 
-```json
-{
-  "mcp.servers": {
-    "corex": {
-      "url": "http://localhost:4000/corex/mcp"
-    }
-  }
-}
-```
+Point your client at `http://localhost:4004` when using the default MCP port there.
 
-### Generic MCP client
+<!-- tabs-close -->
 
-```json
-{
-  "name": "corex",
-  "url": "http://localhost:4000/corex/mcp"
-}
-```
+## Tools
 
-## 5. Available tools
+All tools are read-only.
 
-All tools are read-only and safe to call repeatedly.
+| Tool | Purpose |
+| ---- | ------- |
+| `list_components` | All component ids (`accordion`, `date_picker`, …) |
+| `get_component` | Module, slots, docs, `source_path` for one `id` |
+| `installation_guide` | Install steps for new or existing projects (`scenario`: `new_project`, `existing_project`, `all`) |
 
-### `list_components`
+Call `list_components` before `get_component` when you need a valid `id`.
 
-Returns every Corex component id from the package registry (strings such as `accordion` or `date_picker`). Use this before `get_component` when you need a valid id.
+## Related
 
-**Arguments:** none (empty object).
-
-**Result:** JSON with a `components` array of id strings.
-
-### `get_component`
-
-Returns metadata for one component: Elixir module, function component names and arity, Markdown module documentation when available, `source_path` when known, and `docs_note` when docs are missing or not Markdown.
-
-Pass `id` exactly as returned by `list_components`.
-
-**Arguments:**
-
-- `id` (string, required)  -  e.g. `accordion`, `data_table`
-
-**Result:** JSON object with the registry payload plus `docs`, `docs_note`, `source_path`, and related fields.
-
-### `installation_guide`
-
-Returns copy-paste steps for installing Corex on a new project (`mix corex.new`), an existing Phoenix app, or both. It does **not** run shell commands.
-
-**Arguments:**
-
-- `scenario` (string, optional)  -  one of `new_project`, `existing_project`, or `all` (default `all`).
-
-**Result:** JSON with structured steps, commands, and reference URLs (`hexdocs_corex`, `manual_installation`, `repository`).
+- [Installation](installation.html) — `mix corex.new` enables MCP in dev by default
+- [Tableau](tableau.html) — Bandit MCP for static sites

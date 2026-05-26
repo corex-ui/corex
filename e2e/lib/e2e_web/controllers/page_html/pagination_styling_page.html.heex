@@ -1,0 +1,60 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="pagination-styling-page"
+    title={~t"Pagination · Style"}
+    subtitle={
+      ~t"Semantic colors on page controls, density steps, type scale, radii, and host max-width utilities—same modifier pattern as accordion."
+    }
+  >
+    <.demo_section
+      id="pagination-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.PaginationDemo.styling_color_heex()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PaginationDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.PaginationDemo.styling_size_heex()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PaginationDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-styling-text"
+      title={~t"Text"}
+      code={E2eWeb.Demos.PaginationDemo.styling_text_heex()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PaginationDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-styling-radius"
+      title={~t"Radius"}
+      code={E2eWeb.Demos.PaginationDemo.styling_radius_heex()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PaginationDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pagination-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.PaginationDemo.styling_max_width_heex()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PaginationDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

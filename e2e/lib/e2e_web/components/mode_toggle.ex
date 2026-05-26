@@ -2,7 +2,7 @@ defmodule E2eWeb.ModeToggle do
   use E2eWeb, :html
 
   @doc """
-  Provides dark vs light theme toggle using toggle_group.
+  Provides dark vs light mode toggle using toggle.
   """
 
   attr :mode, :string,
@@ -14,17 +14,22 @@ defmodule E2eWeb.ModeToggle do
 
   def mode_toggle(assigns) do
     ~H"""
-    <.toggle_group
+    <.toggle
       id={@id}
-      class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
-      value={if @mode == "dark", do: ["dark"], else: []}
-      on_value_change_client="phx:set-mode"
+      class="toggle toggle--sm"
+      data-toggle-dual-label
+      pressed={@mode == "dark"}
+      on_pressed_change_client="phx:set-mode"
     >
-      <:item value="dark">
-        <.heroicon name="hero-sun" class="icon state-on" />
-        <.heroicon name="hero-moon" class="icon state-off" />
-      </:item>
-    </.toggle_group>
+      <span>
+        <.heroicon name="hero-moon" />
+        <span class="sr-only">{"Dark mode"}</span>
+      </span>
+      <span data-pressed>
+        <.heroicon name="hero-sun" />
+        <span class="sr-only">{"Light mode"}</span>
+      </span>
+    </.toggle>
     """
   end
 end

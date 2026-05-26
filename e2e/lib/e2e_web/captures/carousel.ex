@@ -18,40 +18,40 @@ defmodule CorexWeb.Carousel do
               id: "carousel-basic",
               class: "carousel",
               items: @items,
-              prev_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-left" />)}],
-              next_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-right" />)}]
+              prev_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-left" />)}],
+              next_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-right" />)}]
             },
             loop: %{
               id: "carousel-loop",
               class: "carousel",
               items: @items,
               loop: true,
-              prev_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-left" />)}],
-              next_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-right" />)}]
+              prev_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-left" />)}],
+              next_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-right" />)}]
             },
             vertical: %{
               id: "carousel-vertical",
               class: "carousel",
               items: @items,
               orientation: "vertical",
-              prev_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-up" />)}],
-              next_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-down" />)}]
+              prev_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-up" />)}],
+              next_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-down" />)}]
             },
             slides_per_page: %{
               id: "carousel-multiple",
               class: "carousel",
               items: @items,
               slides_per_page: 2,
-              prev_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-left" />)}],
-              next_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-right" />)}]
+              prev_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-left" />)}],
+              next_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-right" />)}]
             },
             auto_play: %{
               id: "carousel-autoplay",
               class: "carousel",
               items: @items,
               autoplay: true,
-              prev_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-left" />)}],
-              next_trigger: [%{inner_block: ~s(<.heroicon name="hero-arrow-right" />)}]
+              prev_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-left" />)}],
+              next_trigger: [%{inner_block: ~S(<.heroicon name="hero-arrow-right" />)}]
             }
           ]
 

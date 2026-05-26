@@ -1,8 +1,14 @@
 defmodule E2eWeb.NavigatePatternsLive do
   use E2eWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+
+  def mount(params, _session, socket) do
+    {:ok, assign(socket, :tab, Map.get(params, "tab"))}
+  end
+
+  def handle_params(params, _uri, socket) do
+    {:noreply, assign(socket, :tab, Map.get(params, "tab"))}
   end
 
   def render(assigns) do
@@ -13,78 +19,51 @@ defmodule E2eWeb.NavigatePatternsLive do
       theme={@theme}
       path={@path}
     >
-      <.layout_heading>
-        <:title>Navigate</:title>
-        <:subtitle>Live View</:subtitle>
-      </.layout_heading>
-      <h3>Anatomy</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2">
-          <.navigate to="#" class="link">Internal Link</.navigate>
-          <.navigate to="#" class="link">
-            Internal Link
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.navigate>
-          <.navigate to="#" class="link" aria_label="Internal link icon only">
-            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
-          </.navigate>
-          <.navigate to="https://example.com" class="link" external>
-            External Link
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
-              <title>Opens in a new window</title>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-              />
-            </svg>
-          </.navigate>
-          <.navigate to="#" class="link" download="report.pdf">
-            Download Link
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
-              <title>Download PDF, 2MB</title>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-              />
-            </svg>
-          </.navigate>
-        </div>
-      </section>
+      <.demo_page
+        path={@path}
+        id="navigate-patterns-page"
+        title={~t"Navigate · Pattern"}
+        subtitle={~t"to, type (href, navigate, patch), external, and download on <.navigate>."}
+      >
+        <.demo_section
+          id="navigate-patterns-href"
+          title={~t"Trigger · href"}
+          code={E2eWeb.Demos.NavigateDemo.patterns_href_code()}
+        >
+          <:preview><E2eWeb.Demos.NavigateDemo.patterns_href_example /></:preview>
+        </.demo_section>
 
-      <h3>Color</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2">
-          <.navigate to="#" class="link link--accent">Internal Link</.navigate>
-          <.navigate to="#" class="link link--brand">Internal Link</.navigate>
-          <.navigate to="#" class="link link--alert">Internal Link</.navigate>
-          <.navigate to="#" class="link link--info">Internal Link</.navigate>
-          <.navigate to="#" class="link link--success">Internal Link</.navigate>
-        </div>
-      </section>
+        <.demo_section
+          id="navigate-patterns-navigate"
+          title={~t"Trigger · navigate"}
+          code={E2eWeb.Demos.NavigateDemo.patterns_navigate_code()}
+        >
+          <:preview><E2eWeb.Demos.NavigateDemo.patterns_navigate_example /></:preview>
+        </.demo_section>
 
-      <h3>Size</h3>
-      <section class="layout__section">
-        <div class="layout__row gap-2 items-center">
-          <.navigate to="#" class="link link--sm">Internal Link</.navigate>
-          <.navigate to="#" class="link link--md">Internal Link</.navigate>
-          <.navigate to="#" class="link link--lg">Internal Link</.navigate>
-          <.navigate to="#" class="link link--xl">Internal Link</.navigate>
-        </div>
-      </section>
+        <.demo_section
+          id="navigate-patterns-patch"
+          title={~t"Trigger · patch"}
+          code={E2eWeb.Demos.NavigateDemo.patterns_patch_code()}
+        >
+          <:preview>
+            <div class="flex flex-col gap-space">
+              <E2eWeb.Demos.NavigateDemo.patterns_patch_example />
+              <%= if @tab do %>
+                <p class="text-sm text-ink-muted">Patched query: tab={@tab}</p>
+              <% end %>
+            </div>
+          </:preview>
+        </.demo_section>
+
+        <.demo_section
+          id="navigate-patterns-external-download"
+          title={~t"External and download"}
+          code={E2eWeb.Demos.NavigateDemo.patterns_external_and_download_code()}
+        >
+          <:preview><E2eWeb.Demos.NavigateDemo.patterns_external_and_download_example /></:preview>
+        </.demo_section>
+      </.demo_page>
     </Layouts.app>
     """
   end

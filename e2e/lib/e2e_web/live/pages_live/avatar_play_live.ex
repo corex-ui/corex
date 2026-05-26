@@ -45,7 +45,7 @@ defmodule E2eWeb.AvatarPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Avatar · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Avatar · Playground" heading_class="layout-heading">
         <:controls>
           <form
             phx-change="avatar_play_changed"

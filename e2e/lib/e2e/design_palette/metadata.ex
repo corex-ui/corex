@@ -2,7 +2,7 @@ defmodule E2e.DesignPalette.Metadata do
   @moduledoc false
 
   def token_set_order(config) do
-    semantic = ~w(
+    semantic = ~W(
       semantic/color
       semantic/dimension
       semantic/border

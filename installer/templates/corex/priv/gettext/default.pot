@@ -1,0 +1,72 @@
+## This file is a PO Template file.
+##
+## "msgid"s here are often extracted from source code.
+## Add new messages manually only if they're dynamic
+## messages that can't be statically extracted.
+##
+## Run "mix gettext.extract" to bring this file up to
+## date. Leave "msgstr"s empty as changing them here has no
+## effect: edit them in PO (.po) files instead.
+#
+msgid ""
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Accessible and unstyled Phoenix components"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex documentation on HexDocs"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex for Phoenix"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Corex on GitHub"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Dark mode"
+msgstr ""
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Demo Site"
+msgstr ""
+
+#: lib/app_web/controllers/page_html/home.html.heex
+#, elixir-autogen, elixir-format
+msgid "Hex Doc"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Light mode"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "Theme"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We lost the connection"
+msgstr ""
+
+#: lib/app_web/components/layouts.ex
+#, elixir-autogen, elixir-format
+msgid "We're trying to reconnect you..."
+msgstr ""

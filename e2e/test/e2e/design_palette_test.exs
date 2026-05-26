@@ -42,6 +42,20 @@ defmodule E2e.DesignPaletteTest do
 
     assert colors["root"]["description"] =~ ~r/Surface root at 98% lightness/
     assert colors["ui"]["description"] =~ ~r/Surface ui default stop/
+
+    ink_muted = colors["ink-muted"]["value"]
+    ui_default = colors["ui"]["value"]
+
+    assert contrast_ratio(ink_muted, ui_default) > 4.49
+  end
+
+  defp contrast_ratio(fg_hex, bg_hex) do
+    p = Color.Palette.contrast(fg_hex, background: bg_hex, targets: [4.5])
+
+    case p.stops do
+      [%{achieved: a} | _] -> a
+      _ -> 0.0
+    end
   end
 
   test "semantic color.json aliases reference theme.color paths" do

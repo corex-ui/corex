@@ -11,6 +11,7 @@ defmodule Corex.Combobox.Anatomy do
       items: [],
       placeholder: nil,
       value: [],
+      form_field: false,
       always_submit_on_enter: false,
       auto_focus: false,
       close_on_select: false,
@@ -29,11 +30,12 @@ defmodule Corex.Combobox.Anatomy do
       on_open_change: nil,
       on_open_change_client: nil,
       on_input_value_change: nil,
+      on_input_value_change_client: nil,
       on_value_change: nil,
       on_value_change_client: nil,
       filter: true,
       redirect: false,
-      controlled: false
+      submit_name: nil
     ]
 
     @type t :: %__MODULE__{
@@ -59,11 +61,13 @@ defmodule Corex.Combobox.Anatomy do
             on_open_change: nil,
             on_open_change_client: nil,
             on_input_value_change: nil,
+            on_input_value_change_client: nil,
             on_value_change: nil,
             on_value_change_client: nil,
             filter: boolean(),
             redirect: boolean(),
-            controlled: boolean()
+            form_field: boolean(),
+            submit_name: String.t() | nil
           }
   end
 

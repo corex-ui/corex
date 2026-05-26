@@ -4,7 +4,7 @@ defmodule E2eWeb.DatePickerEventsLiveTest do
   import Phoenix.LiveViewTest
 
   test "dpe_on_value_server inserts a log row", %{conn: conn} do
-    {:ok, view, _html} = live(conn, ~p"/date-picker/events")
+    {view, _html} = live_ok!(conn, ~p"/date-picker/events")
 
     html =
       render_click(view, "dpe_on_value_server", %{
@@ -12,6 +12,6 @@ defmodule E2eWeb.DatePickerEventsLiveTest do
         "value" => "2026-05-12"
       })
 
-    assert html =~ ~s(data-part="row")
+    assert html =~ ~S(data-part="row")
   end
 end

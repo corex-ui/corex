@@ -4,6 +4,8 @@ defmodule Corex.FileUpload.Connect do
 
   alias Corex.Selectors
 
+  alias Corex.FormField
+
   alias Corex.FileUpload.Anatomy.{
     Dropzone,
     HiddenInput,
@@ -33,7 +35,7 @@ defmodule Corex.FileUpload.Connect do
       "id" => assigns.id,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
@@ -55,6 +57,7 @@ defmodule Corex.FileUpload.Connect do
     |> maybe_put_int("data-max-file-size", assigns.max_file_size)
     |> maybe_put_int("data-min-file-size", assigns.min_file_size)
     |> Map.reject(fn {_k, v} -> is_nil(v) end)
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   def ignore_root(assigns) do
@@ -101,7 +104,8 @@ defmodule Corex.FileUpload.Connect do
       "data-scope" => "file-upload",
       "data-part" => "root",
       "dir" => Map.get(assigns, :dir),
-      "id" => zid(assigns.id)
+      "id" => zid(assigns.id),
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 

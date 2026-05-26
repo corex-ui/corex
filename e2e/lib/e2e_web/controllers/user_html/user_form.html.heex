@@ -2,7 +2,6 @@
   :let={f}
   for={@form}
   action={@action}
-  id={@form.id}
 >
   <input :if={@return_context} type="hidden" name="return_to" value={@return_context} />
   <.native_input field={f[:name]} type="text" class="native-input max-w-none">
@@ -15,7 +14,7 @@
   <.select
     class="select  max-w-none"
     field={f[:country]}
-    placeholder="Select a country"
+    placeholder={~t"Select a country"}
     items={[
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
@@ -39,7 +38,7 @@
   <.combobox
     field={f[:currency]}
     class="combobox  max-w-none"
-    placeholder="Search currency"
+    placeholder={~t"Search currency"}
     items={currency_items()}
   >
     <:label>Preferred currency</:label>
@@ -56,6 +55,16 @@
       {msg}
     </:error>
   </.combobox>
+  <.tags_input field={f[:tags]} class="tags-input max-w-none">
+    <:label>Tags</:label>
+    <:close>
+      <.heroicon name="hero-x-mark" />
+    </:close>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.tags_input>
   <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
     <:label>Select a date</:label>
     <:trigger>
@@ -85,7 +94,7 @@
   <.number_input
     field={f[:level]}
     min={1.0}
-    max={10.0}
+    max={5.0}
     step={1.0}
     class="number-input  max-w-none"
   >

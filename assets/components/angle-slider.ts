@@ -1,6 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/angle-slider";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class AngleSlider extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,7 +27,15 @@ export class AngleSlider extends Component<Props, Api> {
     const hiddenInputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="angle-slider"][data-part="hidden-input"]'
     );
-    if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+    if (hiddenInputEl instanceof HTMLInputElement) {
+      syncHiddenInputValue(
+        hiddenInputEl,
+        this.el,
+        String(this.api.value),
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps() as Record<string, unknown>
+      );
+    }
 
     const controlEl = this.el.querySelector<HTMLElement>(
       '[data-scope="angle-slider"][data-part="control"]'

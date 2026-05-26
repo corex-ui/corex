@@ -12,14 +12,15 @@ defmodule E2eWeb.ColorPickerApiLive do
     {:ok,
      socket
      |> assign(:id_value_c, @id_value_c)
-     |> assign(
-       :codes,
-       %{
-         set_value_c: D.api_set_value_client_code(),
-         set_value_s_heex: D.api_set_value_server_heex(),
-         set_value_s_ex: D.api_set_value_server_elixir()
-       }
-     )}
+     |> assign(:codes, demo_codes())}
+  end
+
+  defp demo_codes do
+    %{
+      binding: D.api_set_value_client_code(),
+      server_heex: D.api_set_value_server_heex(),
+      server_elixir: D.api_set_value_server_elixir()
+    }
   end
 
   @impl true
@@ -37,6 +38,7 @@ defmodule E2eWeb.ColorPickerApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="color-picker-api-page"
         title="Color Picker · API"
         subtitle="Programmatic color: client `phx-click` binding, then the matching server push."
@@ -44,7 +46,7 @@ defmodule E2eWeb.ColorPickerApiLive do
         <.demo_section
           id="color-picker-api-set-value-c"
           title="set_value (Client binding)"
-          code={@codes.set_value_c}
+          code={@codes.binding}
         >
           <:preview>
             <D.api_set_value_client_example id={@id_value_c} />
@@ -55,8 +57,8 @@ defmodule E2eWeb.ColorPickerApiLive do
           id="color-picker-api-set-value-s"
           title="set_value (Server)"
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_s_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.set_value_s_ex}
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.server_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.server_elixir}
           ]}
         >
           <:preview>

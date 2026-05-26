@@ -17,9 +17,57 @@ defmodule E2eWeb.AdminLive.Form do
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>
         <:actions>
-          <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button button--sm">
-            <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+          <.navigate
+            to={return_path(@return_to, @admin)}
+            type="navigate"
+            class="button"
+            aria_label="Cancel"
+            title="Cancel"
+          >
+            <.heroicon name="hero-arrow-left" />
+            <span class="sr-only">Cancel</span>
           </.navigate>
+          <.dialog
+            :if={@live_action == :edit}
+            id={"admin-delete-#{@admin.id}"}
+            class="dialog"
+            role="alertdialog"
+            modal
+            close_on_interact_outside={false}
+            initial_focus={"admin-delete-#{@admin.id}-cancel"}
+            final_focus={"dialog:admin-delete-#{@admin.id}:trigger"}
+          >
+            <:trigger
+              class="button button--alert button--square"
+              aria_label="Delete admin"
+              title="Delete admin"
+            >
+              <.heroicon name="hero-trash" />
+            </:trigger>
+            <:title>Delete admin?</:title>
+            <:description>This action cannot be undone.</:description>
+            <:content>
+              <div class="flex flex-wrap justify-end gap-2 mt-4">
+                <.action
+                  id={"admin-delete-#{@admin.id}-cancel"}
+                  phx-click={Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)}
+                  class="button button--sm button--ghost"
+                >
+                  Cancel
+                </.action>
+                <.action
+                  id={"admin-delete-#{@admin.id}-confirm"}
+                  phx-click={
+                    Corex.Dialog.set_open("admin-delete-#{@admin.id}", false)
+                    |> JS.push("delete", value: %{id: @admin.id})
+                  }
+                  class="button button--sm button--alert"
+                >
+                  Delete
+                </.action>
+              </div>
+            </:content>
+          </.dialog>
         </:actions>
       </.layout_heading>
 
@@ -41,7 +89,7 @@ defmodule E2eWeb.AdminLive.Form do
           class="select max-w-none"
           field={@form[:country]}
           deselectable
-          translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
+          translation={%Corex.Select.Translation{placeholder: "Select a country"}}
           items={[
             %{label: "France", value: "fra"},
             %{label: "Belgium", value: "bel"},
@@ -63,7 +111,7 @@ defmodule E2eWeb.AdminLive.Form do
         <.combobox
           field={@form[:currency]}
           class="combobox max-w-none"
-          placeholder={gettext("Search currency")}
+          placeholder="Search currency"
           items={currency_items()}
         >
           <:label>Preferred currency</:label>
@@ -81,6 +129,17 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.combobox>
 
+        <.tags_input field={@form[:tags]} class="tags-input max-w-none">
+          <:label>Tags</:label>
+          <:close>
+            <.heroicon name="hero-x-mark" />
+          </:close>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.tags_input>
+
         <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
           <:label>Select a date</:label>
           <:trigger>
@@ -97,7 +156,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad max-w-none">
+        <.signature_pad field={@form[:signature]} class="signature-pad">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
@@ -110,7 +169,7 @@ defmodule E2eWeb.AdminLive.Form do
         <.number_input
           field={@form[:level]}
           min={1.0}
-          max={10.0}
+          max={5.0}
           step={1.0}
           class="number-input max-w-none"
         >
@@ -126,7 +185,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.number_input>
-        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+        <.checkbox field={@form[:terms]} class="checkbox">
           <:label>
             Accept the terms
           </:label>
@@ -183,12 +242,38 @@ defmodule E2eWeb.AdminLive.Form do
 
   @impl true
   def handle_event("validate", %{"admin" => admin_params}, socket) do
-    changeset = Accounts.change_admin(socket.assigns.admin, admin_params)
+    changeset =
+      socket.assigns.admin
+      |> Accounts.change_admin(admin_params)
+      |> Map.put(:action, :validate)
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
+  def handle_event("validate", _params, socket), do: {:noreply, socket}
+
   def handle_event("save", %{"admin" => admin_params}, socket) do
     save_admin(socket, socket.assigns.live_action, admin_params)
+  end
+
+  def handle_event("save", params, socket) do
+    admin_params = Map.get(params, "admin", %{})
+    save_admin(socket, socket.assigns.live_action, admin_params)
+  end
+
+  def handle_event("delete", %{"id" => id}, socket) do
+    admin = Accounts.get_admin!(id)
+
+    case Accounts.delete_admin(admin) do
+      {:ok, _admin} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Admin deleted successfully")
+         |> push_navigate(to: ~p"/admins")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Could not delete admin.")}
+    end
   end
 
   defp save_admin(socket, :edit, admin_params) do
@@ -200,7 +285,7 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
     end
   end
 
@@ -213,7 +298,7 @@ defmodule E2eWeb.AdminLive.Form do
          |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
     end
   end
 
@@ -222,16 +307,16 @@ defmodule E2eWeb.AdminLive.Form do
 
   defp currency_items do
     [
-      %{value: "eur", label: "Euro"},
-      %{value: "usd", label: "US Dollar"},
-      %{value: "gbp", label: "British Pound"},
-      %{value: "jpy", label: "Japanese Yen"},
-      %{value: "chf", label: "Swiss Franc"},
-      %{value: "cad", label: "Canadian Dollar"},
-      %{value: "aud", label: "Australian Dollar"},
-      %{value: "sek", label: "Swedish Krona"},
-      %{value: "nok", label: "Norwegian Krone"},
-      %{value: "sgd", label: "Singapore Dollar"}
+      %{value: "eur", label: ~t"Euro"},
+      %{value: "usd", label: ~t"US Dollar"},
+      %{value: "gbp", label: ~t"British Pound"},
+      %{value: "jpy", label: ~t"Japanese Yen"},
+      %{value: "chf", label: ~t"Swiss Franc"},
+      %{value: "cad", label: ~t"Canadian Dollar"},
+      %{value: "aud", label: ~t"Australian Dollar"},
+      %{value: "sek", label: ~t"Swedish Krona"},
+      %{value: "nok", label: ~t"Norwegian Krone"},
+      %{value: "sgd", label: ~t"Singapore Dollar"}
     ]
   end
 end

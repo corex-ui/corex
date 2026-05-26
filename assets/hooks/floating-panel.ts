@@ -1,6 +1,7 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { FloatingPanel } from "../components/floating-panel";
+import type { PositioningOptions } from "@zag-js/popper";
 import type {
   Props,
   OpenChangeDetails,
@@ -10,7 +11,6 @@ import type {
 } from "@zag-js/floating-panel";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 import { readPositioningOptions } from "../lib/positioning";
-import { anchorPointFromPositioning } from "../lib/floating-panel-anchor";
 import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -21,7 +21,86 @@ type FloatingPanelHookState = {
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
 
-function parseSize(val: string | undefined): { width: number; height: number } | undefined {
+type PanelSize = { width: number; height: number };
+
+type AnchorDetails = {
+  triggerRect: DOMRect | null;
+  boundaryRect: DOMRect | null;
+};
+
+function anchorPointFromPositioning(
+  positioning: PositioningOptions,
+  details: AnchorDetails,
+  panelSize: PanelSize,
+  dir: "ltr" | "rtl" | undefined
+): { x: number; y: number } | undefined {
+  const boundaryRect = details.boundaryRect;
+  if (!boundaryRect) return undefined;
+
+  const gutter = positioning.gutter ?? 8;
+  const shift = positioning.shift ?? 0;
+  const mainAxis = positioning.offset?.mainAxis ?? 0;
+  const crossAxis = positioning.offset?.crossAxis ?? 0;
+  const placement = positioning.placement ?? "bottom";
+  const { width: pw, height: ph } = panelSize;
+  const b = boundaryRect;
+  const isRtl = dir === "rtl";
+
+  const xInnerLeft = b.x + gutter;
+  const xInnerRight = b.x + b.width - pw - gutter;
+  const xCenter = b.x + (b.width - pw) / 2;
+
+  const yInnerTop = b.y + gutter;
+  const yInnerBottom = b.y + b.height - ph - gutter;
+  const yCenter = b.y + (b.height - ph) / 2;
+
+  const parts = placement.split("-") as [string, string?];
+  const side = parts[0];
+  const align = parts[1];
+
+  const xForBottomTop = () => {
+    if (align === "start") return isRtl ? xInnerRight : xInnerLeft;
+    if (align === "end") return isRtl ? xInnerLeft : xInnerRight;
+    return xCenter;
+  };
+
+  if (side === "bottom") {
+    return {
+      x: xForBottomTop() + shift + crossAxis,
+      y: yInnerBottom - mainAxis,
+    };
+  }
+
+  if (side === "top") {
+    return {
+      x: xForBottomTop() + shift + crossAxis,
+      y: yInnerTop + mainAxis,
+    };
+  }
+
+  if (side === "left") {
+    const y = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+    return {
+      x: b.x + gutter + mainAxis,
+      y: y + shift + crossAxis,
+    };
+  }
+
+  if (side === "right") {
+    const y = align === "start" ? yInnerTop : align === "end" ? yInnerBottom : yCenter;
+    return {
+      x: b.x + b.width - pw - gutter - mainAxis,
+      y: y + shift + crossAxis,
+    };
+  }
+
+  return {
+    x: xCenter + crossAxis,
+    y: yCenter + mainAxis,
+  };
+}
+
+export function parseSize(val: string | undefined): { width: number; height: number } | undefined {
   if (!val) return undefined;
   try {
     const parsed = JSON.parse(val) as { width?: number; height?: number };
@@ -34,7 +113,7 @@ function parseSize(val: string | undefined): { width: number; height: number } |
   return undefined;
 }
 
-function parsePoint(val: string | undefined): { x: number; y: number } | undefined {
+export function parsePoint(val: string | undefined): { x: number; y: number } | undefined {
   if (!val) return undefined;
   try {
     const parsed = JSON.parse(val) as { x?: number; y?: number };
@@ -49,7 +128,7 @@ function parsePoint(val: string | undefined): { x: number; y: number } | undefin
 
 const FALLBACK_DEFAULT_SIZE = { width: 320, height: 240 };
 
-function buildAnchorProps(el: HTMLElement) {
+export function buildAnchorProps(el: HTMLElement) {
   const defaultSize = parseSize(el.dataset.defaultSize) ?? FALLBACK_DEFAULT_SIZE;
   const defaultPosition = parsePoint(el.dataset.defaultPosition);
   const positioning = readPositioningOptions(el);
@@ -162,7 +241,6 @@ const FloatingPanelHook: Hook<
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       dir: getDir(el),
-      defaultPosition: anchorProps.defaultPosition,
       getAnchorPosition: anchorProps.getAnchorPosition,
     } as Partial<Props>);
   },

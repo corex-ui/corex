@@ -99,7 +99,7 @@ defmodule Corex.MCP.Tools.Installation do
   defp corex_hex_version do
     case Application.spec(:corex, :vsn) do
       nil ->
-        "0.1.0-beta.5"
+        Mix.raise("corex application version is not available")
 
       v when is_list(v) ->
         List.to_string(v)
@@ -131,7 +131,7 @@ defmodule Corex.MCP.Tools.Installation do
         title: "Configure Esbuild for ESM and code splitting",
         edit_files: ["config/config.exs"],
         snippet: """
-        # Under config :esbuild, my_app: [ args: ~w(...) ], ensure the main target includes:
+        # Under config :esbuild, my_app: [ args: ~W(...) ], ensure the main target includes:
         #   --bundle --format=esm --splitting --target=es2022
         #   --outdir=../priv/static/assets/js
         #   --external:/fonts/* --external:/images/* --alias:@=.
@@ -142,7 +142,7 @@ defmodule Corex.MCP.Tools.Installation do
           version: \"0.25.4\",
           my_app: [
             args:
-              ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+              ~W(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
             cd: Path.expand(\"../assets\", __DIR__),
             env: %{\"NODE_PATH\" => [Path.expand(\"../deps\", __DIR__), Mix.Project.build_path()]}
           ]

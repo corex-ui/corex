@@ -7,6 +7,7 @@ defmodule Corex.FileUpload.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
       disabled: false,
       invalid: false,
       read_only: false,
@@ -32,6 +33,7 @@ defmodule Corex.FileUpload.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             disabled: boolean(),
             invalid: boolean(),
             read_only: boolean(),
@@ -58,7 +60,7 @@ defmodule Corex.FileUpload.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
 

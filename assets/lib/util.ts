@@ -75,7 +75,11 @@ export const getNumber = (
 
 export const getBoolean = (element: HTMLElement, attrName: string): boolean => {
   const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-  return element.hasAttribute(`data-${dashName}`);
+  const key = `data-${dashName}`;
+  if (!element.hasAttribute(key)) return false;
+  const raw = element.getAttribute(key);
+  if (raw === "false" || raw === "0") return false;
+  return true;
 };
 
 export const getBooleanValue = (element: HTMLElement, attrName: string): boolean | undefined => {
@@ -119,4 +123,26 @@ export function canPushEvent(liveSocket: {
   main: { isDead: boolean; isConnected: () => boolean };
 }): boolean {
   return !liveSocket.main.isDead && liveSocket.main.isConnected();
+}
+
+export function associateInputWithFormIfOutside(input: HTMLElement, hookEl: HTMLElement): void {
+  const formId = getString(hookEl, "form");
+  if (!formId) return;
+  if (hookEl.closest("form") !== null) return;
+  input.setAttribute("form", formId);
+}
+
+export function clearFormAssociationWhenNested(input: HTMLElement, hookEl: HTMLElement): void {
+  if (hookEl.closest("form") !== null) {
+    input.removeAttribute("form");
+  }
+}
+
+export function syncInputFormAssociation(input: HTMLElement | null, hookEl: HTMLElement): void {
+  if (!input) return;
+  if (hookEl.closest("form") !== null) {
+    input.removeAttribute("form");
+  } else {
+    associateInputWithFormIfOutside(input, hookEl);
+  }
 }

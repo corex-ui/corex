@@ -19,46 +19,6 @@ defmodule Corex.Helpers do
 
   def data_state(bool, true_val, false_val), do: if(bool, do: true_val, else: false_val)
 
-  def normalize_checkbox_checked(true), do: true
-  def normalize_checkbox_checked(false), do: false
-  def normalize_checkbox_checked(:indeterminate), do: :indeterminate
-  def normalize_checkbox_checked("indeterminate"), do: :indeterminate
-  def normalize_checkbox_checked("true"), do: true
-  def normalize_checkbox_checked("false"), do: false
-  def normalize_checkbox_checked(nil), do: false
-
-  def normalize_checkbox_checked(_), do: false
-
-  def checkbox_checked_attr_value(true), do: "true"
-  def checkbox_checked_attr_value(false), do: "false"
-  def checkbox_checked_attr_value(:indeterminate), do: "indeterminate"
-
-  def checkbox_checked_controlled_attr(controlled, checked) do
-    if controlled, do: checkbox_checked_attr_value(normalize_checkbox_checked(checked)), else: nil
-  end
-
-  def checkbox_checked_default_attr(controlled, checked) do
-    c = normalize_checkbox_checked(checked)
-
-    if controlled do
-      nil
-    else
-      if c == false, do: nil, else: checkbox_checked_attr_value(c)
-    end
-  end
-
-  def checkbox_native_checked(checked) do
-    normalize_checkbox_checked(checked) == true
-  end
-
-  def checkbox_visual_state(checked) do
-    case normalize_checkbox_checked(checked) do
-      true -> "checked"
-      false -> "unchecked"
-      :indeterminate -> "indeterminate"
-    end
-  end
-
   def validate_value!([]), do: []
 
   def validate_value!(value) when is_list(value) do
@@ -72,6 +32,39 @@ defmodule Corex.Helpers do
   def validate_value!(value), do: raise(ArgumentError, value_error(value))
 
   def value_error(value), do: "value must be a list of strings, got: #{inspect(value)}"
+
+  def normalize_string_list_value!(value) when is_list(value), do: validate_value!(value)
+
+  def normalize_string_list_value!(value) when is_binary(value) do
+    case String.trim(value) do
+      "" ->
+        []
+
+      trimmed ->
+        trimmed
+        |> String.split(",")
+        |> Enum.map(&String.trim/1)
+        |> Enum.reject(&(&1 == ""))
+        |> validate_value!()
+    end
+  end
+
+  def normalize_string_list_value!(value, graphemes: true) when is_binary(value) do
+    trimmed = String.trim(value)
+
+    cond do
+      trimmed == "" ->
+        []
+
+      String.contains?(trimmed, ",") ->
+        trimmed |> String.split(",", trim: true) |> validate_value!()
+
+      true ->
+        trimmed |> String.graphemes() |> validate_value!()
+    end
+  end
+
+  def normalize_string_list_value!(value, _opts), do: validate_value!(value)
 
   def validate_tabs_value!(nil), do: nil
   def validate_tabs_value!(value) when is_binary(value), do: value
@@ -170,6 +163,20 @@ defmodule Corex.Helpers do
   def maybe_put(map, _key, nil), do: map
   def maybe_put(map, key, value), do: Map.put(map, key, value)
 
+  def joined_csv_values([]), do: nil
+
+  def joined_csv_values(values) when is_list(values) do
+    Enum.map_join(values, ",", &to_string/1)
+  end
+
+  def controlled_dataset_values(true, joined) when is_binary(joined), do: {joined, nil}
+  def controlled_dataset_values(false, joined) when is_binary(joined), do: {nil, joined}
+  def controlled_dataset_values(_controlled, _joined), do: {nil, nil}
+
+  def controlled_string_value(true, value) when is_binary(value), do: {value, nil}
+  def controlled_string_value(false, value) when is_binary(value), do: {nil, value}
+  def controlled_string_value(_controlled, _value), do: {nil, nil}
+
   def maybe_put_data_dir(map, nil), do: map
   def maybe_put_data_dir(map, dir) when dir in ["ltr", "rtl"], do: Map.put(map, "data-dir", dir)
   def maybe_put_data_dir(map, _), do: map
@@ -217,11 +224,9 @@ defmodule Corex.Helpers do
         }
 
       %{label: _} = map ->
-        assert_list_item_no_legacy_id!(map)
-
         map =
           map
-          |> Map.put_new(:value, Corex.List.generate_id())
+          |> Map.put_new(:value, Corex.ItemBuilder.generate_id("list"))
 
         %{
           value: Map.fetch!(map, :value),
@@ -242,18 +247,6 @@ defmodule Corex.Helpers do
         #{inspect(other)}
         """
     end)
-  end
-
-  defp assert_list_item_no_legacy_id!(map) when is_map(map) do
-    sm = Map.new(map, fn {k, v} -> {to_string(k), v} end)
-
-    if Map.has_key?(sm, "id") do
-      raise ArgumentError, """
-      List item maps must not use :id. Use :value for the option value (see Corex.List).
-
-      Got keys: #{inspect(Map.keys(map))}
-      """
-    end
   end
 
   defp normalize_list_item_redirect(nil), do: nil

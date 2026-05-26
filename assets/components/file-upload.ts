@@ -21,12 +21,34 @@ function toPhash(h: number, x: string): number {
   return h;
 }
 
-function zagFileId(value: string): string {
+export function zagFileId(value: string): string {
   return toName(toPhash(5381, value) >>> 0);
 }
 
-function fileKeyFor(file: File): string {
+export function fileKeyFor(file: File): string {
   return zagFileId(`${file.name}-${file.size}`);
+}
+
+export function labelFieldNameFor(fieldName: string): string {
+  if (fieldName.includes("[")) {
+    return fieldName.replace(/\[([^\]]+)\]$/, "[$1_label]");
+  }
+
+  return `${fieldName}_label`;
+}
+
+function setInputFiles(inputEl: HTMLInputElement, files: File[]): void {
+  try {
+    if (typeof window.DataTransfer !== "undefined") {
+      const dataTransfer = new window.DataTransfer();
+      for (const file of files) {
+        dataTransfer.items.add(file);
+      }
+      inputEl.files = dataTransfer.files;
+    }
+  } catch {
+    // ignore unsupported environments
+  }
 }
 
 export class FileUpload extends Component<Props, Api> {
@@ -159,7 +181,80 @@ export class FileUpload extends Component<Props, Api> {
       }
     }
 
+    this.syncFormSubmitInputs();
     this.touchSentinel();
+  }
+
+  syncFormSubmitInputs(): void {
+    const fileInput = this.el.querySelector<HTMLInputElement>(
+      '[data-scope="file-upload"][data-part="hidden-input"]'
+    );
+    const sentinel = this.el.querySelector<HTMLInputElement>('[data-part="hidden-input-sentinel"]');
+    const files = this.api.acceptedFiles;
+    const name = this.el.dataset.name;
+
+    if (fileInput) {
+      setInputFiles(fileInput, files);
+    }
+
+    this.syncAcceptedNamesHidden(name, files);
+
+    if (!sentinel) return;
+
+    if (files.length > 0) {
+      sentinel.disabled = true;
+      sentinel.removeAttribute("name");
+      return;
+    }
+
+    sentinel.disabled = false;
+    if (name) {
+      sentinel.setAttribute("name", name);
+    }
+  }
+
+  private syncAcceptedNamesHidden(fieldName: string | undefined, files: File[]): void {
+    if (!fieldName) return;
+
+    const labelFieldName = labelFieldNameFor(fieldName);
+
+    const region =
+      this.el.querySelector<HTMLElement>('[data-scope="file-upload"][data-part="region"]') ??
+      this.el;
+
+    let labelInput = region.querySelector<HTMLInputElement>(
+      '[data-scope="file-upload"][data-part="accepted-names-hidden"]'
+    );
+
+    if (!labelInput) {
+      labelInput = document.createElement("input");
+      labelInput.type = "hidden";
+      labelInput.setAttribute("data-scope", "file-upload");
+      labelInput.setAttribute("data-part", "accepted-names-hidden");
+      region.appendChild(labelInput);
+    }
+
+    const names = files
+      .map((file) => file.name)
+      .filter(Boolean)
+      .join(", ");
+
+    if (names === "") {
+      labelInput.disabled = true;
+      labelInput.removeAttribute("name");
+      labelInput.value = "";
+      return;
+    }
+
+    labelInput.disabled = false;
+    labelInput.name = labelFieldName;
+    labelInput.value = names;
+    const formId = this.el.dataset.form;
+    if (formId) {
+      labelInput.setAttribute("form", formId);
+    } else {
+      labelInput.removeAttribute("form");
+    }
   }
 
   private touchSentinel(): void {

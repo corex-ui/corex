@@ -197,9 +197,9 @@
         "value": "#49009e"
       },
       "ink-muted": {
-        "description": "5.0:1 contrast against ui (#f3f0eb)",
+        "description": "5.15:1 contrast against ui (#f3f0eb)",
         "type": "color",
-        "value": "#696662"
+        "value": "#676460"
       },
       "info-hover": {
         "description": "Semantic info hover fill at 40% lightness (chroma #1D4ED8).",

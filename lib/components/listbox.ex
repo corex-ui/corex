@@ -4,205 +4,301 @@ defmodule Corex.Listbox do
 
   Pass `items={Corex.List.new([...])}`. With `redirect`, use per-item `:to` and `:redirect` (`:href` | `:patch` | `:navigate` | `false`); Zag runs single-select when `redirect` is true.
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
   ### Minimal
 
   ```heex
-  <.listbox
-    id="my-listbox"
-    class="listbox"
-    items={Corex.List.new([
-      %{label: "France", value: "fra", disabled: true},
-      %{label: "Belgium", value: "bel"},
-      %{label: "Germany", value: "deu"},
-      %{label: "Netherlands", value: "nld"},
-      %{label: "Switzerland", value: "che"},
-      %{label: "Austria", value: "aut"}
-    ])}
-  >
-    <:label>Choose a country</:label>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.listbox>
-  ```
-
-  ### Grouped
-
-  ```heex
-  <.listbox
-    class="listbox"
-    items={Corex.List.new([
-      %{label: "France", value: "fra", group: "Europe"},
-      %{label: "Belgium", value: "bel", group: "Europe"},
-      %{label: "Germany", value: "deu", group: "Europe"},
-      %{label: "Netherlands", value: "nld", group: "Europe"},
-      %{label: "Switzerland", value: "che", group: "Europe"},
-      %{label: "Austria", value: "aut", group: "Europe"},
-      %{label: "Japan", value: "jpn", group: "Asia"},
-      %{label: "China", value: "chn", group: "Asia"},
-      %{label: "South Korea", value: "kor", group: "Asia"},
-      %{label: "Thailand", value: "tha", group: "Asia"},
-      %{label: "USA", value: "usa", group: "North America"},
-      %{label: "Canada", value: "can", group: "North America"},
-      %{label: "Mexico", value: "mex", group: "North America"}
-    ])}
-  >
-    <:label>Choose a country</:label>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
-  </.listbox>
-  ```
-
-  ### Custom
-
-  This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack).
-  Use the `:item` slot with `:let={%{item: entry}}` to access the entry map.
-
-  ```heex
-  <.listbox
-    class="listbox"
-    items={Corex.List.new([
+  <.listbox class="listbox" items={
+    Corex.List.new([
       %{label: "France", value: "fra"},
       %{label: "Belgium", value: "bel"},
       %{label: "Germany", value: "deu"},
       %{label: "Netherlands", value: "nld"},
       %{label: "Switzerland", value: "che"},
       %{label: "Austria", value: "aut"}
-    ])}
-  >
-    <:label>
-      Country of residence
-    </:label>
-    <:item :let={%{item: entry}}>
-      <Flagpack.flag name={String.to_atom(to_string(entry.value))} />
-      {entry.label}
-    </:item>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
+    ])
+  }>
+    <:label>Choose a country</:label>
   </.listbox>
   ```
 
-  ### Custom Grouped
+  ### With indicator
 
   ```heex
-  <.listbox
-    class="listbox"
-    items={Corex.List.new([
+  <.listbox class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
+    ])
+  }>
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  ### Grouped
+
+  ```heex
+  <.listbox class="listbox" items={
+    Corex.List.new([
       %{label: "France", value: "fra", group: "Europe"},
       %{label: "Belgium", value: "bel", group: "Europe"},
       %{label: "Germany", value: "deu", group: "Europe"},
       %{label: "Japan", value: "jpn", group: "Asia"},
       %{label: "China", value: "chn", group: "Asia"},
-      %{label: "South Korea", value: "kor", group: "Asia"}
-    ])}
-  >
-    <:item :let={%{item: entry}}>
-      <Flagpack.flag name={String.to_atom(to_string(entry.value))} />
-      {entry.label}
-    </:item>
-    <:item_indicator>
-      <.heroicon name="hero-check" />
-    </:item_indicator>
+      %{label: "USA", value: "usa", group: "North America"}
+    ])
+  }>
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
   </.listbox>
   ```
 
-  ### Stream
+  ### Custom item slot
 
-  Use with `Phoenix.LiveView.stream/3` to add or remove items dynamically. Keep a list in sync with the stream and pass it as `items`. The hook reads `data-items` and rebuilds the list when items change.
-
-  For actions inside the `:item` slot (e.g. a remove button), use `data-phx-push` and `data-phx-push-id` so the listbox hook can delegate clicks to LiveView:
+  Requires [Flagpack](https://hex.pm/packages/flagpack). Use `:item` with `:let={%{item: entry}}`.
 
   ```heex
-  def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> stream_configure(:items, dom_id: &"listbox:my-listbox:item:#{&1.value}")
-     |> stream(:items, @initial_items)
-     |> assign(:items_list, @initial_items)}
-  end
+  <.listbox class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"},
+      %{label: "Netherlands", value: "nld"},
+      %{label: "Switzerland", value: "che"},
+      %{label: "Austria", value: "aut"}
+    ])
+  }>
+    <:label>Country of residence</:label>
+    <:item :let={%{item: entry}}>
+      <Flagpack.flag name={String.to_atom(entry.value)} />
+      {entry.label}
+    </:item>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
 
-  def render(assigns) do
-    ~H"""
-    <.listbox id="my-listbox" class="listbox" items={@items_list}>
-      <:label>Choose an item</:label>
-      <:empty>No items</:empty>
-      <:item :let={%{item: entry}}>
-        <span class="flex items-center justify-between gap-2 w-full">
-          <span class="flex items-center gap-2">
-            <.action
-              phx-click={JS.push("remove_item", value: %{value: entry.value})}
-              data-phx-push="remove_item"
-              data-phx-push-id={entry.value}
-              class="button button--sm"
-            >
-              <.heroicon name="hero-trash" />
-            </.action>
-            <span>{entry.label}</span>
-          </span>
-        </span>
-      </:item>
-      <:item_indicator>
-        <.heroicon name="hero-check" />
-      </:item_indicator>
-    </.listbox>
-    """
-  end
+  <!-- tabs-close -->
 
-  def handle_event("remove_item", %{"value" => v}, socket) do
-    item = Enum.find(socket.assigns.items_list, &(to_string(&1.value) == v))
-    if item do
-      {:noreply,
-       socket
-       |> stream_delete(:items, item)
-       |> assign(:items_list, List.delete(socket.assigns.items_list, item))}
-    else
-      {:noreply, socket}
-    end
+  ## API
+
+  Requires a stable `id` on `<.listbox>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set selection (server) | `socket` |
+  | [`value/1`](#value/1) | Read selection (client) | `%Phoenix.LiveView.JS{}` |
+  | [`value/2`](#value/2) | Read selection (client, opts) | `%Phoenix.LiveView.JS{}` |
+  | [`value/3`](#value/3) | Read selection (server) | `socket` |
+  | [`value/4`](#value/4) | Read selection (server, opts) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
+
+  ```heex
+  <.action phx-click={Corex.Listbox.set_value("listbox-api-sv-client", ["bel"])} class="button button--sm">
+    Belgium
+  </.action>
+  <.listbox id="listbox-api-sv-client" class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])
+  }>
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  ```elixir
+  def handle_event("listbox_api_set_value", _params, socket) do
+    {:noreply, Corex.Listbox.set_value(socket, "listbox-api-sv-server", ["bel"])}
+  end
+  ```
+
+  ### value
+
+  ```heex
+  <.action phx-click={Corex.Listbox.value("listbox-api-val-client")} class="button button--sm">
+    Read selection
+  </.action>
+  ```
+
+  ```elixir
+  def handle_event("listbox_api_value_server", _params, socket) do
+    {:noreply, Corex.Listbox.value(socket, "listbox-api-val-server")}
   end
   ```
 
   <!-- tabs-close -->
 
-  ## Styling
+  ## Events
 
-  Use data attributes to target elements:
+  ### Server events
 
-  ```css
-  [data-scope="listbox"][data-part="root"] {}
-  [data-scope="listbox"][data-part="content"] {}
-  [data-scope="listbox"][data-part="item"] {}
-  [data-scope="listbox"][data-part="item-text"] {}
-  [data-scope="listbox"][data-part="item-indicator"] {}
-  [data-scope="listbox"][data-part="item-group"] {}
-  [data-scope="listbox"][data-part="item-group-label"] {}
-  ```
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="listbox_value_changed"` | Selection changes | `%{"id" => id, "value" => values}` — list of selected value strings |
 
-  If you wish to use the default Corex styling, you can use the class `listbox` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  <!-- tabs-open -->
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/listbox.css";
-  ```
-
-  You can then use modifiers
+  ### on_value_change
 
   ```heex
-  <.listbox class="listbox listbox--accent listbox--lg" items={Corex.List.new([])}>
+  <.listbox
+    class="listbox"
+    items={
+      Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
+      ])
+    }
+    on_value_change="listbox_value_changed"
+  >
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
   </.listbox>
   ```
 
+  ```elixir
+  def handle_event("listbox_value_changed", %{"id" => id, "value" => value}, socket) do
+    {:noreply, assign(socket, :selected, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="listbox-value-changed"` | Selection changes | `id`, `value`, `items` |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.listbox
+    id="listbox-events-client"
+    class="listbox"
+    items={
+      Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
+      ])
+    }
+    on_value_change_client="listbox-value-changed"
+  >
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  ```javascript
+  document.getElementById("listbox-events-client")?.addEventListener("listbox-value-changed", (event) => {
+    console.log(event.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Stream
+
+  Use `Phoenix.LiveView.stream/3` to add or remove items at runtime. Keep a list assign in sync with the stream and pass `Corex.List.new(@items_list)` as `items`. Configure `dom_id` to match each item element id (`listbox:stream-listbox:item:#{value}`).
+
+  ```elixir
+  defmodule MyAppWeb.ListboxStreamLive do
+    use MyAppWeb, :live_view
+
+    def mount(_params, _session, socket) do
+      initial = [
+        %{value: "1", label: "Apple"},
+        %{value: "2", label: "Banana"},
+        %{value: "3", label: "Cherry"}
+      ]
+
+      {:ok,
+       socket
+       |> stream_configure(:items, dom_id: &"listbox:stream-listbox:item:#{&1.value}")
+       |> stream(:items, initial)
+       |> assign(:items_list, initial)
+       |> assign(:next_id, 4)}
+    end
+
+    def handle_event("add_item", _params, socket) do
+      id = to_string(socket.assigns.next_id)
+      item = %{value: id, label: "Item " <> id}
+
+      {:noreply,
+       socket
+       |> stream_insert(:items, item)
+       |> assign(:items_list, socket.assigns.items_list ++ [item])
+       |> assign(:next_id, socket.assigns.next_id + 1)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.listbox id="stream-listbox" class="listbox" items={Corex.List.new(@items_list)}>
+        <:label>Choose an item</:label>
+        <:empty>No items</:empty>
+        <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+      </.listbox>
+      """
+    end
+  end
+  ```
+
+  ### Controlled
+
+  ```heex
+  <.listbox
+    class="listbox"
+    controlled
+    value={@value}
+    on_value_change="listbox_controlled_changed"
+    items={
+      Corex.List.new([
+        %{label: "France", value: "fra"},
+        %{label: "Belgium", value: "bel"},
+        %{label: "Germany", value: "deu"}
+      ])
+    }
+  >
+    <:label>Choose a country</:label>
+    <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+  </.listbox>
+  ```
+
+  ```elixir
+  def handle_event("listbox_controlled_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :value, value)}
+  end
+  ```
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -306,8 +402,6 @@ defmodule Corex.Listbox do
     assigns =
       assigns
       |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:dir, fn -> "ltr" end)
-      |> assign_new(:controlled, fn -> false end)
       |> assign(:value, validate_value!(assigns[:value] || []))
       |> assign(:items, items)
       |> assign(:has_groups, has_groups)
@@ -366,8 +460,13 @@ defmodule Corex.Listbox do
             </div>
           </div>
           <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>{entry[:label]}</span>
-            {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
+            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
+              <%= if @item == [] do %>
+                {entry[:label]}
+              <% else %>
+                {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
+              <% end %>
+            </span>
             <span
               phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
               {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
@@ -412,10 +511,31 @@ defmodule Corex.Listbox do
     end
   end
 
-  @doc type: :api
-  @doc """
-  Sets listbox selection from the client. Dispatches `corex:listbox:set-value` on the hook root.
-  """
+  api_doc(~S"""
+  Set the listbox selection from `phx-click`. Dispatches `corex:listbox:set-value` with `detail.value` (string list, wrapped if a single scalar is passed internally).
+
+  ```heex
+  <.action phx-click={Corex.Listbox.set_value("my-listbox", ["fra"])}>Choose France</.action>
+  <.listbox id="my-listbox" class="listbox" items={
+    Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"}
+    ])
+  }>
+    <:label>Country</:label>
+  </.listbox>
+  ```
+
+  ```javascript
+  document.getElementById("my-listbox")?.dispatchEvent(
+    new CustomEvent("corex:listbox:set-value", {
+      bubbles: false,
+      detail: { value: ["fra"] },
+    })
+  );
+  ```
+  """)
+
   def set_value(listbox_id, value) when is_binary(listbox_id) do
     JS.dispatch("corex:listbox:set-value",
       to: "##{listbox_id}",
@@ -424,10 +544,16 @@ defmodule Corex.Listbox do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets listbox selection from the server via `push_event` (`listbox_set_value`).
-  """
+  api_doc(~S"""
+  Set the listbox selection from `handle_event` (`listbox_set_value`).
+
+  ```elixir
+  def handle_event("pick_country", %{"code" => c}, socket) do
+    {:noreply, Corex.Listbox.set_value(socket, "my-listbox", [c])}
+  end
+  ```
+  """)
+
   def set_value(socket, listbox_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
     LiveView.push_event(socket, "listbox_set_value", %{
@@ -436,11 +562,27 @@ defmodule Corex.Listbox do
     })
   end
 
-  @doc type: :api
-  @doc """
-  Requests the listbox's current selected values from the client. See `value/2` (socket arity) for `:respond_to`.
-  """
-  def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
+  api_doc(~S"""
+  Read selected values from `phx-click`. Dispatches `corex:listbox:value`. Optional `respond_to:` `:server`, `:client`, or `:both`.
+
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `listbox_value_response` | `%{"id" => id, "value" => selection}` |
+  | Client | `listbox-value` on the root | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.Listbox.value("my-listbox")}>Read selection</.action>
+  <.listbox id="my-listbox" class="listbox" items={Corex.List.new([%{label: "A", value: "a"}])}>
+    <:label>Pick</:label>
+  </.listbox>
+  ```
+
+  ```elixir
+  def handle_event("listbox_value_response", %{"id" => _, "value" => v}, socket) do
+    {:noreply, assign(socket, :picked, v)}
+  end
+  ```
+  """)
 
   def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
     JS.dispatch("corex:listbox:value",
@@ -450,16 +592,27 @@ defmodule Corex.Listbox do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Requests the listbox's current selected values from the client via `push_event` (`listbox_value`).
-
-  The hook responds with `listbox_value_response` and/or dispatches `listbox-value` depending on `:respond_to`.
-  """
   def value(socket, listbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
     value(socket, listbox_id, [])
   end
+
+  api_doc_short("Same as [`value/2`](#value/2) with default `respond_to:`.")
+  def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
+
+  api_doc(~S"""
+  Read selected values from `handle_event` (`listbox_value`). Same replies as [`value/2`](#value/2).
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `listbox_value_response` | `%{"id" => id, "value" => selection}` |
+
+  ```elixir
+  def handle_event("read_listbox", _, socket) do
+    {:noreply, Corex.Listbox.value(socket, "my-listbox", respond_to: :server)}
+  end
+  ```
+  """)
 
   def value(socket, listbox_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) and is_list(opts) do

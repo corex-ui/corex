@@ -23,7 +23,7 @@ Add `corex` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-beta.5"}
+    {:corex, "~> 0.1.0-rc.0"}
   ]
 end
 ```
@@ -53,32 +53,51 @@ config :esbuild,
 
 ## 3. Phoenix Hooks
 
-Import Corex and merge its hooks into the `LiveSocket`. After your existing LiveView and `colocatedHooks` imports, add:
+<!-- tabs-open -->
+
+### All Corex hooks
 
 ```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import corex from "corex"
-```
 
-Then merge `...corex` into the `hooks` map:
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
 
-```javascript
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: { ...colocatedHooks, ...corex }
+  hooks: { ...corex },
 })
+
+liveSocket.connect()
 ```
 
-`import corex from "corex"` registers **every** Corex hook and keeps the full lazy registry in your bundle graph. To register **only** some hooks **without** pulling that full table into your app bundle, import **`hooks`** from **`corex/hooks`** and pass **lazy factories** (object keys must match **`phx-hook`** names, e.g. **`Dialog`**):
+Merge with `colocatedHooks` when your app uses them:
 
 ```javascript
+hooks: { ...colocatedHooks, ...corex },
+```
+
+### Lazy hooks only
+
+Import only the hooks you render. Keys must match `phx-hook` names (`Dialog`, `Accordion`, …):
+
+```javascript
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import { hooks } from "corex/hooks"
+
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  ?.getAttribute("content")
 
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
   hooks: {
-    ...colocatedHooks,
     ...hooks({
       Accordion: () => import("corex/accordion"),
       Dialog: () => import("corex/dialog"),
@@ -86,13 +105,15 @@ const liveSocket = new LiveSocket("/live", Socket, {
     }),
   },
 })
+
+liveSocket.connect()
 ```
 
-Each value must be a **zero-argument function** returning the same dynamic import your bundler would use for that subpath. Esbuild then emits chunks **only** for those modules.
+Each value is a zero-argument function returning a dynamic `import()`. Esbuild emits chunks only for listed hooks.
 
-If you already **eager-import** hook implementations from **`corex/<component>`**, you can still merge them with the same **`hooks`** helper: pass an object whose values are **hook objects** (not functions), and **`hooks`** returns that object unchanged (useful with **`colocatedHooks`**).
+<!-- tabs-close -->
 
-## 4. Root layout: load `app.js` as a module
+## 4. Root layout: load app.js as a module
 
 The Corex JS bundle is ESM, so the browser must load it as a module. In `lib/my_app_web/components/layouts/root.html.heex`, set `type="module"` on the `<script>` tag that loads `assets/js/app.js`:
 
@@ -127,12 +148,16 @@ use Corex, only: [:accordion], prefix: "ui"
 ```
 
 ```heex
-<.ui_accordion id="my-accordion" class="accordion">
-  ...
-</.ui_accordion>
+<.ui_accordion
+  id="my-accordion"
+  class="accordion"
+  items={Corex.Content.new([
+    [value: "first", label: "First", content: "First panel."],
+    [value: "second", label: "Second", content: "Second panel."],
+    [value: "third", label: "Third", content: "Third panel."]
+  ])}
+/>
 ```
-
-## 6. Verify
 
 Compile and rebuild assets:
 
@@ -141,9 +166,9 @@ mix compile
 mix assets.build
 ```
 
-## 7. Optional: Corex Design
+## 6. Optional: Corex Design
 
-The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Install the assets with:
+See the [Design guide](design.html) for commands, modifiers, shared utilities, and themes. Short version: install assets with:
 
 ```bash
 mix corex.design
@@ -161,7 +186,7 @@ Then import the design layers from `assets/css/app.css`. The minimum is `main.cs
 @import "../corex/components/accordion.css";
 ```
 
-Add `@import "../corex/components/toggle-group.css"` when you use `toggle_group`, and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
+Add `@import "../corex/components/toggle.css"` when you use `toggle` (for example a mode switcher), and `@import "../corex/components/select.css"` when you use `select` (for example theme or language pickers).
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 
@@ -177,7 +202,7 @@ Give **`<body>`** the **`typo`** and **`layout`** classes so base typography and
 </html>
 ```
 
-## 8. Optional: Phoenix flash with Toast
+## 7. Optional: Phoenix flash with Toast
 
 To render Phoenix flash (and LiveView flash) as Corex toasts instead of the default `<.flash_group>`, render a `<.toast_group>` in your app layout and pass it `flash={@flash}`. In `lib/my_app_web/components/layouts.ex`, replace the flash group inside `def app/1` with:
 
@@ -213,9 +238,9 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
-See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and the rest of the toast API.
+See `Corex.Toast` for `create/5`, `create/6`, `update/3`, `update/4`, `remove/2`, `remove/3`, and `dismiss/2` / `dismiss/3`. Pass `action: %{label: "…", js: %Phoenix.LiveView.JS{}}` with `JS.push`, `JS.patch`, or `JS.navigate` composed in `js`.
 
-## 9. Add your first component
+## 8. Add your first component
 
 After the install, every Corex function component is available in your templates. The `id` attribute is required for any component you want to drive from the API.
 
@@ -375,11 +400,9 @@ defmodule MyAppWeb.AccordionAsyncLive do
 end
 ```
 
-## 10. Driving components from the API
+## 9. Driving components from the API
 
-See [API](api.html) for the shared pattern (`id`, `handle_event`, `phx-click`, DOM `CustomEvent`). See [Events](events.html) for `on_*`, client events, and responses.
-
-Every component documents its own helpers under **`Corex.<Name>`** in Hexdocs. You need a stable **`id`** on the root.
+Every component documents its own helpers under **`Corex.<Name>`** in Hexdocs (see **API** and **Events** on each module page). You need a stable **`id`** on the root.
 
 **Client-side** (inline binding):
 
@@ -399,10 +422,11 @@ end
 
 ## What's next
 
+To upgrade an existing app, see [Updating Corex](update.html).
+
 This is the minimum required to use Corex. From here, layer on the optional features one at a time:
 
-- [API](api.html) and [Events](events.html)  -  control and listen to components from LiveView or JS.
-- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
+- [Dark mode](dark_mode.html)  -  `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle>` mode switcher.
 - [Theming](theming.html)  -  `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
 - [Localize](localize.html)  -  `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
 - [MCP](mcp.html)  -  Corex MCP for AI tooling in development.

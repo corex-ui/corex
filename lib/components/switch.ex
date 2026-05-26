@@ -2,160 +2,140 @@ defmodule Corex.Switch do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Switch](https://zagjs.com/components/react/switch).
 
-  ## Examples
+  ## Anatomy
+
   <!-- tabs-open -->
 
-  ### Basic Usage
+  ### Minimal
 
   ```heex
-  <.switch id="my-switch">
-    <:label>Enable notifications</:label>
+  <.switch class="switch" aria_label="Enable notifications" />
+  ```
+
+  ### With label
+
+  ```heex
+  <.switch class="switch">
+    <:label>Enable</:label>
   </.switch>
   ```
 
-  ### Label before control
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.switch>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_checked/2`](#set_checked/2) | Set checked state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_checked/3`](#set_checked/3) | Set checked state (server) | `socket` |
+  | [`toggle_checked/2`](#toggle_checked/2) | Toggle checked (client) | `%Phoenix.LiveView.JS{}` |
+  | [`toggle_checked/3`](#toggle_checked/3) | Toggle checked (server) | `socket` |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.switch>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_checked_change="switch_changed"` | Checked state changes | `%{"id" => id, "checked" => boolean}` |
+
+  <!-- tabs-open -->
+
+  ### on_checked_change
 
   ```heex
-  <.switch id="my-switch">
-    <:label position={:pre}>Enable notifications</:label>
-  </.switch>
-  ```
-
-  ### Controlled Mode
-
-  ```heex
-  <.switch
-    id="my-switch"
-    controlled
-    checked={@switch_checked}
-    on_checked_change="switch_changed">
-    <:label>Enable notifications</:label>
+  <.switch class="switch" on_checked_change="switch_changed">
+    <:label>Subscribe</:label>
   </.switch>
   ```
 
   ```elixir
-  def handle_event("switch_changed", %{"checked" => checked}, socket) do
-    {:noreply, assign(socket, :switch_checked, checked)}
+  def handle_event("switch_changed", %{"id" => id, "checked" => checked}, socket) do
+    {:noreply, assign(socket, :checked, checked)}
   end
   ```
 
   <!-- tabs-close -->
 
-  ## Phoenix Form Integration
+  ### Client events
 
-  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_checked_change_client="switch-changed"` | Checked state changes | `id`, `checked` |
 
-  ### Controller
+  <!-- tabs-open -->
 
-  Build the form from an Ecto changeset:
+  ### on_checked_change_client
+
+  ```heex
+  <.switch id="switch-on-checked-change-client" class="switch" on_checked_change_client="switch-changed">
+    <:label>Subscribe</:label>
+  </.switch>
+  ```
+
+  ```javascript
+  const el = document.getElementById("switch-on-checked-change-client");
+  el?.addEventListener("switch-changed", (event) => console.log(event.detail));
+  ```
+
+  <!-- tabs-close -->
+
+  ## Patterns
+
+  <!-- tabs-open -->
+
+  ### Controlled
+
+  For server-owned checked state, set `controlled`, bind `checked`, and handle `on_checked_change` in LiveView.
+
+  ```heex
+  <.switch
+    class="switch"
+    controlled
+    checked={@checked}
+    on_checked_change="patterns_checked"
+  >
+    <:label>Enable</:label>
+  </.switch>
+  ```
 
   ```elixir
-  def form_page(conn, _params) do
-    form =
-      %MyApp.Form.Preferences{}
-      |> MyApp.Form.Preferences.changeset(%{})
-      |> Phoenix.Component.to_form(as: :preferences, id: "preferences-form")
-    render(conn, :form_page, form: form)
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :checked, false)}
+  end
+
+  def handle_event("patterns_checked", %{"checked" => checked}, socket) do
+    {:noreply, assign(socket, :checked, checked == true or checked == "true")}
   end
   ```
 
+  <!-- tabs-close -->
+
+  ## Form
+
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:notifications]}` so the switch name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:notifications])}` when you want alert borders after validation.
+
   ```heex
-  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
-    <.switch field={f[:notifications]} class="switch">
+  <.form for={@form} phx-change="validate">
+    <.switch field={@form[:notifications]} class="switch">
       <:label>Enable notifications</:label>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.switch>
-    <button type="submit">Submit</button>
   </.form>
   ```
 
-  ### Live View
+  ## Style
 
-  When using Phoenix form in a Live view you must also add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
-
-  ### With Ecto changeset
-
-  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
-
-  This allows the Live View to be the source of truth and the component to be in sync accordingly.
-
-  First create your schema and changeset:
-
-  ```elixir
-  defmodule MyApp.Accounts.User do
-    use Ecto.Schema
-    import Ecto.Changeset
-
-    embedded_schema do
-      field :notifications_enabled, :boolean, default: false
-    end
-
-    def changeset(user, attrs) do
-      user
-      |> cast(attrs, [:notifications_enabled])
-      |> validate_required([:notifications_enabled])
-    end
-  end
-  ```
-
-  ```elixir
-  defmodule MyAppWeb.UserLive do
-    use MyAppWeb, :live_view
-    alias MyApp.Accounts.User
-
-    def mount(_params, _session, socket) do
-      {:ok, assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
-    end
-
-    def handle_event("validate", %{"user" => user_params}, socket) do
-      changeset = User.changeset(%User{}, user_params)
-      {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form for={@form} id={@form.id} phx-change="validate">
-        <.switch field={@form[:notifications_enabled]} class="switch" controlled>
-          <:label>Enable notifications</:label>
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.switch>
-      </.form>
-      """
-    end
-  end
-  ```
-
-  ## Programmatic Control
-
-  ```heex
-  # Client-side
-  <button phx-click={Corex.Switch.set_checked("my-switch", true)}>
-    Turn On
-  </button>
-
-  <button phx-click={Corex.Switch.toggle_checked("my-switch")}>
-    Toggle
-  </button>
-
-  # Server-side
-  def handle_event("turn_on", _, socket) do
-    {:noreply, Corex.Switch.set_checked(socket, "my-switch", true)}
-  end
-
-  def handle_event("toggle", _, socket) do
-    {:noreply, Corex.Switch.toggle_checked(socket, "my-switch")}
-  end
-  ```
-
-  ## Styling
-
-  Use data attributes to target elements:
+  Target parts with `data-scope` and `data-part`, or use Corex Design: import tokens and `switch.css`, then set `class="switch"` on `<.switch>`.
 
   ```css
   [data-scope="switch"][data-part="root"] {}
@@ -166,27 +146,46 @@ defmodule Corex.Switch do
   [data-scope="switch"][data-part="error"] {}
   ```
 
-  If you wish to use the default Corex styling, you can use the class `switch` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/switch.css";
   ```
 
-  You can then use modifiers
+  Stack modifiers on the host (`class` on `<.switch>`).
 
-  ```heex
-  <.switch class="switch switch--accent switch--lg">
-  ```
+  <!-- tabs-open -->
+
+  ### Color
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | Default | `switch` |
+  | Accent | `switch switch--accent` |
+  | Brand | `switch switch--brand` |
+  | Alert | `switch switch--alert` |
+  | Info | `switch switch--info` |
+  | Success | `switch switch--success` |
+
+  ### Size
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | SM | `switch switch--sm` |
+  | MD | `switch switch--md` |
+  | LG | `switch switch--lg` |
+  | XL | `switch switch--xl` |
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Helpers
+  import Corex.Api.Doc
+
+  alias Corex.Checkable.Helpers, as: CheckableHelpers
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
   alias Corex.Switch.Connect
   alias Phoenix.HTML.Form
@@ -297,16 +296,10 @@ defmodule Corex.Switch do
   end
 
   def switch(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     assigns =
       assigns
-      |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
+      |> Corex.FormField.assign_form_field(field)
       |> assign(:checked, Form.normalize_value("checkbox", field.value))
-      |> assign_new(:form, fn -> field.form.id end)
 
     switch(assigns)
   end
@@ -317,7 +310,8 @@ defmodule Corex.Switch do
       |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign(:checked, Helpers.normalize_checkbox_checked(assigns.checked))
+      |> assign_new(:form_field, fn -> false end)
+      |> assign(:checked, CheckableHelpers.normalize_checked(assigns.checked))
 
     ~H"""
     <div
@@ -329,6 +323,7 @@ defmodule Corex.Switch do
       {Connect.props(%Props{
         id: @id,
         controlled: @controlled,
+        form_field: @form_field,
         checked: @checked,
         name: @name,
         form: @form,
@@ -344,8 +339,9 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-        <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
+      <input type="hidden" name={@name} value="false" disabled={@disabled} />
+
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation, read_only: @read_only})}>
         <input
           phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
           {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
@@ -380,27 +376,39 @@ defmodule Corex.Switch do
           {@aria_label}
         </span>
       </label>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="switch" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
+        data-scope="switch"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the switch checked state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set checked state from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Switch.set_checked("my-switch", true)}>On</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
 
-      <button phx-click={Corex.Switch.set_checked("my-switch", true)}>
-        Turn On
-      </button>
+  ```javascript
+  document.getElementById("my-switch")?.dispatchEvent(
+    new CustomEvent("corex:switch:set-checked", {
+      bubbles: false,
+      detail: { checked: true },
+    })
+  );
+  ```
+  """)
 
-      <button phx-click={Corex.Switch.set_checked("my-switch", false)}>
-        Turn Off
-      </button>
-  """
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
     JS.dispatch("corex:switch:set-checked",
       to: "##{switch_id}",
@@ -409,17 +417,23 @@ defmodule Corex.Switch do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the switch checked state from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Set checked state from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="switch_on">On</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
 
-      def handle_event("turn_on", _params, socket) do
-        socket = Corex.Switch.set_checked(socket, "my-switch", true)
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("switch_on", _, socket) do
+    {:noreply, Corex.Switch.set_checked(socket, "my-switch", true)}
+  end
+  ```
+  """)
+
   def set_checked(socket, switch_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
@@ -429,16 +443,23 @@ defmodule Corex.Switch do
     })
   end
 
-  @doc type: :api
-  @doc """
-  Toggles the switch checked state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Toggle checked state from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Switch.toggle_checked("my-switch")}>Toggle</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
 
-      <button phx-click={Corex.Switch.toggle_checked("my-switch")}>
-        Toggle
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-switch")?.dispatchEvent(
+    new CustomEvent("corex:switch:toggle-checked", { bubbles: false })
+  );
+  ```
+  """)
+
   def toggle_checked(switch_id) when is_binary(switch_id) do
     JS.dispatch("corex:switch:toggle-checked",
       to: "##{switch_id}",
@@ -446,17 +467,23 @@ defmodule Corex.Switch do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Toggles the switch checked state from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Toggle checked state from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="flip_switch">Toggle</.action>
+  <.switch id="my-switch" class="switch" name="s" value="on">
+    <:label>Notify</:label>
+  </.switch>
+  ```
 
-      def handle_event("toggle", _params, socket) do
-        socket = Corex.Switch.toggle_checked(socket, "my-switch")
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("flip_switch", _, socket) do
+    {:noreply, Corex.Switch.toggle_checked(socket, "my-switch")}
+  end
+  ```
+  """)
+
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
     LiveView.push_event(socket, "switch_toggle_checked", %{

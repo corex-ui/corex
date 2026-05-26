@@ -1,30 +1,32 @@
 defmodule E2eWeb.Demos.ToastDemo do
   use E2eWeb, :html
 
+  alias Phoenix.LiveView.JS
+
   def api_client_binding_code do
     ~S"""
     <div class="layout__row">
       <.action
-        phx-click={Corex.Toast.create_toast("layout-toast", "Info", "Info description", :info, [])}
+        phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
         class="button button--sm"
       >
         Info
       </.action>
       <.action
-        phx-click={Corex.Toast.create_toast("layout-toast", "Success", "Success description", :success, [])}
+        phx-click={Corex.Toast.create("layout-toast", "Success", "Success description", :success, [])}
         class="button button--sm"
       >
         Success
       </.action>
       <.action
-        phx-click={Corex.Toast.create_toast("layout-toast", "Error", "Error description", :error, [])}
+        phx-click={Corex.Toast.create("layout-toast", "Error", "Error description", :error, [])}
         class="button button--sm"
       >
         Error
       </.action>
       <.action
         phx-click={
-          Corex.Toast.create_toast("layout-toast", "Loading", "Loading description", :info,
+          Corex.Toast.create("layout-toast", "Loading", "Loading description", :info,
             duration: :infinity,
             loading: true
           )
@@ -41,28 +43,26 @@ defmodule E2eWeb.Demos.ToastDemo do
     ~H"""
     <div class="layout__row">
       <.action
-        phx-click={Corex.Toast.create_toast("layout-toast", "Info", "Info description", :info, [])}
+        phx-click={Corex.Toast.create("layout-toast", "Info", "Info description", :info, [])}
         class="button button--sm"
       >
         Info
       </.action>
       <.action
-        phx-click={
-          Corex.Toast.create_toast("layout-toast", "Success", "Success description", :success, [])
-        }
+        phx-click={Corex.Toast.create("layout-toast", "Success", "Success description", :success, [])}
         class="button button--sm"
       >
         Success
       </.action>
       <.action
-        phx-click={Corex.Toast.create_toast("layout-toast", "Error", "Error description", :error, [])}
+        phx-click={Corex.Toast.create("layout-toast", "Error", "Error description", :error, [])}
         class="button button--sm"
       >
         Error
       </.action>
       <.action
         phx-click={
-          Corex.Toast.create_toast("layout-toast", "Loading", "Loading description", :info,
+          Corex.Toast.create("layout-toast", "Loading", "Loading description", :info,
             duration: :infinity,
             loading: true
           )
@@ -75,7 +75,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_create_toast_client_js_heex do
+  def api_create_client_js_heex do
     ~S"""
     <div class="layout__row">
       <button
@@ -110,7 +110,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_create_toast_client_js do
+  def api_create_client_js do
     ~S"""
     const el = document.getElementById("layout-toast");
     const dispatch = (detail) =>
@@ -153,7 +153,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_create_toast_client_ts do
+  def api_create_client_ts do
     ~S"""
     const el: HTMLElement | null = document.getElementById("layout-toast");
     const dispatch = (detail: Record<string, unknown>) =>
@@ -196,7 +196,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_create_toast_client_js_example(assigns) do
+  def api_create_client_js_example(assigns) do
     _ = assigns
 
     ~H"""
@@ -233,7 +233,7 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_push_toast_server_heex do
+  def api_create_server_heex do
     ~S"""
     <div class="layout__row">
       <.action phx-click="toast_api_push_info" class="button button--sm">Info</.action>
@@ -244,33 +244,33 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
-  def api_push_toast_server_elixir do
+  def api_create_server_elixir do
     ~S"""
     def handle_event("toast_api_push_info", _params, socket) do
       {:noreply,
-       Corex.Toast.push_toast(socket, "layout-toast", "Info", "From server", :info, 5000)}
+       Corex.Toast.create(socket, "layout-toast", "Info", "From server", :info, duration: 5000)}
     end
 
     def handle_event("toast_api_push_success", _params, socket) do
       {:noreply,
-       Corex.Toast.push_toast(socket, "layout-toast", "Success", "From server", :success, 5000)}
+       Corex.Toast.create(socket, "layout-toast", "Success", "From server", :success, duration: 5000)}
     end
 
     def handle_event("toast_api_push_error", _params, socket) do
       {:noreply,
-       Corex.Toast.push_toast(socket, "layout-toast", "Error", "From server", :error, 5000)}
+       Corex.Toast.create(socket, "layout-toast", "Error", "From server", :error, duration: 5000)}
     end
 
     def handle_event("toast_api_push_loading", _params, socket) do
       {:noreply,
-       Corex.Toast.push_toast(socket, "layout-toast", "Loading", "From server", :info, :infinity,
+       Corex.Toast.create(socket, "layout-toast", "Loading", "From server", :info, duration: :infinity,
          loading: true
        )}
     end
     """
   end
 
-  def api_push_toast_server_example(assigns) do
+  def api_create_server_example(assigns) do
     _ = assigns
 
     ~H"""
@@ -283,14 +283,552 @@ defmodule E2eWeb.Demos.ToastDemo do
     """
   end
 
+  def api_update_toast_client_binding_code do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "Before update", "Create this toast once, then tap Update.", :info,
+            id: "toast-api-update-demo",
+            duration: 60_000
+          )
+        }
+        class="button button--sm"
+      >
+        Create demo toast
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.update("layout-toast", "toast-api-update-demo", %{
+            title: "After update",
+            description: "Updated via Corex.Toast.update/3",
+            type: :success,
+            duration: 5000
+          })
+        }
+        class="button button--sm"
+      >
+        Update
+      </.action>
+    </div>
+    """
+  end
+
+  def api_update_toast_client_binding_example(assigns) do
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Corex.Toast.create(
+            "layout-toast",
+            "Before update",
+            "Create this toast once, then tap Update.",
+            :info,
+            id: "toast-api-update-demo",
+            duration: 60_000
+          )
+        }
+        class="button button--sm"
+      >
+        Create demo toast
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.update("layout-toast", "toast-api-update-demo", %{
+            title: "After update",
+            description: "Updated via Corex.Toast.update/3",
+            type: :success,
+            duration: 5000
+          })
+        }
+        class="button button--sm"
+      >
+        Update
+      </.action>
+    </div>
+    """
+  end
+
+  def api_update_toast_client_js_heex do
+    ~S"""
+    <div class="layout__row">
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+      >
+        Create demo toast
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
+      >
+        Update
+      </button>
+    </div>
+    """
+  end
+
+  def api_update_toast_client_js do
+    ~S"""
+    const el = document.getElementById("layout-toast");
+    el?.dispatchEvent(
+      new CustomEvent("toast:create", {
+        bubbles: false,
+        detail: {
+          id: "toast-api-update-demo",
+          groupId: "layout-toast",
+          title: "Before update",
+          description: "Create once then call update.",
+          type: "info",
+          duration: "60000",
+        },
+      })
+    );
+
+    el?.dispatchEvent(
+      new CustomEvent("toast:update", {
+        bubbles: false,
+        detail: {
+          id: "toast-api-update-demo",
+          groupId: "layout-toast",
+          title: "After update",
+          description: "Updated via toast:update",
+          type: "success",
+          duration: "5000",
+        },
+      })
+    );
+    """
+  end
+
+  def api_update_toast_client_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("layout-toast");
+    el?.dispatchEvent(
+      new CustomEvent("toast:create", {
+        bubbles: false,
+        detail: {
+          id: "toast-api-update-demo",
+          groupId: "layout-toast",
+          title: "Before update",
+          description: "Create once then call update.",
+          type: "info",
+          duration: "60000",
+        },
+      })
+    );
+
+    el?.dispatchEvent(
+      new CustomEvent("toast:update", {
+        bubbles: false,
+        detail: {
+          id: "toast-api-update-demo",
+          groupId: "layout-toast",
+          title: "After update",
+          description: "Updated via toast:update",
+          type: "success",
+          duration: "5000",
+        },
+      })
+    );
+    """
+  end
+
+  def api_update_toast_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row">
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:create', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'Before update', description: 'Create once then tap Update.', type: 'info', duration: '60000' } }))"
+      >
+        Create demo toast
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('layout-toast')?.dispatchEvent(new CustomEvent('toast:update', {bubbles: false, detail: { id: 'toast-api-update-demo', groupId: 'layout-toast', title: 'After update', description: 'Updated via toast:update', type: 'success', duration: '5000' } }))"
+      >
+        Update
+      </button>
+    </div>
+    """
+  end
+
+  def api_update_toast_server_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action phx-click="toast_api_seed_update_demo" class="button button--sm">Create demo toast</.action>
+      <.action phx-click="toast_api_update_demo" class="button button--sm">Update</.action>
+    </div>
+    """
+  end
+
+  def api_update_toast_server_elixir do
+    ~S"""
+    def handle_event("toast_api_seed_update_demo", _params, socket) do
+      {:noreply,
+       Corex.Toast.create(socket, "layout-toast", "Before update", "Create once then tap Update.", :info,
+         id: "toast-api-update-demo",
+         duration: 60_000
+       )}
+    end
+
+    def handle_event("toast_api_update_demo", _params, socket) do
+      {:noreply,
+       Corex.Toast.update(socket, "layout-toast", "toast-api-update-demo", %{
+         title: "After update",
+         description: "Updated from server",
+         type: :success,
+         duration: 5000
+       })}
+    end
+    """
+  end
+
+  def api_update_toast_server_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row">
+      <.action phx-click="toast_api_seed_update_demo" class="button button--sm">
+        Create demo toast
+      </.action>
+      <.action phx-click="toast_api_update_demo" class="button button--sm">Update</.action>
+    </div>
+    """
+  end
+
+  def anatomy_type_code do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
+        class="button button--sm"
+      >
+        Info
+      </.action>
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Success", "Client binding", :success, [])}
+        class="button button--sm"
+      >
+        Success
+      </.action>
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Error", "Client binding", :error, [])}
+        class="button button--sm"
+      >
+        Error
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_type_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Info", "Client binding", :info, [])}
+        class="button button--sm"
+      >
+        Info
+      </.action>
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Success", "Client binding", :success, [])}
+        class="button button--sm"
+      >
+        Success
+      </.action>
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "Error", "Client binding", :error, [])}
+        class="button button--sm"
+      >
+        Error
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_duration_code do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)}
+        class="button button--sm"
+      >
+        2s
+      </.action>
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "5 seconds", "duration: 5000 (default)", :info, duration: 5000)}
+        class="button button--sm"
+      >
+        5s
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "Persistent", "duration: :infinity", :info, duration: :infinity)
+        }
+        class="button button--sm"
+      >
+        Infinity
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_duration_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "2 seconds", "duration: 2000", :info, duration: 2000)
+        }
+        class="button button--sm"
+      >
+        2s
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "5 seconds", "duration: 5000 (default)", :info,
+            duration: 5000
+          )
+        }
+        class="button button--sm"
+      >
+        5s
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "Persistent", "duration: :infinity", :info,
+            duration: :infinity
+          )
+        }
+        class="button button--sm"
+      >
+        Infinity
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_loading_code do
+    ~S"""
+    <div class="layout__row">
+      <.action
+        phx-click={Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)}
+        class="button button--sm"
+      >
+        No loading
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "Loading", "loading: true", :info,
+            duration: :infinity,
+            loading: true
+          )
+        }
+        class="button button--sm"
+      >
+        Loading
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_loading_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="layout__row">
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "No loading", "Default slot", :info, duration: 5000)
+        }
+        class="button button--sm"
+      >
+        No loading
+      </.action>
+      <.action
+        phx-click={
+          Corex.Toast.create("layout-toast", "Loading", "loading: true", :info,
+            duration: :infinity,
+            loading: true
+          )
+        }
+        class="button button--sm"
+      >
+        Loading
+      </.action>
+    </div>
+    """
+  end
+
+  def anatomy_trigger_redirect_code do
+    ~S"""
+    <.action
+      phx-click={
+        Corex.Toast.create("layout-toast", "Saved", "Action redirects to this anatomy page.", :success,
+          id: "toast-anatomy-redirect",
+          duration: 30_000,
+          action: %{
+            label: "Same page",
+            class: "button button--accent button--sm",
+            js: JS.patch(~p"/toast/anatomy")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with redirect
+    </.action>
+    """
+  end
+
+  def anatomy_trigger_redirect_example(assigns) do
+    ~H"""
+    <.action
+      phx-click={
+        Corex.Toast.create(
+          "layout-toast",
+          "Saved",
+          "Action redirects to this anatomy page.",
+          :success,
+          id: "toast-anatomy-redirect",
+          duration: 30_000,
+          action: %{
+            label: "Same page",
+            class: "button button--accent button--sm",
+            js: JS.patch(~p"/toast/anatomy")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with redirect
+    </.action>
+    """
+  end
+
+  def anatomy_trigger_live_view_js_code do
+    ~S"""
+    <.action
+      phx-click={
+        Corex.Toast.create("layout-toast", "Dismiss me", "Action runs a Phoenix.LiveView.JS command.", :info,
+          id: "toast-anatomy-dismiss",
+          duration: :infinity,
+          action: %{
+            label: "Dismiss",
+            class: "button button--accent button--sm",
+            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with Live View JS
+    </.action>
+    """
+  end
+
+  def anatomy_trigger_live_view_js_example(assigns) do
+    ~H"""
+    <.action
+      phx-click={
+        Corex.Toast.create(
+          "layout-toast",
+          "Dismiss me",
+          "Action runs a Phoenix.LiveView.JS command.",
+          :info,
+          id: "toast-anatomy-dismiss",
+          duration: :infinity,
+          action: %{
+            label: "Dismiss",
+            class: "button button--accent button--sm",
+            js: Corex.Toast.dismiss("layout-toast", "toast-anatomy-dismiss")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with Live View JS
+    </.action>
+    """
+  end
+
+  def anatomy_trigger_custom_label_code do
+    ~S"""
+    <.action
+      phx-click={
+        Corex.Toast.create("layout-toast", "Open docs", "Label is rendered from ~H with a heroicon.", :info,
+          id: "toast-anatomy-custom-label",
+          duration: 30_000,
+          action: %{
+            label: ~H{
+              <.heroicon name="hero-arrow-top-right-on-square" />
+              Open
+            },
+            class: "button button--accent button--sm",
+            js: JS.patch(~p"/toast/anatomy")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with custom label
+    </.action>
+    """
+  end
+
+  def anatomy_trigger_custom_label_example(assigns) do
+    ~H"""
+    <.action
+      phx-click={
+        Corex.Toast.create(
+          "layout-toast",
+          "Open docs",
+          "Label is rendered from ~H with a heroicon.",
+          :info,
+          id: "toast-anatomy-custom-label",
+          duration: 30_000,
+          action: %{
+            label: ~H{
+              <.heroicon name="hero-arrow-top-right-on-square" />
+              Open
+            },
+            class: "button button--accent button--sm",
+            js: JS.patch(~p"/toast/anatomy")
+          }
+        )
+      }
+      class="button button--sm"
+    >
+      Toast with custom label
+    </.action>
+    """
+  end
+
   def api_codes do
     %{
-      create_toast_client_binding: api_client_binding_code(),
-      create_toast_client_js_heex: api_create_toast_client_js_heex(),
-      create_toast_client_js: api_create_toast_client_js(),
-      create_toast_client_ts: api_create_toast_client_ts(),
-      push_toast_server_heex: api_push_toast_server_heex(),
-      push_toast_server_elixir: api_push_toast_server_elixir()
+      create_client_binding: api_client_binding_code(),
+      create_client_js_heex: api_create_client_js_heex(),
+      create_client_js: api_create_client_js(),
+      create_client_ts: api_create_client_ts(),
+      update_toast_client_binding: api_update_toast_client_binding_code(),
+      update_toast_client_js_heex: api_update_toast_client_js_heex(),
+      update_toast_client_js: api_update_toast_client_js(),
+      update_toast_client_ts: api_update_toast_client_ts(),
+      create_server_heex: api_create_server_heex(),
+      create_server_elixir: api_create_server_elixir(),
+      update_toast_server_heex: api_update_toast_server_heex(),
+      update_toast_server_elixir: api_update_toast_server_elixir()
     }
   end
 end

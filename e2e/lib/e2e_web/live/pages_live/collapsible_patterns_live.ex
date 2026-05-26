@@ -18,7 +18,7 @@ defmodule E2eWeb.CollapsiblePatternsLive do
       |> assign(:controlled_elixir, E2eWeb.Demos.CollapsibleDemo.patterns_controlled_elixir())
       |> assign_async(:collapsible, fn ->
         Process.sleep(1000)
-        {:ok, %{collapsible: %{open: false, body: "Loaded after async."}}}
+        {:ok, %{collapsible: %{open: false, body: ~t"Loaded after async."}}}
       end)
 
     {:ok, socket}
@@ -37,16 +37,17 @@ defmodule E2eWeb.CollapsiblePatternsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="collapsible-patterns-page"
-        title="Collapsible · Pattern"
-        subtitle="Common ways to structure Collapsible state and data flows."
+        title={~t"Collapsible · Pattern"}
+        subtitle={~t"Common ways to structure Collapsible state and data flows."}
       >
         <.demo_section
           id="collapsible-patterns-async"
-          title="Async"
+          title={~t"Async"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @async_heex_full},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @async_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @async_heex_full},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @async_elixir}
           ]}
         >
           <:preview>
@@ -70,10 +71,10 @@ defmodule E2eWeb.CollapsiblePatternsLive do
 
         <.demo_section
           id="collapsible-patterns-controlled"
-          title="Controlled (LiveView)"
+          title={~t"Controlled (LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @controlled_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @controlled_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @controlled_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @controlled_elixir}
           ]}
         >
           <:preview>

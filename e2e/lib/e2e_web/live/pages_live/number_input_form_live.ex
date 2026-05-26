@@ -7,143 +7,126 @@ defmodule E2eWeb.NumberInputFormLive do
   alias E2e.Form.NumberInputForm
   alias E2eWeb.Demos.NumberInputDemo, as: Demo
 
-  @live_form_id "number-input-live-changeset-form"
-  @live_strict_form_id "number-input-live-validate-form"
+  @phoenix_form_id "number-input-live-form-phoenix"
+  @ecto_form_id "number-input-live-form-ecto"
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Number Input form")
+     |> assign(:page_title, "Number Input · Form")
      |> assign(:form_ecto, Demo.form_ecto())
-     |> assign(:live_basic_heex, Demo.form_doc_live_changeset_heex())
-     |> assign(:live_basic_elixir, Demo.form_doc_live_changeset_elixir())
-     |> assign(:live_validate_heex, Demo.form_doc_live_validate_heex())
-     |> assign(:live_validate_elixir, Demo.form_doc_live_validate_elixir())
+     |> assign(:live_phoenix_heex, Demo.form_doc_live_phoenix_heex())
+     |> assign(:live_phoenix_elixir, Demo.form_doc_live_phoenix_elixir())
+     |> assign(:live_ecto_heex, Demo.form_doc_live_ecto_heex())
+     |> assign(:live_ecto_elixir, Demo.form_doc_live_ecto_elixir())
      |> assign_forms()}
   end
 
-  defp assign_forms(socket) do
-    form =
-      %NumberInputForm{}
-      |> NumberInputForm.changeset(%{"value" => "1234"})
-      |> Phoenix.Component.to_form(as: :number_input_changeset, id: @live_form_id)
-
-    strict_form =
-      %NumberInputForm{}
-      |> NumberInputForm.changeset_validate(%{"value" => "1234"})
-      |> Phoenix.Component.to_form(as: :number_input_validate, id: @live_strict_form_id)
-
-    socket
-    |> assign(:form, form)
-    |> assign(:strict_form, strict_form)
-  end
-
-  @impl true
-  def handle_event("validate", params, socket) do
-    rparams = Map.get(params, "number_input_changeset", %{})
-
-    changeset =
-      %NumberInputForm{}
-      |> NumberInputForm.changeset(rparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :number_input_changeset,
-         id: @live_form_id
-       )
-     )}
-  end
-
-  def handle_event("validate_strict", params, socket) do
-    rparams = Map.get(params, "number_input_validate", %{})
-
-    changeset =
-      %NumberInputForm{}
-      |> NumberInputForm.changeset_validate(rparams)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :strict_form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :number_input_validate,
-         id: @live_strict_form_id
-       )
-     )}
-  end
-
-  @impl true
-  def handle_event("save", params, socket) do
-    rparams = Map.get(params, "number_input_changeset", %{})
-
-    case NumberInputForm.changeset(%NumberInputForm{}, rparams) do
-      %Ecto.Changeset{valid?: true} = changeset ->
-        data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: #{data.value}"
-
-        {:noreply,
-         socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(
-             NumberInputForm.changeset(%NumberInputForm{}, rparams),
-             as: :number_input_changeset,
-             id: @live_form_id
-           )
-         )}
-
-      %Ecto.Changeset{} = changeset ->
-        {:noreply,
-         socket
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(changeset,
-             action: :insert,
-             as: :number_input_changeset,
-             id: @live_form_id
-           )
-         )}
+  defp phoenix_value_from_submit(params, socket) do
+    case params do
+      %{"number_input_phoenix" => %{"value" => v}} when is_binary(v) -> v
+      _ -> Phoenix.HTML.Form.normalize_value("number", socket.assigns.phoenix_form[:value].value)
     end
   end
 
-  def handle_event("save_strict", params, socket) do
-    rparams = Map.get(params, "number_input_validate", %{})
+  defp assign_forms(socket) do
+    phoenix_form =
+      Phoenix.Component.to_form(%{"value" => "1234"},
+        as: :number_input_phoenix,
+        id: @phoenix_form_id
+      )
 
-    case NumberInputForm.changeset_validate(%NumberInputForm{}, rparams) do
+    ecto_form =
+      %NumberInputForm{}
+      |> NumberInputForm.changeset_validate(%{"value" => "1234"})
+      |> Phoenix.Component.to_form(as: :number_input_ecto, id: @ecto_form_id)
+
+    socket
+    |> assign(:phoenix_form, phoenix_form)
+    |> assign(:ecto_form, ecto_form)
+  end
+
+  @impl true
+  def handle_event("change_phoenix", %{"number_input_phoenix" => params}, socket) do
+    {:noreply,
+     assign(
+       socket,
+       :phoenix_form,
+       Phoenix.Component.to_form(params,
+         as: :number_input_phoenix,
+         id: @phoenix_form_id
+       )
+     )}
+  end
+
+  def handle_event("change_phoenix", _params, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_event("save_phoenix", params, socket) do
+    value = phoenix_value_from_submit(params, socket)
+
+    {:noreply,
+     socket
+     |> Toast.create("layout-toast", "Submitted", "value=#{inspect(value)}", :info,
+       duration: 5000
+     )
+     |> assign(
+       :phoenix_form,
+       Phoenix.Component.to_form(%{"value" => value},
+         as: :number_input_phoenix,
+         id: @phoenix_form_id
+       )
+     )}
+  end
+
+  @impl true
+  def handle_event("validate", %{"number_input_ecto" => params}, socket) do
+    changeset =
+      %NumberInputForm{}
+      |> NumberInputForm.changeset_validate(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     assign(
+       socket,
+       :ecto_form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :number_input_ecto,
+         id: @ecto_form_id
+       )
+     )}
+  end
+
+  @impl true
+  def handle_event("save", %{"number_input_ecto" => params}, socket) do
+    case NumberInputForm.changeset_validate(%NumberInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted (strict): #{data.value}"
+        message = "Submitted: value=#{data.value}"
 
         {:noreply,
          socket
-         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
-             NumberInputForm.changeset_validate(%NumberInputForm{}, rparams),
-             as: :number_input_validate,
-             id: @live_strict_form_id
+             NumberInputForm.changeset_validate(%NumberInputForm{}, params),
+             as: :number_input_ecto,
+             id: @ecto_form_id
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
-         socket
-         |> assign(
-           :strict_form,
+         assign(
+           socket,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :number_input_validate,
-             id: @live_strict_form_id
+             as: :number_input_ecto,
+             id: @ecto_form_id
            )
          )}
     end
@@ -152,42 +135,32 @@ defmodule E2eWeb.NumberInputFormLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app
-      flash={@flash}
-      mode={@mode}
-      theme={@theme}
-      path={@path}
-    >
-      <.demo_page
-        id="number-input-form-live-page"
-        title="Number Input · Form"
-        subtitle="LiveView phx-change / phx-submit with basic vs stricter validation."
-      >
+    <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+      <.demo_page path={@path} id="number-input-form-live-page" title={~t"Number Input · Form"}>
         <.demo_section
-          id="number-input-live-form-changeset"
-          title="Phoenix Form (changeset)"
+          id="number-input-live-form-phoenix-section"
+          title={~t"Phoenix Form"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_phoenix_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_phoenix_elixir}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_changeset form={@form} />
+            <Demo.form_preview_live_phoenix form={@phoenix_form} />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="number-input-live-form-validate"
-          title="Ecto changeset (validation)"
+          id="number-input-live-form-ecto-section"
+          title={~t"Phoenix Form + Ecto"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @live_validate_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_validate_elixir},
-            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @live_ecto_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @live_ecto_elixir},
+            %{value: "ecto", label: ~t"Ecto", language: :elixir, code: @form_ecto}
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_validate form={@strict_form} />
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

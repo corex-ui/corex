@@ -7,6 +7,8 @@ defmodule Corex.PinInput.Anatomy do
 
     defstruct [
       :id,
+      form_field: false,
+      controlled: false,
       value: [],
       count: 4,
       disabled: false,
@@ -25,11 +27,15 @@ defmodule Corex.PinInput.Anatomy do
       placeholder: "○",
       on_value_change: nil,
       on_value_change_client: nil,
-      on_value_complete: nil
+      on_value_complete: nil,
+      on_value_complete_client: nil,
+      submit_name: nil
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
+            controlled: boolean(),
             value: list(String.t()),
             count: non_neg_integer(),
             disabled: boolean(),
@@ -48,13 +54,15 @@ defmodule Corex.PinInput.Anatomy do
             placeholder: String.t(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil,
-            on_value_complete: String.t() | nil
+            on_value_complete: String.t() | nil,
+            on_value_complete_client: String.t() | nil,
+            submit_name: String.t() | nil
           }
   end
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, :dir, orientation: "horizontal", read_only: false]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
 

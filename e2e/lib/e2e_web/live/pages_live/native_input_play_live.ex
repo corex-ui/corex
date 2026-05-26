@@ -1,16 +1,17 @@
 defmodule E2eWeb.NativeInputPlayLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
+  import E2eWeb.Demos.NativeInputFormFields, only: [anatomy_all_fields: 1]
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, disabled: false)}
+    {:ok, assign(socket, :dir, "ltr")}
   end
 
   @impl true
-  def handle_event("disabled_changed", %{"checked" => checked, "id" => _}, socket) do
-    {:noreply, assign(socket, :disabled, checked == true or checked == "true")}
+  def handle_event("control_changed", %{"value" => [value], "id" => "dir"}, socket) do
+    {:noreply, assign(socket, :dir, value)}
   end
 
   @impl true
@@ -22,33 +23,29 @@ defmodule E2eWeb.NativeInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_page
-        id="native-input-play-page"
+      <.demo_playground
+        id="native-input-playground"
+        path={@path}
         title="Native Input · Playground"
-        subtitle="Toggle a few props."
+        heading_class="layout-heading"
       >
-        <.demo_section
-          id="native-input-play"
-          title="Playground"
-          code={E2eWeb.Demos.NativeInputDemo.playground_code()}
-        >
-          <:preview>
-            <div class="layout__row items-start gap-ui-padding">
-              <div class="flex flex-col gap-2">
-                <.switch
-                  class="switch"
-                  id="ni-disabled"
-                  checked={@disabled}
-                  on_checked_change="disabled_changed"
-                >
-                  <:label>Disabled (demo text)</:label>
-                </.switch>
-              </div>
-              <E2eWeb.Demos.NativeInputDemo.playground_example disabled={@disabled} />
-            </div>
-          </:preview>
-        </.demo_section>
-      </.demo_page>
+        <:controls>
+          <.playground_dir_toggle
+            id="dir"
+            on_value_change="control_changed"
+            value={[@dir]}
+          />
+        </:controls>
+        <:canvas>
+          <div class="w-full max-w-lg max-h-[70vh] overflow-y-auto scrollbar scrollbar--sm">
+            <.anatomy_all_fields
+              id_prefix="native-input-playground"
+              input_class="native-input max-w-md w-full"
+              dir={@dir}
+            />
+          </div>
+        </:canvas>
+      </.demo_playground>
     </Layouts.app>
     """
   end

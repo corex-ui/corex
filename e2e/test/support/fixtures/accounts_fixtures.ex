@@ -14,10 +14,11 @@ defmodule E2e.AccountsFixtures do
         birth_date: ~D[1990-01-15],
         country: "some country",
         name: "some name",
-        signature: "M0,0L1,1Z",
+        signature: ["M0,0L1,1Z"],
         terms: true,
         level: 5,
-        currency: "eur"
+        currency: "eur",
+        tags: ["alpha", "beta"]
       })
       |> E2e.Accounts.create_user()
 
@@ -34,10 +35,11 @@ defmodule E2e.AccountsFixtures do
         birth_date: ~D[1990-01-15],
         country: :fra,
         name: "some name",
-        signature: "M0,0L1,1Z",
+        signature: ["M0,0L1,1Z"],
         terms: true,
         level: 5,
-        currency: "eur"
+        currency: "eur",
+        tags: ["alpha", "beta"]
       })
       |> E2e.Accounts.create_admin()
 

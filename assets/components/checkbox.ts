@@ -1,6 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/checkbox";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { syncCheckableHiddenInput } from "../lib/checkable-form-sync";
 
 export class Checkbox extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,8 +21,14 @@ export class Checkbox extends Component<Props, Api> {
     const inputEl = rootEl.querySelector<HTMLElement>(
       ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
     );
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    if (inputEl instanceof HTMLInputElement) {
+      syncCheckableHiddenInput(
+        inputEl,
+        this.el,
+        this.api.checked === true,
+        (el, props) => this.spreadProps(el, props),
+        this.api.getHiddenInputProps() as Record<string, unknown>
+      );
     }
 
     const labelEl = rootEl.querySelector<HTMLElement>(

@@ -5,13 +5,16 @@
   path={@path}
 >
   <.demo_page
+    path={@path}
     id="dialog-anatomy-page"
-    title="Dialog Anatomy"
-    subtitle="Structure: minimal surface, title and description, and actions composed in content."
+    title={~t"Dialog Anatomy"}
+    subtitle={
+      ~t"Structure: minimal surface, title and description, and actions composed in content."
+    }
   >
     <.demo_section
       id="dialog-anatomy-minimal"
-      title="Minimal"
+      title={~t"Minimal"}
       code={E2eWeb.Demos.DialogDemo.minimal_code()}
     >
       <:preview><E2eWeb.Demos.DialogDemo.minimal_example /></:preview>
@@ -19,7 +22,7 @@
 
     <.demo_section
       id="dialog-anatomy-title-description"
-      title="With title and description"
+      title={~t"With title and description"}
       code={E2eWeb.Demos.DialogDemo.with_title_description_code()}
     >
       <:preview><E2eWeb.Demos.DialogDemo.with_title_description_example /></:preview>
@@ -27,7 +30,7 @@
 
     <.demo_section
       id="dialog-anatomy-actions"
-      title="Actions"
+      title={~t"Actions"}
       code={E2eWeb.Demos.DialogDemo.actions_code()}
     >
       <:preview><E2eWeb.Demos.DialogDemo.actions_example /></:preview>

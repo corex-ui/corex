@@ -86,13 +86,15 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def minimal_code do
     ~S"""
-    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]} />
+    <.angle_slider class="angle-slider">
+      <:label>Angle</:label>
+    </.angle_slider>
     """
   end
 
   def with_label_code do
     ~S"""
-    <.angle_slider class="angle-slider" value={90.0} marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider" marker_values={[0, 90, 180, 270]}>
       <:label>Angle</:label>
     </.angle_slider>
     """
@@ -312,7 +314,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     <.action phx-click={Corex.AngleSlider.set_value("api-angle-slider", 90.0)}>Set to 90°</.action>
     <.action phx-click={Corex.AngleSlider.set_value("api-angle-slider", 180.0)}>Set to 180°</.action>
     <.action phx-click={Corex.AngleSlider.set_value("api-angle-slider", 270.0)}>Set to 270°</.action>
-    <.angle_slider id="api-angle-slider" class="angle-slider" marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider" marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Angle</:label>
     </.angle_slider>
     """
@@ -353,7 +355,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     >
       Set to 90°
     </.action>
-    <.angle_slider id="api-angle-slider-client-js" class="angle-slider" marker_values={[0.0, 90.0, 180.0, 270.0]}>
+    <.angle_slider class="angle-slider" marker_values={[0.0, 90.0, 180.0, 270.0]}>
       <:label>Angle</:label>
     </.angle_slider>
     """
@@ -371,11 +373,13 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
 
   def api_set_value_client_js_ts do
     ~S"""
-    const el = document.getElementById("api-angle-slider-client-js")
-    el?.dispatchEvent(new CustomEvent("corex:angle-slider:set-value", {
-      detail: { value: 90.0 as number },
-      bubbles: false
-    }))
+    const el: HTMLElement | null = document.getElementById("api-angle-slider-client-js")
+    el?.dispatchEvent(
+      new CustomEvent<{ value: number }>("corex:angle-slider:set-value", {
+        detail: { value: 90.0 },
+        bubbles: false
+      })
+    )
     """
   end
 
@@ -477,7 +481,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def events_on_value_change_server_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-server"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change="angle_slider_changed"
@@ -490,7 +493,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def events_on_value_change_end_server_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-end-server"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       value={90.0}
@@ -504,7 +506,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def events_on_value_change_client_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-client"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change_client="angle-slider-changed"
@@ -517,7 +518,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def events_on_value_change_end_client_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-end-client"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       value={90.0}
@@ -531,7 +531,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def events_server_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-server"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change="angle_slider_changed"
@@ -540,7 +539,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     </.angle_slider>
 
     <.angle_slider
-      id="events-angle-slider-on-value-change-end-server"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       value={90.0}
@@ -552,27 +550,15 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   end
 
   def events_server_elixir do
-    ~S"""
-    def mount(_params, _session, socket) do
-      {:ok, socket |> stream(:server_logs, [])}
-    end
-
-    def handle_event("angle_slider_changed", %{"id" => id, "value" => value} = params, socket) do
-      log = new_log("server:on_value_change", id, value, params["dragging"])
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-
-    def handle_event("angle_slider_change_ended", %{"id" => id, "value" => value} = params, socket) do
-      log = new_log("server:on_value_change_end", id, value, params["dragging"])
-      {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
-    end
-    """
+    E2eWeb.Demos.DocExamples.event_handlers_snippet([
+      {"angle_slider_changed", ~S|%{"id" => id, "value" => value} = params|},
+      {"angle_slider_change_ended", ~S|%{"id" => id, "value" => value} = params|}
+    ])
   end
 
   def events_client_heex do
     ~S"""
     <.angle_slider
-      id="events-angle-slider-on-value-change-client"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       on_value_change_client="angle-slider-changed"
@@ -581,7 +567,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     </.angle_slider>
 
     <.angle_slider
-      id="events-angle-slider-on-value-change-end-client"
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       value={90.0}
@@ -659,7 +644,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def patterns_controlled_heex do
     ~S"""
     <.angle_slider
-      id={@id_controlled}
       class="angle-slider"
       marker_values={[0.0, 90.0, 180.0, 270.0]}
       controlled
@@ -716,19 +700,78 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     """
   end
 
+  def form_doc_controller_phoenix_heex do
+    ~S"""
+    <.form
+      for={@form}
+      action={~p"/angle-slider/form"}
+      method="post"
+    >
+      <.angle_slider
+        field={@form[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_doc_controller_phoenix_elixir do
+    ~S"""
+    def angle_slider_form_page(conn, _params) do
+      phoenix_form =
+        Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-form-phoenix")
+
+      render(conn, :angle_slider_form_page, phoenix_form: phoenix_form)
+    end
+
+    def angle_slider_form_submit(conn, params) do
+      if is_map(params["angle_slider_phoenix"]) do
+        angle = params["angle_slider_phoenix"]["angle"] || ""
+
+        conn
+        |> put_flash(:info, "Submitted: angle=#{inspect(angle)}")
+        |> redirect(to: ~p"/angle-slider/form#angle-slider-form-phoenix")
+      end
+    end
+    """
+  end
+
+  def form_doc_live_phoenix_heex do
+    ~S"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.angle_slider
+        field={@form[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/products"}
+      action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.angle_slider
-        field={f[:angle]}
-        id="product-angle"
+        field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
@@ -739,7 +782,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent w-full">Submit</:action>
+      <.action type="submit" class="button button--accent">Submit</:action>
     </.form>
     """
   end
@@ -784,16 +827,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_doc_controller_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
-      action={~p"/products"}
+      action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.angle_slider
-        field={f[:angle]}
-        id="product-angle-validated"
+        field={@form[:angle]}
         marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
@@ -804,7 +843,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent w-full">Submit</:action>
+      <.action type="submit" class="button button--accent">Submit</:action>
     </.form>
     """
   end
@@ -851,14 +890,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_angle"
       phx-submit="save_angle"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.angle_slider
         field={@form[:angle]}
-        id="live-product-angle"
         marker_values={[0, 90, 180, 270]}
         on_value_change="angle_changed"
         class="angle-slider"
@@ -870,7 +907,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent w-full">Submit</:action>
+      <.action type="submit" class="button button--accent">Submit</:action>
     </.form>
     """
   end
@@ -946,14 +983,12 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={@form.id}
+     
       phx-change="validate_angle_range"
       phx-submit="save_angle_range"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <.angle_slider
         field={@form[:angle]}
-        id="live-product-angle-range"
         marker_values={[0, 90, 180, 270]}
         on_value_change="angle_range_changed"
         class="angle-slider"
@@ -965,7 +1000,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
         </:error>
       </.angle_slider>
 
-      <.action type="submit" class="button button--accent w-full">Submit</:action>
+      <.action type="submit" class="button button--accent">Submit</:action>
     </.form>
     """
   end
@@ -1047,22 +1082,30 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_doc_native_heex do
     ~S"""
     <form
-      action={~p"/products"}
+      action={~p"/angle-slider/form"}
       method="post"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
-    >
+          >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.angle_slider
-        name="product[angle]"
-        id="native-product-angle"
+        name="angle_slider_form[angle]"
         value={0.0}
         marker_values={[0, 90, 180, 270]}
         class="angle-slider"
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" class="button button--accent w-full">Submit</:action>
+      <.action type="submit" class="button button--accent">Submit</:action>
     </form>
+    """
+  end
+
+  def form_doc_controller_native_elixir do
+    ~S"""
+    def angle_slider_form_submit(conn, %{"angle_slider_form" => %{"angle" => angle}}) do
+      conn
+      |> put_flash(:info, "Submitted: angle=#{angle}")
+      |> redirect(to: ~p"/angle-slider/form#angle-slider-form-native")
+    end
     """
   end
 
@@ -1075,8 +1118,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
         field={f[:angle]}
@@ -1094,7 +1135,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-form-changeset-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -1111,8 +1152,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={@form.id}
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
         field={f[:angle]}
@@ -1130,7 +1169,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-form-validate-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -1146,7 +1185,6 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       action={~p"/angle-slider/form"}
       method="post"
       id="angle-slider-plain-form"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.angle_slider
@@ -1158,7 +1196,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       >
         <:label>Angle</:label>
       </.angle_slider>
-      <.action type="submit" id="angle-slider-form-submit" class="button button--accent w-full">
+      <.action type="submit" id="angle-slider-form-submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -1172,10 +1210,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
         id="angle-slider-live-form-changeset-angle"
@@ -1195,7 +1231,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-changeset-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -1210,10 +1246,8 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
-      class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
         id="angle-slider-live-form-validate-angle"
@@ -1233,7 +1267,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       <.action
         type="submit"
         id="angle-slider-live-form-validate-submit"
-        class="button button--accent w-full"
+        class="button button--accent"
       >
         Submit
       </.action>
@@ -1246,4 +1280,144 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
   def form_validate_heex, do: form_doc_controller_validate_heex()
   def form_validate_elixir, do: form_doc_controller_validate_elixir()
   def form_native_heex, do: form_doc_native_heex()
+  def form_native_elixir, do: form_doc_controller_native_elixir()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_controller_phoenix(assigns) do
+    ~H"""
+    <.form
+      :let={f}
+      for={@form}
+      action={~p"/angle-slider/form"}
+      method="post"
+    >
+      <.angle_slider
+        field={f[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_controller_ecto(assigns), do: form_preview_controller_validate(assigns)
+  def form_phoenix_heex, do: form_doc_controller_phoenix_heex()
+  def form_phoenix_elixir, do: form_doc_controller_phoenix_elixir()
+  def form_ecto_heex, do: form_validate_heex()
+  def form_ecto_elixir, do: form_validate_elixir()
+  def form_doc_live_ecto_heex, do: form_doc_live_validate_heex()
+
+  attr(:form, :any, required: true)
+
+  def form_preview_live_phoenix(assigns) do
+    ~H"""
+    <.form for={@form} phx-submit="save_phoenix">
+      <.angle_slider
+        field={@form[:angle]}
+        marker_values={[0, 90, 180, 270]}
+        class="angle-slider"
+      >
+        <:label>Angle</:label>
+      </.angle_slider>
+      <.action type="submit" class="button button--accent">Submit</.action>
+    </.form>
+    """
+  end
+
+  def form_preview_live_ecto(assigns), do: form_preview_live_validate(assigns)
+
+  def form_doc_live_phoenix_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"angle" => "0"}, as: :angle_slider_phoenix, id: "angle-slider-live-form-phoenix")
+
+        {:ok, assign(socket, :phoenix_form, phoenix_form)}
+      end
+
+      def handle_event("save_phoenix", %{"angle_slider_phoenix" => params}, socket) do
+        angle = params["angle"] || ""
+
+        {:noreply,
+         assign(
+           socket,
+           :phoenix_form,
+           Phoenix.Component.to_form(%{"angle" => angle}, as: :angle_slider_phoenix, id: "angle-slider-live-form-phoenix")
+         )}
+      end
+    end
+    """
+  end
+
+  def form_doc_live_ecto_elixir do
+    ~S"""
+    defmodule MyAppWeb.AngleSliderFormLive do
+      use MyAppWeb, :live_view
+
+      def mount(_params, _session, socket) do
+        ecto_form =
+          %MyApp.Forms.AngleSlider{}
+          |> MyApp.Forms.AngleSlider.changeset_validate(%{})
+          |> Phoenix.Component.to_form(as: :angle_slider_ecto, id: "angle-slider-live-form-ecto")
+
+        {:ok, assign(socket, :ecto_form, ecto_form)}
+      end
+
+      def handle_event("validate", %{"angle_slider_ecto" => params}, socket) do
+        changeset =
+          %MyApp.Forms.AngleSlider{}
+          |> MyApp.Forms.AngleSlider.changeset_validate(params)
+          |> Map.put(:action, :validate)
+
+        {:noreply,
+         assign(
+           socket,
+           :ecto_form,
+           Phoenix.Component.to_form(changeset,
+             action: :validate,
+             as: :angle_slider_ecto,
+             id: "angle-slider-live-form-ecto"
+           )
+         )}
+      end
+
+      def handle_event("save", %{"angle_slider_ecto" => params}, socket) do
+        case MyApp.Forms.AngleSlider.changeset_validate(%MyApp.Forms.AngleSlider{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            _data = Ecto.Changeset.apply_changes(changeset)
+
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(
+                 MyApp.Forms.AngleSlider.changeset_validate(%MyApp.Forms.AngleSlider{}, params),
+                 as: :angle_slider_ecto,
+                 id: "angle-slider-live-form-ecto"
+               )
+             )}
+
+          changeset ->
+            {:noreply,
+             assign(
+               socket,
+               :ecto_form,
+               Phoenix.Component.to_form(changeset,
+                 action: :insert,
+                 as: :angle_slider_ecto,
+                 id: "angle-slider-live-form-ecto"
+               )
+             )}
+        end
+      end
+    end
+    """
+  end
 end

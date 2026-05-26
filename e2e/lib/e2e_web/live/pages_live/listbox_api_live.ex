@@ -38,7 +38,9 @@ defmodule E2eWeb.ListboxApiLive do
     desc = "#{id}\n#{inspect(value)}"
 
     {:noreply,
-     Corex.Toast.push_toast(socket, "layout-toast", "listbox_value_response", desc, :info, 5000)}
+     Corex.Toast.create(socket, "layout-toast", "listbox_value_response", desc, :info,
+       duration: 5000
+     )}
   end
 
   def render(assigns) do
@@ -50,15 +52,18 @@ defmodule E2eWeb.ListboxApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="listbox-api-page"
-        title="Listbox · API"
-        subtitle="Programmatic selection and reading the current value from LiveView or the client."
+        title={~t"Listbox · API"}
+        subtitle={
+          ~t"Programmatic selection and reading the current value from LiveView or the client."
+        }
       >
         <.demo_section
           id="listbox-api-set-value-binding"
-          title="set_value (Phoenix binding)"
+          title={~t"set_value (Phoenix binding)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_binding}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_binding}
           ]}
         >
           <:preview>
@@ -85,12 +90,12 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-set-value-server"
-          title="set_value (push_event from LiveView)"
+          title={~t"set_value (push_event from LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_server_heex},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.set_value_server_heex},
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.set_value_server_elixir
             }
@@ -109,9 +114,9 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-set-value-js"
-          title="set_value (CustomEvent from JavaScript)"
+          title={~t"set_value (CustomEvent from JavaScript)"}
           code_tabs={[
-            %{value: "js", label: "JS", language: :js, code: @codes.set_value_js}
+            %{value: "js", label: ~t"JS", language: :js, code: @codes.set_value_js}
           ]}
         >
           <:preview>
@@ -126,7 +131,7 @@ defmodule E2eWeb.ListboxApiLive do
                 )
               }
             >
-              Germany (JS.dispatch)
+              Germany
             </.action>
             <.listbox id="listbox-api-sv-js" class="listbox" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>
@@ -137,9 +142,9 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-value-binding"
-          title="value (Phoenix binding)"
+          title={~t"value (Phoenix binding)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.value_binding}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.value_binding}
           ]}
         >
           <:preview>
@@ -160,12 +165,12 @@ defmodule E2eWeb.ListboxApiLive do
 
         <.demo_section
           id="listbox-api-value-server"
-          title="value (push_event from LiveView)"
+          title={~t"value (push_event from LiveView)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @codes.value_server_heex},
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @codes.value_server_heex},
             %{
               value: "elixir",
-              label: "Elixir",
+              label: ~t"Elixir",
               language: :elixir,
               code: @codes.value_server_elixir
             }

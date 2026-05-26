@@ -8,8 +8,7 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [
       :id,
       slide_count: 0,
-      page: 0,
-      controlled: false,
+      page: 1,
       dir: "ltr",
       orientation: "horizontal",
       slides_per_page: 1,
@@ -31,7 +30,6 @@ defmodule Corex.Carousel.Anatomy do
             id: String.t(),
             slide_count: non_neg_integer(),
             page: non_neg_integer(),
-            controlled: boolean(),
             dir: String.t(),
             orientation: String.t(),
             slides_per_page: non_neg_integer(),
@@ -124,6 +122,7 @@ defmodule Corex.Carousel.Anatomy do
       "role",
       "aria-label",
       "aria-hidden",
+      "inert",
       "data-current",
       "data-in-view",
       "tabindex"

@@ -2,8 +2,6 @@ defmodule Corex.TreeView.Connect do
   @moduledoc false
 
   alias Corex.Animation.Height
-  alias Corex.Json
-
   alias Corex.Selectors
 
   alias Corex.TreeView.Anatomy.{
@@ -23,7 +21,13 @@ defmodule Corex.TreeView.Connect do
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
+
+  import Corex.Helpers,
+    only: [
+      validate_value!: 1,
+      get_boolean: 1,
+      joined_csv_values: 1
+    ]
 
   defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
   defp depth_style(_), do: "--depth: 0"
@@ -52,36 +56,18 @@ defmodule Corex.TreeView.Connect do
     animation = Map.get(assigns, :animation, "js")
     animation_options = Map.get(assigns, :animation_options, %Height{})
 
+    default_expanded_str =
+      (assigns.expanded_value || []) |> validate_value!() |> joined_csv_values()
+
+    default_selected_str = (assigns.value || []) |> validate_value!() |> joined_csv_values()
+
     base = %{
       "id" => assigns.id,
-      "data-tree" => Json.encode!(assigns.tree),
+      "data-tree" => Corex.Dataset.encode_json(assigns.tree),
       "data-animation" => animation,
       "data-redirect" => get_boolean(assigns.redirect),
-      "data-default-expanded-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.expanded_value), ",")
-        end,
-      "data-expanded-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.expanded_value), ",")
-        else
-          nil
-        end,
-      "data-default-selected-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
-        end,
-      "data-selected-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
-        end,
-      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-expanded-value" => default_expanded_str,
+      "data-default-selected-value" => default_selected_str,
       "data-selection-mode" => assigns.selection_mode,
       "data-typeahead" => if(Map.get(assigns, :typeahead, true), do: "true", else: "false"),
       "data-dir" => assigns.dir,

@@ -13,6 +13,7 @@ defmodule Corex.NumberInput.Connect do
     TriggerGroup
   }
 
+  alias Corex.FormField
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
 
@@ -21,46 +22,41 @@ defmodule Corex.NumberInput.Connect do
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
-  defp value_attr(nil), do: nil
-  defp value_attr(v), do: to_string(v)
-
-  defp controlled_value_str(%{controlled: true} = assigns) do
-    case assigns.value do
-      nil -> ""
-      v -> to_string(v)
-    end
-  end
-
-  defp controlled_value_str(_), do: nil
-
-  defp uncontrolled_default_str(%{controlled: false} = assigns) do
-    value_attr(assigns.default_value || assigns.value)
-  end
-
-  defp uncontrolled_default_str(_), do: nil
+  defp value_str(nil), do: nil
+  defp value_str(v), do: to_string(v)
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    form_field = Map.get(assigns, :form_field, false)
+    controlled = Map.get(assigns, :controlled, false)
+    value_dataset = FormField.default_value_dataset(assigns, value_str(assigns.value))
+
+    {value_attr, default_attr} =
+      cond do
+        controlled -> {value_dataset, nil}
+        form_field -> {value_dataset, nil}
+        true -> {nil, value_dataset}
+      end
+
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(assigns.controlled),
-      "data-value" => controlled_value_str(assigns),
-      "data-default-value" => uncontrolled_default_str(assigns),
+      "data-controlled" => get_boolean(controlled),
+      "data-value" => value_attr,
+      "data-default-value" => default_attr,
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),
       "data-step" => num_attr(assigns.step),
       "data-disabled" => get_boolean(assigns.disabled),
-      "data-read-only" => get_boolean(assigns.read_only),
+      "data-readonly" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
       "data-required" => get_boolean(assigns.required),
       "data-allow-mouse-wheel" => get_boolean(assigns.allow_mouse_wheel),
-      "data-name" => assigns.name,
-      "data-form" => assigns.form,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-dir" => Map.get(assigns, :dir),
       "data-orientation" => orientation(assigns)
     }
+    |> FormField.put_form_field_attrs(assigns)
   end
 
   def ignore_root(assigns) do
@@ -106,7 +102,8 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "root",
       "id" => "number-input:#{assigns.id}",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "data-readonly" => get_boolean(Map.get(assigns, :read_only, false))
     }
   end
 
@@ -129,7 +126,8 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "control",
       "id" => "number-input:#{assigns.id}:control",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "role" => "group"
     }
   end
 
@@ -151,7 +149,15 @@ defmodule Corex.NumberInput.Connect do
       "disabled" => get_boolean(assigns.disabled),
       "id" => "number-input:#{assigns.id}:input",
       "dir" => Map.get(assigns, :dir),
-      "data-orientation" => orientation(assigns)
+      "data-orientation" => orientation(assigns),
+      "type" => "text",
+      "inputmode" => "decimal",
+      "role" => "spinbutton",
+      "autocomplete" => "off",
+      "autocorrect" => "off",
+      "spellcheck" => "false",
+      "pattern" => "-?[0-9]*(.[0-9]+)?",
+      "required" => get_boolean(assigns.required)
     }
   end
 

@@ -37,13 +37,14 @@ defmodule E2eWeb.FloatingPanelPlayLive do
       path={@path}
     >
       <.demo_playground
+        path={@path}
         id="floating-panel-play-page"
         title="Floating Panel · Playground"
         heading_class="layout-heading"
       >
         <:controls>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="fp-draggable"
             checked={@draggable}
             on_checked_change="draggable_changed"
@@ -51,7 +52,7 @@ defmodule E2eWeb.FloatingPanelPlayLive do
             <:label>Draggable</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="fp-resizable"
             checked={@resizable}
             on_checked_change="resizable_changed"

@@ -11,19 +11,19 @@ defmodule CorexWeb.FloatingPanel do
               trigger: [
                 %{
                   inner_block:
-                    ~s(<span data-closed>Open panel</span><span data-open>Close panel</span>)
+                    ~S(<span data-closed>Open panel</span><span data-open>Close panel</span>)
                 }
               ],
               minimize_trigger: [
-                %{inner_block: ~s(<.heroicon name="hero-arrow-down-left" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-arrow-down-left" class="icon" />)}
               ],
               maximize_trigger: [
-                %{inner_block: ~s(<.heroicon name="hero-arrows-pointing-out" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-arrows-pointing-out" class="icon" />)}
               ],
               default_trigger: [
-                %{inner_block: ~s(<.heroicon name="hero-rectangle-stack" class="icon" />)}
+                %{inner_block: ~S(<.heroicon name="hero-rectangle-stack" class="icon" />)}
               ],
-              close_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" class="icon" />)}],
+              close_trigger: [%{inner_block: ~S(<.heroicon name="hero-x-mark" class="icon" />)}],
               content: [%{inner_block: "Panel content goes here."}]
             }
           ]

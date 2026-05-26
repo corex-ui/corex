@@ -2,94 +2,170 @@ defmodule Corex.Timer do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Timer](https://zagjs.com/components/react/timer).
 
-  Countdown-only leading-zero collapse (hide unused day/hour columns) is **on by default** when `countdown` is true. Override with `collapse_leading_zeros={false}` or with fixed `segments`.
+  Countdown leading-zero collapse is on by default when `countdown` is true. Override with `collapse_leading_zeros={false}` or fixed `segments`.
 
   ## Anatomy
 
-  ### Basic
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
-  <.timer id="t" start_ms={60_000} class="timer">
-    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  <.timer start_ms={60_000} class="timer" />
+  ```
+
+  ### With triggers
+
+  ```heex
+  <.timer start_ms={60_000} class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
   ### Countdown
 
   ```heex
-  <.timer id="t" countdown start_ms={90_000} target_ms={0} class="timer">
-    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  <.timer countdown start_ms={60_000} target_ms={0} class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  ### Fixed segments (always four columns)
+  ### Interval tick
 
   ```heex
-  <.timer id="t" countdown start_ms={@ms} segments={[:days, :hours, :minutes, :seconds]} class="timer" />
-  ```
-
-  ### Separator slot
-
-  Omit `:separator` to render nothing between digit columns. Pass it to supply markup (for example `:` or `·`) between segments.
-
-  ```heex
-  <.timer id="t" start_ms={60_000} class="timer">
-    <:separator>·</:separator>
+  <.timer start_ms={60_000} interval={2000} auto_start class="timer">
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  ### Region label (a11y)
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.timer>`. Use trigger slots and `auto_start` for built-in controls; use the API for imperative control from LiveView or the client.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`start/1`](#start/1) | Start timer (client) | `%Phoenix.LiveView.JS{}` |
+  | [`start/2`](#start/2) | Start timer (server) | `socket` |
+  | [`pause/1`](#pause/1) | Pause timer (client) | `%Phoenix.LiveView.JS{}` |
+  | [`pause/2`](#pause/2) | Pause timer (server) | `socket` |
+  | [`resume/1`](#resume/1) | Resume timer (client) | `%Phoenix.LiveView.JS{}` |
+  | [`resume/2`](#resume/2) | Resume timer (server) | `socket` |
+  | [`reset/1`](#reset/1) | Reset timer (client) | `%Phoenix.LiveView.JS{}` |
+  | [`reset/2`](#reset/2) | Reset timer (server) | `socket` |
+  | [`restart/1`](#restart/1) | Restart timer (client) | `%Phoenix.LiveView.JS{}` |
+  | [`restart/2`](#restart/2) | Restart timer (server) | `socket` |
+  | [`state/1`](#state/1) | Read machine state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`state/2`](#state/2) | Read machine state (client, opts) | `%Phoenix.LiveView.JS{}` |
+  | [`state/3`](#state/3) | Read machine state (server) | `socket` |
+
+  ### Machine state (`state/2`, `state/3`)
+
+  Replies with `timer_state_response` (server) or `timer-state` on the host (client). Payload includes Zag machine fields:
+
+  | Field | Type | Meaning |
+  | ----- | ---- | ------- |
+  | `running` | boolean | Timer is running |
+  | `paused` | boolean | Timer is paused |
+  | `progressPercent` | number | Progress toward target |
+  | `time` | map | `{days, hours, minutes, seconds, milliseconds}` |
+  | `formattedTime` | map | Same keys, string values |
+
+  ## Events
+
+  Pick an event name and pass it to `on_*` on `<.timer>`.
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_tick="timer_tick"` | Each tick | `%{"id" => id, "formattedTime" => string, ...}` |
+  | `on_complete="timer_complete"` | Countdown reaches target | `%{"id" => id}` |
+
+  <!-- tabs-open -->
+
+  ### on_tick
 
   ```heex
-  <.timer id="t" translation={%Corex.Timer.Translation{area_label: "Countdown"}} class="timer" />
-  ```
-
-  ### Unit labels (optional)
-
-  Per-column caption under each digit cell (stacked column). Omit a slot to hide that unit’s label.
-
-  ```heex
-  <.timer id="t" countdown start_ms={@ms} target_ms={0} class="timer">
-    <:day_label>Days</:day_label>
-    <:hour_label>Hours</:hour_label>
-    <:minute_label>Minutes</:minute_label>
-    <:second_label>Seconds</:second_label>
+  <.timer
+    countdown
+    start_ms={3_600_000}
+    target_ms={0}
+    class="timer"
+    on_tick="timer_tick"
+    on_complete="timer_complete"
+  >
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
 
-  Action slots (`:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`) are optional.
+  ```elixir
+  def handle_event("timer_tick", %{"id" => id} = params, socket) do
+    {:noreply, assign(socket, :last_tick, Map.get(params, "formattedTime"))}
+  end
 
-  ## Styling
-
-  ```css
-  [data-scope="timer"][data-part="root"] {}
-  [data-scope="timer"][data-part="area"] {}
-  [data-scope="timer"][data-part="item-label"] {}
-  [data-scope="timer"][data-part="item"] {}
-  [data-scope="timer"][data-part="separator"] {}
-  [data-scope="timer"][data-part="control"] {}
-  [data-scope="timer"][data-part="action-trigger"] {}
+  def handle_event("timer_complete", %{"id" => _id}, socket) do
+    {:noreply, socket}
+  end
   ```
 
-  ```css
-  @import "../corex/components/timer.css";
-  ```
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_tick_client="timer-tick"` | Each tick | `id`, formatted time fields |
+  | `on_complete_client="timer-complete"` | Countdown completes | `id` |
+
+  <!-- tabs-open -->
+
+  ### on_tick_client
 
   ```heex
-  <.timer class="timer timer--accent timer--lg">
+  <.timer
+    id="timer-events-client"
+    countdown
+    start_ms={3_600_000}
+    target_ms={0}
+    class="timer"
+    on_tick_client="timer-tick"
+    on_complete_client="timer-complete"
+  >
+    <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
   </.timer>
   ```
+
+  ```javascript
+  const el = document.getElementById("timer-events-client");
+  el?.addEventListener("timer-tick", (e) => console.log(e.detail));
+  el?.addEventListener("timer-complete", (e) => console.log(e.detail));
+  ```
+
+  <!-- tabs-close -->
 
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Timer.Anatomy.{
     ActionTrigger,
@@ -105,6 +181,10 @@ defmodule Corex.Timer do
 
   alias Corex.Timer.Connect
   alias Corex.Timer.Translation, as: TimerTranslation
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [respond_to_fields: 1]
 
   @parts [:days, :hours, :minutes, :seconds]
 
@@ -213,7 +293,14 @@ defmodule Corex.Timer do
   end
 
   def timer(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+    assigns =
+      assigns
+      |> assign_new(:id, fn -> "timer-#{System.unique_integer([:positive])}" end)
+      |> assign(
+        :translation,
+        TimerTranslation.resolve(assigns.translation)
+      )
+
     segments = normalize_segments(assigns.segments)
     time_values = time_values(assigns.start_ms)
 
@@ -291,6 +378,8 @@ defmodule Corex.Timer do
     <div
       id={@id}
       phx-hook="Timer"
+      data-loading
+      phx-mounted={JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(@props_struct)}
     >
@@ -473,13 +562,224 @@ defmodule Corex.Timer do
     end
   end
 
+  api_doc(~S"""
+  Start the timer from `phx-click`. Dispatches `corex:timer:start` on the timer root (`id` matches the DOM host).
+
+  ```heex
+  <.action phx-click={Corex.Timer.start("my-timer")}>Start</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+
+  ```javascript
+  document.getElementById("my-timer")?.dispatchEvent(new CustomEvent("corex:timer:start", { bubbles: false }));
+  ```
+  """)
+
+  def start(timer_id) when is_binary(timer_id) do
+    JS.dispatch("corex:timer:start", to: "##{timer_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Start the timer from `handle_event` via [`push_event/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#push_event/3) (`timer_start`).
+
+  ```elixir
+  def handle_event("start_timer", _params, socket) do
+    {:noreply, Corex.Timer.start(socket, "my-timer")}
+  end
+  ```
+  """)
+
+  def start(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    LiveView.push_event(socket, "timer_start", %{id: timer_id})
+  end
+
+  api_doc(~S"""
+  Pause the timer from `phx-click`. Dispatches `corex:timer:pause`.
+
+  ```heex
+  <.action phx-click={Corex.Timer.pause("my-timer")}>Pause</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+  """)
+
+  def pause(timer_id) when is_binary(timer_id) do
+    JS.dispatch("corex:timer:pause", to: "##{timer_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Pause the timer from `handle_event` (`timer_pause`).
+
+  ```elixir
+  def handle_event("pause_timer", _params, socket) do
+    {:noreply, Corex.Timer.pause(socket, "my-timer")}
+  end
+  ```
+  """)
+
+  def pause(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    LiveView.push_event(socket, "timer_pause", %{id: timer_id})
+  end
+
+  api_doc(~S"""
+  Resume the timer from `phx-click`. Dispatches `corex:timer:resume`.
+
+  ```heex
+  <.action phx-click={Corex.Timer.resume("my-timer")}>Resume</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+  """)
+
+  def resume(timer_id) when is_binary(timer_id) do
+    JS.dispatch("corex:timer:resume", to: "##{timer_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Resume the timer from `handle_event` (`timer_resume`).
+
+  ```elixir
+  def handle_event("resume_timer", _params, socket) do
+    {:noreply, Corex.Timer.resume(socket, "my-timer")}
+  end
+  ```
+  """)
+
+  def resume(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    LiveView.push_event(socket, "timer_resume", %{id: timer_id})
+  end
+
+  api_doc(~S"""
+  Reset the timer from `phx-click`. Dispatches `corex:timer:reset`.
+
+  ```heex
+  <.action phx-click={Corex.Timer.reset("my-timer")}>Reset</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+  """)
+
+  def reset(timer_id) when is_binary(timer_id) do
+    JS.dispatch("corex:timer:reset", to: "##{timer_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Reset the timer from `handle_event` (`timer_reset`).
+
+  ```elixir
+  def handle_event("reset_timer", _params, socket) do
+    {:noreply, Corex.Timer.reset(socket, "my-timer")}
+  end
+  ```
+  """)
+
+  def reset(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    LiveView.push_event(socket, "timer_reset", %{id: timer_id})
+  end
+
+  api_doc(~S"""
+  Restart the timer from `phx-click`. Dispatches `corex:timer:restart`.
+
+  ```heex
+  <.action phx-click={Corex.Timer.restart("my-timer")}>Restart</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+  """)
+
+  def restart(timer_id) when is_binary(timer_id) do
+    JS.dispatch("corex:timer:restart", to: "##{timer_id}", bubbles: false)
+  end
+
+  api_doc(~S"""
+  Restart the timer from `handle_event` (`timer_restart`).
+
+  ```elixir
+  def handle_event("restart_timer", _params, socket) do
+    {:noreply, Corex.Timer.restart(socket, "my-timer")}
+  end
+  ```
+  """)
+
+  def restart(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    LiveView.push_event(socket, "timer_restart", %{id: timer_id})
+  end
+
+  api_doc(~S"""
+  Read machine state from `phx-click`. Dispatches `corex:timer:state`. Optional `respond_to:` `:server`, `:client`, or `:both`.
+
+  | | Reply | Payload |
+  | - | ----- | ------- |
+  | Server | `timer_state_response` | `%{"id" => id}` plus `running`, `paused`, `progressPercent`, `time`, `formattedTime` |
+  | Client | `timer-state` on the timer root | same fields in `detail` |
+
+  ```heex
+  <.action phx-click={Corex.Timer.state("my-timer")}>State</.action>
+  <.timer id="my-timer" start_ms={60_000} class="timer"></.timer>
+  ```
+
+  ```elixir
+  def handle_event("timer_state_response", %{"id" => _, "running" => running}, socket) do
+    {:noreply, assign(socket, :running, running)}
+  end
+  ```
+
+  ```javascript
+  document.getElementById("my-timer")?.addEventListener("timer-state", (e) => {
+    console.log(e.detail.running, e.detail.paused);
+  });
+  ```
+  """)
+
+  def state(timer_id, opts) when is_binary(timer_id) and is_list(opts) do
+    JS.dispatch("corex:timer:state",
+      to: "##{timer_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  def state(socket, timer_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) do
+    state(socket, timer_id, [])
+  end
+
+  api_doc_short("Same as [`state/2`](#state/2) with default `respond_to:`.")
+  def state(timer_id) when is_binary(timer_id), do: state(timer_id, [])
+
+  api_doc(~S"""
+  Read machine state from `handle_event` (`timer_state`). Same replies as [`state/2`](#state/2); server-side only unless you also use [`state/2`](#state/2) for a client DOM reply.
+
+  | Reply | Payload |
+  | ----- | ------- |
+  | `timer_state_response` | `%{"id" => id}` plus `running`, `paused`, `progressPercent`, `time`, `formattedTime` |
+
+  ```elixir
+  def handle_event("read_state", _params, socket) do
+    {:noreply, Corex.Timer.state(socket, "my-timer")}
+  end
+
+  def handle_event("timer_state_response", %{"id" => _, "running" => running}, socket) do
+    {:noreply, assign(socket, :running, running)}
+  end
+  ```
+  """)
+
+  def state(socket, timer_id, opts)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(timer_id) and is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "timer_state",
+      Map.merge(%{id: timer_id}, respond_to_fields(opts))
+    )
+  end
+
   @doc type: :component
   attr(:id, :string, required: false)
   attr(:rest, :global)
 
   def timer_skeleton(assigns) do
-    assigns = assign_new(assigns, :id, fn -> "timer-#{System.unique_integer([:positive])}" end)
-
     ~H"""
     <div id={@id} {@rest}>
       <div {Connect.root(%Root{id: @id, dir: "ltr", orientation: "horizontal"})}>

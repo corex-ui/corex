@@ -7,8 +7,7 @@ defmodule E2eWeb.TreeViewPlayLive do
   def mount(_params, _session, socket) do
     controls = %{
       selection_mode: "single",
-      dir: "ltr",
-      typeahead: true
+      dir: "ltr"
     }
 
     socket =
@@ -20,13 +19,8 @@ defmodule E2eWeb.TreeViewPlayLive do
   end
 
   @impl true
-  def handle_event("control_changed", %{"checked" => raw, "id" => id}, socket) do
-    checked = control_bool(raw)
-    {:noreply, update_control(socket, control_id(id), checked)}
-  end
-
   def handle_event("control_changed", %{"value" => [value], "id" => id}, socket) do
-    {:noreply, update_control(socket, control_id(id), value)}
+    {:noreply, update_control(socket, id, value)}
   end
 
   defp update_control(socket, "selection_mode", value) do
@@ -37,18 +31,7 @@ defmodule E2eWeb.TreeViewPlayLive do
     update(socket, :controls, &%{&1 | dir: value})
   end
 
-  defp update_control(socket, "typeahead", checked) do
-    update(socket, :controls, &%{&1 | typeahead: checked})
-  end
-
   defp update_control(socket, _unknown, _v), do: socket
-
-  defp control_bool(v) when v in [true, "true"], do: true
-  defp control_bool(v) when v in [false, "false"], do: false
-  defp control_bool(v), do: !!v
-
-  defp control_id("playground-typeahead-" <> _), do: "typeahead"
-  defp control_id(id), do: id
 
   @impl true
   def render(assigns) do
@@ -59,7 +42,7 @@ defmodule E2eWeb.TreeViewPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Tree view · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title="Tree view · Playground" heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -78,15 +61,6 @@ defmodule E2eWeb.TreeViewPlayLive do
             <:item value="single">Single</:item>
             <:item value="multiple">Multiple</:item>
           </.toggle_group>
-
-          <.switch
-            class="switch"
-            id={"playground-typeahead-#{@controls.typeahead}"}
-            checked={@controls.typeahead}
-            on_checked_change="control_changed"
-          >
-            <:label>Typeahead</:label>
-          </.switch>
         </:controls>
         <:canvas>
           <.tree_view
@@ -96,7 +70,6 @@ defmodule E2eWeb.TreeViewPlayLive do
             value={E2e.TreeViewDemo.repo_selected_default()}
             selection_mode={@controls.selection_mode}
             dir={@controls.dir}
-            typeahead={@controls.typeahead}
             items={@items}
           >
             <:label>Repository</:label>

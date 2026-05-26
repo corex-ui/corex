@@ -40,12 +40,13 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
     ~H"""
     <Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
       <.demo_page
+        path={@path}
         id="file-upload-live-anatomy-page"
         title="File Upload live · Anatomy"
         subtitle="LiveView uploads (allow_upload) and Corex.FileUploadLive."
       >
         <.demo_section
-          id="file-upload-live-anatomy-minimal"
+          id="file-upload-live-anatomy-minimal-section"
           title="Minimal"
           code={FileUploadDemo.live_anatomy_minimal_code()}
         >
@@ -68,7 +69,7 @@ defmodule E2eWeb.FileUploadLiveAnatomyLive do
           </:preview>
         </.demo_section>
         <.demo_section
-          id="file-upload-live-anatomy-label"
+          id="file-upload-live-anatomy-label-section"
           title="With label"
           code={FileUploadDemo.live_anatomy_with_label_code()}
         >

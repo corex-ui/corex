@@ -42,7 +42,7 @@
   --theme-color-success-hover: #004f0a; /** Semantic success hover fill at 40% lightness (chroma #15803D). */
   --theme-color-info-ink: #dcd9d4; /** 7.0:1 contrast against info (#072fba) */
   --theme-color-brand-hover: #49009e; /** Semantic brand hover fill at 40% lightness (chroma #5B21B6). */
-  --theme-color-ink-muted: #696662; /** 5.0:1 contrast against ui (#f3f0eb) */
+  --theme-color-ink-muted: #676460; /** 5.15:1 contrast against ui (#f3f0eb) */
   --theme-color-info-hover: #021eac; /** Semantic info hover fill at 40% lightness (chroma #1D4ED8). */
   --theme-color-ink-info: #1c4dd7; /** 6.0:1 contrast against ui (#f3f0eb) */
   --theme-color-info-muted: #0f3cc6; /** Semantic info muted fill at 40% lightness (chroma #1D4ED8). */

@@ -7,12 +7,12 @@
 
   .tabs {
     width: 100%;
-    max-width: none;
+    max-width: var(--container-md);
   }
 
   .tabs [data-scope="tabs"][data-part="root"] {
     @apply ui-root;
-    gap: --spacing(4);
+    gap: var(--spacing-space);
   }
 
   .tabs [data-scope="tabs"][data-part="root"][data-orientation="vertical"] {
@@ -68,6 +68,11 @@
     @apply ui-item;
     width: fit-content;
     max-width: none;
+  }
+
+  .tabs
+    [data-scope="tabs"][data-part="trigger"][data-focus]:not(:focus-visible) {
+    box-shadow: none;
   }
 
   .tabs [data-scope="tabs"][data-part="trigger"][data-orientation="vertical"] {

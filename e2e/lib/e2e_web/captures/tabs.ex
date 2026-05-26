@@ -2,8 +2,8 @@ defmodule CorexWeb.Tabs do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Tabs
   alias Corex.Content
+  alias Corex.Tabs
 
   @items Content.new([
            %{

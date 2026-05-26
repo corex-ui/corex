@@ -62,16 +62,19 @@ defmodule E2eWeb.SelectEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="select-events-page"
-        title="Select · Event"
-        subtitle="Subscribe to value changes from LiveView (on_value_change) or the client (CustomEvent and hook)."
+        title={~t"Select · Event"}
+        subtitle={
+          ~t"Subscribe to value changes from LiveView (on_value_change) or the client (CustomEvent and hook)."
+        }
       >
         <.demo_section
-          id="select-events-server"
-          title="On Value Change (Server)"
+          id="select-events-server-section"
+          title={~t"On Value Change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -103,12 +106,12 @@ defmodule E2eWeb.SelectEventsLive do
         </.demo_section>
 
         <.demo_section
-          id="select-events-client"
-          title="On Value Change (Client)"
+          id="select-events-client-section"
+          title={~t"On Value Change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

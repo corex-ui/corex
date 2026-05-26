@@ -1,7 +1,7 @@
 defmodule E2e.DesignPalette.Config do
   @moduledoc false
 
-  @theme_order ~w(neo uno duo leo)
+  @theme_order ~W(neo uno duo leo)
 
   def defaults do
     nl = neo_light()
@@ -94,7 +94,7 @@ defmodule E2e.DesignPalette.Config do
         "default" => %{"color" => "base", "ratio" => 8},
         "info" => %{"color" => "info", "ratio" => 6},
         "link" => %{"color" => "info", "ratio" => 6},
-        "muted" => %{"color" => "base", "ratio" => 5},
+        "muted" => %{"color" => "base", "ratio" => 5.15},
         "success" => %{"color" => "success", "ratio" => 6}
       },
       "output" => "tokens/themes/neo/color/light.json",

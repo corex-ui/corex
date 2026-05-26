@@ -66,16 +66,17 @@ defmodule E2eWeb.SwitchEventsLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="switch-events-page"
-        title="Switch · Event"
-        subtitle="Subscribe to checked changes from LiveView or the client."
+        title={~t"Switch · Event"}
+        subtitle={~t"Subscribe to checked changes from LiveView or the client."}
       >
         <.demo_section
           id="switch-events-server"
-          title="On checked change (Server)"
+          title={~t"On checked change (Server)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @server_heex},
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @server_heex},
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
@@ -102,11 +103,11 @@ defmodule E2eWeb.SwitchEventsLive do
 
         <.demo_section
           id="switch-events-client"
-          title="On checked change (Client)"
+          title={~t"On checked change (Client)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_heex},
-            %{value: "js", label: "JS", language: :js, code: @client_js},
-            %{value: "ts", label: "TS", language: :javascript, code: @client_ts}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @client_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @client_ts}
           ]}
         >
           <:preview>

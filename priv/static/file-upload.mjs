@@ -1,4 +1,8 @@
 import {
+  bindArrayFieldSubmitIntent
+} from "./chunks/chunk-WDSYQCT6.mjs";
+import "./chunks/chunk-VMKNATWC.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -6,7 +10,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -28,7 +32,7 @@ import {
   raf,
   visuallyHiddenStyle,
   warn
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+file-upload@1.40.0/node_modules/@zag-js/file-upload/dist/file-upload.anatomy.mjs
 var anatomy = createAnatomy("file-upload").parts(
@@ -868,6 +872,24 @@ function zagFileId(value) {
 function fileKeyFor(file) {
   return zagFileId(`${file.name}-${file.size}`);
 }
+function labelFieldNameFor(fieldName) {
+  if (fieldName.includes("[")) {
+    return fieldName.replace(/\[([^\]]+)\]$/, "[$1_label]");
+  }
+  return `${fieldName}_label`;
+}
+function setInputFiles2(inputEl, files) {
+  try {
+    if (typeof window.DataTransfer !== "undefined") {
+      const dataTransfer = new window.DataTransfer();
+      for (const file of files) {
+        dataTransfer.items.add(file);
+      }
+      inputEl.files = dataTransfer.files;
+    }
+  } catch {
+  }
+}
 var FileUpload = class extends Component {
   previewCleanup = /* @__PURE__ */ new Map();
   sentinelSnapshot = "";
@@ -976,7 +998,61 @@ var FileUpload = class extends Component {
         );
       }
     }
+    this.syncFormSubmitInputs();
     this.touchSentinel();
+  }
+  syncFormSubmitInputs() {
+    const fileInput = this.el.querySelector(
+      '[data-scope="file-upload"][data-part="hidden-input"]'
+    );
+    const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
+    const files = this.api.acceptedFiles;
+    const name = this.el.dataset.name;
+    if (fileInput) {
+      setInputFiles2(fileInput, files);
+    }
+    this.syncAcceptedNamesHidden(name, files);
+    if (!sentinel) return;
+    if (files.length > 0) {
+      sentinel.disabled = true;
+      sentinel.removeAttribute("name");
+      return;
+    }
+    sentinel.disabled = false;
+    if (name) {
+      sentinel.setAttribute("name", name);
+    }
+  }
+  syncAcceptedNamesHidden(fieldName, files) {
+    if (!fieldName) return;
+    const labelFieldName = labelFieldNameFor(fieldName);
+    const region = this.el.querySelector('[data-scope="file-upload"][data-part="region"]') ?? this.el;
+    let labelInput = region.querySelector(
+      '[data-scope="file-upload"][data-part="accepted-names-hidden"]'
+    );
+    if (!labelInput) {
+      labelInput = document.createElement("input");
+      labelInput.type = "hidden";
+      labelInput.setAttribute("data-scope", "file-upload");
+      labelInput.setAttribute("data-part", "accepted-names-hidden");
+      region.appendChild(labelInput);
+    }
+    const names = files.map((file) => file.name).filter(Boolean).join(", ");
+    if (names === "") {
+      labelInput.disabled = true;
+      labelInput.removeAttribute("name");
+      labelInput.value = "";
+      return;
+    }
+    labelInput.disabled = false;
+    labelInput.name = labelFieldName;
+    labelInput.value = names;
+    const formId = this.el.dataset.form;
+    if (formId) {
+      labelInput.setAttribute("form", formId);
+    } else {
+      labelInput.removeAttribute("form");
+    }
   }
   touchSentinel() {
     const sentinel = this.el.querySelector('[data-part="hidden-input-sentinel"]');
@@ -1088,6 +1164,7 @@ function fileChangePayload(el, details) {
     id: el.id,
     acceptedCount: details.acceptedFiles.length,
     rejectedCount: details.rejectedFiles.length,
+    acceptedNames: details.acceptedFiles.map((file) => file.name),
     firstAcceptedName: first?.name ?? null,
     firstAcceptedType: first?.type ?? null
   };
@@ -1119,7 +1196,7 @@ var FileUploadHook = {
       id: el.id,
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
-      readOnly: getBoolean(el, "readOnly"),
+      readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       name: getString(el, "name"),
       dir: getDir(el),
@@ -1165,6 +1242,9 @@ var FileUploadHook = {
     zag.init();
     this.fileUpload = zag;
     this.handlers = [];
+    this.unbindSubmitIntent = bindArrayFieldSubmitIntent(el, () => {
+      zag.syncFormSubmitInputs();
+    });
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
     domRegistry.add("corex:file-upload:clear-files", () => {
@@ -1196,7 +1276,7 @@ var FileUploadHook = {
       id: this.el.id,
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
-      readOnly: getBoolean(this.el, "readOnly"),
+      readOnly: getBoolean(this.el, "readonly"),
       required: getBoolean(this.el, "required"),
       name: getString(this.el, "name"),
       dir: getDir(this.el),
@@ -1210,6 +1290,7 @@ var FileUploadHook = {
     });
   },
   destroyed() {
+    this.unbindSubmitIntent?.();
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }
@@ -1220,5 +1301,8 @@ var FileUploadHook = {
   }
 };
 export {
-  FileUploadHook as FileUpload
+  FileUploadHook as FileUpload,
+  fileAcceptPayload,
+  fileChangePayload,
+  fileRejectPayload
 };

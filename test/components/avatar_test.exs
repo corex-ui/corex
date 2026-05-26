@@ -17,13 +17,14 @@ defmodule Corex.AvatarTest do
     test "renders with src" do
       html =
         render_component(&Corex.Avatar.avatar/1,
+          id: "test-avatar",
           src: "image.png",
           fallback: [%{inner_block: fn _, _ -> "JD" end}]
         )
 
       assert html =~ "image.png"
-      assert html =~ ~s(phx-mounted=)
-      assert html =~ ~s(data-part="image")
+      assert html =~ ~S(phx-mounted=)
+      assert html =~ ~S(data-part="image")
     end
   end
 

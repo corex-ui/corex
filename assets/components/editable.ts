@@ -1,6 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/editable";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { syncInputFormAssociation } from "../lib/util";
 
 export class Editable extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +18,11 @@ export class Editable extends Component<Props, Api> {
       this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
+    const controlEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="control"]'
+    );
+    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+
     const areaEl = this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="area"]');
     if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
 
@@ -24,6 +30,12 @@ export class Editable extends Component<Props, Api> {
       '[data-scope="editable"][data-part="label"]'
     );
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+
+    const formValueEl = this.el.querySelector<HTMLInputElement>(`#${this.el.id}-value`);
+    if (formValueEl) {
+      formValueEl.value = this.api.value;
+      syncInputFormAssociation(formValueEl, this.el);
+    }
 
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="editable"][data-part="input"]'

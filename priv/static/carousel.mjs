@@ -9,7 +9,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunks/chunk-LIWT33BG.mjs";
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -44,7 +44,7 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
@@ -1050,6 +1050,10 @@ var Carousel = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  updateProps(props) {
+    super.updateProps(props);
+    this.machine.service.send({ type: "SNAP.REFRESH" });
+  }
   render() {
     const rootEl = this.el.querySelector('[data-scope="carousel"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
@@ -1066,7 +1070,10 @@ var Carousel = class extends Component {
       const itemEl = this.el.querySelector(
         `[data-scope="carousel"][data-part="item"][data-index="${i}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i }));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ index: i }));
+        this.syncSlideInert(itemEl);
+      }
     }
     const prevTriggerEl = this.el.querySelector(
       '[data-scope="carousel"][data-part="prev-trigger"]'
@@ -1097,9 +1104,23 @@ var Carousel = class extends Component {
     );
     if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
   }
+  syncSlideInert(itemEl) {
+    itemEl.inert = itemEl.getAttribute("aria-hidden") === "true";
+  }
 };
 
 // hooks/carousel.ts
+function toZagPage(page) {
+  if (page == null) return void 0;
+  return Math.max(0, page - 1);
+}
+function fromZagPage(page) {
+  return page + 1;
+}
+function readCorexPage(el, attr) {
+  const dataKey = attr === "page" ? "page" : "defaultPage";
+  return toZagPage(getNumber(el, dataKey));
+}
 function readInstant(detail) {
   if (detail && typeof detail === "object" && "instant" in detail) {
     const v = detail.instant;
@@ -1120,7 +1141,7 @@ var CarouselHook = {
     const zag = new Carousel(el, {
       id: el.id,
       slideCount,
-      ...controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") },
+      ...controlled ? { page: readCorexPage(el, "page") } : { defaultPage: readCorexPage(el, "defaultPage") },
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       slidesPerPage: getNumber(el, "slidesPerPage"),
@@ -1140,7 +1161,7 @@ var CarouselHook = {
           pushEvent,
           payload: {
             id: el.id,
-            page: details.page,
+            page: fromZagPage(details.page),
             pageSnapPoint: details.pageSnapPoint
           },
           serverEventName: getString(el, "onPageChange"),
@@ -1190,7 +1211,7 @@ var CarouselHook = {
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") },
+      ...controlled ? { page: readCorexPage(this.el, "page") } : {},
       dir: getDir(this.el),
       orientation: getString(this.el, "orientation"),
       slidesPerPage: getNumber(this.el, "slidesPerPage"),
@@ -1212,5 +1233,9 @@ var CarouselHook = {
   }
 };
 export {
-  CarouselHook as Carousel
+  CarouselHook as Carousel,
+  fromZagPage,
+  readCorexPage,
+  readInstant,
+  toZagPage
 };

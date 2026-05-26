@@ -2,13 +2,12 @@ defmodule Corex.ColorPicker do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Color Picker](https://zagjs.com/components/react/color-picker).
 
-  ## Examples
+  ## Anatomy
 
   ### Basic
 
   ```heex
   <.color_picker
-    id="my-color-picker"
     value="rgb(25, 9, 192, 0.9)"
     label="Select Color (RGBA)"
     presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
@@ -16,7 +15,7 @@ defmodule Corex.ColorPicker do
   />
   ```
 
-  ## Styling
+  ## Style
 
   Target elements via data attributes:
 
@@ -29,6 +28,7 @@ defmodule Corex.ColorPicker do
   [data-scope="color-picker"][data-part="area"] {}
   [data-scope="color-picker"][data-part="channel-slider"] {}
   [data-scope="color-picker"][data-part="swatch-trigger"] {}
+  [data-scope="color-picker"][data-part="error"] {}
   ```
 
   Import the Corex design:
@@ -39,33 +39,338 @@ defmodule Corex.ColorPicker do
   @import "../corex/components/color-picker.css";
   ```
 
+  ## API
+
+  Requires a stable `id` on `<.color_picker>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_value/2`](#set_value/2) | Set color (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_value/3`](#set_value/3) | Set color (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_value
+
+  ```heex
+  <.action phx-click={Corex.ColorPicker.set_value("color-picker-api", "#ff0000")} class="button button--sm">
+    Set red
+  </.action>
+  <.color_picker id="color-picker-api" value="#000000" label="Color" class="color-picker" />
+  ```
+
+  ```elixir
+  def handle_event("set_color", %{"color" => hex}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "color-picker-api", hex)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
   ## Events
 
-  - `on_value_change` / `on_value_change_end` - when color changes (detail: `%{valueAsString: string}`)
-  - `on_value_change_client` / `on_value_change_end_client` - client-only variants
-  - `on_open_change` - when open state changes (detail: `%{open: boolean}`)
-  - `on_open_change_client` - client-only variant
-  - `on_format_change` - when format changes (detail: `%{format: string}`)
-  - `on_pointer_down_outside` / `on_focus_outside` / `on_interact_outside` - when interacting outside
+  ### Server events
 
-  ## API Control
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_value_change="color_value_changed"` | Color changes | `%{"id" => id, "valueAsString" => value}` |
+  | `on_open_change="color_open_changed"` | Open state changes | `%{"id" => id, "open" => open}` |
 
-  Use `set_value` for programmatic color updates.
-  '''
+  <!-- tabs-open -->
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for ColorPicker component strings.
+  ### on_value_change
 
-    Without gettext: `translation={%ColorPicker.Translation{ hex: "Hex color value" }}`
+  ```heex
+  <.color_picker
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_value_change="color_value_changed"
+  />
+  ```
 
-    With gettext: `translation={%ColorPicker.Translation{ hex: Corex.Gettext.gettext("Hex color value") }}`
-    """
-    defstruct [:hex, :alpha]
+  ```elixir
+  def handle_event("color_value_changed", %{"valueAsString" => value}, socket) do
+    {:noreply, assign(socket, :color, value)}
   end
+  ```
+
+  ### on_open_change
+
+  ```heex
+  <.color_picker
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_open_change="color_open_changed"
+  />
+  ```
+
+  ```elixir
+  def handle_event("color_open_changed", %{"open" => open}, socket) do
+    {:noreply, assign(socket, :color_picker_open, open)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_value_change_client="color-value-changed"` | Color changes | `id`, `valueAsString` |
+  | `on_open_change_client="color-open-changed"` | Open state changes | `id`, `open` |
+  | `on_format_change_client="color-format-changed"` | Format changes | `id`, `format` |
+  | `on_pointer_down_outside_client="color-pointer-down-outside"` | Pointer down outside | `id`, ... |
+  | `on_focus_outside_client="color-focus-outside"` | Focus outside | `id`, ... |
+  | `on_interact_outside_client="color-interact-outside"` | Interact outside | `id`, ... |
+
+  <!-- tabs-open -->
+
+  ### on_value_change_client
+
+  ```heex
+  <.color_picker
+    id="color-picker-events-client"
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_value_change_client="color-value-changed"
+  />
+  ```
+
+  ```javascript
+  document.getElementById("color-picker-events-client")?.addEventListener("color-value-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  ### on_open_change_client
+
+  ```heex
+  <.color_picker
+    id="color-picker-open-events-client"
+    class="color-picker"
+    value="#3b82f6"
+    label="Color"
+    on_open_change_client="color-open-changed"
+  />
+  ```
+
+  ```javascript
+  document.getElementById("color-picker-open-events-client")?.addEventListener("color-open-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
+  ## Form
+
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:color]}` so the picker name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:color])}` when you want alert borders after validation.
+
+  <!-- tabs-open -->
+
+  ### Phoenix form (changeset)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/color-picker/form"
+        method="post"
+      >
+        <.color_picker
+          field={f[:color]}
+          label="Color"
+          class="color-picker"
+          presets={["#ff0000", "#00ff00", "#0000ff"]}
+        >
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.color_picker>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_page(conn, _params) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+            as: :color_picker_phoenix,
+            id: "color-picker-form-phoenix"
+          )
+
+        render(conn, :color_picker_form_page, phoenix_form: phoenix_form)
+      end
+
+      def color_picker_form_submit(conn, params) do
+        if is_map(params["color_picker_phoenix"]) do
+          color = params["color_picker_phoenix"]["color"] || ""
+
+          conn
+          |> put_flash(:info, "Submitted: color=#{inspect(color)}")
+          |> redirect(to: "/color-picker/form")
+        end
+      end
+  ```
+
+  ### Ecto changeset (validation)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/color-picker/form"
+        method="post"
+      >
+        <.color_picker
+          field={f[:color]}
+          label="Color"
+          class="color-picker"
+          presets={["#ff0000", "#00ff00", "#0000ff"]}
+        >
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.color_picker>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_validate_page(conn, _params) do
+        changeset =
+          MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, %{})
+
+        form =
+          Phoenix.Component.to_form(changeset,
+            as: :color_picker_validate,
+            id: "color-picker-validate-form"
+          )
+
+        render(conn, :color_picker_form_page, form: form)
+      end
+
+      def color_picker_form_validate_create(conn, %{"color_picker_validate" => params}) do
+        case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Saved: color=#{data.color}")
+            |> redirect(to: "/settings")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+
+            form =
+              Phoenix.Component.to_form(changeset,
+                as: :color_picker_validate,
+                id: "color-picker-validate-form"
+              )
+
+            render(conn, :color_picker_form_page, form: form)
+        end
+      end
+  ```
+
+  #### Ecto
+
+  ```elixir
+      defmodule MyApp.Form.ColorPickerForm do
+        use Ecto.Schema
+        import Ecto.Changeset
+
+        embedded_schema do
+          field :color, :string, default: "#3b82f6"
+        end
+
+        def changeset(form, attrs \\ %{}) do
+          form
+          |> cast(attrs, [:color])
+          |> validate_required([:color])
+        end
+
+        def changeset_validate(form, attrs \\ %{}) do
+          form
+          |> cast(attrs, [:color])
+          |> validate_required([:color])
+          |> validate_alpha_max_50()
+        end
+
+        defp validate_alpha_max_50(changeset) do
+          with value when is_binary(value) <- get_field(changeset, :color),
+               [_, alpha] <-
+                 Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
+               {float_val, _} <- Float.parse(alpha),
+               true <- float_val > 0.5 do
+            add_error(changeset, :color, "maximum alpha allowed is 50%")
+          else
+            _ -> changeset
+          end
+        end
+      end
+  ```
+
+  ### Native form (plain HTML)
+
+  ```heex
+      <form
+        action="/color-picker/form"
+        method="post"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <.color_picker
+          name="color_picker_form[color]"
+          value="#3b82f6"
+          label="Color"
+          class="color-picker"
+        />
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+        conn
+        |> put_flash(:info, "Submitted: color=#{color}")
+        |> redirect(to: "/color-picker/form")
+      end
+  ```
+
+  <!-- tabs-close -->
+  '''
 
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
+
+  alias Corex.ColorPicker.Translation
 
   alias Corex.ColorPicker.Anatomy.{
     Area,
@@ -111,7 +416,7 @@ defmodule Corex.ColorPicker do
   attr(:read_only, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:positioning, :map, default: %Corex.Positioning{})
+  attr(:positioning, :map, default: %Corex.Positioning{fit_viewport: false})
   attr(:presets, :list, default: [])
   attr(:class, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
@@ -121,9 +426,13 @@ defmodule Corex.ColorPicker do
   attr(:on_open_change, :string, default: nil)
   attr(:on_open_change_client, :string, default: nil)
   attr(:on_format_change, :string, default: nil)
+  attr(:on_format_change_client, :string, default: nil)
   attr(:on_pointer_down_outside, :string, default: nil)
+  attr(:on_pointer_down_outside_client, :string, default: nil)
   attr(:on_focus_outside, :string, default: nil)
+  attr(:on_focus_outside_client, :string, default: nil)
   attr(:on_interact_outside, :string, default: nil)
+  attr(:on_interact_outside_client, :string, default: nil)
 
   attr(:translation, Corex.ColorPicker.Translation,
     default: nil,
@@ -140,31 +449,24 @@ defmodule Corex.ColorPicker do
   end
 
   def color_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     v = form_field_to_color_value(field)
 
     assigns
-    |> assign(:field, nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
-    |> assign(:id, field.id)
-    |> assign(:name, field.name)
+    |> Corex.FormField.assign_form_field(field)
     |> assign(:value, v)
-    |> assign(:invalid, errors != [])
     |> color_picker()
   end
 
   def color_picker(assigns) do
-    default_translation = %Translation{
-      hex: Corex.Gettext.gettext("Hex color value"),
-      alpha: Corex.Gettext.gettext("Alpha (opacity) value")
-    }
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
-      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign_new(:form_field, fn -> false end)
+      |> assign_new(:errors, fn -> [] end)
+      |> assign_new(:invalid, fn -> false end)
+      |> assign(:translation, translation)
       |> assign(:dir, assigns.dir || "ltr")
 
     initial_value = initial_value(assigns)
@@ -187,6 +489,7 @@ defmodule Corex.ColorPicker do
       {@rest}
       {Connect.props(%Props{
         id: @id,
+        form_field: @form_field,
         value: @value,
         name: @name,
         close_on_select: @close_on_select,
@@ -204,9 +507,13 @@ defmodule Corex.ColorPicker do
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         on_format_change: @on_format_change,
+        on_format_change_client: @on_format_change_client,
         on_pointer_down_outside: @on_pointer_down_outside,
+        on_pointer_down_outside_client: @on_pointer_down_outside_client,
         on_focus_outside: @on_focus_outside,
-        on_interact_outside: @on_interact_outside
+        on_focus_outside_client: @on_focus_outside_client,
+        on_interact_outside: @on_interact_outside,
+        on_interact_outside_client: @on_interact_outside_client
       })}
       data-label={@label}
       data-presets={Corex.Json.encode!(@presets)}
@@ -358,7 +665,12 @@ defmodule Corex.ColorPicker do
           </div>
         </div>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="color-picker" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        data-scope="color-picker"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -401,11 +713,24 @@ defmodule Corex.ColorPicker do
     String.downcase(preset_hex) == String.downcase(current)
   end
 
-  @doc type: :api
-  @doc """
-  Sets the color value from client-side. Returns a `Phoenix.LiveView.JS` command.
-  Value can be any color string (e.g. `"#ff0000"`, `"rgba(255, 0, 0, 1)"`).
-  """
+  api_doc(~S"""
+  Set the picker value from a control (`phx-click`). `value` is a color string (e.g. hex).
+
+  ```heex
+  <.action phx-click={Corex.ColorPicker.set_value("my-color-picker", "#226677")}>Set</.action>
+  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  ```
+
+  ```javascript
+  document.getElementById("my-color-picker")?.dispatchEvent(
+    new CustomEvent("corex:color-picker:set-value", {
+      bubbles: false,
+      detail: { value: "#226677" },
+    })
+  );
+  ```
+  """)
+
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
     JS.dispatch("corex:color-picker:set-value",
       to: "##{color_picker_id}",
@@ -414,24 +739,26 @@ defmodule Corex.ColorPicker do
     )
   end
 
-  @doc type: :api
-  @doc """
-  Sets the color value from server-side.
-  """
+  api_doc(~S"""
+  Set the value from `handle_event`.
+
+  ```heex
+  <.action phx-click="pick_color" phx-value-value="#226677">Set</.action>
+  <.color_picker id="my-color-picker" class="color-picker" label="Color" value="#000000" />
+  ```
+
+  ```elixir
+  def handle_event("pick_color", %{"value" => v}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", v)}
+  end
+  ```
+  """)
+
   def set_value(socket, color_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
     LiveView.push_event(socket, "color_picker_set_value", %{
       color_picker_id: color_picker_id,
       value: to_string(value)
     })
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      hex: partial.hex || default.hex,
-      alpha: partial.alpha || default.alpha
-    }
   end
 end

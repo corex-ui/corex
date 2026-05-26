@@ -2,23 +2,17 @@ defmodule Corex.Dialog do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Dialog](https://zagjs.com/components/react/dialog).
 
-  ## Examples
+  ## Anatomy
 
   <!-- tabs-open -->
 
-  ### Basic Usage
-
-  With top-level slots:
+  ### Minimal
 
   ```heex
-  <.dialog id="my-dialog" class="dialog">
-    <:trigger>Open Dialog</:trigger>
-    <:title>Dialog Title</:title>
-    <:description>
-      This is a dialog description that explains what the dialog is about.
-    </:description>
+  <.dialog class="dialog">
+    <:trigger>Open</:trigger>
     <:content>
-      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
+      <p>Minimal content.</p>
     </:content>
     <:close_trigger>
       <.heroicon name="hero-x-mark" class="icon" />
@@ -26,62 +20,212 @@ defmodule Corex.Dialog do
   </.dialog>
   ```
 
-  With title, description, and close trigger inside content (use the same id as the dialog):
+  ### Title and description
 
   ```heex
-  <.dialog id="my-dialog" class="dialog">
+  <.dialog class="dialog">
     <:trigger>Open Dialog</:trigger>
+    <:title>Dialog Title</:title>
+    <:description>
+      Short description of what this dialog is for.
+    </:description>
     <:content>
-      <.dialog_title id="my-dialog">Dialog Title</.dialog_title>
-      <.dialog_description id="my-dialog">
-        This is a dialog description that explains what the dialog is about.
-      </.dialog_description>
-      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
-      <.dialog_close_trigger id="my-dialog">
-        <.heroicon name="hero-x-mark" class="icon" />
-      </.dialog_close_trigger>
+      <p>Body content.</p>
     </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
   </.dialog>
   ```
 
-  ### Controlled Mode
+  ### Actions in content
 
   ```heex
-  <.dialog
-    id="my-dialog"
-    controlled
-    open={@dialog_open}
-    on_open_change="dialog_changed">
+  <.dialog id="dialog-anatomy-actions" class="dialog">
     <:trigger>Open Dialog</:trigger>
+    <:title>Confirm</:title>
+    <:description>Choose an action to continue.</:description>
     <:content>
-      <:title>Dialog Title</:title>
-      <:description>Dialog description goes here.</:description>
-      <p>Dialog content</p>
-      <:close_trigger>Close</:close_trigger>
+      <p>Are you sure you want to continue?</p>
+      <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
+          Cancel
+        </.action>
+        <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm">
+          Continue
+        </.action>
+      </div>
     </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+  ```
+
+  <!-- tabs-close -->
+
+  ## API
+
+  Requires a stable `id` on `<.dialog>`.
+
+  | Function | Action | Returns |
+  | -------- | ------ | ------- |
+  | [`set_open/2`](#set_open/2) | Set open state (client) | `%Phoenix.LiveView.JS{}` |
+  | [`set_open/3`](#set_open/3) | Set open state (server) | `socket` |
+
+  <!-- tabs-open -->
+
+  ### set_open
+
+  ```heex
+  <.action phx-click={Corex.Dialog.set_open("dialog-api", true)} class="button button--sm">
+    Open Dialog
+  </.action>
+  <.dialog id="dialog-api" class="dialog">
+    <:trigger>Open Dialog</:trigger>
+    <:title>Dialog Title</:title>
+    <:description>Dialog description.</:description>
+    <:content>
+      <p>Dialog content</p>
+      <.action phx-click={Corex.Dialog.set_open("dialog-api", false)} class="button button--sm">
+        Close
+      </.action>
+    </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
   </.dialog>
   ```
 
   ```elixir
-  def handle_event("dialog_changed", %{"open" => open}, socket) do
+  def handle_event("open_dialog", _, socket) do
+    {:noreply, Corex.Dialog.set_open(socket, "dialog-api", true)}
+  end
+  ```
+
+  <!-- tabs-close -->
+
+  ## Events
+
+  ### Server events
+
+  | Event | When | Payload |
+  | ----- | ---- | ------- |
+  | `on_open_change="dialog_open_changed"` | Open state changes | `%{"id" => id, "open" => open, "previousOpen" => previous}` |
+
+  <!-- tabs-open -->
+
+  ### on_open_change
+
+  ```heex
+  <.dialog class="dialog" on_open_change="dialog_open_changed">
+    <:trigger>Open Dialog</:trigger>
+    <:title>Dialog Title</:title>
+    <:content>
+      <p>Dialog content</p>
+    </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+  ```
+
+  ```elixir
+  def handle_event("dialog_open_changed", %{"id" => id, "open" => open}, socket) do
     {:noreply, assign(socket, :dialog_open, open)}
   end
   ```
 
   <!-- tabs-close -->
 
+  ### Client events
+
+  | Event | When | `event.detail` |
+  | ----- | ---- | -------------- |
+  | `on_open_change_client="dialog-open-changed"` | Open state changes | `id`, `open`, `previousOpen` |
+
+  <!-- tabs-open -->
+
+  ### on_open_change_client
+
+  ```heex
+  <.dialog id="dialog-events-client" class="dialog" on_open_change_client="dialog-open-changed">
+    <:trigger>Open</:trigger>
+    <:content><p>Content</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ```javascript
+  document.getElementById("dialog-events-client")?.addEventListener("dialog-open-changed", (e) => {
+    console.log(e.detail);
+  });
+  ```
+
+  <!-- tabs-close -->
+
   ## Animation
 
-  Set `animation` on `dialog` (`instant`, `js`, or `custom`).
+  Set `animation` on `<.dialog>` (`instant`, `js`, or `custom`).
 
-  - `instant`  -  Zag toggles the native `hidden` attribute, no animation.
-  - `js`  -  Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
-  - `custom`  -  the hook never re-applies `hidden`; the consumer drives the animation by listening to the `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
+  <!-- tabs-open -->
 
-        // event.detail (DialogOpenChangedDetail)
-        { id, open, previousOpen }
+  ### Instant
 
-    Closed visibility is provided by CSS baselines on `[data-state="closed"]` (see `e2e/assets/corex/components/dialog.css`), so the consumer only needs to drive the transition itself. Use the Scale helpers exported from `corex` (mirroring how Accordion / Tree view use the Height helpers).
+  ```heex
+  <.dialog class="dialog" modal animation="instant">
+    <:trigger>Open</:trigger>
+    <:title>Instant</:title>
+    <:content>
+      <p>Native show and hide without JS transitions.</p>
+    </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+  ```
+
+  ### JS
+
+  Web Animations API via `animation_options` (`Corex.Animation.Scale`).
+
+  ```heex
+  <.dialog
+    class="dialog"
+    modal
+    animation="js"
+    animation_options={%Corex.Animation.Scale{duration: 0.3, easing: "ease-out"}}
+  >
+    <:trigger>Open</:trigger>
+    <:title>JS</:title>
+    <:content><p>Scaled open and close.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Custom
+
+  Set `animation="custom"` and `on_open_change_client`. The hook does not toggle `hidden`; listen for:
+
+      // event.detail — DialogOpenChangedDetail
+      { id, open, previousOpen }
+
+  ```heex
+  <.dialog
+    class="dialog"
+    animation="custom"
+    on_open_change_client="my-dialog-open-changed"
+  >
+    <:trigger>Open</:trigger>
+    <:title>Custom</:title>
+    <:content>
+      <p>Motion animates open and close.</p>
+    </:content>
+    <:close_trigger>
+      <.heroicon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+  ```
 
   ```javascript
   import { animate } from "motion"
@@ -92,9 +236,6 @@ defmodule Corex.Dialog do
     animateScaleClose,
   } from "corex"
 
-  const reducedMotion = () =>
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
   document.addEventListener("my-dialog-open-changed", (e) => {
     const { id, open } = e.detail
     const root = document.getElementById(id)
@@ -102,110 +243,139 @@ defmodule Corex.Dialog do
     const backdrop = findDialogBackdrop(root)
     const content = findDialogContent(root)
     if (open) {
-      if (backdrop)
-        animateScaleOpen(backdrop, { animator: animate, duration: 0.5, easing: "ease-out" })
-      if (content) {
-        animateScaleOpen(content, {
-          animator: animate,
-          duration: 0.7,
-          easing: [0.16, 1, 0.3, 1],
-          scaleStart: 0.7,
-          scaleEnd: 1,
-        })
-        if (!reducedMotion())
-          animate(
-            content,
-            { y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
-            { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
-          )
-      }
+      if (backdrop) animateScaleOpen(backdrop, { animator: animate, duration: 0.5, easing: "ease-out" })
+      if (content) animateScaleOpen(content, { animator: animate, duration: 0.7, easing: [0.16, 1, 0.3, 1] })
     } else {
-      if (backdrop)
-        animateScaleClose(backdrop, { animator: animate, duration: 0.4, easing: "ease-in" })
-      if (content) {
-        animateScaleClose(content, {
-          animator: animate,
-          duration: 0.35,
-          easing: "ease-in",
-          scaleStart: 0.8,
-          scaleEnd: 1,
-        })
-        if (!reducedMotion())
-          animate(
-            content,
-            { y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
-            { duration: 0.35, easing: "ease-in" },
-          )
-      }
+      if (backdrop) animateScaleClose(backdrop, { animator: animate, duration: 0.4, easing: "ease-in" })
+      if (content) animateScaleClose(content, { animator: animate, duration: 0.35, easing: "ease-in" })
     }
   })
   ```
 
-  ## API Control
+  <!-- tabs-close -->
 
-  In order to use the API, you must use an id on the component
+  ## Alert dialog
 
-  ***Client-side***
+  Use `role="alertdialog"` with explicit modal and dismiss behavior. Set `initial_focus` to the id of the least destructive action.
 
-  ```heex
-  <button phx-click={Corex.Dialog.set_open("my-dialog", true)}>
-    Open Dialog
-  </button>
-  ```
-
-  ***Server-side***
-
-  ```elixir
-  def handle_event("open_dialog", _, socket) do
-    {:noreply, Corex.Dialog.set_open(socket, "my-dialog", true)}
-  end
-  ```
-
-  ## Styling
-
-  Use data attributes to target elements:
-
-  ```css
-  [data-scope="dialog"][data-part="root"] {}
-  [data-scope="dialog"][data-part="trigger"] {}
-  [data-scope="dialog"][data-part="backdrop"] {}
-  [data-scope="dialog"][data-part="positioner"] {}
-  [data-scope="dialog"][data-part="content"] {}
-  [data-scope="dialog"][data-part="title"] {}
-  [data-scope="dialog"][data-part="description"] {}
-  [data-scope="dialog"][data-part="close-trigger"] {}
-  ```
-
-  If you wish to use the default Corex styling, you can use the class `dialog` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
-
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/dialog.css";
-  ```
-
-  You can then use modifiers
+  <!-- tabs-open -->
 
   ```heex
-  <.dialog class="dialog dialog--accent dialog--lg">
+  <.dialog
+    id="delete-item-alert"
+    class="dialog"
+    role="alertdialog"
+    modal
+    close_on_interact_outside={false}
+    initial_focus="delete-item-alert-cancel"
+    final_focus="dialog:delete-item-alert:trigger"
+  >
+    <:trigger>Delete item</:trigger>
+    <:title>Delete this item?</:title>
+    <:description>This action cannot be undone.</:description>
+    <:content>
+      <div class="flex flex-wrap justify-end gap-2 mt-4">
+        <.action id="delete-item-alert-cancel" phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--ghost">
+          Cancel
+        </.action>
+        <.action phx-click={Corex.Dialog.set_open("delete-item-alert", false)} class="button button--sm button--alert">
+          Delete
+        </.action>
+      </div>
+    </:content>
+  </.dialog>
   ```
+
+  <!-- tabs-close -->
+
+  ## Focus
+
+  `initial_focus` is the `id` of a focusable element inside the dialog (for example a cancel `.action`). When omitted, Zag focuses the first focusable element in the content.
+
+  `final_focus` is the `id` of the element to receive focus when the dialog closes (for example the trigger: `dialog:my-dialog:trigger`). When omitted, Zag restores focus to the element that had focus before the dialog opened.
+
+  ## Style
+
+  Stack modifiers on the host (`class` on `<.dialog>`).
+
+  When `prevent_scroll` is enabled, Zag sets `--scrollbar-width` on the document root. Fixed or sticky app chrome can compensate with `calc(... + var(--scrollbar-width, 0px))` at the app level; Corex does not apply this globally.
+
+  <!-- tabs-open -->
+
+  ### Default
+
+  ```heex
+  <.dialog class="dialog">
+    <:trigger>Open</:trigger>
+    <:title>Default</:title>
+    <:content><p>Default size.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Small
+
+  ```heex
+  <.dialog class="dialog dialog--sm">
+    <:trigger>Open</:trigger>
+    <:title>Small</:title>
+    <:content><p>Compact dialog.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Large
+
+  ```heex
+  <.dialog class="dialog dialog--lg">
+    <:trigger>Open</:trigger>
+    <:title>Large</:title>
+    <:content><p>Spacious dialog.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Text
+
+  ```heex
+  <.dialog class="dialog dialog--text-xl">
+    <:trigger>Open</:trigger>
+    <:title>Larger type</:title>
+    <:content><p>Title, description, and body scale with the modifier.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Radius
+
+  ```heex
+  <.dialog class="dialog dialog--rounded-xl">
+    <:trigger>Open</:trigger>
+    <:title>Rounded panel</:title>
+    <:content><p>Corner radius on the content panel and close trigger.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  ### Side
+
+  ```heex
+  <.dialog class="dialog dialog--side" modal>
+    <:trigger>Open</:trigger>
+    <:title>Side panel</:title>
+    <:content><p>Slides in from the edge.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
+
+  <!-- tabs-close -->
 
   '''
 
-  defmodule Translation do
-    @moduledoc """
-    Translation struct for Dialog component strings.
-
-    Without gettext: `translation={%Dialog.Translation{ close: "Close" }}`
-
-    With gettext: `translation={%Dialog.Translation{ close: Corex.Gettext.gettext("Close") }}`
-    """
-    defstruct [:close]
-  end
-
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Api.Doc
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -218,9 +388,9 @@ defmodule Corex.Dialog do
     Trigger
   }
 
+  alias Corex.Api.RespondTo
   alias Corex.Dialog.Connect
-  alias Phoenix.LiveView
-  alias Phoenix.LiveView.JS
+  alias Corex.Dialog.Translation
 
   @doc """
   Renders a dialog component.
@@ -238,8 +408,7 @@ defmodule Corex.Dialog do
 
   attr(:controlled, :boolean,
     default: false,
-    doc:
-      "Whether the dialog is controlled. Only in LiveView, the on_open_change event is required"
+    doc: "Whether the dialog is controlled. In LiveView, pair with on_open_change when true"
   )
 
   attr(:modal, :boolean,
@@ -265,6 +434,24 @@ defmodule Corex.Dialog do
   attr(:restore_focus, :boolean,
     default: true,
     doc: "Whether to restore focus when dialog closes"
+  )
+
+  attr(:role, :string,
+    default: "dialog",
+    values: [nil, "dialog", "alertdialog"],
+    doc: "ARIA role for the dialog content (`dialog` or `alertdialog`)"
+  )
+
+  attr(:initial_focus, :string,
+    default: nil,
+    doc:
+      "Id of a focusable element inside the dialog to receive focus when opened (for alerts, use the least destructive action)"
+  )
+
+  attr(:final_focus, :string,
+    default: nil,
+    doc:
+      "Id of the element to receive focus when the dialog closes (for example the trigger id `dialog:my-dialog:trigger`)"
   )
 
   attr(:dir, :string,
@@ -301,17 +488,12 @@ defmodule Corex.Dialog do
 
   attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
 
-  attr(:aria_label, :string,
-    default: nil,
-    doc:
-      "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
-  )
-
   attr(:rest, :global)
 
   slot :trigger, required: true do
     attr(:class, :string, required: false)
     attr(:aria_label, :string, required: false)
+    attr(:title, :string, required: false)
   end
 
   slot :content, required: true do
@@ -331,13 +513,12 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
-    default_translation = %Translation{close: Corex.Gettext.gettext("Close")}
+    translation = Translation.resolve(assigns.translation)
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "dialog-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:translation, fn -> default_translation end)
-      |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:translation, translation)
 
     id = assigns.id
     dir = assigns.dir
@@ -348,7 +529,15 @@ defmodule Corex.Dialog do
       |> assign(:trigger_struct, %Trigger{id: id, dir: dir, open: open})
       |> assign(:backdrop_struct, %Backdrop{id: id, dir: dir, open: open})
       |> assign(:positioner_struct, %Positioner{id: id, dir: dir, open: open})
-      |> assign(:content_struct, %Content{id: id, dir: dir, open: open})
+      |> assign(:content_struct, %Content{
+        id: id,
+        dir: dir,
+        open: open,
+        role: assigns.role,
+        has_title: assigns.title != [],
+        has_description: assigns.description != [],
+        label: translation.label
+      })
       |> assign(:title_struct, %Title{id: id, dir: dir, open: open})
       |> assign(:description_struct, %Description{id: id, dir: dir, open: open})
       |> assign(:close_trigger_struct, %CloseTrigger{
@@ -374,17 +563,21 @@ defmodule Corex.Dialog do
         close_on_escape: @close_on_escape,
         prevent_scroll: @prevent_scroll,
         restore_focus: @restore_focus,
+        role: @role,
+        initial_focus: @initial_focus,
+        final_focus: @final_focus,
         dir: @dir,
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         animation: @animation,
         animation_options: @animation_options,
-        dialog_default_label: @aria_label
+        label: @translation.label
       })}
     >
       <button
         phx-mounted={Connect.ignore_trigger(@trigger_struct)}
-        aria-label={Map.get(List.first(@trigger), :aria_label, nil)}
+        aria-label={trigger_aria_label = Map.get(List.first(@trigger), :aria_label, nil)}
+        title={Map.get(List.first(@trigger), :title, trigger_aria_label)}
         {Connect.trigger(@trigger_struct)}
         class={Map.get(List.first(@trigger), :class, nil)}
       >
@@ -476,19 +669,19 @@ defmodule Corex.Dialog do
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:aria_label, :string, default: nil)
+  attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
-    assigns = assign_new(assigns, :aria_label, fn -> Corex.Gettext.gettext("Close") end)
+    translation = Translation.resolve(Map.get(assigns, :translation))
 
     assigns =
       assign(assigns, :close_trigger_struct, %CloseTrigger{
         id: assigns.id,
         dir: assigns.dir,
         open: false,
-        aria_label: assigns.aria_label
+        aria_label: translation.close
       })
 
     ~H"""
@@ -502,49 +695,54 @@ defmodule Corex.Dialog do
     """
   end
 
-  @doc type: :api
-  @doc """
-  Sets the dialog open state from client-side. Returns a `Phoenix.LiveView.JS` command.
+  api_doc(~S"""
+  Set open state from a control (`phx-click`).
 
-  ## Examples
+  ```heex
+  <.action phx-click={Corex.Dialog.set_open("my-dialog", true)}>Open</.action>
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open</:trigger>
+    <:content><p>Content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
 
-      <button phx-click={Corex.Dialog.set_open("my-dialog", true)}>
-        Open Dialog
-      </button>
-  """
+  ```javascript
+  document.getElementById("my-dialog")?.dispatchEvent(
+    new CustomEvent("corex:dialog:set-open", {
+      bubbles: false,
+      detail: { open: true },
+    })
+  );
+  ```
+  """)
+
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
-    JS.dispatch("corex:dialog:set-open",
-      to: "##{dialog_id}",
-      detail: %{open: open},
-      bubbles: false
-    )
+    RespondTo.dispatch_set_open(dialog_id, open, "corex:dialog:set-open")
   end
 
-  @doc type: :api
-  @doc """
-  Sets the dialog open state from server-side. Pushes a LiveView event.
+  api_doc(~S"""
+  Set open state from `handle_event`.
 
-  ## Examples
+  ```heex
+  <.action phx-click="open_dialog">Open</.action>
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open</:trigger>
+    <:content><p>Content.</p></:content>
+    <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
+  </.dialog>
+  ```
 
-      def handle_event("open_dialog", _params, socket) do
-        socket = Corex.Dialog.set_open(socket, "my-dialog", true)
-        {:noreply, socket}
-      end
-  """
+  ```elixir
+  def handle_event("open_dialog", _, socket) do
+    {:noreply, Corex.Dialog.set_open(socket, "my-dialog", true)}
+  end
+  ```
+  """)
+
   def set_open(socket, dialog_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(dialog_id) and
              is_boolean(open) do
-    LiveView.push_event(socket, "dialog_set_open", %{
-      dialog_id: dialog_id,
-      open: open
-    })
-  end
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      close: partial.close || default.close
-    }
+    RespondTo.push_set_open(socket, "dialog_set_open", dialog_id, open)
   end
 end

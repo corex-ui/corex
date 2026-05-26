@@ -72,14 +72,17 @@ defmodule E2eWeb.TreeViewAnimationLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="tree-view-animation-page"
         title="Tree view · Animation"
         subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
       >
         <.demo_playground
+          path={@path}
           id="tree-view-animation-playground"
           title="Playground"
           heading_class="layout-heading"
+          title_tag="h2"
         >
           <:controls>
             <.select

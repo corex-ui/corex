@@ -1,28 +1,31 @@
 import {
+  createRect,
+  getRectCorners
+} from "./chunks/chunk-QB2YSZP6.mjs";
+import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunks/chunk-NMOLO6CB.mjs";
+} from "./chunks/chunk-EPNQR235.mjs";
 import {
   trackDismissableElement
-} from "./chunks/chunk-MLVURBKI.mjs";
-import "./chunks/chunk-B7AHHTCM.mjs";
+} from "./chunks/chunk-57TWBSTW.mjs";
+import "./chunks/chunk-4QMNVH3P.mjs";
 import {
   readPositioningOptions
-} from "./chunks/chunk-YM6Q7RBK.mjs";
+} from "./chunks/chunk-VJGUNSK5.mjs";
 import {
   performRedirect,
   readDomItemRedirect
 } from "./chunks/chunk-FOQSALVP.mjs";
 import {
-  createRect,
-  getRectCorners
-} from "./chunks/chunk-QB2YSZP6.mjs";
-import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunks/chunk-CTFBPAMI.mjs";
+} from "./chunks/chunk-V4PB2O2G.mjs";
+import {
+  notifyChange
+} from "./chunks/chunk-2WCNJX5P.mjs";
 import {
   Component,
   VanillaMachine,
@@ -67,7 +70,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunks/chunk-EE44DOTL.mjs";
+} from "./chunks/chunk-EWT2BP2N.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.40.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1705,9 +1708,14 @@ var Menu = class extends Component {
         );
         itemGroups.forEach((groupEl) => {
           if (!this.isOwnElement(groupEl)) return;
-          const groupId = groupEl.id;
-          if (groupId) {
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          const groupId = groupEl.dataset.id ?? "";
+          if (!groupId) return;
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          const labelEl = groupEl.querySelector(
+            '[data-scope="menu"][data-part="item-group-label"]'
+          );
+          if (labelEl) {
+            this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
           }
         });
         const separators = contentEl.querySelectorAll(
@@ -1782,25 +1790,17 @@ var MenuHook = {
         );
         performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
       }
-      const eventName = getString(el, "onSelect");
-      if (eventName && canPushEvent(liveSocket)) {
-        pushEvent(eventName, {
+      notifyChange({
+        el,
+        canPushServer: canPushEvent(liveSocket),
+        pushEvent,
+        payload: {
           id: el.id,
           value: details.value ?? null
-        });
-      }
-      const eventNameClient = getString(el, "onSelectClient");
-      if (eventNameClient) {
-        el.dispatchEvent(
-          new CustomEvent(eventNameClient, {
-            bubbles: true,
-            detail: {
-              id: el.id,
-              value: details.value ?? null
-            }
-          })
-        );
-      }
+        },
+        serverEventName: getString(el, "onSelect"),
+        clientEventName: getString(el, "onSelectClient")
+      });
     };
     const menu = new Menu(el, {
       id: el.id.replace(/^menu:/, ""),
@@ -1813,25 +1813,17 @@ var MenuHook = {
       positioning: readPositioningOptions(el),
       onSelect: buildOnSelect(),
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && canPushEvent(liveSocket)) {
-          pushEvent(eventName, {
+        notifyChange({
+          el,
+          canPushServer: canPushEvent(liveSocket),
+          pushEvent,
+          payload: {
             id: el.id,
             open: details.open ?? false
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open ?? false
-              }
-            })
-          );
-        }
+          },
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
       }
     });
     menu.init();
@@ -1919,5 +1911,6 @@ var MenuHook = {
   }
 };
 export {
-  MenuHook as Menu
+  MenuHook as Menu,
+  findImmediateParentMenuHookEl
 };

@@ -4,13 +4,7 @@ defmodule E2eWeb.CarouselPlayLive do
   import E2eWeb.DemoPage, only: [demo_playground: 1, playground_dir_toggle: 1]
 
   defp playground_items do
-    [
-      ~p"/images/beach.jpg",
-      ~p"/images/fall.jpg",
-      ~p"/images/sand.jpg",
-      ~p"/images/star.jpg",
-      ~p"/images/winter.jpg"
-    ]
+    E2eWeb.Demos.CarouselDemo.gallery_images()
   end
 
   defp playground_slide_count, do: length(playground_items())
@@ -125,7 +119,7 @@ defmodule E2eWeb.CarouselPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground title="Carousel · Playground" heading_class="layout-heading">
+      <.demo_playground path={@path} title={~t"Carousel · Playground"} heading_class="layout-heading">
         <:controls>
           <.playground_dir_toggle
             id="dir"
@@ -141,19 +135,24 @@ defmodule E2eWeb.CarouselPlayLive do
             deselectable={false}
             value={[@controls.orientation]}
           >
-            <:item value="vertical" aria_label="Vertical orientation">
+            <:item value="vertical" aria_label={~t"Vertical orientation"}>
               <.heroicon name="hero-arrows-up-down" class="icon icon--lg" />
             </:item>
-            <:item value="horizontal" aria_label="Horizontal orientation">
+            <:item value="horizontal" aria_label={~t"Horizontal orientation"}>
               <.heroicon name="hero-arrows-right-left" class="icon icon--lg" />
             </:item>
           </.toggle_group>
 
-          <.switch class="switch" id="loop" checked={@loop} on_checked_change="loop_changed">
+          <.switch
+            class="switch switch--sm"
+            id="loop"
+            checked={@loop}
+            on_checked_change="loop_changed"
+          >
             <:label>Loop</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="autoplay"
             checked={@autoplay}
             on_checked_change="autoplay_changed"

@@ -1,0 +1,40 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="listbox-styling-page"
+    title={~t"Listbox · Style"}
+    subtitle={
+      ~t"Selected-item colors, density, and width via modifier classes and Tailwind max-w-* on the listbox root (vertical by default; horizontal uses a wider default max width)."
+    }
+  >
+    <.demo_section
+      id="listbox-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.ListboxDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ListboxDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="listbox-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.ListboxDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ListboxDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="listbox-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.ListboxDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ListboxDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

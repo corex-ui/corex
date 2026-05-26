@@ -21,7 +21,7 @@ defmodule E2eWeb.SignatureFormTest do
     session
     |> Signature.goto_form(:live)
     |> Signature.submit_form(:live)
-    |> Signature.wait_for_signature_field_error()
+    |> Signature.wait_for_signature_field_error(:live)
   end
 
   feature "live form - has no A11y violations", %{session: session} do

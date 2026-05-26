@@ -3,21 +3,20 @@ defmodule E2eWeb.CheckboxApiLive do
 
   import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
 
-  alias Phoenix.LiveView.JS
   alias E2eWeb.Demos.CheckboxDemo
 
   @id_bind "checkbox-api-bind"
-  @id_dispatch "checkbox-api-dispatch"
   @id_server "checkbox-api-server"
 
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:id_bind, @id_bind)
-     |> assign(:id_dispatch, @id_dispatch)
      |> assign(:id_server, @id_server)
      |> assign(:client_binding_heex, CheckboxDemo.api_client_binding_code())
-     |> assign(:js_dispatch, CheckboxDemo.api_js_dispatch_code())
+     |> assign(:js_dispatch_heex, CheckboxDemo.api_js_dispatch_heex())
+     |> assign(:js_dispatch_js, CheckboxDemo.api_js_dispatch_js())
+     |> assign(:js_dispatch_ts, CheckboxDemo.api_js_dispatch_ts())
      |> assign(:server_elixir, CheckboxDemo.api_server_elixir())}
   end
 
@@ -42,15 +41,16 @@ defmodule E2eWeb.CheckboxApiLive do
       path={@path}
     >
       <.demo_page
+        path={@path}
         id="checkbox-api-page"
-        title="Checkbox · API"
-        subtitle="Programmatically set the checked state from the server or client bindings."
+        title={~t"Checkbox · API"}
+        subtitle={~t"Programmatically set the checked state from the server or client bindings."}
       >
         <.demo_section
           id="checkbox-api-client-binding"
-          title="Set checked (Client Binding)"
+          title={~t"Set checked (Client Binding)"}
           code_tabs={[
-            %{value: "heex", label: "Heex", language: :heex, code: @client_binding_heex}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @client_binding_heex}
           ]}
         >
           <:preview>
@@ -60,43 +60,23 @@ defmodule E2eWeb.CheckboxApiLive do
 
         <.demo_section
           id="checkbox-api-js-dispatch"
-          title="Set checked (Client JS)"
+          title={~t"Set checked (Client JS)"}
           code_tabs={[
-            %{value: "js", label: "JS", language: :js, code: @js_dispatch}
+            %{value: "heex", label: ~t"Heex", language: :heex, code: @js_dispatch_heex},
+            %{value: "js", label: ~t"JS", language: :js, code: @js_dispatch_js},
+            %{value: "ts", label: ~t"TS", language: :javascript, code: @js_dispatch_ts}
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <.action
-                phx-click={
-                  JS.dispatch("corex:checkbox:set-checked",
-                    to: "##{@id_dispatch}",
-                    detail: %{checked: true},
-                    bubbles: false
-                  )
-                }
-                class="button button--sm"
-              >
-                Dispatch checked
-              </.action>
-            </div>
-            <.checkbox id={@id_dispatch} class="checkbox">
-              <:label>Terms</:label>
-              <:indicator>
-                <.heroicon name="hero-check" />
-              </:indicator>
-              <:indeterminate>
-                <.heroicon name="hero-minus" />
-              </:indeterminate>
-            </.checkbox>
+            <CheckboxDemo.api_js_dispatch_example />
           </:preview>
         </.demo_section>
 
         <.demo_section
-          id="checkbox-api-server"
-          title="Set checked (Server)"
+          id="checkbox-api-server-section"
+          title={~t"Set checked (Server)"}
           code_tabs={[
-            %{value: "elixir", label: "Elixir", language: :elixir, code: @server_elixir}
+            %{value: "elixir", label: ~t"Elixir", language: :elixir, code: @server_elixir}
           ]}
         >
           <:preview>
