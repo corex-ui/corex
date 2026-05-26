@@ -16,7 +16,7 @@ defmodule E2eWeb.RadioGroupFormTest do
     assert_has(
       session,
       Wallaby.Query.css(
-        ~s|#radio-group-form-ecto [data-scope="radio-group"][data-part="error"]|,
+        ~S|#radio-group-form-ecto [data-scope="radio-group"][data-part="error"]|,
         text: "can't be blank"
       )
     )
