@@ -11,7 +11,7 @@ defmodule E2eWeb.CheckboxFormTest do
       session
       |> Checkbox.goto_form(:static)
       |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-      |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-phoenix-terms")
+      |> Checkbox.wait_static_form_checkbox_ready("checkbox-form-phoenix_terms")
       |> Checkbox.submit_form()
       |> Checkbox.see_flash("terms=false")
     end
@@ -100,7 +100,7 @@ defmodule E2eWeb.CheckboxFormTest do
         |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
 
       session
-      |> Checkbox.click_checkbox_in_section("checkbox-live-form-ecto-terms")
+      |> Checkbox.click_checkbox_in_section("checkbox-live-form-ecto_terms")
       |> Checkbox.click_live_strict_submit()
       |> Checkbox.see_flash("terms=true")
     end

@@ -59,11 +59,14 @@
   }
 
   .signature-pad [data-scope="signature-pad"][data-part="clear-trigger"] {
-    @apply ui-trigger ui-trigger--sm ui-trigger--square;
+    @apply ui-trigger ui-trigger--square;
 
     position: absolute;
+    z-index: 1;
     top: var(--spacing-space-sm);
     inset-inline-end: var(--spacing-space-sm);
+    min-height: calc(var(--spacing-size) * 0.6);
+    min-width: calc(var(--spacing-size) * 0.6);
   }
 
   .signature-pad [data-part="preview"] {

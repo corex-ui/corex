@@ -3041,7 +3041,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-7PXMD5A7.mjs
+  // ../priv/static/chunks/chunk-B34HSI73.mjs
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return mountStringBinding(el, valueKey, defaultKey);
   }
@@ -3121,8 +3121,11 @@ var Corex = (() => {
     return { checked: getCheckedState(el, "checked") };
   }
   function mountCheckedBinding(el) {
-    if (isZagCheckedControlled(el)) {
+    if (getBoolean(el, "controlled")) {
       return { checked: getCheckedState(el, "checked") };
+    }
+    if (getBoolean(el, "formField")) {
+      return { defaultChecked: getCheckedState(el, "checked") };
     }
     return { defaultChecked: getCheckedState(el, "defaultChecked") };
   }
@@ -3202,8 +3205,8 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var z;
-  var init_chunk_7PXMD5A7 = __esm({
-    "../priv/static/chunks/chunk-7PXMD5A7.mjs"() {
+  var init_chunk_B34HSI73 = __esm({
+    "../priv/static/chunks/chunk-B34HSI73.mjs"() {
       "use strict";
       init_chunk_EWT2BP2N();
       z = (s2) => s2 === void 0 ? null : s2;
@@ -3545,7 +3548,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -4347,7 +4350,7 @@ var Corex = (() => {
       init_chunk_4SRF4GX7();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -6528,7 +6531,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -7389,7 +7392,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -13505,7 +13508,7 @@ var Corex = (() => {
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -15739,7 +15742,7 @@ var Corex = (() => {
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy10 = createAnatomy("color-picker", [
@@ -19693,7 +19696,7 @@ var Corex = (() => {
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -22241,7 +22244,7 @@ var Corex = (() => {
       init_chunk_XI7CXJ3V();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -23639,7 +23642,7 @@ var Corex = (() => {
     "../priv/static/editable.mjs"() {
       "use strict";
       init_chunk_4QMNVH3P();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -26961,7 +26964,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -30138,7 +30141,7 @@ ${err}`);
       init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -31941,7 +31944,7 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32558,7 +32561,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -33268,7 +33271,7 @@ ${err}`);
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -34241,7 +34244,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -35676,7 +35679,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -35858,6 +35861,11 @@ ${err}`);
           __publicField(this, "imageURL", "");
           __publicField(this, "paths", []);
           __publicField(this, "name");
+          __publicField(this, "applyPartDir", (el) => {
+            if (el instanceof HTMLElement) {
+              el.setAttribute("dir", getDir(this.el));
+            }
+          });
           __publicField(this, "syncPaths", () => {
             const segment = this.el.querySelector(
               '[data-scope="signature-pad"][data-part="segment"]'
@@ -35913,27 +35921,41 @@ ${err}`);
           );
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
+          this.applyPartDir(rootEl);
           const label = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="label"]'
           );
-          if (label) this.spreadProps(label, this.api.getLabelProps());
+          if (label) {
+            this.spreadProps(label, this.api.getLabelProps());
+            this.applyPartDir(label);
+          }
           const control = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="control"]'
           );
-          if (control) this.spreadProps(control, this.api.getControlProps());
+          if (control) {
+            this.spreadProps(control, this.api.getControlProps());
+            this.applyPartDir(control);
+          }
           const segment = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="segment"]'
           );
-          if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+          if (segment) {
+            this.spreadProps(segment, this.api.getSegmentProps());
+            this.applyPartDir(segment);
+          }
           const guide = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="guide"]'
           );
-          if (guide) this.spreadProps(guide, this.api.getGuideProps());
+          if (guide) {
+            this.spreadProps(guide, this.api.getGuideProps());
+            this.applyPartDir(guide);
+          }
           const clearBtn = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="clear-trigger"]'
           );
           if (clearBtn) {
             this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+            this.applyPartDir(clearBtn);
           }
           const hiddenInput = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="hidden-input"]'
@@ -35945,6 +35967,7 @@ ${err}`);
                 value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
               })
             );
+            this.applyPartDir(hiddenInput);
             if (getString(this.el, "submitName")) {
               hiddenInput.removeAttribute("name");
               hiddenInput.removeAttribute("form");
@@ -35966,7 +35989,8 @@ ${err}`);
           const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
           const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
-            name: zagNameForForm2(el)
+            name: zagNameForForm2(el),
+            dir: getDir(el)
           }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
             drawing: buildDrawingOptions(el),
             onDrawEnd: (details) => {
@@ -36053,6 +36077,7 @@ ${err}`);
           (_a4 = this.signaturePad) == null ? void 0 : _a4.updateProps({
             id: el.id,
             name: zagNameForForm2(el),
+            dir: getDir(el),
             drawing: buildDrawingOptions(el)
           });
           const serverPaths = readFormFieldServerPaths(el);
@@ -36203,7 +36228,7 @@ ${err}`);
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -36974,7 +36999,7 @@ ${err}`);
       init_chunk_4QMNVH3P();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -38262,7 +38287,7 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -41844,7 +41869,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -42138,7 +42163,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_7PXMD5A7();
+      init_chunk_B34HSI73();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -44229,10 +44254,17 @@ ${err}`);
     return {
       mounted() {
         return __async(this, null, function* () {
-          const mod2 = yield importFn();
-          const real = mod2[exportName];
-          this._realHook = real;
-          if (real == null ? void 0 : real.mounted) return real.mounted.call(this);
+          const el = this.el;
+          try {
+            const mod2 = yield importFn();
+            const real = mod2[exportName];
+            this._realHook = real;
+            if (real == null ? void 0 : real.mounted) {
+              yield real.mounted.call(this);
+            }
+          } finally {
+            el.removeAttribute("data-loading");
+          }
         });
       },
       updated() {

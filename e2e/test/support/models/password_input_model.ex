@@ -30,10 +30,7 @@ defmodule E2eWeb.PasswordInputModel do
       raise ArgumentError, "invalid password input host dom id"
     end
 
-    assert_has(
-      session,
-      css(~s|##{host_dom_id}[phx-hook="PasswordInput"]:not([data-loading])|, visible: :any)
-    )
+    wait_ready(session, "##{host_dom_id}")
 
     session
   end
@@ -167,15 +164,32 @@ defmodule E2eWeb.PasswordInputModel do
   def fill_live_password_input(session, value, form \\ :phoenix) do
     host_id =
       case form do
-        :ecto -> "password-input-live-form-ecto-password"
+        :ecto -> "password-input-live-form-ecto_password"
         _ -> "password-input-live-form-phoenix-password"
       end
 
-    fill_in(
-      session,
-      css("##{host_id} [data-scope='password-input'][data-part='input']", visible: :any),
-      with: value
-    )
+    session
+    |> wait_root_password_input_ready(host_id)
+    |> fill_password_host(host_id, value)
+  end
+
+  def fill_password_host(session, host_dom_id, value)
+      when is_binary(host_dom_id) and is_binary(value) do
+    escaped = String.replace(value, "'", "\\'")
+
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const input = host?.querySelector('[data-scope="password-input"][data-part="input"]');
+        if (!input) throw new Error("password input not found");
+        input.value = '#{escaped}';
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        """,
+        [host_dom_id]
+      )
 
     session
   end

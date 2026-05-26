@@ -60,21 +60,52 @@ defmodule E2eWeb.SwitchModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def wait_switch_host_ready(session, host_dom_id) when is_binary(host_dom_id) do
+    if not (String.match?(host_dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(host_dom_id) > 0) do
+      raise ArgumentError, "invalid switch host dom id"
+    end
+
+    wait_ready(session, "##{host_dom_id}")
+  end
+
   def click_switch(session, mode \\ :static) do
-    host_id =
+    host_dom_id =
       case mode do
-        :live -> "#switch-live-form-ecto-notifications"
-        _ -> "#switch-form-phoenix-notifications"
+        :live -> "switch-live-form-ecto_notifications"
+        _ -> "switch-form-phoenix_notifications"
       end
 
-    session
-    |> click(css("#{host_id} [data-scope='switch'][data-part='control']"))
-    |> assert_has(
+    session =
+      session
+      |> wait_switch_host_ready(host_dom_id)
+      |> click_switch_control(host_dom_id)
+
+    wait_for_has(
+      session,
       css(
-        "#{host_id} [data-scope='switch'][data-part='root'][data-state='checked']",
+        "##{host_dom_id} [data-scope='switch'][data-part='root'][data-state='checked']",
         visible: :any
-      )
+      ),
+      timeout: 10_000
     )
+
+    session
+  end
+
+  def click_switch_control(session, host_dom_id) when is_binary(host_dom_id) do
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const control = host?.querySelector('[data-scope="switch"][data-part="control"]');
+        if (!control) throw new Error("switch control not found");
+        control.click();
+        """,
+        [host_dom_id]
+      )
+
+    session
   end
 
   def press_space_on_switch(session) do

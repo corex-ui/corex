@@ -189,11 +189,11 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def click_checkbox(session, :live) do
-    click_checkbox_in_section(session, "checkbox-live-form-phoenix-terms")
+    click_checkbox_in_section(session, "checkbox-live-form-phoenix_terms")
   end
 
   def click_checkbox(session, :static_ecto) do
-    click_checkbox_in_section(session, "checkbox-form-ecto-terms")
+    click_checkbox_in_section(session, "checkbox-form-ecto_terms")
   end
 
   def click_checkbox(session, :static_native) do
@@ -201,13 +201,29 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def click_checkbox(session) do
-    click_checkbox_in_section(session, "checkbox-form-phoenix-terms")
+    click_checkbox_in_section(session, "checkbox-form-phoenix_terms")
   end
 
   def click_checkbox_in_section(session, host_id) when is_binary(host_id) do
     session
     |> wait_static_form_checkbox_ready(host_id)
-    |> click(css("##{host_id} [data-scope='checkbox'][data-part='control']"))
+    |> click_checkbox_control(host_id)
+    |> wait_checkbox_checked(host_id)
+  end
+
+  def click_checkbox_control(session, host_id) when is_binary(host_id) do
+    click(
+      session,
+      css(~s|[id="checkbox:#{host_id}:control"]|, visible: :any)
+    )
+  end
+
+  def wait_checkbox_checked(session, host_id) when is_binary(host_id) do
+    wait_for_has(
+      session,
+      css(~s|[id="checkbox:#{host_id}:control"][data-state="checked"]|, visible: :any),
+      timeout: 10_000
+    )
   end
 
   def submit_form(session, mode \\ :static) do
@@ -239,12 +255,7 @@ defmodule E2eWeb.CheckboxModel do
       raise ArgumentError, "invalid host id"
     end
 
-    assert_has(
-      session,
-      css("##{host_id}[phx-hook='Checkbox']:not([data-loading])", visible: :any)
-    )
-
-    session
+    wait_ready(session, "##{host_id}")
   end
 
   def submit_static_changeset(session) do

@@ -12,7 +12,7 @@ import {
 import {
   getJsonStringList,
   readFormFieldServerPaths
-} from "./chunks/chunk-7PXMD5A7.mjs";
+} from "./chunks/chunk-B34HSI73.mjs";
 import {
   idMatches,
   readPayloadId
@@ -25,6 +25,7 @@ import {
   dataAttr,
   getBoolean,
   getDataUrl,
+  getDir,
   getEventTarget,
   getNumber,
   getRelativePoint,
@@ -546,6 +547,11 @@ var SignaturePad = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  applyPartDir = (el) => {
+    if (el instanceof HTMLElement) {
+      el.setAttribute("dir", getDir(this.el));
+    }
+  };
   syncPaths = () => {
     const segment = this.el.querySelector(
       '[data-scope="signature-pad"][data-part="segment"]'
@@ -586,27 +592,41 @@ var SignaturePad = class extends Component {
     );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
+    this.applyPartDir(rootEl);
     const label = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="label"]'
     );
-    if (label) this.spreadProps(label, this.api.getLabelProps());
+    if (label) {
+      this.spreadProps(label, this.api.getLabelProps());
+      this.applyPartDir(label);
+    }
     const control = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="control"]'
     );
-    if (control) this.spreadProps(control, this.api.getControlProps());
+    if (control) {
+      this.spreadProps(control, this.api.getControlProps());
+      this.applyPartDir(control);
+    }
     const segment = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="segment"]'
     );
-    if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+    if (segment) {
+      this.spreadProps(segment, this.api.getSegmentProps());
+      this.applyPartDir(segment);
+    }
     const guide = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="guide"]'
     );
-    if (guide) this.spreadProps(guide, this.api.getGuideProps());
+    if (guide) {
+      this.spreadProps(guide, this.api.getGuideProps());
+      this.applyPartDir(guide);
+    }
     const clearBtn = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="clear-trigger"]'
     );
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      this.applyPartDir(clearBtn);
     }
     const hiddenInput = rootEl.querySelector(
       '[data-scope="signature-pad"][data-part="hidden-input"]'
@@ -618,6 +638,7 @@ var SignaturePad = class extends Component {
           value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
         })
       );
+      this.applyPartDir(hiddenInput);
       if (getString(this.el, "submitName")) {
         hiddenInput.removeAttribute("name");
         hiddenInput.removeAttribute("form");
@@ -693,6 +714,7 @@ var SignaturePadHook = {
     const signaturePad = new SignaturePad(el, {
       id: el.id,
       name: zagNameForForm(el),
+      dir: getDir(el),
       ...defaultPaths.length > 0 ? { defaultPaths } : {},
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
@@ -777,6 +799,7 @@ var SignaturePadHook = {
     this.signaturePad?.updateProps({
       id: el.id,
       name: zagNameForForm(el),
+      dir: getDir(el),
       drawing: buildDrawingOptions(el)
     });
     const serverPaths = readFormFieldServerPaths(el);

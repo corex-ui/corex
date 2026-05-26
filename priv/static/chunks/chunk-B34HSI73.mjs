@@ -86,8 +86,11 @@ function readUpdatedServerChecked(el) {
   return { checked: getCheckedState(el, "checked") };
 }
 function mountCheckedBinding(el) {
-  if (isZagCheckedControlled(el)) {
+  if (getBoolean(el, "controlled")) {
     return { checked: getCheckedState(el, "checked") };
+  }
+  if (getBoolean(el, "formField")) {
+    return { defaultChecked: getCheckedState(el, "checked") };
   }
   return { defaultChecked: getCheckedState(el, "defaultChecked") };
 }

@@ -67,7 +67,7 @@ defmodule E2eWeb.SignaturePadTest do
         |> Signature.wait_has_segment_in_host(host, timeout: 8_000)
 
       session
-      |> Signature.click_in_section("signature-api-clear-server", "Clear (server)")
+      |> Signature.click_in_section("signature-api-clear-server", "Clear")
       |> Signature.refute_segment_in_host(host)
     end
   end

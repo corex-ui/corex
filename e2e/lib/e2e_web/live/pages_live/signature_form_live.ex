@@ -120,7 +120,7 @@ defmodule E2eWeb.SignatureFormLive do
            socket,
            :ecto_form,
            Phoenix.Component.to_form(changeset,
-             action: :validate,
+             action: :insert,
              as: :signature_ecto,
              id: @ecto_form_id
            )

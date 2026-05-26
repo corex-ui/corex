@@ -79,7 +79,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
         class="button button--sm"
         onclick="document.getElementById('signature-api-cjs')?.dispatchEvent(new CustomEvent('corex:signature-pad:clear', { bubbles: false, detail: { id: 'signature-api-cjs' } }))"
       >
-        Clear (client JS)
+        Clear
       </button>
     </div>
 
@@ -125,7 +125,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           class="button button--sm"
           onclick="document.getElementById('signature-api-cjs')?.dispatchEvent(new CustomEvent('corex:signature-pad:clear', { bubbles: false, detail: { id: 'signature-api-cjs' } }))"
         >
-          Clear (client JS)
+          Clear
         </button>
       </div>
       <.signature_pad id="signature-api-cjs" class="signature-pad">
@@ -140,7 +140,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     ~S"""
     <div class="layout__row">
       <.action phx-click="signature_api_clear" class="button button--sm">
-        Clear (server)
+        Clear
       </.action>
     </div>
 
@@ -166,7 +166,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
     <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
       <div class="layout__row">
         <.action phx-click="signature_api_clear" class="button button--sm">
-          Clear (server)
+          Clear
         </.action>
       </div>
       <.signature_pad id="signature-api-srv" class="signature-pad">
@@ -313,6 +313,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature-pad/form"}
       method="post"
     >
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -406,6 +407,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_doc_live_ecto_heex do
     ~S"""
     <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad field={@ecto_form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -515,6 +517,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature-pad/form"}
       method="post"
     >
+      <input type="hidden" name="signature_changeset[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -553,6 +556,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature-pad/form"}
       method="post"
     >
+      <input type="hidden" name="signature_validate[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -593,6 +597,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature-pad/form"}
       method="post"
     >
+      <input type="hidden" name="signature_changeset[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -620,6 +625,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature-pad/form"}
       method="post"
     >
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad field={f[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
@@ -745,6 +751,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_preview_live_ecto(assigns) do
     ~H"""
     <.form for={@form} phx-change="validate" phx-submit="save">
+      <input type="hidden" name="signature_ecto[_sent]" value="1" />
       <.signature_pad
         field={@form[:signature]}
         class="signature-pad"

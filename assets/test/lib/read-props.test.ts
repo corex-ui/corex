@@ -13,6 +13,7 @@ import {
   readStringControlledZagUpdate,
   readStringListControlledZagUpdate,
   readStringListControlledZagProps,
+  mountCheckedBinding,
 } from "../../lib/read-props";
 
 describe("readStringControlledZagProps", () => {
@@ -47,6 +48,23 @@ describe("readStringControlledZagUpdate", () => {
   it("returns empty when uncontrolled", () => {
     const node = el({ defaultValue: "init" });
     expect(readStringControlledZagUpdate(node, "value", "defaultValue")).toEqual({});
+  });
+});
+
+describe("mountCheckedBinding", () => {
+  it("returns checked when controlled", () => {
+    const node = el({ controlled: true, checked: "true" });
+    expect(mountCheckedBinding(node)).toEqual({ checked: true });
+  });
+
+  it("returns defaultChecked from data-checked when form field", () => {
+    const node = el({ formField: true, checked: "false" });
+    expect(mountCheckedBinding(node)).toEqual({ defaultChecked: false });
+  });
+
+  it("returns defaultChecked when uncontrolled", () => {
+    const node = el({ defaultChecked: "true" });
+    expect(mountCheckedBinding(node)).toEqual({ defaultChecked: true });
   });
 });
 

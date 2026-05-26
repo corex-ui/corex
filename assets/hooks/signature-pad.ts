@@ -3,7 +3,7 @@ import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/typ
 import { SignaturePad } from "../components/signature-pad";
 import type { Props } from "@zag-js/signature-pad";
 
-import { getBoolean, getNumber, getString } from "../lib/util";
+import { getBoolean, getDir, getNumber, getString } from "../lib/util";
 import { getJsonStringList, readFormFieldServerPaths } from "../lib/read-props";
 import { idMatches, readPayloadId } from "../lib/respond-to";
 import {
@@ -102,6 +102,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     const signaturePad = new SignaturePad(el, {
       id: el.id,
       name: zagNameForForm(el),
+      dir: getDir(el),
       ...(defaultPaths.length > 0 ? { defaultPaths } : {}),
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
@@ -200,6 +201,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     this.signaturePad?.updateProps({
       id: el.id,
       name: zagNameForForm(el),
+      dir: getDir(el),
       drawing: buildDrawingOptions(el),
     } as Partial<Props>);
 

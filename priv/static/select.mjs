@@ -35,7 +35,7 @@ import {
 import {
   mountStringListBinding,
   readUpdatedServerStringList
-} from "./chunks/chunk-7PXMD5A7.mjs";
+} from "./chunks/chunk-B34HSI73.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

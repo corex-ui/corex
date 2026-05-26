@@ -191,7 +191,7 @@ defmodule E2eWeb.PinInputApiLive do
         </.demo_section>
         <.demo_section
           id="pin-input-api-clear-server"
-          title="Clear (Server)"
+          title="Clear"
           code_tabs={[
             %{value: "heex", label: "Heex", language: :heex, code: @codes.clear_server_heex},
             %{value: "elixir", label: "Elixir", language: :elixir, code: @codes.clear_server_elixir}

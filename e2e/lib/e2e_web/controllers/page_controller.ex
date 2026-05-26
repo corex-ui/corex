@@ -746,6 +746,22 @@ defmodule E2eWeb.PageController do
   end
 
   def signature_form_submit(conn, %{"signature_ecto" => ecto_params}) do
+    signature_form_submit_ecto(conn, ecto_params)
+  end
+
+  def signature_form_submit(conn, %{"user" => user_params}) do
+    sig = Map.get(user_params, "signature", "")
+
+    conn
+    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast(sig)}")
+    |> redirect(to: ~p"/signature-pad/form#signature-form-native")
+  end
+
+  def signature_form_submit(conn, _params) do
+    signature_form_submit_ecto(conn, %{})
+  end
+
+  defp signature_form_submit_ecto(conn, ecto_params) do
     changeset =
       %E2e.Form.SignatureForm{}
       |> E2e.Form.SignatureForm.changeset_validate(ecto_params)
@@ -772,20 +788,6 @@ defmodule E2eWeb.PageController do
       |> assign_signature_form_docs("signature-form-ecto")
       |> render(:signature_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
     end
-  end
-
-  def signature_form_submit(conn, %{"user" => user_params}) do
-    sig = Map.get(user_params, "signature", "")
-
-    conn
-    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast(sig)}")
-    |> redirect(to: ~p"/signature-pad/form#signature-form-native")
-  end
-
-  def signature_form_submit(conn, _params) do
-    conn
-    |> put_flash(:info, "Submitted: #{E2e.Form.SignatureForm.format_for_toast([])}")
-    |> redirect(to: ~p"/signature-pad/form#signature-form-native")
   end
 
   def menu_page(conn, _params) do

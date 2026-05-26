@@ -11,4 +11,15 @@ describe("SignaturePad", () => {
     expect(el.querySelector('[data-part="hidden-input"]')).toBeTruthy();
     c.destroy();
   });
+
+  it("applies dir from host data-dir to clear trigger after render", () => {
+    const el = signaturePadTree();
+    el.dataset.dir = "rtl";
+    const clear = el.querySelector<HTMLElement>('[data-part="clear-trigger"]');
+    clear?.setAttribute("dir", "ltr");
+    const c = new SignaturePad(el, { id: el.id, dir: "rtl" });
+    c.render();
+    expect(clear?.getAttribute("dir")).toBe("rtl");
+    c.destroy();
+  });
 });

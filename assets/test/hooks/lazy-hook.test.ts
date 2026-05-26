@@ -12,8 +12,11 @@ describe("createLazyHook", () => {
       "TestHook"
     );
 
-    const ctx = { el: document.createElement("div") } as object & HookInterface<HTMLElement>;
+    const el = document.createElement("div");
+    el.setAttribute("data-loading", "");
+    const ctx = { el } as object & HookInterface<HTMLElement>;
     await hook.mounted!.call(ctx);
     expect(mounted).toHaveBeenCalled();
+    expect(el.hasAttribute("data-loading")).toBe(false);
   });
 });

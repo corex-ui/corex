@@ -89,7 +89,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       {form_live, _} =
         index_live
-        |> element("a", "New Admin")
+        |> element("a[href='/en/admins/new']")
         |> render_click()
         |> follow_redirect(conn, ~p"/admins/new")
         |> unwrap_live_redirect!()

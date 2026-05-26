@@ -2,10 +2,17 @@
 function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
-      const mod = await importFn();
-      const real = mod[exportName];
-      this._realHook = real;
-      if (real?.mounted) return real.mounted.call(this);
+      const el = this.el;
+      try {
+        const mod = await importFn();
+        const real = mod[exportName];
+        this._realHook = real;
+        if (real?.mounted) {
+          await real.mounted.call(this);
+        }
+      } finally {
+        el.removeAttribute("data-loading");
+      }
     },
     updated() {
       this._realHook?.updated?.call(this);
