@@ -456,7 +456,7 @@ defmodule Corex.SignaturePad do
             data-scope="signature-pad"
             data-part="array-input"
             data-empty
-            name={@submit_name}
+            name={if(@field_used, do: @submit_name)}
             value=""
           />
         </div>
