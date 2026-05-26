@@ -5,6 +5,7 @@ defmodule E2eWeb.TetrexOwnership do
 
   @session_key "tetrex_owned_games"
   @max_owned 20
+  @test Mix.env() == :test
 
   def session_key, do: @session_key
 
@@ -14,7 +15,7 @@ defmodule E2eWeb.TetrexOwnership do
       |> list_from_session()
       |> MapSet.union(OwnershipStore.list(session))
 
-    if Mix.env() == :test do
+    if @test do
       MapSet.union(owned, OwnershipStore.list(%{}))
     else
       owned
