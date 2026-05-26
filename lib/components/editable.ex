@@ -71,6 +71,8 @@ defmodule Corex.Editable do
 
   Use `field={f[:name]}` inside `<.form>` for changeset-backed forms.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:name])}` when you want alert borders after validation.
+
   ```heex
   <.form for={@form} phx-change="validate">
     <.editable field={@form[:name]} class="editable">

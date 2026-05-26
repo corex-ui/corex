@@ -149,7 +149,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">Off</.action>
       <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">Toggle</.action>
     </div>
-    <.switch id="switch-api-cb" class="switch">
+    <.switch class="switch">
       <:label>Power</:label>
     </.switch>
     """
@@ -206,7 +206,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
         Toggle
       </button>
     </div>
-    <.switch id="switch-api-cjs" class="switch">
+    <.switch class="switch">
       <:label>Power</:label>
     </.switch>
     """
@@ -286,7 +286,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
       <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
     </div>
-    <.switch id="switch-api-srv" class="switch">
+    <.switch class="switch">
       <:label>Power</:label>
     </.switch>
     """
@@ -372,7 +372,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def events_client_heex do
     ~S"""
-    <.switch id="switch-on-checked-change-client" class="switch" on_checked_change_client="switch-changed">
+    <.switch class="switch" on_checked_change_client="switch-changed">
       <:label>Subscribe</:label>
     </.switch>
     """
@@ -438,12 +438,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -473,12 +472,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -823,15 +821,18 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch" id="switch-form-phoenix-notifications">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.switch>
-      <.action type="submit" id="switch-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -865,19 +866,18 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def form_doc_controller_ecto_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@ecto_form}
+      for={@form}
       action={~p"/switch/form"}
       method="post"
     >
-      <.switch field={f[:notifications]} class="switch" id="switch-form-ecto-notifications">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-form-ecto-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -919,11 +919,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.switch field={@phoenix_form[:notifications]} class="switch" id="switch-live-form-phoenix-notifications">
+    <.form for={@form} phx-submit="save_phoenix">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.switch>
-      <.action type="submit" id="switch-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -932,15 +936,15 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
-      <.switch field={@ecto_form[:notifications]} class="switch" id="switch-live-form-ecto-notifications">
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <.switch field={@form[:notifications]} class="switch">
         <:label>Enable notifications</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.switch>
-      <.action type="submit" id="switch-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>

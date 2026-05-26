@@ -36,12 +36,17 @@ defmodule E2eWeb.Demos.SelectDemo do
     <.select
       class="select"
       items={Corex.List.new([
-        %{label: "France", value: "fra"},
+        %{label: "France", value: "fra", disabled: true},
         %{label: "Belgium", value: "bel"},
-        %{label: "Germany", value: "deu"}
+        %{label: "Germany", value: "deu"},
+        %{label: "Netherlands", value: "nld"},
+        %{label: "Switzerland", value: "che"},
+        %{label: "Austria", value: "aut"}
       ])}
     >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
     </.select>
     """
   end
@@ -126,13 +131,21 @@ defmodule E2eWeb.Demos.SelectDemo do
         %{label: "France", value: "fra", group: "Europe"},
         %{label: "Belgium", value: "bel", group: "Europe"},
         %{label: "Germany", value: "deu", group: "Europe"},
+        %{label: "Netherlands", value: "nld", group: "Europe"},
+        %{label: "Switzerland", value: "che", group: "Europe"},
+        %{label: "Austria", value: "aut", group: "Europe"},
         %{label: "Japan", value: "jpn", group: "Asia"},
         %{label: "China", value: "chn", group: "Asia"},
-        %{label: "South Korea", value: "kor", group: "Asia"}
+        %{label: "South Korea", value: "kor", group: "Asia"},
+        %{label: "Thailand", value: "tha", group: "Asia"},
+        %{label: "USA", value: "usa", group: "North America"},
+        %{label: "Canada", value: "can", group: "North America"},
+        %{label: "Mexico", value: "mex", group: "North America"}
       ])}
     >
-      <:label>Country</:label>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
     </.select>
     """
   end
@@ -163,13 +176,19 @@ defmodule E2eWeb.Demos.SelectDemo do
         %{label: "Austria", value: "aut"}
       ])}
     >
-      <:label>Country of residence</:label>
+      <:label>
+        Country of residence
+      </:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.value)} />
+        <Flagpack.flag name={String.to_atom(to_string(item.value))} />
         {item.label}
       </:item>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+      <:item_indicator>
+        <.heroicon name="hero-check" />
+      </:item_indicator>
     </.select>
     """
   end
@@ -205,13 +224,16 @@ defmodule E2eWeb.Demos.SelectDemo do
         %{label: "South Korea", value: "kor", group: "Asia"}
       ])}
     >
-      <:label>Country of residence</:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(item.value)} />
+        <Flagpack.flag name={String.to_atom(to_string(item.value))} />
         {item.label}
       </:item>
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+      <:item_indicator>
+        <.heroicon name="hero-check" />
+      </:item_indicator>
     </.select>
     """
   end
@@ -869,13 +891,12 @@ defmodule E2eWeb.Demos.SelectDemo do
   def form_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/select/form"}
       method="post"
     >
       <.select
-        field={f[:country]}
+        field={@form[:country]}
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
@@ -919,13 +940,12 @@ defmodule E2eWeb.Demos.SelectDemo do
   def form_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/select/form"}
       method="post"
     >
       <.select
-        field={f[:country]}
+        field={@form[:country]}
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
@@ -1235,13 +1255,12 @@ defmodule E2eWeb.Demos.SelectDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/select/form"}
       method="post"
     >
       <.select
-        field={f[:country]}
+        field={@form[:country]}
         class="select"
         translation={%Corex.Select.Translation{placeholder: "Select a country"}}
         items={Corex.List.new([
@@ -1257,6 +1276,10 @@ defmodule E2eWeb.Demos.SelectDemo do
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.select>
       <.action type="submit" class="button button--accent">
         Submit
@@ -1288,11 +1311,10 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.select
-        id="select-live-form-phoenix-country"
         class="select"
-        field={@phoenix_form[:country]}
+        field={@form[:country]}
         items={Corex.List.new([
           %{label: "France", value: "fra"},
           %{label: "Belgium", value: "bel"},
@@ -1307,8 +1329,12 @@ defmodule E2eWeb.Demos.SelectDemo do
         <:trigger>
           <.heroicon name="hero-chevron-down" class="icon" />
         </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.select>
-      <.action type="submit" id="select-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>

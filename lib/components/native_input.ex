@@ -42,7 +42,7 @@ defmodule Corex.NativeInput do
   <.native_input type="checkbox" name="user[agree]" class="native-input">
     <:label>I agree</:label>
   </.native_input>
-  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose..." class="native-input">
+  <.native_input type="select" name="user[role]" options={["Admin": "admin", "User": "user"]} prompt="Choose role" class="native-input">
     <:label>Role</:label>
   </.native_input>
   <.native_input type="radio" name="user[size]" options={["Small": "s", "Medium": "m", "Large": "l"]} value="m" class="native-input">
@@ -76,6 +76,8 @@ defmodule Corex.NativeInput do
   ## Form
 
   Use `field={f[:email]}` inside `<.form>` with a changeset-backed form.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:email])}` when you want alert borders after validation.
 
   For `type="select"` with `multiple`, the field name is suffixed with `[]` so Ecto `{:array, :string}` receives a list (same Phoenix convention as [`Corex.Select`](Corex.Select.html) `multiple`).
 

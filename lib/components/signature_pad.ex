@@ -57,6 +57,8 @@ defmodule Corex.SignaturePad do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:signature])}` when you want alert borders after validation.
+
   With `field={@form[:signature]}`, paths submit as `name="…[]"` hidden array inputs. On draw or clear, the hook updates those inputs and dispatches `input` so LiveView tracks the field. Errors render only when `Phoenix.Component.used_input?/1` is true for the field.
 
   ### Controller

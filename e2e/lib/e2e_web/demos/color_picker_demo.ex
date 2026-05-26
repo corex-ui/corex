@@ -10,7 +10,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def minimal_code do
     ~S"""
     <.color_picker
-      label="Pick a color"
+      value="rgb(25, 9, 192, 0.9)"
+      label="Select Color (RGBA)"
+      presets={["#ff0000", "#00ff00", "#0000ff", "rgb(25, 9, 192, 0.9)"]}
       class="color-picker"
     />
     """
@@ -102,7 +104,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action phx-click={Corex.ColorPicker.set_value("color-picker-api-value-c", "#3b82f6")} class="button button--sm">Set blue</.action>
     </div>
     <.color_picker
-      id="color-picker-api-value-c"
       value="#3b82f6"
       label="Set the color from actions"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -140,7 +141,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       <.action phx-click="cp_api_s_value" phx-value-color="#3b82f6" class="button button--sm">Set blue</.action>
     </div>
     <.color_picker
-      id="color-picker-api-value-s"
       value="#3b82f6"
       label="Set the color (Server)"
       presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
@@ -308,13 +308,13 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      for={@phoenix_form}
+      for={@form}
       action={~p"/color-picker/form"}
       method="post"
     >
       <.color_picker
-        name={@phoenix_form[:color].name}
-        value={@phoenix_form[:color].value || "#3b82f6"}
+        name={@form[:color].name}
+        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
       />
@@ -348,10 +348,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.color_picker
-        name={@phoenix_form[:color].name}
-        value={@phoenix_form[:color].value || "#3b82f6"}
+        name={@form[:color].name}
+        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
       />

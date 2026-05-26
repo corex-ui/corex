@@ -66,6 +66,8 @@ defmodule Corex.PinInput do
 
   Use `field={f[:code]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:code])}` when you want alert borders after validation.
+
   ```heex
   <.form for={@form} phx-change="validate">
     <.pin_input field={@form[:code]} count={4} class="pin-input">

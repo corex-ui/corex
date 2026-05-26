@@ -4,7 +4,7 @@ defmodule E2eWeb.Demos.FloatingPanelDemo do
   def anatomy_basic_code do
     ~S"""
     <.floating_panel class="floating-panel">
-      <:trigger>
+      <:trigger class="button button--ghost button--sm">
         <span data-closed>Open panel</span>
         <span data-open>Close panel</span>
       </:trigger>

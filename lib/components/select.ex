@@ -209,6 +209,8 @@ defmodule Corex.Select do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+
   ### Multiple selection and `{:array, :string}` fields
 
   With `multiple` and `field={f[:tags]}`, the hidden native `<select>` submits list params (`post[tags][]`), matching Phoenix's multi-select convention:

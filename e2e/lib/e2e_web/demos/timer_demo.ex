@@ -18,10 +18,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def anatomy_with_triggers_code do
     ~S"""
     <.timer start_ms={60_000} class="timer">
-      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -42,10 +42,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def anatomy_countdown_code do
     ~S"""
     <.timer countdown start_ms={60_000} target_ms={0} class="timer">
-      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -64,10 +64,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def anatomy_timing_code do
     ~S"""
     <.timer start_ms={60_000} interval={2000} auto_start class="timer">
-      <:start_trigger><.heroicon name="hero-play"/></:start_trigger>
-      <:pause_trigger><.heroicon name="hero-pause"/></:pause_trigger>
-      <:resume_trigger><.heroicon name="hero-play"/></:resume_trigger>
-      <:reset_trigger><.heroicon name="hero-arrow-path"/></:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -200,10 +200,10 @@ defmodule E2eWeb.Demos.TimerDemo do
       target_ms={0}
       class="timer"
     >
-      <:start_trigger>…</:start_trigger>
-      <:pause_trigger>…</:pause_trigger>
-      <:resume_trigger>…</:resume_trigger>
-      <:reset_trigger>…</:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -211,10 +211,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_template_props_timing_heex do
     ~S"""
     <.timer id="t-interval" start_ms={60_000} interval={1000} auto_start class="timer">
-      <:start_trigger>…</:start_trigger>
-      <:pause_trigger>…</:pause_trigger>
-      <:resume_trigger>…</:resume_trigger>
-      <:reset_trigger>…</:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end
@@ -222,10 +222,10 @@ defmodule E2eWeb.Demos.TimerDemo do
   def api_template_props_direction_heex do
     ~S"""
     <.timer id="t-dir" start_ms={0} target_ms={30_000} dir="rtl" class="timer">
-      <:start_trigger>…</:start_trigger>
-      <:pause_trigger>…</:pause_trigger>
-      <:resume_trigger>…</:resume_trigger>
-      <:reset_trigger>…</:reset_trigger>
+      <:start_trigger><.heroicon name="hero-play" /></:start_trigger>
+      <:pause_trigger><.heroicon name="hero-pause" /></:pause_trigger>
+      <:resume_trigger><.heroicon name="hero-play" /></:resume_trigger>
+      <:reset_trigger><.heroicon name="hero-arrow-path" /></:reset_trigger>
     </.timer>
     """
   end

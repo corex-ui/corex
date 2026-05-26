@@ -4,7 +4,7 @@ defmodule Corex.FileUploadLive do
 
   Use after [`allow_upload/3`](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#allow_upload/3). Pass `upload={@uploads.name}` and `field` matching the atom given to `allow_upload`. Renders [`live_file_input`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#live_file_input/1) and `phx-drop-target`; **no** Zag `FileUpload` hook. Do not combine this component with `<.file_upload>` on the same file control.
 
-  Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html).
+  Forms must bind [`phx-change`](https://hexdocs.pm/phoenix_live_view/uploads.html) (and typically `phx-submit`) as in the [uploads guide](https://hexdocs.pm/phoenix_live_view/uploads.html). For shared form patterns, see the [Forms](forms.html) guide.
 
   ## Anatomy
 

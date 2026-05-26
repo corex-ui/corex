@@ -3,6 +3,7 @@
 ## Unreleased
 
 - **Form `invalid` styling is opt-in for all `field={}` components** — `Corex.FormField.assign_form_field/2` no longer sets `invalid` from changeset errors. Error messages still render in `:error` slots; pass `invalid` or `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders.
+- **Hex docs aligned with e2e demos** — Added [Forms](guides/forms.html) guide (invalid styling, custom errors, invalid-on-error). E2e `*_code` snippets and component `## Form` sections link to the guide. Doc parity (moduledoc vs demo code tabs) runs in `mix lint` for core components.
 
 Stable **0.1.0** will follow this release candidate after RC feedback.
 

@@ -6,7 +6,7 @@ defmodule E2eWeb.Demos.DialogDemo do
     <.dialog class="dialog">
       <:trigger>Open</:trigger>
       <:content>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <p>Minimal content.</p>
       </:content>
       <:close_trigger>
         <.heroicon name="hero-x-mark" class="icon" />
@@ -34,13 +34,13 @@ defmodule E2eWeb.Demos.DialogDemo do
   def with_title_description_code do
     ~S"""
     <.dialog class="dialog">
-      <:trigger>Open</:trigger>
-      <:title>Lorem ipsum dolor sit amet</:title>
+      <:trigger>Open Dialog</:trigger>
+      <:title>Dialog Title</:title>
       <:description>
-        Consectetur adipiscing elit. Sed sodales ullamcorper tristique.
+        Short description of what this dialog is for.
       </:description>
       <:content>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <p>Body content.</p>
       </:content>
       <:close_trigger>
         <.heroicon name="hero-x-mark" class="icon" />
@@ -72,11 +72,11 @@ defmodule E2eWeb.Demos.DialogDemo do
   def actions_code do
     ~S"""
     <.dialog class="dialog">
-      <:trigger>Open</:trigger>
-      <:title>Lorem ipsum dolor sit amet</:title>
-      <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
+      <:trigger>Open Dialog</:trigger>
+      <:title>Confirm</:title>
+      <:description>Choose an action to continue.</:description>
       <:content>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        <p>Are you sure you want to continue?</p>
         <div class="flex flex-wrap justify-end gap-2 mt-4">
           <.action phx-click={Corex.Dialog.set_open("dialog-anatomy-actions", false)} class="button button--sm button--ghost">
             Cancel

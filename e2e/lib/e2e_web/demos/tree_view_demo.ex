@@ -88,31 +88,6 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   defp styling_expanded, do: ["styling-lib", "styling-test"]
   defp styling_value, do: ["styling-lib-tree-view-ex"]
 
-  # --------------------------------------------------------------------------
-  # Shared items string (for rendered code panels). Mirrors the accordion
-  # `code_items_basic()` pattern – concatenated into each code snippet below so
-  # the displayed code is fully self-contained (no `E2e.TreeViewDemo.*` refs).
-  # --------------------------------------------------------------------------
-
-  defp code_anatomy_items do
-    ~S"""
-    Corex.Tree.new([
-          %{label: "lib", value: "lib", children: [
-            %{label: "tree_view.ex", value: "lib-tree-view-ex"},
-            %{label: "tree_view_demo.ex", value: "lib-tree-view-demo-ex"}
-          ]},
-          %{label: "test", value: "test", children: [
-            %{label: "tree_view_test.exs", value: "test-tree-view-test-exs"}
-          ]},
-          %{label: "assets", value: "assets", children: [
-            %{label: "tree-view.ts", value: "assets-tree-view-ts"}
-          ]},
-          %{label: "mix.exs", value: "mix-exs"}
-        ])
-    """
-    |> String.trim_trailing("\n")
-  end
-
   defp code_api_items do
     ~S"""
     Corex.Tree.new([
@@ -149,13 +124,37 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   # --------------------------------------------------------------------------
 
   def anatomy_minimal_code do
-    """
+    ~S"""
     <.tree_view
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "Components", value: "components", children: [
+            %{label: "Accordion", value: "accordion"},
+            %{label: "Checkbox", value: "checkbox"},
+            %{label: "Tree view", value: "tree-view"}
+          ]},
+          %{label: "Form", value: "form"},
+          %{label: "Tree", value: "tree", children: [%{label: "Tree.Item", value: "tree-item"}]}
+        ])
+      }
     />
+    """
+  end
+
+  def anatomy_with_label_code do
+    ~S"""
+    <.tree_view
+      class="tree-view"
+      items={
+        Corex.Tree.new([
+          %{label: "Guides", value: "guides"},
+          %{label: "Reference", value: "reference"}
+        ])
+      }
+    >
+      <:label>My Documents</:label>
+    </.tree_view>
     """
   end
 
@@ -172,16 +171,25 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_with_indicator_code do
-    """
+    ~S"""
     <.tree_view
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "src", value: "src", children: [
+            %{label: "components", value: "components"},
+            %{label: "index.ts", value: "index.ts"}
+          ]},
+          %{label: "README.md", value: "readme"}
+        ])
+      }
     >
-      <:label>Corex</:label>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      <:branch_indicator :let={item}>
+        <.heroicon :if={item.children && item.children != []} name="hero-chevron-right" />
+      </:branch_indicator>
+      <:item_indicator>
+        <.heroicon name="hero-check" />
+      </:item_indicator>
     </.tree_view>
     """
   end
@@ -203,18 +211,26 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_custom_slots_code do
-    """
+    ~S"""
     <.tree_view
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "src", value: "src", children: [
+            %{label: "components", value: "components", children: [%{label: "tree-view.tsx", value: "tree-view.tsx"}]},
+            %{label: "main.ts", value: "main.ts"}
+          ]},
+          %{label: "README.md", value: "readme"}
+        ])
+      }
     >
-      <:label>Corex</:label>
-      <:branch_indicator><.heroicon name="hero-chevron-right" class="icon" /></:branch_indicator>
-      <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
-      <:branch :let={branch}><.heroicon name="hero-folder" class="icon" />{branch.label}</:branch>
-      <:item :let={item}><.heroicon name="hero-document" class="icon" />{item.label}</:item>
+      <:label>Project</:label>
+      <:branch :let={item}>
+        <.heroicon name="hero-folder" /> {item.label}
+      </:branch>
+      <:item :let={item}>
+        <.heroicon name="hero-document" /> {item.label}
+      </:item>
     </.tree_view>
     """
   end
@@ -238,34 +254,36 @@ defmodule E2eWeb.Demos.TreeViewDemo do
   end
 
   def anatomy_compound_code do
-    """
+    ~S"""
     <.tree_view
       :let={ctx}
       compound
       class="tree-view"
-      expanded_value={["lib"]}
-      value={["lib-tree-view-ex"]}
-      items={#{code_anatomy_items()}}
+      items={
+        Corex.Tree.new([
+          %{label: "Components", value: "components", children: [
+            %{label: "Accordion", value: "accordion"},
+            %{label: "Checkbox", value: "checkbox"}
+          ]},
+          %{label: "Form", value: "form"}
+        ])
+      }
     >
       <.tree_view_root ctx={ctx}>
-        <:label>Corex</:label>
-        <%= for item <- ctx.items do %>
-          <%= if item.children && item.children != [] do %>
-            <.tree_view_branch :let={branch} ctx={ctx} item={item}>
-              <.tree_view_branch_trigger branch={branch}>
-                {String.capitalize(item.label)}
-                <:indicator><.heroicon name="hero-chevron-right" /></:indicator>
-              </.tree_view_branch_trigger>
-              <.tree_view_branch_content branch={branch}>
-                <%= for child <- item.children do %>
-                  <.tree_view_item ctx={ctx} item={child} />
-                <% end %>
-              </.tree_view_branch_content>
-            </.tree_view_branch>
-          <% else %>
-            <.tree_view_item ctx={ctx} item={item} />
-          <% end %>
-        <% end %>
+        <:label>Project</:label>
+        <.tree_view_branch :let={branch} :for={item <- ctx.items} ctx={ctx} item={item}>
+          <.tree_view_branch_trigger branch={branch}>
+            {item.label}
+            <:indicator>
+              <.heroicon name="hero-chevron-right" />
+            </:indicator>
+          </.tree_view_branch_trigger>
+          <.tree_view_branch_content branch={branch}>
+            <.tree_view_item :for={child <- item.children || []} ctx={ctx} item={child}>
+              {child.label}
+            </.tree_view_item>
+          </.tree_view_branch_content>
+        </.tree_view_branch>
       </.tree_view_root>
     </.tree_view>
     """

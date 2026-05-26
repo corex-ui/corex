@@ -16,13 +16,24 @@ defmodule E2eWeb.Demos.MenuDemo do
     <.menu
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "menu", label: "Menu"},
-        %Corex.Tree.Item{value: "combobox", label: "Combobox"},
-        %Corex.Tree.Item{value: "select", label: "Select"}
+        %Corex.Tree.Item{
+          value: "edit",
+          label: "Edit"
+        },
+        %Corex.Tree.Item{
+          value: "duplicate",
+          label: "Duplicate"
+        },
+        %Corex.Tree.Item{
+          value: "delete",
+          label: "Delete"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
     </.menu>
     """
   end
@@ -57,14 +68,32 @@ defmodule E2eWeb.Demos.MenuDemo do
     <.menu
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "combobox", label: "Combobox", group: "Pickers"},
-        %Corex.Tree.Item{value: "listbox", label: "Listbox", group: "Pickers"},
-        %Corex.Tree.Item{value: "menu", label: "Menu", group: "Overlays"},
-        %Corex.Tree.Item{value: "dialog", label: "Dialog", group: "Overlays"}
+        %Corex.Tree.Item{
+          value: "edit",
+          label: "Edit",
+          group: "Actions"
+        },
+        %Corex.Tree.Item{
+          value: "duplicate",
+          label: "Duplicate",
+          group: "Actions"
+        },
+        %Corex.Tree.Item{
+          value: "account-1",
+          label: "Account 1",
+          group: "Accounts"
+        },
+        %Corex.Tree.Item{
+          value: "account-2",
+          label: "Account 2",
+          group: "Accounts"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      <:trigger>Actions</:trigger>
+      <:indicator>
+        <.heroicon name="hero-chevron-down" />
+      </:indicator>
     </.menu>
     """
   end
@@ -90,23 +119,57 @@ defmodule E2eWeb.Demos.MenuDemo do
     <.menu
       class="menu"
       items={[
-        %Corex.Tree.Item{value: "listbox", label: "Listbox"},
         %Corex.Tree.Item{
-          value: "corex",
-          label: "Corex",
+          value: "new-tab",
+          label: "New tab"
+        },
+        %Corex.Tree.Item{
+          value: "share",
+          label: "Share",
           children: [
-            %Corex.Tree.Item{value: "combobox", label: "Combobox"},
-            %Corex.Tree.Item{value: "date-picker", label: "Date picker"},
-            %Corex.Tree.Item{value: "menu", label: "Menu"},
-            %Corex.Tree.Item{value: "dialog", label: "Dialog"}
+            %Corex.Tree.Item{
+              value: "messages",
+              label: "Messages"
+            },
+            %Corex.Tree.Item{
+              value: "airdrop",
+              label: "Airdrop"
+            },
+            %Corex.Tree.Item{
+              value: "whatsapp",
+              label: "WhatsApp"
+            }
           ]
         },
-        %Corex.Tree.Item{value: "tabs", label: "Tabs"}
+        %Corex.Tree.Item{
+          value: "print",
+          label: "Print"
+        }
       ]}
     >
-      <:trigger>Corex</:trigger>
-      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
-      <:nested_indicator><.heroicon name="hero-chevron-right" /></:nested_indicator>
+      <:trigger>Click me</:trigger>
+    </.menu>
+    """
+  end
+
+  def nested_menu_code do
+    ~S"""
+    <.menu
+      class="menu"
+      items={[
+        %Corex.Tree.Item{
+          value: "share",
+          label: "Share",
+          children: [
+            %Corex.Tree.Item{value: "messages", label: "Messages"}
+          ]
+        }
+      ]}
+    >
+      <:trigger>Click me</:trigger>
+      <:nested_indicator>
+        <.heroicon name="hero-arrow-right" />
+      </:nested_indicator>
     </.menu>
     """
   end

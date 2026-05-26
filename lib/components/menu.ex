@@ -71,7 +71,7 @@ defmodule Corex.Menu do
       },
       %Corex.Tree.Item{
         value: "print",
-        label: "Print..."
+        label: "Print"
       }
     ]}
   >

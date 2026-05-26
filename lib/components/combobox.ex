@@ -248,6 +248,8 @@ defmodule Corex.Combobox do
 
   Use `field={f[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `<.form for={@form}>`. See [Select](`Corex.Select`) **Form** for full controller and LiveView examples.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:field])}` when you want alert borders after validation.
+
   ### Localization
 
   Pass `translation={%Corex.Combobox.Translation{}}` for partial overrides. See [`Corex.Combobox.Translation`](`Corex.Combobox.Translation`) for defaults.

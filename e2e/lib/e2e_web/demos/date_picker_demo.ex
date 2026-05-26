@@ -3,11 +3,17 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def minimal_code do
     ~S"""
-    <.date_picker translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
+    <.date_picker>
       <:label>Select a date</:label>
-      <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
-      <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
-      <:next_trigger><.heroicon name="hero-chevron-right" class="icon" /></:next_trigger>
+      <:trigger>
+        <.heroicon name="hero-calendar" />
+      </:trigger>
+             <:prev_trigger>
+            <.heroicon name="hero-chevron-left" class="icon" />
+          </:prev_trigger>
+          <:next_trigger>
+            <.heroicon name="hero-chevron-right" class="icon" />
+          </:next_trigger>
     </.date_picker>
     """
   end
@@ -123,7 +129,6 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     </.action>
 
     <.date_picker
-      id="date-picker-api-sv-client"
       translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
       class="date-picker"
     >
@@ -262,7 +267,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       Set to 2024-01-15
     </.action>
 
-    <.date_picker id="date-picker-api-sv-server" translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
+    <.date_picker translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}} class="date-picker">
       <:label>Select a date</:label>
       <:trigger><.heroicon name="hero-calendar" class="icon" /></:trigger>
       <:prev_trigger><.heroicon name="hero-chevron-left" class="icon" /></:prev_trigger>
@@ -478,13 +483,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
     >
       <.date_picker
-        field={f[:date]}
+        field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -511,13 +515,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/date-picker/form"}
       method="post"
     >
       <.date_picker
-        field={f[:date]}
+        field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -531,6 +534,10 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <:next_trigger>
           <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.date_picker>
       <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
@@ -574,13 +581,12 @@ defmodule E2eWeb.Demos.DatePickerDemo do
   def form_doc_controller_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
     >
       <.date_picker
-        field={f[:date]}
+        field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -703,9 +709,9 @@ defmodule E2eWeb.Demos.DatePickerDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
+    <.form for={@form} phx-submit="save_phoenix">
       <.date_picker
-        field={@phoenix_form[:date]}
+        field={@form[:date]}
         translation={%Corex.DatePicker.Translation{open_calendar: "Select date", close_calendar: "Select date", input: "Select date"}}
         class="date-picker"
       >
@@ -719,6 +725,10 @@ defmodule E2eWeb.Demos.DatePickerDemo do
         <:next_trigger>
           <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.date_picker>
       <.action type="submit" class="button button--accent">Submit</.action>
     </.form>

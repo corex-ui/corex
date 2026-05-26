@@ -4,7 +4,10 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def minimal_code do
     ~S"""
     <.signature_pad class="signature-pad">
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
     </.signature_pad>
     """
   end
@@ -21,9 +24,13 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def with_label_code do
     ~S"""
-    <.signature_pad class="signature-pad">
+    <.signature_pad
+      on_draw_end="signature_drawn"
+      class="signature-pad">
       <:label>Sign here</:label>
-      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
     </.signature_pad>
     """
   end
@@ -47,7 +54,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       </.action>
     </div>
 
-    <.signature_pad id="signature-api-cb" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -83,7 +90,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       </button>
     </div>
 
-    <.signature_pad id="signature-api-cjs" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -144,7 +151,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       </.action>
     </div>
 
-    <.signature_pad id="signature-api-srv" class="signature-pad">
+    <.signature_pad class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
     </.signature_pad>
@@ -210,7 +217,6 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def events_client_heex do
     ~S"""
     <.signature_pad
-      id="signature-events-client"
       class="signature-pad"
       on_draw_end_client="signature-drawn"
     >
@@ -266,16 +272,19 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/signature-pad/form"}
       method="post"
     >
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.signature_pad>
       <.action type="submit" class="button button--accent">
         Submit
@@ -308,13 +317,12 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_doc_controller_ecto_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@ecto_form}
+      for={@form}
       action={~p"/signature-pad/form"}
       method="post"
     >
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -364,14 +372,18 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.signature_pad field={@phoenix_form[:signature]} class="signature-pad" id="signature-live-form-phoenix-pad">
+    <.form for={@form} phx-submit="save_phoenix">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -406,9 +418,9 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
+    <.form for={@form} phx-change="validate" phx-submit="save">
       <input type="hidden" name="signature_ecto[_sent]" value="1" />
-      <.signature_pad field={@ecto_form[:signature]} class="signature-pad" id="signature-live-form-ecto-pad" on_draw_end="signature_drawn">
+      <.signature_pad field={@form[:signature]} class="signature-pad" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -418,7 +430,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
           {msg}
         </:error>
       </.signature_pad>
-      <.action type="submit" id="signature-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -512,13 +524,12 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
     >
       <input type="hidden" name="signature_changeset[_sent]" value="1" />
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -551,13 +562,12 @@ defmodule E2eWeb.Demos.SignatureDemo do
   def form_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/signature-pad/form"}
       method="post"
     >
       <input type="hidden" name="signature_validate[_sent]" value="1" />
-      <.signature_pad field={f[:signature]} class="signature-pad">
+      <.signature_pad field={@form[:signature]} class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
@@ -689,15 +699,15 @@ defmodule E2eWeb.Demos.SignatureDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/signature-pad/form"} method="post" id="signature-form-native">
+    <form action={~p"/signature-pad/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.signature_pad name="user[signature]" class="signature-pad" id="signature-form-native-pad">
+      <.signature_pad name="user[signature]" class="signature-pad">
         <:label>Sign here</:label>
         <:clear_trigger>
           <.heroicon name="hero-x-mark" />
         </:clear_trigger>
       </.signature_pad>
-      <.action type="submit" id="signature-form-native-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>

@@ -3,8 +3,10 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def minimal_code do
     ~S"""
-    <.password_input name="user[password]" class="password-input">
+    <.password_input class="password-input">
       <:label>Password</:label>
+      <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
     </.password_input>
     """
   end
@@ -54,7 +56,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       </.action>
     </div>
     <.password_input
-      id="password-input-api-binding"
       class="password-input"
       name="user[password]"
       on_visibility_change="password_input_api_visibility"
@@ -146,7 +147,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       </.action>
     </div>
     <.password_input
-      id="password-input-api-client"
       class="password-input"
       name="user[password]"
       on_visibility_change_client="password-input-api-visibility-changed"
@@ -254,7 +254,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       </.action>
     </div>
     <.password_input
-      id="password-input-api-server"
       class="password-input"
       name="user[password]"
     >
@@ -314,7 +313,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def api_initial_heex do
     ~S"""
     <.password_input
-      id="password-input-api-initial"
       class="password-input"
       name="user[password]"
       visible
@@ -375,7 +373,6 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def events_client_heex do
     ~S"""
     <.password_input
-      id="password-input-events-client"
       class="password-input"
       name="user[password]"
       on_visibility_change_client="password-visibility-changed"
@@ -432,15 +429,18 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/password-input/form"}
       method="post"
     >
-      <.password_input field={f[:password]} class="password-input">
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.password_input>
       <.action type="submit" class="button button--accent">
         Submit
@@ -472,13 +472,17 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.password_input field={@phoenix_form[:password]} class="password-input" id="password-input-live-form-phoenix-password">
+    <.form for={@form} phx-submit="save_phoenix">
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.password_input>
-      <.action type="submit" id="password-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -488,12 +492,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/password-input/form"}
       method="post"
           >
-      <.password_input field={f[:password]} class="password-input">
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
@@ -550,12 +553,11 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   def form_doc_controller_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action={~p"/password-input/form"}
       method="post"
           >
-      <.password_input field={f[:password]} class="password-input">
+      <.password_input field={@form[:password]} class="password-input">
         <:label>Password</:label>
         <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
         <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>

@@ -64,7 +64,6 @@ defmodule E2eWeb.Demos.PinInputDemo do
   def events_client_heex do
     ~S"""
     <.pin_input
-      id="pin-input-events-client"
       count={4}
       class="pin-input"
       on_value_change_client="pin-input-changed"
@@ -113,15 +112,14 @@ defmodule E2eWeb.Demos.PinInputDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/pin-input/form"}
       method="post"
     >
-      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-phoenix-pin">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
       </.pin_input>
-      <.action type="submit" id="pin-input-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -148,19 +146,18 @@ defmodule E2eWeb.Demos.PinInputDemo do
   def form_doc_controller_ecto_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@ecto_form}
+      for={@form}
       action={~p"/pin-input/form"}
       method="post"
     >
-      <.pin_input field={f[:pin]} count={4} class="pin-input" id="pin-input-form-ecto-pin">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.pin_input>
-      <.action type="submit" id="pin-input-form-ecto-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -200,12 +197,12 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/pin-input/form"} method="post" id="pin-input-form-native">
+    <form action={~p"/pin-input/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.pin_input name="pin_input[pin]" count={4} class="pin-input" id="pin-input-form-native-pin">
+      <.pin_input name="pin_input[pin]" count={4} class="pin-input">
         <:label>Code</:label>
       </.pin_input>
-      <.action type="submit" id="pin-input-form-native-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </form>
@@ -226,11 +223,11 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.pin_input field={@phoenix_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-phoenix-pin">
+    <.form for={@form} phx-submit="save_phoenix">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
       </.pin_input>
-      <.action type="submit" id="pin-input-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -239,15 +236,15 @@ defmodule E2eWeb.Demos.PinInputDemo do
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
-      <.pin_input field={@ecto_form[:pin]} count={4} class="pin-input" id="pin-input-live-form-ecto-pin">
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <.pin_input field={@form[:pin]} count={4} class="pin-input">
         <:label>Code</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.pin_input>
-      <.action type="submit" id="pin-input-live-form-ecto-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -456,7 +453,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click={Corex.PinInput.set_value("pin-api-set-client", ["1", "2", "3", "4"])} class="button button--sm">
       Fill
     </.action>
-    <.pin_input id="pin-api-set-client" count={4} class="pin-input">
+    <.pin_input count={4} class="pin-input">
       <:label>Code</:label>
     </.pin_input>
     """
@@ -467,7 +464,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click="api_pin_set_value_server" class="button button--sm">
       Fill from server
     </.action>
-    <.pin_input id="pin-api-set-server" count={4} class="pin-input">
+    <.pin_input count={4} class="pin-input">
       <:label>Code</:label>
     </.pin_input>
     """
@@ -494,7 +491,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     >
       Fill via dispatch
     </.action>
-    <.pin_input id="pin-api-set-js" count={4} class="pin-input">
+    <.pin_input count={4} class="pin-input">
       <:label>Code</:label>
     </.pin_input>
     """
@@ -564,7 +561,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click={Corex.PinInput.value("pin-api-val-client")} class="button button--sm">
       Read value
     </.action>
-    <.pin_input id="pin-api-val-client" count={4} class="pin-input" value={["1", "2", "", ""]}>
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
       <:label>Code</:label>
     </.pin_input>
     """
@@ -575,7 +572,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click="api_pin_value_server" class="button button--sm">
       Read value (server)
     </.action>
-    <.pin_input id="pin-api-val-server" count={4} class="pin-input" value={["5", "6", "7", "8"]}>
+    <.pin_input count={4} class="pin-input" value={["5", "6", "7", "8"]}>
       <:label>Code</:label>
     </.pin_input>
     """
@@ -597,7 +594,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     >
       Read via dispatch
     </.action>
-    <.pin_input id="pin-api-val-js" count={4} class="pin-input" value={["1", "0", "0", "0"]}>
+    <.pin_input count={4} class="pin-input" value={["1", "0", "0", "0"]}>
       <:label>Code</:label>
     </.pin_input>
     """
@@ -638,7 +635,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click={Corex.PinInput.clear("pin-api-clear-client")} class="button button--sm">
       Clear
     </.action>
-    <.pin_input id="pin-api-clear-client" count={4} class="pin-input" value={["9", "9", "9", "9"]}>
+    <.pin_input count={4} class="pin-input" value={["9", "9", "9", "9"]}>
       <:label>Code</:label>
     </.pin_input>
     """
@@ -649,7 +646,7 @@ defmodule E2eWeb.Demos.PinInputDemo do
     <.action phx-click="api_pin_clear_server" class="button button--sm">
       Clear from server
     </.action>
-    <.pin_input id="pin-api-clear-server" count={4} class="pin-input" value={["1", "1", "1", "1"]}>
+    <.pin_input count={4} class="pin-input" value={["1", "1", "1", "1"]}>
       <:label>Code</:label>
     </.pin_input>
     """

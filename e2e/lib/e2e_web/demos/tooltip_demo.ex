@@ -43,24 +43,10 @@ defmodule E2eWeb.Demos.TooltipDemo do
 
   def anatomy_placement_code do
     ~S"""
-    <div class="layout__row gap-2">
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
-        <:trigger>Bottom</:trigger>
-        <:content>Tooltip below</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "top"}}>
-        <:trigger>Top</:trigger>
-        <:content>Tooltip above</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "left"}}>
-        <:trigger>Left</:trigger>
-        <:content>Tooltip on the left</:content>
-      </.tooltip>
-      <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "right"}}>
-        <:trigger>Right</:trigger>
-        <:content>Tooltip on the right</:content>
-      </.tooltip>
-    </div>
+    <.tooltip class="tooltip" positioning={%Corex.Positioning{placement: "bottom"}}>
+      <:trigger>Bottom</:trigger>
+      <:content>Tooltip below</:content>
+    </.tooltip>
     """
   end
 

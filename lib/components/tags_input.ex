@@ -30,7 +30,7 @@ defmodule Corex.TagsInput do
     class="tags-input"
     value={["lorem", "duis"]}
     translation={%Corex.TagsInput.Translation{
-      placeholder: "Add lorem or duis…",
+      placeholder: "Add lorem or duis",
       delete_tag_trigger_label: "Remove %{tag}",
       tag_edited: "Edit %{tag}. Press enter to save or escape to cancel."
     }}
@@ -125,6 +125,8 @@ defmodule Corex.TagsInput do
   <!-- tabs-close -->
 
   ## Form
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:tags])}` when you want alert borders after validation.
 
   With `field={f[:tags]}`, each tag is submitted as its own request param (`post[tags][]`), so Phoenix receives a **list**:
 

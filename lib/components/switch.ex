@@ -119,6 +119,8 @@ defmodule Corex.Switch do
 
   Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:notifications]}` so the switch name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:notifications])}` when you want alert borders after validation.
+
   ```heex
   <.form for={@form} phx-change="validate">
     <.switch field={@form[:notifications]} class="switch">

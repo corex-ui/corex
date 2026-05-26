@@ -61,9 +61,7 @@ defmodule E2eWeb.Demos.MarqueeDemo do
       items={[
         %{name: "Home", icon: "hero-home"},
         %{name: "User", icon: "hero-user"},
-        %{name: "Cog", icon: "hero-cog-6-tooth"},
-        %{name: "Heart", icon: "hero-heart"},
-        %{name: "Star", icon: "hero-star"}
+        %{name: "Cog", icon: "hero-cog-6-tooth"}
       ]}
       duration={25}
       spacing="2rem"

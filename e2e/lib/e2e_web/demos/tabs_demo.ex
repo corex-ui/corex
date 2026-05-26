@@ -23,11 +23,14 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_basic_code do
     ~S"""
-    <.tabs class="tabs" value="lorem" items={Corex.Content.new([
-      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-    ])} />
+    <.tabs
+      class="tabs"
+      items={Corex.Content.new([
+        [label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+        [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+        [label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+      ])}
+    />
     """
   end
 
@@ -47,13 +50,13 @@ defmodule E2eWeb.Demos.TabsDemo do
     <.tabs
       class="tabs"
       indicator
-      value="lorem"
       items={Corex.Content.new([
-        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-        %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+        [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+        [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+        [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
       ])}
-    />
+    >
+    </.tabs>
     """
   end
 
@@ -66,6 +69,27 @@ defmodule E2eWeb.Demos.TabsDemo do
       value="lorem"
       items={E2eWeb.Demos.TabsDemo.basic_items()}
     />
+    """
+  end
+
+  def anatomy_custom_code do
+    ~S"""
+    <.tabs
+      class="tabs"
+      value="lorem"
+      items={Corex.Content.new([
+        [value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
+        [label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus.", meta: %{indicator: "hero-chevron-right"}],
+        [value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+      ])}
+    >
+      <:trigger :let={item}>
+        {item.label}
+      </:trigger>
+      <:content :let={item}>
+        {item.content}
+      </:content>
+    </.tabs>
     """
   end
 

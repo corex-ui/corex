@@ -54,22 +54,6 @@ defmodule E2eWeb.Demos.ToggleDemo do
       <span>lorem</span>
       <span data-pressed>donec</span>
     </.toggle>
-
-    <.toggle
-      class="toggle toggle--sm"
-      data-toggle-dual-label
-      pressed={@mode == "dark"}
-      on_pressed_change_client="phx:set-mode"
-    >
-      <span>
-        <.heroicon name="hero-moon" />
-        <span class="sr-only">Dark mode</span>
-      </span>
-      <span data-pressed>
-        <.heroicon name="hero-sun" />
-        <span class="sr-only">Light mode</span>
-      </span>
-    </.toggle>
     """
   end
 

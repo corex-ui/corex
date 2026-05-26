@@ -223,6 +223,14 @@ defmodule E2eWeb.PageController do
     end
   end
 
+  def checkbox_form_submit(conn, %{"user" => %{"accept_terms" => terms}}) do
+    checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
+
+    conn
+    |> put_flash(:info, "Submitted: terms=#{inspect(checked)}")
+    |> redirect(to: ~p"/checkbox/form#checkbox-form-native")
+  end
+
   def checkbox_form_submit(conn, %{"terms" => %{"terms" => terms}}) do
     checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
 

@@ -34,7 +34,7 @@ defmodule Corex.Avatar do
 
   ```heex
   <.avatar pending class="avatar">
-    <:loading><span class="text-sm">Loading…</span></:loading>
+    <:loading><span class="text-sm">Loading</span></:loading>
   </.avatar>
   ```
 

@@ -52,7 +52,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_minimal_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_minimal} field={:anatomy_minimal}>
+      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
@@ -64,7 +64,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_with_label_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_label} field={:anatomy_label}>
+      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
         <:label>Files</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
@@ -111,7 +111,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def live_anatomy_custom_slots_code do
     ~S"""
     <form phx-change="validate">
-      <.file_upload_live upload={@uploads.anatomy_custom} field={:anatomy_custom}>
+      <.file_upload_live upload={@uploads.document} field={:document} class="file-upload">
         <:dropzone>
           <span>Custom dropzone</span>
         </:dropzone>
@@ -164,12 +164,16 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_controller_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} action={~p"/file-upload/form"} method="post" multipart>
-      <.file_upload field={@phoenix_form[:attachment]} class="file-upload">
+    <.form for={@form} action={~p"/file-upload/form"} method="post" multipart>
+      <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.file_upload>
       <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
@@ -195,14 +199,18 @@ defmodule E2eWeb.Demos.FileUploadDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix" multipart>
-      <.file_upload field={@phoenix_form[:attachment]} class="file-upload" id="file-upload-live-phoenix-field">
+    <.form for={@form} phx-submit="save_phoenix" multipart>
+      <.file_upload field={@form[:attachment]} class="file-upload">
         <:label>Attachment</:label>
         <:close>
           <.heroicon name="hero-x-mark" />
         </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.file_upload>
-      <.action type="submit" id="file-upload-live-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -379,7 +387,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <.action phx-click={Corex.FileUpload.open_file_picker("file-upload-api-phx")} class="button button--sm">
       Open picker
     </.action>
-    <.file_upload id="file-upload-api-phx" name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload name="demo[]" class="file-upload" max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -393,7 +401,7 @@ defmodule E2eWeb.Demos.FileUploadDemo do
     <.action phx-click="api_fu_open_server" phx-value-id="file-upload-api-server" class="button button--sm">
       Open picker
     </.action>
-    <.file_upload id="file-upload-api-server" name="demo[]" class="file-upload" max_files={3}>
+    <.file_upload name="demo[]" class="file-upload" max_files={3}>
       <:label>Upload</:label>
       <:close>
         <.heroicon name="hero-x-mark" />
@@ -511,7 +519,6 @@ defmodule E2eWeb.Demos.FileUploadDemo do
   def events_client_heex do
     ~S"""
     <.file_upload
-      id="file-upload-events-client"
       class="file-upload"
       name="ev-client[]"
       on_file_change_client="file-upload-file-change"

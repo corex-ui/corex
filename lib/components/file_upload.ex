@@ -107,6 +107,8 @@ defmodule Corex.FileUpload do
 
   See **Multipart form** under Anatomy. Use `field={f[:attachment]}` inside `<.form multipart>`.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide.
+
   '''
 
   @doc type: :component

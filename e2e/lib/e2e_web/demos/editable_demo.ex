@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def minimal_code do
     ~S"""
-    <.editable class="editable" value="My custom value" placeholder="Enter value">
+    <.editable value="Click to edit" class="editable">
       <:label>Name</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -151,7 +151,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button button--sm">Alpha</.action>
       <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button button--sm">Beta</.action>
     </div>
-    <.editable id="editable-api-cb" class="editable" value="Start">
+    <.editable class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -198,7 +198,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         Gamma (client JS)
       </button>
     </div>
-    <.editable id="editable-api-cjs" class="editable" value="Start">
+    <.editable class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -255,7 +255,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
       <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
     </div>
-    <.editable id="editable-api-srv" class="editable" value="Start">
+    <.editable class="editable" value="Start">
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
@@ -328,18 +328,21 @@ defmodule E2eWeb.Demos.EditableDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/editable/form"}
       method="post"
     >
-      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-phoenix-text">
+      <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.editable>
-      <.action type="submit" id="editable-form-phoenix-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -368,12 +371,11 @@ defmodule E2eWeb.Demos.EditableDemo do
   def form_doc_controller_ecto_heex do
     ~S"""
     <.form
-      :let={f}
-      for={@ecto_form}
+      for={@form}
       action={~p"/editable/form"}
       method="post"
     >
-      <.editable field={f[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-ecto-text">
+      <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -383,7 +385,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-ecto-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -421,15 +423,15 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_native_heex do
     ~S"""
-    <form action={~p"/editable/form"} method="post" id="editable-form-native">
+    <form action={~p"/editable/form"} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-form-native-text">
+      <.editable name="editable[text]" value="" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-form-native-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </form>
     """
   end
@@ -448,22 +450,26 @@ defmodule E2eWeb.Demos.EditableDemo do
 
   def form_doc_live_phoenix_heex do
     ~S"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.editable field={@phoenix_form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-phoenix-text">
+    <.form for={@form} phx-submit="save_phoenix">
+      <.editable field={@form[:text]} placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.editable>
-      <.action type="submit" id="editable-live-form-phoenix-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
 
   def form_doc_live_ecto_heex do
     ~S"""
-    <.form for={@ecto_form} phx-change="validate" phx-submit="save">
-      <.editable field={@ecto_form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable" id="editable-live-form-ecto-text">
+    <.form for={@form} phx-change="validate" phx-submit="save">
+      <.editable field={@form[:text]} on_value_change="value_changed" placeholder="Enter text" activation_mode="dblclick" select_on_focus class="editable">
         <:label>Text</:label>
         <:error :let={msg}>
           <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -473,7 +479,7 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
-      <.action type="submit" id="editable-live-form-ecto-submit" class="button button--accent">Submit</.action>
+      <.action type="submit" class="button button--accent">Submit</.action>
     </.form>
     """
   end
@@ -836,7 +842,6 @@ defmodule E2eWeb.Demos.EditableDemo do
   def events_client_heex do
     ~S"""
     <.editable
-      id="editable-events-client"
       class="editable"
       value="Edit me"
       on_value_change_client="editable-changed"

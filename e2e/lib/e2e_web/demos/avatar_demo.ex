@@ -81,18 +81,19 @@ defmodule E2eWeb.Demos.AvatarDemo do
 
   def anatomy_value_code do
     ~S"""
-    <div class="layout__row gap-4 items-center">
-      <.avatar src="" class="avatar">
-        <:value :let={src}>
-          {if src, do: "IMG", else: " - "}
-        </:value>
-      </.avatar>
-      <.avatar src="https://example.com/photo.jpg" class="avatar">
-        <:value :let={src}>
-          {if src, do: "IMG", else: " - "}
-        </:value>
-      </.avatar>
-    </div>
+    <.avatar src="https://corex-ui.com/images/avatar.png" alt="" class="avatar">
+      <:value :let={src}>
+        {if src, do: "IMG", else: " - "}
+      </:value>
+    </.avatar>
+    """
+  end
+
+  def anatomy_pending_code do
+    ~S"""
+    <.avatar pending class="avatar">
+      <:loading><span class="text-sm">Loading</span></:loading>
+    </.avatar>
     """
   end
 

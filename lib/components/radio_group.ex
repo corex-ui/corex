@@ -256,6 +256,8 @@ defmodule Corex.RadioGroup do
 
   Use `field={@form[:choice]}` inside `<.form>` so the hidden input name and validation align with Phoenix forms. Pass `invalid` only when you want invalid styling.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:choice])}` when you want alert borders after validation.
+
   ```heex
   <.form for={@form} phx-change="validate">
     <.radio_group

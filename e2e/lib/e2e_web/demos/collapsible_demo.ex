@@ -57,12 +57,8 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       <:trigger :let={c}>
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
-      <:closed>
-        <span class="text-sm text-ink-muted">▼</span>
-      </:closed>
-      <:opened>
-        <span class="text-sm text-ink-muted">▲</span>
-      </:opened>
+      <:closed>▼</:closed>
+      <:opened>▲</:opened>
       <:content :let={_c}>
         Panel body with custom opened/closed adornments.
       </:content>

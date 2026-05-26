@@ -119,6 +119,8 @@ defmodule Corex.NumberInput do
 
   Use `field={f[:value]}` inside `<.form>`. With a form field, increment and decrement stay local; the hidden input updates for submit.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:value])}` when you want alert borders after validation.
+
   ```heex
   <.form for={@form} phx-change="validate">
     <.number_input field={@form[:value]} class="number-input">

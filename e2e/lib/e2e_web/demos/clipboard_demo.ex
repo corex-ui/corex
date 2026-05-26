@@ -1,6 +1,24 @@
 defmodule E2eWeb.Demos.ClipboardDemo do
   use E2eWeb, :html
 
+  def trigger_only_code do
+    ~S"""
+    <.clipboard
+      class="clipboard"
+      value="https://example.com/share"
+      input={false}
+      trigger_aria_label="Copy link"
+    >
+      <:copy>
+        <.heroicon name="hero-clipboard" />
+      </:copy>
+      <:copied>
+        <.heroicon name="hero-check" />
+      </:copied>
+    </.clipboard>
+    """
+  end
+
   def minimal_code do
     ~S"""
     <.clipboard class="clipboard" value="hello@example.com">

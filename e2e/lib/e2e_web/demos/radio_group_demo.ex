@@ -166,7 +166,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def api_binding_heex do
     ~S"""
     <.radio_group
-      id="radio-group-api-binding"
       name="rg-api-binding"
       class="radio-group"
       items={[
@@ -208,7 +207,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def api_client_heex do
     ~S"""
     <.radio_group
-      id="radio-group-api-client"
       name="rg-api-client"
       class="radio-group"
       items={[
@@ -261,7 +259,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       Clear
     </.action>
     <.radio_group
-      id="radio-group-api-clear"
       name="rg-api-clear"
       class="radio-group"
       value="lorem"
@@ -314,7 +311,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       Focus group
     </.action>
     <.radio_group
-      id="radio-group-api-focus"
       name="rg-api-focus"
       class="radio-group"
       items={[
@@ -360,7 +356,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       Set Donec
     </.action>
     <.radio_group
-      id="radio-group-api-server"
       name="rg-api-server"
       class="radio-group"
       value="lorem"
@@ -418,7 +413,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def api_controlled_heex do
     ~S"""
     <.radio_group
-      id="radio-group-api-controlled"
       name="rg-api-controlled"
       class="radio-group"
       items={[
@@ -494,7 +488,6 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def events_client_heex do
     ~S"""
     <.radio_group
-      id="radio-group-events-client"
       name="rg-events-client"
       class="radio-group"
       items={[
@@ -699,14 +692,17 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_doc_controller_phoenix_heex do
     ~s"""
     <.form
-      :let={f}
-      for={@phoenix_form}
+      for={@form}
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.radio_group>
       <.action type="submit" class="button button--accent">
         Submit
@@ -738,12 +734,16 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
 
   def form_doc_live_phoenix_heex do
     ~s"""
-    <.form for={@phoenix_form} phx-submit="save_phoenix">
-      <.radio_group field={@phoenix_form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
+    <.form for={@form} phx-submit="save_phoenix">
+      <.radio_group field={@form[:choice]} class="radio-group" items={Corex.List.new(#{@form_items_code})}>
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
       </.radio_group>
-      <.action type="submit" id="radio-group-live-form-phoenix-submit" class="button button--accent">
+      <.action type="submit" class="button button--accent">
         Submit
       </.action>
     </.form>
@@ -753,13 +753,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_doc_controller_changeset_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action="/account/choice"
       method="post"
     >
       <.radio_group
-        field={f[:choice]}
+        field={@form[:choice]}
         class="radio-group"
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},
@@ -822,13 +821,12 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
   def form_doc_controller_validate_heex do
     ~S"""
     <.form
-      :let={f}
       for={@form}
       action="/account/choice"
       method="post"
     >
       <.radio_group
-        field={f[:choice]}
+        field={@form[:choice]}
         class="radio-group"
         items={[
           %{value: "lorem", label: "Lorem ipsum dolor sit amet"},

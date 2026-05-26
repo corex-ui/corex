@@ -35,6 +35,8 @@ defmodule Corex.PasswordInput do
 
   When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `<.form for={@form}>`.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:password])}` when you want alert borders after validation.
+
   ### Controller
 
   Build the form from an Ecto changeset:

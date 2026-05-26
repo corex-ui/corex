@@ -39,8 +39,9 @@ defmodule Corex.MixProject do
     ]
   end
 
-  defp elixirc_paths_base(:test), do: ["lib", "test/support"]
+  defp elixirc_paths_base(:test), do: ["lib", "test/support", "test/mix"]
   defp elixirc_paths_base(:docs), do: ["lib", "installer/lib"]
+  defp elixirc_paths_base(:dev), do: ["lib", "test/mix"]
   defp elixirc_paths_base(_), do: ["lib"]
 
   defp deps do
@@ -85,6 +86,7 @@ defmodule Corex.MixProject do
         "format --check-formatted",
         "compile --force --warnings-as-errors",
         "compile --force --warnings-as-errors --env test",
+        "corex.doc_parity --sections anatomy --components checkbox,switch,select,combobox,accordion,tabs,dialog,action,navigate",
         "credo --strict",
         "sobelow --exit"
       ],
@@ -154,6 +156,7 @@ defmodule Corex.MixProject do
         "guides/installation.md",
         "guides/manual_installation.md",
         "guides/design.md",
+        "guides/forms.md",
         "guides/tableau.md",
         "guides/tableau_theming.md",
         "guides/tableau_mode.md",
@@ -184,6 +187,7 @@ defmodule Corex.MixProject do
          ]},
         {:Guides,
          [
+           "guides/forms.md",
            "guides/MCP.md",
            "guides/usage_rules.md",
            "guides/dark_mode.md",
@@ -250,6 +254,9 @@ defmodule Corex.MixProject do
         Corex.ToggleGroup,
         Corex.Tooltip,
         Corex.TreeView
+      ],
+      Form: [
+        Corex.FormField
       ],
       Content: [
         Corex.Content,

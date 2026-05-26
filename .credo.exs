@@ -249,7 +249,7 @@
           # Security - Input & File Handling
           {OeditusCredo.Check.Security.ImproperInputValidation, []},
           {OeditusCredo.Check.Security.PathTraversal,
-           [files: %{excluded: ["lib/mix/", "test/mix/", "test/corex/"]}]},
+           [files: %{excluded: ["lib/mix/", "test/mix/", "test/corex/", "lib/corex/doc_parity.ex"]}]},
           {OeditusCredo.Check.Security.UnrestrictedFileUpload, []},
           # Security - Web
           {OeditusCredo.Check.Security.MissingCSRFProtection,

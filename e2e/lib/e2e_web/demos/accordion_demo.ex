@@ -74,23 +74,19 @@ defmodule E2eWeb.Demos.AccordionDemo do
     ~S"""
     <.accordion class="accordion" value="lorem">
       <:trigger value="lorem">
-        <.heroicon name="hero-chat-bubble-left-right" /> Lorem ipsum dolor sit amet
+        <.heroicon name="hero-chevron-right" /> Lorem ipsum dolor sit amet
       </:trigger>
-      <:content value="lorem">
-        <p>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</p>
-      </:content>
+      <:content value="lorem"><p>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</p></:content>
       <:indicator value="lorem">
-        <.heroicon name="hero-chevron-right" />
+        <.heroicon name="hero-chevron-down" />
       </:indicator>
 
       <:trigger value="duis">
-        <.heroicon name="hero-device-phone-mobile" /> Duis dictum gravida odio ac pharetra?
+        <.heroicon name="hero-chevron-right" /> Duis dictum gravida odio ac pharetra?
       </:trigger>
-      <:content value="duis">
-        <p>Nullam eget vestibulum ligula, at interdum tellus.</p>
-      </:content>
+      <:content value="duis"><p>Nullam eget vestibulum ligula, at interdum tellus.</p></:content>
       <:indicator value="duis">
-        <.heroicon name="hero-chevron-right" />
+        <.heroicon name="hero-chevron-down" />
       </:indicator>
     </.accordion>
     """
@@ -177,12 +173,14 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <.accordion
       class="accordion"
       items={
-    """ <>
-      code_items_basic() <>
-      ~S"""
-        }
-      />
-      """
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    />
+    """
   end
 
   def with_indicator_code do
@@ -190,39 +188,57 @@ defmodule E2eWeb.Demos.AccordionDemo do
     <.accordion
       class="accordion"
       items={
-    """ <>
-      code_items_basic() <>
-      ~S"""
-        }
-      >
-        <:indicator>
-          <.heroicon name="hero-chevron-right" />
-        </:indicator>
-      </.accordion>
-      """
+        Corex.Content.new([
+          %{label: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit."},
+          %{label: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula."},
+          %{label: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a."}
+        ])
+      }
+    >
+      <:indicator>
+        <.heroicon name="hero-chevron-right" />
+      </:indicator>
+    </.accordion>
+    """
   end
 
   def custom_slots_code do
     ~S"""
     <.accordion
       class="accordion"
+      value="lorem"
       items={
-    """ <>
-      code_items_with_meta() <>
-      ~S"""
-        }
-      >
-        <:trigger :let={item}>
-          <.heroicon name={item.meta.icon} />{item.label}
-        </:trigger>
-        <:content :let={item}>
-          <p>{item.content}</p>
-        </:content>
-        <:indicator :let={item}>
-          <.heroicon name={item.meta.indicator} />
-        </:indicator>
-      </.accordion>
-      """
+        Corex.Content.new([
+          %{
+            value: "lorem",
+            label: "Lorem ipsum dolor sit amet",
+            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+            meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
+          },
+          %{
+            label: "Duis dictum gravida odio ac pharetra?",
+            content: "Nullam eget vestibulum ligula, at interdum tellus.",
+            meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
+          },
+          %{
+            value: "donec",
+            label: "Donec condimentum ex mi",
+            content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+            disabled: true,
+            meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
+          }
+        ])
+      }
+    >
+      <:trigger :let={item}>
+        <.heroicon name={item.meta.icon} />{item.label}
+      </:trigger>
+      <:content :let={item}><p>{item.content}</p></:content>
+      <:indicator :let={item}>
+        <.heroicon name={item.meta.indicator} />
+      </:indicator>
+    </.accordion>
+    """
   end
 
   def compound_code do

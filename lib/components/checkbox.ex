@@ -389,6 +389,8 @@ defmodule Corex.Checkbox do
 
   Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:terms]}` so the checkbox name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
 
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:terms])}` when you want alert borders after validation.
+
   <!-- tabs-open -->
 
   ### Phoenix Form (changeset)
