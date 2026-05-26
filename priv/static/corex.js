@@ -6054,6 +6054,10 @@ var Corex = (() => {
         initApi() {
           return this.zagConnect(connect4);
         }
+        updateProps(props) {
+          super.updateProps(props);
+          this.machine.service.send({ type: "SNAP.REFRESH" });
+        }
         render() {
           var _a4;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="carousel"][data-part="root"]')) != null ? _a4 : this.el;
@@ -7670,22 +7674,26 @@ var Corex = (() => {
           return this.zagConnect(connect7);
         }
         render() {
+          const orientation = this.el.dataset.orientation;
           const rootEl = this.el.querySelector(
             '[data-scope="collapsible"][data-part="root"]'
           );
           if (rootEl) {
             this.spreadProps(rootEl, this.api.getRootProps());
+            if (orientation) rootEl.dataset.orientation = orientation;
             const triggerEl = rootEl.querySelector(
               '[data-scope="collapsible"][data-part="trigger"]'
             );
             if (triggerEl) {
               this.spreadProps(triggerEl, this.api.getTriggerProps());
+              if (orientation) triggerEl.dataset.orientation = orientation;
             }
             const contentEl = rootEl.querySelector(
               '[data-scope="collapsible"][data-part="content"]'
             );
             if (contentEl) {
               this.spreadProps(contentEl, this.api.getContentProps());
+              if (orientation) contentEl.dataset.orientation = orientation;
             }
           }
         }
@@ -22191,11 +22199,23 @@ var Corex = (() => {
     return "Dialog";
   }
   function syncDialogContentAriaRefs(rootEl, contentEl) {
-    var _a4;
+    var _a4, _b;
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if (!((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim())) {
+      contentEl.removeAttribute("aria-labelledby");
+      const label = dialogInitialAriaLabel(rootEl);
+      if (label) {
+        contentEl.setAttribute("aria-label", label);
+      } else {
+        contentEl.removeAttribute("aria-label");
+      }
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
     const descriptionEl = rootEl.querySelector(
       '[data-scope="dialog"][data-part="description"]'
     );
-    if (!((_a4 = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _a4.trim())) {
+    if (!((_b = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _b.trim())) {
       contentEl.removeAttribute("aria-describedby");
     }
   }

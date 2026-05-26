@@ -55,6 +55,20 @@
     }
   }
 
+  .combobox [data-scope="combobox"][data-part="input"][data-invalid] {
+    border-inline-end-color: var(--color-alert);
+  }
+
+  .combobox
+    [data-scope="combobox"][data-part="input"][data-invalid]
+    ~ [data-scope="combobox"][data-part="clear-trigger"],
+  .combobox
+    [data-scope="combobox"][data-part="input"][data-invalid]
+    ~ [data-scope="combobox"][data-part="trigger"] {
+    border-color: var(--color-alert);
+    box-shadow: none;
+  }
+
   .combobox [data-scope="combobox"][data-part="trigger"] {
     @apply ui-trigger ui-trigger--square;
 
@@ -118,6 +132,11 @@
 
   .combobox [data-scope="combobox"][data-part="error"] {
     @apply ui-error;
+  }
+
+  .combobox [data-scope="combobox"][data-part="error"].absolute {
+    padding-block: 0;
+    display: block;
   }
 
   .combobox [data-scope="combobox"][data-part="root"][data-readonly] {

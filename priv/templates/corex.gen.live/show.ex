@@ -25,6 +25,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               type="navigate"
               class="button"
               aria_label="Back to list"
+              title="Back to list"
             >
               <.heroicon name="hero-arrow-left" />
             </.navigate>
@@ -33,6 +34,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               type="navigate"
               class="button button--accent button--square"
               aria_label="Edit <%= schema.human_singular %>"
+              title="Edit <%= schema.human_singular %>"
             >
               <.heroicon name="hero-pencil-square" />
               <span class="sr-only">Edit <%= schema.human_singular %></span>
@@ -49,6 +51,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <:trigger
                 class="button button--alert button--square"
                 aria_label="Delete <%= schema.human_singular %>"
+                title="Delete <%= schema.human_singular %>"
               >
                 <.heroicon name="hero-trash" />
               </:trigger>

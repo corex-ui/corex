@@ -266,7 +266,7 @@ defmodule Corex.AngleSliderTest do
         )
 
       assert html =~ "invalid"
-      assert html =~ "data-invalid"
+      refute html =~ ~r/\bdata-invalid=""/
     end
   end
 

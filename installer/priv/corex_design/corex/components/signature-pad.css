@@ -119,8 +119,50 @@
     line-height: --value(--text-*--line-height, [length]);
   }
 
+  & [data-scope="signature-pad"][data-part="control"] {
+    height: calc(--value(--spacing-size-*, [length]) * 4);
+  }
+
   & [data-scope="signature-pad"][data-part="clear-trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
     min-height: --value(--spacing-size-*, [length]);
     min-width: --value(--spacing-size-*, [length]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+
+    &:hover {
+      background-color: --value(--color-*-hover, [color]);
+    }
+
+    &:active {
+      background-color: --value(--color-*-active, [color]);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+      cursor: not-allowed;
+    }
+  }
+}
+
+@utility signature-pad--rounded-* {
+  & [data-scope="signature-pad"][data-part="control"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
+  & [data-scope="signature-pad"][data-part="segment"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
+  & [data-scope="signature-pad"][data-part="clear-trigger"] {
+    border-radius: --value(--radius-*, [length]);
   }
 }

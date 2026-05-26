@@ -274,7 +274,7 @@ defmodule Corex.PasswordInput do
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
-      "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, invalid state, and errors from the form field"
+      "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, and errors from the form field. Pass `invalid` explicitly for alert styling."
   )
 
   attr(:rest, :global)
@@ -381,7 +381,7 @@ defmodule Corex.PasswordInput do
           </button>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="password-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="password-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>

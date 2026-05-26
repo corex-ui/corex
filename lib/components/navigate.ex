@@ -76,6 +76,11 @@ defmodule Corex.Navigate do
     doc: "Required for icon-only links, describes the link to screen readers"
   )
 
+  attr(:title, :string,
+    default: nil,
+    doc: "Native tooltip on hover; defaults to aria_label when omitted"
+  )
+
   attr(:replace, :boolean,
     default: false,
     doc: "Forwarded to Phoenix link for navigate/patch only; no effect for href (warns)."
@@ -125,6 +130,7 @@ defmodule Corex.Navigate do
       assigns
       |> assign(:method_attrs, method_attrs)
       |> assign(:replace_attrs, replace_attrs)
+      |> assign(:title, assigns.title || assigns.aria_label)
 
     ~H"""
     <.link
@@ -133,6 +139,7 @@ defmodule Corex.Navigate do
       patch={@type == "patch" && @to}
       download={@download}
       aria-label={@aria_label}
+      title={@title}
       {@replace_attrs}
       {@method_attrs}
       target={@external && "_blank"}

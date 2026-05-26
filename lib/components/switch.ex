@@ -374,7 +374,13 @@ defmodule Corex.Switch do
           {@aria_label}
         </span>
       </label>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="switch" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
+        data-scope="switch"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>

@@ -33,7 +33,7 @@ defmodule E2eWeb.DocPageMatrix do
     pin_input: [:anatomy, :api, :events],
     radio_group: [:anatomy, :api, :events, :patterns],
     select: [:anatomy, :api, :events, :patterns],
-    signature_pad: [:anatomy, :api, :events],
+    signature_pad: [:anatomy, :api, :events, :style],
     switch: [:anatomy, :api, :events, :patterns],
     tabs: [:anatomy, :api, :events, :patterns],
     tags_input: [:anatomy, :api, :events, :patterns],

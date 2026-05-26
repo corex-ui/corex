@@ -48,6 +48,24 @@
 
   .tags-input [data-scope="tags-input"][data-part="control"][data-invalid] {
     border-color: var(--color-alert);
+    box-shadow: none;
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="control"][data-invalid][data-focus] {
+    outline-color: var(--color-alert);
+  }
+
+  .tags-input
+    [data-scope="tags-input"][data-part="control"][data-invalid]
+    > [data-part="input"],
+  .tags-input
+    [data-scope="tags-input"][data-part="control"][data-invalid]
+    [data-part="item-preview"],
+  .tags-input
+    [data-scope="tags-input"][data-part="control"][data-invalid]
+    [data-part="item-input"] {
+    border-color: var(--color-border);
+    box-shadow: none;
   }
 
   .tags-input [data-scope="tags-input"][data-part="control"][data-focus] {
@@ -110,6 +128,11 @@
 
   .tags-input [data-scope="tags-input"][data-part="error"] {
     @apply ui-error;
+  }
+
+  .tags-input [data-scope="tags-input"][data-part="error"].absolute {
+    padding-block: 0;
+    display: block;
   }
 }
 

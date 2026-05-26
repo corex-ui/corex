@@ -7,23 +7,31 @@
   <.demo_page
     path={@path}
     id="navigate-anatomy-page"
-    title={~t"Navigate Anatomy"}
-    subtitle={~t"Internal, external, and download links."}
+    title={~t"Navigate · Anatomy"}
+    subtitle={~t"Minimal link content: text, text with icon, and icon-only (aria_label)."}
   >
     <.demo_section
-      id="navigate-anatomy-basic"
-      title={~t"Basic"}
-      code={E2eWeb.Demos.NavigateDemo.anatomy_basic_code()}
+      id="navigate-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.NavigateDemo.anatomy_minimal_code()}
     >
-      <:preview><E2eWeb.Demos.NavigateDemo.anatomy_basic_example /></:preview>
+      <:preview><E2eWeb.Demos.NavigateDemo.anatomy_minimal_example /></:preview>
     </.demo_section>
 
     <.demo_section
-      id="navigate-anatomy-external-download"
-      title={~t"External and download"}
-      code={E2eWeb.Demos.NavigateDemo.anatomy_external_and_download_code()}
+      id="navigate-anatomy-with-icon"
+      title={~t"With icon"}
+      code={E2eWeb.Demos.NavigateDemo.anatomy_with_icon_code()}
     >
-      <:preview><E2eWeb.Demos.NavigateDemo.anatomy_external_and_download_example /></:preview>
+      <:preview><E2eWeb.Demos.NavigateDemo.anatomy_with_icon_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="navigate-anatomy-icon-only"
+      title={~t"Icon only"}
+      code={E2eWeb.Demos.NavigateDemo.anatomy_icon_only_code()}
+    >
+      <:preview><E2eWeb.Demos.NavigateDemo.anatomy_icon_only_example /></:preview>
     </.demo_section>
   </.demo_page>
 </Layouts.app>

@@ -253,6 +253,8 @@ defmodule Corex.DataTable do
   [data-scope="data-table"][data-part="tbody"] {}
   [data-scope="data-table"][data-part="row"] {}
   [data-scope="data-table"][data-part="cell"] {}
+  [data-scope="data-table"][data-part="grow-cell"] {}
+  [data-scope="data-table"][data-part="col-grow"] {}
   [data-scope="data-table"][data-part="sort-header"] {}
   [data-scope="data-table"][data-part="sort-text"] {}
   [data-scope="data-table"][data-part="sort-icon-container"] {}
@@ -373,6 +375,11 @@ defmodule Corex.DataTable do
     ~H"""
     <div tabindex="0" dir={@dir} {@rest}>
       <table data-scope="data-table" data-part="root">
+        <colgroup>
+          <col :if={@selectable} data-part="col-selection" />
+          <col :for={{_col, index} <- Enum.with_index(@col)} data-part={col_data_part(index, length(@col))} />
+          <col :if={@action != []} data-part="col-action" />
+        </colgroup>
         <thead data-scope="data-table" data-part="thead">
           <tr>
             <th :if={@selectable} data-scope="data-table" data-part="selection-header" scope="col" aria-label={@translation.select_all}>
@@ -389,7 +396,7 @@ defmodule Corex.DataTable do
                 </:indicator>
               </Corex.Checkbox.checkbox>
             </th>
-            <th :for={col <- @col} data-scope="data-table" data-part="cell">
+            <th :for={{col, index} <- Enum.with_index(@col)} data-scope="data-table" data-part={cell_data_part(index, length(@col))}>
               <div :if={@on_sort != nil && col[:name]} data-scope="data-table" data-part="sort-header">
                 <span data-scope="data-table" data-part="sort-text">{col[:label]}</span>
                 <span data-scope="data-table" data-part="sort-icon-container">
@@ -416,7 +423,7 @@ defmodule Corex.DataTable do
                 {col[:label]}
               </span>
             </th>
-            <th :if={@action != []} data-scope="data-table" data-part="action-header">
+            <th :if={@action != []} data-scope="data-table" data-part="action-header" scope="col">
               {@translation.actions}
             </th>
           </tr>
@@ -448,10 +455,10 @@ defmodule Corex.DataTable do
               </Corex.Checkbox.checkbox>
             </td>
             <td
-              :for={col <- @col}
+              :for={{col, index} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               data-scope="data-table"
-              data-part="cell"
+              data-part={cell_data_part(index, length(@col))}
             >
               {render_slot(col, @row_item.(row))}
             </td>
@@ -472,4 +479,10 @@ defmodule Corex.DataTable do
   end
 
   defp resolve_row_id(assigns), do: assigns
+
+  defp col_data_part(index, count) when index == count - 1, do: "col-grow"
+  defp col_data_part(_, _), do: "col"
+
+  defp cell_data_part(index, count) when index == count - 1, do: "grow-cell"
+  defp cell_data_part(_, _), do: "cell"
 end

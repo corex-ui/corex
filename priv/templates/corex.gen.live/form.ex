@@ -33,6 +33,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <:trigger
                 class="button button--alert button--square"
                 aria_label="Delete <%= schema.human_singular %>"
+                title="Delete <%= schema.human_singular %>"
               >
                 <.heroicon name="hero-trash" />
               </:trigger>

@@ -7,8 +7,8 @@
   <.demo_page
     path={@path}
     id="action-style-page"
-    title={~t"Action Styling"}
-    subtitle={~t"Size, color, shape, and disabled states."}
+    title={~t"Action · Style"}
+    subtitle={~t"Color, size, corner radius, shape, and disabled modifiers on class=\"button\"."}
   >
     <.demo_section
       id="action-style-color"
@@ -24,6 +24,14 @@
       code={E2eWeb.Demos.ActionDemo.styling_size_code()}
     >
       <:preview><E2eWeb.Demos.ActionDemo.styling_size_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-style-rounded"
+      title={~t"Rounded"}
+      code={E2eWeb.Demos.ActionDemo.styling_rounded_code()}
+    >
+      <:preview><E2eWeb.Demos.ActionDemo.styling_rounded_example /></:preview>
     </.demo_section>
 
     <.demo_section

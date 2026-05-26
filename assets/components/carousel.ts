@@ -13,6 +13,11 @@ export class Carousel extends Component<Props, Api> {
     return this.zagConnect(connect);
   }
 
+  updateProps(props: Partial<Props>) {
+    super.updateProps(props);
+    this.machine.service.send({ type: "SNAP.REFRESH" });
+  }
+
   render(): void {
     const rootEl =
       this.el.querySelector<HTMLElement>('[data-scope="carousel"][data-part="root"]') ?? this.el;

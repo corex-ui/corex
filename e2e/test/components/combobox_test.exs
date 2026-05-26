@@ -70,7 +70,7 @@ defmodule E2eWeb.ComboboxTest do
       refute Combobox.hidden_input_value_by_host_id(session, "combobox-api-sv-js") == "deu"
 
       session
-      |> Combobox.click_button_in_section("combobox-api-set-value-js", "Germany (JS)")
+      |> Combobox.click_button_in_section("combobox-api-set-value-js", "Germany")
 
       Combobox.wait_hidden_value_by_host_id(session, "combobox-api-sv-js", "deu", timeout: 8_000)
     end

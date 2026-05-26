@@ -288,7 +288,7 @@ defmodule Corex.PinInputTest do
           %{field: field}
         )
 
-      assert html =~ ~S(data-invalid=)
+      refute html =~ ~r/\bdata-invalid=""/
       assert html =~ ~S(data-part="error")
       assert html =~ "blank"
     end

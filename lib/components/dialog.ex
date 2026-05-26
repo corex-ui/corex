@@ -493,6 +493,7 @@ defmodule Corex.Dialog do
   slot :trigger, required: true do
     attr(:class, :string, required: false)
     attr(:aria_label, :string, required: false)
+    attr(:title, :string, required: false)
   end
 
   slot :content, required: true do
@@ -528,7 +529,15 @@ defmodule Corex.Dialog do
       |> assign(:trigger_struct, %Trigger{id: id, dir: dir, open: open})
       |> assign(:backdrop_struct, %Backdrop{id: id, dir: dir, open: open})
       |> assign(:positioner_struct, %Positioner{id: id, dir: dir, open: open})
-      |> assign(:content_struct, %Content{id: id, dir: dir, open: open, role: assigns.role})
+      |> assign(:content_struct, %Content{
+        id: id,
+        dir: dir,
+        open: open,
+        role: assigns.role,
+        has_title: assigns.title != [],
+        has_description: assigns.description != [],
+        label: translation.label
+      })
       |> assign(:title_struct, %Title{id: id, dir: dir, open: open})
       |> assign(:description_struct, %Description{id: id, dir: dir, open: open})
       |> assign(:close_trigger_struct, %CloseTrigger{
@@ -567,7 +576,8 @@ defmodule Corex.Dialog do
     >
       <button
         phx-mounted={Connect.ignore_trigger(@trigger_struct)}
-        aria-label={Map.get(List.first(@trigger), :aria_label, nil)}
+        aria-label={trigger_aria_label = Map.get(List.first(@trigger), :aria_label, nil)}
+        title={Map.get(List.first(@trigger), :title, trigger_aria_label)}
         {Connect.trigger(@trigger_struct)}
         class={Map.get(List.first(@trigger), :class, nil)}
       >

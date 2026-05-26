@@ -68,6 +68,10 @@ defmodule E2eWeb.Router do
       live("/admins/:id", AdminLive.Show, :show)
       live("/admins/:id/edit", AdminLive.Form, :edit)
 
+      live("/forms/patterns", FormPatternsLive)
+
+      live("/action/patterns", ActionPatternsLive)
+
       live("/accordion/playground", AccordionPlayLive)
       live("/accordion/api", AccordionApiLive)
       live("/accordion/events", AccordionEventsLive)
@@ -168,6 +172,8 @@ defmodule E2eWeb.Router do
       live("/menu/api", MenuApiLive)
       live("/menu/events", MenuEventsLive)
       live("/menu/patterns", MenuPatternsLive)
+
+      live("/navigate/patterns", NavigatePatternsLive)
 
       live("/native-input/live-form", NativeInputFormLive)
 
@@ -302,6 +308,7 @@ defmodule E2eWeb.Router do
     get("/select/form", PageController, :select_form_page)
     post("/select/form", PageController, :select_form_submit)
 
+    get("/signature-pad/style", PageController, :signature_styling_page)
     get("/signature-pad/anatomy", PageController, :signature_page)
     get("/signature-pad/form", PageController, :signature_form_page)
     post("/signature-pad/form", PageController, :signature_form_submit)

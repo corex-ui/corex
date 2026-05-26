@@ -535,8 +535,9 @@ defmodule Corex.TagsInput do
         />
       </div>
       <div
-        :if={!Enum.empty?(@errors)}
+        :if={@error != [] and !Enum.empty?(@errors)}
         :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
         data-scope="tags-input"
         data-part="error"
       >

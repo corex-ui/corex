@@ -7,15 +7,23 @@
   <.demo_page
     path={@path}
     id="action-anatomy-page"
-    title={~t"Action Anatomy"}
-    subtitle={~t"Buttons and icon-only actions."}
+    title={~t"Action · Anatomy"}
+    subtitle={~t"Minimal button content: text, text with icon, and icon-only (aria_label)."}
   >
     <.demo_section
-      id="action-anatomy-basic"
-      title={~t"Basic"}
-      code={E2eWeb.Demos.ActionDemo.anatomy_basic_code()}
+      id="action-anatomy-minimal"
+      title={~t"Minimal"}
+      code={E2eWeb.Demos.ActionDemo.anatomy_minimal_code()}
     >
-      <:preview><E2eWeb.Demos.ActionDemo.anatomy_basic_example /></:preview>
+      <:preview><E2eWeb.Demos.ActionDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="action-anatomy-with-icon"
+      title={~t"With icon"}
+      code={E2eWeb.Demos.ActionDemo.anatomy_with_icon_code()}
+    >
+      <:preview><E2eWeb.Demos.ActionDemo.anatomy_with_icon_example /></:preview>
     </.demo_section>
 
     <.demo_section

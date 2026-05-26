@@ -773,4 +773,316 @@ defmodule E2eWeb.Demos.SignatureDemo do
     </.form>
     """
   end
+
+  def styling_drawing_color_code do
+    ~S"""
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-accent)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-brand)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-alert)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-success)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-info)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_drawing_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-drawing-ink"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-accent"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-accent)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-brand"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-brand)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-alert"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-alert)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-success"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-success)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-drawing-info"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-info)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_trigger_color_code do
+    ~S"""
+    <.signature_pad class="signature-pad max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--accent max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--brand max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--alert max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--success max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--info max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_trigger_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-trigger-default"
+      class="signature-pad max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-accent"
+      class="signature-pad signature-pad--accent max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-brand"
+      class="signature-pad signature-pad--brand max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-alert"
+      class="signature-pad signature-pad--alert max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-success"
+      class="signature-pad signature-pad--success max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-trigger-info"
+      class="signature-pad signature-pad--info max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_size_code do
+    ~S"""
+    <.signature_pad class="signature-pad signature-pad--sm max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--md max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--lg max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--xl max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-size-sm"
+      class="signature-pad signature-pad--sm max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-md"
+      class="signature-pad signature-pad--md max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-lg"
+      class="signature-pad signature-pad--lg max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-size-xl"
+      class="signature-pad signature-pad--xl max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_rounded_code do
+    ~S"""
+    <.signature_pad class="signature-pad signature-pad--rounded-none max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-sm max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-md max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-lg max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-xl max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad class="signature-pad signature-pad--rounded-full max-w-none" drawing_fill="var(--color-ink)">
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def styling_rounded_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <.signature_pad
+      id="signature-style-rounded-none"
+      class="signature-pad signature-pad--rounded-none max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-sm"
+      class="signature-pad signature-pad--rounded-sm max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-md"
+      class="signature-pad signature-pad--rounded-md max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-lg"
+      class="signature-pad signature-pad--rounded-lg max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-xl"
+      class="signature-pad signature-pad--rounded-xl max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    <.signature_pad
+      id="signature-style-rounded-full"
+      class="signature-pad signature-pad--rounded-full max-w-none"
+      drawing_fill="var(--color-ink)"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger><.heroicon name="hero-x-mark" /></:clear_trigger>
+    </.signature_pad>
+    """
+  end
 end

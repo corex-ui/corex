@@ -16,6 +16,14 @@ defmodule Corex.CheckboxTest do
     """
   end
 
+  defp checkbox_with_error_slot(assigns) do
+    ~H"""
+    <.checkbox id="test-checkbox" name="cb" errors={["is required"]}>
+      <:error :let={msg}>{msg}</:error>
+    </.checkbox>
+    """
+  end
+
   describe "checkbox/1" do
     test "renders" do
       html =
@@ -100,7 +108,7 @@ defmodule Corex.CheckboxTest do
       assert html =~ ~r/indet-test/
     end
 
-    test "renders with errors displays error container" do
+    test "omits error container when error slot is not used" do
       html =
         render_component(&Checkbox.checkbox/1,
           id: "test-checkbox",
@@ -108,7 +116,14 @@ defmodule Corex.CheckboxTest do
           errors: ["is required"]
         )
 
+      refute html =~ ~r/data-part="error"/
+    end
+
+    test "renders error container when error slot is used" do
+      html = rendered_to_string(checkbox_with_error_slot(%{}))
+
       assert html =~ ~r/data-part="error"/
+      assert html =~ "is required"
     end
 
     test "renders with field from form has correct hidden input name and id" do

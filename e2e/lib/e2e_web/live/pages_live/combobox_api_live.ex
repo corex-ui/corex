@@ -129,7 +129,7 @@ defmodule E2eWeb.ComboboxApiLive do
                   )
                 }
               >
-                Germany (JS)
+                Germany
               </.action>
               <.action
                 type="button"

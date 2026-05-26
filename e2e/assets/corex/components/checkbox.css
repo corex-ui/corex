@@ -89,10 +89,10 @@
   .checkbox [data-scope="checkbox"][data-part="label"] {
     @apply ui-label;
     cursor: pointer;
+  }
 
-    &[data-invalid] {
-      color: var(--color-alert);
-    }
+  .checkbox [data-scope="checkbox"][data-part="label"][data-invalid] {
+    color: var(--color-ink);
   }
 
   .checkbox[data-disabled] [data-scope="checkbox"][data-part="label"],
@@ -167,9 +167,15 @@
 
     &[data-invalid] {
       border-color: var(--color-alert);
+      box-shadow: none;
     }
 
-    &[data-required] {
+    &[data-invalid]:focus-visible,
+    &[data-invalid][data-focus] {
+      box-shadow: none;
+    }
+
+    &[data-required]:not([data-invalid]) {
       border-color: var(--color-alert);
     }
   }
@@ -210,6 +216,11 @@
   }
   .checkbox [data-scope="checkbox"][data-part="error"] {
     @apply ui-error;
+  }
+
+  .checkbox [data-scope="checkbox"][data-part="error"].absolute {
+    padding-block: 0;
+    display: block;
   }
 }
 

@@ -1050,6 +1050,10 @@ var Carousel = class extends Component {
   initApi() {
     return this.zagConnect(connect);
   }
+  updateProps(props) {
+    super.updateProps(props);
+    this.machine.service.send({ type: "SNAP.REFRESH" });
+  }
   render() {
     const rootEl = this.el.querySelector('[data-scope="carousel"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());

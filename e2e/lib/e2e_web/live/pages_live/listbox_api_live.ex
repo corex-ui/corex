@@ -131,7 +131,7 @@ defmodule E2eWeb.ListboxApiLive do
                 )
               }
             >
-              Germany (JS.dispatch)
+              Germany
             </.action>
             <.listbox id="listbox-api-sv-js" class="listbox" items={Demo.items_minimal()}>
               <:label>Choose a country</:label>

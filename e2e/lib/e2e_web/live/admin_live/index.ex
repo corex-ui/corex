@@ -22,6 +22,7 @@ defmodule E2eWeb.AdminLive.Index do
             type="navigate"
             class="button button--accent button--square"
             aria_label="New admin"
+            title="New admin"
           >
             <.heroicon name="hero-plus" />
             <span class="sr-only">New admin</span>

@@ -416,7 +416,7 @@ defmodule Corex.AngleSlider do
         />
       </div>
 
-      <div :if={not @compound and @error} :for={msg <- @errors} data-scope="angle-slider" data-part="error">
+      <div :if={not @compound and @error != []} :for={msg <- @errors} data-scope="angle-slider" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>

@@ -74,7 +74,7 @@
     color: var(--color-ink);
     background-color: var(--color-ui);
     border-color: var(--color-alert);
-    box-shadow: inset 0 0 0 1px var(--color-alert);
+    box-shadow: none;
   }
 
   .pin-input [data-scope="pin-input"][data-part="input"][data-disabled] {

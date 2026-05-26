@@ -805,7 +805,13 @@ defmodule Corex.Select do
             {render_slot(@trigger)}
           </button>
         </div>
-        <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
+        <div
+          :if={@error != [] and !Enum.empty?(@errors)}
+          :for={msg <- @errors}
+          class={Map.get(Enum.at(@error, 0), :class, nil)}
+          data-scope="select"
+          data-part="error"
+        >
           {render_slot(@error, msg)}
         </div>
         <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>

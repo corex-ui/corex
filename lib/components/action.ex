@@ -54,14 +54,16 @@ defmodule Corex.Action do
 
   ### Rounded
 
+  Use Tailwind `rounded-*` utilities on the host (for example `class="button rounded-xl"`).
+
   | Modifier | Classes |
   | -------- | ------- |
-  | None | `button button--rounded-none` |
-  | SM | `button button--rounded-sm` |
-  | MD | `button button--rounded-md` |
-  | LG | `button button--rounded-lg` |
-  | XL | `button button--rounded-xl` |
-  | Full | `button button--rounded-full` |
+  | None | `button rounded-none` |
+  | SM | `button rounded-sm` |
+  | MD | `button rounded-md` |
+  | LG | `button rounded-lg` |
+  | XL | `button rounded-xl` |
+  | Full | `button rounded-full` |
 
   <!-- tabs-close -->
 

@@ -22,6 +22,7 @@ defmodule E2eWeb.AdminLive.Form do
             type="navigate"
             class="button"
             aria_label="Cancel"
+            title="Cancel"
           >
             <.heroicon name="hero-arrow-left" />
             <span class="sr-only">Cancel</span>
@@ -39,6 +40,7 @@ defmodule E2eWeb.AdminLive.Form do
             <:trigger
               class="button button--alert button--square"
               aria_label="Delete admin"
+              title="Delete admin"
             >
               <.heroicon name="hero-trash" />
             </:trigger>

@@ -32,7 +32,7 @@ defmodule Corex.Collapsible.Anatomy do
     @moduledoc false
     defstruct [:id, :dir, :open, orientation: "vertical"]
 
-    @ignored_attrs ["data-state", "dir", "id"]
+    @ignored_attrs ["data-state", "dir", "id", "data-orientation"]
     def ignored_attrs, do: @ignored_attrs
   end
 

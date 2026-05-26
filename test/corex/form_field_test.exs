@@ -44,13 +44,20 @@ defmodule Corex.FormFieldTest do
     assert render_errors(field) == ""
   end
 
-  test "assign_form_field sets invalid when visible errors exist" do
+  test "assign_form_field does not set invalid from visible errors" do
     field = name_field(%{"name" => ""}, :validate)
 
     result = FormField.assign_form_field(%{invalid: false, __changed__: %{}}, field)
 
     assert result.errors != []
-    assert result.invalid == true
+    assert result.invalid == false
+  end
+
+  test "invalid? is true when field has visible errors" do
+    field = name_field(%{"name" => ""}, :validate)
+
+    assert FormField.invalid?(field)
+    refute FormField.invalid?(name_field(%{}, :validate))
   end
 
   test "assign_form_field keeps invalid false when errors are hidden" do

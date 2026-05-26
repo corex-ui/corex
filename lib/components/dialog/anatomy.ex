@@ -119,13 +119,24 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open, role: "dialog"]
+    defstruct [
+      :id,
+      :dir,
+      :open,
+      role: "dialog",
+      has_title: false,
+      has_description: false,
+      label: nil
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             open: boolean(),
-            role: String.t()
+            role: String.t(),
+            has_title: boolean(),
+            has_description: boolean(),
+            label: String.t() | nil
           }
 
     @ignored_attrs [
@@ -135,6 +146,7 @@ defmodule Corex.Dialog.Anatomy do
       "id",
       "role",
       "aria-modal",
+      "aria-label",
       "aria-labelledby",
       "aria-describedby",
       "tabindex",

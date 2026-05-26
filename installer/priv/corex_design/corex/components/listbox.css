@@ -144,7 +144,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: block;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-space);
     text-align: start;
   }
 
@@ -163,7 +166,9 @@
   }
 
   .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] {
+    flex: 0 0 auto;
     flex-shrink: 0;
+    margin-inline-start: auto;
   }
 
   .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] .icon,

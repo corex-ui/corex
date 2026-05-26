@@ -22,6 +22,7 @@ defmodule E2eWeb.AdminLive.Show do
             type="navigate"
             class="button"
             aria_label="Back to list"
+            title="Back to list"
           >
             <.heroicon name="hero-arrow-left" />
           </.navigate>
@@ -30,6 +31,7 @@ defmodule E2eWeb.AdminLive.Show do
             type="navigate"
             class="button button--accent button--square"
             aria_label="Edit admin"
+            title="Edit admin"
           >
             <.heroicon name="hero-pencil-square" />
             <span class="sr-only">Edit admin</span>
@@ -46,6 +48,7 @@ defmodule E2eWeb.AdminLive.Show do
             <:trigger
               class="button button--alert button--square"
               aria_label="Delete admin"
+              title="Delete admin"
             >
               <.heroicon name="hero-trash" />
             </:trigger>

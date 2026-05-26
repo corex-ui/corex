@@ -88,6 +88,8 @@ defmodule E2eWeb.App.MainNav do
     cond do
       path == "" or String.starts_with?(path, "/showcases") -> nil
       String.starts_with?(path, "/admins") -> nil
+      String.starts_with?(path, "/users") -> nil
+      String.starts_with?(path, "/forms") -> nil
       not doc_navigation_path?(path) -> nil
       path == "/accordion/anatomy" -> "page"
       true -> "location"

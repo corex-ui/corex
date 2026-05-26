@@ -123,10 +123,22 @@ defmodule Corex.Dialog.Connect do
       "data-state" => data_state(assigns.open, "open", "closed"),
       "role" => Map.get(assigns, :role, "dialog"),
       "dir" => Map.get(assigns, :dir),
-      "id" => "dialog:#{assigns.id}:content",
-      "aria-labelledby" => "dialog:#{assigns.id}:title",
-      "aria-describedby" => "dialog:#{assigns.id}:description"
+      "id" => "dialog:#{assigns.id}:content"
     }
+
+    base =
+      if Map.get(assigns, :has_title, false) do
+        Map.put(base, "aria-labelledby", "dialog:#{assigns.id}:title")
+      else
+        Map.put(base, "aria-label", Map.get(assigns, :label) || "Dialog")
+      end
+
+    base =
+      if Map.get(assigns, :has_description, false) do
+        Map.put(base, "aria-describedby", "dialog:#{assigns.id}:description")
+      else
+        base
+      end
 
     cond do
       assigns.open -> base

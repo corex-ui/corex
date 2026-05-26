@@ -109,6 +109,11 @@
   .switch [data-scope="switch"][data-part="error"] {
     @apply ui-error;
   }
+
+  .switch [data-scope="switch"][data-part="error"].absolute {
+    padding-block: 0;
+    display: block;
+  }
 }
 
 @utility switch--* {

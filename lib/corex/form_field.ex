@@ -1,5 +1,15 @@
 defmodule Corex.FormField do
-  @moduledoc false
+  @moduledoc """
+  Shared helpers for Corex components that accept `field={@form[:name]}`.
+
+  `assign_form_field/2` wires id, name, form, errors, and `field_used`. It does **not**
+  set `invalid` from changeset errors. Pass `invalid` on the component when you want
+  alert styling (`data-invalid`):
+
+      <.select field={@form[:country]} invalid={FormField.invalid?(@form[:country])} />
+
+  Error messages still come from the `:error` slot via `assign_errors/2`.
+  """
 
   import Phoenix.Component
 
@@ -16,6 +26,9 @@ defmodule Corex.FormField do
 
     assign(assigns, :errors, errors)
   end
+
+  @spec invalid?(Phoenix.HTML.FormField.t()) :: boolean()
+  def invalid?(%Phoenix.HTML.FormField{} = field), do: field_errors_visible?(field)
 
   defp field_errors_visible?(%Phoenix.HTML.FormField{errors: []}), do: false
 
@@ -39,9 +52,7 @@ defmodule Corex.FormField do
       |> assign_ids(field)
       |> assign_errors(field)
 
-    invalid = assigns.errors != [] || Map.get(assigns, :invalid, false)
-
-    assign(assigns, :invalid, invalid)
+    assign(assigns, :invalid, Map.get(assigns, :invalid, false))
   end
 
   @spec dataset_default_boolean(boolean() | :indeterminate) :: String.t()

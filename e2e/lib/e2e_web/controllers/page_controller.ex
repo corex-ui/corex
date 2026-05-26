@@ -710,6 +710,10 @@ defmodule E2eWeb.PageController do
     render(conn, :signature_page)
   end
 
+  def signature_styling_page(conn, _params) do
+    render(conn, :signature_styling_page)
+  end
+
   defp assign_signature_form_docs(conn, scroll_to) do
     conn
     |> assign(:scroll_to, scroll_to)

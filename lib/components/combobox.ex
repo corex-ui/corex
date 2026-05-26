@@ -615,7 +615,13 @@ defmodule Corex.Combobox do
           </div>
         </div>
       </div>
-      <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        class={Map.get(Enum.at(@error, 0), :class, nil)}
+        data-scope="combobox"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
       <div style="display: none;" data-templates="combobox">

@@ -128,6 +128,39 @@ defmodule Corex.DialogTest do
       refute Map.has_key?(result, "hidden")
     end
 
+    test "uses aria-label when no title" do
+      assigns = %{
+        id: "test-dialog",
+        dir: "ltr",
+        open: false,
+        role: "dialog",
+        has_title: false,
+        has_description: false,
+        label: "Confirm"
+      }
+
+      result = Connect.content(assigns, "instant")
+      assert result["aria-label"] == "Confirm"
+      refute Map.has_key?(result, "aria-labelledby")
+      refute Map.has_key?(result, "aria-describedby")
+    end
+
+    test "uses aria-labelledby and aria-describedby when title and description present" do
+      assigns = %{
+        id: "test-dialog",
+        dir: "ltr",
+        open: true,
+        role: "dialog",
+        has_title: true,
+        has_description: true
+      }
+
+      result = Connect.content(assigns, "instant")
+      assert result["aria-labelledby"] == "dialog:test-dialog:title"
+      assert result["aria-describedby"] == "dialog:test-dialog:description"
+      refute Map.has_key?(result, "aria-label")
+    end
+
     test "returns alertdialog role when set" do
       assigns = %{id: "test-dialog", dir: "ltr", open: true, role: "alertdialog"}
       result = Connect.content(assigns, "instant")

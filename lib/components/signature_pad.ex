@@ -248,11 +248,25 @@ defmodule Corex.SignaturePad do
   @import "../corex/components/signature-pad.css";
   ```
 
-  You can then use modifiers
+  Drawing stroke color is set with the `drawing_fill` attribute (a CSS color value such as
+  `var(--color-ink)` or `var(--color-accent)`). It is not controlled by root modifier classes.
+
+  Trigger color, size, and corner radius use modifier classes on the root:
 
   ```heex
-  <.signature_pad class="signature-pad signature-pad--accent signature-pad--lg">
+  <.signature_pad
+    class="signature-pad signature-pad--accent signature-pad--lg signature-pad--rounded-xl"
+    drawing_fill="var(--color-ink)"
+  >
   ```
+
+  | Modifier | Applies to |
+  | -------- | ---------- |
+  | `signature-pad--{accent,brand,alert,success,info}` | Clear trigger only |
+  | `signature-pad--{sm,md,lg,xl}` | Label, control height, clear trigger |
+  | `signature-pad--rounded-{none,sm,md,lg,xl,full}` | Control, pad surface, clear trigger |
+
+  The guide line (`data-part="guide"`) is not themed by color modifiers.
 
   '''
 
@@ -289,7 +303,7 @@ defmodule Corex.SignaturePad do
 
   attr(:drawing_fill, :string,
     default: "black",
-    doc: "The fill color for drawing strokes"
+    doc: "CSS color for drawing strokes (e.g. `var(--color-ink)` or `var(--color-accent)`)"
   )
 
   attr(:drawing_size, :integer,

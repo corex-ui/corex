@@ -190,6 +190,8 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/action/anatomy",
           style: true,
           playground: false,
+          pattern: true,
+          patterns_to: ~p"/action/patterns",
           style_to: ~p"/action/style"
         },
         %{
@@ -459,6 +461,8 @@ defmodule E2eWeb.Helpers do
           anatomy_to: ~p"/navigate/anatomy",
           style: true,
           playground: false,
+          pattern: true,
+          patterns_to: ~p"/navigate/patterns",
           style_to: ~p"/navigate/style"
         },
         %{
@@ -536,10 +540,12 @@ defmodule E2eWeb.Helpers do
           label: ~t"Signature pad",
           id: "signature-pad",
           pattern: false,
+          style: true,
           anatomy_to: ~p"/signature-pad/anatomy",
           playground_to: ~p"/signature-pad/playground",
           api_to: ~p"/signature-pad/api",
           events_to: ~p"/signature-pad/events",
+          style_to: ~p"/signature-pad/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/signature-pad/form"),
             doc_form_menu_item(~t"Live Form", ~p"/signature-pad/live-form")
@@ -676,7 +682,8 @@ defmodule E2eWeb.Helpers do
   def form_menu_items do
     Corex.Tree.new([
       menu_item(~t"Controller View", ~p"/users", ~p"/users"),
-      menu_item(~t"Live View", ~p"/admins", ~p"/admins")
+      menu_item(~t"Live View", ~p"/admins", ~p"/admins"),
+      menu_item(~t"Pattern", ~p"/forms/patterns", ~p"/forms/patterns")
     ])
   end
 

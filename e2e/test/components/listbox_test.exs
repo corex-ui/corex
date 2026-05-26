@@ -96,7 +96,7 @@ defmodule E2eWeb.ListboxTest do
       refute Listbox.item_aria_selected?(session, "listbox-api-sv-js", "deu")
 
       session
-      |> Listbox.click_button_in_section("listbox-api-set-value-js", "Germany (JS.dispatch)")
+      |> Listbox.click_button_in_section("listbox-api-set-value-js", "Germany")
       |> Listbox.wait_item_aria_selected("listbox-api-sv-js", "deu", timeout: 5_000)
 
       assert Listbox.item_aria_selected?(session, "listbox-api-sv-js", "deu")

@@ -460,8 +460,13 @@ defmodule Corex.Listbox do
             </div>
           </div>
           <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
-            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>{entry[:label]}</span>
-            {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
+            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, orientation: @orientation})}>
+              <%= if @item == [] do %>
+                {entry[:label]}
+              <% else %>
+                {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
+              <% end %>
+            </span>
             <span
               phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
               {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}

@@ -1243,6 +1243,18 @@ function dialogInitialAriaLabel(rootEl) {
   return "Dialog";
 }
 function syncDialogContentAriaRefs(rootEl, contentEl) {
+  const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+  if (!titleEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-labelledby");
+    const label = dialogInitialAriaLabel(rootEl);
+    if (label) {
+      contentEl.setAttribute("aria-label", label);
+    } else {
+      contentEl.removeAttribute("aria-label");
+    }
+  } else {
+    contentEl.removeAttribute("aria-label");
+  }
   const descriptionEl = rootEl.querySelector(
     '[data-scope="dialog"][data-part="description"]'
   );
