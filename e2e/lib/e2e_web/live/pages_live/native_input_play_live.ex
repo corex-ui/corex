@@ -23,7 +23,12 @@ defmodule E2eWeb.NativeInputPlayLive do
       theme={@theme}
       path={@path}
     >
-      <.demo_playground path={@path} title="Native Input · Playground" heading_class="layout-heading">
+      <.demo_playground
+        id="native-input-playground"
+        path={@path}
+        title="Native Input · Playground"
+        heading_class="layout-heading"
+      >
         <:controls>
           <.playground_dir_toggle
             id="dir"
