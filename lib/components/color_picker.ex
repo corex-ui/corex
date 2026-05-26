@@ -163,6 +163,207 @@ defmodule Corex.ColorPicker do
   ```
 
   <!-- tabs-close -->
+
+  ## Form
+
+  Set the form `id` in `to_form/2` and use `<.form for={@form}>`. Use `field={@form[:color]}` so the picker name matches the form. For Ecto validation in LiveView, add `phx-change` on the form so params stay in sync.
+
+  For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:color])}` when you want alert borders after validation.
+
+  <!-- tabs-open -->
+
+  ### Phoenix form (changeset)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/color-picker/form"
+        method="post"
+      >
+        <.color_picker
+          field={f[:color]}
+          label="Color"
+          class="color-picker"
+          invalid={Corex.FormField.invalid?(@form[:color])}
+          presets={["#ff0000", "#00ff00", "#0000ff"]}
+        >
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.color_picker>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_page(conn, _params) do
+        phoenix_form =
+          Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+            as: :color_picker_phoenix,
+            id: "color-picker-form-phoenix"
+          )
+
+        render(conn, :color_picker_form_page, phoenix_form: phoenix_form)
+      end
+
+      def color_picker_form_submit(conn, params) do
+        if is_map(params["color_picker_phoenix"]) do
+          color = params["color_picker_phoenix"]["color"] || ""
+
+          conn
+          |> put_flash(:info, "Submitted: color=#{inspect(color)}")
+          |> redirect(to: "/color-picker/form")
+        end
+      end
+  ```
+
+  ### Ecto changeset (validation)
+
+  #### Heex
+
+  ```heex
+      <.form
+        :let={f}
+        for={@form}
+        action="/color-picker/form"
+        method="post"
+      >
+        <.color_picker
+          field={f[:color]}
+          label="Color"
+          class="color-picker"
+          invalid={Corex.FormField.invalid?(@form[:color])}
+          presets={["#ff0000", "#00ff00", "#0000ff"]}
+        >
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.color_picker>
+
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </.form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_validate_page(conn, _params) do
+        changeset =
+          MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, %{})
+
+        form =
+          Phoenix.Component.to_form(changeset,
+            as: :color_picker_validate,
+            id: "color-picker-validate-form"
+          )
+
+        render(conn, :color_picker_form_page, form: form)
+      end
+
+      def color_picker_form_validate_create(conn, %{"color_picker_validate" => params}) do
+        case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
+          %Ecto.Changeset{valid?: true} = changeset ->
+            data = Ecto.Changeset.apply_changes(changeset)
+
+            conn
+            |> put_flash(:info, "Saved: color=#{data.color}")
+            |> redirect(to: "/settings")
+
+          changeset ->
+            changeset = Map.put(changeset, :action, :insert)
+
+            form =
+              Phoenix.Component.to_form(changeset,
+                as: :color_picker_validate,
+                id: "color-picker-validate-form"
+              )
+
+            render(conn, :color_picker_form_page, form: form)
+        end
+      end
+  ```
+
+  #### Ecto
+
+  ```elixir
+      defmodule MyApp.Form.ColorPickerForm do
+        use Ecto.Schema
+        import Ecto.Changeset
+
+        embedded_schema do
+          field :color, :string, default: "#3b82f6"
+        end
+
+        def changeset(form, attrs \\ %{}) do
+          form
+          |> cast(attrs, [:color])
+          |> validate_required([:color])
+        end
+
+        def changeset_validate(form, attrs \\ %{}) do
+          form
+          |> cast(attrs, [:color])
+          |> validate_required([:color])
+          |> validate_alpha_max_50()
+        end
+
+        defp validate_alpha_max_50(changeset) do
+          with value when is_binary(value) <- get_field(changeset, :color),
+               [_, alpha] <-
+                 Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
+               {float_val, _} <- Float.parse(alpha),
+               true <- float_val > 0.5 do
+            add_error(changeset, :color, "maximum alpha allowed is 50%")
+          else
+            _ -> changeset
+          end
+        end
+      end
+  ```
+
+  ### Native form (plain HTML)
+
+  ```heex
+      <form
+        action="/color-picker/form"
+        method="post"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <.color_picker
+          name="color_picker_form[color]"
+          value="#3b82f6"
+          label="Color"
+          class="color-picker"
+        />
+        <.action type="submit" class="button button--accent">
+          Submit
+        </.action>
+      </form>
+  ```
+
+  #### Elixir
+
+  ```elixir
+      def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
+        conn
+        |> put_flash(:info, "Submitted: color=#{color}")
+        |> redirect(to: "/color-picker/form")
+      end
+  ```
+
+  <!-- tabs-close -->
   '''
 
   @doc type: :component
@@ -464,7 +665,12 @@ defmodule Corex.ColorPicker do
           </div>
         </div>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="color-picker" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        data-scope="color-picker"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>

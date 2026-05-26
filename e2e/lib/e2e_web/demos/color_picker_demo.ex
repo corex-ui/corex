@@ -262,43 +262,31 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       import Ecto.Changeset
 
       embedded_schema do
-    field :color, :string, default: "#3b82f6"
-    end
+        field :color, :string, default: "#3b82f6"
+      end
 
-    def changeset(form, attrs \\ %{}) do
-    form
-    |> cast(attrs, [:color])
-    |> validate_required([:color])
-    end
+      def changeset(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:color])
+        |> validate_required([:color])
+      end
 
-    def changeset_validate(form, attrs \\ %{}) do
-    form
-    |> cast(attrs, [:color])
-    |> validate_required([:color])
-    |> validate_alpha_max_50()
-    end
+      def changeset_validate(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:color])
+        |> validate_required([:color])
+        |> validate_alpha_max_50()
+      end
 
-    defp validate_alpha_max_50(changeset) do
-    case get_field(changeset, :color) do
-      nil ->
-        changeset
-
-      value ->
-        case Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value) do
-          [_, a] ->
-            case Float.parse(a) do
-              {float_val, _} ->
-                if float_val > 0.5 do
-                  add_error(changeset, :color, "maximum alpha allowed is 50%")
-                else
-                  changeset
-                end
-
-              :error ->
-                changeset
-            end
-          _ ->
-            changeset
+      defp validate_alpha_max_50(changeset) do
+        with value when is_binary(value) <- get_field(changeset, :color),
+             [_, alpha] <-
+               Regex.run(~r/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/, value),
+             {float_val, _} <- Float.parse(alpha),
+             true <- float_val > 0.5 do
+          add_error(changeset, :color, "maximum alpha allowed is 50%")
+        else
+          _ -> changeset
         end
       end
     end
@@ -308,16 +296,24 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_doc_controller_phoenix_heex do
     ~S"""
     <.form
+      :let={f}
       for={@form}
-      action={~p"/color-picker/form"}
+      action="/color-picker/form"
       method="post"
     >
       <.color_picker
-        name={@form[:color].name}
-        value={@form[:color].value || "#3b82f6"}
+        field={f[:color]}
         label="Color"
         class="color-picker"
-      />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+
       <.action type="submit" class="button button--accent">
         Submit
       </.action>
@@ -329,7 +325,10 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     def color_picker_form_page(conn, _params) do
       phoenix_form =
-        Phoenix.Component.to_form(%{"color" => "#3b82f6"}, as: :color_picker_phoenix, id: "color-picker-form-phoenix")
+        Phoenix.Component.to_form(%{"color" => "#3b82f6"},
+          as: :color_picker_phoenix,
+          id: "color-picker-form-phoenix"
+        )
 
       render(conn, :color_picker_form_page, phoenix_form: phoenix_form)
     end
@@ -340,7 +339,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
         conn
         |> put_flash(:info, "Submitted: color=#{inspect(color)}")
-        |> redirect(to: ~p"/color-picker/form#color-picker-form-phoenix")
+        |> redirect(to: "/color-picker/form")
       end
     end
     """
@@ -433,17 +432,24 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_validate_heex do
     ~S"""
     <.form
+      :let={f}
       for={@form}
-      action={~p"/color-picker/form"}
+      action="/color-picker/form"
       method="post"
-          >
+    >
       <.color_picker
-        name={@form[:color].name}
-        value={@form[:color].value || "#3b82f6"}
+        field={f[:color]}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
+
       <.action type="submit" class="button button--accent">
         Submit
       </.action>
@@ -453,29 +459,38 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   def form_validate_elixir do
     ~S"""
+    def color_picker_form_validate_page(conn, _params) do
+      changeset =
+        MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, %{})
+
+      form =
+        Phoenix.Component.to_form(changeset,
+          as: :color_picker_validate,
+          id: "color-picker-validate-form"
+        )
+
+      render(conn, :color_picker_form_page, form: form)
+    end
+
     def color_picker_form_validate_create(conn, %{"color_picker_validate" => params}) do
       case MyApp.Form.ColorPickerForm.changeset_validate(%MyApp.Form.ColorPickerForm{}, params) do
         %Ecto.Changeset{valid?: true} = changeset ->
           data = Ecto.Changeset.apply_changes(changeset)
+
           conn
           |> put_flash(:info, "Saved: color=#{data.color}")
-          |> redirect(to: ~p"/settings")
+          |> redirect(to: "/settings")
 
         changeset ->
           changeset = Map.put(changeset, :action, :insert)
 
-          validate_form =
-            Phoenix.Component.to_form(changeset, as: :color_picker_validate, id: "color-picker-validate-form")
-
           form =
-            %MyApp.Form.ColorPickerForm{}
-            |> MyApp.Form.ColorPickerForm.changeset(%{})
-            |> Phoenix.Component.to_form(
-              as: :color_picker_changeset,
-              id: "color-picker-changeset-form"
+            Phoenix.Component.to_form(changeset,
+              as: :color_picker_validate,
+              id: "color-picker-validate-form"
             )
 
-          render(conn, :color_picker_form_page, form: form, validate_form: validate_form)
+          render(conn, :color_picker_form_page, form: form)
       end
     end
     """
@@ -484,9 +499,9 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   def form_native_heex do
     ~S"""
     <form
-      action={~p"/color-picker/form"}
+      action="/color-picker/form"
       method="post"
-          >
+    >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.color_picker
         name="color_picker_form[color]"
@@ -506,7 +521,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     def color_picker_form_submit(conn, %{"color_picker_form" => %{"color" => color}}) do
       conn
       |> put_flash(:info, "Submitted: color=#{color}")
-      |> redirect(to: ~p"/color-picker/form#color-picker-form-native")
+      |> redirect(to: "/color-picker/form")
     end
     """
   end
@@ -643,13 +658,18 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       method="post"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-changeset"
-        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-changeset-submit"
@@ -671,13 +691,18 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       method="post"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-validate"
-        value={@form[:color].value || "#3b82f6"}
         label="Color"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-submit"
@@ -728,14 +753,19 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       phx-submit="save_basic"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-live-basic"
-        value={@color}
         label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-basic-form-live-submit"
@@ -748,7 +778,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
   end
 
   attr(:form, :any, required: true)
-  attr(:color, :string, required: true)
 
   def form_preview_live_validate(assigns) do
     ~H"""
@@ -758,14 +787,19 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       phx-submit="save_validate"
     >
       <.color_picker
-        name={@form[:color].name}
+        field={@form[:color]}
         id="color-picker-live-validate"
-        value={@color}
         label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
-      />
-      <.color_form_errors form={@form} />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action
         type="submit"
         id="color-picker-validate-form-live-submit"
@@ -787,11 +821,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       method="post"
     >
       <.color_picker
-        name={@form[:color].name}
-        value={@form[:color].value || "#3b82f6"}
+        field={@form[:color]}
         label="Color"
         class="color-picker"
-      />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action type="submit" class="button button--accent">
         Submit
       </.action>
@@ -813,11 +853,17 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form for={@form} phx-submit="save_phoenix">
       <.color_picker
-        name={@form[:color].name}
-        value={@form[:color].value || "#3b82f6"}
+        field={@form[:color]}
         label="Color"
         class="color-picker"
-      />
+        invalid={Corex.FormField.invalid?(@form[:color])}
+        presets={["#ff0000", "#00ff00", "#0000ff"]}
+      >
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.color_picker>
       <.action type="submit" class="button button--accent">
         Submit
       </.action>

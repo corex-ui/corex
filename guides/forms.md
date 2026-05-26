@@ -2,40 +2,154 @@
 
 Corex form components accept `field={@form[:name]}` from [`Phoenix.Component.to_form/2`](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#to_form/2). Set the form `id` in `to_form/2` and wrap fields in `<.form for={@form}>`.
 
-Per-component wiring (checkbox, select, combobox, and others) lives in each module's **Form** section in Hexdocs. This guide covers patterns that apply across components.
+The examples below use [`Corex.Checkbox`](Corex.Checkbox.html) and [`Corex.Select`](Corex.Select.html). The same patterns apply to other form components; see each module's **Form** section in Hexdocs.
 
-## Error messages and `invalid` styling
+## Example schema
 
-[`Corex.FormField`](Corex.FormField.html) wires `id`, `name`, `form`, and errors into components that accept `field={...}`. It does **not** set `invalid` from changeset errors automatically.
+```elixir
+defmodule MyApp.Form.Preferences do
+  use Ecto.Schema
+  import Ecto.Changeset
 
-- **Messages** still render through the `:error` slot when the field has errors and was used (`used_input?/1`).
-- **Alert borders** (`data-invalid`) are opt-in: pass `invalid` yourself when you want visible invalid styling.
+  embedded_schema do
+    field :terms, :boolean, default: false
+    field :country, Ecto.Enum, values: [:fra, :deu, :bel]
+  end
 
-```heex
-<.select
-  field={@form[:country]}
-  class="select"
-  invalid={Corex.FormField.invalid?(@form[:country])}
->
-  <:label>Your country of residence</:label>
-  <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
-    {msg}
-  </:error>
-</.select>
+  def changeset(preferences, attrs \\ %{}) do
+    preferences
+    |> cast(attrs, [:terms, :country])
+    |> validate_required([:terms, :country])
+    |> validate_acceptance(:terms)
+  end
+
+  def changeset_validate(preferences, attrs \\ %{}) do
+    preferences
+    |> cast(attrs, [:terms, :country])
+    |> validate_required([:terms, :country], message: "can't be blank")
+    |> validate_acceptance(:terms, message: "must be accepted to continue")
+  end
+end
 ```
 
-Use `Corex.FormField.invalid?/1` on LiveView forms with `phx-change` so borders appear after the user interacts with a field, not on the initial empty render.
+## Controller
 
-Static anatomy examples without a changeset can pass `invalid` directly on the component.
+Build the form from a changeset, render with `<.form>`, and post to a controller action.
 
-## LiveView validate flow
+```elixir
+def preferences_page(conn, _params) do
+  form =
+    %MyApp.Form.Preferences{}
+    |> MyApp.Form.Preferences.changeset(%{})
+    |> Phoenix.Component.to_form(as: :preferences, id: "preferences-form")
+
+  render(conn, :preferences, form: form)
+end
+
+def preferences_create(conn, %{"preferences" => params}) do
+  case MyApp.Form.Preferences.changeset(%MyApp.Form.Preferences{}, params) do
+    %Ecto.Changeset{valid?: true} = changeset ->
+      data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Saved: terms=#{data.terms}, country=#{data.country}")
+      |> redirect(to: "/account")
+
+    changeset ->
+      changeset = Map.put(changeset, :action, :insert)
+
+      form =
+        Phoenix.Component.to_form(changeset, as: :preferences, id: "preferences-form")
+
+      render(conn, :preferences, form: form)
+  end
+end
+```
 
 ```heex
-<.form for={@form} id="profile-form" phx-change="validate" phx-submit="save">
+<.form :let={f} for={@form} action="/account/preferences" method="post">
+  <.checkbox field={f[:terms]} class="checkbox">
+    <:label>Accept terms</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.checkbox>
+
+  <.select
+    field={f[:country]}
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:label>Country</:label>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.select>
+
+  <.action type="submit" class="button button--accent">Submit</.action>
+</.form>
+```
+
+## LiveView
+
+Use an Ecto changeset as the source of truth. Add `phx-change` so validation runs as the user edits. On `<.select>`, pass `controlled` when the form is driven by LiveView (see [`Corex.Select`](Corex.Select.html#module-form)).
+
+```elixir
+def mount(_params, _session, socket) do
+  form =
+    %MyApp.Form.Preferences{}
+    |> MyApp.Form.Preferences.changeset_validate(%{})
+    |> to_form(action: :validate, as: :preferences, id: "preferences-form")
+
+  {:ok, assign(socket, :form, form)}
+end
+
+def handle_event("validate", %{"preferences" => params}, socket) do
+  form =
+    %MyApp.Form.Preferences{}
+    |> MyApp.Form.Preferences.changeset_validate(params)
+    |> to_form(action: :validate, as: :preferences, id: "preferences-form")
+
+  {:noreply, assign(socket, :form, form)}
+end
+
+def handle_event("save", %{"preferences" => params}, socket) do
+  case MyApp.Form.Preferences.changeset(%MyApp.Form.Preferences{}, params) do
+    %Ecto.Changeset{valid?: true} = changeset ->
+      data = Ecto.Changeset.apply_changes(changeset)
+      {:noreply, put_flash(socket, :info, "Saved: country=#{data.country}")}
+
+    changeset ->
+      {:noreply,
+       assign(socket, :form, to_form(changeset, action: :validate, as: :preferences, id: "preferences-form"))}
+  end
+end
+```
+
+```heex
+<.form for={@form} id="preferences-form" phx-change="validate" phx-submit="save">
+  <.checkbox
+    field={@form[:terms]}
+    class="checkbox"
+    invalid={Corex.FormField.invalid?(@form[:terms])}
+  >
+    <:label>Accept terms</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.checkbox>
+
   <.select
     field={@form[:country]}
     class="select"
+    controlled
     invalid={Corex.FormField.invalid?(@form[:country])}
     items={Corex.List.new([
       %{label: "France", value: "fra"},
@@ -44,33 +158,139 @@ Static anatomy examples without a changeset can pass `invalid` directly on the c
     ])}
   >
     <:label>Country</:label>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
   </.select>
+
   <.action type="submit" class="button button--accent">Save</.action>
 </.form>
 ```
 
-```elixir
-def handle_event("validate", %{"profile" => params}, socket) do
-  form =
-    %MyApp.Form.Profile{}
-    |> MyApp.Form.Profile.changeset_validate(params)
-    |> to_form(action: :validate, as: :profile, id: "profile-form")
+## Native form (plain HTML)
 
-  {:noreply, assign(socket, :form, form)}
+Use `name` on the component when you are not using `to_form/2`. Checkbox values follow Phoenix's checkbox param convention.
+
+```heex
+<form action="/register" method="post">
+  <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+
+  <.checkbox name="user[accept_terms]" class="checkbox">
+    <:label>Accept terms</:label>
+  </.checkbox>
+
+  <.select
+    name="user[country]"
+    class="select"
+    items={Corex.List.new([
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ])}
+  >
+    <:label>Country</:label>
+    <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  </.select>
+
+  <.action type="submit" class="button button--accent">Submit</.action>
+</form>
+```
+
+```elixir
+def register_create(conn, %{"user" => %{"accept_terms" => terms, "country" => country}}) do
+  checked = Phoenix.HTML.Form.normalize_value("checkbox", terms)
+
+  conn
+  |> put_flash(:info, "Submitted: terms=#{inspect(checked)}, country=#{country}")
+  |> redirect(to: "/register")
 end
 ```
+
+## Ecto validation (strict messages)
+
+Use a dedicated `changeset_validate/2` with stricter messages for controller re-render or LiveView `phx-change`. The HEEx is the same as in **Controller** or **LiveView**; only the changeset function differs.
+
+```elixir
+def preferences_validate_page(conn, _params) do
+  changeset =
+    MyApp.Form.Preferences.changeset_validate(%MyApp.Form.Preferences{}, %{})
+
+  form =
+    Phoenix.Component.to_form(changeset, as: :preferences_validate, id: "preferences-validate-form")
+
+  render(conn, :preferences_validate, form: form)
+end
+
+def preferences_validate_create(conn, %{"preferences_validate" => params}) do
+  case MyApp.Form.Preferences.changeset_validate(%MyApp.Form.Preferences{}, params) do
+    %Ecto.Changeset{valid?: true} = changeset ->
+      data = Ecto.Changeset.apply_changes(changeset)
+      conn
+      |> put_flash(:info, "Saved: country=#{data.country}")
+      |> redirect(to: "/account")
+
+    changeset ->
+      form =
+        Phoenix.Component.to_form(
+          Map.put(changeset, :action, :insert),
+          as: :preferences_validate,
+          id: "preferences-validate-form"
+        )
+
+      render(conn, :preferences_validate, form: form)
+  end
+end
+```
+
+In LiveView, call `changeset_validate/2` inside `handle_event("validate", ...)` the same way as in the **LiveView** section above.
+
+## Error messages and `invalid` styling
+
+[`Corex.FormField`](Corex.FormField.html) wires `id`, `name`, `form`, and errors into components that accept `field={...}`. It does **not** set `invalid` from changeset errors automatically.
+
+- **Messages** render through the `:error` slot when the field has errors and was used (`used_input?/1`).
+- **Alert borders** (`data-invalid`) are opt-in: pass `invalid` when you want visible invalid styling.
+
+```heex
+<.checkbox field={@form[:terms]} class="checkbox" invalid={Corex.FormField.invalid?(@form[:terms])}>
+  <:label>Accept terms</:label>
+  <:error :let={msg}>
+    <.heroicon name="hero-exclamation-circle" class="icon" />
+    {msg}
+  </:error>
+</.checkbox>
+
+<.select
+  field={@form[:country]}
+  class="select"
+  controlled
+  invalid={Corex.FormField.invalid?(@form[:country])}
+  items={Corex.List.new([
+    %{label: "France", value: "fra"},
+    %{label: "Belgium", value: "bel"},
+    %{label: "Germany", value: "deu"}
+  ])}
+>
+  <:label>Country</:label>
+  <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+  <:error :let={msg}>
+    <.heroicon name="hero-exclamation-circle" class="icon" />
+    {msg}
+  </:error>
+</.select>
+```
+
+Use `Corex.FormField.invalid?/1` on LiveView forms with `phx-change` so borders appear after the user interacts with a field, not on the initial empty render. Static demos without a changeset can pass `invalid` directly on the component.
 
 ## Custom error presentation
 
 Keep `invalid` off the control if you only want a custom affordance (for example a tooltip) without `data-invalid` on the host.
 
 ```heex
-<.select field={@form[:country]} class="select relative">
-  <:label>Your country of residence</:label>
+<.select field={@form[:country]} class="select relative" controlled>
+  <:label>Country</:label>
   <:error :let={msg} class="absolute top-0 end-0">
     <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
       <:trigger>
@@ -84,77 +304,26 @@ Keep `invalid` off the control if you only want a custom affordance (for example
 
 The `:error` slot still receives translated messages from the changeset; only the presentation changes.
 
-## Invalid on error (inline + border)
-
-Combine `:error` with explicit `invalid` when you want both inline messages and alert styling:
-
-```heex
-<.combobox
-  field={@form[:currency]}
-  class="combobox"
-  invalid={Corex.FormField.invalid?(@form[:currency])}
-  items={Corex.List.new([
-    %{label: "Euro", value: "eur"},
-    %{label: "US Dollar", value: "usd"},
-    %{label: "British Pound", value: "gbp"}
-  ])}
->
-  <:label>Preferred currency</:label>
-  <:error :let={msg}>
-    <.heroicon name="hero-exclamation-circle" class="icon" />
-    {msg}
-  </:error>
-</.combobox>
-```
-
-## Example schema
-
-```elixir
-defmodule MyApp.Form.PatternsForm do
-  use Ecto.Schema
-  import Ecto.Changeset
-
-  embedded_schema do
-    field :country, Ecto.Enum, values: [:fra, :deu, :bel]
-    field :currency, :string
-    field :tags, {:array, :string}
-    field :terms, :boolean, default: false
-    field :notifications, :boolean, default: false
-    field :password, :string, redact: true
-  end
-
-  def changeset_validate(form, attrs \\ %{}) do
-    form
-    |> cast(attrs, [:country, :currency, :tags, :terms, :notifications, :password])
-    |> validate_required([:country, :currency, :tags, :password])
-    |> validate_acceptance(:terms)
-    |> validate_acceptance(:notifications)
-    |> validate_inclusion(:currency, ~w(eur usd gbp))
-    |> validate_length(:password, min: 8)
-  end
-end
-```
-
 ## Component reference
 
-Hover a **Component** link for the Hexdocs summary card. **Form** links jump to that module's Form section (anchors differ per component).
+Hover a **Component** link for the Hexdocs summary card. **Form** links jump to that module's Form section.
 
 | Component | Form |
 | --------- | ---- |
+| [Corex.AngleSlider](Corex.AngleSlider.html) | [Form](Corex.AngleSlider.html#module-form) |
 | [Corex.Checkbox](Corex.Checkbox.html) | [Form](Corex.Checkbox.html#module-form) |
-| [Corex.Switch](Corex.Switch.html) | [Form](Corex.Switch.html#module-form) |
-| [Corex.Select](Corex.Select.html) | [Form](Corex.Select.html#module-form) |
+| [Corex.ColorPicker](Corex.ColorPicker.html) | [Form](Corex.ColorPicker.html#module-form) |
 | [Corex.Combobox](Corex.Combobox.html) | [Form](Corex.Combobox.html#module-form) |
-| [Corex.TagsInput](Corex.TagsInput.html) | [Form](Corex.TagsInput.html#module-form) |
-| [Corex.RadioGroup](Corex.RadioGroup.html) | [Form](Corex.RadioGroup.html#module-form) |
+| [Corex.DatePicker](Corex.DatePicker.html) | [Form](Corex.DatePicker.html#module-form) |
+| [Corex.Editable](Corex.Editable.html) | [Form](Corex.Editable.html#module-form) |
+| [Corex.FileUpload](Corex.FileUpload.html) | [Form](Corex.FileUpload.html#module-form) |
+| [Corex.FileUploadLive](Corex.FileUploadLive.html) | [Form with submit](Corex.FileUploadLive.html#module-form-with-submit) |
+| [Corex.NativeInput](Corex.NativeInput.html) | [Form](Corex.NativeInput.html#module-form) |
 | [Corex.NumberInput](Corex.NumberInput.html) | [Form](Corex.NumberInput.html#module-form) |
 | [Corex.PasswordInput](Corex.PasswordInput.html) | [Form](Corex.PasswordInput.html#module-form) |
 | [Corex.PinInput](Corex.PinInput.html) | [Form](Corex.PinInput.html#module-form) |
-| [Corex.AngleSlider](Corex.AngleSlider.html) | [Form](Corex.AngleSlider.html#module-form) |
-| [Corex.ColorPicker](Corex.ColorPicker.html) | — |
-| [Corex.DatePicker](Corex.DatePicker.html) | [Form](Corex.DatePicker.html#module-form) |
-| [Corex.Editable](Corex.Editable.html) | [Form](Corex.Editable.html#module-form) |
+| [Corex.RadioGroup](Corex.RadioGroup.html) | [Form](Corex.RadioGroup.html#module-form) |
+| [Corex.Select](Corex.Select.html) | [Form](Corex.Select.html#module-form) |
 | [Corex.SignaturePad](Corex.SignaturePad.html) | [Form](Corex.SignaturePad.html#module-form) |
-| [Corex.FileUpload](Corex.FileUpload.html) | [Form](Corex.FileUpload.html#module-form) |
-| [Corex.NativeInput](Corex.NativeInput.html) | [Form](Corex.NativeInput.html#module-form) |
-| [Corex.FileUploadLive](Corex.FileUploadLive.html) | [Form with submit](Corex.FileUploadLive.html#module-form-with-submit) |
+| [Corex.Switch](Corex.Switch.html) | [Form](Corex.Switch.html#module-form) |
+| [Corex.TagsInput](Corex.TagsInput.html) | [Form](Corex.TagsInput.html#module-form) |

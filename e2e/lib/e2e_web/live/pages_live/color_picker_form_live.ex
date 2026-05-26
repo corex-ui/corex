@@ -147,8 +147,6 @@ defmodule E2eWeb.ColorPickerFormLive do
 
   @impl true
   def render(assigns) do
-    assigns = assign(assigns, :validate_color, get_color_from_form(assigns.validate_form))
-
     ~H"""
     <Layouts.app
       flash={@flash}
@@ -184,27 +182,11 @@ defmodule E2eWeb.ColorPickerFormLive do
           ]}
         >
           <:preview>
-            <ColorPickerDemo.form_preview_live_validate
-              form={@validate_form}
-              color={@validate_color}
-            />
+            <ColorPickerDemo.form_preview_live_validate form={@validate_form} />
           </:preview>
         </.demo_section>
       </.demo_page>
     </Layouts.app>
     """
-  end
-
-  defp get_color_from_form(form) do
-    raw =
-      form[:color].value || form.params["color"] ||
-        Ecto.Changeset.get_change(form.source, :color) ||
-        Ecto.Changeset.get_field(form.source, :color)
-
-    case raw do
-      nil -> "#3b82f6"
-      "" -> "#3b82f6"
-      v when is_binary(v) -> v
-    end
   end
 end
