@@ -10,6 +10,19 @@ defmodule E2e.Tetrex.StoreTest do
     Store.finalize(id, score, frames, client)
   end
 
+  test "get_first_frame and get_frames load replay data selectively" do
+    first = Tetrex.to_client(Tetrex.new())
+    last = Tetrex.to_client(%{Tetrex.new() | score: 12_000, status: :game_over})
+    frames = List.duplicate(first, 50) ++ [last]
+
+    assert Store.finalize("replay1", 12_000, frames, last) == :saved
+
+    assert Store.get_first_frame("replay1") == first
+    assert length(Store.get_frames("replay1")) == 51
+    assert Store.get_client_state("replay1") == last
+    assert Store.get_player_name("replay1") != nil
+  end
+
   test "list_top does not load frames or client_state" do
     client = Tetrex.to_client(%{Tetrex.new() | score: 99_000, status: :game_over})
     huge_frames = List.duplicate(client, 1200)

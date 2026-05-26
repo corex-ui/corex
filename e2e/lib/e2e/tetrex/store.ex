@@ -55,6 +55,34 @@ defmodule E2e.Tetrex.Store do
 
   def get(id) when is_binary(id), do: Repo.get(Game, id)
 
+  def get_client_state(id) when is_binary(id) do
+    Game
+    |> where([g], g.id == ^id)
+    |> select([g], g.client_state)
+    |> Repo.one()
+  end
+
+  def get_first_frame(id) when is_binary(id) do
+    Game
+    |> where([g], g.id == ^id)
+    |> select([g], fragment("(?)[1]", g.frames))
+    |> Repo.one()
+  end
+
+  def get_frames(id) when is_binary(id) do
+    Game
+    |> where([g], g.id == ^id)
+    |> select([g], g.frames)
+    |> Repo.one()
+  end
+
+  def get_player_name(id) when is_binary(id) do
+    Game
+    |> where([g], g.id == ^id)
+    |> select([g], g.player_name)
+    |> Repo.one()
+  end
+
   def on_leaderboard?(id) when is_binary(id) do
     id in top_leaderboard_ids()
   end

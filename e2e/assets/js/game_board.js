@@ -57,12 +57,21 @@ const GameBoard = {
       this.startTick()
     })
 
-    this.handleEvent("replay_init", ({frames, step_ms}) => {
+    this.handleEvent("replay_begin", ({frames, step_ms}) => {
       if (!this.replay || !frames?.length) return
       this.replayFrames = frames
       this.replayBaseStepMs = step_ms || DEFAULT_REPLAY_STEP_MS
       this.replaySpeedIdx = 0
       this.replayIndex = 0
+    })
+
+    this.handleEvent("replay_chunk", ({frames}) => {
+      if (!this.replay || !frames?.length) return
+      this.replayFrames = this.replayFrames.concat(frames)
+    })
+
+    this.handleEvent("replay_done", () => {
+      if (!this.replay || !this.replayFrames.length) return
       this.syncReplayHudFromFrame(0)
       this.wireReplayControls()
       this.wireReplayEndOverlay()
