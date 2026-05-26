@@ -13,7 +13,14 @@ defmodule E2eWeb.RadioGroupFormTest do
       |> RadioGroup.wait_for_has(css("#radio-group-form-page"), timeout: 15_000)
       |> RadioGroup.submit_form(:static, :ecto)
 
-    assert_has(session, Wallaby.Query.css("#radio-group-form-ecto", text: "can't be blank"))
+    assert_has(
+      session,
+      Wallaby.Query.css(
+        ~s|#radio-group-form-ecto [data-scope="radio-group"][data-part="error"]|,
+        text: "can't be blank"
+      )
+    )
+
     refute_has(session, Wallaby.Query.text("Submitted: choice="))
   end
 

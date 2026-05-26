@@ -683,7 +683,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       def changeset_validate(form, attrs \\ %{}) do
         form
         |> cast(attrs, [:choice])
-        |> validate_required([:choice], message: "can't be blank")
+        |> validate_required([:choice])
       end
     end
     """

@@ -213,7 +213,13 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def wait_for_ecto_form_error(session) do
-    assert_has(session, css("#radio-group-form-ecto", text: "can't be blank"))
+    assert_has(
+      session,
+      css(~s|#radio-group-form-ecto [data-scope="radio-group"][data-part="error"]|,
+        text: "can't be blank"
+      )
+    )
+
     session
   end
 
