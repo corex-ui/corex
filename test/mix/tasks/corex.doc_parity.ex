@@ -1,6 +1,5 @@
 defmodule Mix.Tasks.Corex.DocParity do
   @moduledoc false
-  @hidden true
 
   use Mix.Task
 
