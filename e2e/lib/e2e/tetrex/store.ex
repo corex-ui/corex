@@ -56,14 +56,12 @@ defmodule E2e.Tetrex.Store do
   def get(id) when is_binary(id), do: Repo.get(Game, id)
 
   def on_leaderboard?(id) when is_binary(id) do
-    Enum.any?(list_top(), &(&1.id == id))
+    id in top_leaderboard_ids()
   end
 
   def list_top(limit \\ @top) do
-    from(g in Game,
-      order_by: [desc: g.score, asc: g.ended_at],
-      limit: ^limit
-    )
+    top_ordered(limit)
+    |> select([g], struct(g, [:id, :score, :player_name, :ended_at]))
     |> Repo.all()
   end
 
@@ -94,17 +92,29 @@ defmodule E2e.Tetrex.Store do
   end
 
   def qualifies_for_leaderboard?(score) when is_integer(score) do
-    entries = list_top(@top)
+    scores = top_leaderboard_scores()
 
     cond do
-      entries == [] -> true
-      length(entries) < @top -> true
-      true -> score > min_leaderboard_score(entries)
+      scores == [] -> true
+      length(scores) < @top -> true
+      true -> score > Enum.min(scores)
     end
   end
 
-  defp min_leaderboard_score(entries) do
-    entries |> Enum.map(& &1.score) |> Enum.min()
+  defp top_ordered(limit) do
+    from(g in Game, order_by: [desc: g.score, asc: g.ended_at], limit: ^limit)
+  end
+
+  defp top_leaderboard_ids(limit \\ @top) do
+    top_ordered(limit)
+    |> select([g], g.id)
+    |> Repo.all()
+  end
+
+  defp top_leaderboard_scores(limit \\ @top) do
+    top_ordered(limit)
+    |> select([g], g.score)
+    |> Repo.all()
   end
 
   defp trim_to_top do

@@ -10,6 +10,22 @@ defmodule E2e.Tetrex.StoreTest do
     Store.finalize(id, score, frames, client)
   end
 
+  test "list_top does not load frames or client_state" do
+    client = Tetrex.to_client(%{Tetrex.new() | score: 99_000, status: :game_over})
+    huge_frames = List.duplicate(client, 1200)
+
+    assert Store.finalize("huge", 99_000, huge_frames, client) == :saved
+
+    full = Store.get("huge")
+    [entry] = Store.list_top(1)
+
+    assert entry.id == "huge"
+    assert entry.frames == []
+    assert is_nil(entry.client_state)
+    assert length(full.frames) == 1200
+    assert is_map(full.client_state)
+  end
+
   test "finalize keeps only top 10 scores" do
     for i <- 1..12 do
       finalize_game("game-#{i}", i * 100)
