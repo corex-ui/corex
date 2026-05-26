@@ -1792,7 +1792,7 @@ defmodule E2eWeb.PageController do
   end
 
   def radio_group_form_submit(conn, params) do
-    radio_group_form_submit(conn, Map.put(params, "radio_group_ecto", %{}))
+    radio_group_form_submit(conn, Map.put(params, "radio_group_ecto", %{"choice" => ""}))
   end
 
   def timer_page(conn, _params) do
