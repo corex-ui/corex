@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
   def form_ecto do
     ~S"""
-    defmodule E2e.Form.PatternsForm do
+    defmodule MyApp.Form.PatternsForm do
       use Ecto.Schema
       import Ecto.Changeset
 
