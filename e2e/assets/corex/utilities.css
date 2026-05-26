@@ -330,24 +330,27 @@
     box-shadow: none;
   }
 
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ink);
+    background-color: var(--color-ui-hover);
+  }
+
   @media (hover: hover) {
-    &[data-highlighted]:not(:hover),
-    &[data-focus]:not(:hover) {
+    &[data-highlighted]:not(:hover) {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ink);
       background-color: var(--color-ui-hover);
     }
 
-    &[data-highlighted]:active,
-    &[data-focus]:active {
+    &[data-highlighted]:active {
       background-color: var(--color-ui-active);
       box-shadow: none;
     }
   }
 
   @media (hover: none) {
-    &[data-highlighted],
-    &[data-focus] {
+    &[data-highlighted] {
       outline: none;
       box-shadow: inset 0 0 0 2px var(--color-ink);
       background-color: var(--color-ui-hover);
@@ -381,23 +384,26 @@
       box-shadow: none;
     }
 
+    &:focus-visible {
+      background-color: var(--color-selected-hover);
+      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
+      outline: none;
+    }
+
     @media (hover: hover) {
-      &[data-highlighted]:not(:hover),
-      &[data-focus]:not(:hover) {
+      &[data-highlighted]:not(:hover) {
         background-color: var(--color-selected-hover);
         box-shadow: inset 0 0 0 2px var(--color-selected-ink);
       }
 
-      &[data-highlighted]:active,
-      &[data-focus]:active {
+      &[data-highlighted]:active {
         background-color: var(--color-selected-active);
         box-shadow: none;
       }
     }
 
     @media (hover: none) {
-      &[data-highlighted],
-      &[data-focus] {
+      &[data-highlighted] {
         background-color: var(--color-selected-hover);
         box-shadow: inset 0 0 0 2px var(--color-selected-ink);
       }

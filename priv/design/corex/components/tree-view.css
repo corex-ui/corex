@@ -141,8 +141,7 @@
         background-color: --value(--color-*-active, [color]);
       }
 
-      &:focus-visible,
-      &[data-focus] {
+      &:focus-visible {
         box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
         outline: none;
       }
@@ -178,8 +177,7 @@
         background-color: --value(--color-*-active, [color]);
       }
 
-      &:focus-visible,
-      &[data-focus] {
+      &:focus-visible {
         box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
         outline: none;
       }

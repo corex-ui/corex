@@ -1,14 +1,6 @@
 defmodule E2eWeb.Demos.TabsDemo do
   use E2eWeb, :html
 
-  @tabs_items_attr ~S"""
-  items={Corex.Content.new([
-    %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
-    %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
-    %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
-  ])}
-  """
-
   def basic_items do
     Corex.Content.new([
       %{
@@ -30,8 +22,12 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def anatomy_basic_code do
-    """
-    <.tabs class="tabs" value="lorem" #{@tabs_items_attr} />
+    ~S"""
+    <.tabs class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -47,12 +43,16 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def anatomy_indicator_code do
-    """
+    ~S"""
     <.tabs
       class="tabs"
       indicator
       value="lorem"
-      #{@tabs_items_attr}
+      items={Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      ])}
     />
     """
   end
@@ -83,7 +83,11 @@ defmodule E2eWeb.Demos.TabsDemo do
         <.tabs
           class="tabs"
           value="lorem"
-          #{@tabs_items_attr}
+          items={Corex.Content.new([
+            %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+            %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+            %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+          ])}
         />
       </:content>
     </.tabs>
@@ -122,7 +126,11 @@ defmodule E2eWeb.Demos.TabsDemo do
     <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "lorem")} class="button button--sm">Lorem</.action>
     <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", "duis")} class="button button--sm">Duis</.action>
     <.action phx-click={Corex.Tabs.set_value("tabs-api-cb", nil)} class="button button--sm">Close all</.action>
-    <.tabs id="tabs-api-cb" class="tabs" value="lorem" #{@tabs_items_attr} />
+    <.tabs id="tabs-api-cb" class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -161,7 +169,11 @@ defmodule E2eWeb.Demos.TabsDemo do
     >
       Lorem (client JS)
     </button>
-    <.tabs id="tabs-api-cjs" class="tabs" value="lorem" #{@tabs_items_attr} />
+    <.tabs id="tabs-api-cjs" class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -212,7 +224,11 @@ defmodule E2eWeb.Demos.TabsDemo do
     <.action phx-click="tabs_api_lorem" class="button button--sm">Lorem</.action>
     <.action phx-click="tabs_api_duis" class="button button--sm">Duis</.action>
     <.action phx-click="tabs_api_close" class="button button--sm">Close all</.action>
-    <.tabs id="tabs-api-srv" class="tabs" value="lorem" #{@tabs_items_attr} />
+    <.tabs id="tabs-api-srv" class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -274,7 +290,11 @@ defmodule E2eWeb.Demos.TabsDemo do
       value={@value}
       controlled
       on_value_change="tabs_pattern_value"
-      #{@tabs_items_attr}
+      items={Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      ])}
     />
     """
   end
@@ -318,15 +338,37 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_color_code do
-    items = @tabs_items_attr
-
-    """
-    <.tabs class="tabs" value="lorem" #{items} />
-    <.tabs class="tabs tabs--accent" value="lorem" #{items} />
-    <.tabs class="tabs tabs--brand" value="lorem" #{items} />
-    <.tabs class="tabs tabs--alert" value="lorem" #{items} />
-    <.tabs class="tabs tabs--info" value="lorem" #{items} />
-    <.tabs class="tabs tabs--success" value="lorem" #{items} />
+    ~S"""
+    <.tabs class="tabs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--accent" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--brand" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--alert" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--info" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--success" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -376,13 +418,27 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_size_code do
-    items = @tabs_items_attr
-
-    """
-    <.tabs class="tabs tabs--sm" value="lorem" #{items} />
-    <.tabs class="tabs tabs--md" value="lorem" #{items} />
-    <.tabs class="tabs tabs--lg" value="lorem" #{items} />
-    <.tabs class="tabs tabs--xl" value="lorem" #{items} />
+    ~S"""
+    <.tabs class="tabs tabs--sm" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--md" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--lg" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -420,13 +476,27 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_text_code do
-    items = @tabs_items_attr
-
-    """
-    <.tabs class="tabs tabs--text-sm" value="lorem" #{items} />
-    <.tabs class="tabs tabs--text-xl" value="lorem" #{items} />
-    <.tabs class="tabs tabs--text-2xl" value="lorem" #{items} />
-    <.tabs class="tabs tabs--text-4xl" value="lorem" #{items} />
+    ~S"""
+    <.tabs class="tabs tabs--text-sm" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--text-xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--text-2xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--text-4xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -464,14 +534,32 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_radius_code do
-    items = @tabs_items_attr
-
-    """
-    <.tabs class="tabs tabs--rounded-none" value="lorem" #{items} />
-    <.tabs class="tabs tabs--rounded-md" value="lorem" #{items} />
-    <.tabs class="tabs tabs--rounded-lg" value="lorem" #{items} />
-    <.tabs class="tabs tabs--rounded-xl" value="lorem" #{items} />
-    <.tabs class="tabs tabs--rounded-full" value="lorem" #{items} />
+    ~S"""
+    <.tabs class="tabs tabs--rounded-none" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--rounded-md" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--rounded-lg" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--rounded-xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs tabs--rounded-full" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -515,13 +603,27 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_max_width_code do
-    items = @tabs_items_attr
-
-    """
-    <.tabs class="tabs max-w-2xs" value="lorem" #{items} />
-    <.tabs class="tabs max-w-md" value="lorem" #{items} />
-    <.tabs class="tabs max-w-xl" value="lorem" #{items} />
-    <.tabs class="tabs max-w-2xl" value="lorem" #{items} />
+    ~S"""
+    <.tabs class="tabs max-w-2xs" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs max-w-md" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs max-w-xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
+    <.tabs class="tabs max-w-2xl" value="lorem" items={Corex.Content.new([
+      %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+      %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+      %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+    ])} />
     """
   end
 
@@ -564,7 +666,11 @@ defmodule E2eWeb.Demos.TabsDemo do
       class="tabs"
       value="lorem"
       on_value_change="tabs_value_changed"
-      #{@tabs_items_attr}
+      items={Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      ])}
     />
     """
   end
@@ -583,7 +689,11 @@ defmodule E2eWeb.Demos.TabsDemo do
       class="tabs"
       value="lorem"
       on_value_change_client="tabs-value-changed"
-      #{@tabs_items_attr}
+      items={Corex.Content.new([
+        %{value: "lorem", label: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."},
+        %{value: "duis", label: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."},
+        %{value: "donec", label: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."}
+      ])}
     />
     """
   end
