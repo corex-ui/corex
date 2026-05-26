@@ -57,8 +57,12 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
       <:trigger :let={c}>
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
-      <:closed>▼</:closed>
-      <:opened>▲</:opened>
+      <:closed>
+        <.heroicon name="hero-chevron-down" />
+      </:closed>
+      <:opened>
+        <.heroicon name="hero-chevron-up" />
+      </:opened>
       <:content :let={_c}>
         Panel body with custom opened/closed adornments.
       </:content>
@@ -73,10 +77,10 @@ defmodule E2eWeb.Demos.CollapsibleDemo do
         {if c.open, do: "Collapse", else: "Expand"}
       </:trigger>
       <:closed>
-        <span class="text-sm text-ink-muted">▼</span>
+        <.heroicon name="hero-chevron-down" />
       </:closed>
       <:opened>
-        <span class="text-sm text-ink-muted">▲</span>
+        <.heroicon name="hero-chevron-up" />
       </:opened>
       <:content :let={_c}>
         Panel body with custom opened/closed adornments.

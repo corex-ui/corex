@@ -585,6 +585,191 @@ defmodule E2eWeb.Demos.MarqueeDemo do
     """
   end
 
+  defp styling_marquee_items do
+    [
+      %{name: "Apple", logo: "🍎"},
+      %{name: "Banana", logo: "🍌"},
+      %{name: "Cherry", logo: "🍒"},
+      %{name: "Grape", logo: "🍇"},
+      %{name: "Lemon", logo: "🍋"}
+    ]
+  end
+
+  defp styling_marquee_slot do
+    """
+      <:item :let={item}>
+        <span>{item.logo}</span>
+        <span>{item.name}</span>
+      </:item>
+    """
+  end
+
+  def styling_size_code do
+    items =
+      ~S|items={[{name: "Apple", logo: "🍎"}, {name: "Banana", logo: "🍌"}, {name: "Cherry", logo: "🍒"}, {name: "Grape", logo: "🍇"}, {name: "Lemon", logo: "🍋"}]}|
+
+    slot = styling_marquee_slot()
+
+    """
+    <.marquee class="marquee marquee--sm" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee marquee--md" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee marquee--lg" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee marquee--xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    assigns = assign(assigns, :items, styling_marquee_items())
+
+    ~H"""
+    <div class="flex flex-col gap-6 items-start w-full">
+      <.marquee
+        id="marquee-style-size-sm"
+        class="marquee marquee--sm"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-size-md"
+        class="marquee marquee--md"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-size-lg"
+        class="marquee marquee--lg"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-size-xl"
+        class="marquee marquee--xl"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    items =
+      ~S|items={[{name: "Apple", logo: "🍎"}, {name: "Banana", logo: "🍌"}, {name: "Cherry", logo: "🍒"}, {name: "Grape", logo: "🍇"}, {name: "Lemon", logo: "🍋"}]}|
+
+    slot = styling_marquee_slot()
+
+    """
+    <.marquee class="marquee max-w-2xs" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee max-w-md" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee max-w-xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    <.marquee class="marquee max-w-2xl" #{items} duration={20} spacing="2rem" pause_on_interaction>
+    #{slot}
+    </.marquee>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns = assign(assigns, :items, styling_marquee_items())
+
+    ~H"""
+    <div class="flex flex-col gap-6 items-start w-full">
+      <.marquee
+        id="marquee-style-max-2xs"
+        class="marquee max-w-2xs"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-max-md"
+        class="marquee max-w-md"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-max-xl"
+        class="marquee max-w-xl"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+      <.marquee
+        id="marquee-style-max-2xl"
+        class="marquee max-w-2xl"
+        items={@items}
+        duration={20}
+        spacing="2rem"
+        pause_on_interaction
+      >
+        <:item :let={item}>
+          <span>{item.logo}</span>
+          <span>{item.name}</span>
+        </:item>
+      </.marquee>
+    </div>
+    """
+  end
+
   defp api_marquee_snippet(id) do
     """
     <.marquee

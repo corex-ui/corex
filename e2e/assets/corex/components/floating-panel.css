@@ -8,6 +8,8 @@
 
   .floating-panel [data-scope="floating-panel"][data-part="trigger"] {
     @apply ui-trigger;
+
+    min-height: calc(var(--spacing-size) * 0.8);
   }
 
   .floating-panel
@@ -79,6 +81,15 @@
   .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"],
   .floating-panel [data-scope="floating-panel"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--square ui-trigger--sm;
+
+    width: calc(var(--spacing-size-sm) * 0.8);
+    min-width: calc(var(--spacing-size-sm) * 0.8);
+    max-width: calc(var(--spacing-size-sm) * 0.8);
+    min-height: calc(var(--spacing-size-sm) * 0.8);
+    max-height: calc(var(--spacing-size-sm) * 0.8);
+    padding: 0;
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
   }
 
   [data-scope="floating-panel"][data-part="body"] {

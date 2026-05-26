@@ -722,4 +722,267 @@ defmodule E2eWeb.Demos.PinInputDemo do
     </.pin_input>
     """
   end
+
+  def styling_color_code do
+    """
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
+      <:label>Default</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--accent" value={["1", "2", "", ""]}>
+      <:label>Accent</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--brand" value={["1", "2", "", ""]}>
+      <:label>Brand</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--alert" value={["1", "2", "", ""]}>
+      <:label>Alert</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--info" value={["1", "2", "", ""]}>
+      <:label>Info</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--success" value={["1", "2", "", ""]}>
+      <:label>Success</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-6 items-start">
+      <.pin_input
+        id="pin-input-style-color-default"
+        count={4}
+        class="pin-input"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Default</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-color-accent"
+        count={4}
+        class="pin-input pin-input--accent"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Accent</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-color-brand"
+        count={4}
+        class="pin-input pin-input--brand"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Brand</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-color-alert"
+        count={4}
+        class="pin-input pin-input--alert"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Alert</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-color-info"
+        count={4}
+        class="pin-input pin-input--info"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Info</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-color-success"
+        count={4}
+        class="pin-input pin-input--success"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Success</:label>
+      </.pin_input>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    """
+    <.pin_input count={4} class="pin-input pin-input--sm" value={["1", "2", "", ""]}>
+      <:label>SM</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--md" value={["1", "2", "", ""]}>
+      <:label>MD</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--lg" value={["1", "2", "", ""]}>
+      <:label>LG</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--xl" value={["1", "2", "", ""]}>
+      <:label>XL</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start">
+      <.pin_input
+        id="pin-input-style-size-sm"
+        count={4}
+        class="pin-input pin-input--sm"
+        value={["1", "2", "", ""]}
+      >
+        <:label>SM</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-size-md"
+        count={4}
+        class="pin-input pin-input--md"
+        value={["1", "2", "", ""]}
+      >
+        <:label>MD</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-size-lg"
+        count={4}
+        class="pin-input pin-input--lg"
+        value={["1", "2", "", ""]}
+      >
+        <:label>LG</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-size-xl"
+        count={4}
+        class="pin-input pin-input--xl"
+        value={["1", "2", "", ""]}
+      >
+        <:label>XL</:label>
+      </.pin_input>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    """
+    <.pin_input count={4} class="pin-input pin-input--rounded-none" value={["1", "2", "", ""]}>
+      <:label>None</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--rounded-sm" value={["1", "2", "", ""]}>
+      <:label>SM</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--rounded-md" value={["1", "2", "", ""]}>
+      <:label>MD</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--rounded-lg" value={["1", "2", "", ""]}>
+      <:label>LG</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input pin-input--rounded-full" value={["1", "2", "", ""]}>
+      <:label>Full</:label>
+    </.pin_input>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start">
+      <.pin_input
+        id="pin-input-style-radius-none"
+        count={4}
+        class="pin-input pin-input--rounded-none"
+        value={["1", "2", "", ""]}
+      >
+        <:label>None</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-radius-sm"
+        count={4}
+        class="pin-input pin-input--rounded-sm"
+        value={["1", "2", "", ""]}
+      >
+        <:label>SM</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-radius-md"
+        count={4}
+        class="pin-input pin-input--rounded-md"
+        value={["1", "2", "", ""]}
+      >
+        <:label>MD</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-radius-lg"
+        count={4}
+        class="pin-input pin-input--rounded-lg"
+        value={["1", "2", "", ""]}
+      >
+        <:label>LG</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-radius-full"
+        count={4}
+        class="pin-input pin-input--rounded-full"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Full</:label>
+      </.pin_input>
+    </div>
+    """
+  end
+
+  def styling_states_code do
+    """
+    <.pin_input count={4} class="pin-input" value={[]}>
+      <:label>Empty</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input" value={["1", "2", "", ""]}>
+      <:label>Partial</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input" value={["1", "2", "3", "4"]}>
+      <:label>Complete</:label>
+    </.pin_input>
+    <.pin_input count={4} class="pin-input" value={["1", "2", "3", "4"]} invalid>
+      <:label>Invalid</:label>
+      <:error>Invalid code</:error>
+    </.pin_input>
+    """
+  end
+
+  def styling_states_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start">
+      <.pin_input id="pin-input-style-state-empty" count={4} class="pin-input" value={[]}>
+        <:label>Empty</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-state-partial"
+        count={4}
+        class="pin-input"
+        value={["1", "2", "", ""]}
+      >
+        <:label>Partial</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-state-complete"
+        count={4}
+        class="pin-input"
+        value={["1", "2", "3", "4"]}
+      >
+        <:label>Complete</:label>
+      </.pin_input>
+      <.pin_input
+        id="pin-input-style-state-invalid"
+        count={4}
+        class="pin-input"
+        value={["1", "2", "3", "4"]}
+        invalid
+      >
+        <:label>Invalid</:label>
+        <:error>Invalid code</:error>
+      </.pin_input>
+    </div>
+    """
+  end
 end

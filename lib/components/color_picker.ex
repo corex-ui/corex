@@ -28,6 +28,7 @@ defmodule Corex.ColorPicker do
   [data-scope="color-picker"][data-part="area"] {}
   [data-scope="color-picker"][data-part="channel-slider"] {}
   [data-scope="color-picker"][data-part="swatch-trigger"] {}
+  [data-scope="color-picker"][data-part="error"] {}
   ```
 
   Import the Corex design:
@@ -187,7 +188,6 @@ defmodule Corex.ColorPicker do
           field={f[:color]}
           label="Color"
           class="color-picker"
-          invalid={Corex.FormField.invalid?(@form[:color])}
           presets={["#ff0000", "#00ff00", "#0000ff"]}
         >
           <:error :let={msg}>
@@ -241,7 +241,6 @@ defmodule Corex.ColorPicker do
           field={f[:color]}
           label="Color"
           class="color-picker"
-          invalid={Corex.FormField.invalid?(@form[:color])}
           presets={["#ff0000", "#00ff00", "#0000ff"]}
         >
           <:error :let={msg}>
@@ -466,6 +465,7 @@ defmodule Corex.ColorPicker do
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
+      |> assign_new(:invalid, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:dir, assigns.dir || "ltr")
 

@@ -213,6 +213,11 @@ defmodule Corex.DatePicker.Connect do
     )
   end
 
+  @spec ignore_value_input(String.t()) :: Phoenix.LiveView.JS.t()
+  def ignore_value_input(id) when is_binary(id) do
+    JS.ignore_attributes(["value"], to: Selectors.css_id("#{id}-value"))
+  end
+
   defp input_index(assigns) do
     Map.get(assigns, :index) || 0
   end

@@ -62,6 +62,23 @@ defmodule Corex.ColorPickerTest do
       assert html =~ ~S(data-part="positioner")
     end
 
+    test "does not set invalid when only errors are present" do
+      html =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <ColorPicker.color_picker id="cp-errors" errors={["Pick a color"]}>
+              <:error :let={msg}>{msg}</:error>
+            </ColorPicker.color_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Pick a color"
+      refute html =~ ~S(data-invalid="")
+    end
+
     test "renders open picker with presets and partial translation" do
       html =
         render_component(

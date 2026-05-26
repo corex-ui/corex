@@ -68,7 +68,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = styling_assigns(assigns)
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination id="pagination-style-color-default" class="pagination" />
       <.style_pagination id="pagination-style-color-accent" class="pagination pagination--accent" />
       <.style_pagination id="pagination-style-color-brand" class="pagination pagination--brand" />
@@ -108,7 +108,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = styling_assigns(assigns)
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination id="pagination-style-size-sm" class="pagination pagination--sm" />
       <.style_pagination id="pagination-style-size-md" class="pagination pagination--md" />
       <.style_pagination id="pagination-style-size-lg" class="pagination pagination--lg" />
@@ -146,7 +146,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = styling_assigns(assigns)
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination id="pagination-style-text-sm" class="pagination pagination--text-sm" />
       <.style_pagination id="pagination-style-text-xl" class="pagination pagination--text-xl" />
       <.style_pagination id="pagination-style-text-2xl" class="pagination pagination--text-2xl" />
@@ -194,7 +194,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = styling_assigns(assigns)
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination
         id="pagination-style-radius-none"
         class="pagination pagination--rounded-none"
@@ -240,7 +240,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
     assigns = styling_assigns(assigns)
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.style_pagination id="pagination-style-max-2xs" class="pagination max-w-2xs" />
       <.style_pagination id="pagination-style-max-md" class="pagination max-w-md" />
       <.style_pagination id="pagination-style-max-xl" class="pagination max-w-xl" />

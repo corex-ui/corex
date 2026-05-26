@@ -42,6 +42,6 @@ defmodule Corex.DocParityTest do
   test "print full parity report (mix test --only parity_report)" do
     results = DocParity.run()
     IO.puts(DocParity.report(results))
-    assert true
+    assert DocParity.failures(results) == []
   end
 end

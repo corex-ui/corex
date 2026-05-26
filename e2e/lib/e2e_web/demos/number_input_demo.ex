@@ -73,29 +73,49 @@ defmodule E2eWeb.Demos.NumberInputDemo do
   def with_triggers_code, do: minimal_code()
   def with_triggers_example(assigns), do: minimal_example(assigns)
 
+  defp styling_triggers_code do
+    """
+      <:decrement_trigger><.heroicon name="hero-chevron-down" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" /></:increment_trigger>
+    """
+  end
+
   def styling_color_code do
-    ~S"""
+    triggers = styling_triggers_code()
+
+    """
     <.number_input class="number-input" value="1">
       <:label>Default</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    #{triggers}
     </.number_input>
     <.number_input class="number-input number-input--accent" value="1">
       <:label>Accent</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    #{triggers}
     </.number_input>
     <.number_input class="number-input number-input--brand" value="1">
       <:label>Brand</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input number-input--alert" value="1">
+      <:label>Alert</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input number-input--info" value="1">
+      <:label>Info</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input number-input--success" value="1">
+      <:label>Success</:label>
+    #{triggers}
     </.number_input>
     """
   end
 
   def styling_color_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-6 items-start">
       <.number_input id="number-input-style-color-default" class="number-input" value="1">
         <:label>Default</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -119,35 +139,134 @@ defmodule E2eWeb.Demos.NumberInputDemo do
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       </.number_input>
+      <.number_input
+        id="number-input-style-color-alert"
+        class="number-input number-input--alert"
+        value="1"
+      >
+        <:label>Alert</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input
+        id="number-input-style-color-info"
+        class="number-input number-input--info"
+        value="1"
+      >
+        <:label>Info</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input
+        id="number-input-style-color-success"
+        class="number-input number-input--success"
+        value="1"
+      >
+        <:label>Success</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
     </div>
     """
   end
 
   def styling_size_code do
-    ~S"""
-    <.number_input class="number-input number-input--sm">
+    triggers = styling_triggers_code()
+
+    """
+    <.number_input class="number-input number-input--sm" value="1">
       <:label>SM</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    #{triggers}
     </.number_input>
-    <.number_input class="number-input number-input--lg">
+    <.number_input class="number-input number-input--md" value="1">
+      <:label>MD</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input number-input--lg" value="1">
       <:label>LG</:label>
-      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input number-input--xl" value="1">
+      <:label>XL</:label>
+    #{triggers}
     </.number_input>
     """
   end
 
   def styling_size_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-xs">
-      <.number_input id="number-input-style-sm" class="number-input number-input--sm">
+    <div class="flex flex-col gap-4 max-w-md">
+      <.number_input id="number-input-style-sm" class="number-input number-input--sm w-full" value="1">
         <:label>SM</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       </.number_input>
-      <.number_input id="number-input-style-lg" class="number-input number-input--lg">
+      <.number_input id="number-input-style-md" class="number-input number-input--md w-full" value="1">
+        <:label>MD</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-lg" class="number-input number-input--lg w-full" value="1">
         <:label>LG</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-xl" class="number-input number-input--xl w-full" value="1">
+        <:label>XL</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    triggers = styling_triggers_code()
+
+    """
+    <.number_input class="number-input max-w-2xs" value="1">
+      <:label>2xs</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input max-w-md" value="1">
+      <:label>MD</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input max-w-xl" value="1">
+      <:label>XL</:label>
+    #{triggers}
+    </.number_input>
+    <.number_input class="number-input max-w-2xl" value="1">
+      <:label>2XL</:label>
+    #{triggers}
+    </.number_input>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-stretch w-full">
+      <.number_input id="number-input-style-max-2xs" class="number-input max-w-2xs w-full" value="1">
+        <:label>2xs</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-max-md" class="number-input max-w-md w-full" value="1">
+        <:label>MD</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-max-xl" class="number-input max-w-xl w-full" value="1">
+        <:label>XL</:label>
+        <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+        <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+      </.number_input>
+      <.number_input id="number-input-style-max-2xl" class="number-input max-w-2xl w-full" value="1">
+        <:label>2XL</:label>
         <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
         <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       </.number_input>

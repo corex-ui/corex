@@ -1,6 +1,6 @@
 import {
   readUpdatedServerString
-} from "./chunks/chunk-B34HSI73.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

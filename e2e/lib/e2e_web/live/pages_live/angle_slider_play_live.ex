@@ -127,7 +127,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -136,7 +136,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -145,7 +145,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -154,7 +154,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="show_markers"
             checked={@controls.show_markers}
             on_checked_change="control_changed"
@@ -182,7 +182,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
 
           <.select
             id="value_text_as"
-            class="select select--accent w-4xs"
+            class="select select--sm w-4xs"
             value={[@controls.value_text_as]}
             deselectable={false}
             items={[

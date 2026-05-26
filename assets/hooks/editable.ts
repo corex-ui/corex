@@ -11,32 +11,58 @@ import {
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
 import { idMatches, notifyChange, readPayloadId, readPayloadValue } from "../lib/respond-to";
+import {
+  notifyPhoenixFormChange,
+  type NotifyPhoenixFormChangeOptions,
+} from "../lib/live-view-form-input";
 
 type EditableHookState = {
   editable?: Editable;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  allowFormNotify?: boolean;
+  unbindFormSubmit?: () => void;
 };
 
 export function dataDefaultValue(el: HTMLElement): string {
   return getString(el, "defaultValue") ?? "";
 }
 
-function notifyEditableValueChange(
+function formValueInput(el: HTMLElement): HTMLInputElement | null {
+  return el.querySelector<HTMLInputElement>(`#${el.id}-value`);
+}
+
+function syncEditableFormValue(
   el: HTMLElement,
-  pushEvent: (name: string, payload: Record<string, unknown>) => void,
-  canPush: () => boolean,
-  value: string
+  value: string,
+  options: NotifyPhoenixFormChangeOptions = {}
 ): void {
+  const hidden = formValueInput(el);
+  if (hidden) {
+    notifyPhoenixFormChange(hidden, value, options);
+    return;
+  }
+
   const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]') as {
     value: string;
     dispatchEvent: (e: Event) => boolean;
   } | null;
   if (inputEl) {
-    inputEl.value = value;
-    inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-    inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+    notifyPhoenixFormChange(inputEl as HTMLInputElement, value, options);
   }
+}
+
+function notifyEditableValueChange(
+  el: HTMLElement,
+  pushEvent: (name: string, payload: Record<string, unknown>) => void,
+  canPush: () => boolean,
+  value: string,
+  hook: EditableHookState
+): void {
+  syncEditableFormValue(el, value, {
+    markUsed: hook.allowFormNotify === true,
+  });
+
   notifyChange({
     el,
     canPushServer: canPush(),
@@ -50,6 +76,29 @@ function notifyEditableValueChange(
   });
 }
 
+function bindFormSubmitSync(el: HTMLElement, zag: Editable): () => void {
+  const form = el.closest("form");
+  if (!form) return () => {};
+
+  const onSubmit = () => {
+    if (!zag.api.editing) return;
+
+    const inputEl = el.querySelector(
+      '[data-scope="editable"][data-part="input"]'
+    ) as HTMLInputElement | null;
+
+    syncEditableFormValue(el, inputEl?.value ?? zag.api.value, { markUsed: false });
+  };
+
+  form.addEventListener("submit", onSubmit, true);
+  return () => form.removeEventListener("submit", onSubmit, true);
+}
+
+function zagName(el: HTMLElement): string | undefined {
+  if (formValueInput(el)) return undefined;
+  return getString(el, "name");
+}
+
 const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & EditableHookState) {
     const el = this.el;
@@ -58,6 +107,8 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
     const placeholder = getString(el, "placeholder");
     const activationMode = getString(el, "activationMode") as "focus" | "dblclick" | undefined;
     const selectOnFocus = getBoolean(el, "selectOnFocus");
+
+    this.allowFormNotify = false;
 
     const valueBinding = mountStringBinding(el, "value", "defaultValue");
     const zag = new Editable(el, {
@@ -69,8 +120,8 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagName(el),
+      form: formValueInput(el) ? undefined : getString(el, "form"),
       dir: getDir(el),
       ...(placeholder !== undefined ? { placeholder } : {}),
       ...(activationMode !== undefined ? { activationMode } : {}),
@@ -79,14 +130,21 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
         ? { edit: getBoolean(el, "edit") }
         : { defaultEdit: getBoolean(el, "defaultEdit") }),
       onValueChange: (details: ValueChangeDetails) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
       },
       onValueCommit: (details: ValueChangeDetails) => {
-        notifyEditableValueChange(el, pushEvent, canPush, details.value);
+        notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
       },
     } as Props);
     zag.init();
     this.editable = zag;
+
+    queueMicrotask(() => {
+      syncEditableFormValue(el, zag.api.value, { markUsed: false });
+      this.allowFormNotify = true;
+    });
+
+    this.unbindFormSubmit = bindFormSubmitSync(el, zag);
 
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
@@ -115,8 +173,8 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
       readOnly: getBoolean(el, "readonly"),
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
+      name: zagName(el),
+      form: formValueInput(el) ? undefined : getString(el, "form"),
       dir: getDir(el),
       ...editPatch,
     };
@@ -127,6 +185,7 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & EditableHookState) {
+    this.unbindFormSubmit?.();
     this.domRegistry?.teardown();
     this.handleRegistry?.teardown();
     this.editable?.destroy();

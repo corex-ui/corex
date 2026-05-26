@@ -61,32 +61,45 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
-  def styling_color_code do
-    ~S"""
-    <.editable class="editable" value="Default">
+  defp styling_slots_code do
+    """
       <:label>Label</:label>
       <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
       <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
       <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    """
+  end
+
+  def styling_color_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable" value="Default">
+    #{slots}
     </.editable>
     <.editable class="editable editable--accent" value="Accent">
-      <:label>Label</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    #{slots}
     </.editable>
     <.editable class="editable editable--brand" value="Brand">
-      <:label>Label</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--alert" value="Alert">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--info" value="Info">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--success" value="Success">
+    #{slots}
     </.editable>
     """
   end
 
   def styling_color_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
+    <div class="flex flex-wrap gap-6 items-start">
       <.editable id="editable-style-color-default" class="editable" value="Default">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
@@ -105,37 +118,193 @@ defmodule E2eWeb.Demos.EditableDemo do
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
+      <.editable id="editable-style-color-alert" class="editable editable--alert" value="Alert">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-color-info" class="editable editable--info" value="Info">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-color-success" class="editable editable--success" value="Success">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
     </div>
     """
   end
 
   def styling_size_code do
-    ~S"""
+    slots = styling_slots_code()
+
+    """
     <.editable class="editable editable--sm" value="SM">
-      <:label>Label</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--md" value="MD">
+    #{slots}
     </.editable>
     <.editable class="editable editable--lg" value="LG">
-      <:label>Label</:label>
-      <:edit_trigger><.heroicon name="hero-pencil-square" /></:edit_trigger>
-      <:submit_trigger><.heroicon name="hero-check" /></:submit_trigger>
-      <:cancel_trigger><.heroicon name="hero-x-mark" /></:cancel_trigger>
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--xl" value="XL">
+    #{slots}
     </.editable>
     """
   end
 
   def styling_size_example(assigns) do
+    _ = assigns
+
     ~H"""
-    <div class="flex flex-col gap-4 w-full max-w-sm">
+    <div class="flex flex-col gap-4 items-start">
       <.editable id="editable-style-sm" class="editable editable--sm" value="SM">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
         <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
+      <.editable id="editable-style-md" class="editable editable--md" value="MD">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
       <.editable id="editable-style-lg" class="editable editable--lg" value="LG">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-xl" class="editable editable--xl" value="XL">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable editable--rounded-none" value="None">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--rounded-sm" value="SM">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--rounded-md" value="MD">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--rounded-lg" value="LG">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--rounded-xl" value="XL">
+    #{slots}
+    </.editable>
+    <.editable class="editable editable--rounded-full" value="Full">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start">
+      <.editable id="editable-style-radius-none" class="editable editable--rounded-none" value="None">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-radius-sm" class="editable editable--rounded-sm" value="SM">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-radius-md" class="editable editable--rounded-md" value="MD">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-radius-lg" class="editable editable--rounded-lg" value="LG">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-radius-xl" class="editable editable--rounded-xl" value="XL">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-radius-full" class="editable editable--rounded-full" value="Full">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    slots = styling_slots_code()
+
+    """
+    <.editable class="editable max-w-2xs" value="2xs">
+    #{slots}
+    </.editable>
+    <.editable class="editable max-w-md" value="MD">
+    #{slots}
+    </.editable>
+    <.editable class="editable max-w-xl" value="XL">
+    #{slots}
+    </.editable>
+    <.editable class="editable max-w-2xl" value="2XL">
+    #{slots}
+    </.editable>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-start">
+      <.editable id="editable-style-max-2xs" class="editable max-w-2xs" value="2xs">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-max-md" class="editable max-w-md" value="MD">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-max-xl" class="editable max-w-xl" value="XL">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.editable id="editable-style-max-2xl" class="editable max-w-2xl" value="2XL">
         <:label>Label</:label>
         <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
         <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>

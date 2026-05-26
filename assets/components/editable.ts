@@ -1,6 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/editable";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { syncInputFormAssociation } from "../lib/util";
 
 export class Editable extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,6 +30,12 @@ export class Editable extends Component<Props, Api> {
       '[data-scope="editable"][data-part="label"]'
     );
     if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+
+    const formValueEl = this.el.querySelector<HTMLInputElement>(`#${this.el.id}-value`);
+    if (formValueEl) {
+      formValueEl.value = this.api.value;
+      syncInputFormAssociation(formValueEl, this.el);
+    }
 
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="editable"][data-part="input"]'

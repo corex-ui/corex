@@ -1,0 +1,50 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="pin-input-styling-page"
+    title={~t"Pin Input · Style"}
+    subtitle={
+      ~t"Semantic colors, density, corner radius, and cell states via modifier classes on the pin input root."
+    }
+  >
+    <.demo_section
+      id="pin-input-styling-color"
+      title={~t"Color"}
+      code={E2eWeb.Demos.PinInputDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.PinInputDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-styling-radius"
+      title={~t"Radius"}
+      code={E2eWeb.Demos.PinInputDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-styling-states"
+      title={~t"States"}
+      code={E2eWeb.Demos.PinInputDemo.styling_states_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.PinInputDemo.styling_states_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

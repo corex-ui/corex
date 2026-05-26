@@ -107,6 +107,21 @@ defmodule Corex.Editable.Anatomy do
     def ignored_attrs, do: @ignored_attrs
   end
 
+  defmodule FormValue do
+    @moduledoc false
+    defstruct [:id, :name, :value, :form]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            name: String.t(),
+            value: String.t() | nil,
+            form: String.t() | nil
+          }
+
+    @ignored_attrs ["id", "name", "value", "form"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
   defmodule Input do
     @moduledoc false
     defstruct [

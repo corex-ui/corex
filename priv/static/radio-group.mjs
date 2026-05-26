@@ -5,6 +5,7 @@ import {
   toPx
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
+  notifyPhoenixFormChange,
   reapplyLiveViewValueInputUsage
 } from "./chunks/chunk-VMKNATWC.mjs";
 import {
@@ -14,7 +15,7 @@ import {
 import {
   readStringControlledZagProps,
   readUpdatedServerString
-} from "./chunks/chunk-B34HSI73.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -544,7 +545,38 @@ var RadioGroup = class extends Component {
   }
 };
 
+// lib/form-field-feedback.ts
+function isCorexFormField(el) {
+  return getBoolean(el, "formField");
+}
+function setHostDataInvalid(el, invalid) {
+  if (invalid) {
+    el.setAttribute("data-invalid", "");
+  } else {
+    el.removeAttribute("data-invalid");
+  }
+}
+function setScopeErrorsVisible(el, scope, visible) {
+  el.querySelectorAll(`[data-scope="${scope}"][data-part="error"]`).forEach((node) => {
+    node.hidden = !visible;
+  });
+}
+function clearCorexFormFieldFeedback(el, scope) {
+  setHostDataInvalid(el, false);
+  setScopeErrorsVisible(el, scope, false);
+}
+function hasCorexFormFieldValue(value) {
+  return value != null && value !== "";
+}
+
 // hooks/radio-group.ts
+function syncRadioGroupValueInputForPhoenix(el, value, options = {}) {
+  const valueInput = el.querySelector(
+    '[data-scope="radio-group"][data-part="value-input"]'
+  );
+  if (!valueInput) return;
+  notifyPhoenixFormChange(valueInput, value ?? "", options);
+}
 function valueChangePayload(el, details) {
   return {
     id: el.id,
@@ -569,6 +601,9 @@ var RadioGroupHook = {
       orientation: getString(el, "orientation"),
       onValueChange: (details) => {
         const selected = details.value;
+        if (isCorexFormField(el)) {
+          this.lastServerValue = selected ?? void 0;
+        }
         el.querySelectorAll(
           '[data-scope="radio-group"][data-part="item-hidden-input"]'
         ).forEach((input) => {
@@ -576,13 +611,23 @@ var RadioGroupHook = {
           if (input.checked !== on) input.checked = on;
           syncInputFormAssociation(input, el);
         });
-        const checked = el.querySelector(
-          '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+        syncRadioGroupValueInputForPhoenix(el, selected);
+        if (isCorexFormField(el) && hasCorexFormFieldValue(selected)) {
+          clearCorexFormFieldFeedback(el, "radio-group");
+          zag.updateProps({ invalid: false });
+        }
+        const valueInput2 = el.querySelector(
+          '[data-scope="radio-group"][data-part="value-input"]'
         );
-        if (checked) {
-          reapplyLiveViewValueInputUsage(checked);
-          checked.dispatchEvent(new Event("input", { bubbles: true }));
-          checked.dispatchEvent(new Event("change", { bubbles: true }));
+        if (!valueInput2) {
+          const checked = el.querySelector(
+            '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+          );
+          if (checked) {
+            reapplyLiveViewValueInputUsage(checked);
+            checked.dispatchEvent(new Event("input", { bubbles: true }));
+            checked.dispatchEvent(new Event("change", { bubbles: true }));
+          }
         }
         notifyChange({
           el,
@@ -596,6 +641,15 @@ var RadioGroupHook = {
     });
     zag.init();
     this.radioGroup = zag;
+    this.lastServerValue = getString(el, "value") ?? void 0;
+    queueMicrotask(() => {
+      if (!isCorexFormField(el)) return;
+      syncRadioGroupValueInputForPhoenix(el, zag.api.value ?? null, { markUsed: false });
+    });
+    const valueInput = el.querySelector(
+      '[data-scope="radio-group"][data-part="value-input"]'
+    );
+    if (valueInput) syncInputFormAssociation(valueInput, el);
     const emitValue = (respondTo) => {
       const value = zag.api.value;
       emitResponse({
@@ -645,7 +699,10 @@ var RadioGroupHook = {
   updated() {
     const el = this.el;
     const zag = this.radioGroup;
-    const valuePatch = readUpdatedServerString(el);
+    const valuePatch = readUpdatedServerString(el, this.lastServerValue);
+    if ("value" in valuePatch) {
+      this.lastServerValue = valuePatch.value ?? void 0;
+    }
     zag?.updateProps({
       id: el.id,
       ...valuePatch,
@@ -657,6 +714,9 @@ var RadioGroupHook = {
       orientation: getString(el, "orientation"),
       dir: getDir(el)
     });
+    if ("value" in valuePatch) {
+      syncRadioGroupValueInputForPhoenix(el, valuePatch.value ?? null, { markUsed: false });
+    }
   },
   destroyed() {
     this.domRegistry?.teardown();

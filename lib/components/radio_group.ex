@@ -344,7 +344,8 @@ defmodule Corex.RadioGroup do
     ItemText,
     Label,
     Props,
-    Root
+    Root,
+    ValueInput
   }
 
   alias Corex.RadioGroup.Connect
@@ -395,14 +396,20 @@ defmodule Corex.RadioGroup do
     assigns
     |> Corex.FormField.assign_form_field(field)
     |> assign(:value, v)
-    |> radio_group()
+    |> assign(:form_field, true)
+    |> do_radio_group()
   end
 
   def radio_group(assigns) do
+    assigns
+    |> assign_new(:form_field, fn -> false end)
+    |> do_radio_group()
+  end
+
+  defp do_radio_group(assigns) do
     assigns =
       assigns
       |> assign_new(:id, fn -> "radio-group-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:errors, fn -> [] end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, normalize_radio_items(assigns.items))
@@ -431,6 +438,13 @@ defmodule Corex.RadioGroup do
         on_value_change_client: @on_value_change_client
       })}
     >
+      <input
+        :if={@form_field}
+        phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})}
+        name={@name}
+        value={@value || ""}
+      />
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != [], read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != [], read_only: @read_only})}>
         <div :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
@@ -462,7 +476,7 @@ defmodule Corex.RadioGroup do
             value: entry.value,
             disabled: entry.disabled,
             invalid: entry.invalid,
-            name: @name,
+            name: if(@form_field, do: nil, else: @name),
             form: @form,
             checked: @value == entry.value,
             dir: @dir,
@@ -472,7 +486,7 @@ defmodule Corex.RadioGroup do
             value: entry.value,
             disabled: entry.disabled,
             invalid: entry.invalid,
-            name: @name,
+            name: if(@form_field, do: nil, else: @name),
             form: @form,
             checked: @value == entry.value,
             dir: @dir,
@@ -505,7 +519,12 @@ defmodule Corex.RadioGroup do
           })}
         </label>
       </div>
-      <div :if={@error != []} :for={msg <- @errors} data-scope="radio-group" data-part="error">
+      <div
+        :if={@error != [] and !Enum.empty?(@errors)}
+        :for={msg <- @errors}
+        data-scope="radio-group"
+        data-part="error"
+      >
         {render_slot(@error, msg)}
       </div>
     </div>

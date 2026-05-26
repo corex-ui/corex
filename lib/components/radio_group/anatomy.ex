@@ -183,6 +183,33 @@ defmodule Corex.RadioGroup.Anatomy do
     def ignored_attrs, do: @ignored_attrs
   end
 
+  defmodule ValueInput do
+    @moduledoc false
+    defstruct [:id, :dir, :orientation]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "data-orientation",
+      "dir",
+      "name",
+      "value",
+      "type",
+      "hidden",
+      "aria-hidden",
+      "tabindex",
+      "data-focus",
+      "data-focus-visible"
+    ]
+
+    def ignored_attrs, do: @ignored_attrs
+  end
+
   defmodule ItemHiddenInput do
     @moduledoc false
     defstruct [:id, :value, :disabled, :invalid, :name, :form, :checked, :dir, :orientation]

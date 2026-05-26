@@ -44,7 +44,7 @@
   width: 100%;
 
   &[data-orientation="vertical"] {
-    height:  var(--container-md);
+    height: calc(var(--spacing-size) * 6);
   }
 
   &[data-orientation="horizontal"] {
@@ -119,9 +119,20 @@
 }
 }
 
+@utility marquee--* {
+  [data-scope="marquee"][data-part="item"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="marquee"][data-part="root"][data-orientation="vertical"] {
+    height: calc(--value(--spacing-size-*, [length]) * 6);
+  }
+}
+
 @utility marquee--on-* {
   [data-scope="marquee"][data-part="edge"] {
-
-  --edge-background: --value(--color-*, [color]);
+    --edge-background: --value(--color-*, [color]);
   }
 }

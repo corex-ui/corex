@@ -41,7 +41,7 @@ defmodule E2eWeb.TagsInputPlayLive do
       <.demo_playground path={@path} title="Tags input · Playground" heading_class="layout-heading">
         <:controls>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -49,7 +49,7 @@ defmodule E2eWeb.TagsInputPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="editable"
             checked={@controls.editable}
             on_checked_change="control_changed"
@@ -57,7 +57,7 @@ defmodule E2eWeb.TagsInputPlayLive do
             <:label>Editable</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="allow_duplicates"
             checked={@controls.allow_duplicates}
             on_checked_change="control_changed"
@@ -65,7 +65,7 @@ defmodule E2eWeb.TagsInputPlayLive do
             <:label>Allow duplicates</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="add_on_paste"
             checked={@controls.add_on_paste}
             on_checked_change="control_changed"

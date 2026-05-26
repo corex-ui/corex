@@ -42,11 +42,6 @@ defmodule E2eWeb.NumberInputModel do
     wait_root_number_input_ready(session, "number-input-playground")
   end
 
-  def wait_patterns_page(session) do
-    assert_has(session, css("#number-input-patterns-page", visible: :any))
-    session
-  end
-
   def click_increment_in_section(session, section_dom_id) do
     click(
       session,
@@ -67,6 +62,46 @@ defmodule E2eWeb.NumberInputModel do
     click(
       session,
       xpath("(//*[@id='#{section_id}']//button[normalize-space(.)='#{label}'])[1]")
+    )
+
+    session
+  end
+
+  def assert_hidden_submit_value(session, host_dom_id, expected)
+      when is_binary(host_dom_id) and is_binary(expected) do
+    actual = hidden_submit_value_at_host(session, host_dom_id)
+
+    assert actual == expected,
+           "expected hidden submit value #{inspect(expected)}, got #{inspect(actual)}"
+
+    session
+  end
+
+  def hidden_submit_value_at_host(session, host_dom_id) when is_binary(host_dom_id) do
+    key = {:e2e_number_input_submit_value, self(), make_ref()}
+
+    _ =
+      execute_script(
+        session,
+        """
+        const host = document.getElementById(arguments[0]);
+        const hidden = host?.querySelector('[data-part="value-input"]');
+        return hidden?.value ?? "";
+        """,
+        [host_dom_id],
+        fn value -> Process.put(key, to_string(value || "")) end
+      )
+
+    Process.get(key, "")
+  end
+
+  def refute_number_input_field_error(session, host_dom_id) when is_binary(host_dom_id) do
+    refute_has(
+      session,
+      css(
+        "##{host_dom_id} [data-scope='number-input'][data-part='error']",
+        visible: :any
+      )
     )
 
     session
@@ -118,6 +153,7 @@ defmodule E2eWeb.NumberInputModel do
     path =
       case {mode, form} do
         {:static, :native} -> "/en/number-input/form#number-input-form-native"
+        {:static, :ecto} -> "/en/number-input/form#number-input-form-ecto"
         {:static, _} -> "/en/number-input/form#number-input-form-phoenix"
         {:live, _} -> "/en/number-input/live-form"
       end
@@ -296,6 +332,7 @@ defmodule E2eWeb.NumberInputModel do
             visible: :any
           )
         )
+        |> wait_number_input_hidden_value("number-input-plain-form", :static)
         |> click(css("#number-input-plain-submit"))
 
       {:live, _} ->

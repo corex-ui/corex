@@ -27,6 +27,7 @@ defmodule Corex.NumberInput.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
+            form_field: boolean(),
             value: String.t() | nil,
             min: number() | nil,
             max: number() | nil,

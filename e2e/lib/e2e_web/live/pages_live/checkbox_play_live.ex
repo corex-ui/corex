@@ -79,7 +79,7 @@ defmodule E2eWeb.CheckboxPlayLive do
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -88,7 +88,7 @@ defmodule E2eWeb.CheckboxPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="read_only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -97,7 +97,7 @@ defmodule E2eWeb.CheckboxPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"
@@ -108,7 +108,7 @@ defmodule E2eWeb.CheckboxPlayLive do
         <:canvas>
           <.checkbox
             id="checkbox-playground"
-            class="checkbox"
+            class="checkbox checkbox--sm"
             checked={@checked}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

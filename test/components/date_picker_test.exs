@@ -105,7 +105,8 @@ defmodule Corex.DatePickerTest do
           %{form: form}
         )
 
-      assert html1 =~ "data-default-value=\"2025-01-01\""
+      assert html1 =~ "data-scope=\"date-picker\""
+      assert html1 =~ "name=\"user[d1]\""
 
       html2 =
         render_component(
@@ -118,6 +119,53 @@ defmodule Corex.DatePickerTest do
         )
 
       assert html2 =~ "data-scope=\"date-picker\""
+    end
+  end
+
+  describe "format_value/2" do
+    test "formats single Date as ISO" do
+      assert DatePicker.format_value("single", ~D[2024-06-01]) == "2024-06-01"
+    end
+
+    test "formats multiple dates as comma-separated ISO" do
+      assert DatePicker.format_value("multiple", [~D[2024-06-01], ~D[2024-06-15]]) ==
+               "2024-06-01, 2024-06-15"
+    end
+
+    test "formats range from comma string" do
+      assert DatePicker.format_value("range", "2024-01-01,2024-06-30") ==
+               "2024-01-01, 2024-06-30"
+    end
+
+    test "does not use inspect for Date structs" do
+      refute DatePicker.format_value("single", ~D[2024-06-01]) =~ "~D"
+    end
+  end
+
+  describe "cast_params/2" do
+    test "casts single from value key" do
+      assert DatePicker.cast_params("single", %{"value" => "2024-06-01"}) == %{
+               "date" => "2024-06-01"
+             }
+    end
+
+    test "casts multiple from comma string" do
+      assert DatePicker.cast_params("multiple", %{"value" => "2024-06-01, 2024-06-15"}) == %{
+               "dates" => ["2024-06-01", "2024-06-15"]
+             }
+    end
+
+    test "casts range from list" do
+      assert DatePicker.cast_params("range", %{"date_range" => ["2024-01-01", "2024-06-30"]}) ==
+               %{
+                 "date_range" => ["2024-01-01", "2024-06-30"]
+               }
+    end
+
+    test "casts range from comma string via value key" do
+      assert DatePicker.cast_params("range", %{"value" => "2024-01-01,2024-06-30"}) == %{
+               "date_range" => ["2024-01-01", "2024-06-30"]
+             }
     end
   end
 

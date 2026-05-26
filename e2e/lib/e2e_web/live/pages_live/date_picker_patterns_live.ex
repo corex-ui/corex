@@ -62,7 +62,7 @@ defmodule E2eWeb.DatePickerPatternsLive do
                 id="date-picker-patterns-controlled"
                 class="date-picker"
                 controlled
-                value={@selected && [@selected]}
+                value={@selected}
                 on_value_change="pattern_date_changed"
                 translation={
                   %Corex.DatePicker.Translation{

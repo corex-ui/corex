@@ -172,14 +172,24 @@ defmodule E2eWeb.ToastPlayLive do
               phx-submit="create_toast"
               class="flex flex-col gap-space"
             >
-              <.native_input field={@form[:title]} type="text" class="native-input w-full" required>
+              <.native_input
+                field={@form[:title]}
+                type="text"
+                class="native-input native-input--sm w-full"
+                required
+              >
                 <:label>Title</:label>
               </.native_input>
-              <.native_input field={@form[:message]} type="text" class="native-input w-full" required>
+              <.native_input
+                field={@form[:message]}
+                type="text"
+                class="native-input native-input--sm w-full"
+                required
+              >
                 <:label>Message</:label>
               </.native_input>
               <.select
-                class="select select--accent w-full"
+                class="select select--sm w-full"
                 field={@form[:type]}
                 items={@type_items}
               >
@@ -191,7 +201,7 @@ defmodule E2eWeb.ToastPlayLive do
               <.number_input
                 id="toast-playground-duration"
                 field={@form[:duration]}
-                class="number-input w-full"
+                class="number-input number-input--sm w-full"
                 min={0.0}
                 step={1.0}
                 required
@@ -204,11 +214,11 @@ defmodule E2eWeb.ToastPlayLive do
                   <.heroicon name="hero-chevron-up" class="icon" />
                 </:increment_trigger>
               </.number_input>
-              <.switch field={@form[:loading]} class="switch">
+              <.switch field={@form[:loading]} class="switch switch--sm">
                 <:label>Loading</:label>
               </.switch>
               <footer class="flex w-full justify-end">
-                <.action type="submit" class="button button--accent">Create toast</.action>
+                <.action type="submit" class="button button--sm button--accent">Create toast</.action>
               </footer>
             </.form>
           </div>

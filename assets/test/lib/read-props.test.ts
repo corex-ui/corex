@@ -13,6 +13,7 @@ import {
   readStringControlledZagUpdate,
   readStringListControlledZagUpdate,
   readStringListControlledZagProps,
+  readUpdatedServerString,
   mountCheckedBinding,
 } from "../../lib/read-props";
 
@@ -26,6 +27,20 @@ describe("readStringControlledZagProps", () => {
     const node = el({ defaultValue: "y" });
     expect(readStringControlledZagProps(node, "value", "defaultValue")).toEqual({
       defaultValue: "y",
+    });
+  });
+
+  it("returns defaultValue from data-value when form field", () => {
+    const node = el({ formField: true, value: "from-server" });
+    expect(readStringControlledZagProps(node, "value", "defaultValue")).toEqual({
+      defaultValue: "from-server",
+    });
+  });
+
+  it("returns defaultValue when form field even if data-controlled is set", () => {
+    const node = el({ formField: true, controlled: true, value: "duis" });
+    expect(readStringControlledZagProps(node, "value", "defaultValue")).toEqual({
+      defaultValue: "duis",
     });
   });
 });
@@ -48,6 +63,16 @@ describe("readStringControlledZagUpdate", () => {
   it("returns empty when uncontrolled", () => {
     const node = el({ defaultValue: "init" });
     expect(readStringControlledZagUpdate(node, "value", "defaultValue")).toEqual({});
+  });
+
+  it("returns empty when form field data-value unchanged", () => {
+    const node = el({ formField: true, value: "same" });
+    expect(readUpdatedServerString(node, "same")).toEqual({});
+  });
+
+  it("returns value when form field data-value changes", () => {
+    const node = el({ formField: true, value: "next" });
+    expect(readUpdatedServerString(node, "prev")).toEqual({ value: "next" });
   });
 });
 
@@ -88,12 +113,12 @@ describe("readCheckedControlledZagUpdate", () => {
 describe("readNumberControlledZagProps", () => {
   it("returns value and step when controlled", () => {
     const node = el({ controlled: true, value: 5, step: 2 });
-    expect(readNumberControlledZagProps(node)).toEqual({ value: 5, step: 2 });
+    expect(readNumberControlledZagProps(node)).toEqual({ value: "5", step: 2 });
   });
 
   it("returns defaultValue and step when uncontrolled", () => {
     const node = el({ defaultValue: 3, step: 1 });
-    expect(readNumberControlledZagProps(node)).toEqual({ defaultValue: 3, step: 1 });
+    expect(readNumberControlledZagProps(node)).toEqual({ defaultValue: "3", step: 1 });
   });
 });
 
@@ -116,6 +141,13 @@ describe("readStringListControlledZagProps", () => {
     const node = el({ controlled: true, value: "a, b" });
     expect(readStringListControlledZagProps(node, "value", "defaultValue")).toEqual({
       value: ["a", "b"],
+    });
+  });
+
+  it("returns defaultValue list from data-value when form field", () => {
+    const node = el({ formField: true, value: "a, b" });
+    expect(readStringListControlledZagProps(node, "value", "defaultValue")).toEqual({
+      defaultValue: ["a", "b"],
     });
   });
 });
@@ -164,12 +196,20 @@ describe("readStringListControlledZagUpdate", () => {
 describe("readNumberControlledZagUpdate", () => {
   it("returns value and step when controlled", () => {
     const node = el({ controlled: true, value: 5, step: 2 });
-    expect(readNumberControlledZagUpdate(node)).toEqual({ value: 5, step: 2 });
+    expect(readNumberControlledZagUpdate(node)).toEqual({
+      value: "5",
+      step: 2,
+      nextServerValue: "5",
+    });
   });
 
   it("returns value when form field", () => {
     const node = el({ formField: true, value: "7", step: 1 });
-    expect(readNumberControlledZagUpdate(node)).toEqual({ value: 7, step: 1 });
+    expect(readNumberControlledZagUpdate(node)).toEqual({
+      value: "7",
+      step: 1,
+      nextServerValue: "7",
+    });
   });
 
   it("returns step only when uncontrolled", () => {

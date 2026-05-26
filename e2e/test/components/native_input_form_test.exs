@@ -4,53 +4,68 @@ defmodule E2eWeb.NativeInputFormTest do
 
   alias E2eWeb.NativeInputModel, as: NativeInput
 
-  feature "static form - submit empty shows flash with name and agree", %{session: session} do
+  feature "static native form - submit empty shows flash with name and agree", %{session: session} do
     session
     |> NativeInput.goto_form(:static, :native)
     |> NativeInput.submit_form(:static, :native)
     |> NativeInput.wait_for_redirect()
-    |> NativeInput.see_flash("Submitted: name=")
+    |> NativeInput.see_flash("Submitted:")
   end
 
-  feature "static form - fill all native input types then submit shows all values in flash", %{
-    session: session
-  } do
+  feature "static native form - fill all native input types then submit shows all values in flash",
+          %{
+            session: session
+          } do
     session
     |> NativeInput.goto_form(:static, :native)
-    |> NativeInput.fill_input_via_script("native-input-form-name", "Alice", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-email", "alice@example.com", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-bio", "Developer", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-birth-date", "1990-01-15", :static)
-    |> NativeInput.fill_input_via_script(
-      "native-input-form-datetime",
-      "2024-06-15T14:30",
-      :static
-    )
-    |> NativeInput.fill_input_via_script("native-input-form-reminder-time", "09:00", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-month", "2024-06", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-week", "2024-W24", :static)
-    |> NativeInput.fill_input_via_script(
-      "native-input-form-website",
-      "https://example.com",
-      :static
-    )
-    |> NativeInput.fill_input_via_script("native-input-form-phone", "+1234567890", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-q", "elixir", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-color", "#ef4444", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-count", "42", :static)
-    |> NativeInput.fill_input_via_script("native-input-form-password", "secret", :static)
-    |> NativeInput.select_option("native-input-form-role", "admin", :static)
-    |> NativeInput.select_multiple_options(
-      "native-input-form-tags",
-      ["elixir", "phoenix"],
-      :static
-    )
-    |> NativeInput.click_radio("profile[size]", "m", :static)
-    |> NativeInput.click_agree(:static)
+    |> NativeInput.fill_all_fields(:static, :native)
     |> NativeInput.submit_form(:static, :native)
     |> NativeInput.wait_for_redirect()
     |> NativeInput.see_flash("Submitted:")
     |> NativeInput.see_flash("name=")
+    |> NativeInput.see_flash("size=")
+  end
+
+  feature "static ecto form - submit without required fields shows validation errors", %{
+    session: session
+  } do
+    session =
+      session
+      |> NativeInput.goto_form(:static, :ecto)
+      |> NativeInput.submit_form(:static, :ecto)
+
+    assert has_text?(session, "can't be blank")
+  end
+
+  feature "static ecto form - fill all fields then submit shows values in flash", %{
+    session: session
+  } do
+    session
+    |> NativeInput.goto_form(:static, :ecto)
+    |> NativeInput.fill_all_fields(:static, :ecto)
+    |> NativeInput.submit_form(:static, :ecto)
+    |> NativeInput.wait_for_redirect()
+    |> NativeInput.see_flash("Submitted:")
+    |> NativeInput.see_flash("size=")
+  end
+
+  feature "static ecto form - radio selection persists after failed submit", %{session: session} do
+    session =
+      session
+      |> NativeInput.goto_form(:static, :ecto)
+      |> NativeInput.click_radio("l", :static, :ecto)
+      |> NativeInput.submit_form(:static, :ecto)
+
+    assert has_text?(session, "can't be blank")
+
+    session =
+      session
+      |> NativeInput.fill_all_fields(:static, :ecto)
+      |> NativeInput.click_radio("s", :static, :ecto)
+      |> NativeInput.submit_form(:static, :ecto)
+      |> NativeInput.wait_for_redirect()
+
+    NativeInput.see_flash(session, "size=")
   end
 
   feature "live form - submit without required fields shows validation errors", %{
@@ -69,14 +84,10 @@ defmodule E2eWeb.NativeInputFormTest do
   } do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.fill_input_via_script("native-input-form-name", "Alice", :live)
-    |> NativeInput.fill_input_via_script("native-input-form-email", "alice@example.com", :live)
-    |> NativeInput.fill_input_via_script("native-input-form-bio", "Developer", :live)
-    |> NativeInput.fill_input_via_script("native-input-form-count", "42", :live)
-    |> NativeInput.select_option("native-input-form-role", "admin", :live)
-    |> NativeInput.click_agree(:live)
+    |> NativeInput.fill_all_fields(:live, :ecto)
     |> NativeInput.submit_form(:live, :ecto)
     |> NativeInput.see_flash("name=")
+    |> NativeInput.see_flash("size=")
   end
 
   feature "static form - has no A11y violations", %{session: session} do

@@ -156,7 +156,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad max-w-none">
+        <.signature_pad field={@form[:signature]} class="signature-pad">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />

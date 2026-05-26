@@ -995,7 +995,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input id="tags-style-color-base" class="tags-input w-full" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
@@ -1069,7 +1069,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-trigger-accent"
         class="tags-input w-full tags-input--trigger--accent"
@@ -1130,7 +1130,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input id="tags-style-size-sm" class="tags-input w-full tags-input--sm" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>
@@ -1168,7 +1168,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-text-sm"
         class="tags-input w-full tags-input--text-sm"
@@ -1225,7 +1225,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input
         id="tags-style-radius-none"
         class="tags-input w-full tags-input--rounded-none"
@@ -1289,7 +1289,7 @@ defmodule E2eWeb.Demos.TagsInputDemo do
     assigns = assign(assigns, :demo_tags, styling_tags_value())
 
     ~H"""
-    <div class="flex flex-col gap-space-lg w-full">
+    <div class="flex flex-col gap-space-lg w-full items-center">
       <.tags_input id="tags-style-max-2xs" class="tags-input w-full max-w-2xs" value={@demo_tags}>
         <:close><.heroicon name="hero-x-mark" /></:close>
       </.tags_input>

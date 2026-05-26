@@ -143,11 +143,16 @@ defmodule E2eWeb.CarouselPlayLive do
             </:item>
           </.toggle_group>
 
-          <.switch class="switch" id="loop" checked={@loop} on_checked_change="loop_changed">
+          <.switch
+            class="switch switch--sm"
+            id="loop"
+            checked={@loop}
+            on_checked_change="loop_changed"
+          >
             <:label>Loop</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="autoplay"
             checked={@autoplay}
             on_checked_change="autoplay_changed"

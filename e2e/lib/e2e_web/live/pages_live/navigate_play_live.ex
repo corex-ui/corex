@@ -30,7 +30,7 @@ defmodule E2eWeb.NavigatePlayLive do
       >
         <:controls>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="external"
             checked={@external}
             on_checked_change="external_changed"

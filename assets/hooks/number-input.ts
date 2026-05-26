@@ -10,6 +10,11 @@ import {
   getDir,
   syncInputFormAssociation,
 } from "../lib/util";
+import {
+  formatDisplayValue,
+  formatSubmitValue,
+  mergeFormatOptions,
+} from "../lib/number-input-format";
 import { mountNumberBinding, readUpdatedServerNumber } from "../lib/read-props";
 import {
   notifyChange,
@@ -48,18 +53,52 @@ type NumberInputHookState = {
   numberInput?: NumberInput;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  lastServerValue?: string;
 };
+
+function submitValueForHost(el: HTMLElement, valueAsNumber: number): string {
+  const step = getNumber(el, "step") ?? 1;
+  if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
+  return formatSubmitValue(valueAsNumber, step);
+}
+
+function canonicalDatasetValue(el: HTMLElement): string {
+  return getString(el, "value") ?? getString(el, "defaultValue") ?? "";
+}
+
+function hiddenSubmitValue(el: HTMLElement, displayValue: string, valueAsNumber?: number): string {
+  const step = getNumber(el, "step") ?? 1;
+
+  if (
+    valueAsNumber !== undefined &&
+    Number.isFinite(valueAsNumber) &&
+    !Number.isNaN(valueAsNumber)
+  ) {
+    return submitValueForHost(el, valueAsNumber);
+  }
+
+  const canonical = canonicalDatasetValue(el);
+  if (canonical !== "") {
+    return formatSubmitValue(canonical, step);
+  }
+
+  const stripped = (displayValue ?? "").replace(/,/g, "");
+  if (stripped === "") return "";
+
+  return formatSubmitValue(stripped, step);
+}
 
 export function syncNumberInputValueInput(
   el: HTMLElement,
   value: string,
-  notifyForm = false
+  notifyForm = false,
+  valueAsNumber?: number
 ): void {
   const valueInput = el.querySelector<HTMLInputElement>(
     '[data-scope="number-input"][data-part="value-input"]'
   );
   if (!valueInput) return;
-  const v = value ?? "";
+  const v = hiddenSubmitValue(el, value, valueAsNumber);
   const changed = valueInput.value !== v;
   if (changed) valueInput.value = v;
   syncInputFormAssociation(valueInput, el);
@@ -70,17 +109,38 @@ export function syncNumberInputValueInput(
   }
 }
 
+function setZagValue(zag: NumberInput, value: number | string): void {
+  const step = getNumber(zag.el, "step") ?? 1;
+
+  if (typeof value === "number") {
+    if (Number.isNaN(value)) return;
+    zag.machine.service.send({
+      type: "VALUE.SET",
+      value: formatDisplayValue(value, step),
+    });
+    return;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed === "") return;
+
+  zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
+}
+
 export function buildMachineProps(
   el: HTMLElement,
   pushEvent: (name: string, payload: Record<string, unknown>) => void,
   canPush: () => boolean
 ): Props {
+  const step = getNumber(el, "step") ?? 1;
+
   return {
     id: el.id,
     ...mountNumberBinding(el),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
-    step: getNumber(el, "step"),
+    step,
+    formatOptions: mergeFormatOptions(step),
     disabled: getBoolean(el, "disabled"),
     readOnly: getBoolean(el, "readonly"),
     invalid: getBoolean(el, "invalid"),
@@ -89,7 +149,7 @@ export function buildMachineProps(
     dir: getDir(el),
     onValueChange: (details: ValueChangeDetails) => {
       if (details.value !== undefined) {
-        syncNumberInputValueInput(el, details.value ?? "", true);
+        syncNumberInputValueInput(el, details.value ?? "", true, details.valueAsNumber);
       }
       notifyChange({
         el,
@@ -107,6 +167,24 @@ export function buildMachineProps(
   } as Props;
 }
 
+function numberInputPropsForUpdate(el: HTMLElement): Partial<Props> {
+  const step = getNumber(el, "step") ?? 1;
+
+  return {
+    id: el.id,
+    min: getNumber(el, "min"),
+    max: getNumber(el, "max"),
+    step,
+    formatOptions: mergeFormatOptions(step),
+    disabled: getBoolean(el, "disabled"),
+    readOnly: getBoolean(el, "readonly"),
+    invalid: getBoolean(el, "invalid"),
+    required: getBoolean(el, "required"),
+    allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+    dir: getDir(el),
+  };
+}
+
 const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
@@ -116,13 +194,14 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    const initial = String(zag.api.value ?? getString(el, "defaultValue") ?? "");
-    syncNumberInputValueInput(el, initial, true);
+    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? undefined;
+    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector<HTMLInputElement>(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (valueInput) {
-      queueLiveViewFormInputSync(valueInput, () => initial);
+      queueLiveViewFormInputSync(valueInput, () => initialSubmit);
     }
 
     const emitState = (respondTo: RespondTo) => {
@@ -142,10 +221,14 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
 
-    domRegistry.add<CustomEvent<{ value: number }>>("corex:number-input:set-value", (event) => {
-      const v = event.detail?.value;
-      if (typeof v === "number" && !Number.isNaN(v)) zag.api.setValue(v);
-    });
+    domRegistry.add<CustomEvent<{ value: number | string }>>(
+      "corex:number-input:set-value",
+      (event) => {
+        const v = event.detail?.value;
+        if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
+        else if (typeof v === "string") setZagValue(zag, v);
+      }
+    );
 
     domRegistry.add<CustomEvent>("corex:number-input:clear-value", () => {
       zag.api.clearValue();
@@ -181,7 +264,7 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
     registry.add("number_input_set_value", (payload: { id?: string; value: number }) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
-        zag.api.setValue(payload.value);
+        setZagValue(zag, payload.value);
       }
     });
 
@@ -224,29 +307,32 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const el = this.el;
     const zag = this.numberInput;
-    const valuePatch = readUpdatedServerNumber(el);
+    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
 
-    const next: Partial<Props> = {
-      id: el.id,
-      min: getNumber(el, "min"),
-      max: getNumber(el, "max"),
-      step: getNumber(el, "step"),
-      disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readonly"),
-      invalid: getBoolean(el, "invalid"),
-      required: getBoolean(el, "required"),
-      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-      dir: getDir(el),
-    };
-    Object.assign(next, valuePatch);
-    zag?.updateProps(next);
+    if (valuePatch.nextServerValue !== undefined) {
+      this.lastServerValue = valuePatch.nextServerValue;
+    }
+
+    const zagPatch = { ...valuePatch };
+    delete zagPatch.nextServerValue;
+
+    zag?.updateProps({
+      ...numberInputPropsForUpdate(el),
+      ...zagPatch,
+    } as Partial<Props>);
 
     queueMicrotask(() => {
-      if (zag && "value" in valuePatch) {
-        syncNumberInputValueInput(el, String(valuePatch.value ?? ""), false);
+      if (zag && "value" in zagPatch) {
+        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
       } else if (zag) {
-        syncNumberInputValueInput(el, zag.api.value ?? getString(el, "defaultValue") ?? "");
+        syncNumberInputValueInput(
+          el,
+          zag.api.value ?? getString(el, "defaultValue") ?? "",
+          false,
+          zag.api.valueAsNumber
+        );
       }
+
       const visible = el.querySelector<HTMLInputElement>(
         '[data-scope="number-input"][data-part="input"]'
       );

@@ -667,4 +667,129 @@ defmodule E2eWeb.Demos.MenuDemo do
     </.menu>
     """
   end
+
+  defp styling_items_attr do
+    ~S|items={[
+      %Corex.Tree.Item{value: "menu", label: "Menu"},
+      %Corex.Tree.Item{value: "combobox", label: "Combobox"},
+      %Corex.Tree.Item{value: "select", label: "Select"}
+    ]}|
+  end
+
+  def styling_color_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu" value="menu" #{items}>
+      <:trigger>Default</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--accent" value="menu" #{items}>
+      <:trigger>Accent</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--brand" value="menu" #{items}>
+      <:trigger>Brand</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--alert" value="menu" #{items}>
+      <:trigger>Alert</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--info" value="menu" #{items}>
+      <:trigger>Info</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--success" value="menu" #{items}>
+      <:trigger>Success</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-color-default" class="menu w-full" items={@items} value="menu">
+        <:trigger>Default</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-accent" class="menu menu--accent w-full" items={@items} value="menu">
+        <:trigger>Accent</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-brand" class="menu menu--brand w-full" items={@items} value="menu">
+        <:trigger>Brand</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-alert" class="menu menu--alert w-full" items={@items} value="menu">
+        <:trigger>Alert</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-color-info" class="menu menu--info w-full" items={@items} value="menu">
+        <:trigger>Info</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu
+        id="menu-style-color-success"
+        class="menu menu--success w-full"
+        items={@items}
+        value="menu"
+      >
+        <:trigger>Success</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    items = styling_items_attr()
+
+    """
+    <.menu class="menu menu--sm" #{items}>
+      <:trigger>SM</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--md" #{items}>
+      <:trigger>MD</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--lg" #{items}>
+      <:trigger>LG</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    <.menu class="menu menu--xl" #{items}>
+      <:trigger>XL</:trigger>
+      <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+    </.menu>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    assigns = assign(assigns, :items, demo_leaf_items())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.menu id="menu-style-size-sm" class="menu menu--sm w-full" items={@items}>
+        <:trigger>SM</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-md" class="menu menu--md w-full" items={@items}>
+        <:trigger>MD</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-lg" class="menu menu--lg w-full" items={@items}>
+        <:trigger>LG</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+      <.menu id="menu-style-size-xl" class="menu menu--xl w-full" items={@items}>
+        <:trigger>XL</:trigger>
+        <:indicator><.heroicon name="hero-chevron-down" /></:indicator>
+      </.menu>
+    </div>
+    """
+  end
 end

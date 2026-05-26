@@ -3041,7 +3041,49 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-B34HSI73.mjs
+  // ../priv/static/chunks/chunk-VL4ETB3G.mjs
+  function fractionDigitsForStep(step) {
+    var _a4;
+    if (!Number.isFinite(step) || step === Math.trunc(step)) {
+      return null;
+    }
+    const frac = (_a4 = step.toString().split(".")[1]) == null ? void 0 : _a4.replace(/0+$/, "");
+    if (!frac) return null;
+    return Math.min(frac.length, MAX_FRACTION_DIGITS);
+  }
+  function formatOptionsFromStep(step) {
+    const digits = fractionDigitsForStep(step);
+    if (digits === null) {
+      return { useGrouping: true };
+    }
+    return {
+      maximumFractionDigits: digits,
+      minimumFractionDigits: 0,
+      useGrouping: true
+    };
+  }
+  function mergeFormatOptions(step) {
+    return formatOptionsFromStep(step);
+  }
+  function formatSubmitOptions(step) {
+    return __spreadProps(__spreadValues({}, formatOptionsFromStep(step)), { useGrouping: false });
+  }
+  function formatSubmitValue(value, step) {
+    if (value === void 0 || value === null) return "";
+    const trimmed = String(value).trim();
+    if (trimmed === "") return "";
+    const n2 = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+    if (Number.isNaN(n2)) return trimmed.replace(/,/g, "");
+    return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n2);
+  }
+  function formatDisplayValue(value, step) {
+    if (value === void 0 || value === null) return "";
+    const trimmed = String(value).trim();
+    if (trimmed === "") return "";
+    const n2 = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+    if (Number.isNaN(n2)) return trimmed;
+    return new Intl.NumberFormat("en-US", mergeFormatOptions(step)).format(n2);
+  }
   function readStringControlledZagProps(el, valueKey, defaultKey) {
     return mountStringBinding(el, valueKey, defaultKey);
   }
@@ -3094,19 +3136,29 @@ var Corex = (() => {
     return { value: readDatasetStringList(el, "value") };
   }
   function mountStringListBinding(el) {
-    if (isZagValueControlled(el)) {
+    if (getBoolean(el, "formField")) {
+      return { defaultValue: readDatasetStringList(el, "value") };
+    }
+    if (getBoolean(el, "controlled")) {
       return { value: readDatasetStringList(el, "value") };
     }
     return { defaultValue: readDatasetStringList(el, "defaultValue") };
   }
-  function readUpdatedServerString(el) {
+  function readUpdatedServerString(el, lastServerValue) {
     if (!isZagValueControlled(el)) {
       return {};
     }
-    return { value: z(getString(el, "value")) };
+    const raw = getString(el, "value");
+    if (getBoolean(el, "formField") && raw === lastServerValue) {
+      return {};
+    }
+    return { value: z(raw) };
   }
   function mountStringBinding(el, valueKey, defaultKey) {
-    if (isZagValueControlled(el)) {
+    if (getBoolean(el, "formField")) {
+      return { defaultValue: z(getString(el, valueKey)) };
+    }
+    if (getBoolean(el, "controlled")) {
       return { value: z(getString(el, valueKey)) };
     }
     return { defaultValue: z(getString(el, defaultKey)) };
@@ -3121,11 +3173,11 @@ var Corex = (() => {
     return { checked: getCheckedState(el, "checked") };
   }
   function mountCheckedBinding(el) {
-    if (getBoolean(el, "controlled")) {
-      return { checked: getCheckedState(el, "checked") };
-    }
     if (getBoolean(el, "formField")) {
       return { defaultChecked: getCheckedState(el, "checked") };
+    }
+    if (getBoolean(el, "controlled")) {
+      return { checked: getCheckedState(el, "checked") };
     }
     return { defaultChecked: getCheckedState(el, "defaultChecked") };
   }
@@ -3151,27 +3203,53 @@ var Corex = (() => {
     }
     return { defaultValue: readDatasetTagsList(el, "defaultTags") };
   }
-  function readUpdatedServerNumber(el) {
-    const step = getNumber(el, "step");
-    const base = step !== void 0 ? { step } : {};
-    if (!isZagValueControlled(el)) {
-      return base;
+  function numberInputStep(el) {
+    var _a4;
+    return (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+  }
+  function readUpdatedServerNumber(el, lastServerValue) {
+    const step = numberInputStep(el);
+    const base = { step };
+    if (getBoolean(el, "controlled")) {
+      const raw = getString(el, "value");
+      if (raw === void 0 || raw === "") {
+        return base;
+      }
+      return __spreadProps(__spreadValues({}, base), {
+        value: formatDisplayValue(raw, step),
+        nextServerValue: raw
+      });
     }
-    const raw = getString(el, "value");
-    if (raw === void 0 || raw === "") {
-      return base;
+    if (getBoolean(el, "formField")) {
+      const raw = getString(el, "value");
+      if (raw === void 0 || raw === "") {
+        return base;
+      }
+      if (raw === lastServerValue) {
+        return base;
+      }
+      return __spreadProps(__spreadValues({}, base), {
+        value: formatDisplayValue(raw, step),
+        nextServerValue: raw
+      });
     }
-    const parsed = Number(raw);
-    return Number.isNaN(parsed) ? base : __spreadProps(__spreadValues({}, base), { value: parsed });
+    return base;
   }
   function mountNumberBinding(el) {
-    const step = getNumber(el, "step");
-    if (isZagValueControlled(el)) {
+    const step = numberInputStep(el);
+    if (getBoolean(el, "controlled")) {
       const raw = getString(el, "value");
-      const value = raw !== void 0 && raw !== "" && !Number.isNaN(Number(raw)) ? Number(raw) : void 0;
+      const value = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
       return { value, step };
     }
-    return { defaultValue: getNumber(el, "defaultValue"), step };
+    if (getBoolean(el, "formField")) {
+      const raw = getString(el, "value");
+      const defaultValue2 = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
+      return { defaultValue: defaultValue2, step };
+    }
+    const rawDefault = getString(el, "defaultValue");
+    const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
+    return { defaultValue, step };
   }
   function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey) {
     return readUpdatedServerStringList(el);
@@ -3194,21 +3272,19 @@ var Corex = (() => {
   function readControlledOrDefaultBoolean(el, openKey, defaultOpenKey) {
     return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
   }
-  function readStringListControlledZagProps(el, valueKey, defaultValueKey) {
-    if (isZagValueControlled(el)) {
-      return { value: readDatasetStringList(el, valueKey) };
-    }
-    return { defaultValue: readDatasetStringList(el, defaultValueKey) };
+  function readStringListControlledZagProps(el, _valueKey, _defaultValueKey) {
+    return mountStringListBinding(el);
   }
   function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
     var _a4;
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
-  var z;
-  var init_chunk_B34HSI73 = __esm({
-    "../priv/static/chunks/chunk-B34HSI73.mjs"() {
+  var MAX_FRACTION_DIGITS, z;
+  var init_chunk_VL4ETB3G = __esm({
+    "../priv/static/chunks/chunk-VL4ETB3G.mjs"() {
       "use strict";
       init_chunk_EWT2BP2N();
+      MAX_FRACTION_DIGITS = 10;
       z = (s2) => s2 === void 0 ? null : s2;
     }
   });
@@ -3548,7 +3624,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -4350,7 +4426,7 @@ var Corex = (() => {
       init_chunk_4SRF4GX7();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -6535,7 +6611,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -7396,7 +7472,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -13516,7 +13592,7 @@ var Corex = (() => {
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -15750,7 +15826,7 @@ var Corex = (() => {
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy10 = createAnatomy("color-picker", [
@@ -17450,6 +17526,7 @@ var Corex = (() => {
   __export(date_picker_exports, {
     DatePicker: () => DatePickerHook,
     resolveCloseOnSelect: () => resolveCloseOnSelect,
+    syncDatePickerValueInput: () => syncDatePickerValueInput,
     valueToIsoString: () => valueToIsoString
   });
   function $09ec6a572d60460f$export$842a2cf37af977e1(amount, numerator) {
@@ -19672,9 +19749,44 @@ var Corex = (() => {
       }
     }
   }
+  function isDateLike(d2) {
+    return typeof d2 === "object" && d2 !== null && "year" in d2 && "month" in d2 && "day" in d2 && typeof d2.year === "number" && typeof d2.month === "number" && typeof d2.day === "number";
+  }
   function valueToIsoString(d2) {
     if (d2 == null) return "";
+    if (typeof d2 === "string") {
+      const trimmed = d2.trim();
+      if (trimmed === "") return "";
+      try {
+        return parse2(trimmed).toString();
+      } catch (e2) {
+        return trimmed;
+      }
+    }
+    if (isDateLike(d2)) {
+      const { year, month, day } = d2;
+      const mm = String(month).padStart(2, "0");
+      const dd = String(day).padStart(2, "0");
+      return `${year}-${mm}-${dd}`;
+    }
     return String(d2);
+  }
+  function isoListFromValues(values) {
+    return (values == null ? void 0 : values.length) ? values.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+  }
+  function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
+    const hiddenInput = el.querySelector(
+      '[data-scope="date-picker"][data-part="value-input"]'
+    );
+    if (!hiddenInput) return;
+    if (hiddenInput.value !== isoStr) {
+      hiddenInput.value = isoStr;
+    }
+    if (notifyForm) {
+      notifyPhoenixFormChange(hiddenInput, isoStr);
+    } else {
+      notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
+    }
   }
   function resolveZagDatePickerTranslations(el) {
     const raw = el.dataset.translation;
@@ -19704,7 +19816,7 @@ var Corex = (() => {
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -21826,8 +21938,7 @@ var Corex = (() => {
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)), {
             onValueChange: (details) => {
-              var _a4;
-              const isoList = ((_a4 = details.value) == null ? void 0 : _a4.length) ? details.value.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+              const isoList = isoListFromValues(details.value);
               const submitName = getString(el, "submitName");
               if (submitName) {
                 syncArrayHiddenInputsForPhoenix(el, isoList, {
@@ -21837,14 +21948,7 @@ var Corex = (() => {
                 });
               } else {
                 const isoStr = isoList.length > 0 ? isoList.join(",") : "";
-                const hiddenInput = el.querySelector(`#${el.id}-value`);
-                if (hiddenInput && hiddenInput.value !== isoStr) {
-                  if (hook.allowFormNotify === true) {
-                    notifyPhoenixFormChange(hiddenInput, isoStr);
-                  } else {
-                    notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
-                  }
-                }
+                syncDatePickerValueInput(el, isoStr, hook.allowFormNotify === true);
               }
               notifyChange({
                 el,
@@ -21901,9 +22005,8 @@ var Corex = (() => {
           datePickerInstance.init();
           this.datePicker = datePickerInstance;
           queueMicrotask(() => {
-            var _a4;
             const submitName = getString(el, "submitName");
-            const isoList = ((_a4 = datePickerInstance.api.value) == null ? void 0 : _a4.length) ? datePickerInstance.api.value.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
+            const isoList = isoListFromValues(datePickerInstance.api.value);
             if (submitName) {
               syncArrayHiddenInputsForPhoenix(el, isoList, {
                 scope: "date-picker",
@@ -21911,11 +22014,7 @@ var Corex = (() => {
                 notifyLiveView: false
               });
             } else {
-              const hiddenInput = el.querySelector(`#${el.id}-value`);
-              const isoStr = isoList.length > 0 ? isoList.join(",") : "";
-              if (hiddenInput) {
-                notifyPhoenixFormChange(hiddenInput, isoStr, { markUsed: false });
-              }
+              syncDatePickerValueInput(el, isoList.length > 0 ? isoList.join(",") : "", false);
             }
             hook.allowFormNotify = true;
           });
@@ -21968,6 +22067,12 @@ var Corex = (() => {
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)));
+          if (!getString(el, "submitName")) {
+            queueMicrotask(() => {
+              const isoStr = "value" in valuePatch ? valuePatch.value.join(",") : isoListFromValues(zag == null ? void 0 : zag.api.value).join(",");
+              syncDatePickerValueInput(el, isoStr, false);
+            });
+          }
         },
         destroyed() {
           var _a4;
@@ -22264,7 +22369,7 @@ var Corex = (() => {
       init_chunk_XI7CXJ3V();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -23638,13 +23743,24 @@ var Corex = (() => {
     var _a4;
     return (_a4 = getString(el, "defaultValue")) != null ? _a4 : "";
   }
-  function notifyEditableValueChange(el, pushEvent, canPush, value) {
+  function formValueInput(el) {
+    return el.querySelector(`#${el.id}-value`);
+  }
+  function syncEditableFormValue(el, value, options = {}) {
+    const hidden = formValueInput(el);
+    if (hidden) {
+      notifyPhoenixFormChange(hidden, value, options);
+      return;
+    }
     const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
     if (inputEl) {
-      inputEl.value = value;
-      inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-      inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+      notifyPhoenixFormChange(inputEl, value, options);
     }
+  }
+  function notifyEditableValueChange(el, pushEvent, canPush, value, hook) {
+    syncEditableFormValue(el, value, {
+      markUsed: hook.allowFormNotify === true
+    });
     notifyChange({
       el,
       canPushServer: canPush(),
@@ -23657,12 +23773,32 @@ var Corex = (() => {
       clientEventName: getString(el, "onValueChangeClient")
     });
   }
+  function bindFormSubmitSync(el, zag) {
+    const form = el.closest("form");
+    if (!form) return () => {
+    };
+    const onSubmit = () => {
+      var _a4;
+      if (!zag.api.editing) return;
+      const inputEl = el.querySelector(
+        '[data-scope="editable"][data-part="input"]'
+      );
+      syncEditableFormValue(el, (_a4 = inputEl == null ? void 0 : inputEl.value) != null ? _a4 : zag.api.value, { markUsed: false });
+    };
+    form.addEventListener("submit", onSubmit, true);
+    return () => form.removeEventListener("submit", onSubmit, true);
+  }
+  function zagName(el) {
+    if (formValueInput(el)) return void 0;
+    return getString(el, "name");
+  }
   var anatomy13, parts13, getRootId12, getAreaId2, getLabelId8, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine13, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
       init_chunk_4QMNVH3P();
-      init_chunk_B34HSI73();
+      init_chunk_VMKNATWC();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -23969,6 +24105,11 @@ var Corex = (() => {
             '[data-scope="editable"][data-part="label"]'
           );
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const formValueEl = this.el.querySelector(`#${this.el.id}-value`);
+          if (formValueEl) {
+            formValueEl.value = this.api.value;
+            syncInputFormAssociation(formValueEl, this.el);
+          }
           const inputEl = this.el.querySelector(
             '[data-scope="editable"][data-part="input"]'
           );
@@ -24000,6 +24141,7 @@ var Corex = (() => {
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
+          this.allowFormNotify = false;
           const valueBinding = mountStringBinding(el, "value", "defaultValue");
           const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
@@ -24008,19 +24150,24 @@ var Corex = (() => {
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagName(el),
+            form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
           }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlled") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
             onValueChange: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
             },
             onValueCommit: (details) => {
-              notifyEditableValueChange(el, pushEvent, canPush, details.value);
+              notifyEditableValueChange(el, pushEvent, canPush, details.value, this);
             }
           }));
           zag.init();
           this.editable = zag;
+          queueMicrotask(() => {
+            syncEditableFormValue(el, zag.api.value, { markUsed: false });
+            this.allowFormNotify = true;
+          });
+          this.unbindFormSubmit = bindFormSubmitSync(el, zag);
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
           domRegistry.add("corex:editable:set-value", (event) => {
@@ -24046,8 +24193,8 @@ var Corex = (() => {
             readOnly: getBoolean(el, "readonly"),
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
-            name: getString(el, "name"),
-            form: getString(el, "form"),
+            name: zagName(el),
+            form: formValueInput(el) ? void 0 : getString(el, "form"),
             dir: getDir(el)
           }, editPatch);
           if (!((_a4 = this.editable) == null ? void 0 : _a4.api.editing) && "value" in valuePatch) {
@@ -24056,10 +24203,11 @@ var Corex = (() => {
           (_b = this.editable) == null ? void 0 : _b.updateProps(props);
         },
         destroyed() {
-          var _a4, _b, _c;
-          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
-          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
-          (_c = this.editable) == null ? void 0 : _c.destroy();
+          var _a4, _b, _c, _d;
+          (_a4 = this.unbindFormSubmit) == null ? void 0 : _a4.call(this);
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.editable) == null ? void 0 : _d.destroy();
         }
       };
     }
@@ -26984,7 +27132,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -30105,12 +30253,36 @@ ${err}`);
       valueAsNumber: api.valueAsNumber
     };
   }
-  function syncNumberInputValueInput(el, value, notifyForm = false) {
+  function submitValueForHost(el, valueAsNumber) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
+    return formatSubmitValue(valueAsNumber, step);
+  }
+  function canonicalDatasetValue(el) {
+    var _a4, _b;
+    return (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "";
+  }
+  function hiddenSubmitValue(el, displayValue, valueAsNumber) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+      return submitValueForHost(el, valueAsNumber);
+    }
+    const canonical = canonicalDatasetValue(el);
+    if (canonical !== "") {
+      return formatSubmitValue(canonical, step);
+    }
+    const stripped = (displayValue != null ? displayValue : "").replace(/,/g, "");
+    if (stripped === "") return "";
+    return formatSubmitValue(stripped, step);
+  }
+  function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (!valueInput) return;
-    const v2 = value != null ? value : "";
+    const v2 = hiddenSubmitValue(el, value, valueAsNumber);
     const changed = valueInput.value !== v2;
     if (changed) valueInput.value = v2;
     syncInputFormAssociation(valueInput, el);
@@ -30120,13 +30292,31 @@ ${err}`);
       valueInput.dispatchEvent(new Event("change", { bubbles: true }));
     }
   }
+  function setZagValue(zag, value) {
+    var _a4;
+    const step = (_a4 = getNumber(zag.el, "step")) != null ? _a4 : 1;
+    if (typeof value === "number") {
+      if (Number.isNaN(value)) return;
+      zag.machine.service.send({
+        type: "VALUE.SET",
+        value: formatDisplayValue(value, step)
+      });
+      return;
+    }
+    const trimmed = value.trim();
+    if (trimmed === "") return;
+    zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
+  }
   function buildMachineProps(el, pushEvent, canPush) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
     return __spreadProps(__spreadValues({
       id: el.id
     }, mountNumberBinding(el)), {
       min: getNumber(el, "min"),
       max: getNumber(el, "max"),
-      step: getNumber(el, "step"),
+      step,
+      formatOptions: mergeFormatOptions(step),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readonly"),
       invalid: getBoolean(el, "invalid"),
@@ -30134,9 +30324,9 @@ ${err}`);
       allowMouseWheel: getBoolean(el, "allowMouseWheel"),
       dir: getDir(el),
       onValueChange: (details) => {
-        var _a4;
+        var _a5;
         if (details.value !== void 0) {
-          syncNumberInputValueInput(el, (_a4 = details.value) != null ? _a4 : "", true);
+          syncNumberInputValueInput(el, (_a5 = details.value) != null ? _a5 : "", true, details.valueAsNumber);
         }
         notifyChange({
           el,
@@ -30153,6 +30343,23 @@ ${err}`);
       }
     });
   }
+  function numberInputPropsForUpdate(el) {
+    var _a4;
+    const step = (_a4 = getNumber(el, "step")) != null ? _a4 : 1;
+    return {
+      id: el.id,
+      min: getNumber(el, "min"),
+      max: getNumber(el, "max"),
+      step,
+      formatOptions: mergeFormatOptions(step),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readonly"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+      dir: getDir(el)
+    };
+  }
   var anatomy18, parts18, getRootId14, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId10, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine18, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
@@ -30161,7 +30368,7 @@ ${err}`);
       init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -30975,7 +31182,7 @@ ${err}`);
           return this.zagConnect(connect18);
         }
         render() {
-          var _a4;
+          var _a4, _b, _c, _d, _e;
           const rootEl = (_a4 = this.el.querySelector('[data-scope="number-input"][data-part="root"]')) != null ? _a4 : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -30993,11 +31200,15 @@ ${err}`);
           const inputEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="input"]'
           );
-          if (inputEl) {
+          if (inputEl instanceof HTMLInputElement) {
             const visibleProps = __spreadValues({}, this.api.getInputProps());
             delete visibleProps.name;
             delete visibleProps.form;
             this.spreadProps(inputEl, visibleProps);
+            const formatted = (_b = this.api.value) != null ? _b : "";
+            if (inputEl.value !== formatted) {
+              inputEl.value = formatted;
+            }
           }
           const decrementEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="decrement-trigger"]'
@@ -31011,11 +31222,14 @@ ${err}`);
             '[data-scope="number-input"][data-part="value-input"]'
           );
           if (valueInputEl instanceof HTMLInputElement) {
-            const value = this.api.value || getString(this.el, "defaultValue") || "";
+            const step = (_c = getNumber(this.el, "step")) != null ? _c : 1;
+            const n2 = this.api.valueAsNumber;
+            const canonical = (_e = (_d = getString(this.el, "value")) != null ? _d : getString(this.el, "defaultValue")) != null ? _e : "";
+            const submit = Number.isFinite(n2) && !Number.isNaN(n2) ? formatSubmitValue(n2, step) : canonical;
             syncHiddenInputValue(
               valueInputEl,
               this.el,
-              value,
+              submit,
               (el, props) => this.spreadProps(el, props),
               {}
             );
@@ -31024,20 +31238,21 @@ ${err}`);
       };
       NumberInputHook = {
         mounted() {
-          var _a4, _b;
+          var _a4, _b, _c;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
           zag.init();
           this.numberInput = zag;
-          const initial = String((_b = (_a4 = zag.api.value) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : "");
-          syncNumberInputValueInput(el, initial, true);
+          this.lastServerValue = (_b = (_a4 = getString(el, "value")) != null ? _a4 : getString(el, "defaultValue")) != null ? _b : void 0;
+          const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+          syncNumberInputValueInput(el, (_c = zag.api.value) != null ? _c : "", true, zag.api.valueAsNumber);
           const valueInput = el.querySelector(
             '[data-scope="number-input"][data-part="value-input"]'
           );
           if (valueInput) {
-            queueLiveViewFormInputSync(valueInput, () => initial);
+            queueLiveViewFormInputSync(valueInput, () => initialSubmit);
           }
           const emitState = (respondTo) => {
             const snapshot2 = machineState(zag.api);
@@ -31054,11 +31269,15 @@ ${err}`);
           };
           const domRegistry = createDomEventRegistry(el);
           this.domRegistry = domRegistry;
-          domRegistry.add("corex:number-input:set-value", (event) => {
-            var _a5;
-            const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
-            if (typeof v2 === "number" && !Number.isNaN(v2)) zag.api.setValue(v2);
-          });
+          domRegistry.add(
+            "corex:number-input:set-value",
+            (event) => {
+              var _a5;
+              const v2 = (_a5 = event.detail) == null ? void 0 : _a5.value;
+              if (typeof v2 === "number" && !Number.isNaN(v2)) setZagValue(zag, v2);
+              else if (typeof v2 === "string") setZagValue(zag, v2);
+            }
+          );
           domRegistry.add("corex:number-input:clear-value", () => {
             zag.api.clearValue();
           });
@@ -31085,7 +31304,7 @@ ${err}`);
           registry.add("number_input_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
             if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
-              zag.api.setValue(payload.value);
+              setZagValue(zag, payload.value);
             }
           });
           registry.add("number_input_clear_value", (payload) => {
@@ -31120,27 +31339,24 @@ ${err}`);
         updated() {
           const el = this.el;
           const zag = this.numberInput;
-          const valuePatch = readUpdatedServerNumber(el);
-          const next2 = {
-            id: el.id,
-            min: getNumber(el, "min"),
-            max: getNumber(el, "max"),
-            step: getNumber(el, "step"),
-            disabled: getBoolean(el, "disabled"),
-            readOnly: getBoolean(el, "readonly"),
-            invalid: getBoolean(el, "invalid"),
-            required: getBoolean(el, "required"),
-            allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-            dir: getDir(el)
-          };
-          Object.assign(next2, valuePatch);
-          zag == null ? void 0 : zag.updateProps(next2);
+          const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
+          if (valuePatch.nextServerValue !== void 0) {
+            this.lastServerValue = valuePatch.nextServerValue;
+          }
+          const zagPatch = __spreadValues({}, valuePatch);
+          delete zagPatch.nextServerValue;
+          zag == null ? void 0 : zag.updateProps(__spreadValues(__spreadValues({}, numberInputPropsForUpdate(el)), zagPatch));
           queueMicrotask(() => {
             var _a4, _b, _c;
-            if (zag && "value" in valuePatch) {
-              syncNumberInputValueInput(el, String((_a4 = valuePatch.value) != null ? _a4 : ""), false);
+            if (zag && "value" in zagPatch) {
+              syncNumberInputValueInput(el, String((_a4 = zagPatch.value) != null ? _a4 : ""), false, zag.api.valueAsNumber);
             } else if (zag) {
-              syncNumberInputValueInput(el, (_c = (_b = zag.api.value) != null ? _b : getString(el, "defaultValue")) != null ? _c : "");
+              syncNumberInputValueInput(
+                el,
+                (_c = (_b = zag.api.value) != null ? _b : getString(el, "defaultValue")) != null ? _c : "",
+                false,
+                zag.api.valueAsNumber
+              );
             }
             const visible = el.querySelector(
               '[data-scope="number-input"][data-part="input"]'
@@ -31964,7 +32180,7 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32581,7 +32797,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -33277,6 +33493,35 @@ ${err}`);
       }
     };
   }
+  function isCorexFormField(el) {
+    return getBoolean(el, "formField");
+  }
+  function setHostDataInvalid(el, invalid) {
+    if (invalid) {
+      el.setAttribute("data-invalid", "");
+    } else {
+      el.removeAttribute("data-invalid");
+    }
+  }
+  function setScopeErrorsVisible(el, scope, visible) {
+    el.querySelectorAll(`[data-scope="${scope}"][data-part="error"]`).forEach((node) => {
+      node.hidden = !visible;
+    });
+  }
+  function clearCorexFormFieldFeedback(el, scope) {
+    setHostDataInvalid(el, false);
+    setScopeErrorsVisible(el, scope, false);
+  }
+  function hasCorexFormFieldValue(value) {
+    return value != null && value !== "";
+  }
+  function syncRadioGroupValueInputForPhoenix(el, value, options = {}) {
+    const valueInput = el.querySelector(
+      '[data-scope="radio-group"][data-part="value-input"]'
+    );
+    if (!valueInput) return;
+    notifyPhoenixFormChange(valueInput, value != null ? value : "", options);
+  }
   function valueChangePayload2(el, details) {
     return {
       id: el.id,
@@ -33291,7 +33536,7 @@ ${err}`);
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -33609,6 +33854,7 @@ ${err}`);
       };
       RadioGroupHook = {
         mounted() {
+          var _a4;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
@@ -33625,6 +33871,9 @@ ${err}`);
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
               const selected = details.value;
+              if (isCorexFormField(el)) {
+                this.lastServerValue = selected != null ? selected : void 0;
+              }
               el.querySelectorAll(
                 '[data-scope="radio-group"][data-part="item-hidden-input"]'
               ).forEach((input) => {
@@ -33632,13 +33881,23 @@ ${err}`);
                 if (input.checked !== on) input.checked = on;
                 syncInputFormAssociation(input, el);
               });
-              const checked = el.querySelector(
-                '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+              syncRadioGroupValueInputForPhoenix(el, selected);
+              if (isCorexFormField(el) && hasCorexFormFieldValue(selected)) {
+                clearCorexFormFieldFeedback(el, "radio-group");
+                zag.updateProps({ invalid: false });
+              }
+              const valueInput2 = el.querySelector(
+                '[data-scope="radio-group"][data-part="value-input"]'
               );
-              if (checked) {
-                reapplyLiveViewValueInputUsage(checked);
-                checked.dispatchEvent(new Event("input", { bubbles: true }));
-                checked.dispatchEvent(new Event("change", { bubbles: true }));
+              if (!valueInput2) {
+                const checked = el.querySelector(
+                  '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+                );
+                if (checked) {
+                  reapplyLiveViewValueInputUsage(checked);
+                  checked.dispatchEvent(new Event("input", { bubbles: true }));
+                  checked.dispatchEvent(new Event("change", { bubbles: true }));
+                }
               }
               notifyChange({
                 el,
@@ -33652,6 +33911,16 @@ ${err}`);
           }));
           zag.init();
           this.radioGroup = zag;
+          this.lastServerValue = (_a4 = getString(el, "value")) != null ? _a4 : void 0;
+          queueMicrotask(() => {
+            var _a5;
+            if (!isCorexFormField(el)) return;
+            syncRadioGroupValueInputForPhoenix(el, (_a5 = zag.api.value) != null ? _a5 : null, { markUsed: false });
+          });
+          const valueInput = el.querySelector(
+            '[data-scope="radio-group"][data-part="value-input"]'
+          );
+          if (valueInput) syncInputFormAssociation(valueInput, el);
           const emitValue = (respondTo) => {
             const value = zag.api.value;
             emitResponse({
@@ -33699,9 +33968,13 @@ ${err}`);
           });
         },
         updated() {
+          var _a4, _b;
           const el = this.el;
           const zag = this.radioGroup;
-          const valuePatch = readUpdatedServerString(el);
+          const valuePatch = readUpdatedServerString(el, this.lastServerValue);
+          if ("value" in valuePatch) {
+            this.lastServerValue = (_a4 = valuePatch.value) != null ? _a4 : void 0;
+          }
           zag == null ? void 0 : zag.updateProps(__spreadProps(__spreadValues({
             id: el.id
           }, valuePatch), {
@@ -33713,6 +33986,9 @@ ${err}`);
             orientation: getString(el, "orientation"),
             dir: getDir(el)
           }));
+          if ("value" in valuePatch) {
+            syncRadioGroupValueInputForPhoenix(el, (_b = valuePatch.value) != null ? _b : null, { markUsed: false });
+          }
         },
         destroyed() {
           var _a4, _b, _c;
@@ -34264,7 +34540,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -35699,7 +35975,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -36248,7 +36524,7 @@ ${err}`);
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -37019,7 +37295,7 @@ ${err}`);
       init_chunk_4QMNVH3P();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -38307,7 +38583,7 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -41889,7 +42165,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -42183,7 +42459,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_B34HSI73();
+      init_chunk_VL4ETB3G();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();

@@ -69,7 +69,7 @@ defmodule E2eWeb.CollapsiblePlayLive do
           </.toggle_group>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="disabled"
             checked={@disabled}
             on_checked_change="control_changed"

@@ -39,4 +39,50 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.goto_form(:live)
     |> NumberInput.check_accessibility()
   end
+
+  feature "controller ecto validate form - grouped display submits canonical value", %{
+    session: session
+  } do
+    session
+    |> NumberInput.goto_form(:static, :ecto)
+    |> NumberInput.wait_root_number_input_ready("number-input-form-ecto_value")
+    |> NumberInput.assert_hidden_submit_value("number-input-form-ecto_value", "1234")
+    |> NumberInput.refute_number_input_field_error("number-input-form-ecto_value")
+  end
+
+  feature "static phoenix form - increment updates hidden submit value", %{session: session} do
+    session =
+      session
+      |> NumberInput.goto_form(:static, :phoenix)
+      |> NumberInput.wait_root_number_input_ready("number-input-form-phoenix_value")
+
+    session
+    |> NumberInput.click_increment_in_section("number-input-form-phoenix")
+    |> NumberInput.wait(300)
+
+    assert NumberInput.hidden_submit_value_at_host(session, "number-input-form-phoenix_value") ==
+             "1235"
+  end
+
+  feature "static ecto form - increment updates hidden submit value", %{session: session} do
+    session =
+      session
+      |> NumberInput.goto_form(:static, :ecto)
+      |> NumberInput.wait_root_number_input_ready("number-input-form-ecto_value")
+
+    session
+    |> NumberInput.click_increment_in_section("number-input-form-ecto")
+    |> NumberInput.wait(300)
+
+    assert NumberInput.hidden_submit_value_at_host(session, "number-input-form-ecto_value") ==
+             "1235"
+  end
+
+  feature "live ecto validate form - initial value is valid", %{session: session} do
+    session
+    |> NumberInput.goto_form(:live)
+    |> NumberInput.wait_root_number_input_ready("number-input-live-form-ecto_value")
+    |> NumberInput.assert_hidden_submit_value("number-input-live-form-ecto_value", "1234")
+    |> NumberInput.refute_number_input_field_error("number-input-live-form-ecto_value")
+  end
 end

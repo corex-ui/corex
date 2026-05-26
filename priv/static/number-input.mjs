@@ -19,9 +19,12 @@ import {
   reapplyLiveViewValueInputUsage
 } from "./chunks/chunk-VMKNATWC.mjs";
 import {
+  formatDisplayValue,
+  formatSubmitValue,
+  mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber
-} from "./chunks/chunk-B34HSI73.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -1344,11 +1347,15 @@ var NumberInput = class extends Component {
     const inputEl = this.el.querySelector(
       '[data-scope="number-input"][data-part="input"]'
     );
-    if (inputEl) {
+    if (inputEl instanceof HTMLInputElement) {
       const visibleProps = { ...this.api.getInputProps() };
       delete visibleProps.name;
       delete visibleProps.form;
       this.spreadProps(inputEl, visibleProps);
+      const formatted = this.api.value ?? "";
+      if (inputEl.value !== formatted) {
+        inputEl.value = formatted;
+      }
     }
     const decrementEl = this.el.querySelector(
       '[data-scope="number-input"][data-part="decrement-trigger"]'
@@ -1362,11 +1369,14 @@ var NumberInput = class extends Component {
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (valueInputEl instanceof HTMLInputElement) {
-      const value = this.api.value || getString(this.el, "defaultValue") || "";
+      const step = getNumber(this.el, "step") ?? 1;
+      const n = this.api.valueAsNumber;
+      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
+      const submit = Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
       syncHiddenInputValue(
         valueInputEl,
         this.el,
-        value,
+        submit,
         (el, props) => this.spreadProps(el, props),
         {}
       );
@@ -1384,12 +1394,33 @@ function machineState(api) {
     valueAsNumber: api.valueAsNumber
   };
 }
-function syncNumberInputValueInput(el, value, notifyForm = false) {
+function submitValueForHost(el, valueAsNumber) {
+  const step = getNumber(el, "step") ?? 1;
+  if (!Number.isFinite(valueAsNumber) || Number.isNaN(valueAsNumber)) return "";
+  return formatSubmitValue(valueAsNumber, step);
+}
+function canonicalDatasetValue(el) {
+  return getString(el, "value") ?? getString(el, "defaultValue") ?? "";
+}
+function hiddenSubmitValue(el, displayValue, valueAsNumber) {
+  const step = getNumber(el, "step") ?? 1;
+  if (valueAsNumber !== void 0 && Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber)) {
+    return submitValueForHost(el, valueAsNumber);
+  }
+  const canonical = canonicalDatasetValue(el);
+  if (canonical !== "") {
+    return formatSubmitValue(canonical, step);
+  }
+  const stripped = (displayValue ?? "").replace(/,/g, "");
+  if (stripped === "") return "";
+  return formatSubmitValue(stripped, step);
+}
+function syncNumberInputValueInput(el, value, notifyForm = false, valueAsNumber) {
   const valueInput = el.querySelector(
     '[data-scope="number-input"][data-part="value-input"]'
   );
   if (!valueInput) return;
-  const v = value ?? "";
+  const v = hiddenSubmitValue(el, value, valueAsNumber);
   const changed = valueInput.value !== v;
   if (changed) valueInput.value = v;
   syncInputFormAssociation(valueInput, el);
@@ -1399,13 +1430,29 @@ function syncNumberInputValueInput(el, value, notifyForm = false) {
     valueInput.dispatchEvent(new Event("change", { bubbles: true }));
   }
 }
+function setZagValue(zag, value) {
+  const step = getNumber(zag.el, "step") ?? 1;
+  if (typeof value === "number") {
+    if (Number.isNaN(value)) return;
+    zag.machine.service.send({
+      type: "VALUE.SET",
+      value: formatDisplayValue(value, step)
+    });
+    return;
+  }
+  const trimmed = value.trim();
+  if (trimmed === "") return;
+  zag.machine.service.send({ type: "VALUE.SET", value: trimmed });
+}
 function buildMachineProps(el, pushEvent, canPush) {
+  const step = getNumber(el, "step") ?? 1;
   return {
     id: el.id,
     ...mountNumberBinding(el),
     min: getNumber(el, "min"),
     max: getNumber(el, "max"),
-    step: getNumber(el, "step"),
+    step,
+    formatOptions: mergeFormatOptions(step),
     disabled: getBoolean(el, "disabled"),
     readOnly: getBoolean(el, "readonly"),
     invalid: getBoolean(el, "invalid"),
@@ -1414,7 +1461,7 @@ function buildMachineProps(el, pushEvent, canPush) {
     dir: getDir(el),
     onValueChange: (details) => {
       if (details.value !== void 0) {
-        syncNumberInputValueInput(el, details.value ?? "", true);
+        syncNumberInputValueInput(el, details.value ?? "", true, details.valueAsNumber);
       }
       notifyChange({
         el,
@@ -1431,6 +1478,22 @@ function buildMachineProps(el, pushEvent, canPush) {
     }
   };
 }
+function numberInputPropsForUpdate(el) {
+  const step = getNumber(el, "step") ?? 1;
+  return {
+    id: el.id,
+    min: getNumber(el, "min"),
+    max: getNumber(el, "max"),
+    step,
+    formatOptions: mergeFormatOptions(step),
+    disabled: getBoolean(el, "disabled"),
+    readOnly: getBoolean(el, "readonly"),
+    invalid: getBoolean(el, "invalid"),
+    required: getBoolean(el, "required"),
+    allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+    dir: getDir(el)
+  };
+}
 var NumberInputHook = {
   mounted() {
     const el = this.el;
@@ -1439,13 +1502,14 @@ var NumberInputHook = {
     const zag = new NumberInput(el, buildMachineProps(el, pushEvent, canPush));
     zag.init();
     this.numberInput = zag;
-    const initial = String(zag.api.value ?? getString(el, "defaultValue") ?? "");
-    syncNumberInputValueInput(el, initial, true);
+    this.lastServerValue = getString(el, "value") ?? getString(el, "defaultValue") ?? void 0;
+    const initialSubmit = submitValueForHost(el, zag.api.valueAsNumber);
+    syncNumberInputValueInput(el, zag.api.value ?? "", true, zag.api.valueAsNumber);
     const valueInput = el.querySelector(
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (valueInput) {
-      queueLiveViewFormInputSync(valueInput, () => initial);
+      queueLiveViewFormInputSync(valueInput, () => initialSubmit);
     }
     const emitState = (respondTo) => {
       const snapshot = machineState(zag.api);
@@ -1462,10 +1526,14 @@ var NumberInputHook = {
     };
     const domRegistry = createDomEventRegistry(el);
     this.domRegistry = domRegistry;
-    domRegistry.add("corex:number-input:set-value", (event) => {
-      const v = event.detail?.value;
-      if (typeof v === "number" && !Number.isNaN(v)) zag.api.setValue(v);
-    });
+    domRegistry.add(
+      "corex:number-input:set-value",
+      (event) => {
+        const v = event.detail?.value;
+        if (typeof v === "number" && !Number.isNaN(v)) setZagValue(zag, v);
+        else if (typeof v === "string") setZagValue(zag, v);
+      }
+    );
     domRegistry.add("corex:number-input:clear-value", () => {
       zag.api.clearValue();
     });
@@ -1492,7 +1560,7 @@ var NumberInputHook = {
     registry.add("number_input_set_value", (payload) => {
       if (!idMatches(el.id, readPayloadId(payload))) return;
       if (typeof payload.value === "number" && !Number.isNaN(payload.value)) {
-        zag.api.setValue(payload.value);
+        setZagValue(zag, payload.value);
       }
     });
     registry.add("number_input_clear_value", (payload) => {
@@ -1527,26 +1595,26 @@ var NumberInputHook = {
   updated() {
     const el = this.el;
     const zag = this.numberInput;
-    const valuePatch = readUpdatedServerNumber(el);
-    const next = {
-      id: el.id,
-      min: getNumber(el, "min"),
-      max: getNumber(el, "max"),
-      step: getNumber(el, "step"),
-      disabled: getBoolean(el, "disabled"),
-      readOnly: getBoolean(el, "readonly"),
-      invalid: getBoolean(el, "invalid"),
-      required: getBoolean(el, "required"),
-      allowMouseWheel: getBoolean(el, "allowMouseWheel"),
-      dir: getDir(el)
-    };
-    Object.assign(next, valuePatch);
-    zag?.updateProps(next);
+    const valuePatch = readUpdatedServerNumber(el, this.lastServerValue);
+    if (valuePatch.nextServerValue !== void 0) {
+      this.lastServerValue = valuePatch.nextServerValue;
+    }
+    const zagPatch = { ...valuePatch };
+    delete zagPatch.nextServerValue;
+    zag?.updateProps({
+      ...numberInputPropsForUpdate(el),
+      ...zagPatch
+    });
     queueMicrotask(() => {
-      if (zag && "value" in valuePatch) {
-        syncNumberInputValueInput(el, String(valuePatch.value ?? ""), false);
+      if (zag && "value" in zagPatch) {
+        syncNumberInputValueInput(el, String(zagPatch.value ?? ""), false, zag.api.valueAsNumber);
       } else if (zag) {
-        syncNumberInputValueInput(el, zag.api.value ?? getString(el, "defaultValue") ?? "");
+        syncNumberInputValueInput(
+          el,
+          zag.api.value ?? getString(el, "defaultValue") ?? "",
+          false,
+          zag.api.valueAsNumber
+        );
       }
       const visible = el.querySelector(
         '[data-scope="number-input"][data-part="input"]'

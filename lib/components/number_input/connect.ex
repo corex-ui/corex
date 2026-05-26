@@ -29,19 +29,18 @@ defmodule Corex.NumberInput.Connect do
   def props(assigns) do
     form_field = Map.get(assigns, :form_field, false)
     controlled = Map.get(assigns, :controlled, false)
-    zag_controlled = form_field || controlled
     value_dataset = FormField.default_value_dataset(assigns, value_str(assigns.value))
 
     {value_attr, default_attr} =
-      if zag_controlled do
-        {value_dataset, nil}
-      else
-        {nil, value_dataset}
+      cond do
+        controlled -> {value_dataset, nil}
+        form_field -> {value_dataset, nil}
+        true -> {nil, value_dataset}
       end
 
     %{
       "id" => assigns.id,
-      "data-controlled" => get_boolean(zag_controlled),
+      "data-controlled" => get_boolean(controlled),
       "data-value" => value_attr,
       "data-default-value" => default_attr,
       "data-min" => num_attr(assigns.min),

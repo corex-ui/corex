@@ -183,6 +183,58 @@ defmodule E2eWeb.EditableModel do
     if mode == :live, do: prepare_live_form(session), else: session
   end
 
+  def assert_hidden_form_value(session, host_dom_id, expected)
+      when is_binary(host_dom_id) and is_binary(expected) do
+    host_json = Jason.encode!(host_dom_id)
+    expected_json = Jason.encode!(expected)
+
+    Wallaby.Browser.execute_script(
+      session,
+      """
+      (function () {
+        const hidden = document.getElementById(#{host_json} + "-value");
+        if (!hidden) {
+          throw new Error("missing hidden form input #" + #{host_json} + "-value");
+        }
+        if (hidden.value !== #{expected_json}) {
+          throw new Error(
+            "hidden form value " + JSON.stringify(hidden.value) + " !== " + #{expected_json}
+          );
+        }
+      })();
+      """
+    )
+
+    session
+  end
+
+  def assert_phoenix_form_would_submit_text(session, host_dom_id, expected)
+      when is_binary(host_dom_id) and is_binary(expected) do
+    host_json = Jason.encode!(host_dom_id)
+    expected_json = Jason.encode!(expected)
+
+    Wallaby.Browser.execute_script(
+      session,
+      """
+      (function () {
+        const hidden = document.getElementById(#{host_json} + "-value");
+        const form = hidden?.closest("form");
+        if (!form || !hidden) {
+          throw new Error("missing form or hidden input for " + #{host_json});
+        }
+        const sent = String(new FormData(form).get(hidden.getAttribute("name")));
+        if (sent !== #{expected_json}) {
+          throw new Error(
+            "FormData would submit " + JSON.stringify(sent) + " for " + hidden.getAttribute("name")
+          );
+        }
+      })();
+      """
+    )
+
+    session
+  end
+
   def submit_form(session, mode \\ :static) do
     id =
       if mode == :live,

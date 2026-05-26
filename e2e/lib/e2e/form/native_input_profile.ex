@@ -23,63 +23,87 @@ defmodule E2e.Form.NativeInputProfile do
     field :agree, :boolean, default: false
   end
 
+  @fields [
+    :name,
+    :email,
+    :bio,
+    :birth_date,
+    :datetime,
+    :reminder_time,
+    :month,
+    :week,
+    :website,
+    :phone,
+    :q,
+    :color,
+    :count,
+    :password,
+    :role,
+    :tags,
+    :size,
+    :agree
+  ]
+
+  @required_fields @fields
+
   def changeset(profile, attrs \\ %{}) do
     profile
-    |> cast(attrs, [
-      :name,
-      :email,
-      :bio,
-      :birth_date,
-      :datetime,
-      :reminder_time,
-      :month,
-      :week,
-      :website,
-      :phone,
-      :q,
-      :color,
-      :count,
-      :password,
-      :role,
-      :tags,
-      :size,
-      :agree
-    ])
+    |> cast(attrs, @fields)
     |> validate_required([:name, :email, :agree])
     |> validate_acceptance(:agree)
   end
 
   def changeset_validate(profile, attrs \\ %{}) do
     profile
-    |> cast(attrs, [
-      :name,
-      :email,
-      :bio,
-      :birth_date,
-      :datetime,
-      :reminder_time,
-      :month,
-      :week,
-      :website,
-      :phone,
-      :q,
-      :color,
-      :count,
-      :password,
-      :role,
-      :tags,
-      :size,
-      :agree
-    ])
-    |> validate_required([:name, :email, :role, :count, :agree], message: "can't be blank")
+    |> cast(attrs, @fields)
+    |> validate_required(@required_fields, message: "can't be blank")
     |> validate_format(:email, ~r/@/, message: "must look like an email address")
     |> validate_length(:bio, min: 3, message: "must be at least 3 characters")
+    |> validate_length(:password, min: 6, message: "must be at least 6 characters")
+    |> validate_format(:website, ~r/^https?:\/\//, message: "must start with http:// or https://")
     |> validate_number(:count,
       greater_than: 0,
       less_than: 99,
       message: "must be between 1 and 98"
     )
+    |> validate_tags_present()
     |> validate_acceptance(:agree, message: "must be accepted to continue")
+  end
+
+  defp validate_tags_present(changeset) do
+    tags = get_field(changeset, :tags) || []
+
+    if tags == [] do
+      add_error(changeset, :tags, "can't be blank")
+    else
+      changeset
+    end
+  end
+
+  def valid_attrs(overrides \\ %{}) do
+    Map.merge(
+      %{
+        "name" => "Ada",
+        "email" => "ada@ex.com",
+        "bio" => "Short bio here",
+        "birth_date" => "1990-01-15",
+        "datetime" => "2024-06-15T14:30",
+        "reminder_time" => "09:00",
+        "month" => "2024-06",
+        "week" => "2024-W24",
+        "website" => "https://example.com",
+        "phone" => "+1234567890",
+        "q" => "elixir",
+        "color" => "#3b82f6",
+        "count" => "5",
+        "password" => "secret1",
+        "role" => "admin",
+        "tags" => ["elixir", "phoenix"],
+        "size" => "l",
+        "agree" => "true"
+      },
+      overrides
+    )
   end
 
   @toast_fields ~W(

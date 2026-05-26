@@ -260,28 +260,30 @@ defmodule E2eWeb.Demos.SelectDemo do
     items_attr =
       ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
 
+    value_attr = ~S|value={["fra"]}|
+
     """
-    <.select class="select" #{items_attr}>
+    <.select class="select" #{items_attr} #{value_attr}>
       <:label>Default</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select class="select select--accent" #{items_attr}>
+    <.select class="select select--accent" #{items_attr} #{value_attr}>
       <:label>Accent</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select class="select select--brand" #{items_attr}>
+    <.select class="select select--brand" #{items_attr} #{value_attr}>
       <:label>Brand</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select class="select select--alert" #{items_attr}>
+    <.select class="select select--alert" #{items_attr} #{value_attr}>
       <:label>Alert</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select class="select select--info" #{items_attr}>
+    <.select class="select select--info" #{items_attr} #{value_attr}>
       <:label>Info</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    <.select class="select select--success" #{items_attr}>
+    <.select class="select select--success" #{items_attr} #{value_attr}>
       <:label>Success</:label>
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
@@ -295,6 +297,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-default"
         class="select"
         items={items()}
+        value={["fra"]}
       >
         <:label>Default</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -303,6 +306,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-accent"
         class="select select--accent"
         items={items()}
+        value={["fra"]}
       >
         <:label>Accent</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -311,6 +315,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-brand"
         class="select select--brand"
         items={items()}
+        value={["fra"]}
       >
         <:label>Brand</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -319,6 +324,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-alert"
         class="select select--alert"
         items={items()}
+        value={["fra"]}
       >
         <:label>Alert</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -327,6 +333,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-info"
         class="select select--info"
         items={items()}
+        value={["fra"]}
       >
         <:label>Info</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
@@ -335,6 +342,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         id="select-style-color-success"
         class="select select--success"
         items={items()}
+        value={["fra"]}
       >
         <:label>Success</:label>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>

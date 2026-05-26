@@ -34,8 +34,8 @@ describe.each([
 });
 
 describe.each([
-  ["controlled", { controlled: true, value: 5, step: 2 }, { value: 5, step: 2 }],
-  ["default", { defaultValue: 3, step: 1 }, { defaultValue: 3, step: 1 }],
+  ["controlled", { controlled: true, value: 5, step: 2 }, { value: "5", step: 2 }],
+  ["default", { defaultValue: 3, step: 1 }, { defaultValue: "3", step: 1 }],
 ] as const)("readNumberControlledZagProps %s", (_label, dataset, expected) => {
   it("reads numbers", () => {
     expect(readNumberControlledZagProps(el(dataset as Record<string, string | number>))).toEqual(
@@ -103,7 +103,11 @@ describe.each([
 });
 
 describe.each([
-  ["controlled", { controlled: true, value: 5, step: 2 }, { value: 5, step: 2 }],
+  [
+    "controlled",
+    { controlled: true, value: 5, step: 2 },
+    { value: "5", step: 2, nextServerValue: "5" },
+  ],
   ["uncontrolled", { defaultValue: 3, step: 1 }, { step: 1 }],
 ] as const)("readNumberControlledZagUpdate %s", (_label, dataset, expected) => {
   it("reads numbers", () => {

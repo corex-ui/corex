@@ -31,6 +31,7 @@ defmodule E2eWeb.DemoPage do
 
   - Use **`<.demo_playground>>`** (below) for every `… · Playground` LiveView: one DOM shape (`layout_heading` + `preview` frame + sidebar + canvas). `AccordionPlayLive` is the visual reference; all play pages should render through this component. Source links live on **`demo_page`** only, not in the playground block.
   - **Control strip order (when a control exists for the component):** (1) **Direction** LTR/RTL  -  `<.playground_dir_toggle>` when the component has `dir`; (2) orientation or other `toggle_group` axes; (3) `select` controls; (4) `switch` rows. Not every page has every control; only include what the primitive supports.
+  - **Control strip sizing:** use `--sm` on sidebar controls only (not the canvas demo), e.g. `toggle-group toggle-group--sm`, `select select--sm`, `switch switch--sm`, `checkbox checkbox--sm`, `number-input number-input--sm`, `native-input native-input--sm`.
 
   ## Shell contract (page types)
   ## Shell contract (page types)

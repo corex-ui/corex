@@ -273,8 +273,21 @@ defmodule CorexTest.ComponentHelpers do
   end
 
   def render_editable(assigns) do
+    assigns = assigns |> Map.put_new(:name, nil) |> Map.put_new(:value, "text")
+
     ~H"""
-    <.editable id="test-editable"  value="text">
+    <.editable id="test-editable" name={@name} value={@value}>
+      <:label>Label</:label>
+      <:edit_trigger>Edit</:edit_trigger>
+      <:submit_trigger>Save</:submit_trigger>
+      <:cancel_trigger>Cancel</:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def render_editable_with_field(assigns) do
+    ~H"""
+    <.editable field={@field} class="editable">
       <:label>Label</:label>
       <:edit_trigger>Edit</:edit_trigger>
       <:submit_trigger>Save</:submit_trigger>

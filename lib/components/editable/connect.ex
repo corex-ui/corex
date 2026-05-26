@@ -9,6 +9,7 @@ defmodule Corex.Editable.Connect do
     CancelTrigger,
     Control,
     EditTrigger,
+    FormValue,
     Input,
     Label,
     Preview,
@@ -44,6 +45,12 @@ defmodule Corex.Editable.Connect do
   def ignore_input(assigns) do
     JS.ignore_attributes(Input.ignored_attrs(),
       to: Selectors.css_id("editable:#{assigns.id}:input")
+    )
+  end
+
+  def ignore_form_value(assigns) do
+    JS.ignore_attributes(FormValue.ignored_attrs(),
+      to: "##{assigns.id}-value"
     )
   end
 
@@ -155,6 +162,19 @@ defmodule Corex.Editable.Connect do
       "id" => "editable:#{assigns.id}:label",
       "for" => "editable:#{assigns.id}:input"
     }
+  end
+
+  @spec form_value(FormValue.t()) :: map()
+  def form_value(assigns) do
+    %{
+      "type" => "hidden",
+      "data-scope" => "editable",
+      "data-part" => "form-value",
+      "id" => "#{assigns.id}-value",
+      "name" => assigns.name,
+      "value" => assigns.value || ""
+    }
+    |> maybe_put("form", assigns.form)
   end
 
   @spec input(Input.t()) :: map()

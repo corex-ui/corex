@@ -22,6 +22,7 @@ describe("date-picker hook parsers", () => {
   it.each([
     [null, ""],
     ["2024-06-01", "2024-06-01"],
+    [{ year: 2024, month: 6, day: 1 }, "2024-06-01"],
     [0, "0"],
   ] as const)("valueToIsoString %#", (input, expected) => {
     expect(valueToIsoString(input)).toBe(expected);

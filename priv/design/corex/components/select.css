@@ -213,6 +213,43 @@
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
+
+  [data-scope="select"][data-part="item"][data-selected],
+  [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected]:hover,
+  [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: --value(--color-*-hover, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected]:active,
+  [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: --value(--color-*-active, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    background-color: --value(--color-*-hover, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected] [data-part="item-text"],
+  [data-scope="select"][data-part="item"][data-state="checked"] [data-part="item-text"] {
+    color: --value(--color-*-ink, [color]);
+  }
 }
 
 @utility select--rounded-* {

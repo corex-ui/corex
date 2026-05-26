@@ -23,7 +23,7 @@ import {
 import {
   mountStringBinding,
   readUpdatedServerString
-} from "./chunks/chunk-B34HSI73.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   idMatches,
   notifyChange,

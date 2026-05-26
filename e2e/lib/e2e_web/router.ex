@@ -175,12 +175,12 @@ defmodule E2eWeb.Router do
 
       live("/navigate/patterns", NavigatePatternsLive)
 
+      live("/native-input/playground", NativeInputPlayLive)
       live("/native-input/live-form", NativeInputFormLive)
 
       live("/number-input/playground", NumberInputPlayLive)
       live("/number-input/api", NumberInputApiLive)
       live("/number-input/events", NumberInputEventsLive)
-      live("/number-input/patterns", NumberInputPatternsLive)
       live("/number-input/live-form", NumberInputFormLive)
 
       live("/password-input/playground", PasswordInputPlayLive)
@@ -297,6 +297,7 @@ defmodule E2eWeb.Router do
     post("/color-picker/form", PageController, :color_picker_form_submit)
 
     get("/date-picker/anatomy", PageController, :date_picker_page)
+    get("/date-picker/style", PageController, :date_picker_styling_page)
     get("/date-picker/form", PageController, :date_picker_form_page)
     post("/date-picker/form", PageController, :date_picker_form_submit)
 
@@ -314,6 +315,7 @@ defmodule E2eWeb.Router do
     post("/signature-pad/form", PageController, :signature_form_submit)
 
     get("/menu/anatomy", PageController, :menu_page)
+    get("/menu/style", PageController, :menu_styling_page)
 
     get("/tabs/anatomy", PageController, :tabs_page)
     get("/tabs/style", PageController, :tabs_styling_page)
@@ -353,7 +355,9 @@ defmodule E2eWeb.Router do
     post("/file-upload/form", PageController, :file_upload_form_submit)
     get("/floating-panel/anatomy", PageController, :floating_panel_page)
     get("/listbox/anatomy", PageController, :listbox_page)
+    get("/listbox/style", PageController, :listbox_styling_page)
     get("/marquee/anatomy", PageController, :marquee_page)
+    get("/marquee/style", PageController, :marquee_styling_page)
     get("/number-input/anatomy", PageController, :number_input_page)
     get("/number-input/style", PageController, :number_input_styling_page)
     get("/number-input/form", PageController, :number_input_form_page)
@@ -362,9 +366,11 @@ defmodule E2eWeb.Router do
     get("/password-input/form", PageController, :password_input_form_page)
     post("/password-input/form", PageController, :password_input_form_submit)
     get("/pin-input/anatomy", PageController, :pin_input_page)
+    get("/pin-input/style", PageController, :pin_input_styling_page)
     get("/pin-input/form", PageController, :pin_input_form_page)
     post("/pin-input/form", PageController, :pin_input_form_submit)
     get("/native-input/anatomy", PageController, :native_input_page)
+    get("/native-input/style", PageController, :native_input_styling_page)
     get("/native-input/form", PageController, :native_input_form_page)
     post("/native-input/form", PageController, :native_input_form_submit)
     get("/radio-group/anatomy", PageController, :radio_group_page)

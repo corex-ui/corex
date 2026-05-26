@@ -141,6 +141,7 @@ defmodule Corex.Editable do
     CancelTrigger,
     Control,
     EditTrigger,
+    FormValue,
     Input,
     Label,
     Preview,
@@ -273,6 +274,11 @@ defmodule Corex.Editable do
         on_value_change_client: @on_value_change_client
       })}
     >
+      <input
+        :if={@name}
+        phx-mounted={Connect.ignore_form_value(%FormValue{id: @id, name: @name, value: @content_value, form: @form})}
+        {Connect.form_value(%FormValue{id: @id, name: @name, value: @content_value, form: @form})}
+      />
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, read_only: @read_only})}>
       <label
         class={Map.get(Enum.at(@label, 0), :class, nil)}
@@ -283,7 +289,7 @@ defmodule Corex.Editable do
       </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <div phx-mounted={Connect.ignore_area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})} {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false, orientation: @orientation})}>
-            <input type="text" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
+            <input type="text" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, value: @content_value, placeholder: @placeholder, name: if(@name, do: nil, else: @name), form: if(@name, do: nil, else: @form), required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input, dir: @dir, orientation: @orientation})} />
             <span phx-mounted={Connect.ignore_preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})} {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit, orientation: @orientation})}>
               {@value_text}
             </span>

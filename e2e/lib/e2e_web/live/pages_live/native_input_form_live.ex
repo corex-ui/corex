@@ -8,7 +8,8 @@ defmodule E2eWeb.NativeInputFormLive do
   alias E2eWeb.Demos.NativeInputDemo, as: Demo
 
   @phoenix_form_id "native-input-live-form-phoenix"
-  @live_strict_form_id "native-input-live-strict-form"
+  @ecto_form_id "native-input-live-form-ecto"
+  @phoenix_form_as :profile_phoenix
 
   @impl true
   def mount(_params, _session, socket) do
@@ -25,41 +26,37 @@ defmodule E2eWeb.NativeInputFormLive do
 
   defp assign_forms(socket) do
     phoenix_form =
-      Phoenix.Component.to_form(%{"email" => ""},
-        as: :native_input_phoenix,
+      Phoenix.Component.to_form(Demo.phoenix_form_defaults(),
+        as: @phoenix_form_as,
         id: @phoenix_form_id
       )
 
-    strict_form =
+    ecto_form =
       %NativeInputProfile{}
       |> NativeInputProfile.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :profile_strict, id: @live_strict_form_id)
+      |> Phoenix.Component.to_form(as: :profile_ecto, id: @ecto_form_id)
 
     socket
     |> assign(:phoenix_form, phoenix_form)
-    |> assign(:strict_form, strict_form)
+    |> assign(:ecto_form, ecto_form)
   end
 
   @impl true
   def handle_event("save_phoenix", params, socket) do
-    email = get_in(params, ["native_input_phoenix", "email"]) || ""
+    profile = Map.get(params, "profile_phoenix", %{})
+    message = "Submitted: #{NativeInputProfile.format_for_toast(profile)}"
 
     {:noreply,
      socket
-     |> Toast.create("layout-toast", "Submitted", "Submitted: email=#{email}", :info,
-       duration: 5000
-     )
+     |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
      |> assign(
        :phoenix_form,
-       Phoenix.Component.to_form(%{"email" => email},
-         as: :native_input_phoenix,
-         id: @phoenix_form_id
-       )
+       Phoenix.Component.to_form(profile, as: @phoenix_form_as, id: @phoenix_form_id)
      )}
   end
 
-  def handle_event("validate_strict", params, socket) do
-    p = Map.get(params, "profile_strict", %{})
+  def handle_event("validate", params, socket) do
+    p = Map.get(params, "profile_ecto", %{})
 
     changeset =
       %NativeInputProfile{}
@@ -67,20 +64,20 @@ defmodule E2eWeb.NativeInputFormLive do
       |> Map.put(:action, :validate)
 
     {:noreply,
-     socket
-     |> assign(
-       :strict_form,
+     assign(
+       socket,
+       :ecto_form,
        Phoenix.Component.to_form(changeset,
          action: :validate,
-         as: :profile_strict,
-         id: @live_strict_form_id
+         as: :profile_ecto,
+         id: @ecto_form_id
        )
      )}
   end
 
   @impl true
-  def handle_event("save_strict", params, socket) do
-    p = Map.get(params, "profile_strict", %{})
+  def handle_event("save", params, socket) do
+    p = Map.get(params, "profile_ecto", %{})
 
     case NativeInputProfile.changeset_validate(%NativeInputProfile{}, p) do
       %Ecto.Changeset{valid?: true} = changeset ->
@@ -91,23 +88,23 @@ defmodule E2eWeb.NativeInputFormLive do
          socket
          |> Toast.create("layout-toast", "Submitted", message, :info, duration: 5000)
          |> assign(
-           :strict_form,
+           :ecto_form,
            Phoenix.Component.to_form(
              NativeInputProfile.changeset_validate(%NativeInputProfile{}, p),
-             as: :profile_strict,
-             id: @live_strict_form_id
+             as: :profile_ecto,
+             id: @ecto_form_id
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
-         socket
-         |> assign(
-           :strict_form,
+         assign(
+           socket,
+           :ecto_form,
            Phoenix.Component.to_form(changeset,
              action: :insert,
-             as: :profile_strict,
-             id: @live_strict_form_id
+             as: :profile_ecto,
+             id: @ecto_form_id
            )
          )}
     end
@@ -150,7 +147,7 @@ defmodule E2eWeb.NativeInputFormLive do
           ]}
         >
           <:preview>
-            <Demo.form_preview_live_validate form={@strict_form} />
+            <Demo.form_preview_live_ecto form={@ecto_form} />
           </:preview>
         </.demo_section>
       </.demo_page>

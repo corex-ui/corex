@@ -7,11 +7,17 @@
   }
 
   .listbox {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
     width: 100%;
-    max-width: var(--container-5xs);
+    max-width: var(--container-3xs);
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .listbox[data-orientation="horizontal"] {
+    width: 100%;
     max-width: var(--container-md);
   }
 
@@ -60,6 +66,9 @@
     [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="vertical"] {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
   }
 
   .listbox
@@ -115,6 +124,11 @@
       [data-layout="list"][data-orientation="horizontal"]
     ),
   .listbox [data-scope="listbox"][data-part="item-group"] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
     background-color: var(--color-border);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -122,8 +136,18 @@
     gap: 1px;
   }
 
+  .listbox [data-scope="listbox"][data-part="item-group-label"] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .listbox [data-scope="listbox"][data-part="item"] {
     @apply ui-item;
+
+    display: flex;
+    width: 100%;
+    align-self: stretch;
+    box-sizing: border-box;
   }
 
   .listbox
@@ -221,6 +245,16 @@
   [data-scope="listbox"][data-part="item"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+  }
+
+  [data-scope="listbox"][data-part="item-group-label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="listbox"][data-part="item"][data-selected] {

@@ -105,7 +105,7 @@ defmodule E2eWeb.SelectPlayLive do
           />
           <.select
             id="select-playground-disabled-items"
-            class="select select--accent w-4xs"
+            class="select select--sm w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -119,7 +119,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Disabled items</:label>
           </.select>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="select-playground-disabled"
             checked={@controls.disabled}
             on_checked_change="control_changed"
@@ -127,7 +127,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Disabled</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="select-playground-read-only"
             checked={@controls.read_only}
             on_checked_change="control_changed"
@@ -135,7 +135,7 @@ defmodule E2eWeb.SelectPlayLive do
             <:label>Read only</:label>
           </.switch>
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="select-playground-invalid"
             checked={@controls.invalid}
             on_checked_change="control_changed"

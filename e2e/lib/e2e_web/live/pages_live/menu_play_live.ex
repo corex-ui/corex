@@ -61,7 +61,7 @@ defmodule E2eWeb.MenuPlayLive do
           />
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="close_on_select"
             checked={@controls.close_on_select}
             on_checked_change="control_changed"
@@ -70,7 +70,7 @@ defmodule E2eWeb.MenuPlayLive do
           </.switch>
 
           <.switch
-            class="switch"
+            class="switch switch--sm"
             id="loop_focus"
             checked={@controls.loop_focus}
             on_checked_change="control_changed"

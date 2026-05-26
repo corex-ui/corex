@@ -633,33 +633,78 @@ defmodule E2eWeb.PageController do
     render(conn, :date_picker_page)
   end
 
+  def date_picker_styling_page(conn, _params) do
+    render(conn, :date_picker_styling_page)
+  end
+
   defp assign_date_picker_form_docs(conn, scroll_to) do
+    demo = E2eWeb.Demos.DatePickerDemo
+
     conn
     |> assign(:scroll_to, scroll_to)
-    |> assign(:form_ecto, E2eWeb.Demos.DatePickerDemo.form_ecto())
-    |> assign(:phoenix_heex, E2eWeb.Demos.DatePickerDemo.form_phoenix_heex())
-    |> assign(:phoenix_elixir, E2eWeb.Demos.DatePickerDemo.form_phoenix_elixir())
-    |> assign(:ecto_heex, E2eWeb.Demos.DatePickerDemo.form_ecto_heex())
-    |> assign(:ecto_elixir, E2eWeb.Demos.DatePickerDemo.form_ecto_elixir())
-    |> assign(:native_heex, E2eWeb.Demos.DatePickerDemo.form_doc_native_heex())
-    |> assign(:native_elixir, E2eWeb.Demos.DatePickerDemo.form_native_elixir())
+    |> assign(:form_ecto, demo.form_ecto())
+    |> assign(:phoenix_single_heex, demo.form_doc_controller_phoenix_heex())
+    |> assign(:phoenix_single_elixir, demo.form_doc_controller_phoenix_elixir())
+    |> assign(:phoenix_multiple_heex, demo.form_doc_controller_phoenix_multiple_heex())
+    |> assign(:phoenix_multiple_elixir, demo.form_doc_controller_phoenix_multiple_elixir())
+    |> assign(:phoenix_range_heex, demo.form_doc_controller_phoenix_range_heex())
+    |> assign(:phoenix_range_elixir, demo.form_doc_controller_phoenix_range_elixir())
+    |> assign(:ecto_single_heex, demo.form_doc_controller_validate_heex())
+    |> assign(:ecto_single_elixir, demo.form_doc_controller_validate_elixir())
+    |> assign(:ecto_multiple_heex, demo.form_doc_controller_ecto_multiple_heex())
+    |> assign(:ecto_multiple_elixir, demo.form_doc_controller_ecto_multiple_elixir())
+    |> assign(:ecto_range_heex, demo.form_doc_controller_ecto_range_heex())
+    |> assign(:ecto_range_elixir, demo.form_doc_controller_ecto_range_elixir())
+    |> assign(:native_single_heex, demo.form_doc_native_heex())
+    |> assign(:native_single_elixir, demo.form_doc_controller_native_elixir())
+    |> assign(:native_multiple_heex, demo.form_doc_native_multiple_heex())
+    |> assign(:native_multiple_elixir, demo.form_doc_native_multiple_elixir())
+    |> assign(:native_range_heex, demo.form_doc_native_range_heex())
+    |> assign(:native_range_elixir, demo.form_doc_native_range_elixir())
+  end
+
+  defp date_picker_form_page_assigns do
+    %{
+      phoenix_form:
+        Phoenix.Component.to_form(%{"date" => ""},
+          as: :date_picker_phoenix,
+          id: "date-picker-form-phoenix"
+        ),
+      phoenix_multiple_form:
+        Phoenix.Component.to_form(%{"dates" => []},
+          as: :date_picker_phoenix_multiple,
+          id: "date-picker-form-phoenix-multiple"
+        ),
+      phoenix_range_form:
+        Phoenix.Component.to_form(%{"date_range" => []},
+          as: :date_picker_phoenix_range,
+          id: "date-picker-form-phoenix-range"
+        ),
+      ecto_form:
+        %E2e.Form.DatePickerForm{}
+        |> E2e.Form.DatePickerForm.changeset_validate(%{})
+        |> Phoenix.Component.to_form(as: :date_picker_ecto, id: "date-picker-form-ecto"),
+      ecto_multiple_form:
+        %E2e.Form.DatePickerForm{}
+        |> E2e.Form.DatePickerForm.changeset_validate_dates(%{})
+        |> Phoenix.Component.to_form(
+          as: :date_picker_ecto_multiple,
+          id: "date-picker-form-ecto-multiple"
+        ),
+      ecto_range_form:
+        %E2e.Form.DatePickerForm{}
+        |> E2e.Form.DatePickerForm.changeset_validate_range(%{})
+        |> Phoenix.Component.to_form(
+          as: :date_picker_ecto_range,
+          id: "date-picker-form-ecto-range"
+        )
+    }
   end
 
   def date_picker_form_page(conn, _params) do
-    phoenix_form =
-      Phoenix.Component.to_form(%{"date" => ""},
-        as: :date_picker_phoenix,
-        id: "date-picker-form-phoenix"
-      )
-
-    ecto_form =
-      %E2e.Form.DatePickerForm{}
-      |> E2e.Form.DatePickerForm.changeset_validate(%{})
-      |> Phoenix.Component.to_form(as: :date_picker_ecto, id: "date-picker-form-ecto")
-
     conn
     |> assign_date_picker_form_docs(nil)
-    |> render(:date_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
+    |> render(:date_picker_form_page, date_picker_form_page_assigns())
   end
 
   def date_picker_form_submit(conn, %{"date_picker_phoenix" => %{"date" => date}}) do
@@ -668,36 +713,72 @@ defmodule E2eWeb.PageController do
     |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix")
   end
 
+  def date_picker_form_submit(conn, %{"date_picker_phoenix_multiple" => %{"dates" => dates}}) do
+    dates = List.wrap(dates) |> Enum.join(", ")
+
+    conn
+    |> put_flash(:info, "Submitted: dates=#{dates}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix-multiple")
+  end
+
+  def date_picker_form_submit(conn, %{"date_picker_phoenix_range" => params}) do
+    date_range = Corex.DatePicker.format_value("range", Map.get(params, "date_range", []))
+
+    conn
+    |> put_flash(:info, "Submitted: date_range=#{date_range}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-phoenix-range")
+  end
+
   def date_picker_form_submit(conn, %{"date_picker_ecto" => ecto_params}) do
-    changeset =
-      %E2e.Form.DatePickerForm{}
-      |> E2e.Form.DatePickerForm.changeset_validate(ecto_params)
+    date_picker_ecto_submit(
+      conn,
+      ecto_params,
+      "single",
+      :date_picker_ecto,
+      :ecto_form,
+      "date-picker-form-ecto",
+      &E2e.Form.DatePickerForm.changeset_validate/2
+    )
+  end
 
-    if changeset.valid? do
-      date = ecto_params["date"] || ""
+  def date_picker_form_submit(conn, %{"date_picker_ecto_multiple" => ecto_params}) do
+    date_picker_ecto_submit(
+      conn,
+      ecto_params,
+      "multiple",
+      :date_picker_ecto_multiple,
+      :ecto_multiple_form,
+      "date-picker-form-ecto-multiple",
+      &E2e.Form.DatePickerForm.changeset_validate_dates/2
+    )
+  end
 
-      conn
-      |> put_flash(:info, "Submitted: date=#{date}")
-      |> redirect(to: ~p"/date-picker/form#date-picker-form-ecto")
-    else
-      changeset = Map.put(changeset, :action, :insert)
+  def date_picker_form_submit(conn, %{"date_picker_ecto_range" => ecto_params}) do
+    date_picker_ecto_submit(
+      conn,
+      ecto_params,
+      "range",
+      :date_picker_ecto_range,
+      :ecto_range_form,
+      "date-picker-form-ecto-range",
+      &E2e.Form.DatePickerForm.changeset_validate_range/2
+    )
+  end
 
-      ecto_form =
-        Phoenix.Component.to_form(changeset,
-          as: :date_picker_ecto,
-          id: "date-picker-form-ecto"
-        )
+  def date_picker_form_submit(conn, %{"date_picker_form_multiple" => %{"dates" => dates}}) do
+    dates = List.wrap(dates) |> Enum.join(", ")
 
-      phoenix_form =
-        Phoenix.Component.to_form(%{"date" => ""},
-          as: :date_picker_phoenix,
-          id: "date-picker-form-phoenix"
-        )
+    conn
+    |> put_flash(:info, "Submitted: dates=#{dates}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native-multiple")
+  end
 
-      conn
-      |> assign_date_picker_form_docs("date-picker-form-ecto")
-      |> render(:date_picker_form_page, phoenix_form: phoenix_form, ecto_form: ecto_form)
-    end
+  def date_picker_form_submit(conn, %{"date_picker_form_range" => params}) do
+    date_range = Corex.DatePicker.format_value("range", Map.get(params, "date_range", []))
+
+    conn
+    |> put_flash(:info, "Submitted: date_range=#{date_range}")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native-range")
   end
 
   def date_picker_form_submit(conn, %{"date_picker_form" => form_params}) do
@@ -705,14 +786,56 @@ defmodule E2eWeb.PageController do
 
     conn
     |> put_flash(:info, "Submitted: date=#{date}")
-    |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native-single")
   end
 
   def date_picker_form_submit(conn, _params) do
     conn
     |> put_flash(:info, "Submitted: date=")
-    |> redirect(to: ~p"/date-picker/form#date-picker-form-native")
+    |> redirect(to: ~p"/date-picker/form#date-picker-form-native-single")
   end
+
+  defp date_picker_ecto_submit(conn, params, mode, form_as, form_key, anchor, changeset_fun) do
+    params = Corex.DatePicker.cast_params(mode, params)
+    changeset = changeset_fun.(%E2e.Form.DatePickerForm{}, params)
+
+    if changeset.valid? do
+      data = Ecto.Changeset.apply_changes(changeset)
+      message = date_picker_ecto_submit_message(data, mode)
+
+      conn
+      |> put_flash(:info, message)
+      |> redirect(to: ~p"/date-picker/form##{anchor}")
+    else
+      changeset = Map.put(changeset, :action, :insert)
+
+      invalid_form =
+        Phoenix.Component.to_form(changeset,
+          as: form_as,
+          id: date_picker_ecto_form_id(form_as)
+        )
+
+      conn
+      |> assign_date_picker_form_docs(anchor)
+      |> render(
+        :date_picker_form_page,
+        Map.put(date_picker_form_page_assigns(), form_key, invalid_form)
+      )
+    end
+  end
+
+  defp date_picker_ecto_form_id(:date_picker_ecto), do: "date-picker-form-ecto"
+  defp date_picker_ecto_form_id(:date_picker_ecto_multiple), do: "date-picker-form-ecto-multiple"
+  defp date_picker_ecto_form_id(:date_picker_ecto_range), do: "date-picker-form-ecto-range"
+
+  defp date_picker_ecto_submit_message(%{date: date}, "single"),
+    do: "Submitted: date=#{Corex.DatePicker.format_value("single", date)}"
+
+  defp date_picker_ecto_submit_message(%{dates: dates}, "multiple"),
+    do: "Submitted: dates=#{Corex.DatePicker.format_value("multiple", dates)}"
+
+  defp date_picker_ecto_submit_message(%{date_range: date_range}, "range"),
+    do: "Submitted: date_range=#{Corex.DatePicker.format_value("range", date_range)}"
 
   def signature_page(conn, _params) do
     render(conn, :signature_page)
@@ -804,6 +927,10 @@ defmodule E2eWeb.PageController do
 
   def menu_page(conn, _params) do
     render(conn, :menu_page)
+  end
+
+  def menu_styling_page(conn, _params) do
+    render(conn, :menu_styling_page)
   end
 
   def tree_view_page(conn, _params) do
@@ -948,6 +1075,10 @@ defmodule E2eWeb.PageController do
     render(conn, :native_input_page)
   end
 
+  def native_input_styling_page(conn, _params) do
+    render(conn, :native_input_styling_page)
+  end
+
   defp assign_native_input_form_docs(conn, scroll_to) do
     conn
     |> assign(:scroll_to, scroll_to)
@@ -960,32 +1091,9 @@ defmodule E2eWeb.PageController do
     |> assign(:native_elixir, E2eWeb.Demos.NativeInputDemo.form_native_elixir())
   end
 
-  defp native_input_phoenix_defaults do
-    %{
-      "name" => "",
-      "email" => "",
-      "bio" => "",
-      "birth_date" => "",
-      "datetime" => "",
-      "reminder_time" => "",
-      "month" => "",
-      "week" => "",
-      "website" => "",
-      "phone" => "",
-      "q" => "",
-      "color" => "",
-      "count" => "",
-      "password" => "",
-      "role" => "",
-      "tags" => "",
-      "size" => "",
-      "agree" => false
-    }
-  end
-
   def native_input_form_page(conn, _params) do
     phoenix_form =
-      Phoenix.Component.to_form(native_input_phoenix_defaults(),
+      Phoenix.Component.to_form(E2eWeb.Demos.NativeInputDemo.phoenix_form_defaults(),
         as: :profile_phoenix,
         id: "native-input-form-phoenix"
       )
@@ -1028,7 +1136,7 @@ defmodule E2eWeb.PageController do
           )
 
         phoenix_form =
-          Phoenix.Component.to_form(native_input_phoenix_defaults(),
+          Phoenix.Component.to_form(E2eWeb.Demos.NativeInputDemo.phoenix_form_defaults(),
             as: :profile_phoenix,
             id: "native-input-form-phoenix"
           )
@@ -1045,10 +1153,8 @@ defmodule E2eWeb.PageController do
     |> redirect(to: ~p"/native-input/form#native-input-form-native")
   end
 
-  def native_input_form_submit(conn, _params) do
-    conn
-    |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(%{})}")
-    |> redirect(to: ~p"/native-input/form#native-input-form-native")
+  def native_input_form_submit(conn, params) do
+    native_input_form_submit(conn, Map.put(params, "profile_ecto", %{}))
   end
 
   def floating_panel_page(conn, _params) do
@@ -1059,8 +1165,16 @@ defmodule E2eWeb.PageController do
     render(conn, :listbox_page)
   end
 
+  def listbox_styling_page(conn, _params) do
+    render(conn, :listbox_styling_page)
+  end
+
   def marquee_page(conn, _params) do
     render(conn, :marquee_page)
+  end
+
+  def marquee_styling_page(conn, _params) do
+    render(conn, :marquee_styling_page)
   end
 
   def number_input_page(conn, _params) do
@@ -1431,6 +1545,10 @@ defmodule E2eWeb.PageController do
     render(conn, :pin_input_page)
   end
 
+  def pin_input_styling_page(conn, _params) do
+    render(conn, :pin_input_styling_page)
+  end
+
   defp assign_pin_input_form_docs(conn, scroll_to) do
     conn
     |> assign(:scroll_to, scroll_to)
@@ -1673,10 +1791,8 @@ defmodule E2eWeb.PageController do
     |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
   end
 
-  def radio_group_form_submit(conn, _params) do
-    conn
-    |> put_flash(:info, "Submitted: choice=#{inspect("")}")
-    |> redirect(to: ~p"/radio-group/form#radio-group-form-native")
+  def radio_group_form_submit(conn, params) do
+    radio_group_form_submit(conn, Map.put(params, "radio_group_ecto", %{}))
   end
 
   def timer_page(conn, _params) do

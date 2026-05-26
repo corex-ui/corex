@@ -305,7 +305,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={f[:color]}
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -441,7 +440,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={f[:color]}
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -662,7 +660,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         id="color-picker-changeset"
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -695,7 +692,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         id="color-picker-validate"
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -758,7 +754,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         label="Color"
         on_value_change="color_changed_basic"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -792,7 +787,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         label="Color"
         on_value_change="color_changed_validate"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -824,7 +818,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={@form[:color]}
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>
@@ -856,7 +849,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
         field={@form[:color]}
         label="Color"
         class="color-picker"
-        invalid={Corex.FormField.invalid?(@form[:color])}
         presets={["#ff0000", "#00ff00", "#0000ff"]}
       >
         <:error :let={msg}>

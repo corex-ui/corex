@@ -88,6 +88,8 @@ defmodule E2eWeb.RadioGroupFormLive do
          )}
 
       %Ecto.Changeset{} = changeset ->
+        changeset = Map.put(changeset, :action, :insert)
+
         {:noreply,
          assign(
            socket,

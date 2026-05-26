@@ -6,6 +6,10 @@
     z-index: 20;
   }
 
+  .tooltip:has([data-scope="tooltip"][data-part="content"][data-state="open"]) {
+    z-index: 50;
+  }
+
   .tooltip[data-loading] > * {
     @apply ui-loading;
   }
@@ -33,6 +37,7 @@
     max-width: var(--container-5xs);
     position: relative;
     z-index: 1;
+    background-color: var(--color-ui);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-ui);
   }

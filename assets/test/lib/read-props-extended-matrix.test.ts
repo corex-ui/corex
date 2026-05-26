@@ -20,12 +20,15 @@ describe("readStringControlledZagProps extended", () => {
 
 describe("readNumberControlledZagProps extended", () => {
   it.each([
-    [{ controlled: true, value: 0 }, { value: 0 }],
+    [
+      { controlled: true, value: 0 },
+      { value: "0", step: 1 },
+    ],
     [
       { defaultValue: 0, step: 2 },
-      { defaultValue: 0, step: 2 },
+      { defaultValue: "0", step: 2 },
     ],
-    [{}, {}],
+    [{}, { defaultValue: undefined, step: 1 }],
   ] as const)("%#", (dataset, expected) => {
     expect(readNumberControlledZagProps(el(dataset as Record<string, number>))).toEqual(expected);
   });

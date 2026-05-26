@@ -1,0 +1,28 @@
+<Layouts.app flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <.demo_page
+    path={@path}
+    id="marquee-styling-page"
+    title={~t"Marquee · Style"}
+    subtitle={~t"Item scale via size modifiers; host width via Tailwind max-w-* utilities."}
+  >
+    <.demo_section
+      id="marquee-styling-size"
+      title={~t"Size"}
+      code={E2eWeb.Demos.MarqueeDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.MarqueeDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="marquee-styling-max-width"
+      title={~t"Max width"}
+      code={E2eWeb.Demos.MarqueeDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.MarqueeDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

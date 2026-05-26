@@ -586,12 +586,19 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
   def form_ecto do
     ~S"""
-    defmodule MyApp.Form.Terms do
+    defmodule MyApp.Forms.Terms do
       use Ecto.Schema
       import Ecto.Changeset
 
       embedded_schema do
         field :terms, :boolean, default: false
+      end
+
+      def changeset(terms, attrs \\ %{}) do
+        terms
+        |> cast(attrs, [:terms])
+        |> validate_required([:terms])
+        |> validate_acceptance(:terms)
       end
 
       def changeset_validate(terms, attrs \\ %{}) do
@@ -927,8 +934,8 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
       def mount(_params, _session, socket) do
         ecto_form =
-          %MyApp.Form.Terms{}
-          |> MyApp.Form.Terms.changeset_validate(%{})
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(%{})
           |> Phoenix.Component.to_form(as: :terms_ecto, id: "checkbox-live-form-ecto")
 
         {:ok, assign(socket, :ecto_form, ecto_form)}
@@ -936,8 +943,8 @@ defmodule E2eWeb.Demos.CheckboxDemo do
 
       def handle_event("validate", %{"terms_ecto" => params}, socket) do
         changeset =
-          %MyApp.Form.Terms{}
-          |> MyApp.Form.Terms.changeset_validate(params)
+          %MyApp.Forms.Terms{}
+          |> MyApp.Forms.Terms.changeset_validate(params)
           |> Map.put(:action, :validate)
 
         {:noreply,
@@ -953,14 +960,14 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       end
 
       def handle_event("save", %{"terms_ecto" => params}, socket) do
-        case MyApp.Form.Terms.changeset_validate(%MyApp.Form.Terms{}, params) do
+        case MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params) do
           %Ecto.Changeset{valid?: true} = changeset ->
             {:noreply,
              assign(
                socket,
                :ecto_form,
                Phoenix.Component.to_form(
-                 MyApp.Form.Terms.changeset_validate(%MyApp.Form.Terms{}, params),
+                 MyApp.Forms.Terms.changeset_validate(%MyApp.Forms.Terms{}, params),
                  as: :terms_ecto,
                  id: "checkbox-live-form-ecto"
                )

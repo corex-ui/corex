@@ -42,8 +42,12 @@ defmodule Corex.Collapsible do
     <:trigger :let={c}>
       {if c.open, do: "Collapse", else: "Expand"}
     </:trigger>
-    <:closed>▼</:closed>
-    <:opened>▲</:opened>
+    <:closed>
+      <.heroicon name="hero-chevron-down" />
+    </:closed>
+    <:opened>
+      <.heroicon name="hero-chevron-up" />
+    </:opened>
     <:content :let={_c}>
       Panel body with custom opened/closed adornments.
     </:content>

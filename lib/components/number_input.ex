@@ -32,6 +32,8 @@ defmodule Corex.NumberInput do
   </.number_input>
   ```
 
+  `min`, `max`, and `step` are floats. Use `step` for granularity: `step={1}` for whole-number steps (display omits `.0`), `step={0.01}` for two decimal places. The visible value is formatted on the server to match Zag after hydration.
+
   <!-- tabs-close -->
 
   Slots `:decrement_trigger` and `:increment_trigger` are required.
@@ -113,7 +115,7 @@ defmodule Corex.NumberInput do
 
   ## Patterns
 
-  Use `value` for the initial number on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
+  Pass `value` for the initial number on mount. The machine owns updates after that unless you use [`set_value/2`](#set_value/2) or form `field`.
 
   ## Form
 
@@ -201,6 +203,7 @@ defmodule Corex.NumberInput do
   }
 
   alias Corex.NumberInput.Connect
+  alias Corex.NumberInput.Format
   alias Corex.NumberInput.Translation
   alias Corex.Selectors
   alias Phoenix.LiveView
@@ -233,6 +236,8 @@ defmodule Corex.NumberInput do
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:field, Phoenix.HTML.FormField, doc: "A form field struct, e.g. f[:age] or @form[:age]")
+  attr(:form_field, :boolean, default: false)
+  attr(:field_used, :boolean, default: false)
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -252,9 +257,12 @@ defmodule Corex.NumberInput do
   end
 
   def number_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    step = Map.get(assigns, :step, 1.0)
+
     assigns
     |> Corex.FormField.assign_form_field(field)
-    |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
+    |> assign(:value, Form.normalize_value("number", field.value))
+    |> assign_value_formats(step)
     |> number_input()
   end
 
@@ -270,7 +278,8 @@ defmodule Corex.NumberInput do
       |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:form_field, fn -> false end)
       |> assign(:translation, translation)
-      |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
+      |> assign(:value, Form.normalize_value("number", assigns[:value]))
+      |> assign_value_formats(assigns.step)
 
     ~H"""
     <div
@@ -308,7 +317,7 @@ defmodule Corex.NumberInput do
         autocomplete="off"
         tabindex="-1"
         name={@name}
-        value={@value || ""}
+        value={@submit_value || ""}
         data-scope="number-input"
         data-part="value-input"
         phx-mounted={JS.ignore_attributes(["value"], to: Selectors.css_id("number-input:#{@id}:value-input"))}
@@ -318,7 +327,7 @@ defmodule Corex.NumberInput do
           {render_slot(@label)}
         </label>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
-          <input value={@value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
+          <input value={@display_value || ""} phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, required: @required, dir: @dir, orientation: @orientation})} />
           <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
             <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}
@@ -346,8 +355,31 @@ defmodule Corex.NumberInput do
     end
   end
 
-  defp value_to_string(nil), do: nil
-  defp value_to_string(value), do: to_string(value)
+  defp assign_value_formats(assigns, step) do
+    raw = Map.get(assigns, :value)
+
+    display =
+      case formatted_string(raw, &Format.format_display(&1, step)) do
+        "" -> nil
+        s -> s
+      end
+
+    submit =
+      case formatted_string(raw, &Format.format_submit(&1, step)) do
+        "" -> nil
+        s -> s
+      end
+
+    assigns
+    |> assign(:display_value, display)
+    |> assign(:submit_value, submit)
+    |> assign(:value, submit)
+  end
+
+  defp formatted_string(nil, _formatter), do: ""
+  defp formatted_string("", _formatter), do: ""
+
+  defp formatted_string(raw, formatter), do: formatter.(raw)
 
   api_doc(~S"""
   Replace the formatted value from `phx-click`. Dispatches `corex:number-input:set-value` with a numeric `value`.

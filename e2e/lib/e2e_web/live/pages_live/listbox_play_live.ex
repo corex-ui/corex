@@ -50,6 +50,7 @@ defmodule E2eWeb.ListboxPlayLive do
     controls = %{
       disabled_items: [],
       orientation: "vertical",
+      selection_mode: "single",
       dir: "ltr"
     }
 
@@ -90,6 +91,10 @@ defmodule E2eWeb.ListboxPlayLive do
     |> sync_items()
   end
 
+  defp update_control(socket, "selection_mode", value) do
+    update(socket, :controls, &%{&1 | selection_mode: value})
+  end
+
   defp update_control(socket, "dir", value) do
     update(socket, :controls, &%{&1 | dir: value})
   end
@@ -98,6 +103,7 @@ defmodule E2eWeb.ListboxPlayLive do
 
   defp control_id("dir"), do: "dir"
   defp control_id("orientation"), do: "orientation"
+  defp control_id("selection_mode"), do: "selection_mode"
   defp control_id(id), do: id
 
   defp sync_items(socket) do
@@ -143,6 +149,18 @@ defmodule E2eWeb.ListboxPlayLive do
           />
 
           <.toggle_group
+            class="toggle-group toggle-group--sm max-w-6xs"
+            id="selection_mode"
+            on_value_change="control_changed"
+            multiple={false}
+            deselectable={false}
+            value={[@controls.selection_mode]}
+          >
+            <:item value="single">Single</:item>
+            <:item value="multiple">Multiple</:item>
+          </.toggle_group>
+
+          <.toggle_group
             class="toggle-group toggle-group--sm max-w-7xs"
             id="orientation"
             on_value_change="control_changed"
@@ -160,7 +178,7 @@ defmodule E2eWeb.ListboxPlayLive do
 
           <.select
             id="playground-disabled-items"
-            class="select select--accent w-4xs"
+            class="select select--sm w-4xs"
             positioning={%Corex.Positioning{same_width: true}}
             multiple
             deselectable={true}
@@ -179,6 +197,7 @@ defmodule E2eWeb.ListboxPlayLive do
             id={@playground_listbox_id}
             class="listbox"
             items={@items}
+            selection_mode={@controls.selection_mode}
             orientation={@controls.orientation}
             dir={@controls.dir}
           >

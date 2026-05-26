@@ -74,6 +74,36 @@ defmodule Corex.NativeInputTest do
       assert find_in_html(result, ~S(input[type=radio][name="user[size]"])) != []
     end
 
+    test "radio with form field uses field value for checked state" do
+      form = %Phoenix.HTML.Form{id: "profile", name: "profile", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :size,
+        id: "profile_size",
+        name: "profile[size]",
+        value: "l",
+        errors: []
+      }
+
+      result =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.NativeInput.native_input
+              type="radio"
+              field={@field}
+              options={[Small: "s", Medium: "m", Large: "l"]}
+            />
+            """
+          end,
+          %{field: field}
+        )
+
+      assert find_in_html(result, ~S(input[type=radio][value=l][checked])) != []
+      refute find_in_html(result, ~S(input[type=radio][value=m][checked])) != []
+    end
+
     test "renders with form field" do
       form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
 

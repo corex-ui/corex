@@ -1156,7 +1156,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={items()}>
+      <.radio_group
+        field={f[:choice]}
+        class="radio-group"
+        items={items()}
+      >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>
@@ -1186,7 +1190,11 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       action={~p"/radio-group/form"}
       method="post"
     >
-      <.radio_group field={f[:choice]} class="radio-group" items={items()}>
+      <.radio_group
+        field={f[:choice]}
+        class="radio-group"
+        items={items()}
+      >
         <:label>Choose one</:label>
         <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         <:error :let={msg}>

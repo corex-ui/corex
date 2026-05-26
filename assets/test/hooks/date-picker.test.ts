@@ -10,6 +10,10 @@ describe("valueToIsoString", () => {
   it("stringifies values", () => {
     expect(valueToIsoString("2024-01-01")).toBe("2024-01-01");
   });
+
+  it("formats calendar date parts as ISO", () => {
+    expect(valueToIsoString({ year: 2024, month: 6, day: 1 })).toBe("2024-06-01");
+  });
 });
 
 describe("resolveCloseOnSelect", () => {

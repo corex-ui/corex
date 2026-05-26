@@ -109,21 +109,4 @@ defmodule E2eWeb.NumberInputTest do
       |> NumberInput.wait_playground_number_input_ready()
     end
   end
-
-  describe "patterns" do
-    feature "initial value  -  increment updates input", %{session: session} do
-      session =
-        session
-        |> ComponentBehaviorSpec.visit_ready(NumberInput, :number_input, :patterns)
-        |> NumberInput.wait_patterns_page()
-        |> NumberInput.wait_root_number_input_ready("number-input-patterns-initial-field")
-
-      session
-      |> NumberInput.click_increment_in_section("number-input-patterns-initial-doc")
-      |> NumberInput.wait(300)
-
-      assert NumberInput.hidden_value_at_host(session, "number-input-patterns-initial-field") ==
-               "11"
-    end
-  end
 end

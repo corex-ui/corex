@@ -235,7 +235,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
             <.select
               id="playground-disabled-items"
-              class="select select--accent w-4xs"
+              class="select select--sm w-4xs"
               multiple
               deselectable={true}
               close_on_select={false}
@@ -250,7 +250,7 @@ defmodule E2eWeb.AccordionPlayLive do
             </.select>
 
             <.switch
-              class="switch"
+              class="switch switch--sm"
               id={"playground-collapsible-#{@controls.multiple}"}
               checked={@controls.collapsible}
               on_checked_change="control_changed"
@@ -259,7 +259,7 @@ defmodule E2eWeb.AccordionPlayLive do
             </.switch>
 
             <.switch
-              class="switch"
+              class="switch switch--sm"
               id="multiple"
               checked={@controls.multiple}
               on_checked_change="control_changed"
@@ -269,7 +269,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
             <.select
               id="accordion-color"
-              class="select select--accent  w-4xs"
+              class="select select--sm w-4xs"
               value={[@controls.color]}
               deselectable={false}
               items={@accordion_color_items}
@@ -283,7 +283,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
             <.select
               id="accordion-size"
-              class="select select--accent w-4xs"
+              class="select select--sm w-4xs"
               value={[@controls.size]}
               deselectable={false}
               items={@accordion_size_items}

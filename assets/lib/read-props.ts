@@ -1,3 +1,4 @@
+import { formatDisplayValue } from "./number-input-format";
 import {
   getBoolean,
   getCheckedState,
@@ -188,7 +189,11 @@ export function readUpdatedServerStringList(
 export function mountStringListBinding(
   el: HTMLElement
 ): { value: string[] } | { defaultValue: string[] } {
-  if (isZagValueControlled(el)) {
+  if (getBoolean(el, "formField")) {
+    return { defaultValue: readDatasetStringList(el, "value") };
+  }
+
+  if (getBoolean(el, "controlled")) {
     return { value: readDatasetStringList(el, "value") };
   }
 
@@ -196,13 +201,20 @@ export function mountStringListBinding(
 }
 
 export function readUpdatedServerString(
-  el: HTMLElement
+  el: HTMLElement,
+  lastServerValue?: string
 ): { value: string | null } | Record<string, never> {
   if (!isZagValueControlled(el)) {
     return {};
   }
 
-  return { value: z(getString(el, "value")) };
+  const raw = getString(el, "value");
+
+  if (getBoolean(el, "formField") && raw === lastServerValue) {
+    return {};
+  }
+
+  return { value: z(raw) };
 }
 
 export function mountStringBinding(
@@ -210,7 +222,11 @@ export function mountStringBinding(
   valueKey: string,
   defaultKey: string
 ): { value: string | null } | { defaultValue: string | null } {
-  if (isZagValueControlled(el)) {
+  if (getBoolean(el, "formField")) {
+    return { defaultValue: z(getString(el, valueKey)) };
+  }
+
+  if (getBoolean(el, "controlled")) {
     return { value: z(getString(el, valueKey)) };
   }
 
@@ -234,12 +250,12 @@ export function readUpdatedServerChecked(
 export function mountCheckedBinding(
   el: HTMLElement
 ): { checked: CheckedState } | { defaultChecked: CheckedState } {
-  if (getBoolean(el, "controlled")) {
-    return { checked: getCheckedState(el, "checked") };
-  }
-
   if (getBoolean(el, "formField")) {
     return { defaultChecked: getCheckedState(el, "checked") };
+  }
+
+  if (getBoolean(el, "controlled")) {
+    return { checked: getCheckedState(el, "checked") };
   }
 
   return { defaultChecked: getCheckedState(el, "defaultChecked") };
@@ -276,33 +292,79 @@ export function mountTagsBinding(
   return { defaultValue: readDatasetTagsList(el, "defaultTags") };
 }
 
-export function readUpdatedServerNumber(el: HTMLElement): { value?: number; step?: number } {
-  const step = getNumber(el, "step");
-  const base = step !== undefined ? { step } : {};
+function numberInputStep(el: HTMLElement): number {
+  return getNumber(el, "step") ?? 1;
+}
 
-  if (!isZagValueControlled(el)) {
-    return base;
+export type NumberServerValuePatch = {
+  value?: string;
+  step?: number;
+  nextServerValue?: string;
+};
+
+export function readUpdatedServerNumber(
+  el: HTMLElement,
+  lastServerValue?: string
+): NumberServerValuePatch {
+  const step = numberInputStep(el);
+  const base: NumberServerValuePatch = { step };
+
+  if (getBoolean(el, "controlled")) {
+    const raw = getString(el, "value");
+    if (raw === undefined || raw === "") {
+      return base;
+    }
+
+    return {
+      ...base,
+      value: formatDisplayValue(raw, step),
+      nextServerValue: raw,
+    };
   }
 
-  const raw = getString(el, "value");
-  if (raw === undefined || raw === "") {
-    return base;
+  if (getBoolean(el, "formField")) {
+    const raw = getString(el, "value");
+    if (raw === undefined || raw === "") {
+      return base;
+    }
+
+    if (raw === lastServerValue) {
+      return base;
+    }
+
+    return {
+      ...base,
+      value: formatDisplayValue(raw, step),
+      nextServerValue: raw,
+    };
   }
 
-  const parsed = Number(raw);
-  return Number.isNaN(parsed) ? base : { ...base, value: parsed };
+  return base;
 }
 
 export function mountNumberBinding(el: HTMLElement): NumZag {
-  const step = getNumber(el, "step");
-  if (isZagValueControlled(el)) {
+  const step = numberInputStep(el);
+
+  if (getBoolean(el, "controlled")) {
     const raw = getString(el, "value");
-    const value =
-      raw !== undefined && raw !== "" && !Number.isNaN(Number(raw)) ? Number(raw) : undefined;
+    const value = raw !== undefined && raw !== "" ? formatDisplayValue(raw, step) : undefined;
     return { value, step };
   }
 
-  return { defaultValue: getNumber(el, "defaultValue"), step };
+  if (getBoolean(el, "formField")) {
+    const raw = getString(el, "value");
+    const defaultValue =
+      raw !== undefined && raw !== "" ? formatDisplayValue(raw, step) : undefined;
+    return { defaultValue, step };
+  }
+
+  const rawDefault = getString(el, "defaultValue");
+  const defaultValue =
+    rawDefault !== undefined && rawDefault !== ""
+      ? formatDisplayValue(rawDefault, step)
+      : undefined;
+
+  return { defaultValue, step };
 }
 
 export function readStringListControlledZagUpdate(
@@ -334,15 +396,18 @@ export function readEditControlledZagUpdate(
 }
 
 type NumZag =
-  | { value: number | undefined; step: number | undefined; defaultValue?: never }
-  | { value?: never; defaultValue: number | undefined; step: number | undefined };
+  | { value: string | undefined; step: number | undefined; defaultValue?: never }
+  | { value?: never; defaultValue: string | undefined; step: number | undefined };
 
 export function readNumberControlledZagProps(el: HTMLElement): NumZag {
   return mountNumberBinding(el);
 }
 
-export function readNumberControlledZagUpdate(el: HTMLElement): { value?: number; step?: number } {
-  return readUpdatedServerNumber(el);
+export function readNumberControlledZagUpdate(
+  el: HTMLElement,
+  lastServerValue?: string
+): NumberServerValuePatch {
+  return readUpdatedServerNumber(el, lastServerValue);
 }
 
 export function readBooleanControlledZagProps(
@@ -365,14 +430,10 @@ export function readControlledOrDefaultBoolean(
 
 export function readStringListControlledZagProps(
   el: HTMLElement,
-  valueKey: string,
-  defaultValueKey: string
+  _valueKey: string,
+  _defaultValueKey: string
 ): { value: string[] | undefined } | { defaultValue: string[] | undefined } {
-  if (isZagValueControlled(el)) {
-    return { value: readDatasetStringList(el, valueKey) };
-  }
-
-  return { defaultValue: readDatasetStringList(el, defaultValueKey) };
+  return mountStringListBinding(el);
 }
 
 export function readControlledOrDefaultStringList(

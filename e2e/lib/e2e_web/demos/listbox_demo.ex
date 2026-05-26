@@ -706,4 +706,226 @@ defmodule E2eWeb.Demos.ListboxDemo do
     });
     """
   end
+
+  defp styling_items_attr do
+    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}, %{label: "Netherlands", value: "nld"}])}|
+  end
+
+  defp styling_value_attr do
+    ~S|value={["fra"]}|
+  end
+
+  def styling_color_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    """
+    <.listbox class="listbox" #{items} #{value}>
+      <:label>Default</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--accent" #{items} #{value}>
+      <:label>Accent</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--brand" #{items} #{value}>
+      <:label>Brand</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--alert" #{items} #{value}>
+      <:label>Alert</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--info" #{items} #{value}>
+      <:label>Info</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--success" #{items} #{value}>
+      <:label>Success</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_color_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.listbox id="listbox-style-color-default" class="listbox w-full" items={@items} value={@value}>
+        <:label>Default</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-color-accent"
+        class="listbox listbox--accent w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>Accent</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-color-brand"
+        class="listbox listbox--brand w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>Brand</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-color-alert"
+        class="listbox listbox--alert w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>Alert</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-color-info"
+        class="listbox listbox--info w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>Info</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-color-success"
+        class="listbox listbox--success w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>Success</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+    </div>
+    """
+  end
+
+  def styling_size_code do
+    items = styling_items_attr()
+
+    """
+    <.listbox class="listbox listbox--sm" #{items}>
+      <:label>SM</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--md" #{items}>
+      <:label>MD</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--lg" #{items}>
+      <:label>LG</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    <.listbox class="listbox listbox--xl" #{items}>
+      <:label>XL</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def styling_size_example(assigns) do
+    assigns = assign(assigns, :items, items_minimal())
+
+    ~H"""
+    <div class="flex flex-col gap-4 max-w-md">
+      <.listbox id="listbox-style-size-sm" class="listbox listbox--sm w-full" items={@items}>
+        <:label>SM</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox id="listbox-style-size-md" class="listbox listbox--md w-full" items={@items}>
+        <:label>MD</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox id="listbox-style-size-lg" class="listbox listbox--lg w-full" items={@items}>
+        <:label>LG</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox id="listbox-style-size-xl" class="listbox listbox--xl w-full" items={@items}>
+        <:label>XL</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    items = styling_items_attr()
+    value = styling_value_attr()
+
+    slots = """
+      <:label>Label</:label>
+      <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+    """
+
+    """
+    <.listbox class="listbox max-w-2xs" #{items} #{value}>
+    #{slots}
+    </.listbox>
+    <.listbox class="listbox max-w-md" #{items} #{value}>
+    #{slots}
+    </.listbox>
+    <.listbox class="listbox max-w-xl" #{items} #{value}>
+    #{slots}
+    </.listbox>
+    <.listbox class="listbox max-w-2xl" #{items} #{value}>
+    #{slots}
+    </.listbox>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    assigns =
+      assigns
+      |> assign(:items, items_minimal())
+      |> assign(:value, ["fra"])
+
+    ~H"""
+    <div class="flex flex-col gap-4 items-stretch w-full">
+      <.listbox
+        id="listbox-style-max-2xs"
+        class="listbox max-w-2xs w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>2xs</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-max-md"
+        class="listbox max-w-md w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>MD</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-max-xl"
+        class="listbox max-w-xl w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>XL</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+      <.listbox
+        id="listbox-style-max-2xl"
+        class="listbox max-w-2xl w-full"
+        items={@items}
+        value={@value}
+      >
+        <:label>2XL</:label>
+        <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
+      </.listbox>
+    </div>
+    """
+  end
 end

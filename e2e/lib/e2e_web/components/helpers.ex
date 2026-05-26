@@ -334,10 +334,12 @@ defmodule E2eWeb.Helpers do
           label: ~t"Date picker",
           id: "date-picker",
           anatomy_to: ~p"/date-picker/anatomy",
+          style: true,
           playground_to: ~p"/date-picker/playground",
           api_to: ~p"/date-picker/api",
           events_to: ~p"/date-picker/events",
           patterns_to: ~p"/date-picker/patterns",
+          style_to: ~p"/date-picker/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/date-picker/form"),
             doc_form_menu_item(~t"Live Form", ~p"/date-picker/live-form")
@@ -422,7 +424,9 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/listbox/playground",
           api_to: ~p"/listbox/api",
           events_to: ~p"/listbox/events",
-          patterns_to: ~p"/listbox/patterns"
+          patterns_to: ~p"/listbox/patterns",
+          style: true,
+          style_to: ~p"/listbox/style"
         },
         %{
           label: ~t"Marquee",
@@ -431,7 +435,9 @@ defmodule E2eWeb.Helpers do
           playground: false,
           pattern: false,
           api_to: ~p"/marquee/api",
-          events_to: ~p"/marquee/events"
+          events_to: ~p"/marquee/events",
+          style: true,
+          style_to: ~p"/marquee/style"
         },
         %{
           label: ~t"Menu",
@@ -440,16 +446,20 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/menu/playground",
           api_to: ~p"/menu/api",
           events_to: ~p"/menu/events",
-          patterns_to: ~p"/menu/patterns"
+          patterns_to: ~p"/menu/patterns",
+          style: true,
+          style_to: ~p"/menu/style"
         },
         %{
           label: ~t"Native input",
           id: "native-input",
           anatomy_to: ~p"/native-input/anatomy",
-          playground: false,
+          playground_to: ~p"/native-input/playground",
           api: false,
           event: false,
           pattern: false,
+          style: true,
+          style_to: ~p"/native-input/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/native-input/form"),
             doc_form_menu_item(~t"Live Form", ~p"/native-input/live-form")
@@ -473,8 +483,7 @@ defmodule E2eWeb.Helpers do
           playground_to: ~p"/number-input/playground",
           api_to: ~p"/number-input/api",
           events_to: ~p"/number-input/events",
-          pattern: true,
-          patterns_to: ~p"/number-input/patterns",
+          pattern: false,
           style_to: ~p"/number-input/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/number-input/form"),
@@ -498,6 +507,7 @@ defmodule E2eWeb.Helpers do
           label: ~t"Pin input",
           id: "pin-input",
           anatomy_to: ~p"/pin-input/anatomy",
+          style_to: ~p"/pin-input/style",
           playground_to: ~p"/pin-input/playground",
           api_to: ~p"/pin-input/api",
           events_to: ~p"/pin-input/events",

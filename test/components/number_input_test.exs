@@ -169,7 +169,51 @@ defmodule Corex.NumberInputTest do
       assert html =~ ~r/<input\b[^>]*\bvalue="5"[^>]*\bdata-part="input"/
     end
 
-    test "field sets data-default-value from form value" do
+    test "display and submit values differ when grouping applies" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value="1234" step={1.0}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-default-value="1234")
+      assert html =~ ~r/<input\b(?=[^>]*\bdata-part="input")(?=[^>]*\bvalue="1,234")[^>]*>/
+
+      refute html =~
+               ~r/<input\b(?=[^>]*\bdata-part="value-input")(?=[^>]*\bvalue="1,234")[^>]*>/
+    end
+
+    test "formats float value for whole step on server" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input id="x" value={10.0} step={1.0}>
+              <:decrement_trigger>-</:decrement_trigger>
+              <:increment_trigger>+</:increment_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ ~S(data-default-value="10")
+      assert html =~ ~r/<input\b[^>]*\bvalue="10"[^>]*\bdata-part="input"/
+      refute html =~ ~S(value="10.0")
+    end
+
+    test "field sets data-value from form value" do
       changeset =
         {%{}, %{value: :string}}
         |> Ecto.Changeset.cast(%{"value" => "99"}, [:value])
@@ -191,8 +235,9 @@ defmodule Corex.NumberInputTest do
           %{form: form}
         )
 
-      refute html =~ "data-controlled"
-      assert html =~ ~S(data-default-value="99")
+      refute html =~ ~r/data-controlled/
+      assert html =~ ~S(data-value="99")
+      refute html =~ ~S(data-default-value="99")
       assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
     end
 
@@ -241,7 +286,7 @@ defmodule Corex.NumberInputTest do
           %{}
         )
 
-      assert html =~ ~r/<input\b[^>]*\bvalue="5000"[^>]*\bdata-part="input"/
+      assert html =~ ~r/<input\b[^>]*\bvalue="5,000"[^>]*\bdata-part="input"/
     end
 
     test "visible input renders empty value attribute when no value is provided" do

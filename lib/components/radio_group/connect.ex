@@ -12,11 +12,12 @@ defmodule Corex.RadioGroup.Connect do
     ItemText,
     Label,
     Props,
-    Root
+    Root,
+    ValueInput
   }
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1, controlled_string_value: 2]
+  import Corex.Helpers, only: [get_boolean: 1, controlled_string_value: 2, maybe_put: 3]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -36,7 +37,7 @@ defmodule Corex.RadioGroup.Connect do
       "id" => assigns.id,
       "data-value" => value_str,
       "data-default-value" => default_value_str,
-      "data-controlled" => get_boolean(zag_controlled),
+      "data-controlled" => get_boolean(controlled),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-disabled" => get_boolean(assigns.disabled),
@@ -177,13 +178,35 @@ defmodule Corex.RadioGroup.Connect do
     )
   end
 
+  @spec value_input(ValueInput.t()) :: map()
+  def value_input(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
+    %{
+      "type" => "hidden",
+      "hidden" => "true",
+      "aria-hidden" => "true",
+      "tabindex" => "-1",
+      "data-scope" => "radio-group",
+      "data-part" => "value-input",
+      "dir" => assigns.dir,
+      "data-orientation" => orientation,
+      "id" => "radio-group:#{assigns.id}:value-input"
+    }
+  end
+
+  def ignore_value_input(assigns) do
+    JS.ignore_attributes(ValueInput.ignored_attrs(),
+      to: Selectors.css_id("radio-group:#{assigns.id}:value-input")
+    )
+  end
+
   @spec item_hidden_input(ItemHiddenInput.t()) :: map()
   def item_hidden_input(assigns) do
     %{
       "data-scope" => "radio-group",
       "data-part" => "item-hidden-input",
       "type" => "radio",
-      "name" => assigns.name,
       "form" => assigns.form,
       "value" => assigns.value,
       "checked" => get_boolean(assigns.checked),
@@ -197,6 +220,7 @@ defmodule Corex.RadioGroup.Connect do
       "style" =>
         "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
+    |> maybe_put("name", assigns.name)
   end
 
   def ignore_item_hidden_input(assigns) do

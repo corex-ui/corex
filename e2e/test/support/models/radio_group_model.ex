@@ -212,11 +212,17 @@ defmodule E2eWeb.RadioGroupModel do
     assert_has(session, css("#radio-group-form-page"))
   end
 
+  def wait_for_ecto_form_error(session) do
+    assert_has(session, css("#radio-group-form-ecto", text: "can't be blank"))
+    session
+  end
+
   def submit_form(session, mode \\ :static, form \\ :native) do
     id =
       case {mode, form} do
         {:live, :ecto} -> "radio-group-form-live-strict-submit"
         {:live, _} -> "radio-group-live-form-phoenix-submit"
+        {:static, :ecto} -> "radio-group-validate-submit"
         {:static, :phoenix} -> nil
         _ -> "radio-group-controller-submit"
       end

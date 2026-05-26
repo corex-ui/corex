@@ -11,11 +11,11 @@
     title={~t"Date Picker · Form"}
   >
     <.demo_section
-      id="date-picker-form-phoenix"
-      title={~t"Phoenix Form"}
+      id="date-picker-form-phoenix-single-section"
+      title={~t"Phoenix Form · Single"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_elixir}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_single_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_single_elixir}
       ]}
     >
       <:preview>
@@ -24,29 +24,113 @@
     </.demo_section>
 
     <.demo_section
-      id="date-picker-form-ecto"
-      title={~t"Phoenix Form + Ecto"}
+      id="date-picker-form-phoenix-multiple-section"
+      title={~t"Phoenix Form · Multiple"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @ecto_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_elixir},
-        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_multiple_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_multiple_elixir}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_ecto form={@ecto_form} />
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_phoenix_multiple form={
+          @phoenix_multiple_form
+        } />
       </:preview>
     </.demo_section>
 
     <.demo_section
-      id="date-picker-form-native"
-      title={~t"Native HTML Form"}
+      id="date-picker-form-phoenix-range-section"
+      title={~t"Phoenix Form · Range"}
       code_tabs={[
-        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
-        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_elixir}
+        %{value: "heex", label: "Heex", language: :heex, code: @phoenix_range_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @phoenix_range_elixir}
       ]}
     >
       <:preview>
-        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_native />
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_phoenix_range form={
+          @phoenix_range_form
+        } />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-ecto-single-section"
+      title={~t"Phoenix Form + Ecto · Single"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_single_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_single_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_validate form={@ecto_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-ecto-multiple-section"
+      title={~t"Phoenix Form + Ecto · Multiple"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_multiple_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_multiple_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_ecto_multiple form={
+          @ecto_multiple_form
+        } />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-ecto-range-section"
+      title={~t"Phoenix Form + Ecto · Range"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @ecto_range_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @ecto_range_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_ecto_range form={@ecto_range_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-native-single"
+      title={~t"Native HTML Form · Single"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_single_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_single_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_native selection_mode="single" />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-native-multiple-section"
+      title={~t"Native HTML Form · Multiple"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_multiple_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_multiple_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_native selection_mode="multiple" />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="date-picker-form-native-range-section"
+      title={~t"Native HTML Form · Range"}
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_range_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @native_range_elixir}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.DatePickerDemo.form_preview_controller_native selection_mode="range" />
       </:preview>
     </.demo_section>
   </.demo_page>

@@ -15,7 +15,7 @@ import "./chunks/chunk-V4PB2O2G.mjs";
 import {
   readStringListControlledZagProps,
   readStringListControlledZagUpdate
-} from "./chunks/chunk-B34HSI73.mjs";
+} from "./chunks/chunk-VL4ETB3G.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

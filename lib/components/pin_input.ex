@@ -117,6 +117,17 @@ defmodule Corex.PinInput do
   | LG | `pin-input pin-input--lg` |
   | XL | `pin-input pin-input--xl` |
 
+  ### Radius
+
+  | Modifier | Classes |
+  | -------- | ------- |
+  | None | `pin-input pin-input--rounded-none` |
+  | SM | `pin-input pin-input--rounded-sm` |
+  | MD | `pin-input pin-input--rounded-md` |
+  | LG | `pin-input pin-input--rounded-lg` |
+  | XL | `pin-input pin-input--rounded-xl` |
+  | Full | `pin-input pin-input--rounded-full` |
+
   <!-- tabs-close -->
 
   The `value` assign is the initial cell contents. Standalone mode uses `data-default-value`; `field={@form[:code]}` uses Zag controlled `data-value` and resyncs on patch via `updateProps({ value })`. Use the `controlled` assign only for non-form LiveView with `on_value_change`.

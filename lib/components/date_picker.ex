@@ -27,6 +27,31 @@ defmodule Corex.DatePicker do
 
   For cross-cutting invalid styling and error presentation, see the [Forms](forms.html) guide. Pass `invalid={Corex.FormField.invalid?(@form[:date])}` when you want alert borders after validation.
 
+  ### Wire format vs domain types
+
+  The component and LiveView events use **ISO-8601 strings** (`value`, `on_value_change`, hidden inputs). Ecto schemas should use `:date` and `{:array, :date}`. After cast, work with `%Date{}` in application code.
+
+  | Layer | Format |
+  | ----- | ------ |
+  | `value`, events, HTML | ISO strings (comma-joined for multiple/range) |
+  | `field={@form[:date]}` | Accepts `%Date{}` or string; displayed as ISO |
+  | Ecto | `:date`, `{:array, :date}` |
+  | Flash / logs | [`format_value/2`](#format_value/2), not `inspect/1` |
+
+  Use [`cast_params/2`](#cast_params/2) in `handle_event` to normalize `on_value_change` or form params before `cast/3`:
+
+  ```elixir
+  def handle_event("date_changed", %{"value" => value}, socket) do
+    params = Corex.DatePicker.cast_params("single", %{"value" => value})
+
+    changeset =
+      MyApp.Form.DateForm.changeset_validate(%MyApp.Form.DateForm{}, params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, :form, to_form(changeset, action: :validate))}
+  end
+  ```
+
   ### Controller
 
   Build the form from an Ecto changeset:
@@ -147,6 +172,8 @@ defmodule Corex.DatePicker do
   | -------- | ------ | ------- |
   | [`set_value/2`](#set_value/2) | Set selected date(s) (client) | `%Phoenix.LiveView.JS{}` |
   | [`set_value/3`](#set_value/3) | Set selected date(s) (server) | `socket` |
+  | [`format_value/2`](#format_value/2) | Format value for flash/logs | ISO string |
+  | [`cast_params/2`](#cast_params/2) | Normalize params for Ecto cast | map |
 
   ## Events
 
@@ -181,9 +208,13 @@ defmodule Corex.DatePicker do
 
   ```elixir
   def handle_event("date_changed", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :date_value, value)}
+    params = Corex.DatePicker.cast_params("single", %{"value" => value})
+    changeset = MyApp.Form.DateForm.changeset_validate(%MyApp.Form.DateForm{}, params)
+    {:noreply, assign(socket, :form, to_form(changeset, action: :validate))}
   end
   ```
+
+  Event `value` is always an ISO string (comma-joined for multiple/range). Use [`cast_params/2`](#cast_params/2) before Ecto `cast/3`.
 
   <!-- tabs-close -->
 
@@ -520,9 +551,18 @@ defmodule Corex.DatePicker do
   end
 
   def date_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    mode = Map.get(assigns, :selection_mode, "single")
+
+    value =
+      if Map.has_key?(assigns, :value) do
+        assigns.value
+      else
+        date_field_value(field.value, mode)
+      end
+
     assigns
     |> Corex.FormField.assign_form_field(field)
-    |> assign(:value, normalize_date_value(field.value))
+    |> assign(:value, value)
     |> date_picker()
   end
 
@@ -621,8 +661,11 @@ defmodule Corex.DatePicker do
             hidden
             id={"#{@id}-value"}
             name={@name}
-            value={Phoenix.HTML.Form.normalize_value("date", @value)}
+            value={normalize_date_value(@value) || ""}
+            data-scope="date-picker"
+            data-part="value-input"
             aria-hidden="true"
+            phx-mounted={Connect.ignore_value_input(@id)}
           />
           <%= if @selection_mode == "range" do %>
             <div class="date-picker__control-inputs date-picker__control-inputs--range">
@@ -820,6 +863,80 @@ defmodule Corex.DatePicker do
     end
   end
 
+  @selection_modes ~W(single multiple range)
+
+  @doc """
+  Formats a date picker value for flash messages, toasts, and logs.
+
+  `mode` is `"single"`, `"multiple"`, or `"range"`. Accepts `%Date{}`, ISO strings,
+  lists of dates, or comma-separated ISO strings. Never produces `~D[...]` output.
+  """
+  @spec format_value(String.t(), term()) :: String.t()
+  def format_value("single", %Date{} = date), do: Date.to_iso8601(date)
+  def format_value("single", value) when is_binary(value), do: String.trim(value)
+  def format_value("single", nil), do: ""
+
+  def format_value(mode, value) when mode in ["multiple", "range"] and is_list(value) do
+    value
+    |> Enum.map(&format_value("single", &1))
+    |> Enum.reject(&(&1 == ""))
+    |> Enum.join(", ")
+  end
+
+  def format_value(mode, value) when mode in ["multiple", "range"] and is_binary(value) do
+    format_value(mode, split_iso_list(value))
+  end
+
+  def format_value(_mode, nil), do: ""
+  def format_value(_mode, _), do: ""
+
+  @doc """
+  Normalizes form or `on_value_change` params for Ecto `cast/3`.
+
+  Returns a map with the field key for the mode: `"date"`, `"dates"`, or `"date_range"`.
+  Accepts ISO strings, comma-separated strings, lists, or `%Date{}` values.
+  """
+  @spec cast_params(String.t(), map()) :: map()
+  def cast_params(mode, params) when mode in @selection_modes and is_map(params) do
+    case mode do
+      "single" -> %{"date" => cast_single_param(params)}
+      "multiple" -> %{"dates" => cast_list_param(params, "dates")}
+      "range" -> %{"date_range" => cast_list_param(params, "date_range")}
+    end
+  end
+
+  defp cast_single_param(params) do
+    params
+    |> Map.get("date", Map.get(params, "value"))
+    |> param_to_iso_string()
+  end
+
+  defp cast_list_param(params, field) do
+    values =
+      cond do
+        is_list(params[field]) -> params[field]
+        is_binary(params[field]) -> split_iso_list(params[field])
+        is_binary(params["value"]) -> split_iso_list(params["value"])
+        true -> []
+      end
+
+    values
+    |> Enum.map(&param_to_iso_string/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
+  defp param_to_iso_string(%Date{} = date), do: Date.to_iso8601(date)
+  defp param_to_iso_string(value) when is_binary(value), do: String.trim(value)
+  defp param_to_iso_string(nil), do: ""
+  defp param_to_iso_string(_), do: ""
+
+  defp split_iso_list(value) when is_binary(value) do
+    value
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+  end
+
   defp merge_date_picker_assigns(%{} = assigns) do
     assigns
     |> assign_new(:form_field, fn -> false end)
@@ -864,4 +981,20 @@ defmodule Corex.DatePicker do
   defp normalize_date_value(%Date{} = d), do: Date.to_iso8601(d)
   defp normalize_date_value(s) when is_binary(s), do: s
   defp normalize_date_value(_), do: nil
+
+  defp date_field_value(nil, _), do: nil
+  defp date_field_value(%Date{} = d, _), do: Date.to_iso8601(d)
+  defp date_field_value(s, _) when is_binary(s), do: s
+
+  defp date_field_value(values, mode) when is_list(values) and mode in ["multiple", "range"] do
+    values
+    |> Enum.map(&date_field_value(&1, "single"))
+    |> Enum.reject(&is_nil/1)
+    |> case do
+      [] -> nil
+      list -> Enum.join(list, ",")
+    end
+  end
+
+  defp date_field_value(_, _), do: nil
 end

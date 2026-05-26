@@ -6,6 +6,50 @@ import {
   getStringList
 } from "./chunk-EWT2BP2N.mjs";
 
+// lib/number-input-format.ts
+var MAX_FRACTION_DIGITS = 10;
+function fractionDigitsForStep(step) {
+  if (!Number.isFinite(step) || step === Math.trunc(step)) {
+    return null;
+  }
+  const frac = step.toString().split(".")[1]?.replace(/0+$/, "");
+  if (!frac) return null;
+  return Math.min(frac.length, MAX_FRACTION_DIGITS);
+}
+function formatOptionsFromStep(step) {
+  const digits = fractionDigitsForStep(step);
+  if (digits === null) {
+    return { useGrouping: true };
+  }
+  return {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: 0,
+    useGrouping: true
+  };
+}
+function mergeFormatOptions(step) {
+  return formatOptionsFromStep(step);
+}
+function formatSubmitOptions(step) {
+  return { ...formatOptionsFromStep(step), useGrouping: false };
+}
+function formatSubmitValue(value, step) {
+  if (value === void 0 || value === null) return "";
+  const trimmed = String(value).trim();
+  if (trimmed === "") return "";
+  const n = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+  if (Number.isNaN(n)) return trimmed.replace(/,/g, "");
+  return new Intl.NumberFormat("en-US", formatSubmitOptions(step)).format(n);
+}
+function formatDisplayValue(value, step) {
+  if (value === void 0 || value === null) return "";
+  const trimmed = String(value).trim();
+  if (trimmed === "") return "";
+  const n = typeof value === "number" ? value : Number(trimmed.replace(/,/g, ""));
+  if (Number.isNaN(n)) return trimmed;
+  return new Intl.NumberFormat("en-US", mergeFormatOptions(step)).format(n);
+}
+
 // lib/read-props.ts
 var z = (s) => s === void 0 ? null : s;
 function readStringControlledZagProps(el, valueKey, defaultKey) {
@@ -59,19 +103,29 @@ function readUpdatedServerStringList(el) {
   return { value: readDatasetStringList(el, "value") };
 }
 function mountStringListBinding(el) {
-  if (isZagValueControlled(el)) {
+  if (getBoolean(el, "formField")) {
+    return { defaultValue: readDatasetStringList(el, "value") };
+  }
+  if (getBoolean(el, "controlled")) {
     return { value: readDatasetStringList(el, "value") };
   }
   return { defaultValue: readDatasetStringList(el, "defaultValue") };
 }
-function readUpdatedServerString(el) {
+function readUpdatedServerString(el, lastServerValue) {
   if (!isZagValueControlled(el)) {
     return {};
   }
-  return { value: z(getString(el, "value")) };
+  const raw = getString(el, "value");
+  if (getBoolean(el, "formField") && raw === lastServerValue) {
+    return {};
+  }
+  return { value: z(raw) };
 }
 function mountStringBinding(el, valueKey, defaultKey) {
-  if (isZagValueControlled(el)) {
+  if (getBoolean(el, "formField")) {
+    return { defaultValue: z(getString(el, valueKey)) };
+  }
+  if (getBoolean(el, "controlled")) {
     return { value: z(getString(el, valueKey)) };
   }
   return { defaultValue: z(getString(el, defaultKey)) };
@@ -86,11 +140,11 @@ function readUpdatedServerChecked(el) {
   return { checked: getCheckedState(el, "checked") };
 }
 function mountCheckedBinding(el) {
-  if (getBoolean(el, "controlled")) {
-    return { checked: getCheckedState(el, "checked") };
-  }
   if (getBoolean(el, "formField")) {
     return { defaultChecked: getCheckedState(el, "checked") };
+  }
+  if (getBoolean(el, "controlled")) {
+    return { checked: getCheckedState(el, "checked") };
   }
   return { defaultChecked: getCheckedState(el, "defaultChecked") };
 }
@@ -116,27 +170,54 @@ function mountTagsBinding(el) {
   }
   return { defaultValue: readDatasetTagsList(el, "defaultTags") };
 }
-function readUpdatedServerNumber(el) {
-  const step = getNumber(el, "step");
-  const base = step !== void 0 ? { step } : {};
-  if (!isZagValueControlled(el)) {
-    return base;
+function numberInputStep(el) {
+  return getNumber(el, "step") ?? 1;
+}
+function readUpdatedServerNumber(el, lastServerValue) {
+  const step = numberInputStep(el);
+  const base = { step };
+  if (getBoolean(el, "controlled")) {
+    const raw = getString(el, "value");
+    if (raw === void 0 || raw === "") {
+      return base;
+    }
+    return {
+      ...base,
+      value: formatDisplayValue(raw, step),
+      nextServerValue: raw
+    };
   }
-  const raw = getString(el, "value");
-  if (raw === void 0 || raw === "") {
-    return base;
+  if (getBoolean(el, "formField")) {
+    const raw = getString(el, "value");
+    if (raw === void 0 || raw === "") {
+      return base;
+    }
+    if (raw === lastServerValue) {
+      return base;
+    }
+    return {
+      ...base,
+      value: formatDisplayValue(raw, step),
+      nextServerValue: raw
+    };
   }
-  const parsed = Number(raw);
-  return Number.isNaN(parsed) ? base : { ...base, value: parsed };
+  return base;
 }
 function mountNumberBinding(el) {
-  const step = getNumber(el, "step");
-  if (isZagValueControlled(el)) {
+  const step = numberInputStep(el);
+  if (getBoolean(el, "controlled")) {
     const raw = getString(el, "value");
-    const value = raw !== void 0 && raw !== "" && !Number.isNaN(Number(raw)) ? Number(raw) : void 0;
+    const value = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
     return { value, step };
   }
-  return { defaultValue: getNumber(el, "defaultValue"), step };
+  if (getBoolean(el, "formField")) {
+    const raw = getString(el, "value");
+    const defaultValue2 = raw !== void 0 && raw !== "" ? formatDisplayValue(raw, step) : void 0;
+    return { defaultValue: defaultValue2, step };
+  }
+  const rawDefault = getString(el, "defaultValue");
+  const defaultValue = rawDefault !== void 0 && rawDefault !== "" ? formatDisplayValue(rawDefault, step) : void 0;
+  return { defaultValue, step };
 }
 function readStringListControlledZagUpdate(el, _valueKey, _defaultValueKey) {
   return readUpdatedServerStringList(el);
@@ -159,17 +240,17 @@ function readBooleanControlledZagProps(el, openKey, defaultOpenKey) {
 function readControlledOrDefaultBoolean(el, openKey, defaultOpenKey) {
   return getBoolean(el, "controlled") ? getBoolean(el, openKey) : getBoolean(el, defaultOpenKey);
 }
-function readStringListControlledZagProps(el, valueKey, defaultValueKey) {
-  if (isZagValueControlled(el)) {
-    return { value: readDatasetStringList(el, valueKey) };
-  }
-  return { defaultValue: readDatasetStringList(el, defaultValueKey) };
+function readStringListControlledZagProps(el, _valueKey, _defaultValueKey) {
+  return mountStringListBinding(el);
 }
 function readControlledOrDefaultStringList(el, valueKey, defaultValueKey) {
   return (getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) ?? [];
 }
 
 export {
+  mergeFormatOptions,
+  formatSubmitValue,
+  formatDisplayValue,
   readStringControlledZagProps,
   readStringControlledZagUpdate,
   getJsonStringList,

@@ -11,4 +11,18 @@ describe("Editable", () => {
     expect(el.querySelector('[data-part="input"]')).toBeTruthy();
     c.destroy();
   });
+
+  it("syncs form-value hidden input from api value", () => {
+    const el = editableTree();
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.id = `${el.id}-value`;
+    hidden.setAttribute("data-part", "form-value");
+    hidden.setAttribute("data-scope", "editable");
+    el.appendChild(hidden);
+    const c = new Editable(el, { id: el.id, defaultValue: "Saved" });
+    c.init();
+    expect(hidden.value).toBe("Saved");
+    c.destroy();
+  });
 });

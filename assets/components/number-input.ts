@@ -1,7 +1,8 @@
 import { connect, machine, type Props, type Api } from "@zag-js/number-input";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getString } from "../lib/util";
+import { getNumber, getString } from "../lib/util";
+import { formatSubmitValue } from "../lib/number-input-format";
 import { syncHiddenInputValue } from "../lib/value-form-sync";
 
 export class NumberInput extends Component<Props, Api> {
@@ -38,11 +39,15 @@ export class NumberInput extends Component<Props, Api> {
     const inputEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="input"]'
     );
-    if (inputEl) {
+    if (inputEl instanceof HTMLInputElement) {
       const visibleProps = { ...(this.api.getInputProps() as Record<string, unknown>) };
       delete visibleProps.name;
       delete visibleProps.form;
       this.spreadProps(inputEl, visibleProps);
+      const formatted = this.api.value ?? "";
+      if (inputEl.value !== formatted) {
+        inputEl.value = formatted;
+      }
     }
 
     const decrementEl = this.el.querySelector<HTMLElement>(
@@ -59,11 +64,15 @@ export class NumberInput extends Component<Props, Api> {
       '[data-scope="number-input"][data-part="value-input"]'
     );
     if (valueInputEl instanceof HTMLInputElement) {
-      const value = this.api.value || getString(this.el, "defaultValue") || "";
+      const step = getNumber(this.el, "step") ?? 1;
+      const n = this.api.valueAsNumber;
+      const canonical = getString(this.el, "value") ?? getString(this.el, "defaultValue") ?? "";
+      const submit =
+        Number.isFinite(n) && !Number.isNaN(n) ? formatSubmitValue(n, step) : canonical;
       syncHiddenInputValue(
         valueInputEl,
         this.el,
-        value,
+        submit,
         (el, props) => this.spreadProps(el, props),
         {}
       );
