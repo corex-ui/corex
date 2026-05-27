@@ -293,6 +293,7 @@ defmodule E2eWeb.Router do
     get("/combobox/form", PageController, :combobox_form_page)
     post("/combobox/form", PageController, :combobox_form_submit)
     get("/color-picker/anatomy", PageController, :color_picker_page)
+    get("/color-picker/style", PageController, :color_picker_styling_page)
     get("/color-picker/form", PageController, :color_picker_form_page)
     post("/color-picker/form", PageController, :color_picker_form_submit)
 
