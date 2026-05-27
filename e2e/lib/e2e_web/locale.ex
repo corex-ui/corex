@@ -31,16 +31,18 @@ defmodule E2eWeb.Locale do
   def dir(locale) when is_binary(locale) and locale != "" do
     posix = Localize.Locale.locale_id_from_posix(locale)
 
-    with {:ok, id} <- Localize.Locale.cldr_locale_id_from(posix) do
-      case Localize.Locale.get(id, [:layout, :character_order], fallback: true) do
-        {:ok, :rtl} -> "rtl"
-        {:ok, :ltr} -> "ltr"
-        {:ok, "right-to-left"} -> "rtl"
-        {:ok, "left-to-right"} -> "ltr"
-        _ -> "ltr"
-      end
-    else
-      _ -> "ltr"
+    case Localize.Locale.cldr_locale_id_from(posix) do
+      {:ok, id} ->
+        case Localize.Locale.get(id, [:layout, :character_order], fallback: true) do
+          {:ok, :rtl} -> "rtl"
+          {:ok, :ltr} -> "ltr"
+          {:ok, "right-to-left"} -> "rtl"
+          {:ok, "left-to-right"} -> "ltr"
+          _ -> "ltr"
+        end
+
+      _ ->
+        "ltr"
     end
   end
 
