@@ -154,8 +154,8 @@ defmodule E2e.MixProject do
         "tailwind.install --if-missing",
         "esbuild.install --if-missing"
       ],
-      "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
-      "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
+      "assets.digest.clean": ["phx.digest.clean --no-compile"],
+      "assets.digest.clean.all": ["phx.digest.clean --all --no-compile"],
       "assets.build": [
         "e2e.palette",
         "designex corex",

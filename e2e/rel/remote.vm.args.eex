@@ -1,10 +1,7 @@
-## Flags for remote console (gigalixir ps:remote_console)
+## Customize flags given to the VM: https://www.erlang.org/doc/man/erl.html
+## -mode/-name/-sname/-setcookie are configured via env vars, do not set them here
 
-## Enable distribution and EPMD
--name <%= release.name %>@127.0.0.1
--setcookie <%= release.cookie %>
-
-## Use the same allocator tuning as vm.args
+## Low-RAM allocator tuning (same as vm.args)
 +MBas aobf
 +MHas aobf
 +MPas aobf
