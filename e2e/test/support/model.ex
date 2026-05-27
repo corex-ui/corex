@@ -21,6 +21,15 @@ defmodule E2eWeb.Model do
       `#layout-toast` are unreliable in CI, so `prepare_live_form/1`,
       `assert_toast/2`, and `refute_toast/2` use `execute_script` on
       `#layout-toast` innerText plus `Wallaby.Browser.retry/1`.
+
+  Allowed `execute_script` uses:
+
+    * Layout toast readiness and text (`E2eWeb.Model`, `E2eWeb.FormTest`)
+    * Form input value sync when Wallaby `fill_in` does not fire events
+      (`E2eWeb.FormInputHelpers`)
+    * Zag hidden inputs, FormData checks, and controls Wallaby cannot click
+      (component models; prefer `click` / `fill_in` first)
+    * Accessibility axe runs and fragment scroll on `visit_path`
   """
 
   def layout_toast_hook_ready?(session) do
@@ -241,23 +250,7 @@ defmodule E2eWeb.Model do
       end
 
       def visit_path(session, path) when is_binary(path) do
-        session
-        |> visit(path)
-        |> scroll_to_fragment(path)
-      end
-
-      defp scroll_to_fragment(session, path) do
-        case String.split(path, "#", parts: 2) do
-          [_base, id] when id != "" ->
-            execute_script(
-              session,
-              "document.getElementById(arguments[0])?.scrollIntoView({block: 'start'})",
-              [id]
-            )
-
-          _ ->
-            session
-        end
+        E2eWeb.FormTest.visit_path(session, path)
       end
 
       def goto(session, path) when is_binary(path) do
@@ -299,6 +292,30 @@ defmodule E2eWeb.Model do
 
       def assert_submitted(session, substring) when is_binary(substring) do
         assert_toast(session, substring)
+      end
+
+      def see_flash(session, substring) when is_binary(substring) do
+        assert_toast(session, substring)
+      end
+
+      def refute_success_toast(session, substring) when is_binary(substring) do
+        E2eWeb.FormTest.refute_success_toast(session, substring)
+      end
+
+      def wait_for_form_page(session, page_selector, opts \\ []) when is_binary(page_selector) do
+        E2eWeb.FormTest.wait_for_form_page(session, page_selector, opts)
+      end
+
+      def wait_for_field_error(session, form_id, data_scope, error_text \\ "can't be blank") do
+        E2eWeb.FormTest.wait_for_field_error(session, form_id, data_scope, error_text)
+      end
+
+      def goto_form_page(session, path, page_selector, mode, opts \\ []) do
+        E2eWeb.FormTest.goto_form_page(session, path, page_selector, mode, opts)
+      end
+
+      def assert_success_toast(session, substring) when is_binary(substring) do
+        E2eWeb.FormTest.assert_success_toast(session, substring)
       end
 
       def wait_for_has(session, %Wallaby.Query{} = query, opts \\ []) do

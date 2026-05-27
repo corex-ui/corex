@@ -52,14 +52,13 @@ defmodule E2eWeb.AngleSliderModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/angle-slider/form"
-        :live -> "/en/angle-slider/live-form"
+        :static -> {"/en/angle-slider/form", "angle-slider-form-page"}
+        :live -> {"/en/angle-slider/live-form", "angle-slider-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def wait_static_phoenix_angle_slider_ready(session) do
@@ -155,10 +154,6 @@ defmodule E2eWeb.AngleSliderModel do
   def submit_form(session, mode \\ :static) do
     form_id = if mode == :live, do: @live_phoenix_section, else: @static_phoenix_section
     click(session, css("##{form_id} button[type='submit']"))
-  end
-
-  def see_flash(session, flash_text, _opts \\ []) do
-    assert_toast(session, flash_text)
   end
 
   def submit_static_changeset(session) do

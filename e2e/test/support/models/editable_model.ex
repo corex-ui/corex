@@ -173,14 +173,16 @@ defmodule E2eWeb.EditableModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/editable/form"
-        :live -> "/en/editable/live-form#editable-live-form-phoenix-section"
+        :static ->
+          {"/en/editable/form", "editable-form-page"}
+
+        :live ->
+          {"/en/editable/live-form#editable-live-form-phoenix-section", "editable-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def assert_hidden_form_value(session, host_dom_id, expected)
@@ -242,9 +244,5 @@ defmodule E2eWeb.EditableModel do
         else: "editable-form-phoenix-submit"
 
     click(session, css("##{id}"))
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
   end
 end
