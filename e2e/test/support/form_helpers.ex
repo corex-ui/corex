@@ -1,4 +1,4 @@
-defmodule E2eWeb.FormTest do
+defmodule E2eWeb.FormHelpers do
   @moduledoc false
 
   import ExUnit.Assertions
