@@ -3041,7 +3041,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-VL4ETB3G.mjs
+  // ../priv/static/chunks/chunk-H5X7JSOZ.mjs
   function fractionDigitsForStep(step) {
     var _a4;
     if (!Number.isFinite(step) || step === Math.trunc(step)) {
@@ -3280,8 +3280,8 @@ var Corex = (() => {
     return (_a4 = getBoolean(el, "controlled") ? getStringList(el, valueKey) : getStringList(el, defaultValueKey)) != null ? _a4 : [];
   }
   var MAX_FRACTION_DIGITS, z;
-  var init_chunk_VL4ETB3G = __esm({
-    "../priv/static/chunks/chunk-VL4ETB3G.mjs"() {
+  var init_chunk_H5X7JSOZ = __esm({
+    "../priv/static/chunks/chunk-H5X7JSOZ.mjs"() {
       "use strict";
       init_chunk_EWT2BP2N();
       MAX_FRACTION_DIGITS = 10;
@@ -3624,7 +3624,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -4426,7 +4426,7 @@ var Corex = (() => {
       init_chunk_4SRF4GX7();
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -6611,7 +6611,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -7472,7 +7472,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -13592,7 +13592,7 @@ var Corex = (() => {
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -15826,7 +15826,7 @@ var Corex = (() => {
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy10 = createAnatomy("color-picker", [
@@ -17525,7 +17525,9 @@ var Corex = (() => {
   var date_picker_exports = {};
   __export(date_picker_exports, {
     DatePicker: () => DatePickerHook,
+    applyServerIsoToZagIfNeeded: () => applyServerIsoToZagIfNeeded,
     resolveCloseOnSelect: () => resolveCloseOnSelect,
+    resolveIsoListForFormSync: () => resolveIsoListForFormSync,
     syncDatePickerValueInput: () => syncDatePickerValueInput,
     valueToIsoString: () => valueToIsoString
   });
@@ -19774,6 +19776,30 @@ var Corex = (() => {
   function isoListFromValues(values) {
     return (values == null ? void 0 : values.length) ? values.map((d2) => valueToIsoString(d2)).filter(Boolean) : [];
   }
+  function hiddenValueInputIsoList(el) {
+    const hiddenInput = el.querySelector(
+      '[data-scope="date-picker"][data-part="value-input"]'
+    );
+    if (!(hiddenInput == null ? void 0 : hiddenInput.value)) return [];
+    return hiddenInput.value.split(",").map((v2) => v2.trim()).filter(Boolean);
+  }
+  function resolveIsoListForFormSync(el, apiValues, serverValues) {
+    if (serverValues != null) {
+      return serverValues;
+    }
+    const fromApi = isoListFromValues(apiValues);
+    if (fromApi.length > 0) return fromApi;
+    const fromHidden = hiddenValueInputIsoList(el);
+    if (fromHidden.length > 0) return fromHidden;
+    return readDatasetStringList(el, "value");
+  }
+  function applyServerIsoToZagIfNeeded(datePickerInstance, isoList) {
+    const current = isoListFromValues(datePickerInstance.api.value);
+    if (current.length > 0) return current;
+    if (isoList.length === 0) return [];
+    datePickerInstance.api.setValue(isoList.map((x2) => parse2(x2)));
+    return isoListFromValues(datePickerInstance.api.value);
+  }
   function syncDatePickerValueInput(el, isoStr, notifyForm = false) {
     const hiddenInput = el.querySelector(
       '[data-scope="date-picker"][data-part="value-input"]'
@@ -19816,7 +19842,7 @@ var Corex = (() => {
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
       init_chunk_VJGUNSK5();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy11 = createAnatomy("date-picker").parts(
@@ -22006,7 +22032,10 @@ var Corex = (() => {
           this.datePicker = datePickerInstance;
           queueMicrotask(() => {
             const submitName = getString(el, "submitName");
-            const isoList = isoListFromValues(datePickerInstance.api.value);
+            const isoList = applyServerIsoToZagIfNeeded(
+              datePickerInstance,
+              resolveIsoListForFormSync(el, datePickerInstance.api.value)
+            );
             if (submitName) {
               syncArrayHiddenInputsForPhoenix(el, isoList, {
                 scope: "date-picker",
@@ -22069,8 +22098,12 @@ var Corex = (() => {
           }), resolveZagDatePickerTranslations(el)));
           if (!getString(el, "submitName")) {
             queueMicrotask(() => {
-              const isoStr = "value" in valuePatch ? valuePatch.value.join(",") : isoListFromValues(zag == null ? void 0 : zag.api.value).join(",");
-              syncDatePickerValueInput(el, isoStr, false);
+              const serverValues = "value" in valuePatch ? valuePatch.value : null;
+              let isoList = resolveIsoListForFormSync(el, zag == null ? void 0 : zag.api.value, serverValues);
+              if (zag) {
+                isoList = applyServerIsoToZagIfNeeded(zag, isoList);
+              }
+              syncDatePickerValueInput(el, isoList.join(","), false);
             });
           }
         },
@@ -22369,7 +22402,7 @@ var Corex = (() => {
       init_chunk_XI7CXJ3V();
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -23798,7 +23831,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_4QMNVH3P();
       init_chunk_VMKNATWC();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -27132,7 +27165,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -30368,7 +30401,7 @@ ${err}`);
       init_chunk_4SRF4GX7();
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32180,7 +32213,7 @@ ${err}`);
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -32797,7 +32830,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -33536,7 +33569,7 @@ ${err}`);
       init_chunk_PE34YET2();
       init_chunk_VMKNATWC();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -34540,7 +34573,7 @@ ${err}`);
       init_chunk_4PIYPYVK();
       init_chunk_FOQSALVP();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -35975,7 +36008,7 @@ ${err}`);
       init_chunk_FUVA3DRB();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
       anatomy24 = createAnatomy("signature-pad").parts(
@@ -36524,7 +36557,7 @@ ${err}`);
       "use strict";
       init_chunk_G73IV5JU();
       init_chunk_V4PB2O2G();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -37295,7 +37328,7 @@ ${err}`);
       init_chunk_4QMNVH3P();
       init_chunk_WDSYQCT6();
       init_chunk_VMKNATWC();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -38583,7 +38616,7 @@ ${err}`);
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_PE34YET2();
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -42165,7 +42198,7 @@ ${err}`);
   var init_toggle = __esm({
     "../priv/static/toggle.mjs"() {
       "use strict";
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -42459,7 +42492,7 @@ ${err}`);
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_VL4ETB3G();
+      init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();

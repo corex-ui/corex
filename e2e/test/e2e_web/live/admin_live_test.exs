@@ -115,6 +115,19 @@ defmodule E2eWeb.AdminLiveTest do
       assert html =~ "some name"
     end
 
+    test "edit form renders birth_date for date picker", %{conn: conn, admin: admin} do
+      {form_live, html} = live_ok!(conn, ~p"/admins/#{admin}/edit")
+
+      assert html =~ "Edit Admin"
+      iso = Date.to_iso8601(admin.birth_date)
+      assert html =~ ~s|name="admin[birth_date]"|
+      assert html =~ ~s|value="#{iso}"|
+
+      assert render_change(form_live, "validate", %{
+               "admin" => admin_http_params(Map.put(@invalid_attrs_edit, :signature, signature_field_value(admin)))
+             }) =~ ~s|value="#{iso}"|
+    end
+
     test "updates admin in listing", %{conn: conn, admin: admin} do
       {index_live, _html} = live_ok!(conn, ~p"/admins")
 

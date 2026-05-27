@@ -75,6 +75,9 @@ defmodule E2eWeb.UserControllerTest do
       assert html =~ "Edit User"
       assert html =~ "role=\"alertdialog\""
       assert html =~ "user-delete-#{user.id}"
+      iso = Date.to_iso8601(user.birth_date)
+      assert html =~ ~s|name="user[birth_date]"|
+      assert html =~ ~s|value="#{iso}"|
     end
   end
 

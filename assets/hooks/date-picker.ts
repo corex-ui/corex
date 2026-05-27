@@ -12,7 +12,11 @@ import * as datePicker from "@zag-js/date-picker";
 
 import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
 import { syncArrayHiddenInputsForPhoenix } from "../lib/form-array-submit";
-import { mountStringListBinding, readUpdatedServerStringList } from "../lib/read-props";
+import {
+  mountStringListBinding,
+  readDatasetStringList,
+  readUpdatedServerStringList,
+} from "../lib/read-props";
 import { notifyPhoenixFormChange } from "../lib/live-view-form-input";
 import { readPositioningOptions } from "../lib/positioning";
 import { notifyChange } from "../lib/respond-to";
@@ -57,6 +61,48 @@ export function valueToIsoString(d: unknown): string {
 
 function isoListFromValues(values: unknown[] | undefined): string[] {
   return values?.length ? values.map((d) => valueToIsoString(d)).filter(Boolean) : [];
+}
+
+function hiddenValueInputIsoList(el: HTMLElement): string[] {
+  const hiddenInput = el.querySelector<HTMLInputElement>(
+    '[data-scope="date-picker"][data-part="value-input"]'
+  );
+  if (!hiddenInput?.value) return [];
+
+  return hiddenInput.value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
+export function resolveIsoListForFormSync(
+  el: HTMLElement,
+  apiValues: unknown[] | undefined,
+  serverValues?: string[] | null
+): string[] {
+  if (serverValues != null) {
+    return serverValues;
+  }
+
+  const fromApi = isoListFromValues(apiValues);
+  if (fromApi.length > 0) return fromApi;
+
+  const fromHidden = hiddenValueInputIsoList(el);
+  if (fromHidden.length > 0) return fromHidden;
+
+  return readDatasetStringList(el, "value");
+}
+
+export function applyServerIsoToZagIfNeeded(
+  datePickerInstance: DatePicker,
+  isoList: string[]
+): string[] {
+  const current = isoListFromValues(datePickerInstance.api.value);
+  if (current.length > 0) return current;
+  if (isoList.length === 0) return [];
+
+  datePickerInstance.api.setValue(isoList.map((x) => datePicker.parse(x)));
+  return isoListFromValues(datePickerInstance.api.value);
 }
 
 export function syncDatePickerValueInput(
@@ -226,7 +272,10 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     queueMicrotask(() => {
       const submitName = getString(el, "submitName");
-      const isoList = isoListFromValues(datePickerInstance.api.value);
+      const isoList = applyServerIsoToZagIfNeeded(
+        datePickerInstance,
+        resolveIsoListForFormSync(el, datePickerInstance.api.value)
+      );
 
       if (submitName) {
         syncArrayHiddenInputsForPhoenix(el, isoList, {
@@ -299,11 +348,14 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     if (!getString(el, "submitName")) {
       queueMicrotask(() => {
-        const isoStr =
-          "value" in valuePatch
-            ? valuePatch.value.join(",")
-            : isoListFromValues(zag?.api.value).join(",");
-        syncDatePickerValueInput(el, isoStr, false);
+        const serverValues = "value" in valuePatch ? valuePatch.value : null;
+        let isoList = resolveIsoListForFormSync(el, zag?.api.value, serverValues);
+
+        if (zag) {
+          isoList = applyServerIsoToZagIfNeeded(zag, isoList);
+        }
+
+        syncDatePickerValueInput(el, isoList.join(","), false);
       });
     }
   },

@@ -107,6 +107,12 @@ defmodule Corex.DatePickerTest do
 
       assert html1 =~ "data-scope=\"date-picker\""
       assert html1 =~ "name=\"user[d1]\""
+      assert html1 =~ ~S(value="2025-01-01")
+
+      hidden =
+        hd(find_in_html(html1, "[data-scope=\"date-picker\"][data-part=\"value-input\"]"))
+
+      assert Floki.attribute(hidden, "value") == ["2025-01-01"]
 
       html2 =
         render_component(
@@ -315,6 +321,26 @@ defmodule Corex.DatePickerTest do
       result = Connect.props(Map.merge(default_props(), assigns))
       assert result["data-default-value"] == nil
       assert result["data-value"] == "2025-02-22"
+    end
+
+    test "props/1 returns props when form_field" do
+      result =
+        Connect.props(
+          Map.merge(default_props(), %{
+            id: "test-dp",
+            form_field: true,
+            value: "1990-01-15",
+            name: "admin[birth_date]",
+            locale: "en",
+            time_zone: "UTC",
+            dir: "ltr"
+          })
+        )
+
+      assert result["data-controlled"] == ""
+      assert result["data-form-field"] == "true"
+      assert result["data-value"] == "1990-01-15"
+      assert result["data-default-value"] == nil
     end
 
     test "props/1 includes client event attribute names when set" do

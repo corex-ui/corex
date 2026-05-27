@@ -4,7 +4,7 @@ import {
 import {
   readBooleanControlledZagProps,
   readBooleanControlledZagUpdate
-} from "./chunks/chunk-VL4ETB3G.mjs";
+} from "./chunks/chunk-H5X7JSOZ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
