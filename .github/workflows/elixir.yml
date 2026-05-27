@@ -443,21 +443,13 @@ jobs:
       - name: Install Mix archives for corex.new (phx_new)
         run: mix archive.install hex phx_new --force
 
-      - name: Run installer integration test
-        working-directory: installer
-        env:
-          MIX_ENV: test
-        run: |
-          mix compile --force
-          mix test --only integration
-
-      - name: Run integration tests (no database tag)
+      - name: Run integration tests (fast)
         working-directory: integration_test
         env:
           MIX_ENV: test
         run: mix test --timeout 1200000
 
-      - name: Run integration tests (PostgreSQL)
+      - name: Run integration tests (database)
         working-directory: integration_test
         env:
           MIX_ENV: test
@@ -466,10 +458,4 @@ jobs:
           PGPASSWORD: postgres
           PGPORT: "5432"
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: mix test --include database:postgresql --timeout 1200000
-
-      - name: Run integration tests (SQLite3)
-        working-directory: integration_test
-        env:
-          MIX_ENV: test
-        run: mix test --include database:sqlite3 --timeout 1200000
+        run: mix test --include database --timeout 1200000

@@ -26,13 +26,11 @@ defmodule E2eWeb.PasswordInputFormTest do
   end
 
   feature "live form - submit empty password does not show success", %{session: session} do
-    session =
-      session
-      |> PasswordInput.goto_form(:live)
-      |> PasswordInput.submit_form(:live, :ecto)
-
-    refute_has(session, Wallaby.Query.text("password=***"))
-    assert_has(session, Wallaby.Query.css("#password-input-live-form-ecto", visible: true))
+    session
+    |> PasswordInput.goto_form(:live)
+    |> PasswordInput.submit_form(:live, :ecto)
+    |> PasswordInput.refute_success_toast("password=***")
+    |> PasswordInput.wait_for_form_page("password-input-form-live-page")
   end
 
   feature "live form - fill password then submit", %{session: session} do

@@ -174,14 +174,13 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/checkbox/form"
-        :live -> "/en/checkbox/live-form"
+        :static -> {"/en/checkbox/form", "checkbox-form-page"}
+        :live -> {"/en/checkbox/live-form", "checkbox-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def goto_ecto_section(session) do
@@ -238,16 +237,15 @@ defmodule E2eWeb.CheckboxModel do
     click(session, css("##{id}"))
   end
 
-  def see_submitted_value(session, key, value) do
-    assert_has(session, css("body", text: "#{key}=#{value}"))
-  end
+  def see_error(session, error_text, mode \\ :static_ecto) do
+    form_id =
+      case mode do
+        :live -> "checkbox-live-form-ecto"
+        :static_ecto -> "checkbox-form-ecto"
+        _ -> "checkbox-form-ecto"
+      end
 
-  def see_error(session, error_text) do
-    assert_has(session, css("[data-part='error']", text: error_text))
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
+    wait_for_field_error(session, form_id, "checkbox", error_text)
   end
 
   def wait_static_form_checkbox_ready(session, host_id) when is_binary(host_id) do

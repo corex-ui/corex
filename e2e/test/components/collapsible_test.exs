@@ -21,13 +21,10 @@ defmodule E2eWeb.CollapsibleTest do
       Enum.reduce(Collapsible.anatomy_section_ids(), session, fn section_id, sess ->
         host = Collapsible.host_id_for_anatomy_section(section_id)
 
-        sess =
-          sess
-          |> Collapsible.wait_section_collapsible_ready(section_id)
-          |> Collapsible.click_trigger_in_host(host)
-
-        assert Collapsible.trigger_data_state_in_host(sess, host) == "open"
         sess
+        |> Collapsible.wait_section_collapsible_ready(section_id)
+        |> Collapsible.click_trigger_in_host(host)
+        |> Collapsible.wait_trigger_state_in_host(host, "open", timeout: 8_000)
       end)
     end
   end

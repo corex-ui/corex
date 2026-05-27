@@ -32,13 +32,11 @@ defmodule E2eWeb.SelectFormTest do
   feature "live form - submit without selection does not show success", %{
     session: session
   } do
-    session =
-      session
-      |> Select.goto_form(:live)
-      |> Select.submit_form(:live, :phoenix)
-
-    refute_has(session, Wallaby.Query.text("country=bel"))
-    assert_has(session, Wallaby.Query.css("#select-live-form-phoenix", text: "Country"))
+    session
+    |> Select.goto_form(:live)
+    |> Select.submit_form(:live, :phoenix)
+    |> Select.refute_success_toast("country=bel")
+    |> Select.wait_for_live_phoenix_form()
   end
 
   feature "static form - select form has no A11y violations", %{session: session} do

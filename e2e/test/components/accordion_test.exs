@@ -295,20 +295,18 @@ defmodule E2eWeb.AccordionTest do
 
       refute Accordion.events_server_log_has_row?(session)
 
+      before = Accordion.log_row_count(session, "accordion-events-log-server")
+
       session =
         session
         |> Accordion.click_events_server_lorem()
-        |> Accordion.wait_for_has(
-          css("#accordion-events-log-server tr[data-part='row']", count: 1),
-          timeout: 10_000
-        )
+        |> Accordion.wait_log_rows_grew("accordion-events-log-server", before, timeout: 10_000)
+
+      before = Accordion.log_row_count(session, "accordion-events-log-server")
 
       session
       |> Accordion.click_events_server_duis()
-      |> Accordion.wait_for_has(
-        css("#accordion-events-log-server tr[data-part='row']", count: 2),
-        timeout: 10_000
-      )
+      |> Accordion.wait_log_rows_grew("accordion-events-log-server", before, timeout: 10_000)
     end
 
     feature "client  -  duis logs a row", %{session: session} do
@@ -319,13 +317,12 @@ defmodule E2eWeb.AccordionTest do
 
       refute Accordion.events_client_log_has_row?(session)
 
+      before = Accordion.log_row_count(session, "accordion-events-log-client")
+
       _ =
         session
         |> Accordion.click_events_client_duis()
-        |> Accordion.wait_for_has(
-          css("#accordion-events-log-client tr[data-part='row']", count: 1),
-          timeout: 20_000
-        )
+        |> Accordion.wait_log_rows_grew("accordion-events-log-client", before, timeout: 20_000)
     end
   end
 

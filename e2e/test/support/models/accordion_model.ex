@@ -193,6 +193,8 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def click_events_server_duis(session) do
+    E2eWeb.FormInputHelpers.scroll_into_view(session, "accordion-events-server")
+
     click(
       session,
       css(
@@ -204,6 +206,8 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def click_events_server_lorem(session) do
+    E2eWeb.FormInputHelpers.scroll_into_view(session, "accordion-events-server")
+
     click(
       session,
       css(
@@ -215,11 +219,7 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def click_events_client_duis(session) do
-    _ =
-      execute_script(
-        session,
-        "document.getElementById('accordion-events-client')?.scrollIntoView({block: 'center'})"
-      )
+    E2eWeb.FormInputHelpers.scroll_into_view(session, "accordion-events-client")
 
     click(
       session,

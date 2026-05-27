@@ -1,17 +1,28 @@
 defmodule E2eWeb.NativeInputModel do
   use E2eWeb.Model, component: "native-input"
 
-  def goto_form(session, mode, section \\ :phoenix) do
-    path =
-      case {mode, section} do
-        {:static, :native} -> "/en/native-input/form#native-input-form-native"
-        {:static, :ecto} -> "/en/native-input/form#native-input-form-ecto"
-        {:static, _} -> "/en/native-input/form"
-        {:live, _} -> "/en/native-input/live-form#native-input-live-form-ecto-section"
-      end
+  alias E2eWeb.FormInputHelpers
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+  def goto_form(session, mode, section \\ :phoenix) do
+    {path, page_id} = form_path_and_page(mode, section)
+    goto_form_page(session, path, page_id, mode)
+  end
+
+  defp form_path_and_page(:live, _section) do
+    {"/en/native-input/live-form#native-input-live-form-ecto-section",
+     "native-input-form-live-page"}
+  end
+
+  defp form_path_and_page(:static, :native) do
+    {"/en/native-input/form#native-input-form-native", "native-input-form-page"}
+  end
+
+  defp form_path_and_page(:static, :ecto) do
+    {"/en/native-input/form#native-input-form-ecto", "native-input-form-page"}
+  end
+
+  defp form_path_and_page(:static, _) do
+    {"/en/native-input/form", "native-input-form-page"}
   end
 
   defp id_prefix(:live, _section), do: "native-input-live"
@@ -32,21 +43,7 @@ defmodule E2eWeb.NativeInputModel do
 
   def fill_input_via_script(session, id, value, mode, section) when is_binary(value) do
     input_id = field_id(id, mode, section)
-    escaped = String.replace(value, "'", "\\'")
-
-    script = """
-    (function() {
-      var el = document.getElementById('#{input_id}');
-      if (!el) return 'not found';
-      el.value = '#{escaped}';
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-      return 'ok';
-    })()
-    """
-
-    Wallaby.Browser.execute_script(session, script)
-    session
+    FormInputHelpers.set_input_value(session, input_id, value)
   end
 
   defp field_id(id, mode, section) do
@@ -85,23 +82,7 @@ defmodule E2eWeb.NativeInputModel do
   def select_multiple_options(session, id, values, mode \\ :static, section \\ :ecto)
       when is_list(values) do
     input_id = field_id(id, mode, section)
-    values_js = inspect(values)
-
-    script = """
-    (function() {
-      var select = document.getElementById('#{input_id}');
-      if (!select) return 'select not found';
-      var values = #{values_js};
-      for (var i = 0; i < select.options.length; i++) {
-        select.options[i].selected = values.indexOf(select.options[i].value) !== -1;
-      }
-      select.dispatchEvent(new Event('change', { bubbles: true }));
-      return 'ok';
-    })()
-    """
-
-    Wallaby.Browser.execute_script(session, script)
-    session
+    FormInputHelpers.set_select_selected_values(session, input_id, values)
   end
 
   def click_radio(session, value, mode \\ :static, section \\ :ecto) do
@@ -134,16 +115,16 @@ defmodule E2eWeb.NativeInputModel do
     end
   end
 
-  def see_submitted_value(session, key, value) do
-    assert_has(session, css("body", text: "#{key}=#{value}"))
+  def wait_for_ecto_form_error(session, error_text \\ "can't be blank") do
+    wait_for_field_error(session, "native-input-form-ecto", "native-input", error_text)
+  end
+
+  def wait_for_live_form_error(session, error_text \\ "can't be blank") do
+    wait_for_field_error(session, "native-input-live-form-ecto", "native-input", error_text)
   end
 
   def wait_for_redirect(session) do
-    assert_has(session, css("#native-input-form-page"))
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
+    wait_for_form_page(session, "native-input-form-page")
   end
 
   def fill_all_fields(session, mode, section \\ :ecto) do
