@@ -89,12 +89,13 @@
   .color-picker
     [data-scope="color-picker"][data-part="control"]
     [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
-    width: calc(var(--spacing-size) * 0.95);
+    width: calc(var(--spacing-size) * 1.2);
     padding: 0;
-    padding-inline: calc(var(--spacing-space-sm) * 0.5);
+    padding-inline: calc(var(--spacing-space) * 0.5);
   }
 
   .color-picker
+    [data-part="input-groups"]
     [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
   .color-picker
     [data-scope="color-picker"][data-part="channel-input"][data-channel="red"],
@@ -380,7 +381,16 @@
     max-width: none;
   }
 
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
+  &
+    [data-scope="color-picker"][data-part="control"]
+    [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
+    width: --value(--spacing-size-*, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+  }
+
+  &
+    [data-part="input-groups"]
+    [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
   & [data-scope="color-picker"][data-part="channel-input"][data-channel="red"],
   & [data-scope="color-picker"][data-part="channel-input"][data-channel="blue"],
   & [data-scope="color-picker"][data-part="channel-input"][data-channel="green"],
@@ -389,7 +399,7 @@
   & [data-scope="color-picker"][data-part="channel-input"][data-channel="lightness"],
   & [data-scope="color-picker"][data-part="channel-input"][data-channel="brightness"] {
     width: --value(--spacing-size-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
+    min-height: calc(--value(--spacing-size-*, [length]) * 0.55);
     padding-inline: --value(--spacing-space-*, [length]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
