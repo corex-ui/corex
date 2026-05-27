@@ -265,11 +265,6 @@ defmodule Corex.TagsInput do
       "Form field; sets id, name, form, value from the field value, and errors when used_input?/1"
   )
 
-  attr(:field_used, :boolean,
-    default: false,
-    doc: "Whether Phoenix considers the field used (internal; set from field=)"
-  )
-
   attr(:dir, :string,
     default: nil,
     values: [nil, "ltr", "rtl"],
@@ -422,7 +417,7 @@ defmodule Corex.TagsInput do
             data-scope="tags-input"
             data-part="array-input"
             data-empty
-            name={if(@field_used, do: @submit_name)}
+            name={@submit_name}
             value=""
           />
         </div>

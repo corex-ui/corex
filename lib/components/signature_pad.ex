@@ -373,11 +373,6 @@ defmodule Corex.SignaturePad do
       "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
-  attr(:field_used, :boolean,
-    default: false,
-    doc: "Whether Phoenix considers the field used (internal; set from field=)"
-  )
-
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -472,7 +467,7 @@ defmodule Corex.SignaturePad do
             data-scope="signature-pad"
             data-part="array-input"
             data-empty
-            name={if(@field_used, do: @submit_name)}
+            name={@submit_name}
             value=""
           />
         </div>

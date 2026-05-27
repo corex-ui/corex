@@ -279,7 +279,6 @@ defmodule Corex.SignaturePadTest do
         )
 
       assert html =~ "blank"
-      assert html =~ "data-field-used"
     end
 
     test "shows field errors when form has no validate-only restriction" do
