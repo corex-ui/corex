@@ -301,7 +301,7 @@ defmodule Corex.New.Generate do
   defp write_design_version!(dest) do
     version =
       case Mix.Project.config()[:version] do
-        nil -> "0.1.0-rc.0"
+        nil -> "0.1.0-rc.1"
         v -> to_string(v)
       end
 
