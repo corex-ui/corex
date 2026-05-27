@@ -170,6 +170,25 @@ defmodule E2e.AccountsTest do
       assert admin.tags == ["alpha", "beta"]
     end
 
+    test "create_admin/1 accepts signature paths longer than 255 characters" do
+      long_path = "M" <> String.duplicate("183.76,38.44 ", 20)
+      assert byte_size(long_path) > 255
+
+      attrs = %{
+        name: "some name",
+        country: :fra,
+        birth_date: "1990-01-15",
+        signature: [long_path],
+        terms: true,
+        level: 1,
+        currency: "eur",
+        tags: ["alpha"]
+      }
+
+      assert {:ok, %Admin{} = admin} = Accounts.create_admin(attrs)
+      assert hd(admin.signature) == long_path
+    end
+
     test "create_admin/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_admin(@invalid_attrs)
     end

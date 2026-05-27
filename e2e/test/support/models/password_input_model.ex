@@ -132,14 +132,13 @@ defmodule E2eWeb.PasswordInputModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/password-input/form"
-        :live -> "/en/password-input/live-form"
+        :static -> {"/en/password-input/form", "password-input-form-page"}
+        :live -> {"/en/password-input/live-form", "password-input-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def fill_password_input(session, value) do
@@ -208,9 +207,5 @@ defmodule E2eWeb.PasswordInputModel do
     else
       click(session, css("#password-input-form-phoenix button[type='submit']"))
     end
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
   end
 end

@@ -24,6 +24,26 @@ defmodule Corex.New.GenerateTest do
     end
   end
 
+  test "bundled_gettext_catalog_root points at installer priv when snapshot exists" do
+    root = Generate.bundled_gettext_catalog_root()
+    assert File.exists?(Path.join(root, "default.pot"))
+    assert File.exists?(Path.join(root, "en/LC_MESSAGES/default.po"))
+    assert String.ends_with?(root, "priv/gettext")
+  end
+
+  test "archive_priv_gettext_root resolves from compiled module beam path" do
+    beam = :code.which(Corex.New.Generate)
+
+    if is_binary(beam) or is_list(beam) do
+      beam = if is_list(beam), do: List.to_string(beam), else: beam
+      expected = beam |> Path.dirname() |> Path.join("../priv/gettext") |> Path.expand()
+
+      if File.exists?(Path.join(expected, "default.pot")) do
+        assert Generate.bundled_gettext_catalog_root() == expected
+      end
+    end
+  end
+
   test "run/2 writes layouts, assets, and copies bundled design" do
     Corex.New.MixHelper.in_tmp("generate bundled", fn ->
       ScaffoldHelper.write_phoenix_scaffold!(File.cwd!())
@@ -64,6 +84,11 @@ defmodule Corex.New.GenerateTest do
       assert locale_ex =~ "def current do"
       assert locale_ex =~ "format_language_select_label"
       assert locale_ex =~ "titlecase_word"
+
+      assert File.exists?(Path.join(["priv", "gettext", "default.pot"]))
+      assert File.exists?(Path.join(["priv", "gettext", "en", "LC_MESSAGES", "default.po"]))
+      assert File.exists?(Path.join(["priv", "gettext", "fr", "LC_MESSAGES", "default.po"]))
+      assert File.exists?(Path.join(["priv", "gettext", "ar", "LC_MESSAGES", "default.po"]))
     end)
   end
 

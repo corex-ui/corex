@@ -158,13 +158,10 @@ defmodule E2eWeb.NumberInputModel do
         {:live, _} -> "/en/number-input/live-form"
       end
 
-    session = visit_path(session, path)
+    page_id =
+      if mode == :live, do: "number-input-form-live-page", else: "number-input-form-page"
 
-    if mode == :live do
-      prepare_live_form(session)
-    else
-      session
-    end
+    goto_form_page(session, path, page_id, mode)
   end
 
   def fill_number_input(session, value, mode \\ :static, form \\ :phoenix)
@@ -423,11 +420,6 @@ defmodule E2eWeb.NumberInputModel do
   end
 
   def wait_for_redirect(session) do
-    assert_has(session, css("#number-input-form-page", visible: :any))
-    session
-  end
-
-  def see_flash(session, flash_text, _opts \\ []) do
-    assert_toast(session, flash_text)
+    wait_for_form_page(session, "number-input-form-page")
   end
 end

@@ -29,12 +29,10 @@ defmodule E2eWeb.NativeInputFormTest do
   feature "static ecto form - submit without required fields shows validation errors", %{
     session: session
   } do
-    session =
-      session
-      |> NativeInput.goto_form(:static, :ecto)
-      |> NativeInput.submit_form(:static, :ecto)
-
-    assert has_text?(session, "can't be blank")
+    session
+    |> NativeInput.goto_form(:static, :ecto)
+    |> NativeInput.submit_form(:static, :ecto)
+    |> NativeInput.wait_for_ecto_form_error()
   end
 
   feature "static ecto form - fill all fields then submit shows values in flash", %{
@@ -50,33 +48,25 @@ defmodule E2eWeb.NativeInputFormTest do
   end
 
   feature "static ecto form - radio selection persists after failed submit", %{session: session} do
-    session =
-      session
-      |> NativeInput.goto_form(:static, :ecto)
-      |> NativeInput.click_radio("l", :static, :ecto)
-      |> NativeInput.submit_form(:static, :ecto)
-
-    assert has_text?(session, "can't be blank")
-
-    session =
-      session
-      |> NativeInput.fill_all_fields(:static, :ecto)
-      |> NativeInput.click_radio("s", :static, :ecto)
-      |> NativeInput.submit_form(:static, :ecto)
-      |> NativeInput.wait_for_redirect()
-
-    NativeInput.see_flash(session, "size=")
+    session
+    |> NativeInput.goto_form(:static, :ecto)
+    |> NativeInput.click_radio("l", :static, :ecto)
+    |> NativeInput.submit_form(:static, :ecto)
+    |> NativeInput.wait_for_ecto_form_error()
+    |> NativeInput.fill_all_fields(:static, :ecto)
+    |> NativeInput.click_radio("s", :static, :ecto)
+    |> NativeInput.submit_form(:static, :ecto)
+    |> NativeInput.wait_for_redirect()
+    |> NativeInput.see_flash("size=")
   end
 
   feature "live form - submit without required fields shows validation errors", %{
     session: session
   } do
-    session =
-      session
-      |> NativeInput.goto_form(:live)
-      |> NativeInput.submit_form(:live, :ecto)
-
-    assert has_text?(session, "can't be blank")
+    session
+    |> NativeInput.goto_form(:live)
+    |> NativeInput.submit_form(:live, :ecto)
+    |> NativeInput.wait_for_live_form_error()
   end
 
   feature "live form - fill required fields then submit shows values in toast", %{
