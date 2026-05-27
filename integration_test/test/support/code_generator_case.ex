@@ -160,15 +160,10 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_tests_pass(app_path) do
-    env = test_env(app_path)
-
-    mix_run!(["ecto.create"], app_path, env: env)
-    mix_run!(["ecto.migrate"], app_path, env: env)
-
     mix_run!(
       ~w(test --timeout 600000),
       app_path,
-      env: env
+      env: test_env(app_path)
     )
   end
 
@@ -185,7 +180,9 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def drop_test_database(app_path) when is_binary(app_path) do
-    mix_run!(["ecto.drop"], app_path, env: test_env(app_path))
+    if ecto_app?(app_path) do
+      mix_run!(["ecto.drop"], app_path, env: test_env(app_path))
+    end
   end
 
   defp test_env(app_path) when is_binary(app_path) do
@@ -295,8 +292,10 @@ defmodule Corex.Integration.CodeGeneratorCase do
     port_str = to_string(port)
     dev_env = [{"MIX_ENV", "dev"} | Corex.Integration.HttpSmoke.dev_database_env_from_system()]
 
-    mix_run!(["ecto.create"], app_root_path, env: dev_env)
-    mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
+    if ecto_app?(app_root_path) do
+      mix_run!(["ecto.create"], app_root_path, env: dev_env)
+      mix_run!(["ecto.migrate"], app_root_path, env: dev_env)
+    end
 
     server_env =
       [{"PORT", port_str} | dev_env]
@@ -462,6 +461,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
     else
       app_root
     end
+  end
+
+  defp ecto_app?(app_root_path) when is_binary(app_root_path) do
+    config_path = Path.join(app_root_path, "config/config.exs")
+
+    File.exists?(config_path) and File.read!(config_path) =~ ~r/ecto_repos:\s*\[/
   end
 
   def assert_corex_design_layout_classes_present!(app_root, app_name, opts \\ [])
