@@ -1,0 +1,19 @@
+## Flags for remote console (gigalixir ps:remote_console)
+
+## Enable distribution and EPMD
+-name <%= release.name %>@127.0.0.1
+-setcookie <%= release.cookie %>
+
+## Use the same allocator tuning as vm.args
++MBas aobf
++MHas aobf
++MPas aobf
++MDas aobf
++MFas aobf
++MBacul 0
++MHacul 0
++MBsmbcs 64
++MBlmbcs 128
++MHsmbcs 64
++MHlmbcs 128
++MMscs 20

@@ -8,8 +8,8 @@ defmodule E2e.Tetrex.Session do
   alias E2e.Tetrex
   alias E2e.Tetrex.Store
 
-  @idle_ttl_ms :timer.minutes(2)
-  @max_frames 1200
+  @idle_ttl_ms :timer.seconds(45)
+  @max_frames 600
 
   def start_link(game_id) when is_binary(game_id) do
     GenServer.start_link(__MODULE__, game_id, name: via(game_id))
@@ -152,7 +152,7 @@ defmodule E2e.Tetrex.Session do
   @impl true
   def handle_cast({:sync, client_game}, state) do
     {new_state, _update, _finalize_result} = publish_after_sync(state, client_game)
-    {:noreply, new_state}
+    {:noreply, new_state, :hibernate}
   end
 
   defp publish_after_sync(state, client_game) do

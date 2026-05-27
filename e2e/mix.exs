@@ -12,7 +12,19 @@ defmodule E2e.MixProject do
       deps: deps(),
       usage_rules: usage_rules(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      releases: releases(),
+      default_release: :corex_web
+    ]
+  end
+
+  defp releases do
+    [
+      corex_web: [
+        include_executables_for: [:unix],
+        applications: [runtime_tools: :permanent],
+        strip_beams: true
+      ]
     ]
   end
 
@@ -151,6 +163,8 @@ defmodule E2e.MixProject do
         "esbuild e2e"
       ],
       "assets.deploy": [
+        "localize.download_locales",
+        "assets.digest.clean.all",
         "compile",
         "designex corex",
         "tailwind e2e --minify",

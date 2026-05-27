@@ -8,21 +8,18 @@ defmodule E2eWeb.ComboboxPatternsLive do
   alias E2e.Place.Airport
   alias E2e.Repo
 
-  @airport_page_size 120
+  @airport_page_size 40
   @search_limit 80
 
   @grouped_iata ~W(LHR LGW STN JFK LGA EWR CDG ORY IST SAW)
 
   def mount(_params, _session, socket) do
     airports = Place.list_airports_first(@airport_page_size, 0) |> Enum.map(&format_airport/1)
-    grouped = load_airports_grouped_from_db()
-    grouped_all = grouped
 
     {:ok,
      socket
      |> assign(:airports, airports)
-     |> assign(:airports_grouped, grouped)
-     |> assign(:airports_grouped_all, grouped_all)}
+     |> assign(:airports_grouped, load_airports_grouped_from_db())}
   end
 
   def handle_event("search_airports", %{"reason" => "clear-trigger"}, socket) do
@@ -48,8 +45,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
   def handle_event("search_airports", _params, socket), do: {:noreply, socket}
 
   def handle_event("search_airports_grouped", %{"reason" => "clear-trigger"}, socket) do
-    full = socket.assigns.airports_grouped_all
-    {:noreply, assign(socket, :airports_grouped, full)}
+    {:noreply, assign(socket, :airports_grouped, load_airports_grouped_from_db())}
   end
 
   def handle_event("search_airports_grouped", %{"reason" => "item-select"}, socket) do
@@ -58,14 +54,14 @@ defmodule E2eWeb.ComboboxPatternsLive do
 
   def handle_event("search_airports_grouped", %{"value" => value}, socket)
       when is_binary(value) do
-    full = socket.assigns.airports_grouped_all
-
     list =
       if byte_size(value) < 1 do
-        full
+        load_airports_grouped_from_db()
       else
         q = String.downcase(value)
-        Enum.filter(full, fn row -> String.contains?(String.downcase(row.label), q) end)
+
+        load_airports_grouped_from_db()
+        |> Enum.filter(fn row -> String.contains?(String.downcase(row.label), q) end)
       end
 
     {:noreply, assign(socket, :airports_grouped, list)}
