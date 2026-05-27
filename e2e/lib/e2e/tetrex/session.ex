@@ -1,6 +1,8 @@
 defmodule E2e.Tetrex.Session do
   @moduledoc false
 
+  @test Mix.env() == :test
+
   use GenServer
 
   alias E2e.Tetrex
@@ -341,7 +343,7 @@ defmodule E2e.Tetrex.Session do
     :exit, _ -> :ok
   end
 
-  defp sandbox_repo?, do: Mix.env() == :test
+  defp sandbox_repo?, do: @test
 
   defp safe_store_finalize(id, score, frames, client) do
     try do
