@@ -54,11 +54,7 @@ defmodule E2eWeb.RadioGroupModel do
       raise ArgumentError, "click_item_in_section: value must not contain quotes"
     end
 
-    _ =
-      execute_script(
-        session,
-        "document.getElementById(#{Jason.encode!(section_dom_id)})?.scrollIntoView({block: 'center'})"
-      )
+    E2eWeb.FormInputHelpers.scroll_into_view(session, section_dom_id)
 
     session
     |> assert_has(
@@ -124,14 +120,13 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/radio-group/form"
-        :live -> "/en/radio-group/live-form"
+        :static -> {"/en/radio-group/form", "radio-group-form-page"}
+        :live -> {"/en/radio-group/live-form", "radio-group-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def click_radio_native(session, value) do
@@ -209,17 +204,15 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def wait_for_redirect(session) do
-    assert_has(session, css("#radio-group-form-page"))
+    wait_for_form_page(session, "radio-group-form-page")
   end
 
-  def wait_for_ecto_form_error(session) do
-    assert_has(
-      session,
-      css(~S|#radio-group-form-ecto [data-scope="radio-group"][data-part="error"]|,
-        text: "can't be blank"
-      )
-    )
+  def wait_for_ecto_form_error(session, error_text \\ "can't be blank") do
+    wait_for_field_error(session, "radio-group-form-ecto", "radio-group", error_text)
+  end
 
+  def wait_for_live_form_unchanged(session) do
+    assert_has(session, css("#radio-group-live-form-ecto", text: "Choose one"))
     session
   end
 
@@ -238,9 +231,5 @@ defmodule E2eWeb.RadioGroupModel do
     else
       click(session, css("#radio-group-form-phoenix button[type='submit']"))
     end
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
   end
 end

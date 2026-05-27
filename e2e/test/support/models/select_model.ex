@@ -231,7 +231,12 @@ defmodule E2eWeb.SelectModel do
 
   def wait_for_select_field_error(session, mode \\ :static, _opts \\ []) do
     form_id = if mode == :live, do: "select-live-form-ecto", else: "select-form-ecto"
-    assert_has(session, css("##{form_id}", text: "can't be blank"))
+    wait_for_field_error(session, form_id, "select", "can't be blank")
+  end
+
+  def wait_for_live_phoenix_form(session) do
+    assert_has(session, css("#select-live-form-phoenix", text: "Country"))
+    session
   end
 
   def click_form_select_trigger(session, mode \\ :static, form \\ :phoenix) do
@@ -290,19 +295,13 @@ defmodule E2eWeb.SelectModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/select/form"
-        :live -> "/en/select/live-form"
+        :static -> {"/en/select/form", "select-form-page"}
+        :live -> {"/en/select/live-form", "select-form-live-page"}
       end
 
-    session = visit_path(session, path)
-
-    if mode == :live do
-      prepare_live_form(session)
-    else
-      session
-    end
+    goto_form_page(session, path, page_id, mode)
   end
 
   def click_select_trigger(session) do
@@ -319,27 +318,6 @@ defmodule E2eWeb.SelectModel do
 
   def set_select_value(session, id, value) do
     hidden_id = if String.ends_with?(id, "-value"), do: id, else: "#{id}-value"
-
-    script = """
-    (function() {
-      var el = document.getElementById('#{hidden_id}');
-      if (!el) return 'not found';
-      el.value = '#{value}';
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-      return 'ok';
-    })()
-    """
-
-    Wallaby.Browser.execute_script(session, script)
-    session
-  end
-
-  def see_submitted_value(session, key, value) do
-    assert_has(session, css("body", text: "#{key}=#{value}"))
-  end
-
-  def see_flash(session, flash_text, _opts \\ []) do
-    assert_toast(session, flash_text)
+    E2eWeb.FormInputHelpers.set_input_value(session, hidden_id, value)
   end
 end
