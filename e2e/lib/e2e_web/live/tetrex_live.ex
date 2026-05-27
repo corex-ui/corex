@@ -12,6 +12,7 @@ defmodule E2eWeb.TetrexLive do
 
   @tick_ms 700
   @replay_step_ms 280
+  @replay_chunk_size 40
   @tile_base "checkbox w-full min-w-0 h-full min-h-0"
   @preview_tile "checkbox w-full aspect-square min-w-0 pointer-events-none"
 
@@ -31,7 +32,8 @@ defmodule E2eWeb.TetrexLive do
      |> assign(:board_cells, %{})
      |> assign(:preview_cells, Tetrex.preview_cells(nil))
      |> assign(:client_json, nil)
-     |> assign(:replay_frames, nil)
+     |> assign(:replay_ready, false)
+     |> assign(:replay_init_sent, false)
      |> assign(:tick_ms, @tick_ms)
      |> assign(:cols, Tetrex.cols())
      |> assign(:rows, Tetrex.rows())
@@ -128,16 +130,20 @@ defmodule E2eWeb.TetrexLive do
   end
 
   defp resolve_game(socket, id, :replay) do
-    case Store.get(id) do
-      %{frames: frames} when is_list(frames) and frames != [] ->
-        game = Tetrex.from_client(List.first(frames))
+    if connected?(socket) and socket.assigns[:replay_ready] do
+      socket
+    else
+      case Store.get_first_frame(id) do
+        frame when is_map(frame) and map_size(frame) > 0 ->
+          game = Tetrex.from_client(frame)
 
-        socket
-        |> apply_game_assigns(game, :store, started: true)
-        |> assign(:replay_frames, frames)
+          socket
+          |> apply_game_assigns(game, :store, started: true)
+          |> assign(:replay_ready, true)
 
-      _ ->
-        assign_unavailable(socket)
+        _ ->
+          assign_unavailable(socket)
+      end
     end
   end
 
@@ -147,12 +153,12 @@ defmodule E2eWeb.TetrexLive do
         apply_game_assigns(socket, game, :session, started: true)
 
       {:error, :not_found} ->
-        case Store.get(id) do
+        case Store.get_client_state(id) do
           nil ->
             assign_unavailable(socket)
 
-          record ->
-            game = Tetrex.from_client(record.client_state)
+          client ->
+            game = Tetrex.from_client(client)
 
             socket
             |> apply_game_assigns(game, :store, started: true)
@@ -170,12 +176,12 @@ defmodule E2eWeb.TetrexLive do
         |> assign(:board_ready, true)
 
       {:error, :not_found} ->
-        case Store.get(id) do
+        case Store.get_client_state(id) do
           nil ->
             assign_unavailable(socket)
 
-          record ->
-            game = Tetrex.from_client(record.client_state)
+          client ->
+            game = Tetrex.from_client(client)
 
             socket
             |> apply_game_assigns(game, :store, started: true)
@@ -186,10 +192,18 @@ defmodule E2eWeb.TetrexLive do
   end
 
   defp reset_before_resolve(socket) do
+    replay_persist? =
+      connected?(socket) and socket.assigns.live_action == :replay and
+        socket.assigns[:replay_ready]
+
     socket
-    |> assign(:replay_frames, nil)
     |> assign(:leaderboard_saved, false)
     |> assign(:syncing_results, false)
+    |> then(fn s ->
+      if replay_persist?,
+        do: s,
+        else: assign(s, :replay_ready, false) |> assign(:replay_init_sent, false)
+    end)
   end
 
   defp assign_unavailable(socket) do
@@ -206,7 +220,8 @@ defmodule E2eWeb.TetrexLive do
     |> assign(:board_cells, build_board_cells(empty))
     |> assign(:preview_cells, Tetrex.preview_cells(nil))
     |> assign(:client_json, nil)
-    |> assign(:replay_frames, nil)
+    |> assign(:replay_ready, false)
+    |> assign(:replay_init_sent, false)
   end
 
   defp maybe_subscribe_watch(socket, _id, :watch) do
@@ -228,11 +243,13 @@ defmodule E2eWeb.TetrexLive do
   defp maybe_subscribe_watch(socket, _id, _action), do: socket
 
   defp maybe_push_replay_init(socket, :replay) do
-    if connected?(socket) and socket.assigns.replay_frames do
-      send(self(), {:replay_init, socket.assigns.replay_frames})
+    if connected?(socket) and socket.assigns[:replay_ready] and
+         not socket.assigns[:replay_init_sent] and is_binary(socket.assigns.game_id) do
+      send(self(), {:replay_load, socket.assigns.game_id})
+      assign(socket, :replay_init_sent, true)
+    else
+      socket
     end
-
-    socket
   end
 
   defp maybe_push_replay_init(socket, _action), do: socket
@@ -296,8 +313,8 @@ defmodule E2eWeb.TetrexLive do
   defp load_player_name(nil), do: nil
 
   defp load_player_name(game_id) do
-    case Store.get(game_id) do
-      %{player_name: name} when is_binary(name) and name != "" -> name
+    case Store.get_player_name(game_id) do
+      name when is_binary(name) and name != "" -> name
       _ -> Names.random()
     end
   end
@@ -344,8 +361,36 @@ defmodule E2eWeb.TetrexLive do
      |> assign_player_name()}
   end
 
-  def handle_info({:replay_init, frames}, socket) do
-    {:noreply, push_event(socket, "replay_init", %{frames: frames, step_ms: @replay_step_ms})}
+  def handle_info({:replay_load, id}, socket) do
+    case Store.get_frames(id) do
+      frames when is_list(frames) and frames != [] ->
+        chunks = Enum.chunk_every(frames, @replay_chunk_size)
+        send(self(), {:replay_send, chunks, 0})
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  def handle_info({:replay_send, chunks, index}, socket) do
+    case Enum.at(chunks, index) do
+      nil ->
+        {:noreply, push_event(socket, "replay_done", %{})}
+
+      chunk ->
+        event = if index == 0, do: "replay_begin", else: "replay_chunk"
+
+        payload =
+          if index == 0 do
+            %{frames: chunk, step_ms: @replay_step_ms}
+          else
+            %{frames: chunk}
+          end
+
+        send(self(), {:replay_send, chunks, index + 1})
+        {:noreply, push_event(socket, event, payload)}
+    end
   end
 
   def handle_info({:game, payload}, socket) when is_map(payload) do

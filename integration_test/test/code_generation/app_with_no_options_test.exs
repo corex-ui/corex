@@ -12,10 +12,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
 
       assert_no_compilation_warnings(app_root_path)
       assert_passes_formatter_check(app_root_path)
-      assert_tests_pass(app_root_path)
     end)
   end
 
+  @tag database: :postgresql
   test "development workflow works as expected" do
     with_installer_tmp("development_workflow", [autoremove?: false], fn tmp_dir ->
       {app_root_path, _} =

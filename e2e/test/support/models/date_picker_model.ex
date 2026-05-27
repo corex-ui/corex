@@ -182,14 +182,13 @@ defmodule E2eWeb.DatePickerModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/date-picker/form"
-        :live -> "/en/date-picker/live-form"
+        :static -> {"/en/date-picker/form", "date-picker-form-page"}
+        :live -> {"/en/date-picker/live-form", "date-picker-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def submit_form(session, mode \\ :static) do
@@ -199,9 +198,5 @@ defmodule E2eWeb.DatePickerModel do
         else: "date-picker-form-phoenix"
 
     click(session, css("##{form_id} button[type='submit']"))
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
   end
 end
