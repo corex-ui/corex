@@ -50,14 +50,13 @@ defmodule E2eWeb.SwitchModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/switch/form"
-        :live -> "/en/switch/live-form"
+        :static -> {"/en/switch/form", "switch-form-page"}
+        :live -> {"/en/switch/live-form", "switch-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def wait_switch_host_ready(session, host_dom_id) when is_binary(host_dom_id) do
@@ -130,15 +129,13 @@ defmodule E2eWeb.SwitchModel do
     end
   end
 
-  def see_submitted_value(session, key, value) do
-    assert_has(session, css("body", text: "#{key}=#{value}"))
-  end
+  def see_error(session, error_text, mode \\ :live) do
+    form_id =
+      case mode do
+        :static -> "switch-form-ecto"
+        :live -> "switch-live-form-ecto"
+      end
 
-  def see_error(session, error_text) do
-    assert_has(session, css("body", text: error_text))
-  end
-
-  def see_flash(session, flash_text) do
-    assert_toast(session, flash_text)
+    wait_for_field_error(session, form_id, "switch", error_text)
   end
 end

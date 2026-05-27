@@ -16,6 +16,14 @@ defmodule E2eWeb.ComponentSourceLinksTest do
     assert phoenix.to =~ "lib/components/accordion.ex"
   end
 
+  test "links_for_path/1 for color-picker uses PascalCase hex module" do
+    links = ComponentSourceLinks.links_for_path("/color-picker/anatomy")
+    hex = Enum.find(links, &(&1.label == "Hex doc"))
+
+    assert hex.to == "https://hexdocs.pm/corex/Corex.ColorPicker.html"
+    refute hex.to =~ "Color.Picker"
+  end
+
   test "links_for_path/1 for layout-heading" do
     links = ComponentSourceLinks.links_for_path("/layout-heading/anatomy")
     phoenix = Enum.find(links, &(&1.label == "Phoenix"))

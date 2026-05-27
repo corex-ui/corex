@@ -251,14 +251,13 @@ defmodule E2eWeb.SignatureModel do
   end
 
   def goto_form(session, mode) do
-    path =
+    {path, page_id} =
       case mode do
-        :static -> "/en/signature-pad/form"
-        :live -> "/en/signature-pad/live-form"
+        :static -> {"/en/signature-pad/form", "signature-form-page"}
+        :live -> {"/en/signature-pad/live-form", "signature-form-live-page"}
       end
 
-    session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form(session), else: session
+    goto_form_page(session, path, page_id, mode)
   end
 
   def submit_form(session, mode \\ :static, form \\ :ecto) do

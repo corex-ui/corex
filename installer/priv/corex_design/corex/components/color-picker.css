@@ -3,8 +3,8 @@
 
 @layer components {
   .color-picker {
-    width: 100%;
-    max-width: var(--container-3xs);
+    width: fit-content;
+    max-width: fit-content;
   }
 
   .color-picker[data-loading] [data-scope="color-picker"][data-part="root"] {
@@ -14,6 +14,8 @@
   .color-picker [data-scope="color-picker"][data-part="root"] {
     @apply ui-root;
 
+    width: fit-content;
+    max-width: fit-content;
     gap: var(--spacing-space);
     position: relative;
     padding-inline-end: var(--spacing-space);
@@ -31,8 +33,8 @@
     display: flex;
     flex-flow: row wrap;
     align-items: center;
-    width: 100%;
-    max-width: var(--container-xs);
+    width: fit-content;
+    max-width: fit-content;
     padding: var(--spacing-space);
     overflow: hidden;
     gap: var(--spacing-space);
@@ -70,6 +72,9 @@
   .color-picker [data-scope="color-picker"][data-part="channel-input"] {
     @apply ui-input;
 
+    text-align: center;
+    justify-content: center;
+
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -82,19 +87,24 @@
     }
   }
 
-  .color-picker [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
-    width: var(--container-7xs);
+  .color-picker
+    [data-scope="color-picker"][data-part="control"]
+    [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
+    width: calc(var(--spacing-size) * 2.5);
+    flex: 0 0 auto;
   }
 
   .color-picker
     [data-scope="color-picker"][data-part="control"]
     [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
-    width: calc(var(--spacing-size) * 0.95);
+    width: calc(var(--spacing-size) * 1.35);
+    flex: 0 0 auto;
     padding: 0;
-    padding-inline: calc(var(--spacing-space-sm) * 0.5);
+    padding-inline: calc(var(--spacing-space) * 0.5);
   }
 
   .color-picker
+    [data-part="input-groups"]
     [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
   .color-picker
     [data-scope="color-picker"][data-part="channel-input"][data-channel="red"],
@@ -129,14 +139,14 @@
     padding: 0;
     padding-inline: calc(var(--spacing-space-sm) * 0.5);
     font-size: var(--text-xs);
-    line-height: var(--text-xs--line-height);
+    line-height: 1;
     box-sizing: border-box;
   }
 
   .color-picker [data-part="input-group"]:last-child {
-    flex: 0 0 calc(var(--spacing-size) * 0.72);
-    min-width: calc(var(--spacing-size) * 0.72);
-    max-width: calc(var(--spacing-size) * 0.72);
+    flex: 0 0 calc(var(--spacing-size) * 0.85);
+    min-width: calc(var(--spacing-size) * 0.85);
+    max-width: calc(var(--spacing-size) * 0.85);
   }
 
   .color-picker
@@ -147,6 +157,8 @@
 
   .color-picker [data-part="positioner"] {
     display: none;
+    width: max-content;
+    max-width: max-content;
   }
 
   .color-picker
@@ -160,8 +172,8 @@
     flex-direction: column;
     z-index: 30;
     padding: 0;
-    width: 100%;
-    min-width: 0;
+    width: max-content;
+    min-width: var(--container-4xs);
     max-width: var(--container-4xs);
     gap: calc(var(--spacing-space-sm) * 0.5);
     box-sizing: border-box;
@@ -294,6 +306,7 @@
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
+    text-align: center;
   }
 
   .color-picker [data-part="swatch-group"] {
@@ -344,8 +357,6 @@
 }
 
 @utility color-picker--* {
-  max-width: --value(--container-*, [length]);
-
   & [data-scope="color-picker"][data-part="root"] {
     gap: --value(--spacing-space-*, [length]);
   }
@@ -357,50 +368,63 @@
 
   & [data-scope="color-picker"][data-part="control"] {
     align-items: center;
-    width: 100%;
+    width: fit-content;
+    max-width: fit-content;
     padding: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
-    max-width: --value(--container-*, [length]);
   }
 
   & [data-scope="color-picker"][data-part="trigger"] {
     min-width: --value(--spacing-size-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    max-height: --value(--spacing-size-*, [length]);
     overflow: hidden;
     border-radius: var(--radius-md);
   }
 
-  & [data-scope="color-picker"][data-part="channel-input"] {
-    width: --value(--spacing-size-*, [length]);
-  }
-
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
-    flex: 1 1 auto;
-    min-width: 0;
-    width: auto;
-    max-width: none;
-  }
-
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="red"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="blue"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="green"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="hue"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="saturation"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="lightness"],
-  & [data-scope="color-picker"][data-part="channel-input"][data-channel="brightness"] {
-    width: --value(--spacing-size-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
+  &
+    [data-scope="color-picker"][data-part="control"]
+    [data-scope="color-picker"][data-part="channel-input"][data-channel="hex"] {
+    width: calc(--value(--spacing-size-*, [length]) * 2.5);
+    flex: 0 0 auto;
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    max-height: --value(--spacing-size-*, [length]);
+    color: --value(--color-ink-*, [color]);
+    border-color: var(--color-border);
+  }
+
+  &
+    [data-scope="color-picker"][data-part="control"]
+    [data-scope="color-picker"][data-part="channel-input"][data-channel="alpha"] {
+    width: calc(--value(--spacing-size-*, [length]) * 1.35);
+    flex: 0 0 auto;
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    max-height: --value(--spacing-size-*, [length]);
+    padding: 0;
+    padding-inline: calc(--value(--spacing-space-*, [length]) * 0.5);
+    color: --value(--color-ink-*, [color]);
+    border-color: var(--color-border);
+  }
+
+  & [data-part="positioner"],
+  & [data-scope="color-picker"][data-part="content"] {
+    width: max-content;
+    max-width: max-content;
   }
 
   & [data-scope="color-picker"][data-part="content"] {
     @apply scrollbar scrollbar--sm;
 
-    width: 100%;
-    min-width: 0;
-    max-width: --value(--container-*, [length]);
+    min-width: calc(
+      var(--container-4xs) * --value(--spacing-size-*, [length]) / var(--spacing-size)
+    );
+    max-width: calc(
+      var(--container-4xs) * --value(--spacing-size-*, [length]) / var(--spacing-size)
+    );
     gap: --value(--spacing-space-*, [length]);
     box-sizing: border-box;
     overflow-x: hidden;
@@ -409,14 +433,14 @@
 
   & [data-scope="color-picker"][data-part="area-thumb"],
   & [data-scope="color-picker"][data-part="channel-slider-thumb"] {
-    width: calc(--value(--spacing-space-*, [length]) * 2);
-    height: calc(--value(--spacing-space-*, [length]) * 2);
+    width: calc(--value(--spacing-size-*, [length]) * 0.4);
+    height: calc(--value(--spacing-size-*, [length]) * 0.4);
     border: calc(--value(--spacing-space-*, [length]) / 8) solid var(--color-ink);
-    box-shadow: inset 0 0 0 calc(--value(--spacing-space-*, [length]) / 8) var(--color-ink);
+    box-shadow: inset 0 0 0 --value(--spacing-space-*, [length]) var(--color-root);
   }
 
   & [data-scope="color-picker"][data-part="channel-slider"] {
-    height: calc(--value(--spacing-space-*, [length]) * 2);
+    height: calc(--value(--spacing-size-*, [length]) * 0.375);
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
@@ -439,7 +463,7 @@
   & [data-part="pickers"] {
     width: 100%;
     min-width: 0;
-    max-width: var(--container-3xs);
+    max-width: 100%;
     margin-inline: auto;
     gap: --value(--spacing-space-*, [length]);
     box-sizing: border-box;
@@ -452,50 +476,6 @@
     gap: --value(--spacing-space-*, [length]);
   }
 
-  & [data-part="input-groups"] {
-    @apply scrollbar scrollbar--sm;
-
-    flex-wrap: nowrap;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    gap: --value(--spacing-space-*, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    padding-block-end: --value(--spacing-space-*, [length]);
-    box-sizing: border-box;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  & [data-part="input-group"] {
-    flex: 1 1 0;
-    min-width: calc(--value(--spacing-size-*, [length]) * 0.8);
-    gap: --value(--spacing-space-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-  }
-
-  & [data-part="input-group"] > input {
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-
-  &
-    [data-part="input-group"]
-    [data-scope="color-picker"][data-part="channel-input"][data-channel] {
-    width: 100%;
-    min-width: 0;
-    min-height: calc(--value(--spacing-size-*, [length]) * 0.55);
-    height: calc(--value(--spacing-size-*, [length]) * 0.55);
-    max-height: calc(--value(--spacing-size-*, [length]) * 0.55);
-    padding: 0;
-    padding-inline: --value(--spacing-space-*, [length]);
-    font-size: --value(--text-*, [length]);
-    line-height: --value(--text-*--line-height, [length]);
-    box-sizing: border-box;
-  }
-
   & [data-part="swatch-group"] {
     gap: --value(--spacing-space-*, [length]);
     padding-inline: --value(--spacing-space-*, [length]);
@@ -503,13 +483,13 @@
   }
 
   & [data-scope="color-picker"][data-part="swatch-trigger"] {
-    min-height: calc(--value(--spacing-space-*, [length]) * 2);
+    min-height: calc(--value(--spacing-size-*, [length]) * 0.4);
     overflow: hidden;
     border-radius: var(--radius-md);
 
     & [data-scope="color-picker"][data-part="swatch"],
     & [data-scope="color-picker"][data-part="transparency-grid"] {
-      min-height: calc(--value(--spacing-space-*, [length]) * 2);
+      min-height: calc(--value(--spacing-size-*, [length]) * 0.4);
       border-radius: inherit;
     }
   }

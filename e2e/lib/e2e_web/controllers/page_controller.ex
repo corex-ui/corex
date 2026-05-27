@@ -149,6 +149,10 @@ defmodule E2eWeb.PageController do
     render(conn, :color_picker_page)
   end
 
+  def color_picker_styling_page(conn, _params) do
+    render(conn, :color_picker_styling_page)
+  end
+
   def checkbox_page(conn, _params) do
     render(conn, :checkbox_page)
   end

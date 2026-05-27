@@ -113,7 +113,7 @@ defmodule E2eWeb.ComponentSourceLinks do
     module =
       registry_id
       |> String.split("_")
-      |> Enum.map_join(".", &Macro.camelize/1)
+      |> Enum.map_join("", &Macro.camelize/1)
 
     "Corex.#{module}"
   end

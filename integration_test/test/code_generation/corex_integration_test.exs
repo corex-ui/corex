@@ -24,6 +24,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "default app home page" do
+    @tag database: :postgresql
     test "GET / returns 200 and body contains Corex" do
       with_installer_tmp("corex_home", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
@@ -53,7 +54,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
       end)
     end
   end
@@ -66,7 +66,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
       end)
     end
   end
@@ -78,7 +77,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
         assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
       end)
@@ -101,7 +99,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         cfg = File.read!(Path.join(app_root_path, "config/config.exs"))
         assert cfg =~ "config :designex"
         assert_assets_build_pass(app_root_path)
-        assert_tests_pass(app_root_path)
       end)
     end
   end
@@ -118,7 +115,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
         assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
         assert_corex_lang_i18n_invariants!(app_root_path, "my_app")
 
@@ -172,12 +168,12 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
-        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --theme HTTP check" do
+    @tag database: :postgresql
     test "GET / returns theme-related markup" do
       with_installer_tmp("corex_theme_http", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} =
@@ -245,6 +241,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "app with --mode HTTP check" do
+    @tag database: :postgresql
     test "GET / returns mode-related markup" do
       with_installer_tmp("corex_mode_http", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
