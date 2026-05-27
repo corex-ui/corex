@@ -124,7 +124,10 @@ defmodule E2eWeb.AdminLiveTest do
       assert html =~ ~s|value="#{iso}"|
 
       assert render_change(form_live, "validate", %{
-               "admin" => admin_http_params(Map.put(@invalid_attrs_edit, :signature, signature_field_value(admin)))
+               "admin" =>
+                 admin_http_params(
+                   Map.put(@invalid_attrs_edit, :signature, signature_field_value(admin))
+                 )
              }) =~ ~s|value="#{iso}"|
     end
 
