@@ -198,14 +198,15 @@ defmodule Corex.TagsInputTest do
       refute html =~ ~r/data-part="value-input"/
     end
 
-    test "form field renders empty array placeholder input" do
+    test "form field renders empty array placeholder input when field is used" do
       import Ecto.Changeset
 
       cs =
         {%{}, %{tags: {:array, :string}}}
         |> cast(%{"tags" => []}, [:tags])
+        |> Map.put(:action, :validate)
 
-      form = to_form(cs, as: :post, id: "post-form")
+      form = to_form(cs, as: :post, id: "post-form", action: :validate)
       assigns = %{field: form[:tags]}
 
       html =
@@ -222,6 +223,63 @@ defmodule Corex.TagsInputTest do
 
       assert html =~ ~r/data-part="array-input"[^>]*data-empty/
       assert html =~ ~r/name="post\[tags\]\[\]"[^>]*value=""/
+    end
+
+    test "form field omits submit name on empty placeholder when field is not used" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{tags: {:array, :string}}}
+        |> cast(%{}, [:tags])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :post, id: "post-form", action: :validate)
+      assigns = %{field: form[:tags]}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.TagsInput.tags_input field={@field}>
+              <:close><.heroicon name="hero-x-mark" /></:close>
+            </Corex.TagsInput.tags_input>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-part="array-input"[^>]*data-empty/
+      refute html =~ ~r/name="post\[tags\]\[\]"[^>]*data-empty/
+    end
+
+    test "form field sets data-field-used when field is used on validate" do
+      import Ecto.Changeset
+
+      cs =
+        {%{}, %{tags: {:array, :string}}}
+        |> cast(%{"tags" => [""]}, [:tags])
+        |> Map.put(:action, :validate)
+
+      form = to_form(cs, as: :post, id: "post-form", action: :validate)
+      field = form[:tags]
+      assert used_input?(field)
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.TagsInput.tags_input field={@field}>
+              <:close><.heroicon name="hero-x-mark" /></:close>
+            </Corex.TagsInput.tags_input>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ "data-field-used"
+      assert html =~ ~r/data-empty[^>]*name="post\[tags\]\[\]"/
     end
 
     test "form field loads list values from field" do

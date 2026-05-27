@@ -335,22 +335,61 @@ defmodule Corex.TagsInput do
     assigns
     |> Corex.FormField.assign_form_field(field)
     |> assign(:value, tags)
-    |> tags_input()
+    |> tags_input_render(true, Phoenix.Component.used_input?(field))
   end
 
   def tags_input(assigns) do
+    tags_input_render(assigns, false, false)
+  end
+
+  defp tags_input_render(assigns, form_field, field_used) do
     assigns =
       assigns
       |> assign_new(:id, fn -> "tags-input-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:form_field, fn -> false end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value_list, validate_value!(assigns.value))
       |> normalize_tags_input_translation()
+      |> Corex.FormField.assign_list_submit()
+
+    connect_props =
+      Connect.props(%Props{
+        id: assigns.id,
+        form_field: form_field,
+        field_used: field_used,
+        value: assigns.value,
+        controlled: assigns.controlled,
+        disabled: assigns.disabled,
+        read_only: assigns.read_only,
+        invalid: assigns.invalid,
+        required: assigns.required,
+        name: assigns.name,
+        form: assigns.form,
+        dir: assigns.dir,
+        max: assigns.max,
+        delimiter: assigns.delimiter,
+        blur_behavior: assigns.blur_behavior,
+        add_on_paste: assigns.add_on_paste,
+        allow_duplicates: assigns.allow_duplicates,
+        allow_overflow: assigns.allow_overflow,
+        editable: assigns.editable,
+        auto_focus: assigns.auto_focus,
+        on_value_change: assigns.on_value_change,
+        on_value_change_client: assigns.on_value_change_client,
+        on_input_value_change: assigns.on_input_value_change,
+        on_input_value_change_client: assigns.on_input_value_change_client,
+        on_highlight_change: assigns.on_highlight_change,
+        on_highlight_change_client: assigns.on_highlight_change_client,
+        on_value_invalid: assigns.on_value_invalid,
+        on_value_invalid_client: assigns.on_value_invalid_client,
+        translation: assigns.translation,
+        submit_name: assigns.submit_name
+      })
 
     assigns =
-      assigns
-      |> assign_new(:field_used, fn -> false end)
-      |> Corex.FormField.assign_list_submit()
+      assign(assigns,
+        connect_props: connect_props,
+        empty_array_name: if(field_used, do: assigns.submit_name)
+      )
 
     ~H"""
     <div
@@ -359,38 +398,7 @@ defmodule Corex.TagsInput do
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        form_field: @form_field,
-        field_used: @field_used,
-        value: @value,
-        controlled: @controlled,
-        disabled: @disabled,
-        read_only: @read_only,
-        invalid: @invalid,
-        required: @required,
-        name: @name,
-        form: @form,
-        dir: @dir,
-        max: @max,
-        delimiter: @delimiter,
-        blur_behavior: @blur_behavior,
-        add_on_paste: @add_on_paste,
-        allow_duplicates: @allow_duplicates,
-        allow_overflow: @allow_overflow,
-        editable: @editable,
-        auto_focus: @auto_focus,
-        on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client,
-        on_input_value_change: @on_input_value_change,
-        on_input_value_change_client: @on_input_value_change_client,
-        on_highlight_change: @on_highlight_change,
-        on_highlight_change_client: @on_highlight_change_client,
-        on_value_invalid: @on_value_invalid,
-        on_value_invalid_client: @on_value_invalid_client,
-        translation: @translation,
-        submit_name: @submit_name
-      })}
+      {@connect_props}
     >
       <div
         phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, read_only: @read_only})}
@@ -417,7 +425,7 @@ defmodule Corex.TagsInput do
             data-scope="tags-input"
             data-part="array-input"
             data-empty
-            name={@submit_name}
+            name={@empty_array_name}
             value=""
           />
         </div>

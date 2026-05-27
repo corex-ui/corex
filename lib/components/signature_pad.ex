@@ -405,19 +405,47 @@ defmodule Corex.SignaturePad do
     assigns
     |> Corex.FormField.assign_form_field(field)
     |> assign(:paths, paths_value)
-    |> signature_pad()
+    |> signature_pad_render(true, Phoenix.Component.used_input?(field))
   end
 
   def signature_pad(assigns) do
+    signature_pad_render(assigns, false, false)
+  end
+
+  defp signature_pad_render(assigns, form_field, field_used) do
     assigns =
       assigns
       |> assign_new(:id, fn -> "signature-pad-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:form_field, fn -> false end)
       |> then(fn a -> assign(a, :paths, paths_from_paths_attr(a[:paths])) end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
-      |> assign_new(:field_used, fn -> false end)
       |> Corex.FormField.assign_list_submit()
+
+    connect_props =
+      Connect.props(%Props{
+        id: assigns.id,
+        form_field: form_field,
+        field_used: field_used,
+        paths: assigns.paths,
+        drawing_fill: assigns.drawing_fill,
+        drawing_size: assigns.drawing_size,
+        drawing_simulate_pressure: assigns.drawing_simulate_pressure,
+        drawing_smoothing: assigns.drawing_smoothing,
+        drawing_easing: assigns.drawing_easing,
+        drawing_thinning: assigns.drawing_thinning,
+        drawing_streamline: assigns.drawing_streamline,
+        dir: assigns.dir,
+        on_draw_end: assigns.on_draw_end,
+        on_draw_end_client: assigns.on_draw_end_client,
+        name: assigns.name,
+        submit_name: assigns.submit_name
+      })
+
+    assigns =
+      assign(assigns,
+        connect_props: connect_props,
+        empty_array_name: if(field_used, do: assigns.submit_name)
+      )
 
     ~H"""
     <div
@@ -426,24 +454,7 @@ defmodule Corex.SignaturePad do
       data-loading
       phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        form_field: @form_field,
-        field_used: @field_used,
-        paths: @paths,
-        drawing_fill: @drawing_fill,
-        drawing_size: @drawing_size,
-        drawing_simulate_pressure: @drawing_simulate_pressure,
-        drawing_smoothing: @drawing_smoothing,
-        drawing_easing: @drawing_easing,
-        drawing_thinning: @drawing_thinning,
-        drawing_streamline: @drawing_streamline,
-        dir: @dir,
-        on_draw_end: @on_draw_end,
-        on_draw_end_client: @on_draw_end_client,
-        name: @name,
-        submit_name: @submit_name
-      })}
+      {@connect_props}
     >
       <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir})} {Connect.root(%Root{id: @id, dir: @dir})}>
         <div
@@ -467,7 +478,7 @@ defmodule Corex.SignaturePad do
             data-scope="signature-pad"
             data-part="array-input"
             data-empty
-            name={@submit_name}
+            name={@empty_array_name}
             value=""
           />
         </div>
