@@ -120,7 +120,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert html =~ "Edit Admin"
       iso = Date.to_iso8601(admin.birth_date)
-      assert html =~ ~s|name="admin[birth_date]"|
+      assert html =~ ~S|name="admin[birth_date]"|
       assert html =~ ~s|value="#{iso}"|
 
       assert render_change(form_live, "validate", %{

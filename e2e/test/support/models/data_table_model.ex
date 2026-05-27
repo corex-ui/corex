@@ -83,4 +83,111 @@ defmodule E2eWeb.DataTableModel do
   def refute_row_exists(session, text) do
     dont_see(session, text)
   end
+
+  def assert_open_dialog_covers_table_chrome(session, table_id) when is_binary(table_id) do
+    if not (String.match?(table_id, ~r/^[a-zA-Z0-9_-]+$/) and table_id != "") do
+      raise ArgumentError, "invalid table id"
+    end
+
+    execute_script(
+      session,
+      """
+      var table = document.getElementById(arguments[0]);
+      if (!table) return JSON.stringify({ ok: false, error: "missing-table" });
+
+      var backdrop = table.querySelector(
+        '[data-scope="dialog"][data-part="backdrop"][data-state="open"]'
+      );
+
+      function zIndex(el) {
+        if (!el) return null;
+        var value = window.getComputedStyle(el).zIndex;
+        if (value === "auto") return 0;
+        return parseInt(value, 10);
+      }
+
+      function isOverlayHit(x, y) {
+        var hit = document.elementFromPoint(x, y);
+
+        while (hit) {
+          if (hit === backdrop) return true;
+
+          var part = hit.getAttribute("data-part");
+          if (part === "backdrop" || part === "content" || part === "positioner") return true;
+
+          hit = hit.parentElement;
+        }
+
+        return false;
+      }
+
+      function centerPoint(el) {
+        var rect = el.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+      }
+
+      function centerInViewport(el) {
+        var point = centerPoint(el);
+        return (
+          point.x >= 0 &&
+          point.x <= window.innerWidth &&
+          point.y >= 0 &&
+          point.y <= window.innerHeight
+        );
+      }
+
+      var openCell = table.querySelector(
+        '[data-scope="data-table"][data-part="action-cell"]:has([data-scope="dialog"][data-part="backdrop"][data-state="open"])'
+      );
+
+      var otherCell = table.querySelector(
+        '[data-scope="data-table"][data-part="action-cell"]:not(:has([data-scope="dialog"][data-part="backdrop"][data-state="open"]))'
+      );
+
+      var thead = table.querySelector('[data-scope="data-table"][data-part="thead"]');
+      var actionHeader = table.querySelector(
+        '[data-scope="data-table"][data-part="thead"] th[data-part="action-header"]'
+      );
+
+      var headerTargets = [thead, actionHeader].filter(Boolean);
+      var headersCovered = headerTargets.every(function (target) {
+        if (!centerInViewport(target)) return true;
+        var point = centerPoint(target);
+        return isOverlayHit(point.x, point.y);
+      });
+
+      var openCellZ = zIndex(openCell);
+      var otherCellZ = zIndex(otherCell);
+      var theadZ = zIndex(thead);
+      var actionHeaderZ = zIndex(actionHeader);
+
+      return JSON.stringify({
+        ok:
+          !!backdrop &&
+          headersCovered &&
+          openCellZ === 1 &&
+          otherCellZ === 0 &&
+          openCellZ > otherCellZ,
+        backdrop: !!backdrop,
+        openCellZ: openCellZ,
+        otherCellZ: otherCellZ,
+        theadZ: theadZ,
+        actionHeaderZ: actionHeaderZ,
+        headersCovered: headersCovered
+      });
+      """,
+      [table_id],
+      fn result ->
+        decoded = Jason.decode!(result)
+
+        assert decoded["ok"],
+               "expected dialog backdrop to cover table chrome: #{inspect(decoded)}"
+      end
+    )
+
+    session
+  end
 end
