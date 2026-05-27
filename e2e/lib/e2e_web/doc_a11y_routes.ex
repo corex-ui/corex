@@ -57,6 +57,7 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/code/style", "#code-styling-page"},
     {"/en/color-picker/playground", "#color-picker-playground"},
     {"/en/color-picker/anatomy", "#color-picker-anatomy-page"},
+    {"/en/color-picker/style", "#color-picker-styling-page"},
     {"/en/color-picker/api", "#color-picker-api-page"},
     {"/en/color-picker/events", "#color-picker-events-page"},
     {"/en/color-picker/form", "#color-picker-form-page"},

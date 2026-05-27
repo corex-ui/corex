@@ -288,6 +288,8 @@ defmodule E2eWeb.Helpers do
           api_to: ~p"/color-picker/api",
           events_to: ~p"/color-picker/events",
           pattern: false,
+          style: true,
+          style_to: ~p"/color-picker/style",
           forms: [
             doc_form_menu_item(~t"Controller Form", ~p"/color-picker/form"),
             doc_form_menu_item(~t"Live Form", ~p"/color-picker/live-form")
