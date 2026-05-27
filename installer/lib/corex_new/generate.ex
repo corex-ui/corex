@@ -389,19 +389,43 @@ defmodule Corex.New.Generate do
     File.write!(path, contents)
   end
 
-  defp gettext_catalog_template_root do
-    Path.expand("../../templates/corex/priv/gettext", __DIR__)
+  def bundled_gettext_catalog_root do
+    case archive_priv_gettext_root() do
+      nil -> Path.expand("../../priv/gettext", __DIR__)
+      path -> path
+    end
+  end
+
+  defp archive_priv_gettext_root do
+    case :code.which(Corex.New.Generate) do
+      :non_existing ->
+        nil
+
+      :cover_compiled ->
+        nil
+
+      beam ->
+        beam = beam_path_to_string(beam)
+
+        root =
+          beam
+          |> Path.dirname()
+          |> Path.join("../priv/gettext")
+          |> Path.expand()
+
+        if File.exists?(Path.join(root, "default.pot")), do: root, else: nil
+    end
   end
 
   defp copy_gettext_catalog(install_dir) do
-    src = gettext_catalog_template_root()
+    src = bundled_gettext_catalog_root()
     dest = Path.join(install_dir, "priv/gettext")
 
     unless File.dir?(src) do
       Mix.raise("""
       Corex gettext catalog template is missing at #{src}.
 
-      Expected installer/templates/corex/priv/gettext with default.pot and en/fr/ar PO files.
+      Expected installer/priv/gettext with default.pot and en/fr/ar PO files.
       """)
     end
 
