@@ -38403,6 +38403,7 @@ ${err}`);
   var tabs_exports = {};
   __export(tabs_exports, {
     Tabs: () => TabsHook,
+    readTabsLayoutProps: () => readTabsLayoutProps,
     tabsFocusChangePayload: () => tabsFocusChangePayload,
     tabsValueChangePayload: () => tabsValueChangePayload
   });
@@ -38610,6 +38611,12 @@ ${err}`);
   function tabsFocusChangePayload(el, details) {
     var _a4;
     return { id: el.id, value: (_a4 = details.focusedValue) != null ? _a4 : null };
+  }
+  function readTabsLayoutProps(el) {
+    return {
+      orientation: getString(el, "orientation"),
+      dir: getDir(el)
+    };
   }
   var anatomy27, parts27, getRootId22, getListId, getContentId10, getTriggerId10, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine27, Tabs, TabsHook;
   var init_tabs = __esm({
@@ -39009,11 +39016,9 @@ ${err}`);
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
-          const tabs = new Tabs(el, __spreadProps(__spreadValues({
+          const tabs = new Tabs(el, __spreadProps(__spreadValues(__spreadValues({
             id: el.id
-          }, readStringControlledZagProps(el, "value", "defaultValue")), {
-            orientation: getString(el, "orientation"),
-            dir: getString(el, "dir"),
+          }, readStringControlledZagProps(el, "value", "defaultValue")), readTabsLayoutProps(el)), {
             onValueChange: (details) => {
               notifyChange({
                 el,
@@ -39067,12 +39072,9 @@ ${err}`);
         },
         updated() {
           var _a4;
-          (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadProps(__spreadValues({
+          (_a4 = this.tabs) == null ? void 0 : _a4.updateProps(__spreadValues(__spreadValues({
             id: this.el.id
-          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
-            orientation: getString(this.el, "orientation"),
-            dir: getString(this.el, "dir")
-          }));
+          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), readTabsLayoutProps(this.el)));
         },
         destroyed() {
           var _a4, _b, _c;

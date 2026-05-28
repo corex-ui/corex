@@ -24,6 +24,7 @@ import {
   createAnatomy,
   dataAttr,
   first,
+  getDir,
   getEventKey,
   getEventTarget,
   getFocusables,
@@ -614,6 +615,12 @@ function tabsValueChangePayload(el, details) {
 function tabsFocusChangePayload(el, details) {
   return { id: el.id, value: details.focusedValue ?? null };
 }
+function readTabsLayoutProps(el) {
+  return {
+    orientation: getString(el, "orientation"),
+    dir: getDir(el)
+  };
+}
 var TabsHook = {
   mounted() {
     const el = this.el;
@@ -622,8 +629,7 @@ var TabsHook = {
     const tabs = new Tabs(el, {
       id: el.id,
       ...readStringControlledZagProps(el, "value", "defaultValue"),
-      orientation: getString(el, "orientation"),
-      dir: getString(el, "dir"),
+      ...readTabsLayoutProps(el),
       onValueChange: (details) => {
         notifyChange({
           el,
@@ -679,8 +685,7 @@ var TabsHook = {
     this.tabs?.updateProps({
       id: this.el.id,
       ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      orientation: getString(this.el, "orientation"),
-      dir: getString(this.el, "dir")
+      ...readTabsLayoutProps(this.el)
     });
   },
   destroyed() {
@@ -691,6 +696,7 @@ var TabsHook = {
 };
 export {
   TabsHook as Tabs,
+  readTabsLayoutProps,
   tabsFocusChangePayload,
   tabsValueChangePayload
 };
