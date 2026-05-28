@@ -56,6 +56,6 @@ defmodule E2eWeb.MarkdownCodeBlocksTest do
     assert html =~ ".accordion"
     assert html =~ ~s(<span class="w">#{nbsp}</span>)
     refute html =~ ".accordionid="
-    refute html =~ ~s(<span class="w"></span>)
+    refute html =~ ~S(<span class="w"></span>)
   end
 end
