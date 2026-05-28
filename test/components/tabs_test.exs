@@ -89,6 +89,27 @@ defmodule Corex.TabsTest do
       result = Connect.root(assigns)
       assert result["dir"] == "rtl"
     end
+
+    test "omits dir when nil" do
+      assigns = %{id: "test-tabs", dir: nil, orientation: "horizontal"}
+      refute Map.has_key?(Connect.root(assigns), "dir")
+    end
+  end
+
+  describe "tabs/1 dir attribute" do
+    test "renders without dir when nil" do
+      html =
+        render_component(&Corex.Tabs.tabs/1, %{
+          id: "t",
+          items: Corex.Content.new([%{label: "A", content: "B"}]),
+          dir: nil
+        })
+
+      refute html =~ ~s(dir="ltr")
+      refute html =~ ~s(dir="rtl")
+      refute html =~ ~s(data-dir="ltr")
+      refute html =~ ~s(data-dir="rtl")
+    end
   end
 
   describe "Connect.list/1" do
@@ -223,6 +244,38 @@ defmodule Corex.TabsTest do
   end
 
   describe "Connect.props/1" do
+    test "omits data-dir when nil" do
+      assigns = %{
+        id: "test-tabs",
+        dir: nil,
+        orientation: "horizontal",
+        controlled: false,
+        value: nil,
+        on_value_change: nil,
+        on_value_change_client: nil,
+        on_focus_change: nil,
+        on_focus_change_client: nil
+      }
+
+      refute Map.has_key?(Connect.props(assigns), "data-dir")
+    end
+
+    test "sets data-dir when explicit" do
+      assigns = %{
+        id: "test-tabs",
+        dir: "rtl",
+        orientation: "horizontal",
+        controlled: false,
+        value: nil,
+        on_value_change: nil,
+        on_value_change_client: nil,
+        on_focus_change: nil,
+        on_focus_change_client: nil
+      }
+
+      assert Connect.props(assigns)["data-dir"] == "rtl"
+    end
+
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-tabs",

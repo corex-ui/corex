@@ -5,9 +5,14 @@ defmodule E2e.Blog do
 
   @posts_root Path.expand("../../_posts", __DIR__)
 
-  @posts_en @posts_root
-            |> Path.join("*.md")
-            |> Path.wildcard()
+  @en_paths Path.wildcard(Path.join(@posts_root, "*.md"))
+  @ar_paths Path.wildcard(Path.join(@posts_root, "ar/*.md"))
+
+  for path <- @en_paths ++ @ar_paths do
+    @external_resource path
+  end
+
+  @posts_en @en_paths
             |> Enum.map(&Loader.load/1)
             |> Enum.reject(&is_nil/1)
             |> Enum.sort_by(
@@ -27,9 +32,7 @@ defmodule E2e.Blog do
               :desc
             )
 
-  @posts_ar @posts_root
-            |> Path.join("ar/*.md")
-            |> Path.wildcard()
+  @posts_ar @ar_paths
             |> Enum.map(&Loader.load/1)
             |> Enum.reject(&is_nil/1)
             |> Enum.sort_by(
