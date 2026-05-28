@@ -23,7 +23,7 @@ Add `corex` to your `mix.exs` deps:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-rc.0"}
+    {:corex, "~> 0.1.0"}
   ]
 end
 ```

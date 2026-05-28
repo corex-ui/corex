@@ -18,7 +18,7 @@ mix corex.new my_app
 
 ## Existing app — order matters
 
-1. `{:corex, "~> 0.1.0-rc.0"}` → esbuild ESM splitting → LiveSocket + hooks → `type="module"` script → `use Corex` → `mix assets.build`
+1. `{:corex, "~> 0.1.0"}` → esbuild ESM splitting → LiveSocket + hooks → `type="module"` script → `use Corex` → `mix assets.build`
 
 ```javascript
 const liveSocket = new LiveSocket("/live", Socket, {

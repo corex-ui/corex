@@ -187,6 +187,11 @@
     padding-inline: --value(--spacing-space-*, [length]);
     gap: --value(--spacing-space-*, [length]);
     min-height: --value(--spacing-size-*, [length]);
+    color: --value(--color-ink-*, [color]);
+  }
+
+  [data-scope="select"][data-part="trigger"] > [data-part="item-text"] {
+    color: inherit;
   }
 
   [data-scope="select"][data-part="trigger"] .icon,
