@@ -278,7 +278,7 @@ defmodule Corex.DataTable do
   - `data-table--sm|md|lg|xl` — font size on header and body cells; cell padding
   - `data-table--accent|brand|alert|success|info` — header ink (`--color-ink-*`) on column titles only
 
-  Default host caps use `max-width` and `max-height` at `--container-md`. Override on the same element with Tailwind, e.g. `data-table max-w-none`, `data-table max-h-none`, or `data-table h-full` in a sized parent.
+  Default host caps use `max-width` and `max-height` at `--container-md`. Override on the host with the same container scale as width, e.g. `max-w-none`, `max-h-none`, `max-h-2xs`, `min-h-md`, or `h-full` in a sized parent.
 
   Optional `dir="ltr"` or `dir="rtl"` on the component root for text direction.
   This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.

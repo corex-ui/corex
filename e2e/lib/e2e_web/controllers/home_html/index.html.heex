@@ -115,7 +115,7 @@
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!([])}
-                  class="button button--sm button--ghost"
+                  class="button button--sm"
                 >
                   <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
                 </button>
@@ -129,7 +129,7 @@
               </div>
               <.data_table
                 id="hero-events-table"
-                class="data-table home__card__events-table"
+                class="data-table max-h-2xs home__card__events-table"
                 rows={[]}
               >
                 <:col :let={_row} label={~t"Time"}></:col>

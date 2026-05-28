@@ -361,7 +361,6 @@
   .home__card--events .data-table {
     font-size: var(--text-xs);
     line-height: var(--text-xs--line-height);
-    overflow: hidden;
     border-radius: var(--radius-md);
   }
 
