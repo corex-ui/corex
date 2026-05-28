@@ -1,7 +1,6 @@
 defmodule E2eWeb.PagesA11yTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
-  use E2eWeb, :verified_routes
 
   import E2e.AccountsFixtures
 
