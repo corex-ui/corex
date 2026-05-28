@@ -78,6 +78,7 @@ defmodule E2eWeb.ClipboardPlayLive do
 
           <form
             phx-change="clipboard_play_changed"
+            phx-submit="clipboard_play_changed"
             id="clipboard-play-form"
             class="flex flex-col gap-4 w-full max-w-md"
           >
