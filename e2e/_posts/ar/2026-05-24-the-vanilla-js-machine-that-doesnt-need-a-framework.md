@@ -1,6 +1,6 @@
 ---
 title: "آلة Vanilla JS التي لا تحتاج إطار عمل"
-description: "آلات Zag vanilla في hooks LiveView، وupdateProps وقت التشغيل، وتقسيم esbuild بحيث يُحمَّل كل مكوّن عند mount فقط."
+description: "Corex اعتمد على سطر واحد في سجل تغييرات Zag. بدونه، الآلات تبدأ لكن لا تأخذ props جديدة. به، انفتح تكامل Phoenix كاملاً في بعد الظهر."
 date: "2026-05-24 12:00:00 +0000"
 permalink: /ar/blog/the-vanilla-js-machine-that-doesnt-need-a-framework/
 tags:
@@ -13,102 +13,103 @@ sitemap:
   changefreq: monthly
 ---
 
-Zag.js من المكتبات التي تغيّر فعلاً طريقة تفكيرك في الواجهة. آلات حالة لمكوّنات يمكن الوصول إليها، جوهرها بلا إطار، مع محوّلات لـ React وSolid وVue وSvelte. Segun (المنشئ) فعل نادراً: منطق التركيز ولوحة المفاتيح وسمات ARIA وانتقالات الفتح/الإغلاق كله في TypeScript خالص يستهلكه أي إطار.
+النسخة من هذه القصة التي تتسع على شريحة قصيرة. اخترت Zag.js كطبقة سلوك لـ Corex، انتظرت قدرة واحدة مفقودة، ثم انفتح تكامل Phoenix كاملاً في بعد الظهر. النسخة الأطول نفس القصة، مع سياق لسبب أهمية هذا الفتح، وما يجعله ممكناً الآن.
 
-تحدثت مع Segun على YouTube، وإن أردت فهم لماذا Zag أساس متين، تلك المحادثة نقطة بداية جيدة (آسف على جودة الميك فوق لهجتي 😅).
+## لماذا آلات الحالة أصلاً
+
+أفكّر كثيراً في من يُسمح له بامتلاك دعم لوحة المفاتيح. معظم الفرق التي عملت معها تحصل على إمكانية الوصول صحيحة مرة واحدة: يوم يهتم فيه المصمم، أو يوم يصل التدقيق. ثم تنجرف. ترتيب Tab يختل لأن أحد أضاف غلافاً. مفاتيح الأسهم تتوقف على قائمة منسدلة لأن أحد أعاد هيكلة slot. ARIA تعود `false` لأن لا أحد يتذكر أي سمة كان يجب أن تكون حية.
+
+آلات الحالة تحل ذلك بتشفير السلوك في مكان واحد وترك بقية التطبيق يرفض الاهتمام. Zag.js مكتبة من تلك الآلات، كتبها Segun Adebayo، مستقلة عن الإطار في الجوهر، مع محولات لـ React وSolid وVue وSvelte. الأجزاء الصعبة (حلقات التركيز، typeahead، roving tabindex، كل اختصار لوحة مفاتيح يتوقعه مصمم جيد، قاموس WAI-ARIA كامل) في TypeScript نقي. مُختبرة في المعركة من آلاف الفرق لم تضطر للتفكير فيها.
+
+كان لدي حوار مع Segun على YouTube. إن أردت فهم لماذا Zag قاعدة صلبة، ذلك الفيديو المكان الصحيح. اعتذار عن جودة الميكروفون فوق لهجتي.
 
 <div class="blog__embed">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/D1To2_5o8e8?si=yPg6P6oL4dph6H_L" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-ما أوصلني هناك كان Corex. كنت أبني مكوّنات UI يمكن الوصول إليها لـ Phoenix LiveView، وZag كان الخيار الواضح للطبقة السلوكية. الآلات مجرّبة. إمكانية الوصول صحيحة. لم أرد إعادة كتابة أي من ذلك.
+ما أوصلني هناك كان Corex. كنت أبني مكوّنات يمكن الوصول إليها لـ Phoenix LiveView ولم أرد شحن سلوكيات صحيحة 90% لأنني أعدت كتابتها بنفسي.
 
-كم HEEx تكتبه لكل عنصر قرار منفصل: [تشريح مكوّن Corex](/ar/blog/anatomy-of-a-corex-component/). من يملك حالة التشغيل على الخادم مقابل الآلة قرار آخر: [عقلان](/ar/blog/two-brains-liveview-assigns-and-zag-machines/). ربط Zag بـ LiveView كان أثره أعمق مما توقّعت.
+## لمحول vanilla آراءه الخاصة، عن قصد
 
-## الطبقة المناسبة لكل إطار
+محولات إطار Zag تقوم بعمل محدد: تشترك في آلة وتخبر إطارها بإعادة الرسم عند تغيّر الحالة. React يستخدم hooks. Vue يستخدم refs. Svelte يستخدم runes. كل محول يتحدث لهجة reactivity المحلية.
 
-Zag يوفّر محوّلات للإطارات الكبرى لأن لكل منها نموذج تفاعلية. `@zag-js/react` يستخدم `useMachine` وhooks. `@zag-js/vue` يعتمد refs وwatchers. `@zag-js/svelte` يتصل بـ runes. هذه المحوّلات هي ما يُحيي الآلة داخل الإطار: تشترك في انتقالات الحالة وتعيد رسم المكوّنات تلقائياً.
+محول vanilla لا يستطيع الاعتماد على أي منها. ليس لديه نموذج reactivity للاشتراك فيه. ويجب أن يفعل شيئاً لا تفعله محولات الإطار مباشرة: لمس DOM نفسه. يقرأ المواضع، يضبط التركيز، يكتب `aria-*`، يدير التمرير. في React، الإطار يوسّط كل ذلك. بلا إطار، أنت الجسر بين الآلة والمستند.
 
-Vanilla JS قصة مختلفة عن قصد. محوّل vanilla لا يفترض تفاعلية. ويجب أن يفعل ما لا تفعله محوّلات الإطارات: لمس DOM مباشرة. الآلات تحتاج مواقع العناصر وإدارة التركيز و`aria-*` والتمرير. في React الإطار يوسّط كل ذلك. بلا إطار، أنت تربط الآلة بالمستند نفسه.
+لهذا شكل `@zag-js/vanilla` كما هو. تحصل على `VanillaMachine` قائم على class مع دورة حياة واضحة `start()` / `stop()`. تشترك في تغيّرات الحالة وتكتب DOM بنفسك. مستودع Zag يشحن [مثال vanilla TypeScript كامل](https://github.com/chakra-ui/zag/tree/main/examples/vanilla-ts) يوضح النمط.
 
-لذلك `@zag-js/vanilla` رأي. يعطيك غلاف `VanillaMachine` قائم على class مع دورة `start()` / `stop()` واضحة، وتشترك في تغيّرات الحالة وتحدّث DOM بنفسك. Zag يوفّر أيضاً [مثال vanilla TypeScript](https://github.com/chakra-ui/zag/tree/main/examples/vanilla-ts) كاملاً.
+لصفحة ثابتة تُشحن مرة وتعمل محلياً، هذا رائع. أعدّ الآلة، يتفاعل المستخدم، انتهى. Props تدخل مرة والآلة تعمل من هناك.
 
-لصفحة ثابتة هذا النموذج رائع. تُعدّ الآلة، يتفاعل المستخدم، انتهى. الـ props مرة واحدة.
-
-Phoenix LiveView إيقاع مختلف.
+Phoenix LiveView له إيقاع مختلف.
 
 ## ما يحتاجه LiveView فعلاً
 
-LiveView يرسم HTML على الخادم ويرسل patches DOM صغيرة عبر WebSocket عند تغيّر الحالة. المتصفح يطبّق diff. بلا virtual DOM، بلا شجرة مكوّنات على العميل. HTML الصحيح في اللحظة الصحيحة.
+LiveView يرسم HTML على الخادم ويرسل patches DOM صغيرة عبر WebSocket عندما تتغيّر الحالة. المتصفح يطبّق الفرق. لا virtual DOM. لا رسم بياني مكوّنات على العميل. فقط HTML الصحيح في اللحظة الصحيحة.
 
-لتكامل JavaScript، LiveView لديه hooks: كائنات صغيرة على عقد DOM بـ`phx-hook`. تستقبل `mounted` و`updated` و`destroyed`. من داخل الـ hook تدفع أحداثاً للخادم وتستمع لما يعود.
+لتعامل JavaScript، LiveView يعطيك hooks. كائنات صغيرة تربطها بعناصر DOM بـ `phx-hook`، تستقبل callbacks دورة الحياة: `mounted`، `updated`، `destroyed`، والمزيد. من داخل hook تدفع أحداثاً للخادم، تستمع لأحداث من الخادم، وتقرأ DOM مباشرة.
 
-نموذج جيد. الخادم يبقى يتحكّم بالبيانات، والعميل يتحكّم بالسلوك. للعناصر التي يمكن الوصول إليها هذا التقسيم المثالي: LiveView يدير القيم، Zag يدير سلوك العنصر.
+هذا نموذج جيد حقاً. الخادم يبقى مسؤولاً عن البيانات. العميل يتولى السلوك. لمكوّنات يمكن الوصول إليها، هذا التقسيم بالضبط حيث تريد الخط: LiveView يقرر القيم، Zag يقرر كيف يتصرّف المكوّن.
 
-التحدي أن LiveView يمكنه دفع تحديثات لعنصر مربوط في أي وقت. Select controlled حيث الخادم يحدد القيمة. Combobox يصفّي العناصر عند كل ضغطة. Dialog يغلقه الخادم برمجياً. كل ذلك يحتاج إخبار الآلة الجارية: شيء تغيّر، حدّث نفسك.
+المكمن أن LiveView يمكنه دفع تحديثات لعنصر مربوط في أي وقت. select controlled حيث الخادم يثبت الخيار الحالي. combobox حيث الخادم يستبدل كل خيار عند كل ضغطة. حوار يغلقه الخادم من مؤقت أو حدث Presence. كل واحد يحتاج إخبار الآلة الجارية: prop تغيّر للتو، حدّث نفسك.
 
-إصدارات مبكرة من `@zag-js/vanilla` شغّلت الآلة جيداً، لكن بلا تحديث props بعد التهيئة. الآلة مغلقة بعد `start`. للصفحات الثابتة هذا كافٍ. لـ LiveView، كان الشيء الناقص.
+الإصدارات المبكرة من `@zag-js/vanilla` كانت تبدأ آلة وتشغّلها جيداً، لكن لا يمكنك تغيير props بعد التهيئة. الآلة كانت مختومة فعلياً بعد `start()`. لموقع ثابت هذا كان جيداً. لـ LiveView، كان الشيء الوحيد المفقود.
 
-## إصلاح هادئ بعواقب كبيرة
+## سطر في سجل التغييرات
 
-ثم سطر في سجل Zag:
+يوماً سطر في سجل تغييرات Zag:
 
 > Fix issue where vanilla machines do not have the option to change their props during runtime.
 
-هذا كل ما قاله. بلا إعلان. إصلاح واحد.
+هذه الجملة كلها. لا إعلان. لا تسويق. إصلاح واحد.
 
-لكنه يعني أن `VanillaMachine` يقبل `updateProps` بعد التشغيل. وعندما LiveView يطلق `updated` على hook، أقرأ `data-*` من العنصر بعد patch وأمرّرها للآلة. الآلة تتفاعل. ARIA يتحدّث. القيم controlled تتزامن. الخادم يبقى مسيطراً.
+ما عناه فعلاً أن `VanillaMachine` ستقبل الآن استدعاءات `updateProps` في أي وقت بعد `start()`. أي عندما يطلق LiveView `updated` على hook، يمكن للـ hook قراءة `data-*` الطازجة من العنصر المُصحَّح وتمريرها مباشرة للآلة الجارية. تتفاعل الآلة. يتحدّث ARIA. تتزامن القيم controlled. الخادم يبقى مسؤولاً والمستخدم لا يلاحظ.
 
-تكامل Phoenix انتقل من «غير ممكن فعلاً» إلى «لنبنِه».
+تكامل Phoenix انتقل من «ليس ممكناً حقاً» إلى «لنبنِه» بين ذلك الإصدار والعشاء.
 
 ## كيف يجمع Corex الأمر
 
-Corex يلفّ `VanillaMachine` داخل كائنات hook Phoenix. عندما تكتب:
+عندما تضع مكوّن Corex في قالب، الخادم يرسم الـ markup كاملاً: `data-scope` و`data-part` الصحيحة، هيكل ARIA الصحيح، و`phx-hook="ComponentName"` على الجذر.
 
-```heex
-<.accordion id="faq" on_value_change="accordion_changed">
-  ...
-</.accordion>
-```
+على العميل، ثلاثة callbacks دورة الحياة تقوم بكل العمل.
 
-Corex يرسم تشريح HTML كاملاً (جذر، محفّزات، لوحات، `data-part`، هيكل ARIA) ويربط `phx-hook="Accordion"` بالجذر.
+`mounted` يقرأ props المُسلسلة من `data-*`، يبدأ `VanillaMachine`، يشترك في انتقالات الحالة، ويبدأ إبقاء DOM متزامناً مع ما تقرر الآلة.
 
-على العميل، ثلاث callbacks تنجز العمل:
-
-`mounted` يقرأ props من `data-*`، يشغّل `VanillaMachine`، يشترك في الانتقالات، ويبقي DOM متزامناً مع قرار الآلة.
-
-`updated` يقرأ props من العنصر بعد patch ويستدعي `updateProps`. إن غيّر الخادم `value`، تعرف الآلة فوراً. إن أصبح عنصر معطّلاً، نفس الشيء. بلا إعادة mount، بلا فقدان حالة تفاعل.
-
-Corex يستخدم أيضاً `JS.ignore_attributes` عند mount حتى لا تمحو patches LiveView `data-state` وحقول ARIA التي كتبها الـ hook. diff الخادم يدمج مع مخرجات الآلة بدل الاشتباك.
+`updated` يقرأ props المُصحَّحة من نفس الجذر ويستدعي `updateProps` على الآلة. إن غيّر الخادم `value`، تعرف الآلة فوراً. إن أصبح عنصر معطّلاً، نفس الشيء. لا remount. لا فقدان تركيز. لا رمي حالة تفاعل.
 
 `destroyed` يستدعي `machine.stop()` لتفكيك نظيف.
 
-الآلة تتولى كل السلوك: لوحة المفاتيح، أدوار ARIA، فتح/إغلاق، controlled/uncontrolled، إدارة التركيز. LiveView يتولى البيانات. الـ hook جسر.
+فوق ذلك، Corex يطبّق `JS.ignore_attributes` على كل جذر عند mount، حتى لا يزيل diffing في LiveView `data-state` و`aria-*` التي كتبها الـ hook للتو. patch والآلة يكتبان سمات مختلفة ويبقيان بعيدين عن بعضهما بأدب.
 
-## تقسيم chunks والتحميل عند mount
+الآلة تتولى كل شيء سلوكي. LiveView يتولى البيانات. الـ hook رسول صغير بلا منطق خاص.
 
-Corex يوفّر عشرات المكوّنات التفاعلية. كل واحد يسحب آلات Zag ومساعدات DOM وغالباً منطق مجموعة مشترك. لو كل hook في حزمة واحدة سمينة، كل صفحة تدفع ثمن حوارات وdate pickers وcomboboxes لا ترسمها.
+## إصداران، قصة واحدة
 
-نقسّم JavaScript عن قصد.
+هذه في الواقع الفصل الثاني من Corex. الإصدار الأول للمواقع الثابتة: Vite، Astro، Eleventy، أي شيء تكتب فيه HTML عادي مع bundler. تلك النسخة تعمل بجمال لأن الصفحات الثابتة لا تحتاج تحديث props في وقت التشغيل. تضبط props مرة، الآلة تعمل، المستخدمون يتفاعلون.
 
-عند بناء Corex لـ Hex، esbuild يجمّع كل hook كمدخل ESM (`accordion.mjs`، `combobox.mjs`، …) مع **`--splitting`**. الكود المشترك يذهب إلى chunks مُجزّأة تحت `priv/static/chunks/`. أدوات Zag والمحوّلات vanilla تُعاد استخدامها بدل التكرار في كل ملف.
+تكامل LiveView يبني على كل ما نجح هناك، ويضيف الشيء الذي يحتاجه LiveView تحديداً: آلات تبقى متزامنة مع خادم يغيّر رأيه.
 
-التصدير الافتراضي من `corex` ليس ذلك الكتالوج مضمّناً. إنه خريطة **أغلفة hooks كسولة**: كائنات `phx-hook` رقيقة عبر `createLazyHook`. عند `mounted`، الغلاف يشغّل `import("corex/accordion")` (أو المكوّن المطابق)، ثم يمرّر `updated` و`destroyed` و`beforeUpdate` للـ hook الحقيقي. الجلب يحدث في الخلفية والصفحة حية. مسار فيه أكورديون وcheckbox فقط لا يحمّل combobox أو dialog.
+على جانب الخادم، تستخدم مكوّنات Corex كأي مكوّن HEEx. على العميل، قصة التسجيل استيراد واحد.
 
 ```javascript
 import corex from "corex"
 
-let liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken },
+const liveSocket = new LiveSocket("/live", Socket, {
   hooks: { ...corex }
 })
 ```
 
-`...corex` يسجّل كل اسم قد يحتاجه LiveView، لكن المتصفح يطلب chunks للـ hooks التي mount فعلاً.
+هذا الإعداد كله لمعظم التطبيقات.
 
-تطبيق Phoenix يجب أن يشارك النموذج نفسه. في `config/config.exs`، وسائط Esbuild لـ`assets/js/app.js` تحتاج **`--format=esm`** و**`--splitting`**، ووسم `<script>` في التخطيط الجذري **`type="module"`**. بلا splitting، `import()` الديناميكي لا يصبح ملفات منفصلة وتفقد مكسب الأداء. [دليل التثبيت اليدوي](https://hexdocs.pm/corex/manual_installation.html) يشرح الأعلام بالتفصيل.
+## لماذا استيراد واحد ليس استيراداً ثقيلاً
 
-لحزمة أصغر، استورد فقط الـ hooks التي ترسمها:
+Corex يشحن عشرات المكوّنات التفاعلية. كل واحد يسحب آلة Zag، بعض مساعدات DOM، وقليل من منطق collection مشترك. إن هبط كل hook في حزمة واحدة، كل صفحة في تطبيقك تدفع date pickers وحوارات وcomboboxes لا تستخدمها.
+
+لذلك JavaScript مُقسَّم عن قصد. عند بناء Corex لـ Hex، esbuild يجمّع كل hook كمدخل ESM خاص (`accordion.mjs`، `combobox.mjs`، وهكذا) مع `--splitting` مفعّل. الكود المشترك بين hooks يذهب لقطع مُهاشة. أدوات Zag ومحولات vanilla تُعاد استخدامها، لا تُكرَّر.
+
+التصدير الافتراضي من `corex` ليس الكتالوج كاملاً مضمناً. هو خريطة stubs كسولة. كل واحد كائن `phx-hook` صغير أنشأه `createLazyHook`. عندما ي mount LiveView عنصراً مربوطاً، الـ stub يشغّل `import("corex/accordion")` ديناميكياً (أو أي مكوّن طابق)، ثم يمرّر كل callback لاحق للـ hook الحقيقي. مسار فيه accordions وcheckboxes فقط لا يحمّل combobox أو dialog.
+
+لكي يعمل هذا من البداية للنهاية، تطبيق Phoenix يجب أن يشارك. وسائط esbuild لـ `assets/js/app.js` يجب أن تتضمن `--format=esm --splitting`، ووسم script في التخطيط الجذر يجب أن يستخدم `type="module"`. بلا splitting، استدعاءات `import()` الديناميكية لا تصبح ملفات منفصلة وتفقد الفائدة. [دليل التثبيت اليدوي](https://hexdocs.pm/corex/manual_installation.html) فيه الأعلام بالضبط.
+
+إن أردت رسم بياني أصغر، استورد فقط hooks التي ترسمها فعلاً:
 
 ```javascript
 import { hooks } from "corex/hooks"
@@ -123,22 +124,12 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-كل قيمة دالة تُرجع `import()`. Esbuild يصدّر chunks للقائمة فقط. المفاتيح يجب أن تطابق أسماء `phx-hook` (`Accordion`، `Combobox`، …).
+كل قيمة دالة تُرجع `import()`. Esbuild يصدّر قطعاً فقط للـ hooks المدرجة. المكوّنات غير المستخدمة يمكن اقتلاعها من حزمتك. المفاتيح تطابق أسماء `phx-hook` المُصدرة على الخادم.
 
-في الإنتاج، `mix assets.deploy` يصغّر ويهضم نفس المدخل وchunks الـ hooks. راجع [دليل الإنتاج](https://hexdocs.pm/corex/production.html).
+## فكرة الجسر
 
-JS أولي أصغر، chunks مشتركة بين العناصر، تحميل كسول عند ظهور عقدة مربوطة: هكذا يبقى Corex قابلاً للاستخدام في تطبيقات LiveView ثقيلة دون تحميل كتالوج مكوّنات كاملاً في كل صفحة.
+إن نسيت كل شيء آخر في هذا المنشور، الجزء الذي يستحق الاحتفاظ بهذا. آلات Zag لا تعرف أنها تعمل داخل Phoenix. تعمل فقط. لا تهتم إن جاءت props من حالة React أو من patch LiveView. hook Corex هو المحول الصغير الذي يتيح لخادم Phoenix تغيير رأيه حول قيمة دون سحب تفاعل المستخدم معها.
 
-## إصداران، قصة واحدة
+سطر في سجل تغييرات. أشهر من العمل أصبحت ممكنة. عادة هكذا تسير هذه الأمور.
 
-هذا الفصل الثاني. الإصدار الأول من Corex للمواقع الثابتة: Vite وAstro وEleventy، أي إعداد HTML عادي مع bundler. يعمل هناك لأن الصفحات الثابتة لا تحتاج تحديث props وقت التشغيل.
-
-تكامل LiveView يبني على ما نجح هناك، ويضيف ما يحتاجه LiveView: آلات تتزامن مع خادم يغيّر رأيه.
-
-على الخادم تستخدم مكوّنات Corex كأي HEEx. `import corex from "corex"` أعلاه هو قصة تسجيل العميل لمعظم التطبيقات.
-
-آلات Zag تحت لا تعرف ولا تهتم أنها داخل Phoenix. تعمل وتبقي العناصر صحيحة ويمكن الوصول إليها، وLiveView يفعل ما يجيده: تحديث خادم فعّال عند الحاجة.
-
-سطر صغير في changelog. أشهر عمل أصبحت ممكنة. هكذا يجري الأمر عادة.
-
-بعد الـ hooks، [تصميم Corex](/ar/blog/paint-the-parts-the-machine-already-owns/) يلوّن شجرة `data-part`، و[بحث combobox من الخادم](/ar/blog/nine-thousand-airports-one-hundred-rows/) هو النمط الذي يضغط `updated` عند كل ضغطة.
+بعد وضع hooks، [تصميم Corex](/ar/blog/paint-the-parts-the-machine-already-owns/) ينسّق هيكل `data-part` الذي تحافظ عليه الآلات، [عقلان](/ar/blog/two-brains-liveview-assigns-and-zag-machines/) يشرح العقد بين assigns والآلات، و[بحث combobox المغذّى من الخادم](/ar/blog/nine-thousand-airports-one-hundred-rows/) هو النمط الذي يضغط `updated` عند كل ضغطة.
