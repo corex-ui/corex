@@ -1,41 +1,43 @@
 defmodule E2eWeb.ShowcaseCatalog do
   @moduledoc false
 
+  use GettextSigils, backend: E2eWeb.Gettext
+
   def index_entries do
     [
       %{
         id: "soonex",
-        title: "Soonex",
+        title: ~t"Soonex",
         description:
-          "Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN.",
+          ~t"Single-locale coming-soon layout with Neo through Leo themes, Markdown journal, waitlist, and static assets sized for GitHub Pages or any CDN.",
         demo_to: "https://corex-ui.github.io/soonex/",
         github_to: "https://github.com/corex-ui/soonex",
-        tags: ["Starter kit", "Tableau"]
+        tags: [~t"Starter kit", ~t"Tableau"]
       },
       %{
         id: "soonex-i18n",
-        title: "Soonex i18n",
+        title: ~t"Soonex i18n",
         description:
-          "Locales and RTL on the same stack: localized routes, Arabic typography, and the same Corex component set as Soonex.",
+          ~t"Locales and RTL on the same stack: localized routes, Arabic typography, and the same Corex component set as Soonex.",
         demo_to: "https://corex-ui.github.io/soonex_i18n/",
         github_to: "https://github.com/corex-ui/soonex_i18n",
-        tags: ["Locales", "RTL"]
+        tags: [~t"Locales", ~t"RTL"]
       },
       %{
         id: "landex",
-        title: "Landex",
+        title: ~t"Landex",
         description:
-          "A landing page built with Corex, Tableau, and Motion. Contact form using a Cloudflare Worker and the Resend API.",
+          ~t"A landing page built with Corex, Tableau, and Motion. Contact form using a Cloudflare Worker and the Resend API.",
         site_to: "https://oranje-patrimoine.fr/",
-        tags: ["Landing", "Tableau", "Motion"]
+        tags: [~t"Landing", ~t"Tableau", ~t"Motion"]
       },
       %{
         id: "tetrex",
-        title: "Tetrex",
+        title: ~t"Tetrex",
         description:
-          "Checkbox Tetris with semantic piece colors, live sessions, top-10 leaderboard, and frame replay.",
+          ~t"Checkbox Tetris with semantic piece colors, live sessions, top-10 leaderboard, and frame replay.",
         play_to: "/showcases/tetrex",
-        tags: ["LiveView", "Checkbox"]
+        tags: [~t"LiveView", ~t"Checkbox"]
       }
     ]
   end

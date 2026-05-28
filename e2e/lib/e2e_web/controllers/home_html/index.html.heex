@@ -4,13 +4,13 @@
       <div class="home__hero__inner">
         <div class="home__hero__copy">
           <h1 id="home-hero-heading" class="home__display home__display--lg">
-            {"The Phoenix UI with a"} <span class="home__display__accent">{"real API"}</span>.
+            {~t"The Phoenix UI with a"} <span class="home__display__accent">{~t"real API"}</span>.
           </h1>
 
           <p class="home__lede">
-            {"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
+            {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
             <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
-            {"state machines."}
+            {~t"state machines."}
           </p>
 
           <ul class="home__bullets" aria_label="Highlights">
@@ -24,7 +24,7 @@
 
           <div class="home__hero__cta-row">
             <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
-              {"Browse components"}
+              {~t"Browse components"}
               <.heroicon name="hero-arrow-right" class="icon" />
             </.navigate>
             <.navigate
@@ -32,7 +32,7 @@
               class="button button--ghost rounded-full"
               external
             >
-              {"Visit Hexdocs"}
+              {~t"Visit Hexdocs"}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
           </div>
@@ -43,12 +43,12 @@
           class="home__hero__composition"
           phx-hook="HomeHero"
         >
-          <h2 class="sr-only">{"Interactive preview"}</h2>
+          <h2 class="sr-only">{~t"Interactive preview"}</h2>
           <div class="home__hero__col home__hero__col--start">
             <div class="home__card home__card--accordion">
               <div class="home__card__label">
                 <.heroicon name="hero-bars-3-bottom-left" class="icon" />
-                <span>{"Accordion"}</span>
+                <span>{~t"Accordion"}</span>
               </div>
               <.accordion
                 id="hero-accordion"
@@ -96,14 +96,14 @@
                 <.heroicon name="hero-command-line" class="icon" />
                 <span>API</span>
               </div>
-              <p class="home__card__hint">{"Drive the accordion from anywhere."}</p>
+              <p class="home__card__hint">{~t"Drive the accordion from anywhere."}</p>
               <div class="home__card__actions">
                 <button
                   type="button"
                   data-hero-accordion-value={Jason.encode!(["anatomy"])}
                   class="button button--sm button--accent"
                 >
-                  <.heroicon name="hero-chevron-right" class="icon" /> {"Open first"}
+                  <.heroicon name="hero-chevron-right" class="icon" /> {~t"Open first"}
                 </button>
                 <button
                   type="button"

@@ -26,7 +26,10 @@ defmodule E2eWeb.App.Header do
       <div class="layout__header__content">
         <div class="layout__row">
           <.dialog id="menu-dialog" animation="instant" class="dialog dialog--side lg:hidden">
-            <:trigger class="button button--sm button--circle button--ghost" aria_label="Open menu">
+            <:trigger
+              class="button button--sm button--circle button--ghost"
+              aria_label={~t"Open menu"}
+            >
               <.heroicon name="hero-bars-3" />
             </:trigger>
 
@@ -37,7 +40,7 @@ defmodule E2eWeb.App.Header do
                     <.action
                       phx-click={Corex.Dialog.set_open("menu-dialog", false)}
                       class="button button--sm button--circle button--ghost"
-                      aria_label="Close menu"
+                      aria_label={~t"Close menu"}
                     >
                       <.heroicon name="hero-x-mark" />
                     </.action>
@@ -67,7 +70,7 @@ defmodule E2eWeb.App.Header do
               <div
                 id="layout-menu-nav-scroll"
                 class="flex-1 min-h-0 flex flex-col scrollbar scrollbar--sm overflow-y-auto w-full py-size gap-size bg-layer"
-                aria-label="Documentation navigation"
+                aria-label={~t"Documentation navigation"}
                 phx-hook="AsideNavScroll"
               >
                 <.drawer_site_nav_tree path={@path} site_nav_tree_id="site-nav-menu" />
