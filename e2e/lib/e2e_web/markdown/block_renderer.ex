@@ -68,6 +68,11 @@ defmodule E2eWeb.Markdown.BlockRenderer do
     %{__changed__: %{}, code: code, language: language}
     |> inline()
     |> rendered_to_string()
+    |> preserve_makeup_whitespace()
+  end
+
+  def preserve_makeup_whitespace(html) when is_binary(html) do
+    String.replace(html, ~r/<span class="w">\s*<\/span>/, "<span class=\"w\">&nbsp;</span>")
   end
 
   defp highlight_fence_lines(code, language) do
