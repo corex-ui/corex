@@ -513,232 +513,38 @@ defmodule E2eWeb.Demos.SelectDemo do
     """
   end
 
-  defp select_items_attr do
-    ~S|items={Corex.List.new([%{label: "France", value: "fra"}, %{label: "Belgium", value: "bel"}, %{label: "Germany", value: "deu"}])}|
+  def items_minimal do
+    [
+      %{label: "France", value: "fra"},
+      %{label: "Belgium", value: "bel"},
+      %{label: "Germany", value: "deu"}
+    ]
   end
 
-  def api_on_value_server_heex do
-    items_attr = select_items_attr()
-
-    """
-    <.select
-      id="select-api-on-server"
-      class="select"
-      #{items_attr}
-      on_value_change="select_api_on_value_server"
-    >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
-  end
-
-  def api_on_value_server_elixir do
+  def api_set_value_client_binding_code do
     ~S"""
-    def handle_event("select_api_on_value_server", %{"id" => _id, "value" => _value}, socket) do
-      {:noreply, socket}
-    end
-    """
-  end
-
-  def api_on_value_server_example(assigns) do
-    ~H"""
-    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
-      <.select
-        id="select-api-on-server"
-        class="select"
-        items={items()}
-        on_value_change="select_api_on_value_server"
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
-    """
-  end
-
-  def api_on_value_client_heex do
-    items_attr = select_items_attr()
-
-    """
-    <.select
-      id="select-api-on-client"
-      class="select"
-      #{items_attr}
-      on_value_change_client="select-api-on-client"
-    >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
-  end
-
-  def api_on_value_client_js do
-    ~S"""
-    const el = document.getElementById("select-api-on-client");
-    el?.addEventListener("select-api-on-client", (event) => console.log(event.detail));
-    """
-  end
-
-  def api_on_value_client_ts do
-    ~S"""
-    const el = document.getElementById("select-api-on-client");
-    el?.addEventListener("select-api-on-client", (event: Event) =>
-      console.log((event as CustomEvent<unknown>).detail)
-    );
-    """
-  end
-
-  def api_on_value_client_example(assigns) do
-    ~H"""
-    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
-      <.select
-        id="select-api-on-client"
-        class="select"
-        items={items()}
-        on_value_change_client="select-api-on-client"
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
-    """
-  end
-
-  def api_set_value_client_binding_heex do
-    items_attr = select_items_attr()
-
-    """
-    <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={Corex.Select.set_value("select-api-cb", ["fra"])} class="button button--sm">
-        France
-      </.action>
-      <.action phx-click={Corex.Select.set_value("select-api-cb", ["deu"])} class="button button--sm">
-        Germany
-      </.action>
-      <.action phx-click={Corex.Select.set_open("select-api-cb", true)} class="button button--sm">
-        Open
-      </.action>
-    </div>
+    <.action phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}>France</.action>
+    <.action phx-click={Corex.Select.set_value("select-api-cb", [])}>Clear</.action>
     <.select
       id="select-api-cb"
-      class="select"
-      #{items_attr}
+      class="select select--accent"
+      items={Corex.List.new(items_minimal())}
+      translation={%Corex.Select.Translation{placeholder: "Select"}}
     >
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
-    """
-  end
-
-  def api_set_value_client_binding_example(assigns) do
-    ~H"""
-    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
-      <div class="flex flex-wrap gap-2 mb-4">
-        <.action
-          phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}
-          class="button button--sm"
-        >
-          France
-        </.action>
-        <.action
-          phx-click={Corex.Select.set_value("select-api-cb", ["deu"])}
-          class="button button--sm"
-        >
-          Germany
-        </.action>
-        <.action phx-click={Corex.Select.set_open("select-api-cb", true)} class="button button--sm">
-          Open
-        </.action>
-      </div>
-      <.select
-        id="select-api-cb"
-        class="select"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
-    """
-  end
-
-  def api_set_value_client_js_heex do
-    items_attr = select_items_attr()
-
-    """
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button
-        type="button"
-        class="button button--sm"
-        id="select-api-cjs-dispatch"
-        onclick="document.getElementById('select-api-cjs')?.dispatchEvent(new CustomEvent('corex:select:set-value', {bubbles: false, detail: { value: ['fra'] } }))"
-      >
-        Set France (client JS)
-      </button>
-    </div>
-    <.select
-      id="select-api-cjs"
-      class="select"
-      #{items_attr}
-    >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
-    """
-  end
-
-  def api_set_value_client_js_js do
-    ~S"""
-    const el = document.getElementById("select-api-cjs");
-    el?.dispatchEvent(
-      new CustomEvent("corex:select:set-value", { bubbles: false, detail: { value: ["fra"] } })
-    );
-    """
-  end
-
-  def api_set_value_client_js_ts do
-    ~S"""
-    const el: HTMLElement | null = document.getElementById("select-api-cjs");
-    el?.dispatchEvent(
-      new CustomEvent("corex:select:set-value", { bubbles: false, detail: { value: ["fra"] } })
-    );
-    """
-  end
-
-  def api_set_value_client_js_example(assigns) do
-    ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center" id="select-api-cjs-wrap">
-      <div class="layout__row">
-        <button
-          type="button"
-          class="button button--sm"
-          id="select-api-cjs-dispatch"
-          onclick="document.getElementById('select-api-cjs')?.dispatchEvent(new CustomEvent('corex:select:set-value', {bubbles: false, detail: { value: ['fra'] } }))"
-        >
-          Set France (client JS)
-        </button>
-      </div>
-      <.select
-        id="select-api-cjs"
-        class="select"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
     """
   end
 
   def api_set_value_server_heex do
-    items_attr = select_items_attr()
-
-    """
-    <div class="flex flex-wrap gap-2 mb-4">
-      <.action phx-click={JS.push("select_api_server_set", value: %{value: "fra"})} class="button button--sm">
-        France
-      </.action>
-      <.action phx-click={JS.push("select_api_server_set", value: %{value: ""})} class="button button--sm">
-        Clear
-      </.action>
-    </div>
+    ~S"""
+    <.action phx-click="select_api_set_value">France</.action>
+    <.action phx-click="select_api_clear">Clear</.action>
     <.select
       id="select-api-srv"
-      class="select"
-      #{items_attr}
+      class="select select--accent"
+      items={Corex.List.new(items_minimal())}
+      translation={%Corex.Select.Translation{placeholder: "Select"}}
     >
       <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
@@ -747,62 +553,51 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_server_elixir do
     ~S"""
-    def handle_event("select_api_server_set", %{"value" => ""}, socket) do
+    def handle_event("select_api_set_value", _params, socket) do
+      {:noreply, Corex.Select.set_value(socket, "select-api-srv", ["fra"])}
+    end
+
+    def handle_event("select_api_clear", _params, socket) do
       {:noreply, Corex.Select.set_value(socket, "select-api-srv", [])}
     end
-
-    def handle_event("select_api_server_set", %{"value" => v}, socket) when is_binary(v) do
-      {:noreply, Corex.Select.set_value(socket, "select-api-srv", [v])}
-    end
     """
   end
 
-  def api_set_value_server_example(assigns) do
+  def api_set_value_client_js do
+    ~S"""
+    const el = document.getElementById("select-api-cjs");
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:select:set-value", {
+        bubbles: false,
+        detail: { value: ["fra"] },
+      })
+    );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:select:set-value", {
+        bubbles: false,
+        detail: { value: [] },
+      })
+    );
+    """
+  end
+
+  def api_binding_example(assigns) do
     ~H"""
-    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
-      <div class="flex flex-wrap gap-2 mb-4">
-        <.action
-          phx-click={JS.push("select_api_server_set", value: %{value: "fra"})}
-          class="button button--sm"
-        >
-          France
-        </.action>
-        <.action
-          phx-click={JS.push("select_api_server_set", value: %{value: ""})}
-          class="button button--sm"
-        >
-          Clear
-        </.action>
-      </div>
-      <.select
-        id="select-api-srv"
-        class="select"
-        items={items()}
-      >
-        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-      </.select>
-    </div>
+    <.select
+      id="select-api-overview"
+      class="select select--accent"
+      items={Corex.List.new(items_minimal())}
+      translation={%Corex.Select.Translation{placeholder: "Select"}}
+    >
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
     """
   end
 
-  def api_codes do
-    %{
-      on_value_server_heex: api_on_value_server_heex(),
-      on_value_server_elixir: api_on_value_server_elixir(),
-      on_value_client_heex: api_on_value_client_heex(),
-      on_value_client_js: api_on_value_client_js(),
-      on_value_client_ts: api_on_value_client_ts(),
-      set_value_client_binding: api_set_value_client_binding_heex(),
-      set_value_client_js_heex: api_set_value_client_js_heex(),
-      set_value_client_js: api_set_value_client_js_js(),
-      set_value_client_ts: api_set_value_client_js_ts(),
-      set_value_server_heex: api_set_value_server_heex(),
-      set_value_server_elixir: api_set_value_server_elixir()
-    }
-  end
-
-  def api_overview_code, do: api_on_value_server_heex()
-  def api_overview_example(assigns), do: api_on_value_server_example(assigns)
+  def api_overview_code, do: api_set_value_client_binding_code()
+  def api_overview_example(assigns), do: api_binding_example(assigns)
 
   def events_server_heex do
     items_attr =

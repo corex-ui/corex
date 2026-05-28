@@ -390,7 +390,7 @@ defmodule Corex.Select do
 
   ```elixir
   def handle_event("select_api_set_value", _, socket) do
-    {:noreply, Corex.Select.set_value(socket, "select-api-srv", ["bel"])}
+    {:noreply, Corex.Select.set_value(socket, "select-api-srv", ["fra"])}
   end
   ```
 
@@ -492,6 +492,8 @@ defmodule Corex.Select do
   <!-- tabs-open -->
 
   ### Color
+
+  Color modifiers apply theme ink to the trigger label and chevron, and to selected menu items.
 
   | Modifier | Classes |
   | -------- | ------- |
