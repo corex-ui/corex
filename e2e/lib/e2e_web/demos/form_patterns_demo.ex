@@ -5,7 +5,7 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
   def form_ecto do
     ~S"""
-    defmodule MyApp.Form.PatternsForm do
+    defmodule E2e.Form.PatternsForm do
       use Ecto.Schema
       import Ecto.Changeset
 
@@ -33,19 +33,160 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
   def custom_error_heex do
     ~S"""
-    <.form for={@form} phx-change="validate_custom" phx-submit="save_custom">
-      <.select field={@form[:country]} class="select w-full relative">
+    <.form
+      for={@form}
+      id="form-patterns-custom-error"
+      phx-change="validate_custom"
+      phx-submit="save_custom"
+    >
+      <.select
+        field={@form[:country]}
+        class="select max-w-none w-full relative"
+        id="form-patterns-custom-error-country"
+        deselectable
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={country_items()}
+      >
         <:label>Your country of residence</:label>
-        <:error :let={_msg} class="absolute top-0 end-0">
-          <.tooltip class="tooltip tooltip--sm" positioning={%Corex.Positioning{placement: "top-end"}}>
-            <:trigger><.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" /></:trigger>
-            <:content>{error messages}</:content>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" />
+        </:trigger>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-country-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
           </.tooltip>
         </:error>
       </.select>
-      <.combobox field={@form[:currency]} class="combobox max-w-none relative" items={currency_items()}>
-        <:error :let={_msg} class="absolute top-0 end-0">…</:error>
+
+      <.combobox
+        field={@form[:currency]}
+        class="combobox max-w-none w-full relative"
+        id="form-patterns-custom-error-currency"
+        placeholder="Search currency"
+        items={currency_items()}
+      >
+        <:label>Preferred currency</:label>
+        <:empty>No results</:empty>
+        <:item :let={item}>
+          <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
+          <span>{item.label}</span>
+        </:item>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" />
+        </:trigger>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-currency-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
+          </.tooltip>
+        </:error>
       </.combobox>
+
+      <.tags_input
+        field={@form[:tags]}
+        class="tags-input max-w-none w-full relative"
+        id="form-patterns-custom-error-tags"
+      >
+        <:label>Tags</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-tags-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
+          </.tooltip>
+        </:error>
+      </.tags_input>
+
+      <.password_input
+        field={@form[:password]}
+        class="password-input max-w-none w-full relative"
+        id="form-patterns-custom-error-password"
+      >
+        <:label>Password</:label>
+        <:visible_indicator>
+          <.heroicon name="hero-eye" />
+        </:visible_indicator>
+        <:hidden_indicator>
+          <.heroicon name="hero-eye-slash" />
+        </:hidden_indicator>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-password-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
+          </.tooltip>
+        </:error>
+      </.password_input>
+
+      <.switch
+        field={@form[:notifications]}
+        class="switch max-w-none w-full relative"
+        id="form-patterns-custom-error-notifications"
+      >
+        <:label>Email notifications</:label>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-notifications-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
+          </.tooltip>
+        </:error>
+      </.switch>
+
+      <.checkbox
+        field={@form[:terms]}
+        class="checkbox max-w-xs w-full relative"
+        id="form-patterns-custom-error-terms"
+      >
+        <:label>Accept the terms</:label>
+        <:error :let={msg} class="absolute top-0 end-0">
+          <.tooltip
+            id="form-patterns-custom-error-terms-tip"
+            class="tooltip tooltip--sm"
+            positioning={%Corex.Positioning{placement: "top-end"}}
+          >
+            <:trigger>
+              <.heroicon name="hero-exclamation-circle" class="icon text-ink-alert" />
+            </:trigger>
+            <:content>{msg}</:content>
+          </.tooltip>
+        </:error>
+      </.checkbox>
+
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
     </.form>
     """
   end
@@ -60,30 +201,172 @@ defmodule E2eWeb.Demos.FormPatternsDemo do
 
       {:noreply, assign(socket, :custom_form, form)}
     end
+
+    def handle_event("save_custom", %{"patterns_custom" => params}, socket) do
+      case PatternsForm.changeset_validate(%PatternsForm{}, params) do
+        %Ecto.Changeset{valid?: true} = changeset ->
+          {:noreply,
+           socket
+           |> put_flash(:info, "Submitted")
+           |> assign(:custom_form, to_form(changeset, as: :patterns_custom, id: "form-patterns-custom-error"))}
+
+        %Ecto.Changeset{} = changeset ->
+          {:noreply,
+           assign(socket, :custom_form,
+             to_form(changeset, as: :patterns_custom, id: "form-patterns-custom-error", action: :insert)
+           )}
+      end
+    end
     """
   end
 
   def invalid_on_error_heex do
     ~S"""
-    <.select
-      field={@form[:country]}
-      class="select max-w-none"
-      invalid={Corex.FormField.invalid?(@form[:country])}
+    <.form
+      for={@form}
+      id="form-patterns-invalid-on-error"
+      phx-change="validate_invalid"
+      phx-submit="save_invalid"
     >
-      <:label>Your country of residence</:label>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.select>
+      <.select
+        field={@form[:country]}
+        class="select max-w-none w-full"
+        id="form-patterns-invalid-on-error-country"
+        deselectable
+        invalid={Corex.FormField.invalid?(@form[:country])}
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={country_items()}
+      >
+        <:label>Your country of residence</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.select>
+
+      <.combobox
+        field={@form[:currency]}
+        class="combobox max-w-none w-full"
+        id="form-patterns-invalid-on-error-currency"
+        placeholder="Search currency"
+        invalid={Corex.FormField.invalid?(@form[:currency])}
+        items={currency_items()}
+      >
+        <:label>Preferred currency</:label>
+        <:empty>No results</:empty>
+        <:item :let={item}>
+          <span class="font-mono text-xs uppercase place-self-end">{item.value}</span>
+          <span>{item.label}</span>
+        </:item>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" />
+        </:trigger>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.combobox>
+
+      <.tags_input
+        field={@form[:tags]}
+        class="tags-input max-w-none w-full"
+        id="form-patterns-invalid-on-error-tags"
+        invalid={Corex.FormField.invalid?(@form[:tags])}
+      >
+        <:label>Tags</:label>
+        <:close>
+          <.heroicon name="hero-x-mark" />
+        </:close>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.tags_input>
+
+      <.password_input
+        field={@form[:password]}
+        class="password-input max-w-none w-full"
+        id="form-patterns-invalid-on-error-password"
+        invalid={Corex.FormField.invalid?(@form[:password])}
+      >
+        <:label>Password</:label>
+        <:visible_indicator>
+          <.heroicon name="hero-eye" />
+        </:visible_indicator>
+        <:hidden_indicator>
+          <.heroicon name="hero-eye-slash" />
+        </:hidden_indicator>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.password_input>
+
+      <.switch
+        field={@form[:notifications]}
+        class="switch max-w-none w-full"
+        id="form-patterns-invalid-on-error-notifications"
+        invalid={Corex.FormField.invalid?(@form[:notifications])}
+      >
+        <:label>Email notifications</:label>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.switch>
+
+      <.checkbox
+        field={@form[:terms]}
+        class="checkbox max-w-xs w-full"
+        id="form-patterns-invalid-on-error-terms"
+        invalid={Corex.FormField.invalid?(@form[:terms])}
+      >
+        <:label>Accept the terms</:label>
+        <:indicator>
+          <.heroicon name="hero-check" />
+        </:indicator>
+        <:error :let={msg}>
+          <.heroicon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.checkbox>
+
+      <.action type="submit" class="button button--accent">
+        Submit
+      </.action>
+    </.form>
     """
   end
 
   def invalid_on_error_elixir do
     ~S"""
-    <.combobox field={@form[:currency]} invalid={Corex.FormField.invalid?(@form[:currency])}>
-      <:error :let={msg}>…</:error>
-    </.combobox>
+    def handle_event("validate_invalid", %{"patterns_invalid" => params}, socket) do
+      form =
+        %PatternsForm{}
+        |> PatternsForm.changeset_validate(params)
+        |> to_form(action: :validate, as: :patterns_invalid, id: "form-patterns-invalid-on-error")
+
+      {:noreply, assign(socket, :invalid_form, form)}
+    end
+
+    def handle_event("save_invalid", %{"patterns_invalid" => params}, socket) do
+      case PatternsForm.changeset_validate(%PatternsForm{}, params) do
+        %Ecto.Changeset{valid?: true} = changeset ->
+          {:noreply,
+           socket
+           |> put_flash(:info, "Submitted")
+           |> assign(:invalid_form, to_form(changeset, as: :patterns_invalid, id: "form-patterns-invalid-on-error"))}
+
+        %Ecto.Changeset{} = changeset ->
+          {:noreply,
+           assign(socket, :invalid_form,
+             to_form(changeset, as: :patterns_invalid, id: "form-patterns-invalid-on-error", action: :insert)
+           )}
+      end
+    end
     """
   end
 
