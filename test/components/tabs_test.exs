@@ -105,10 +105,10 @@ defmodule Corex.TabsTest do
           dir: nil
         })
 
-      refute html =~ ~s(dir="ltr")
-      refute html =~ ~s(dir="rtl")
-      refute html =~ ~s(data-dir="ltr")
-      refute html =~ ~s(data-dir="rtl")
+      refute html =~ ~S(dir="ltr")
+      refute html =~ ~S(dir="rtl")
+      refute html =~ ~S(data-dir="ltr")
+      refute html =~ ~S(data-dir="rtl")
     end
   end
 
