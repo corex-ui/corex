@@ -37,11 +37,10 @@ defmodule E2eWeb.BlogLiveTest do
     html = html_response(conn, 200)
 
     assert html =~ "Anatomy of a Corex Component"
-    assert html =~ "Corex.Content.new"
-    assert html =~ "Corex.List"
+    assert html =~ "accordion_root"
+    assert html =~ "data-scope"
     assert html =~ "compound"
-    assert html =~ "Manual slots"
-    assert html =~ "VanillaMachine"
+    assert html =~ "The ladder"
     refute html =~ "mix corex.new"
   end
 
@@ -65,18 +64,17 @@ defmodule E2eWeb.BlogLiveTest do
     html = html_response(conn, 200)
 
     assert html =~ "Anatomy of a Corex Component"
-    assert html =~ "clipboard"
-    assert html =~ "Corex.Content.new"
+    assert html =~ "accordion_item"
     assert html =~ "blog__article-shell"
     assert html =~ "min read"
   end
 
-  test "blog post renders corex callout", %{conn: conn} do
+  test "design tokens article renders utilities and contrast section", %{conn: conn} do
     conn = get(conn, ~p"/blog/paint-the-parts-the-machine-already-owns")
     html = html_response(conn, 200)
 
-    assert html =~ "corex-callout"
-    assert html =~ "Contrast from day one"
+    assert html =~ "ui-input"
+    assert html =~ "Contrast is a number"
   end
 
   test "unknown slug redirects to blog index", %{conn: conn} do
@@ -104,8 +102,8 @@ defmodule E2eWeb.BlogLiveTest do
     html = html_response(conn, 200)
 
     assert html =~ "blog__grid"
-    assert html =~ "Journal"
-    assert html =~ "ما سرعة واجهة Checkbox"
+    assert html =~ "اليوميات"
+    assert html =~ "ما سرعة Checkbox"
     refute html =~ "How Fast Is the Checkbox API?"
   end
 end
