@@ -748,7 +748,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:trigger>Open</:trigger>
       <:title>Lorem ipsum dolor sit amet</:title>
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
-      <:content><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
+      <:content class="p-4"><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></:content>
       <:close_trigger><.heroicon name="hero-x-mark" class="icon" /></:close_trigger>
     </.dialog>
     """
@@ -760,7 +760,7 @@ defmodule E2eWeb.Demos.DialogDemo do
       <:trigger>Open</:trigger>
       <:title>Lorem ipsum dolor sit amet</:title>
       <:description>Consectetur adipiscing elit. Sed sodales ullamcorper tristique.</:description>
-      <:content>
+      <:content class="p-4">
         <p>
           Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
         </p>
