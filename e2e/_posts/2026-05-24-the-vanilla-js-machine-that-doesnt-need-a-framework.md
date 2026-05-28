@@ -1,6 +1,6 @@
 ---
 title: "The Vanilla JS Machine That Doesn't Need a Framework"
-description: "Zag.js vanilla machines in LiveView hooks, runtime updateProps, and esbuild splitting so each component loads only when it mounts on the page."
+description: "Corex hinged on one line in a Zag changelog. Without it, machines could start but not take new props. With it, the whole Phoenix integration unlocked in an afternoon."
 date: "2026-05-24 12:00:00 +0000"
 permalink: /en/blog/the-vanilla-js-machine-that-doesnt-need-a-framework/
 tags:
@@ -13,102 +13,103 @@ sitemap:
   changefreq: monthly
 ---
 
-Zag.js is one of those libraries that genuinely changes how you think about UI. State machines for accessible components, completely framework-agnostic at the core, with adapters for React, Solid, Vue and Svelte. Segun (the creator) has done something rare: the hard logic of focus management, keyboard navigation, ARIA attributes, open/close transitions, all of it lives in pure TypeScript that any framework can consume.
+The version of this story that fits on a slide is short. I picked Zag.js as the behavioral layer for Corex, waited for one missing capability to land, and then the entire Phoenix integration unblocked itself in an afternoon. The longer version is the same story, with some context for why the unblock mattered, and what it makes possible now.
 
-I got to talk with Segun about it on YouTube, and if you want to understand why Zag is such a solid foundation, that conversation is a good place to start (sorry for the mic quality on top of my accent 😅).
+## Why state machines at all
+
+I think a lot about who is allowed to own keyboard support. Most teams I have worked on get accessibility right exactly once: the day the designer cares about it, or the day the audit lands. Then it drifts. Tab order goes wrong because someone added a wrapper. Arrow keys stop working on a dropdown because someone refactored a slot. ARIA reverts to `false` because nobody remembers which attribute was supposed to be live.
+
+State machines fix this by encoding behavior in one place and letting the rest of the app refuse to care. Zag.js is a library of those machines, written by Segun Adebayo, framework-agnostic at the core, with adapters for React, Solid, Vue and Svelte. The hard parts (focus rings, typeahead, roving tabindex, every keyboard shortcut a competent designer expects, the entire WAI-ARIA dictionary) live in pure TypeScript. They are battle-tested by thousands of teams who never had to think about them.
+
+I had a conversation with Segun about it on YouTube. If you want to understand why Zag is a solid base, that video is the right place to start. Apologies for the mic quality on top of my accent.
 
 <div class="blog__embed">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/D1To2_5o8e8?si=yPg6P6oL4dph6H_L" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
 
-What brought me there was Corex. I was building accessible UI components for Phoenix LiveView, and Zag was the obvious choice for the behavioral layer. The machines are already battle-tested. The accessibility is already correct. I didn't want to rewrite any of that.
+What brought me there was Corex. I was building accessible components for Phoenix LiveView and I did not want to ship behaviors that were 90% correct because I rewrote them myself.
 
-How much HEEx you write for each widget is a separate choice: [anatomy](/en/blog/anatomy-of-a-corex-component/). Who owns runtime state on the server vs in the machine is another: [state machines](/en/blog/two-brains-liveview-assigns-and-zag-machines/). Connecting Zag to LiveView turned out to be more interesting than I expected.
+## The vanilla adapter has its own opinions, deliberately
 
-## The Right Layer for Every Framework
+Zag's framework adapters do a specific job: they subscribe to a machine and tell their framework to re-render when state changes. React uses hooks. Vue uses refs. Svelte uses runes. Each adapter speaks the local reactivity dialect.
 
-Zag ships adapters for the big JS frameworks because each one has its own reactivity model. `@zag-js/react` uses `useMachine` and hooks. `@zag-js/vue` leans on refs and watchers. `@zag-js/svelte` plugs into runes. These adapters are what make a machine "come alive" inside each framework: they subscribe to state transitions and re-render components automatically.
+The vanilla adapter cannot lean on any of those. It has no reactivity model to subscribe to. It also has to do something the framework adapters do not do directly: touch the DOM itself. It reads positions, sets focus, writes `aria-*`, manages scroll. In React, the framework mediates all of that. Without a framework, you are the bridge between the machine and the document.
 
-Vanilla JS is a different story, and deliberately so. A vanilla adapter can't make assumptions about reactivity. It also has to do something the framework adapters don't: directly touch the DOM. Machines need to read element positions, manage focus, set `aria-*` attributes, handle scroll. In React, the framework mediates all of that. Without a framework, you're connecting the machine to the actual document yourself.
+That is why `@zag-js/vanilla` is shaped the way it is. You get a class-based `VanillaMachine` with a clear `start()` / `stop()` lifecycle. You subscribe to state changes and write to the DOM yourself. The Zag repo ships a [full vanilla TypeScript example](https://github.com/chakra-ui/zag/tree/main/examples/vanilla-ts) that demonstrates the pattern.
 
-That's why `@zag-js/vanilla` is opinionated. It gives you a class-based `VanillaMachine` wrapper with a clear `start()` / `stop()` lifecycle, and you subscribe to state changes and update the DOM yourself. Zag even ships a full [vanilla TypeScript example](https://github.com/chakra-ui/zag/tree/main/examples/vanilla-ts) to show exactly how this works in practice.
+For a static page that ships once and runs locally, this is wonderful. Set up the machine, the user interacts, done. Props go in once and the machine runs from there.
 
-For a static page, this model is wonderful. Set up the machine, let the user interact, done. Props come in once and the machine runs from there.
+Phoenix LiveView has a different rhythm.
 
-Phoenix LiveView, though, has a different rhythm.
+## What LiveView actually needs
 
-## What LiveView Actually Needs
+LiveView renders HTML on the server and sends minimal DOM patches over a WebSocket whenever state changes. The browser applies the diff. No virtual DOM. No client-side component graph. Just the right HTML at the right moment.
 
-LiveView renders HTML on the server and sends minimal DOM patches over a WebSocket when state changes. The browser applies the diff. No virtual DOM, no client-side component tree. Just the right HTML at the right moment.
+For JavaScript interop, LiveView gives you hooks. Small objects you attach to DOM elements with `phx-hook`, receiving lifecycle callbacks: `mounted`, `updated`, `destroyed`, and a few more. From inside a hook you push events to the server, listen for events from the server, and read the DOM directly.
 
-For JavaScript interop, LiveView has hooks: small objects you attach to DOM nodes with `phx-hook`. They receive lifecycle callbacks: `mounted`, `updated`, `destroyed`. From inside a hook you can push events to the server and listen for events coming back.
+This is a genuinely good model. The server stays in charge of data. The client handles behavior. For accessible components, that split is exactly where you want the line: LiveView decides what the values are, Zag decides how the component behaves.
 
-This is a genuinely good model. It means the server stays in control of data, and the client handles behavior. For accessible widgets that's exactly the right split: LiveView manages what the values are, and Zag manages how the widget behaves.
+The catch is that LiveView can push updates to a hooked element at any time. A controlled select where the server pins the current option. A combobox where the server replaces every option on every keystroke. A dialog that the server closes from a timer or a Presence event. Each one requires telling the running machine: a prop just changed, please update yourself.
 
-The challenge is that LiveView can push updates to a hooked element at any time. A controlled Select where the server sets the current value. A Combobox where the server filters items on every keystroke. A Dialog that the server can close programmatically. All of these require telling the running machine: something changed, update yourself.
+Early versions of `@zag-js/vanilla` could start a machine and run it well, but you could not change its props after initialization. The machine was effectively sealed once it started. For a static site this was fine. For LiveView, it was the one missing thing.
 
-Early versions of `@zag-js/vanilla` started the machine and ran it well, but there was no way to update props after initialization. The machine was effectively sealed once it started. For static pages this was fine. For LiveView, it was the one thing missing.
+## A line in a changelog
 
-## A Quiet Fix with a Big Consequence
-
-Then a line appeared in the Zag changelog:
+One day a line landed in the Zag changelog:
 
 > Fix issue where vanilla machines do not have the option to change their props during runtime.
 
-That's all it said. No announcement. One fix.
+That is the whole sentence. No announcement. No marketing. One fix.
 
-But it meant `VanillaMachine` could now accept `updateProps` calls after the machine had started. Which meant that when LiveView fires `updated` on a hook, I could read the fresh `data-*` attributes from the patched element and pass them straight into the running machine. The machine reacts. ARIA updates. Controlled values sync. The server stays in charge.
+What it actually meant was that `VanillaMachine` would now accept `updateProps` calls at any point after `start()`. Which meant that when LiveView fires `updated` on a hook, the hook could read the fresh `data-*` attributes from the patched element and pass them straight into the running machine. The machine reacts. ARIA updates. Controlled values sync. The server stays in charge and the user never notices.
 
-The Phoenix integration went from "not really possible" to "let's build it."
+The Phoenix integration went from "not really possible" to "let's build it" between that release and dinner.
 
-## How Corex Puts It Together
+## How Corex puts it together
 
-Corex wraps `VanillaMachine` inside Phoenix hook objects. When you write:
+When you place a Corex component in a template, the server renders the full markup: the right `data-scope` and `data-part` attributes, the right ARIA skeleton, and `phx-hook="ComponentName"` on the root.
 
-```heex
-<.accordion id="faq" on_value_change="accordion_changed">
-  ...
-</.accordion>
-```
+On the client, three lifecycle callbacks do all the work.
 
-Corex renders the full HTML anatomy (root, triggers, panels, the right `data-part` attributes, the correct ARIA skeleton) and attaches `phx-hook="Accordion"` to the root element.
+`mounted` reads the serialized props from `data-*`, starts a `VanillaMachine`, subscribes to state transitions, and begins keeping the DOM in sync with whatever the machine decides.
 
-On the client, three lifecycle callbacks do the work:
-
-`mounted` reads serialized props from `data-*` attributes, starts a `VanillaMachine`, subscribes to state transitions, and begins keeping the DOM in sync with whatever the machine decides.
-
-`updated` reads the new props from the freshly patched element and calls `updateProps` on the machine. If the server changed `value`, the machine knows immediately. If an item became disabled, same thing. No remount, no lost interaction state.
-
-Corex also uses `JS.ignore_attributes` on mount so LiveView patches do not strip `data-state` and ARIA fields the hook just wrote. Server diffs merge with machine output instead of fighting it.
+`updated` reads the freshly patched props from the same root and calls `updateProps` on the machine. If the server changed `value`, the machine knows immediately. If an item became disabled, same thing. No remount. No lost focus. No interaction state thrown away.
 
 `destroyed` calls `machine.stop()` for a clean teardown.
 
-The machine handles everything behavioral: keyboard navigation, ARIA roles and states, open/closed transitions, controlled vs uncontrolled modes, focus management. LiveView handles the data. The hook is the bridge.
+On top of that, Corex applies `JS.ignore_attributes` on each root at mount, so LiveView diffing does not strip the `data-state` and `aria-*` fields the hook just wrote. The patch and the machine end up writing to different attributes and politely staying out of each other's way.
 
-## Split chunks, load on mount
+The machine handles everything behavioral. LiveView handles the data. The hook is a small messenger that does no logic of its own.
 
-Corex ships dozens of interactive components. Each one pulls in Zag machines, DOM helpers, and often shared collection logic. If every hook shipped in one fat bundle, every page would pay for dialogs, date pickers, and comboboxes it never renders.
+## Two releases, one story
 
-We split the JavaScript on purpose.
+This is actually the second chapter of Corex. The first release shipped for static sites: Vite, Astro, Eleventy, anything where you write plain HTML with a bundler. That version works beautifully because static pages do not need runtime prop updates. You set props once, the machine runs, users interact.
 
-When Corex is built for Hex, esbuild compiles each hook as its own ESM entry (`accordion.mjs`, `combobox.mjs`, and so on) with **`--splitting`** enabled. Shared code between hooks lands in hashed chunks under `priv/static/chunks/`. Zag utilities and vanilla adapters are reused instead of duplicated in every file.
+The LiveView integration builds on everything that worked there, and adds the one thing LiveView specifically needs: machines that can stay in sync with a server that keeps changing its mind.
 
-The default export from `corex` is not that full catalog inlined. It is a map of **lazy hook shells**: thin `phx-hook` objects created by `createLazyHook`. On `mounted`, the shell runs a dynamic `import("corex/accordion")` (or whichever component matched the root), then forwards `updated`, `destroyed`, `beforeUpdate`, and the rest to the real hook. The fetch happens in the background while the rest of the page is already alive. A route with only accordions and checkboxes never downloads combobox or dialog code.
+On the server side, you use Corex components like any HEEx component. On the client, the registration story is one import.
 
 ```javascript
 import corex from "corex"
 
-let liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken },
+const liveSocket = new LiveSocket("/live", Socket, {
   hooks: { ...corex }
 })
 ```
 
-Spreading `...corex` registers every component name LiveView might need, but the browser only requests the chunks for hooks that actually mount.
+That is the entire setup for most apps.
 
-Your Phoenix app must participate in the same model. In `config/config.exs`, the Esbuild args for `assets/js/app.js` need **`--format=esm`** and **`--splitting`**, and the script tag in the root layout must use **`type="module"`**. Without splitting, dynamic `import()` calls cannot become separate files and you lose the performance win. The [manual installation guide](https://hexdocs.pm/corex/manual_installation.html) walks through the exact flags.
+## Why a single import is not a heavy import
 
-If you want a smaller build graph, import only the hooks you render:
+Corex ships dozens of interactive components. Each one pulls in a Zag machine, some DOM helpers, and a bit of shared collection logic. If every hook landed in one bundle, every page in your app would pay for date pickers, dialogs and comboboxes it never uses.
+
+So the JavaScript is split on purpose. When Corex is built for Hex, esbuild compiles each hook as its own ESM entry (`accordion.mjs`, `combobox.mjs`, and so on) with `--splitting` enabled. Shared code between hooks lands in hashed chunks. Zag utilities and vanilla adapters are reused, not duplicated.
+
+The default export from `corex` is not the full catalog inlined. It is a map of lazy stubs. Each one is a tiny `phx-hook` object created by `createLazyHook`. When LiveView mounts a hooked element, the stub runs a dynamic `import("corex/accordion")` (or whichever component matched), then forwards every later lifecycle call to the real hook. A route with only accordions and checkboxes never downloads combobox or dialog code.
+
+For this to work end to end, your Phoenix app needs to participate. The esbuild args for `assets/js/app.js` must include `--format=esm --splitting`, and the script tag in the root layout must use `type="module"`. Without splitting, dynamic `import()` calls cannot become separate files and you lose the win. The [manual installation guide](https://hexdocs.pm/corex/manual_installation.html) has the exact flags.
+
+If you want an even smaller graph, import only the hooks you actually render:
 
 ```javascript
 import { hooks } from "corex/hooks"
@@ -123,23 +124,12 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-Each value is a function returning `import()`. Esbuild emits chunks only for listed hooks, so unused components can be tree-shaken out of your app bundle entirely. Keys must match `phx-hook` names on the server (`Accordion`, `Combobox`, …).
+Each value is a function returning `import()`. Esbuild emits chunks only for listed hooks. Unused components can be tree-shaken out of your bundle entirely. The keys match the `phx-hook` names rendered on the server.
 
-In production, `mix assets.deploy` minifies and digests the same entry plus per-hook chunks you already had in dev. See the [production guide](https://hexdocs.pm/corex/production.html) for the deploy flow.
+## The point of the bridge
 
-Smaller initial JS, shared chunks between widgets, lazy load when a hooked node appears: that is how Corex stays usable on content-heavy LiveView apps without treating every page like a component catalog download.
+If you forget everything else in this post, the part worth keeping is this. Zag's machines do not know they are running inside Phoenix. They just run. They do not care whether the props came from React state or from a LiveView patch. The Corex hook is the small adapter that lets a Phoenix server change its mind about a value without dragging the user's interaction with it.
 
-## Two Releases, One Story
+One line in a changelog. Months of work made possible. That is usually how these things go.
 
-This is actually the second chapter. The first release of Corex was for static sites: Vite, Astro, Eleventy, any setup where you're writing plain HTML with a JS bundler. That version works beautifully precisely because static pages don't need runtime prop updates. You set props once, the machine runs, users interact.
-
-The LiveView integration builds on everything that worked there, and adds the one thing LiveView specifically needs: machines that can stay in sync with a server that keeps changing its mind.
-
-On the server side, you use Corex components like any other HEEx component. The `import corex from "corex"` setup above is the whole client registration story for most apps.
-
-The Zag machines underneath don't know or care that they're running inside Phoenix. They just run, keeping widgets correct and accessible, while LiveView does what it does best: an efficient server update when we need it.
-
-One small fix in a changelog. Months of work made possible. That's how it usually goes.
-
-Once hooks are in place, [Corex Design](/en/blog/paint-the-parts-the-machine-already-owns/) styles the `data-part` tree they maintain, and [server-fed combobox search](/en/blog/nine-thousand-airports-one-hundred-rows/) is the pattern that stress-tests `updated` on every keystroke.
-
+Once hooks are in place, [Corex Design](/en/blog/paint-the-parts-the-machine-already-owns/) styles the `data-part` skeleton the machines maintain, [Two Brains](/en/blog/two-brains-liveview-assigns-and-zag-machines/) explains the runtime contract between assigns and machines, and [server-fed combobox search](/en/blog/nine-thousand-airports-one-hundred-rows/) is the pattern that stress-tests `updated` on every keystroke.
