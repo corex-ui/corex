@@ -103,10 +103,14 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   Corex's bundled templates. Adjust the copied `.ex`, `.heex`, and `.exs` EEx
   files to match your style; they use the same bindings as the originals.
 
-  Array fields (`tags:array:string`) generate a multi-select `Corex.Select` with
-  placeholder options. The hidden select submits `name[]` list params compatible
-  with Ecto `{:array, :string}`. Swap to `Corex.TagsInput` for free-form tags
-  (also submits `name[]` list params when bound with `field={f[:tags]}`).
+  `tags:array:string` generates a multi-select `Corex.Select` with placeholder
+  options. The hidden select submits `name[]` list params compatible with Ecto
+  `{:array, :string}`. Swap to `Corex.TagsInput` for free-form tags (also submits
+  `name[]` list params when bound with `field={f[:tags]}`).
+
+  `array:integer` attributes are omitted from generated forms (schema/migration
+  still include them); add a field manually or use `array:string` and cast in
+  the changeset.
 
   ## Customizing the context, schema, tables and migrations
 

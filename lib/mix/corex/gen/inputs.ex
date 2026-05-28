@@ -6,7 +6,7 @@ defmodule Mix.Corex.Gen.Inputs do
   @doc "Builds HEEx snippets for each schema attribute used by corex.gen templates."
   def inputs(%Schema{} = schema, field_prefix) do
     schema.attrs
-    |> Enum.reject(fn {_key, type} -> type == :map end)
+    |> Enum.reject(fn {_key, type} -> skip_input_type?(type) end)
     |> Enum.map(fn {key, type} ->
       if key in schema.redacts do
         password_input_block(field_prefix, key)
@@ -240,11 +240,11 @@ defmodule Mix.Corex.Gen.Inputs do
     Enum.map([1, 2], fn i -> %{label: "Option #{i}", value: "option#{i}"} end)
   end
 
-  defp array_items({:array, :integer}) do
-    Enum.map([1, 2], fn i -> %{label: "#{i}", value: i} end)
-  end
-
   defp array_items({:array, _}), do: []
+
+  defp skip_input_type?(:map), do: true
+  defp skip_input_type?({:array, :integer}), do: true
+  defp skip_input_type?(_), do: false
 
   defp label(key), do: Phoenix.Naming.humanize(to_string(key))
 end

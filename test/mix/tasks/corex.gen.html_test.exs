@@ -74,8 +74,20 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
                  &1 =~ ~S(<:label>Status</:label>))
            )
 
-    # Map is ignored
     refute Enum.any?(inputs, &(&1 =~ "Data"))
+  end
+
+  test "inputs/1 omits array:integer fields" do
+    schema = %Schema{
+      attrs: [name: :string, scores: {:array, :integer}],
+      module: MyApp.User,
+      redacts: []
+    }
+
+    inputs = Html.inputs(schema)
+
+    assert Enum.any?(inputs, &(&1 =~ ~S(<:label>Name</:label>)))
+    refute Enum.any?(inputs, &(&1 =~ "Scores"))
   end
 
   test "indent_inputs/2 indents blocks" do
