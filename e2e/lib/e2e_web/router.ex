@@ -30,20 +30,16 @@ defmodule E2eWeb.Router do
     get("/sitemap.xml", SitemapController, :index)
     get("/feed.xml", FeedController, :index)
 
-    live_session :marketing,
-      on_mount: [
-        E2eWeb.ModeLive,
-        E2eWeb.ThemeLive,
-        E2eWeb.PathLive,
-        E2eWeb.MountTelemetry,
-        E2eWeb.SEO.Live
-      ] do
-      live("/", HomeLive, :index)
-    end
+    get("/", HomeController, :index)
   end
 
   scope "/:locale", E2eWeb do
     pipe_through(:browser)
+
+    get("/", HomeController, :index)
+    get("/blog", BlogController, :index)
+    get("/blog/:slug", BlogController, :show)
+    get("/showcases", ShowcasesController, :index)
 
     live_session :default,
       on_mount: [
@@ -53,10 +49,6 @@ defmodule E2eWeb.Router do
         E2eWeb.MountTelemetry,
         E2eWeb.SEO.Live
       ] do
-      live("/blog", BlogIndexLive, :index)
-      live("/blog/:slug", BlogPostLive, :show)
-
-      live("/showcases", ShowcasesIndexLive, :index)
       live("/showcases/tetrex", TetrexIndexLive, :index)
       live("/showcases/tetrex/new", TetrexLive, :new)
       live("/showcases/tetrex/:id/replay", TetrexLive, :replay)
@@ -252,8 +244,6 @@ defmodule E2eWeb.Router do
       live("/tooltip/api", TooltipApiLive)
       live("/tooltip/events", TooltipEventsLive)
       live("/tooltip/patterns", TooltipPatternsLive)
-
-      live("/", HomeLive, :index)
     end
 
     get("/templates", ShowcaseRedirectController, :to_showcases)

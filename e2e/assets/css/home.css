@@ -255,24 +255,44 @@
   .home__hero__composition {
     position: relative;
     display: flex;
-    flex-flow: row wrap;
-    align-items: flex-start;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: var(--spacing-space);
     width: 100%;
     min-width: 0;
   }
 
-  @media (min-width: 48rem) {
-    .home__hero__composition {
-      justify-content: flex-start;
-    }
+  .home__hero__col {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-space);
+    min-width: 0;
   }
 
-  .home__hero__composition > .home__card {
+  .home__hero__col > .home__card {
     width: 100%;
     max-width: var(--container-xs);
-    position: relative;
+    align-self: center;
+  }
+
+  @media (min-width: 48rem) {
+    .home__hero__composition {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: --spacing(3);
+    }
+
+    .home__hero__col {
+      flex: 1 1 0;
+      gap: --spacing(3);
+    }
+
+    .home__hero__col > .home__card {
+      max-width: none;
+      align-self: stretch;
+      gap: --spacing(3);
+    }
   }
 
   .home__card {
@@ -291,40 +311,9 @@
     overflow: hidden;
   }
 
-  @media (min-width: 48rem) {
-    .home__hero__composition {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-auto-rows: auto;
-      gap: --spacing(3);
-    }
-
-    .home__hero__composition > .home__card {
-      width: 100%;
-      max-width: none;
-      min-width: 0;
-      gap: --spacing(3);
-    }
-
-    .home__hero__composition > .home__card.home__card--accordion {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .home__hero__composition > .home__card.home__card--api {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .home__hero__composition > .home__card.home__card--code {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .home__hero__composition > .home__card.home__card--events {
-      grid-column: 2;
-      grid-row: 2;
-    }
+  .home__card--events {
+    flex: 1 1 auto;
+    min-height: 12rem;
   }
 
   .home__card__label {

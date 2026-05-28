@@ -5,6 +5,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
 
   @id_server "collapsible-events-server"
   @id_client "collapsible-events-client"
+  @client_event "collapsible-open-changed"
 
   @server_heex E2eWeb.Demos.CollapsibleDemo.events_server_heex()
   @server_elixir E2eWeb.Demos.CollapsibleDemo.events_server_elixir()
@@ -17,6 +18,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
       socket
       |> assign(:id_server, @id_server)
       |> assign(:id_client, @id_client)
+      |> assign(:client_event, @client_event)
       |> assign(:server_heex, @server_heex)
       |> assign(:server_elixir, @server_elixir)
       |> assign(:client_heex, @client_heex)
@@ -117,7 +119,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
               <.collapsible
                 id={@id_client}
                 class="collapsible"
-                on_open_change_client="collapsible-open-changed"
+                on_open_change_client={@client_event}
               >
                 <:trigger>Toggle</:trigger>
                 <:closed>
@@ -137,7 +139,7 @@ defmodule E2eWeb.CollapsibleEventsLive do
                     mounted() {
                       const el = document.getElementById("collapsible-events-client");
                       if (!el) return;
-                      el.addEventListener("collapsible-open-changed", (e) => {
+                      el.addEventListener("{@client_event}", (e) => {
                         const d = e.detail ?? {};
                         this.pushEvent("collapsible_client_open_changed", {
                           id: d.id,
