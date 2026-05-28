@@ -218,22 +218,26 @@ defmodule E2eWeb.ListboxPatternsLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-col gap-3 max-w-md">
-              <.listbox
-                id="listbox-patterns-controlled-field"
-                class="listbox"
-                items={Demo.items_minimal()}
-                selection_mode="multiple"
-                controlled
-                value={@listbox_controlled_value}
-                on_value_change="listbox_patterns_controlled_value"
-              >
-                <:label>Choose countries</:label>
-                <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
-              </.listbox>
-              <p class="text-sm text-ink-muted font-mono" id="listbox-patterns-controlled-state">
-                value: {inspect(@listbox_controlled_value)}
-              </p>
+            <div class="flex flex-col gap-3 w-full items-center">
+              <div class="w-full max-w-md">
+                <.listbox
+                  id="listbox-patterns-controlled-field"
+                  class="listbox"
+                  items={Demo.items_minimal()}
+                  selection_mode="multiple"
+                  controlled
+                  value={@listbox_controlled_value}
+                  on_value_change="listbox_patterns_controlled_value"
+                >
+                  <:label>Choose countries</:label>
+                  <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
+                </.listbox>
+              </div>
+              <div class="w-full min-w-0" id="listbox-patterns-controlled-state">
+                <p class="text-sm text-ink-muted font-mono break-all text-center">
+                  value: {inspect(@listbox_controlled_value)}
+                </p>
+              </div>
             </div>
           </:preview>
         </.demo_section>

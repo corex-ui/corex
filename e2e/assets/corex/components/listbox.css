@@ -7,13 +7,11 @@
   }
 
   .listbox {
-    display: flex;
-    flex-direction: column;
-    align-self: stretch;
     width: 100%;
     max-width: var(--container-3xs);
     min-width: 0;
     box-sizing: border-box;
+    margin-inline: auto;
   }
 
   .listbox[data-orientation="horizontal"] {
@@ -28,6 +26,8 @@
     flex-wrap: nowrap;
     align-items: stretch;
     width: 100%;
+    min-width: 0;
+    max-width: none;
     gap: var(--spacing-space);
   }
 
@@ -190,9 +190,21 @@
   }
 
   .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
     flex-shrink: 0;
+    min-width: 1em;
+    min-height: 1em;
     margin-inline-start: auto;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"]
+    [data-scope="listbox"][data-part="item-indicator"][hidden] {
+    display: flex !important;
+    visibility: hidden;
   }
 
   .listbox [data-scope="listbox"][data-part="content"] [data-scope="listbox"][data-part="item-indicator"] .icon,
@@ -232,6 +244,8 @@
 }
 
 @utility listbox--* {
+  width: 100%;
+
   [data-scope="listbox"][data-part="root"] {
     width: 100%;
     gap: --value(--spacing-space-*, [length]);

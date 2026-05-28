@@ -468,9 +468,11 @@ defmodule E2eWeb.Demos.ListboxDemo do
       <:label>Choose countries</:label>
       <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
     </.listbox>
-    <p class="text-sm text-ink-muted font-mono">
-      value: {inspect(@listbox_controlled_value)}
-    </p>
+    <div class="w-full min-w-0">
+      <p class="text-sm text-ink-muted font-mono break-all text-center">
+        value: {inspect(@listbox_controlled_value)}
+      </p>
+    </div>
     """
   end
 
@@ -493,7 +495,8 @@ defmodule E2eWeb.Demos.ListboxDemo do
       @impl true
       def render(assigns) do
         ~H"""
-        <div class="flex flex-col gap-3 max-w-xl w-full">
+        <div class="flex flex-col gap-3 w-full items-center">
+          <div class="w-full max-w-md">
             <.listbox
               id="listbox-patterns-controlled-field"
               class="listbox"
@@ -515,10 +518,13 @@ defmodule E2eWeb.Demos.ListboxDemo do
               <:label>Choose countries</:label>
               <:item_indicator><.heroicon name="hero-check" /></:item_indicator>
             </.listbox>
-            <p class="text-sm text-ink-muted font-mono" id="listbox-patterns-controlled-state">
+          </div>
+          <div class="w-full min-w-0" id="listbox-patterns-controlled-state">
+            <p class="text-sm text-ink-muted font-mono break-all text-center">
               value: {inspect(@listbox_controlled_value)}
             </p>
           </div>
+        </div>
         """
       end
     end
@@ -754,14 +760,14 @@ defmodule E2eWeb.Demos.ListboxDemo do
       |> assign(:value, ["fra"])
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
-      <.listbox id="listbox-style-color-default" class="listbox w-full" items={@items} value={@value}>
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.listbox id="listbox-style-color-default" class="listbox" items={@items} value={@value}>
         <:label>Default</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
       <.listbox
         id="listbox-style-color-accent"
-        class="listbox listbox--accent w-full"
+        class="listbox listbox--accent"
         items={@items}
         value={@value}
       >
@@ -770,7 +776,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-brand"
-        class="listbox listbox--brand w-full"
+        class="listbox listbox--brand"
         items={@items}
         value={@value}
       >
@@ -779,7 +785,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-alert"
-        class="listbox listbox--alert w-full"
+        class="listbox listbox--alert"
         items={@items}
         value={@value}
       >
@@ -788,7 +794,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-info"
-        class="listbox listbox--info w-full"
+        class="listbox listbox--info"
         items={@items}
         value={@value}
       >
@@ -797,7 +803,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-color-success"
-        class="listbox listbox--success w-full"
+        class="listbox listbox--success"
         items={@items}
         value={@value}
       >
@@ -835,20 +841,20 @@ defmodule E2eWeb.Demos.ListboxDemo do
     assigns = assign(assigns, :items, items_minimal())
 
     ~H"""
-    <div class="flex flex-col gap-4 max-w-md">
-      <.listbox id="listbox-style-size-sm" class="listbox listbox--sm w-full" items={@items}>
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.listbox id="listbox-style-size-sm" class="listbox listbox--sm" items={@items}>
         <:label>SM</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-md" class="listbox listbox--md w-full" items={@items}>
+      <.listbox id="listbox-style-size-md" class="listbox listbox--md" items={@items}>
         <:label>MD</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-lg" class="listbox listbox--lg w-full" items={@items}>
+      <.listbox id="listbox-style-size-lg" class="listbox listbox--lg" items={@items}>
         <:label>LG</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
-      <.listbox id="listbox-style-size-xl" class="listbox listbox--xl w-full" items={@items}>
+      <.listbox id="listbox-style-size-xl" class="listbox listbox--xl" items={@items}>
         <:label>XL</:label>
         <:item_indicator><.heroicon name="hero-check" class="icon" /></:item_indicator>
       </.listbox>
@@ -888,10 +894,10 @@ defmodule E2eWeb.Demos.ListboxDemo do
       |> assign(:value, ["fra"])
 
     ~H"""
-    <div class="flex flex-col gap-4 items-stretch w-full">
+    <div class="flex flex-col gap-4 w-full items-start">
       <.listbox
         id="listbox-style-max-2xs"
-        class="listbox max-w-2xs w-full"
+        class="listbox max-w-2xs"
         items={@items}
         value={@value}
       >
@@ -900,7 +906,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-max-md"
-        class="listbox max-w-md w-full"
+        class="listbox max-w-md"
         items={@items}
         value={@value}
       >
@@ -909,7 +915,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-max-xl"
-        class="listbox max-w-xl w-full"
+        class="listbox max-w-xl"
         items={@items}
         value={@value}
       >
@@ -918,7 +924,7 @@ defmodule E2eWeb.Demos.ListboxDemo do
       </.listbox>
       <.listbox
         id="listbox-style-max-2xl"
-        class="listbox max-w-2xl w-full"
+        class="listbox max-w-2xl"
         items={@items}
         value={@value}
       >
