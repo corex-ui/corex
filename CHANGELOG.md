@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-rc.1
+## 0.1.0
 
 ### Added
 
@@ -20,6 +20,6 @@
 - **Tags input** and **Signature pad**: Empty array placeholders only get a `name` when Phoenix `used_input?/1` is true, restoring correct `data-empty` / `data-field-used` behavior after internal `field_used` attrs were removed.
 - **Data table**: Sticky header/action cells no longer stack above an open row dialog; z-index is lowered for the table while a dialog backdrop is open.
 
-## 0.1.0-rc.0
+## 0.1.0
 
 Initial release candidate of Corex.

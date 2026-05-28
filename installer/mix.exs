@@ -6,7 +6,7 @@ end
 defmodule Corex.New.MixProject do
   use Mix.Project
 
-  @version "0.1.0-rc.1"
+  @version "0.1.0"
   @phoenix_version "1.8.4"
   @scm_url "https://github.com/corex-ui/corex"
 

@@ -27,7 +27,7 @@ Replace `my_app` with your OTP app name.
 ### 1. Dependency
 
 ```elixir
-{:corex, "~> 0.1.0-rc.0"}
+{:corex, "~> 0.1.0"}
 ```
 
 ### 2. Esbuild ESM splitting
