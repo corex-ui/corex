@@ -25,9 +25,6 @@ defmodule E2eWeb.DataTablePatternsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    sort_rows = PState.sort_rows(@list_users, :id, :asc)
-    full_rows = PState.sort_rows(@list_users, :id, :asc)
-
     {db_rows, db_total} =
       Place.list_cities_table(
         page: 1,
@@ -41,12 +38,12 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> stream(:pattern_stream, @stream_initial)
      |> assign(:pattern_stream_next_id, 4)
      |> assign(:pattern_stream_categories, @categories)
-     |> assign(:pattern_sort_rows, sort_rows)
+     |> assign(:pattern_user_rows, @list_users)
+     |> assign(:pattern_sort_rows, PState.sort_rows(@list_users, :id, :asc))
      |> assign(:pattern_sort_by, :id)
      |> assign(:pattern_sort_order, :asc)
-     |> assign(:pattern_select_rows, @list_users)
      |> assign(:pattern_select_selected, [])
-     |> assign(:pattern_full_rows, full_rows)
+     |> assign(:pattern_full_rows, PState.sort_rows(@list_users, :id, :asc))
      |> assign(:pattern_full_sort_by, :id)
      |> assign(:pattern_full_sort_order, :asc)
      |> assign(:pattern_full_selected, [])
@@ -103,7 +100,7 @@ defmodule E2eWeb.DataTablePatternsLive do
   def handle_event("pattern_select", %{"id" => _, "checked" => _} = p, socket) do
     {:noreply,
      PState.handle_select_ns(socket, p,
-       rows: :pattern_select_rows,
+       rows: :pattern_user_rows,
        selected: :pattern_select_selected,
        table_id: "pattern-select-table"
      )}
@@ -112,7 +109,7 @@ defmodule E2eWeb.DataTablePatternsLive do
   def handle_event("pattern_select_all", %{"checked" => _} = p, socket) do
     {:noreply,
      PState.handle_select_all_ns(socket, p,
-       rows: :pattern_select_rows,
+       rows: :pattern_user_rows,
        selected: :pattern_select_selected,
        table_id: "pattern-select-table",
        row_id: &"pselect-#{&1.id}"
@@ -415,7 +412,7 @@ defmodule E2eWeb.DataTablePatternsLive do
               <.data_table
                 id="pattern-select-table"
                 class="data-table max-w-none"
-                rows={@pattern_select_rows}
+                rows={@pattern_user_rows}
                 row_id={&"pselect-#{&1.id}"}
                 selectable
                 selected={@pattern_select_selected}

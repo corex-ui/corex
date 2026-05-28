@@ -56,7 +56,8 @@ defmodule E2eWeb.ShowcasesLiveTest do
   end
 
   test "showcases index mounts with blog layout" do
-    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
     assert html =~ ~S(id="showcases-page")
     assert html =~ "Landex"
     assert html =~ "Tetrex"
@@ -65,21 +66,24 @@ defmodule E2eWeb.ShowcasesLiveTest do
   end
 
   test "showcases index has View Site for landex" do
-    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
     assert html =~ "Landex"
     assert html =~ "View Site"
     assert html =~ "https://oranje-patrimoine.fr/"
   end
 
   test "showcases index has Play for tetrex" do
-    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
     assert html =~ "/showcases/tetrex"
     assert html =~ "Play"
     refute html =~ ~S(class="blog__card__arrow")
   end
 
   test "showcases index has Live demo and GitHub for soonex" do
-    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
     assert html =~ "Live demo"
     assert html =~ "https://corex-ui.github.io/soonex/"
     assert html =~ "https://github.com/corex-ui/soonex"
@@ -95,7 +99,8 @@ defmodule E2eWeb.ShowcasesLiveTest do
   end
 
   test "showcases nav is active only on showcases index" do
-    {_view, html} = live_ok!(build_conn(), "/en/showcases")
+    conn = get(build_conn(), "/en/showcases")
+    html = html_response(conn, 200)
     assert showcases_nav_current?(html)
 
     {_view, html} = live_ok!(build_conn(), "/en/showcases/tetrex")

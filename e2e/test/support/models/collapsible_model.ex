@@ -59,11 +59,24 @@ defmodule E2eWeb.CollapsibleModel do
     session
   end
 
+  def scroll_host_into_view(session, host_dom_id) do
+    if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
+
+    execute_script(
+      session,
+      "document.getElementById(arguments[0])?.scrollIntoView({block: 'center', inline: 'nearest'})",
+      [host_dom_id]
+    )
+
+    session
+  end
+
   def click_trigger_in_host(session, host_dom_id) do
     if not valid_dom_id?(host_dom_id), do: raise(ArgumentError, "invalid host dom id")
 
-    click(
-      session,
+    session
+    |> scroll_host_into_view(host_dom_id)
+    |> click(
       css(~s|##{host_dom_id} [data-scope="collapsible"][data-part="trigger"]|, visible: :any)
     )
 
@@ -91,6 +104,21 @@ defmodule E2eWeb.CollapsibleModel do
       opts
     )
 
+    session
+  end
+
+  def assert_trigger_toggles_in_host(session, host_dom_id, opts \\ []) do
+    session = wait_host_collapsible_ready(session, host_dom_id, opts)
+    before = trigger_data_state_in_host(session, host_dom_id) || "closed"
+
+    session = click_trigger_in_host(session, host_dom_id)
+
+    flipped = if before == "open", do: "closed", else: "open"
+
+    session = wait_trigger_state_in_host(session, host_dom_id, flipped, opts)
+
+    assert trigger_data_state_in_host(session, host_dom_id) == flipped
+    assert before != trigger_data_state_in_host(session, host_dom_id)
     session
   end
 

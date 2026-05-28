@@ -45,9 +45,11 @@ defmodule E2eWeb.Endpoint do
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :corex_web
   end
 
-  plug Phoenix.LiveDashboard.RequestLogger,
-    param_key: "request_logger",
-    cookie_key: "request_logger"
+  if Application.compile_env(:corex_web, :dev_routes) do
+    plug Phoenix.LiveDashboard.RequestLogger,
+      param_key: "request_logger",
+      cookie_key: "request_logger"
+  end
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]

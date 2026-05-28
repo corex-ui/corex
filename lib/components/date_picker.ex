@@ -554,10 +554,9 @@ defmodule Corex.DatePicker do
     mode = Map.get(assigns, :selection_mode, "single")
 
     value =
-      if Map.has_key?(assigns, :value) do
-        assigns.value
-      else
-        date_field_value(field.value, mode)
+      case assigns[:value] do
+        nil -> date_field_value(field.value, mode)
+        explicit -> explicit
       end
 
     assigns

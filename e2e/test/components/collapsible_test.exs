@@ -23,8 +23,7 @@ defmodule E2eWeb.CollapsibleTest do
 
         sess
         |> Collapsible.wait_section_collapsible_ready(section_id)
-        |> Collapsible.click_trigger_in_host(host)
-        |> Collapsible.wait_trigger_state_in_host(host, "open", timeout: 8_000)
+        |> Collapsible.assert_trigger_toggles_in_host(host, timeout: 8_000)
       end)
     end
   end

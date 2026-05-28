@@ -1,7 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import * as hookModule from "../../hooks/tabs";
 import type { ValueChangeDetails } from "@zag-js/tabs";
-import { tabsFocusChangePayload, tabsValueChangePayload } from "../../hooks/tabs";
+import {
+  readTabsLayoutProps,
+  tabsFocusChangePayload,
+  tabsValueChangePayload,
+} from "../../hooks/tabs";
 import { expectHookModule } from "../helpers/expect-hook";
 
 describe("tabs hook module", () => {
@@ -23,6 +27,24 @@ describe("tabsValueChangePayload", () => {
     expect(
       tabsValueChangePayload(el, { value: undefined } as unknown as ValueChangeDetails)
     ).toEqual({ id: "tabs", value: null });
+  });
+});
+
+describe("readTabsLayoutProps", () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute("dir");
+  });
+
+  it("uses data-dir on the hook element when set", () => {
+    const el = document.createElement("div");
+    el.dataset.dir = "rtl";
+    expect(readTabsLayoutProps(el).dir).toBe("rtl");
+  });
+
+  it("falls back to document dir when data-dir is absent", () => {
+    document.documentElement.setAttribute("dir", "rtl");
+    const el = document.createElement("div");
+    expect(readTabsLayoutProps(el).dir).toBe("rtl");
   });
 });
 

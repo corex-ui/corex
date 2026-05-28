@@ -14,4 +14,16 @@ defmodule E2eWeb.CollapsibleEventsLiveTest do
 
     assert html =~ ~S(data-part="row")
   end
+
+  test "collapsible_client_open_changed inserts a client log row", %{conn: conn} do
+    {view, _html} = live_ok!(conn, ~p"/collapsible/events", on_error: :warn)
+
+    html =
+      render_click(view, "collapsible_client_open_changed", %{
+        "id" => "collapsible-events-client",
+        "open" => true
+      })
+
+    assert html =~ ~S(data-part="row")
+  end
 end

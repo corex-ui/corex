@@ -1,6 +1,8 @@
 defmodule E2eWeb.Demos.PaginationDemo do
   use E2eWeb, :html
 
+  @anatomy_count 18
+  @anatomy_page_size 6
   @count 95
   @page_size 10
   @style_count 50
@@ -9,7 +11,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   def anatomy_minimal_code do
     ~S"""
-    <.pagination class="pagination" count={95} page_size={10}>
+    <.pagination class="pagination" count={18} page_size={6}>
       <:prev><.heroicon name="hero-chevron-left" /></:prev>
       <:next><.heroicon name="hero-chevron-right" /></:next>
       <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
@@ -18,7 +20,7 @@ defmodule E2eWeb.Demos.PaginationDemo do
   end
 
   def anatomy_minimal_example(assigns) do
-    assigns = Map.merge(mount_assigns(), assigns)
+    assigns = anatomy_assigns(assigns)
 
     ~H"""
     <.pagination id="pagination-anatomy" class="pagination" count={@count} page_size={@page_size}>
@@ -936,6 +938,13 @@ defmodule E2eWeb.Demos.PaginationDemo do
 
   defp pattern_assigns do
     %{count: @pattern_count, page_size: @pattern_page_size}
+  end
+
+  defp anatomy_assigns(assigns) do
+    assigns
+    |> Map.merge(mount_assigns())
+    |> Map.put(:count, @anatomy_count)
+    |> Map.put(:page_size, @anatomy_page_size)
   end
 
   def mount_assigns do

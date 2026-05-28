@@ -1,0 +1,37 @@
+<Layouts.blog flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <div class="blog">
+    <div class="blog__inner">
+      <.blog_index_hero post_count={@post_count} />
+    </div>
+
+    <section class="blog__listing" aria-label={~t"Blog posts"}>
+      <div class="blog__inner">
+        <div :if={@posts != []} class="blog__grid">
+          <.post_card :for={post <- @posts} post={post} />
+        </div>
+
+        <p :if={@posts == []} class="blog__empty">{~t"No posts yet."}</p>
+
+        <div :if={@post_count > 0} class="blog__pagination">
+          <.pagination
+            id="blog-index-pagination"
+            class="pagination pagination--accent"
+            count={@post_count}
+            page={@page}
+            page_size={@page_size}
+            sibling_count={1}
+            boundary_count={1}
+            dir={E2eWeb.Locale.dir(E2eWeb.Locale.current())}
+            controlled={:all}
+            type={:link}
+            to={~p"/blog"}
+          >
+            <:prev><.heroicon name="hero-chevron-left" /></:prev>
+            <:next><.heroicon name="hero-chevron-right" /></:next>
+            <:ellipsis><.heroicon name="hero-ellipsis-horizontal" /></:ellipsis>
+          </.pagination>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layouts.blog>

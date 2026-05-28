@@ -46,4 +46,16 @@ defmodule E2eWeb.MarkdownCodeBlocksTest do
     assert html =~ ":item"
     refute html =~ "blog__inline-code"
   end
+
+  test "inline HEEx keeps spaces between attributes" do
+    body = "I typed `<.accordion id=\"faq\" items={@topics} />` and moved on."
+
+    html = E2eWeb.Markdown.to_html!(body)
+
+    nbsp = <<0x00A0::utf8>>
+    assert html =~ ".accordion"
+    assert html =~ ~s(<span class="w">#{nbsp}</span>)
+    refute html =~ ".accordionid="
+    refute html =~ ~S(<span class="w"></span>)
+  end
 end

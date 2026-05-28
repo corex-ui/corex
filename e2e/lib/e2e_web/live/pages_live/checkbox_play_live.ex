@@ -108,7 +108,7 @@ defmodule E2eWeb.CheckboxPlayLive do
         <:canvas>
           <.checkbox
             id="checkbox-playground"
-            class="checkbox checkbox--sm"
+            class="checkbox"
             checked={@checked}
             disabled={@controls.disabled}
             read_only={@controls.read_only}

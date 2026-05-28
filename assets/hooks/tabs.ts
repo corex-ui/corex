@@ -2,9 +2,9 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Tabs } from "../components/tabs";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/tabs";
-import type { Direction, Orientation } from "@zag-js/types";
+import type { Orientation } from "@zag-js/types";
 
-import { getString, canPushEvent } from "../lib/util";
+import { getString, getDir, canPushEvent } from "../lib/util";
 import { readStringControlledZagProps, readStringControlledZagUpdate } from "../lib/read-props";
 import { idMatches, readPayloadId, notifyChange } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
@@ -24,6 +24,13 @@ export function tabsFocusChangePayload(
   return { id: el.id, value: details.focusedValue ?? null };
 }
 
+export function readTabsLayoutProps(el: HTMLElement) {
+  return {
+    orientation: getString<Orientation>(el, "orientation"),
+    dir: getDir(el),
+  };
+}
+
 type TabsHookState = {
   tabs?: Tabs;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
@@ -39,8 +46,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
     const tabs = new Tabs(el, {
       id: el.id,
       ...readStringControlledZagProps(el, "value", "defaultValue"),
-      orientation: getString<Orientation>(el, "orientation"),
-      dir: getString<Direction>(el, "dir"),
+      ...readTabsLayoutProps(el),
       onValueChange: (details: ValueChangeDetails) => {
         notifyChange({
           el,
@@ -104,8 +110,7 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
     this.tabs?.updateProps({
       id: this.el.id,
       ...readStringControlledZagUpdate(this.el, "value", "defaultValue"),
-      orientation: getString<Orientation>(this.el, "orientation"),
-      dir: getString<Direction>(this.el, "dir"),
+      ...readTabsLayoutProps(this.el),
     } as Props);
   },
 

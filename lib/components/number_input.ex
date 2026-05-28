@@ -236,8 +236,6 @@ defmodule Corex.NumberInput do
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:field, Phoenix.HTML.FormField, doc: "A form field struct, e.g. f[:age] or @form[:age]")
-  attr(:form_field, :boolean, default: false)
-  attr(:field_used, :boolean, default: false)
   attr(:rest, :global)
 
   slot :label, required: false do

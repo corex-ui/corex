@@ -10,14 +10,16 @@ defmodule E2eWeb.App.Footer do
       <div class="layout__footer__content gap-2 justify-center md:justify-between">
         <div class="layout__row">
           <.navigate class="ui-link ui-link--sm ui-link--accent" to="https://netoum.com" external>
-            Open source by Netoum <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            {~t"Open source by Netoum"}
+            <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
           <.navigate
             class="ui-link ui-link--sm ui-link--accent"
             to="https://github.com/sponsors/corex-ui"
             external
           >
-            Become a sponsor <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            {~t"Become a sponsor"}
+            <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
         </div>
         <div class="layout__row gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0">
@@ -27,7 +29,7 @@ defmodule E2eWeb.App.Footer do
             to="https://github.com/corex-ui/corex"
             external
           >
-            <span class="sr-only">Corex UI on GitHub</span>
+            <span class="sr-only">{~t"Corex UI on GitHub"}</span>
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +52,7 @@ defmodule E2eWeb.App.Footer do
             to="https://hexdocs.pm/corex"
             external
           >
-            <span class="sr-only">Corex UI documentation</span>
+            <span class="sr-only">{~t"Corex UI documentation"}</span>
             <svg
               aria-hidden="true"
               viewBox="0 0 114 100"
@@ -105,7 +107,7 @@ defmodule E2eWeb.App.Footer do
           </.navigate>
 
           <.navigate class="button button--sm button--circle" to="/feed.xml" external>
-            <span class="sr-only">Corex Blog RSS</span>
+            <span class="sr-only">{~t"Corex Blog RSS"}</span>
             <.heroicon name="hero-rss" />
           </.navigate>
         </div>

@@ -26,15 +26,15 @@ defmodule E2e.BlogTest do
 
   test "anatomy post html includes structure terms" do
     post = E2e.Blog.get_by_slug("anatomy-of-a-corex-component", "en")
-    assert post.html =~ "Corex.Content.new"
-    assert post.html =~ "Corex.List"
+    assert post.html =~ "accordion_root"
+    assert post.html =~ "data-scope"
     assert post.html =~ "compound"
-    assert post.html =~ "Manual slots"
+    assert post.html =~ "The ladder"
   end
 
   test "post html includes highlighted code" do
     post = E2e.Blog.get_by_slug("anatomy-of-a-corex-component")
-    assert post.html =~ "clipboard"
+    assert post.html =~ "accordion_trigger"
     assert post.html =~ "pre"
   end
 
@@ -70,10 +70,24 @@ defmodule E2e.BlogTest do
              E2e.Blog.prev_next_post("anatomy-of-a-corex-component", "en")
   end
 
-  test "post html includes corex callout when used" do
+  test "markdown renders corex callout fences" do
+    md = """
+    ```corex-callout note
+    Contrast from day one
+    Body text for the callout.
+    ```
+    """
+
+    html = E2eWeb.Markdown.to_html!(md)
+
+    assert html =~ "corex-callout"
+    assert html =~ "Contrast from day one"
+  end
+
+  test "paint post html includes design system terms" do
     post = E2e.Blog.get_by_slug("paint-the-parts-the-machine-already-owns", "en")
-    assert post.html =~ "corex-callout"
-    assert post.html =~ "Contrast from day one"
+    assert post.html =~ "ui-input"
+    assert post.html =~ "Contrast is a number"
   end
 
   test "list_posts includes arabic articles" do

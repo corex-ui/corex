@@ -60,7 +60,8 @@ config :corex_web, E2eWeb.Endpoint,
       ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$"E,
       ~r"priv/gettext/.*\.po$"E,
       ~r"lib/e2e_web/router\.ex$"E,
-      ~r"lib/e2e_web/(controllers|live|components)/.*\.(ex|heex)$"E
+      ~r"lib/e2e_web/(controllers|live|components)/.*\.(ex|heex)$"E,
+      ~r"_posts/.*\.md$"E
     ]
   ]
 

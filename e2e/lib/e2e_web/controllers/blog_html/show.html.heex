@@ -1,0 +1,23 @@
+<Layouts.blog flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <article class="blog blog--post">
+    <.blog_post_hero
+      title={@post.title}
+      description={@post.description}
+      date_label={@date_label}
+      reading_time={@reading_time}
+      tags={@tags}
+      prev={@prev_post}
+      next={@next_post}
+    />
+
+    <section class="blog__post-body" aria-label={~t"Article"}>
+      <div class="blog__inner">
+        <div class="blog__article-shell typo markdown prose max-w-none">
+          {@post.html |> Phoenix.HTML.raw()}
+        </div>
+      </div>
+    </section>
+
+    <.blog_read_next posts={@suggested_reads} />
+  </article>
+</Layouts.blog>

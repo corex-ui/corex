@@ -236,8 +236,10 @@ defmodule Corex.NumberInputTest do
         )
 
       refute html =~ ~r/data-controlled/
-      assert html =~ ~S(data-value="99")
-      refute html =~ ~S(data-default-value="99")
+      assert html =~ ~S(data-default-value="99")
+      refute html =~ ~S(data-value="99")
+      assert html =~ ~r/name="item\[value\]"/
+      assert html =~ ~r/value="99"[^>]*data-part="value-input"/
       assert html =~ ~r/<input\b[^>]*\bvalue="99"[^>]*\bdata-part="input"/
     end
 

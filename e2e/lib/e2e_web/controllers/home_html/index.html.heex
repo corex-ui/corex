@@ -1,0 +1,268 @@
+<Layouts.marketing flash={@flash} mode={@mode} theme={@theme} path={@path}>
+  <section class="home__hero" aria-labelledby="home-hero-heading">
+    <div class="home__hero__stack">
+      <div class="home__hero__inner">
+        <div class="home__hero__copy">
+          <h1 id="home-hero-heading" class="home__display home__display--lg">
+            {~t"The Phoenix UI with a"} <span class="home__display__accent">{~t"real API"}</span>.
+          </h1>
+
+          <p class="home__lede">
+            {~t"Accessible, unstyled Phoenix components with a full server-and-client API, powered by"}
+            <.navigate to="https://zagjs.com" class="link" external>Zag.js</.navigate>
+            {~t"state machines."}
+          </p>
+
+          <ul class="home__bullets" aria_label="Highlights">
+            <li :for={bullet <- @hero_bullets} class="home__bullet">
+              <.heroicon name="hero-check" class="home__bullet__icon" />
+              <span>
+                <strong>{bullet.title}</strong> {bullet.body}
+              </span>
+            </li>
+          </ul>
+
+          <div class="home__hero__cta-row">
+            <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+              {~t"Browse components"}
+              <.heroicon name="hero-arrow-right" class="icon" />
+            </.navigate>
+            <.navigate
+              to="https://hexdocs.pm/corex/installation.html"
+              class="button button--ghost rounded-full"
+              external
+            >
+              {~t"Visit Hexdocs"}
+              <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+            </.navigate>
+          </div>
+        </div>
+
+        <div
+          id="home-hero-interactive"
+          class="home__hero__composition"
+          phx-hook="HomeHero"
+        >
+          <h2 class="sr-only">{~t"Interactive preview"}</h2>
+          <div class="home__hero__col home__hero__col--start">
+            <div class="home__card home__card--accordion">
+              <div class="home__card__label">
+                <.heroicon name="hero-bars-3-bottom-left" class="icon" />
+                <span>{~t"Accordion"}</span>
+              </div>
+              <.accordion
+                id="hero-accordion"
+                class="accordion"
+                value="machine"
+                on_value_change_client="hero-accordion-changed"
+                items={Corex.Content.new(@hero_accordion_items)}
+              >
+                <:indicator>
+                  <.heroicon name="hero-chevron-right" />
+                </:indicator>
+              </.accordion>
+            </div>
+
+            <div class="home__card home__card--code">
+              <div class="home__card__header">
+                <div class="home__card__label">
+                  <.heroicon name="hero-code-bracket" class="icon" />
+                  <span>HEEx</span>
+                </div>
+                <.clipboard
+                  id="hero-code-clipboard"
+                  class="clipboard clipboard--sm"
+                  value={@hero_code}
+                  input={false}
+                  trigger_aria_label={~t"Copy snippet"}
+                >
+                  <:copy>
+                    <span>{~t"Copy"}</span>
+                    <.heroicon name="hero-clipboard" />
+                  </:copy>
+                  <:copied>
+                    <span>{~t"Copied"}</span>
+                    <.heroicon name="hero-check" />
+                  </:copied>
+                </.clipboard>
+              </div>
+              <.code id="hero-code" language={:heex} class="code code--text-xs" code={@hero_code} />
+            </div>
+          </div>
+
+          <div class="home__hero__col home__hero__col--end">
+            <div class="home__card home__card--api">
+              <div class="home__card__label">
+                <.heroicon name="hero-command-line" class="icon" />
+                <span>API</span>
+              </div>
+              <p class="home__card__hint">{~t"Drive the accordion from anywhere."}</p>
+              <div class="home__card__actions">
+                <button
+                  type="button"
+                  data-hero-accordion-value={Jason.encode!(["anatomy"])}
+                  class="button button--sm button--accent"
+                >
+                  <.heroicon name="hero-chevron-right" class="icon" /> {~t"Open first"}
+                </button>
+                <button
+                  type="button"
+                  data-hero-accordion-value={Jason.encode!(["anatomy", "machine"])}
+                  class="button button--sm"
+                >
+                  <.heroicon name="hero-square-3-stack-3d" class="icon" /> {~t"Open all"}
+                </button>
+                <button
+                  type="button"
+                  data-hero-accordion-value={Jason.encode!([])}
+                  class="button button--sm"
+                >
+                  <.heroicon name="hero-x-mark" class="icon" /> {~t"Close all"}
+                </button>
+              </div>
+            </div>
+
+            <div class="home__card home__card--events">
+              <div class="home__card__label">
+                <.heroicon name="hero-signal" class="icon" />
+                <span>{~t"Events"}</span>
+              </div>
+              <.data_table
+                id="hero-events-table"
+                class="data-table max-h-2xs home__card__events-table"
+                rows={[]}
+              >
+                <:col :let={_row} label={~t"Time"}></:col>
+                <:col :let={_row} label={~t"Open items"}></:col>
+                <:empty>
+                  <p class="home__card__events-empty">
+                    {~t"Toggle the accordion to watch events land."}
+                  </p>
+                </:empty>
+              </.data_table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="home__section home__section--alt home__numbers-section"
+    aria-labelledby="home-numbers-heading"
+  >
+    <div class="home__section__inner">
+      <h2 id="home-numbers-heading" class="sr-only">
+        {~t"Corex by the numbers"}
+      </h2>
+      <div class="home__numbers">
+        <div class="home__numbers__cell">
+          <span class="home__numbers__value">
+            {@component_count}<span class="home__numbers__value__suffix">+</span>
+          </span>
+          <span class="home__numbers__label">{~t"Components"}</span>
+          <p class="home__numbers__hint">
+            {~t"Works in Controller and Live View"}
+          </p>
+        </div>
+        <div class="home__numbers__cell">
+          <span class="home__numbers__value">
+            100<span class="home__numbers__value__suffix">+</span>
+          </span>
+          <span class="home__numbers__label">{~t"API & Events"}</span>
+          <p class="home__numbers__hint">
+            {~t"From the Server and the Client"}
+          </p>
+        </div>
+        <div class="home__numbers__cell">
+          <span class="home__numbers__value">
+            100<span class="home__numbers__value__suffix">%</span>
+          </span>
+          <span class="home__numbers__label">{~t"Open Source"}</span>
+          <p class="home__numbers__hint">
+            {~t"Open Source and free to use. MIT License"}
+          </p>
+        </div>
+        <div class="home__numbers__cell">
+          <span class="home__numbers__value">
+            A<span class="home__numbers__value__suffix">11y</span>
+          </span>
+          <span class="home__numbers__label">{~t"Built in"}</span>
+          <p class="home__numbers__hint">
+            {~t"Keyboard, focus and ARIA from Zag.js machines."}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home__section home__stack-section" aria-labelledby="home-stack-heading">
+    <div class="home__section__inner home__stack">
+      <div class="home__stack__head">
+        <span class="home__stack__rule" aria-hidden="true"></span>
+        <h2 id="home-stack-heading" class="home__eyebrow">{~t"Built with"}</h2>
+        <span class="home__stack__rule" aria-hidden="true"></span>
+      </div>
+
+      <.marquee
+        id="home-stack-marquee"
+        class="marquee marquee--on-layer home__stack__marquee"
+        duration={28}
+        spacing="0px"
+        pause_on_interaction
+        items={@hero_marquee_items}
+      >
+        <:item :let={item}>
+          <span class="home__stack__item">
+            <img src={item.img} alt={item.name} class="home__stack__logo" />
+          </span>
+        </:item>
+      </.marquee>
+    </div>
+  </section>
+
+  <section class="home__section home__section--alt home__cta" aria-labelledby="home-cta-heading">
+    <div class="home__section__inner">
+      <div class="home__cta__inner">
+        <p class="home__eyebrow">{~t"Ready?"}</p>
+        <h2 id="home-cta-heading" class="home__cta__display">
+          {~t"Install Corex"} <span class="home__display__accent">{~t"in one command."}</span>
+        </h2>
+        <p class="home__lede">
+          {~t"Corex generator wires up the dependency, the design tokens and the assets pipeline for you."}
+        </p>
+
+        <.clipboard
+          id="home-install-clipboard"
+          class="clipboard max-w-md"
+          value={@install_command}
+          trigger_aria_label={~t"Copy install command"}
+        >
+          <:copy>
+            <span>{~t"Copy"}</span>
+            <.heroicon name="hero-clipboard" />
+          </:copy>
+          <:copied>
+            <span>{~t"Copied"}</span>
+            <.heroicon name="hero-check" />
+          </:copied>
+        </.clipboard>
+
+        <div class="home__cta__actions">
+          <.navigate to={~p"/accordion/playground"} class="button button--brand rounded-full">
+            {~t"Browse components"}
+            <.heroicon name="hero-arrow-right" class="icon" />
+          </.navigate>
+          <.navigate
+            to="https://github.com/corex-ui/corex"
+            class="button button--ghost rounded-full"
+            external
+          >
+            {~t"Star on GitHub"}
+            <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+          </.navigate>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layouts.marketing>

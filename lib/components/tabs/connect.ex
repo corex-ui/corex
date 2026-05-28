@@ -4,7 +4,9 @@ defmodule Corex.Tabs.Connect do
   alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
 
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [get_boolean: 1]
+
+  import Corex.Helpers,
+    only: [get_boolean: 1, maybe_put_data_dir: 2, maybe_put_dir: 2]
 
   defp root_id(id), do: "tabs-#{id}-root"
   defp list_id(id), do: "tabs-#{id}-list"
@@ -33,9 +35,9 @@ defmodule Corex.Tabs.Connect do
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-on-focus-change" => assigns.on_focus_change,
-      "data-on-focus-change-client" => assigns.on_focus_change_client,
-      "data-dir" => assigns.dir
+      "data-on-focus-change-client" => assigns.on_focus_change_client
     }
+    |> maybe_put_data_dir(assigns.dir)
   end
 
   @spec root(Root.t()) :: map()
@@ -43,10 +45,10 @@ defmodule Corex.Tabs.Connect do
     %{
       "data-scope" => "tabs",
       "data-part" => "root",
-      "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
       "id" => root_id(assigns.id)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_root(%Root{} = assigns) do
@@ -59,10 +61,10 @@ defmodule Corex.Tabs.Connect do
       "data-scope" => "tabs",
       "data-part" => "list",
       "role" => "tablist",
-      "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
       "id" => list_id(assigns.id)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_list(%List{} = assigns) do
@@ -88,13 +90,13 @@ defmodule Corex.Tabs.Connect do
       "data-selected" => get_boolean(expanded),
       "disabled" => assigns.disabled,
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "id" => trigger_id(assigns.id, assigns.value),
       "data-controls" => content_id(assigns.id, assigns.value),
       "aria-controls" => content_id(assigns.id, assigns.value),
       "data-ownedby" => list_id(assigns.id),
       "role" => "tab"
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_trigger(%Trigger{} = assigns) do
@@ -114,9 +116,9 @@ defmodule Corex.Tabs.Connect do
       "data-state" => data_state,
       "data-disabled" => false,
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "id" => indicator_id(assigns.id)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_indicator(%Indicator{} = assigns) do
@@ -138,11 +140,11 @@ defmodule Corex.Tabs.Connect do
       "data-state" => data_state,
       "data-disabled" => assigns.disabled,
       "data-orientation" => assigns.orientation,
-      "dir" => assigns.dir,
       "aria-labelledby" => trigger_id(assigns.id, assigns.value),
       "hidden" => !expanded,
       "id" => content_id(assigns.id, assigns.value)
     }
+    |> maybe_put_dir(assigns.dir)
   end
 
   def ignore_content(%Content{} = assigns) do
