@@ -26,7 +26,7 @@ import {
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunks/chunk-FOQSALVP.mjs";
+} from "./chunks/chunk-6Q6MB27T.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
