@@ -99,7 +99,11 @@ defmodule Corex.DataTable do
   # mount
   socket
   |> assign(:users, users)
-  |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+  |> Corex.DataTable.Sort.assign_for_sort(:users,
+    default_sort_by: :id,
+    default_sort_order: :asc,
+    sort_columns: [:id, :name]
+  )
 
   # handle_event("sort", params, socket)
   {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}

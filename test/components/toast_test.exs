@@ -405,15 +405,13 @@ defmodule Corex.ToastTest do
       assert Payload.normalize_action(%{label: "Go"}) == nil
     end
 
-    test "normalize_action encodes rendered and safe labels" do
+    test "normalize_action rejects rendered and safe labels" do
       assigns = %{}
       rendered = ~H"Run"
-      action = Payload.normalize_action(%{label: rendered, js: JS.push("go")})
-      assert action["label"] =~ "Run"
+      assert Payload.normalize_action(%{label: rendered, js: JS.push("go")}) == nil
 
       safe = {:safe, "<b>Go</b>"}
-      action2 = Payload.normalize_action(%{label: safe, js: JS.push("go")})
-      assert action2["label"] =~ "Go"
+      assert Payload.normalize_action(%{label: safe, js: JS.push("go")}) == nil
     end
 
     test "update_detail drops unknown keys and nil priority" do
