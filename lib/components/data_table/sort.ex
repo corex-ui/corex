@@ -9,7 +9,11 @@ defmodule Corex.DataTable.Sort do
   [`data_table/1`](Corex.DataTable.html#data_table/1) docs). In the LiveView, call
   `assign_for_sort/3` in `mount/3`, then `handle_sort/3` from the `on_sort` event handler.
 
-  ## Example
+  Set `:sort_columns` in `assign_for_sort/3` so sort events from the browser are whitelisted on
+  the server. When `:sort_columns` is omitted, [`handle_sort/3`](#handle_sort/3) ignores all
+  sort events.
+
+  ## Example (in-memory rows)
 
       def mount(_params, _session, socket) do
         socket =
@@ -42,6 +46,50 @@ defmodule Corex.DataTable.Sort do
         </.data_table>
         \"\"\"
       end
+
+  ## Example (database-backed rows)
+
+      def mount(_params, _session, socket) do
+        {rows, total} = MyApp.list_cities(page: 1, page_size: 10, order_by: :name, order_dir: :asc)
+
+        {:ok,
+         socket
+         |> assign(:cities, rows)
+         |> assign(:sort_columns, [:name])
+         |> assign(:sort_by, :name)
+         |> assign(:sort_order, :asc)
+         |> assign(:total, total)}
+      end
+
+      def handle_event("sort", %{"sort_by" => sort_by_param}, socket) do
+        case Corex.DataTable.Sort.parse_sort_by(sort_by_param, socket.assigns.sort_columns) do
+          {:ok, sort_by} ->
+            order =
+              if socket.assigns.sort_by == sort_by do
+                if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+              else
+                :asc
+              end
+
+            {rows, total} =
+              MyApp.list_cities(
+                page: 1,
+                page_size: socket.assigns.page_size,
+                order_by: sort_by,
+                order_dir: order
+              )
+
+            {:noreply,
+             socket
+             |> assign(:cities, rows)
+             |> assign(:sort_by, sort_by)
+             |> assign(:sort_order, order)
+             |> assign(:total, total)}
+
+          :error ->
+            {:noreply, socket}
+        end
+      end
   """
 
   @doc """
@@ -51,9 +99,8 @@ defmodule Corex.DataTable.Sort do
 
   - `:default_sort_by` – atom; column `name` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `:id`)
   - `:default_sort_order` – `:asc` or `:desc`, default `:asc`
-  - `:sort_columns` – list of atoms the client may sort by (e.g. `[:id, :name]`). When set,
-    [`handle_sort/3`](#handle_sort/3) ignores unknown or disallowed `"sort_by"` values instead of
-    raising. Always set this in production LiveViews.
+  - `:sort_columns` – list of atoms the browser may sort by (e.g. `[:id, :name]`). Required for
+    [`handle_sort/3`](#handle_sort/3) to accept sort events; when omitted, sort events are ignored.
 
   The socket must already have an assign at `rows_assign` (e.g. `:users`) with the same list
   passed as `rows` to [`data_table/1`](Corex.DataTable.html#data_table/1). Adds `:sort_by`,
@@ -78,9 +125,11 @@ defmodule Corex.DataTable.Sort do
   Use in `handle_event("sort", params, socket)` (same name as `on_sort`) and return
   `{:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}`.
 
-  `params` must contain `"sort_by"` (string, e.g. `"id"`). When `:sort_columns` was set via
-  [`assign_for_sort/3`](#assign_for_sort/3), only those columns are accepted; other values are
-  ignored and the socket is returned unchanged. Unknown atoms never crash the LiveView process.
+  `params` must contain `"sort_by"` (string, e.g. `"id"`). When `:sort_columns` is set via
+  [`assign_for_sort/3`](#assign_for_sort/3), only those columns are accepted. When
+  `:sort_columns` is `nil`, the socket is returned unchanged. Unknown or disallowed values never
+  crash the LiveView process.
+
   `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
   def handle_sort(socket, %{"sort_by" => sort_by_param}, rows_assign) do
@@ -89,6 +138,23 @@ defmodule Corex.DataTable.Sort do
       :error -> socket
     end
   end
+
+  @doc """
+  Parses a `"sort_by"` param from a LiveView event against an optional column whitelist.
+
+  Returns `{:ok, atom}` when the param is a safe existing atom and is allowed, or `:error` otherwise.
+  When `sort_columns` is `nil`, always returns `:error`. Use in database-backed handlers before
+  calling your context with `order_by`.
+  """
+  def parse_sort_by(param, columns) when is_binary(param) and is_list(columns) do
+    with {:ok, sort_by} <- safe_existing_atom(param), true <- sort_by in columns do
+      {:ok, sort_by}
+    else
+      _ -> :error
+    end
+  end
+
+  def parse_sort_by(_param, _columns), do: :error
 
   defp apply_sort(socket, sort_by, rows_assign) do
     current_sort_by = socket.assigns.sort_by
@@ -108,16 +174,6 @@ defmodule Corex.DataTable.Sort do
     |> assign(:sort_order, sort_order)
     |> assign(rows_assign, sort_rows(rows, sort_by, sort_order))
   end
-
-  defp parse_sort_by(param, columns) when is_list(columns) do
-    with {:ok, sort_by} <- safe_existing_atom(param), true <- sort_by in columns do
-      {:ok, sort_by}
-    else
-      _ -> :error
-    end
-  end
-
-  defp parse_sort_by(param, _columns), do: safe_existing_atom(param)
 
   defp safe_existing_atom(param) when is_binary(param) do
     {:ok, String.to_existing_atom(param)}

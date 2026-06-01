@@ -172,6 +172,7 @@ defmodule Corex.DataTable do
    |> assign(:cities, rows)
    |> assign(:page, 1)
    |> assign(:page_size, 10)
+   |> assign(:sort_columns, [:name])
    |> assign(:sort_by, :name)
    |> assign(:sort_order, :asc)
    |> assign(:total, total)}
@@ -200,30 +201,35 @@ defmodule Corex.DataTable do
   ```
 
   ```elixir
-  def handle_event("sort", %{"sort_by" => sort_by}, socket) do
-    sort_by = String.to_existing_atom(sort_by)
-    order =
-      if socket.assigns.sort_by == sort_by do
-        if socket.assigns.sort_order == :asc, do: :desc, else: :asc
-      else
-        :asc
-      end
+  def handle_event("sort", %{"sort_by" => sort_by_param}, socket) do
+    case Corex.DataTable.Sort.parse_sort_by(sort_by_param, socket.assigns.sort_columns) do
+      {:ok, sort_by} ->
+        order =
+          if socket.assigns.sort_by == sort_by do
+            if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+          else
+            :asc
+          end
 
-    {rows, total} =
-      MyApp.list_cities(
-        page: 1,
-        page_size: socket.assigns.page_size,
-        order_by: sort_by,
-        order_dir: order
-      )
+        {rows, total} =
+          MyApp.list_cities(
+            page: 1,
+            page_size: socket.assigns.page_size,
+            order_by: sort_by,
+            order_dir: order
+          )
 
-    {:noreply,
-     socket
-     |> assign(:cities, rows)
-     |> assign(:page, 1)
-     |> assign(:sort_by, sort_by)
-     |> assign(:sort_order, order)
-     |> assign(:total, total)}
+        {:noreply,
+         socket
+         |> assign(:cities, rows)
+         |> assign(:page, 1)
+         |> assign(:sort_by, sort_by)
+         |> assign(:sort_order, order)
+         |> assign(:total, total)}
+
+      :error ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("page", %{"page" => page}, socket) do

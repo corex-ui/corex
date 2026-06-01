@@ -296,7 +296,11 @@ defmodule E2eWeb.Demos.DataTableDemo do
       {:ok,
        socket
        |> assign(:pattern_sort_rows, [%{id: 1, name: "Alice"}, %{id: 2, name: "Bob"}])
-       |> Corex.DataTable.Sort.assign_for_sort(:pattern_sort_rows, default_sort_by: :id, default_sort_order: :asc)}
+       |> Corex.DataTable.Sort.assign_for_sort(:pattern_sort_rows,
+         default_sort_by: :id,
+         default_sort_order: :asc,
+         sort_columns: [:id, :name]
+       )}
     end
 
     def handle_event("pattern_sort", params, socket) do
@@ -448,30 +452,39 @@ defmodule E2eWeb.Demos.DataTableDemo do
        |> assign(:pattern_db_rows, rows)
        |> assign(:pattern_db_page, 1)
        |> assign(:pattern_db_page_size, 5)
+       |> assign(:pattern_db_sort_columns, [:name, :iata_code, :iata_country_code])
        |> assign(:pattern_db_sort_by, :name)
        |> assign(:pattern_db_sort_order, :asc)
        |> assign(:pattern_db_total, total)}
     end
 
-    def handle_event("pattern_db_sort", %{"sort_by" => sort_by}, socket) do
-      sort_by = String.to_existing_atom(sort_by)
-      order = if socket.assigns.pattern_db_sort_by == sort_by, do: toggle(socket.assigns.pattern_db_sort_order), else: :asc
+    def handle_event("pattern_db_sort", %{"sort_by" => sort_by_param}, socket) do
+      case Corex.DataTable.Sort.parse_sort_by(sort_by_param, socket.assigns.pattern_db_sort_columns) do
+        {:ok, sort_by} ->
+          order =
+            if socket.assigns.pattern_db_sort_by == sort_by,
+              do: toggle(socket.assigns.pattern_db_sort_order),
+              else: :asc
 
-      {rows, total} =
-        MyApp.Place.list_cities_table(
-          page: 1,
-          page_size: socket.assigns.pattern_db_page_size,
-          order_by: sort_by,
-          order_dir: order
-        )
+          {rows, total} =
+            MyApp.Place.list_cities_table(
+              page: 1,
+              page_size: socket.assigns.pattern_db_page_size,
+              order_by: sort_by,
+              order_dir: order
+            )
 
-      {:noreply,
-       socket
-       |> assign(:pattern_db_rows, rows)
-       |> assign(:pattern_db_page, 1)
-       |> assign(:pattern_db_sort_by, sort_by)
-       |> assign(:pattern_db_sort_order, order)
-       |> assign(:pattern_db_total, total)}
+          {:noreply,
+           socket
+           |> assign(:pattern_db_rows, rows)
+           |> assign(:pattern_db_page, 1)
+           |> assign(:pattern_db_sort_by, sort_by)
+           |> assign(:pattern_db_sort_order, order)
+           |> assign(:pattern_db_total, total)}
+
+        :error ->
+          {:noreply, socket}
+      end
     end
 
     def handle_event("pattern_db_page", %{"page" => page}, socket) do

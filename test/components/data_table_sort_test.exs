@@ -81,5 +81,33 @@ defmodule Corex.DataTable.SortTest do
       assert socket.assigns.sort_order == before.sort_order
       assert socket.assigns.users == before.users
     end
+
+    test "ignores sort_by when sort_columns is nil" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, rows())
+        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+      before = socket.assigns
+      socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
+
+      assert socket.assigns.sort_by == before.sort_by
+      assert socket.assigns.sort_order == before.sort_order
+      assert socket.assigns.users == before.users
+    end
+  end
+
+  describe "parse_sort_by/2" do
+    test "rejects when sort_columns is nil" do
+      assert Sort.parse_sort_by("id", nil) == :error
+    end
+
+    test "accepts whitelisted column" do
+      assert Sort.parse_sort_by("name", [:id, :name]) == {:ok, :name}
+    end
+
+    test "rejects column not in whitelist" do
+      assert Sort.parse_sort_by("name", [:id]) == :error
+    end
   end
 end

@@ -8,6 +8,9 @@ defmodule E2eWeb.DataTablePatternsLive do
 
   @pattern_db_page_size 5
 
+  @user_sort_columns [:id, :name, :email, :role, :status]
+  @db_sort_columns [:name, :iata_code, :iata_country_code]
+
   @categories ~W(Fruit Vegetable Misc)
   @stream_initial [
     %{id: "1", name: "Apple", category: "Fruit"},
@@ -52,6 +55,7 @@ defmodule E2eWeb.DataTablePatternsLive do
      |> assign(:pattern_db_page_size, @pattern_db_page_size)
      |> assign(:pattern_db_sort_by, :name)
      |> assign(:pattern_db_sort_order, :asc)
+     |> assign(:pattern_db_sort_columns, @db_sort_columns)
      |> assign(:pattern_db_total, db_total)
      |> assign(:pattern_row_clicked, nil)
      |> assign(:pattern_row_click_rows, [
@@ -93,7 +97,8 @@ defmodule E2eWeb.DataTablePatternsLive do
      PState.handle_sort_ns(socket, p,
        rows: :pattern_sort_rows,
        sort_by: :pattern_sort_by,
-       sort_order: :pattern_sort_order
+       sort_order: :pattern_sort_order,
+       sort_columns: @user_sort_columns
      )}
   end
 
@@ -140,7 +145,8 @@ defmodule E2eWeb.DataTablePatternsLive do
      PState.handle_sort_ns(socket, p,
        rows: :pattern_full_rows,
        sort_by: :pattern_full_sort_by,
-       sort_order: :pattern_full_sort_order
+       sort_order: :pattern_full_sort_order,
+       sort_columns: @user_sort_columns
      )}
   end
 
@@ -164,32 +170,40 @@ defmodule E2eWeb.DataTablePatternsLive do
   end
 
   def handle_event("pattern_db_sort", %{"sort_by" => sort_by_param}, socket) do
-    sort_by = String.to_existing_atom(sort_by_param)
-    current_by = socket.assigns.pattern_db_sort_by
-    current_order = socket.assigns.pattern_db_sort_order
+    case Corex.DataTable.Sort.parse_sort_by(
+           sort_by_param,
+           socket.assigns.pattern_db_sort_columns
+         ) do
+      {:ok, sort_by} ->
+        current_by = socket.assigns.pattern_db_sort_by
+        current_order = socket.assigns.pattern_db_sort_order
 
-    {sort_by, sort_order} =
-      if current_by == sort_by do
-        {sort_by, toggle_order(current_order)}
-      else
-        {sort_by, :asc}
-      end
+        {sort_by, sort_order} =
+          if current_by == sort_by do
+            {sort_by, toggle_order(current_order)}
+          else
+            {sort_by, :asc}
+          end
 
-    {rows, total} =
-      Place.list_cities_table(
-        page: 1,
-        page_size: socket.assigns.pattern_db_page_size,
-        order_by: sort_by,
-        order_dir: sort_order
-      )
+        {rows, total} =
+          Place.list_cities_table(
+            page: 1,
+            page_size: socket.assigns.pattern_db_page_size,
+            order_by: sort_by,
+            order_dir: sort_order
+          )
 
-    {:noreply,
-     socket
-     |> assign(:pattern_db_rows, rows)
-     |> assign(:pattern_db_page, 1)
-     |> assign(:pattern_db_sort_by, sort_by)
-     |> assign(:pattern_db_sort_order, sort_order)
-     |> assign(:pattern_db_total, total)}
+        {:noreply,
+         socket
+         |> assign(:pattern_db_rows, rows)
+         |> assign(:pattern_db_page, 1)
+         |> assign(:pattern_db_sort_by, sort_by)
+         |> assign(:pattern_db_sort_order, sort_order)
+         |> assign(:pattern_db_total, total)}
+
+      :error ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("pattern_db_page", %{"page" => page}, socket) do
