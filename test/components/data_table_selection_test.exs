@@ -49,6 +49,26 @@ defmodule Corex.DataTable.SelectionTest do
 
       assert Enum.sort(socket.assigns.selected) == ["1", "2"]
     end
+
+    test "ignores forged row id when checking" do
+      socket = base_socket()
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-forged", "checked" => true}, :users)
+
+      assert socket.assigns.selected == []
+    end
+
+    test "drops stale selected ids not in current rows" do
+      socket =
+        base_socket()
+        |> assign(:selected, ["1", "stale"])
+
+      socket =
+        Selection.handle_select(socket, %{"id" => "tbl-select-2", "checked" => true}, :users)
+
+      assert Enum.sort(socket.assigns.selected) == ["1", "2"]
+    end
   end
 
   describe "handle_select_all/3" do

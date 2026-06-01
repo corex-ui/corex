@@ -10,6 +10,22 @@ export type RedirectMode = "href" | "patch" | "navigate";
 
 const REDIRECT_MODES: readonly RedirectMode[] = ["href", "patch", "navigate"];
 
+const SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
+export function isAllowedRedirectDestination(destination: string): boolean {
+  const trimmed = destination.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith("//")) return false;
+
+  const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+  if (schemeMatch) {
+    const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+    return scheme === "http" || scheme === "https";
+  }
+
+  return true;
+}
+
 export interface RedirectInput {
   destination: string;
   newTab?: boolean;
@@ -38,7 +54,7 @@ export function readDomItemRedirect(
   fallback?: string
 ): RedirectInput | null {
   if (!itemEl) {
-    if (!fallback) return null;
+    if (!fallback || !isAllowedRedirectDestination(fallback)) return null;
     return { destination: fallback };
   }
 
@@ -47,7 +63,7 @@ export function readDomItemRedirect(
 
   const destination =
     itemEl.getAttribute("data-to") || fallback || itemEl.getAttribute("data-value") || "";
-  if (!destination) return null;
+  if (!destination || !isAllowedRedirectDestination(destination)) return null;
 
   const mode = REDIRECT_MODES.includes(dataRedirect as RedirectMode)
     ? (dataRedirect as RedirectMode)
@@ -61,7 +77,7 @@ export function readDomItemRedirect(
  * Execute a redirect described by `input`.
  *
  * Behavior:
- * - No-op (returns false) when `input` is null or has empty destination.
+ * - No-op (returns false) when `input` is null, has empty destination, or destination uses a disallowed URL scheme.
  * - `newTab === true`     -> always `window.open(_, "_blank", noopener,noreferrer)`.
  * - LV not connected      -> `window.location.href = destination` regardless of mode.
  * - LV connected:
@@ -72,7 +88,8 @@ export function readDomItemRedirect(
  * Returns true when a redirect was attempted, false otherwise.
  */
 export function performRedirect(input: RedirectInput | null, ctx: RedirectContext): boolean {
-  if (!input || !input.destination) return false;
+  if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
+    return false;
   const { destination, newTab, mode } = input;
 
   if (newTab) {

@@ -75,7 +75,7 @@ defmodule Corex.Combobox do
         ])}
       >
         <:item :let={item}>
-          <Flagpack.flag name={String.to_atom(to_string(item.value))} />
+          <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
           {item.label}
         </:item>
         <:trigger>
@@ -108,7 +108,7 @@ defmodule Corex.Combobox do
         ])}
       >
         <:item :let={item}>
-          <Flagpack.flag name={String.to_atom(to_string(item.value))} />
+          <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
           {item.label}
         </:item>
         <:trigger>

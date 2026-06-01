@@ -180,7 +180,7 @@ defmodule E2eWeb.Demos.SelectDemo do
         Country of residence
       </:label>
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(to_string(item.value))} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger>
@@ -225,7 +225,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       ])}
     >
       <:item :let={item}>
-        <Flagpack.flag name={String.to_atom(to_string(item.value))} />
+        <Flagpack.flag name={String.to_existing_atom(to_string(item.value))} />
         {item.label}
       </:item>
       <:trigger>

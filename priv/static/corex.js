@@ -13000,22 +13000,34 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-FOQSALVP.mjs
+  // ../priv/static/chunks/chunk-6Q6MB27T.mjs
+  function isAllowedRedirectDestination(destination) {
+    const trimmed = destination.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith("//")) return false;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      return scheme === "http" || scheme === "https";
+    }
+    return true;
+  }
   function readDomItemRedirect(itemEl, fallback2) {
     if (!itemEl) {
-      if (!fallback2) return null;
+      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
       return { destination: fallback2 };
     }
     const dataRedirect = itemEl.getAttribute("data-redirect");
     if (dataRedirect === "false") return null;
     const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination) return null;
+    if (!destination || !isAllowedRedirectDestination(destination)) return null;
     const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
     const newTab = itemEl.hasAttribute("data-new-tab");
     return { destination, mode, newTab };
   }
   function performRedirect(input, ctx) {
-    if (!input || !input.destination) return false;
+    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
+      return false;
     const { destination, newTab, mode } = input;
     if (newTab) {
       window.open(destination, "_blank", "noopener,noreferrer");
@@ -13035,11 +13047,12 @@ var Corex = (() => {
     }
     return true;
   }
-  var REDIRECT_MODES;
-  var init_chunk_FOQSALVP = __esm({
-    "../priv/static/chunks/chunk-FOQSALVP.mjs"() {
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_6Q6MB27T = __esm({
+    "../priv/static/chunks/chunk-6Q6MB27T.mjs"() {
       "use strict";
       REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
@@ -13590,7 +13603,7 @@ var Corex = (() => {
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -27336,7 +27349,7 @@ ${err}`);
       "use strict";
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -28698,7 +28711,7 @@ ${err}`);
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -29727,6 +29740,12 @@ ${err}`);
         constructor() {
           super(...arguments);
           __publicField(this, "children", []);
+          __publicField(this, "submenuTriggerUnsubs", []);
+          __publicField(this, "destroy", () => {
+            this.clearSubmenuTriggerSubscriptions();
+            this.el.removeAttribute("data-loading");
+            this.machine.stop();
+          });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -29744,11 +29763,18 @@ ${err}`);
         setParent(parent) {
           this.api.setParent(parent.machine.service);
         }
+        clearSubmenuTriggerSubscriptions() {
+          for (const unsub of this.submenuTriggerUnsubs) {
+            unsub();
+          }
+          this.submenuTriggerUnsubs = [];
+        }
         isOwnElement(el) {
           const nearestHook = el.closest('[phx-hook="Menu"]');
           return nearestHook === this.el;
         }
         renderSubmenuTriggers() {
+          this.clearSubmenuTriggerSubscriptions();
           const contentEl = this.el.querySelector(
             '[data-scope="menu"][data-part="content"]'
           );
@@ -29767,8 +29793,8 @@ ${err}`);
               this.spreadProps(triggerEl, triggerProps);
             };
             applyProps();
-            this.machine.subscribe(applyProps);
-            childMenu.machine.subscribe(applyProps);
+            this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
+            this.submenuTriggerUnsubs.push(childMenu.machine.subscribe(applyProps));
           }
         }
         render() {
@@ -29918,18 +29944,21 @@ ${err}`);
             menuByHookId.set(hookId, nestedMenu);
             nestedMenuInstances.push(nestedMenu);
           });
-          setTimeout(() => {
+          this.submenuWireTimer = setTimeout(() => {
+            this.submenuWireTimer = void 0;
+            const rootMenu = this.menu;
+            if (!rootMenu) return;
             nestedMenuInstances.forEach((nestedMenu) => {
               const nestedEl = nestedMenu.el;
               const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
               if (!parentHookEl) return;
-              const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+              const parentMenu = parentHookEl === el ? rootMenu : menuByHookId.get(parentHookEl.id);
               if (!parentMenu) return;
               parentMenu.setChild(nestedMenu);
               nestedMenu.setParent(parentMenu);
             });
-            if (this.menu && this.menu.children.length > 0) {
-              wireSubmenuTriggersDeep(this.menu);
+            if (rootMenu.children.length > 0) {
+              wireSubmenuTriggersDeep(rootMenu);
             }
           }, 0);
           this.onSetOpen = (event) => {
@@ -29964,6 +29993,10 @@ ${err}`);
         },
         destroyed() {
           if (this.el.hasAttribute("data-nested")) return;
+          if (this.submenuWireTimer !== void 0) {
+            clearTimeout(this.submenuWireTimer);
+            this.submenuWireTimer = void 0;
+          }
           if (this.onSetOpen) {
             this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
           }
@@ -29975,6 +30008,7 @@ ${err}`);
           if (this.menu) {
             destroyDescendantMenus(this.menu);
             this.menu.destroy();
+            this.menu = void 0;
           }
         }
       };
@@ -34744,7 +34778,7 @@ ${err}`);
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -40493,6 +40527,16 @@ ${err}`);
     container.dataset.toastGroupId = groupId;
     return { group: group2, store: store2 };
   }
+  function disposeToastGroup(groupId) {
+    const group2 = toastGroups.get(groupId);
+    if (!group2) return;
+    const container = group2.el;
+    group2.destroy();
+    toastGroups.delete(groupId);
+    toastStores.delete(groupId);
+    delete container.dataset.toastGroup;
+    delete container.dataset.toastGroupId;
+  }
   function getToastStore(groupId) {
     if (groupId) return toastStores.get(groupId);
     const el = document.querySelector("[data-toast-group]");
@@ -41217,15 +41261,15 @@ ${err}`);
             this.parts.action.hidden = false;
             this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
             const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
-            if (this.parts.action.innerHTML !== label) {
-              this.parts.action.innerHTML = label;
+            if (this.parts.action.textContent !== label) {
+              this.parts.action.textContent = label;
             }
             const extraClasses = actionClassTokens(this.latestProps.action);
             if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
           } else {
             this.parts.action.hidden = true;
-            if (this.parts.action.innerHTML) {
-              this.parts.action.innerHTML = "";
+            if (this.parts.action.textContent) {
+              this.parts.action.textContent = "";
             }
           }
           const duration = this.duration;
@@ -41524,6 +41568,9 @@ ${err}`);
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
             }
+          }
+          if (this.groupId) {
+            disposeToastGroup(this.groupId);
           }
         }
       };
@@ -43584,7 +43631,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();

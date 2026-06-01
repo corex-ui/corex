@@ -17,7 +17,7 @@ import {
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunks/chunk-FOQSALVP.mjs";
+} from "./chunks/chunk-6Q6MB27T.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
@@ -1623,6 +1623,7 @@ var machine = createMachine({
 // components/menu.ts
 var Menu = class extends Component {
   children = [];
+  submenuTriggerUnsubs = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
@@ -1639,11 +1640,18 @@ var Menu = class extends Component {
   setParent(parent) {
     this.api.setParent(parent.machine.service);
   }
+  clearSubmenuTriggerSubscriptions() {
+    for (const unsub of this.submenuTriggerUnsubs) {
+      unsub();
+    }
+    this.submenuTriggerUnsubs = [];
+  }
   isOwnElement(el) {
     const nearestHook = el.closest('[phx-hook="Menu"]');
     return nearestHook === this.el;
   }
   renderSubmenuTriggers() {
+    this.clearSubmenuTriggerSubscriptions();
     const contentEl = this.el.querySelector(
       '[data-scope="menu"][data-part="content"]'
     );
@@ -1662,10 +1670,15 @@ var Menu = class extends Component {
         this.spreadProps(triggerEl, triggerProps);
       };
       applyProps();
-      this.machine.subscribe(applyProps);
-      childMenu.machine.subscribe(applyProps);
+      this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
+      this.submenuTriggerUnsubs.push(childMenu.machine.subscribe(applyProps));
     }
   }
+  destroy = () => {
+    this.clearSubmenuTriggerSubscriptions();
+    this.el.removeAttribute("data-loading");
+    this.machine.stop();
+  };
   render() {
     const triggerEl = this.el.querySelector(
       '[data-scope="menu"][data-part="trigger"]'
@@ -1850,18 +1863,21 @@ var MenuHook = {
       menuByHookId.set(hookId, nestedMenu);
       nestedMenuInstances.push(nestedMenu);
     });
-    setTimeout(() => {
+    this.submenuWireTimer = setTimeout(() => {
+      this.submenuWireTimer = void 0;
+      const rootMenu = this.menu;
+      if (!rootMenu) return;
       nestedMenuInstances.forEach((nestedMenu) => {
         const nestedEl = nestedMenu.el;
         const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
         if (!parentHookEl) return;
-        const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+        const parentMenu = parentHookEl === el ? rootMenu : menuByHookId.get(parentHookEl.id);
         if (!parentMenu) return;
         parentMenu.setChild(nestedMenu);
         nestedMenu.setParent(parentMenu);
       });
-      if (this.menu && this.menu.children.length > 0) {
-        wireSubmenuTriggersDeep(this.menu);
+      if (rootMenu.children.length > 0) {
+        wireSubmenuTriggersDeep(rootMenu);
       }
     }, 0);
     this.onSetOpen = (event) => {
@@ -1896,6 +1912,10 @@ var MenuHook = {
   },
   destroyed() {
     if (this.el.hasAttribute("data-nested")) return;
+    if (this.submenuWireTimer !== void 0) {
+      clearTimeout(this.submenuWireTimer);
+      this.submenuWireTimer = void 0;
+    }
     if (this.onSetOpen) {
       this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
     }
@@ -1907,6 +1927,7 @@ var MenuHook = {
     if (this.menu) {
       destroyDescendantMenus(this.menu);
       this.menu.destroy();
+      this.menu = void 0;
     }
   }
 };

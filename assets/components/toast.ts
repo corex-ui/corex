@@ -168,15 +168,15 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
       const label = this.latestProps.action?.label ?? "";
-      if (this.parts.action.innerHTML !== label) {
-        this.parts.action.innerHTML = label;
+      if (this.parts.action.textContent !== label) {
+        this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
       if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
     } else {
       this.parts.action.hidden = true;
-      if (this.parts.action.innerHTML) {
-        this.parts.action.innerHTML = "";
+      if (this.parts.action.textContent) {
+        this.parts.action.textContent = "";
       }
     }
 
