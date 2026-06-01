@@ -100,7 +100,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-color"
           title="Color"
-          code={E2eWeb.Demos.DataTableDemo.styling_color_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_color_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -120,7 +120,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-size"
           title="Size"
-          code={E2eWeb.Demos.DataTableDemo.styling_size_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -140,7 +140,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-max-width"
           title="Max width"
-          code={E2eWeb.Demos.DataTableDemo.styling_max_width_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">

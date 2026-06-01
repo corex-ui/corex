@@ -110,23 +110,95 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
-  def styling_rows, do: @anatomy_rows
+  @style_users [
+    %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
+    %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
+    %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"}
+  ]
+
+  def styling_rows, do: @style_users
 
   def playground_rows, do: @anatomy_rows
 
-  def styling_color_code do
-    styling_full_table_code(
+  def styling_color_code_tabs do
+    styling_code_tabs(
       "data-table-styling-color-accent",
       "data-table data-table--accent max-w-none"
     )
   end
 
-  def styling_size_code do
-    styling_full_table_code("data-table-styling-size-lg", "data-table data-table--lg max-w-none")
+  def styling_size_code_tabs do
+    styling_code_tabs("data-table-styling-size-lg", "data-table data-table--lg max-w-none")
   end
 
-  def styling_max_width_code do
-    styling_full_table_code("data-table-styling-max-w-md", "data-table max-w-md")
+  def styling_max_width_code_tabs do
+    styling_code_tabs("data-table-styling-max-w-md", "data-table max-w-md")
+  end
+
+  def styling_code_tabs(table_id, class) do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: styling_heex(table_id, class)},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: styling_elixir()}
+    ]
+  end
+
+  def styling_heex(table_id, class) do
+    styling_full_table_code(table_id, class)
+  end
+
+  def styling_elixir do
+    ~S"""
+    @list_users [
+      %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
+      %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
+      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"}
+    ]
+
+    @style_sort_columns [:id, :name, :role, :status]
+
+    def mount(_params, _session, socket) do
+      {:ok,
+       socket
+       |> assign(:style_rows, @list_users)
+       |> Corex.DataTable.Sort.assign_for_sort(:style_rows,
+         default_sort_by: :id,
+         default_sort_order: :asc,
+         sort_columns: @style_sort_columns
+       )
+       |> assign(:style_selected, [])}
+    end
+
+    def handle_event("style_sort", params, socket) do
+      {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :style_rows)}
+    end
+
+    def handle_event("style_select", %{"id" => checkbox_id} = params, socket) do
+      case String.split(checkbox_id, "-select-", parts: 2) do
+        [table_id, _row_key] ->
+          {:noreply,
+           E2eWeb.DataTablePatternState.handle_select_ns(socket, params,
+             rows: :style_rows,
+             selected: :style_selected,
+             table_id: table_id
+           )}
+
+        _ ->
+          {:noreply, socket}
+      end
+    end
+
+    def handle_event("style_select_all", %{"id" => checkbox_id} = params, socket) do
+      table_id = String.replace_suffix(checkbox_id, "-select-all", "")
+
+      {:noreply,
+       E2eWeb.DataTablePatternState.handle_select_all_ns(socket, params,
+         rows: :style_rows,
+         selected: :style_selected,
+         table_id: table_id,
+         row_id: &"#{table_id}-#{&1.id}"
+       )}
+    end
+    """
   end
 
   defp styling_full_table_code(id, class) do
@@ -135,11 +207,12 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
     ~S"""
     <.data_table
+      id="ID_PLACEHOLDER"
       class="CLASS_PLACEHOLDER"
       rows={@style_rows}
       row_id={&"ID_PLACEHOLDER-#{&1.id}"}
-      sort_by={@style_sort_by}
-      sort_order={@style_sort_order}
+      sort_by={@sort_by}
+      sort_order={@sort_order}
       on_sort="style_sort"
       selectable
       selected={@style_selected}
@@ -266,9 +339,17 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
+  def patterns_sort_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_sort_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_sort_elixir()}
+    ]
+  end
+
   def patterns_sort_heex do
     ~S"""
     <.data_table
+      id="pattern-sort-table"
       class="data-table max-w-none"
       rows={@pattern_sort_rows}
       sort_by={@sort_by}
@@ -286,20 +367,33 @@ defmodule E2eWeb.Demos.DataTableDemo do
       </:sort_icon>
       <:col :let={row} label="ID" name={:id}>{row.id}</:col>
       <:col :let={row} label="Name" name={:name}>{row.name}</:col>
+      <:col :let={row} label="Email" name={:email}>{row.email}</:col>
+      <:col :let={row} label="Role" name={:role}>{row.role}</:col>
+      <:col :let={row} label="Status" name={:status}>{row.status}</:col>
     </.data_table>
     """
   end
 
   def patterns_sort_elixir do
     ~S"""
+    @pattern_users [
+      %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
+      %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
+      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
+      %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
+      %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"}
+    ]
+
+    @pattern_sort_columns [:id, :name, :email, :role, :status]
+
     def mount(_params, _session, socket) do
       {:ok,
        socket
-       |> assign(:pattern_sort_rows, [%{id: 1, name: "Alice"}, %{id: 2, name: "Bob"}])
+       |> assign(:pattern_sort_rows, @pattern_users)
        |> Corex.DataTable.Sort.assign_for_sort(:pattern_sort_rows,
          default_sort_by: :id,
          default_sort_order: :asc,
-         sort_columns: [:id, :name]
+         sort_columns: @pattern_sort_columns
        )}
     end
 
@@ -309,9 +403,17 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
+  def patterns_select_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_select_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_select_elixir()}
+    ]
+  end
+
   def patterns_select_heex do
     ~S"""
     <.data_table
+      id="pattern-select-table"
       class="data-table max-w-none"
       rows={@pattern_select_rows}
       row_id={&"pselect-#{&1.id}"}
@@ -326,16 +428,27 @@ defmodule E2eWeb.Demos.DataTableDemo do
       </:checkbox_indicator>
       <:col :let={row} label="ID" name={:id}>{row.id}</:col>
       <:col :let={row} label="Name" name={:name}>{row.name}</:col>
+      <:col :let={row} label="Email" name={:email}>{row.email}</:col>
+      <:col :let={row} label="Role" name={:role}>{row.role}</:col>
+      <:col :let={row} label="Status" name={:status}>{row.status}</:col>
     </.data_table>
     """
   end
 
   def patterns_select_elixir do
     ~S"""
+    @pattern_users [
+      %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
+      %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
+      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
+      %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
+      %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"}
+    ]
+
     def mount(_params, _session, socket) do
       {:ok,
        socket
-       |> assign(:pattern_select_rows, fetch_rows())
+       |> assign(:pattern_select_rows, @pattern_users)
        |> Corex.DataTable.Selection.assign_for_selection(:pattern_select_rows,
          table_id: "pattern-select-table",
          row_id: &"pselect-#{&1.id}"
@@ -352,9 +465,17 @@ defmodule E2eWeb.Demos.DataTableDemo do
     """
   end
 
+  def patterns_full_code_tabs do
+    [
+      %{value: "heex", label: "Heex", language: :heex, code: patterns_full_heex()},
+      %{value: "elixir", label: "Elixir", language: :elixir, code: patterns_full_elixir()}
+    ]
+  end
+
   def patterns_full_heex do
     ~S"""
     <.data_table
+      id="pattern-full-table"
       class="data-table max-w-none"
       rows={@pattern_full_rows}
       row_id={&"pfull-#{&1.id}"}
@@ -381,6 +502,9 @@ defmodule E2eWeb.Demos.DataTableDemo do
       </:sort_icon>
       <:col :let={row} label="ID" name={:id}>{row.id}</:col>
       <:col :let={row} label="Name" name={:name}>{row.name}</:col>
+      <:col :let={row} label="Email" name={:email}>{row.email}</:col>
+      <:col :let={row} label="Role" name={:role}>{row.role}</:col>
+      <:col :let={row} label="Status" name={:status}>{row.status}</:col>
       <:action :let={row}>
         <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
           <.heroicon name="hero-pencil-square" />
@@ -395,6 +519,31 @@ defmodule E2eWeb.Demos.DataTableDemo do
 
   def patterns_full_elixir do
     ~S"""
+    @pattern_users [
+      %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
+      %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
+      %{id: 3, name: "Charlie", email: "charlie@example.com", role: "User", status: "Active"},
+      %{id: 4, name: "Diana", email: "diana@example.com", role: "Manager", status: "Active"},
+      %{id: 5, name: "Eve", email: "eve@example.com", role: "Admin", status: "Inactive"}
+    ]
+
+    @pattern_sort_columns [:id, :name, :email, :role, :status]
+
+    def mount(_params, _session, socket) do
+      {:ok,
+       socket
+       |> assign(:pattern_full_rows, @pattern_users)
+       |> Corex.DataTable.Sort.assign_for_sort(:pattern_full_rows,
+         default_sort_by: :id,
+         default_sort_order: :asc,
+         sort_columns: @pattern_sort_columns
+       )
+       |> Corex.DataTable.Selection.assign_for_selection(:pattern_full_rows,
+         table_id: "pattern-full-table",
+         row_id: &"pfull-#{&1.id}"
+       )}
+    end
+
     def handle_event("pattern_full_sort", params, socket) do
       {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :pattern_full_rows)}
     end

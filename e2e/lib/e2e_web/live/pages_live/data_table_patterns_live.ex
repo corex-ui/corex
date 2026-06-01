@@ -358,20 +358,7 @@ defmodule E2eWeb.DataTablePatternsLive do
         <.demo_section
           id="data-table-patterns-sort"
           title={~t"Sort"}
-          code_tabs={[
-            %{
-              value: "heex",
-              label: ~t"Heex",
-              language: :heex,
-              code: E2eWeb.Demos.DataTableDemo.patterns_sort_heex()
-            },
-            %{
-              value: "elixir",
-              label: ~t"Elixir",
-              language: :elixir,
-              code: E2eWeb.Demos.DataTableDemo.patterns_sort_elixir()
-            }
-          ]}
+          code_tabs={E2eWeb.Demos.DataTableDemo.patterns_sort_code_tabs()}
         >
           <:preview>
             <.data_table
@@ -403,20 +390,7 @@ defmodule E2eWeb.DataTablePatternsLive do
         <.demo_section
           id="data-table-patterns-select"
           title={~t"Select"}
-          code_tabs={[
-            %{
-              value: "heex",
-              label: ~t"Heex",
-              language: :heex,
-              code: E2eWeb.Demos.DataTableDemo.patterns_select_heex()
-            },
-            %{
-              value: "elixir",
-              label: ~t"Elixir",
-              language: :elixir,
-              code: E2eWeb.Demos.DataTableDemo.patterns_select_elixir()
-            }
-          ]}
+          code_tabs={E2eWeb.Demos.DataTableDemo.patterns_select_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-3 w-full">
@@ -450,20 +424,7 @@ defmodule E2eWeb.DataTablePatternsLive do
         <.demo_section
           id="data-table-patterns-full"
           title={~t"Full (action, sort, select)"}
-          code_tabs={[
-            %{
-              value: "heex",
-              label: ~t"Heex",
-              language: :heex,
-              code: E2eWeb.Demos.DataTableDemo.patterns_full_heex()
-            },
-            %{
-              value: "elixir",
-              label: ~t"Elixir",
-              language: :elixir,
-              code: E2eWeb.Demos.DataTableDemo.patterns_full_elixir()
-            }
-          ]}
+          code_tabs={E2eWeb.Demos.DataTableDemo.patterns_full_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-3 w-full">
