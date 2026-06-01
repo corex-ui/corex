@@ -13000,22 +13000,34 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-FOQSALVP.mjs
+  // ../priv/static/chunks/chunk-6Q6MB27T.mjs
+  function isAllowedRedirectDestination(destination) {
+    const trimmed = destination.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith("//")) return false;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      return scheme === "http" || scheme === "https";
+    }
+    return true;
+  }
   function readDomItemRedirect(itemEl, fallback2) {
     if (!itemEl) {
-      if (!fallback2) return null;
+      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
       return { destination: fallback2 };
     }
     const dataRedirect = itemEl.getAttribute("data-redirect");
     if (dataRedirect === "false") return null;
     const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination) return null;
+    if (!destination || !isAllowedRedirectDestination(destination)) return null;
     const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
     const newTab = itemEl.hasAttribute("data-new-tab");
     return { destination, mode, newTab };
   }
   function performRedirect(input, ctx) {
-    if (!input || !input.destination) return false;
+    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
+      return false;
     const { destination, newTab, mode } = input;
     if (newTab) {
       window.open(destination, "_blank", "noopener,noreferrer");
@@ -13035,11 +13047,12 @@ var Corex = (() => {
     }
     return true;
   }
-  var REDIRECT_MODES;
-  var init_chunk_FOQSALVP = __esm({
-    "../priv/static/chunks/chunk-FOQSALVP.mjs"() {
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_6Q6MB27T = __esm({
+    "../priv/static/chunks/chunk-6Q6MB27T.mjs"() {
       "use strict";
       REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
@@ -13590,7 +13603,7 @@ var Corex = (() => {
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -27163,7 +27176,7 @@ ${err}`);
       "use strict";
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -28525,7 +28538,7 @@ ${err}`);
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -34592,7 +34605,7 @@ ${err}`);
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -43445,7 +43458,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
