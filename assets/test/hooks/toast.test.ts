@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, afterEach } from "vitest";
-import { parseActionSpec } from "../../hooks/toast";
-import { Toast } from "../../hooks/toast";
+import { describe, expect, it, afterEach } from "vitest";
+import type { CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import { parseActionSpec, Toast } from "../../hooks/toast";
 import { getToastStore } from "../../components/toast";
-import { mockLiveSocket } from "../helpers/mock-live-socket";
+import { callHookDestroyed, callHookMounted, mockHookContext } from "../helpers/mock-hook";
 
 describe("parseActionSpec", () => {
   it("parses valid exec_js action", () => {
@@ -44,25 +44,20 @@ describe("Toast hook lifecycle", () => {
     el.id = groupId;
     document.body.appendChild(el);
 
-    const exec = vi.fn();
-    const { ctx } = mockLiveSocket(false);
-    const hook = {
-      el,
-      groupId: "",
-      handlers: [] as symbol[],
-      domListeners: [] as Array<{ el: HTMLElement; name: string; fn: EventListener }>,
-      pushEvent: vi.fn(),
-      js: () => ({ exec }),
-      liveSocket: ctx.liveSocket,
-      handleEvent: vi.fn((_name: string, _fn: (payload: unknown) => void) => Symbol("ref")),
-      removeHandleEvent: vi.fn(),
-    };
+    const { hook } = mockHookContext(el, {
+      connected: false,
+      overrides: {
+        groupId: "",
+        handlers: [] as CallbackRef[],
+        domListeners: [] as Array<{ el: HTMLElement; name: string; fn: EventListener }>,
+      },
+    });
 
-    Toast.mounted.call(hook);
+    callHookMounted(Toast, hook);
     expect(getToastStore(groupId)).toBeDefined();
     expect(el.dataset.toastGroup).toBe("true");
 
-    Toast.destroyed.call(hook);
+    callHookDestroyed(Toast, hook);
     expect(getToastStore(groupId)).toBeUndefined();
     expect(el.dataset.toastGroup).toBeUndefined();
   });
