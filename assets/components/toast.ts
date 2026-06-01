@@ -22,6 +22,14 @@ export function actionClassTokens(action: unknown): string[] {
   return cn.trim().split(/\s+/).filter(Boolean);
 }
 
+function actionLabelHtml(action: unknown): boolean {
+  return (
+    action != null &&
+    typeof action === "object" &&
+    (action as { labelHtml?: unknown }).labelHtml === true
+  );
+}
+
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
@@ -159,7 +167,12 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
       const label = this.latestProps.action?.label ?? "";
-      if (this.parts.action.textContent !== label) {
+      const labelHtml = actionLabelHtml(this.latestProps.action);
+      if (labelHtml) {
+        if (this.parts.action.innerHTML !== label) {
+          this.parts.action.innerHTML = label;
+        }
+      } else if (this.parts.action.textContent !== label) {
         this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
@@ -168,6 +181,9 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       this.parts.action.hidden = true;
       if (this.parts.action.textContent) {
         this.parts.action.textContent = "";
+      }
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
       }
     }
 

@@ -89,6 +89,33 @@ describe("toast group API", () => {
     document.body.removeChild(container);
   });
 
+  it("renders html action labels when labelHtml is true", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, { id: groupId });
+    store.create({
+      id: "t-html-label",
+      title: "Title",
+      type: "info",
+      action: {
+        label: '<span data-testid="custom-label">Open</span>',
+        labelHtml: true,
+        onClick: () => {},
+      },
+    });
+    group.render();
+
+    const action = container.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="action-trigger"]'
+    );
+    expect(action?.querySelector('[data-testid="custom-label"]')).toBeTruthy();
+
+    document.body.removeChild(container);
+  });
+
   it("clones close and loading icons from templates", () => {
     const container = document.createElement("div");
     container.id = groupId;

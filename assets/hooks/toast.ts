@@ -13,6 +13,7 @@ type ToastActionSpec = {
   label: string;
   encoded: string;
   className?: string;
+  labelHtml?: boolean;
 };
 
 type ToastHookRuntime = {
@@ -48,20 +49,24 @@ export function parseActionSpec(raw: unknown): ToastActionSpec | null {
   if (typeof className === "string" && className.trim()) {
     spec.className = className.trim();
   }
+  if (o.labelHtml === true) {
+    spec.labelHtml = true;
+  }
   return spec;
 }
 
 function buildZagAction(
   spec: ToastActionSpec,
   rt: ToastHookRuntime
-): ActionOptions & { className?: string } {
-  const action: ActionOptions & { className?: string } = {
+): ActionOptions & { className?: string; labelHtml?: boolean } {
+  const action: ActionOptions & { className?: string; labelHtml?: boolean } = {
     label: spec.label,
     onClick: () => {
       rt.execJs(spec.encoded);
     },
   };
   if (spec.className) action.className = spec.className;
+  if (spec.labelHtml) action.labelHtml = true;
   return action;
 }
 

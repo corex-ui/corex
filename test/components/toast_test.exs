@@ -405,13 +405,23 @@ defmodule Corex.ToastTest do
       assert Payload.normalize_action(%{label: "Go"}) == nil
     end
 
-    test "normalize_action rejects rendered and safe labels" do
+    test "normalize_action accepts rendered and safe labels as html" do
       assigns = %{}
       rendered = ~H"Run"
-      assert Payload.normalize_action(%{label: rendered, js: JS.push("go")}) == nil
+      action = Payload.normalize_action(%{label: rendered, js: JS.push("go")})
+      assert action["label"] == "Run"
+      assert action["labelHtml"] == true
 
-      safe = {:safe, "<b>Go</b>"}
-      assert Payload.normalize_action(%{label: safe, js: JS.push("go")}) == nil
+      safe = {:safe, "<span>Go</span>"}
+      action = Payload.normalize_action(%{label: safe, js: JS.push("go")})
+      assert action["label"] == "<span>Go</span>"
+      assert action["labelHtml"] == true
+    end
+
+    test "normalize_action keeps plain string labels as text" do
+      action = Payload.normalize_action(%{label: "Go", js: JS.push("go")})
+      assert action["label"] == "Go"
+      refute Map.has_key?(action, "labelHtml")
     end
 
     test "update_detail drops unknown keys and nil priority" do

@@ -40347,6 +40347,9 @@ ${err}`);
     if (typeof cn !== "string") return [];
     return cn.trim().split(/\s+/).filter(Boolean);
   }
+  function actionLabelHtml(action) {
+    return action != null && typeof action === "object" && action.labelHtml === true;
+  }
   function createToastGroup(container, options) {
     var _a4, _b, _c;
     const groupId = (_a4 = options == null ? void 0 : options.id) != null ? _a4 : container.id;
@@ -40406,6 +40409,9 @@ ${err}`);
     if (typeof className === "string" && className.trim()) {
       spec.className = className.trim();
     }
+    if (o2.labelHtml === true) {
+      spec.labelHtml = true;
+    }
     return spec;
   }
   function buildZagAction(spec, rt) {
@@ -40416,6 +40422,7 @@ ${err}`);
       }
     };
     if (spec.className) action.className = spec.className;
+    if (spec.labelHtml) action.labelHtml = true;
     return action;
   }
   function buildRuntime(self2) {
@@ -41094,7 +41101,12 @@ ${err}`);
             this.parts.action.hidden = false;
             this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
             const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
-            if (this.parts.action.textContent !== label) {
+            const labelHtml = actionLabelHtml(this.latestProps.action);
+            if (labelHtml) {
+              if (this.parts.action.innerHTML !== label) {
+                this.parts.action.innerHTML = label;
+              }
+            } else if (this.parts.action.textContent !== label) {
               this.parts.action.textContent = label;
             }
             const extraClasses = actionClassTokens(this.latestProps.action);
@@ -41103,6 +41115,9 @@ ${err}`);
             this.parts.action.hidden = true;
             if (this.parts.action.textContent) {
               this.parts.action.textContent = "";
+            }
+            if (this.parts.action.innerHTML) {
+              this.parts.action.innerHTML = "";
             }
           }
           const duration = this.duration;

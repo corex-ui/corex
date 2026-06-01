@@ -1156,6 +1156,9 @@ function actionClassTokens(action) {
   if (typeof cn !== "string") return [];
   return cn.trim().split(/\s+/).filter(Boolean);
 }
+function actionLabelHtml(action) {
+  return action != null && typeof action === "object" && action.labelHtml === true;
+}
 var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
@@ -1255,7 +1258,12 @@ var ToastItem = class extends Component {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
       const label = this.latestProps.action?.label ?? "";
-      if (this.parts.action.textContent !== label) {
+      const labelHtml = actionLabelHtml(this.latestProps.action);
+      if (labelHtml) {
+        if (this.parts.action.innerHTML !== label) {
+          this.parts.action.innerHTML = label;
+        }
+      } else if (this.parts.action.textContent !== label) {
         this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
@@ -1264,6 +1272,9 @@ var ToastItem = class extends Component {
       this.parts.action.hidden = true;
       if (this.parts.action.textContent) {
         this.parts.action.textContent = "";
+      }
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
       }
     }
     const duration = this.duration;
@@ -1413,6 +1424,9 @@ function parseActionSpec(raw) {
   if (typeof className === "string" && className.trim()) {
     spec.className = className.trim();
   }
+  if (o.labelHtml === true) {
+    spec.labelHtml = true;
+  }
   return spec;
 }
 function buildZagAction(spec, rt) {
@@ -1423,6 +1437,7 @@ function buildZagAction(spec, rt) {
     }
   };
   if (spec.className) action.className = spec.className;
+  if (spec.labelHtml) action.labelHtml = true;
   return action;
 }
 var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
