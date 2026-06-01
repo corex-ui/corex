@@ -9,7 +9,11 @@ defmodule Corex.DataTable.Sort do
   [`data_table/1`](Corex.DataTable.html#data_table/1) docs). In the LiveView, call
   `assign_for_sort/3` in `mount/3`, then `handle_sort/3` from the `on_sort` event handler.
 
-  ## Example
+  Set `:sort_columns` in `assign_for_sort/3` to whitelist sortable columns on the server. When
+  omitted, `:sort_columns` is inferred from atom keys on the first row map. Prefer an explicit
+  list when rows carry extra keys not shown in the table.
+
+  ## Example (in-memory rows)
 
       def mount(_params, _session, socket) do
         socket =
@@ -42,6 +46,50 @@ defmodule Corex.DataTable.Sort do
         </.data_table>
         \"\"\"
       end
+
+  ## Example (database-backed rows)
+
+      def mount(_params, _session, socket) do
+        {rows, total} = MyApp.list_cities(page: 1, page_size: 10, order_by: :name, order_dir: :asc)
+
+        {:ok,
+         socket
+         |> assign(:cities, rows)
+         |> assign(:sort_columns, [:name])
+         |> assign(:sort_by, :name)
+         |> assign(:sort_order, :asc)
+         |> assign(:total, total)}
+      end
+
+      def handle_event("sort", %{"sort_by" => sort_by_param}, socket) do
+        case Corex.DataTable.Sort.parse_sort_by(sort_by_param, socket.assigns.sort_columns) do
+          {:ok, sort_by} ->
+            order =
+              if socket.assigns.sort_by == sort_by do
+                if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+              else
+                :asc
+              end
+
+            {rows, total} =
+              MyApp.list_cities(
+                page: 1,
+                page_size: socket.assigns.page_size,
+                order_by: sort_by,
+                order_dir: order
+              )
+
+            {:noreply,
+             socket
+             |> assign(:cities, rows)
+             |> assign(:sort_by, sort_by)
+             |> assign(:sort_order, order)
+             |> assign(:total, total)}
+
+          :error ->
+            {:noreply, socket}
+        end
+      end
   """
 
   @doc """
@@ -51,9 +99,9 @@ defmodule Corex.DataTable.Sort do
 
   - `:default_sort_by` – atom; column `name` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `:id`)
   - `:default_sort_order` – `:asc` or `:desc`, default `:asc`
-  - `:sort_columns` – list of atoms the client may sort by (e.g. `[:id, :name]`). When set,
-    [`handle_sort/3`](#handle_sort/3) ignores unknown or disallowed `"sort_by"` values instead of
-    raising. Always set this in production LiveViews.
+  - `:sort_columns` – list of atoms the browser may sort by (e.g. `[:id, :name]`). When omitted,
+    inferred from atom keys on the first row in `rows_assign`. Prefer an explicit list in
+    production when row maps include keys you do not expose as sortable columns.
 
   The socket must already have an assign at `rows_assign` (e.g. `:users`) with the same list
   passed as `rows` to [`data_table/1`](Corex.DataTable.html#data_table/1). Adds `:sort_by`,
@@ -62,8 +110,13 @@ defmodule Corex.DataTable.Sort do
   def assign_for_sort(socket, rows_assign, opts \\ []) do
     sort_by = Keyword.get(opts, :default_sort_by)
     sort_order = Keyword.get(opts, :default_sort_order, :asc)
-    sort_columns = Keyword.get(opts, :sort_columns)
     rows = socket.assigns[rows_assign] || []
+
+    sort_columns =
+      case Keyword.fetch(opts, :sort_columns) do
+        {:ok, columns} -> columns
+        :error -> infer_sort_columns(rows, sort_by)
+      end
 
     socket
     |> assign(:sort_by, sort_by)
@@ -78,9 +131,10 @@ defmodule Corex.DataTable.Sort do
   Use in `handle_event("sort", params, socket)` (same name as `on_sort`) and return
   `{:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}`.
 
-  `params` must contain `"sort_by"` (string, e.g. `"id"`). When `:sort_columns` was set via
-  [`assign_for_sort/3`](#assign_for_sort/3), only those columns are accepted; other values are
-  ignored and the socket is returned unchanged. Unknown atoms never crash the LiveView process.
+  `params` must contain `"sort_by"` (string, e.g. `"id"`). Only columns in `:sort_columns` from
+  [`assign_for_sort/3`](#assign_for_sort/3) are accepted. Unknown or disallowed values never crash
+  the LiveView process.
+
   `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
   def handle_sort(socket, %{"sort_by" => sort_by_param}, rows_assign) do
@@ -89,6 +143,35 @@ defmodule Corex.DataTable.Sort do
       :error -> socket
     end
   end
+
+  @doc """
+  Parses a `"sort_by"` param from a LiveView event against an optional column whitelist.
+
+  Returns `{:ok, atom}` when the param is a safe existing atom and is allowed, or `:error` otherwise.
+  When `sort_columns` is `nil`, always returns `:error`. Use in database-backed handlers before
+  calling your context with `order_by`.
+  """
+  def parse_sort_by(param, columns) when is_binary(param) and is_list(columns) do
+    with {:ok, sort_by} <- safe_existing_atom(param), true <- sort_by in columns do
+      {:ok, sort_by}
+    else
+      _ -> :error
+    end
+  end
+
+  def parse_sort_by(_param, _columns), do: :error
+
+  defp infer_sort_columns([], nil), do: []
+
+  defp infer_sort_columns([], sort_by) when is_atom(sort_by), do: [sort_by]
+
+  defp infer_sort_columns([row | _], _sort_by) when is_map(row) do
+    row
+    |> Map.keys()
+    |> Enum.filter(&is_atom/1)
+  end
+
+  defp infer_sort_columns(_, _), do: []
 
   defp apply_sort(socket, sort_by, rows_assign) do
     current_sort_by = socket.assigns.sort_by
@@ -108,16 +191,6 @@ defmodule Corex.DataTable.Sort do
     |> assign(:sort_order, sort_order)
     |> assign(rows_assign, sort_rows(rows, sort_by, sort_order))
   end
-
-  defp parse_sort_by(param, columns) when is_list(columns) do
-    with {:ok, sort_by} <- safe_existing_atom(param), true <- sort_by in columns do
-      {:ok, sort_by}
-    else
-      _ -> :error
-    end
-  end
-
-  defp parse_sort_by(param, _columns), do: safe_existing_atom(param)
 
   defp safe_existing_atom(param) when is_binary(param) do
     {:ok, String.to_existing_atom(param)}

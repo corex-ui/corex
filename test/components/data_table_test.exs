@@ -261,6 +261,28 @@ defmodule Corex.DataTableTest do
         )
 
       assert html =~ "users-select-"
+      assert html =~ "users-select-%{id: 1"
+    end
+
+    test "selectable with tuple rows and stream row_id uses dom id for checkbox ids" do
+      row = {"user-1", %{id: 1, name: "Alice"}}
+
+      html =
+        render_component(&DataTable.data_table/1,
+          id: "users",
+          rows: [row],
+          selectable: true,
+          selected: [],
+          row_id: fn {id, _item} -> id end,
+          col: [
+            %{
+              label: "Name",
+              inner_block: fn _assigns, {_id, item} -> item.name end
+            }
+          ]
+        )
+
+      assert html =~ ~S(id="users-select-user-1")
     end
 
     test "renders with LiveStream rows and phx-update stream" do

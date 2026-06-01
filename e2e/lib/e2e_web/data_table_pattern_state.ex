@@ -6,25 +6,31 @@ defmodule E2eWeb.DataTablePatternState do
   def handle_sort_ns(socket, %{"sort_by" => sort_by_param},
         rows: rows_k,
         sort_by: by_k,
-        sort_order: order_k
+        sort_order: order_k,
+        sort_columns: sort_columns
       ) do
-    sort_by = String.to_existing_atom(sort_by_param)
-    current_by = Map.fetch!(socket.assigns, by_k)
-    current_order = Map.fetch!(socket.assigns, order_k)
+    case Corex.DataTable.Sort.parse_sort_by(sort_by_param, sort_columns) do
+      {:ok, sort_by} ->
+        current_by = Map.fetch!(socket.assigns, by_k)
+        current_order = Map.fetch!(socket.assigns, order_k)
 
-    {next_by, next_order} =
-      if current_by == sort_by do
-        {sort_by, toggle(current_order)}
-      else
-        {sort_by, :asc}
-      end
+        {next_by, next_order} =
+          if current_by == sort_by do
+            {sort_by, toggle(current_order)}
+          else
+            {sort_by, :asc}
+          end
 
-    raw_rows = Map.fetch!(socket.assigns, rows_k)
+        raw_rows = Map.fetch!(socket.assigns, rows_k)
 
-    socket
-    |> assign(by_k, next_by)
-    |> assign(order_k, next_order)
-    |> assign(rows_k, sort_rows(raw_rows, next_by, next_order))
+        socket
+        |> assign(by_k, next_by)
+        |> assign(order_k, next_order)
+        |> assign(rows_k, sort_rows(raw_rows, next_by, next_order))
+
+      :error ->
+        socket
+    end
   end
 
   def handle_select_ns(
