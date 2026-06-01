@@ -135,94 +135,234 @@ export class Combobox extends Component<Props, Api> {
     return blocks;
   }
 
+  private isOwnedByList(listEl: HTMLElement, el: Element): boolean {
+    return el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+  }
+
+  private listPartElements(listEl: HTMLElement, part: string): HTMLElement[] {
+    return Array.from(
+      listEl.querySelectorAll<HTMLElement>(
+        `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
+      )
+    ).filter((el) => this.isOwnedByList(listEl, el));
+  }
+
+  private directListPartElements(listEl: HTMLElement, part: string): HTMLElement[] {
+    return Array.from(listEl.children).filter(
+      (el): el is HTMLElement =>
+        el instanceof HTMLElement &&
+        el.getAttribute("data-scope") === "combobox" &&
+        el.getAttribute("data-part") === part &&
+        !el.hasAttribute("data-template")
+    );
+  }
+
+  private removeListParts(listEl: HTMLElement, parts: readonly string[]): void {
+    for (const part of parts) {
+      this.listPartElements(listEl, part).forEach((el) => el.remove());
+    }
+  }
+
+  private cloneItemFromTemplate(
+    templatesRoot: DocumentFragment | HTMLElement,
+    value: string
+  ): HTMLElement | null {
+    const template = templatesRoot.querySelector<HTMLElement>(
+      `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
+    );
+    if (!template) return null;
+    const itemEl = template.cloneNode(true) as HTMLElement;
+    itemEl.removeAttribute("data-template");
+    return itemEl;
+  }
+
+  private cloneGroupFromTemplate(
+    templatesRoot: DocumentFragment | HTMLElement,
+    groupId: string
+  ): HTMLElement | null {
+    const groupTemplate = templatesRoot.querySelector<HTMLElement>(
+      `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+    );
+    if (!groupTemplate) return null;
+    const groupEl = groupTemplate.cloneNode(true) as HTMLElement;
+    groupEl.removeAttribute("data-template");
+    groupEl
+      .querySelectorAll<HTMLElement>("[data-template]")
+      .forEach((e) => e.removeAttribute("data-template"));
+    return groupEl;
+  }
+
+  private syncFlatItems(
+    listEl: HTMLElement,
+    templatesRoot: DocumentFragment | HTMLElement,
+    items: ComboboxItem[]
+  ): void {
+    const desiredValues = items.map((item) => this.getItemValue(item));
+    const desiredSet = new Set(desiredValues);
+
+    this.listPartElements(listEl, "item").forEach((itemEl) => {
+      const value = itemEl.dataset.value ?? "";
+      if (!desiredSet.has(value)) itemEl.remove();
+    });
+
+    const byValue = new Map<string, HTMLElement>();
+    this.listPartElements(listEl, "item").forEach((itemEl) => {
+      byValue.set(itemEl.dataset.value ?? "", itemEl);
+    });
+
+    for (let index = 0; index < desiredValues.length; index += 1) {
+      const value = desiredValues[index]!;
+      let itemEl = byValue.get(value);
+      if (!itemEl) {
+        itemEl = this.cloneItemFromTemplate(templatesRoot, value) ?? undefined;
+        if (!itemEl) continue;
+        listEl.appendChild(itemEl);
+        byValue.set(value, itemEl);
+      }
+      const ref = listEl.children[index] ?? null;
+      if (listEl.children[index] !== itemEl) {
+        listEl.insertBefore(itemEl, ref);
+      }
+    }
+
+    while (listEl.children.length > desiredValues.length) {
+      listEl.lastElementChild?.remove();
+    }
+  }
+
+  private syncGroupItems(
+    groupEl: HTMLElement,
+    blockItems: ComboboxItem[],
+    templatesRoot: DocumentFragment | HTMLElement
+  ): void {
+    const ul = groupEl.querySelector("ul");
+    if (!ul) return;
+
+    const desiredValues = blockItems.map((item) => this.getItemValue(item));
+    const desiredSet = new Set(desiredValues);
+    const groupId = groupEl.dataset.id ?? "";
+
+    Array.from(
+      ul.querySelectorAll<HTMLElement>(
+        '[data-scope="combobox"][data-part="item"]:not([data-template])'
+      )
+    ).forEach((itemEl) => {
+      const value = itemEl.dataset.value ?? "";
+      if (!desiredSet.has(value)) itemEl.remove();
+    });
+
+    const byValue = new Map<string, HTMLElement>();
+    Array.from(ul.children).forEach((child) => {
+      if (!(child instanceof HTMLElement)) return;
+      if (child.getAttribute("data-part") !== "item") return;
+      byValue.set(child.dataset.value ?? "", child);
+    });
+
+    for (let index = 0; index < desiredValues.length; index += 1) {
+      const value = desiredValues[index]!;
+      let itemEl = byValue.get(value);
+      if (!itemEl) {
+        const groupTemplate = templatesRoot.querySelector<HTMLElement>(
+          `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+        );
+        const itemTemplate = groupTemplate?.querySelector<HTMLElement>(
+          `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"]`
+        );
+        if (!itemTemplate) continue;
+        itemEl = itemTemplate.cloneNode(true) as HTMLElement;
+        itemEl.removeAttribute("data-template");
+        ul.appendChild(itemEl);
+        byValue.set(value, itemEl);
+      }
+      const ref = ul.children[index] ?? null;
+      if (ul.children[index] !== itemEl) {
+        ul.insertBefore(itemEl, ref);
+      }
+    }
+
+    while (ul.children.length > desiredValues.length) {
+      ul.lastElementChild?.remove();
+    }
+  }
+
+  private syncGroupedItems(
+    listEl: HTMLElement,
+    templatesRoot: DocumentFragment | HTMLElement,
+    items: ComboboxItem[]
+  ): void {
+    const blocks = this.buildOrderedBlocks(items).filter(
+      (block): block is { type: "group"; groupId: string; items: ComboboxItem[] } =>
+        block.type === "group"
+    );
+    const desiredGroupIds = new Set(blocks.map((block) => block.groupId));
+
+    this.listPartElements(listEl, "item-group").forEach((groupEl) => {
+      const groupId = groupEl.dataset.id ?? "";
+      if (!desiredGroupIds.has(groupId)) groupEl.remove();
+    });
+
+    const groupsById = new Map<string, HTMLElement>();
+    this.listPartElements(listEl, "item-group").forEach((groupEl) => {
+      groupsById.set(groupEl.dataset.id ?? "", groupEl);
+    });
+
+    for (let index = 0; index < blocks.length; index += 1) {
+      const block = blocks[index]!;
+      let groupEl = groupsById.get(block.groupId);
+      if (!groupEl) {
+        groupEl = this.cloneGroupFromTemplate(templatesRoot, block.groupId) ?? undefined;
+        if (!groupEl) continue;
+        listEl.appendChild(groupEl);
+        groupsById.set(block.groupId, groupEl);
+      }
+      const ref = listEl.children[index] ?? null;
+      if (listEl.children[index] !== groupEl) {
+        listEl.insertBefore(groupEl, ref);
+      }
+      this.syncGroupItems(groupEl, block.items, templatesRoot);
+    }
+
+    while (listEl.children.length > blocks.length) {
+      listEl.lastElementChild?.remove();
+    }
+  }
+
+  private syncEmptyState(listEl: HTMLElement, templatesRoot: DocumentFragment | HTMLElement): void {
+    this.removeListParts(listEl, ["item", "item-group"]);
+    if (this.listPartElements(listEl, "empty").length > 0) return;
+
+    const emptyTemplate = templatesRoot.querySelector<HTMLElement>(
+      '[data-scope="combobox"][data-part="empty"][data-template]'
+    );
+    if (!emptyTemplate) return;
+
+    const emptyEl = emptyTemplate.cloneNode(true) as HTMLElement;
+    emptyEl.removeAttribute("data-template");
+    listEl.appendChild(emptyEl);
+  }
+
   renderItems(): void {
     const listEl = this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="list"]');
     if (!listEl) return;
 
-    const isOwnedByList = (el: Element) =>
-      el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
-
     const templatesRoot = templatesContentRoot(this.el, "combobox");
     if (!templatesRoot) return;
-
-    (["empty", "item-group", "item"] as const).forEach((part) => {
-      Array.from(
-        listEl.querySelectorAll<HTMLElement>(
-          `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
-        )
-      )
-        .filter(isOwnedByList)
-        .forEach((el) => el.remove());
-    });
 
     const items = this.activeItems();
 
     if (items.length === 0) {
-      const emptyTemplate = templatesRoot.querySelector<HTMLElement>(
-        '[data-scope="combobox"][data-part="empty"][data-template]'
-      );
-      if (emptyTemplate) {
-        const emptyEl = emptyTemplate.cloneNode(true) as HTMLElement;
-        emptyEl.removeAttribute("data-template");
-        listEl.appendChild(emptyEl);
-      }
+      this.syncEmptyState(listEl, templatesRoot);
       return;
     }
 
+    this.removeListParts(listEl, ["empty"]);
+
     if (this.hasGroups) {
-      this.renderGroupedItems(listEl, templatesRoot, items);
+      this.directListPartElements(listEl, "item").forEach((el) => el.remove());
+      this.syncGroupedItems(listEl, templatesRoot, items);
     } else {
-      this.renderFlatItems(listEl, templatesRoot, items);
-    }
-  }
-
-  private renderGroupedItems(
-    listEl: HTMLElement,
-    templatesRoot: DocumentFragment | HTMLElement,
-    items: ComboboxItem[]
-  ): void {
-    const blocks = this.buildOrderedBlocks(items);
-
-    for (const block of blocks) {
-      if (block.type !== "group") continue;
-
-      const groupTemplate = templatesRoot.querySelector<HTMLElement>(
-        `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(block.groupId)}"][data-template]`
-      );
-      if (!groupTemplate) continue;
-
-      const groupEl = groupTemplate.cloneNode(true) as HTMLElement;
-      groupEl.removeAttribute("data-template");
-      groupEl
-        .querySelectorAll<HTMLElement>("[data-template]")
-        .forEach((e) => e.removeAttribute("data-template"));
-
-      const keepValues = new Set(block.items.map((i) => this.getItemValue(i)));
-      groupEl
-        .querySelectorAll<HTMLElement>('[data-scope="combobox"][data-part="item"]')
-        .forEach((itemEl) => {
-          const v = itemEl.dataset.value ?? "";
-          if (!keepValues.has(v)) itemEl.remove();
-        });
-
-      listEl.appendChild(groupEl);
-    }
-  }
-
-  private renderFlatItems(
-    listEl: HTMLElement,
-    templatesRoot: DocumentFragment | HTMLElement,
-    items: ComboboxItem[]
-  ): void {
-    for (const item of items) {
-      const value = this.getItemValue(item);
-      const template = templatesRoot.querySelector<HTMLElement>(
-        `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
-      );
-      if (!template) continue;
-      const itemEl = template.cloneNode(true) as HTMLElement;
-      itemEl.removeAttribute("data-template");
-      listEl.appendChild(itemEl);
+      this.removeListParts(listEl, ["item-group"]);
+      this.syncFlatItems(listEl, templatesRoot, items);
     }
   }
 
