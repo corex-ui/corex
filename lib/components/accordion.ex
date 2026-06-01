@@ -725,6 +725,8 @@ defmodule Corex.Accordion do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
+  import Corex.Api.Doc
+
   import Corex.Helpers,
     only: [
       validate_content_items_required!: 2,
@@ -1253,8 +1255,7 @@ defmodule Corex.Accordion do
     """
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Open or close items from `phx-click`. Pass a list (`["lorem"]`), a comma string (`"lorem,donec"`), or `[]` to close all.
 
   ```heex
@@ -1277,7 +1278,8 @@ defmodule Corex.Accordion do
     })
   );
   ```
-  """
+  """)
+
   def set_value(accordion_id, value) when is_binary(accordion_id) do
     JS.dispatch("corex:accordion:set-value",
       to: "##{accordion_id}",
@@ -1286,8 +1288,7 @@ defmodule Corex.Accordion do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Open or close items from `handle_event`. Pushes `accordion_set_value` (no reply event).
 
   ```heex
@@ -1304,7 +1305,8 @@ defmodule Corex.Accordion do
     {:noreply, Corex.Accordion.set_value(socket, "my-accordion", value)}
   end
   ```
-  """
+  """)
+
   def set_value(socket, accordion_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
     RespondTo.push_set_value(
@@ -1315,8 +1317,7 @@ defmodule Corex.Accordion do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read open items from `phx-click`. Dispatches `corex:accordion:value`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -1349,7 +1350,8 @@ defmodule Corex.Accordion do
   ```
 
   `values` is a list of open item `value` strings, or `nil`.
-  """
+  """)
+
   def value(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:value",
       to: "##{accordion_id}",
@@ -1364,8 +1366,7 @@ defmodule Corex.Accordion do
 
   def value(accordion_id) when is_binary(accordion_id), do: value(accordion_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read open items from `handle_event` (`accordion_value`). Same replies as [`value/2`](#value/2).
 
   | Reply | Payload |
@@ -1390,7 +1391,8 @@ defmodule Corex.Accordion do
     {:noreply, assign(socket, :open_items, values)}
   end
   ```
-  """
+  """)
+
   def value(socket, accordion_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_list(opts) do
@@ -1401,8 +1403,7 @@ defmodule Corex.Accordion do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read the focused item from `phx-click`. Dispatches `corex:accordion:focused`. Optional `respond_to:` `:server` (default), `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -1433,7 +1434,8 @@ defmodule Corex.Accordion do
     {:noreply, assign(socket, :focused_item, item)}
   end
   ```
-  """
+  """)
+
   def focused(accordion_id, opts) when is_binary(accordion_id) and is_list(opts) do
     JS.dispatch("corex:accordion:focused",
       to: "##{accordion_id}",
@@ -1448,8 +1450,7 @@ defmodule Corex.Accordion do
 
   def focused(accordion_id) when is_binary(accordion_id), do: focused(accordion_id, [])
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read the focused item from `handle_event` (`accordion_focused`). Same replies as [`focused/2`](#focused/2).
 
   | Reply | Payload |
@@ -1474,7 +1475,8 @@ defmodule Corex.Accordion do
     {:noreply, assign(socket, :focused_item, item)}
   end
   ```
-  """
+  """)
+
   def focused(socket, accordion_id, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_list(opts) do
@@ -1485,8 +1487,7 @@ defmodule Corex.Accordion do
     )
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read expanded, focused, and disabled state for one item from `phx-click`. Dispatches `corex:accordion:item-state`. Optional `disabled:` and `respond_to:` `:server` (default), `:client`, or `:both`.
 
   | | Reply | Payload |
@@ -1517,7 +1518,8 @@ defmodule Corex.Accordion do
     {:noreply, assign(socket, :item_state, {item, state})}
   end
   ```
-  """
+  """)
+
   def item_state(accordion_id, item_value, opts)
       when is_binary(accordion_id) and is_binary(item_value) and is_list(opts) do
     disabled = Keyword.get(opts, :disabled, false)
@@ -1544,8 +1546,7 @@ defmodule Corex.Accordion do
     item_state(accordion_id, item_value, [])
   end
 
-  @doc type: :api
-  @doc ~S"""
+  api_doc(~S"""
   Read item state from `handle_event` (`accordion_item_state`). Same replies as [`item_state/3`](#item_state/3).
 
   | Reply | Payload |
@@ -1570,7 +1571,8 @@ defmodule Corex.Accordion do
     {:noreply, assign(socket, :item_state, {item, state})}
   end
   ```
-  """
+  """)
+
   def item_state(socket, accordion_id, item_value, opts)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) and
              is_binary(item_value) and is_list(opts) do
