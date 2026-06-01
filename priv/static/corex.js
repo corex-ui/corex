@@ -13000,22 +13000,34 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-FOQSALVP.mjs
+  // ../priv/static/chunks/chunk-6Q6MB27T.mjs
+  function isAllowedRedirectDestination(destination) {
+    const trimmed = destination.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith("//")) return false;
+    const schemeMatch = SCHEME_PREFIX.exec(trimmed);
+    if (schemeMatch) {
+      const scheme = schemeMatch[0].slice(0, -1).toLowerCase();
+      return scheme === "http" || scheme === "https";
+    }
+    return true;
+  }
   function readDomItemRedirect(itemEl, fallback2) {
     if (!itemEl) {
-      if (!fallback2) return null;
+      if (!fallback2 || !isAllowedRedirectDestination(fallback2)) return null;
       return { destination: fallback2 };
     }
     const dataRedirect = itemEl.getAttribute("data-redirect");
     if (dataRedirect === "false") return null;
     const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
-    if (!destination) return null;
+    if (!destination || !isAllowedRedirectDestination(destination)) return null;
     const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
     const newTab = itemEl.hasAttribute("data-new-tab");
     return { destination, mode, newTab };
   }
   function performRedirect(input, ctx) {
-    if (!input || !input.destination) return false;
+    if (!input || !input.destination || !isAllowedRedirectDestination(input.destination))
+      return false;
     const { destination, newTab, mode } = input;
     if (newTab) {
       window.open(destination, "_blank", "noopener,noreferrer");
@@ -13035,11 +13047,12 @@ var Corex = (() => {
     }
     return true;
   }
-  var REDIRECT_MODES;
-  var init_chunk_FOQSALVP = __esm({
-    "../priv/static/chunks/chunk-FOQSALVP.mjs"() {
+  var REDIRECT_MODES, SCHEME_PREFIX;
+  var init_chunk_6Q6MB27T = __esm({
+    "../priv/static/chunks/chunk-6Q6MB27T.mjs"() {
       "use strict";
       REDIRECT_MODES = ["href", "patch", "navigate"];
+      SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
     }
   });
 
@@ -13590,7 +13603,7 @@ var Corex = (() => {
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -14772,67 +14785,188 @@ var Corex = (() => {
           }
           return blocks;
         }
+        isOwnedByList(listEl, el) {
+          return el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+        }
+        listPartElements(listEl, part) {
+          return Array.from(
+            listEl.querySelectorAll(
+              `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
+            )
+          ).filter((el) => this.isOwnedByList(listEl, el));
+        }
+        directListPartElements(listEl, part) {
+          return Array.from(listEl.children).filter(
+            (el) => el instanceof HTMLElement && el.getAttribute("data-scope") === "combobox" && el.getAttribute("data-part") === part && !el.hasAttribute("data-template")
+          );
+        }
+        removeListParts(listEl, parts210) {
+          for (const part of parts210) {
+            this.listPartElements(listEl, part).forEach((el) => el.remove());
+          }
+        }
+        cloneItemFromTemplate(templatesRoot, value) {
+          const template = templatesRoot.querySelector(
+            `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
+          );
+          if (!template) return null;
+          const itemEl = template.cloneNode(true);
+          itemEl.removeAttribute("data-template");
+          return itemEl;
+        }
+        cloneGroupFromTemplate(templatesRoot, groupId) {
+          const groupTemplate = templatesRoot.querySelector(
+            `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+          );
+          if (!groupTemplate) return null;
+          const groupEl = groupTemplate.cloneNode(true);
+          groupEl.removeAttribute("data-template");
+          groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
+          return groupEl;
+        }
+        syncFlatItems(listEl, templatesRoot, items) {
+          var _a4, _b, _c;
+          const desiredValues = items.map((item) => this.getItemValue(item));
+          const desiredSet = new Set(desiredValues);
+          this.listPartElements(listEl, "item").forEach((itemEl) => {
+            var _a5;
+            const value = (_a5 = itemEl.dataset.value) != null ? _a5 : "";
+            if (!desiredSet.has(value)) itemEl.remove();
+          });
+          const byValue = /* @__PURE__ */ new Map();
+          this.listPartElements(listEl, "item").forEach((itemEl) => {
+            var _a5;
+            byValue.set((_a5 = itemEl.dataset.value) != null ? _a5 : "", itemEl);
+          });
+          for (let index = 0; index < desiredValues.length; index += 1) {
+            const value = desiredValues[index];
+            let itemEl = byValue.get(value);
+            if (!itemEl) {
+              itemEl = (_a4 = this.cloneItemFromTemplate(templatesRoot, value)) != null ? _a4 : void 0;
+              if (!itemEl) continue;
+              listEl.appendChild(itemEl);
+              byValue.set(value, itemEl);
+            }
+            const ref = (_b = listEl.children[index]) != null ? _b : null;
+            if (listEl.children[index] !== itemEl) {
+              listEl.insertBefore(itemEl, ref);
+            }
+          }
+          while (listEl.children.length > desiredValues.length) {
+            (_c = listEl.lastElementChild) == null ? void 0 : _c.remove();
+          }
+        }
+        syncGroupItems(groupEl, blockItems, templatesRoot) {
+          var _a4, _b, _c;
+          const ul = groupEl.querySelector("ul");
+          if (!ul) return;
+          const desiredValues = blockItems.map((item) => this.getItemValue(item));
+          const desiredSet = new Set(desiredValues);
+          const groupId = (_a4 = groupEl.dataset.id) != null ? _a4 : "";
+          Array.from(
+            ul.querySelectorAll(
+              '[data-scope="combobox"][data-part="item"]:not([data-template])'
+            )
+          ).forEach((itemEl) => {
+            var _a5;
+            const value = (_a5 = itemEl.dataset.value) != null ? _a5 : "";
+            if (!desiredSet.has(value)) itemEl.remove();
+          });
+          const byValue = /* @__PURE__ */ new Map();
+          Array.from(ul.children).forEach((child) => {
+            var _a5;
+            if (!(child instanceof HTMLElement)) return;
+            if (child.getAttribute("data-part") !== "item") return;
+            byValue.set((_a5 = child.dataset.value) != null ? _a5 : "", child);
+          });
+          for (let index = 0; index < desiredValues.length; index += 1) {
+            const value = desiredValues[index];
+            let itemEl = byValue.get(value);
+            if (!itemEl) {
+              const groupTemplate = templatesRoot.querySelector(
+                `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+              );
+              const itemTemplate = groupTemplate == null ? void 0 : groupTemplate.querySelector(
+                `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"]`
+              );
+              if (!itemTemplate) continue;
+              itemEl = itemTemplate.cloneNode(true);
+              itemEl.removeAttribute("data-template");
+              ul.appendChild(itemEl);
+              byValue.set(value, itemEl);
+            }
+            const ref = (_b = ul.children[index]) != null ? _b : null;
+            if (ul.children[index] !== itemEl) {
+              ul.insertBefore(itemEl, ref);
+            }
+          }
+          while (ul.children.length > desiredValues.length) {
+            (_c = ul.lastElementChild) == null ? void 0 : _c.remove();
+          }
+        }
+        syncGroupedItems(listEl, templatesRoot, items) {
+          var _a4, _b, _c;
+          const blocks = this.buildOrderedBlocks(items).filter(
+            (block) => block.type === "group"
+          );
+          const desiredGroupIds = new Set(blocks.map((block) => block.groupId));
+          this.listPartElements(listEl, "item-group").forEach((groupEl) => {
+            var _a5;
+            const groupId = (_a5 = groupEl.dataset.id) != null ? _a5 : "";
+            if (!desiredGroupIds.has(groupId)) groupEl.remove();
+          });
+          const groupsById = /* @__PURE__ */ new Map();
+          this.listPartElements(listEl, "item-group").forEach((groupEl) => {
+            var _a5;
+            groupsById.set((_a5 = groupEl.dataset.id) != null ? _a5 : "", groupEl);
+          });
+          for (let index = 0; index < blocks.length; index += 1) {
+            const block = blocks[index];
+            let groupEl = groupsById.get(block.groupId);
+            if (!groupEl) {
+              groupEl = (_a4 = this.cloneGroupFromTemplate(templatesRoot, block.groupId)) != null ? _a4 : void 0;
+              if (!groupEl) continue;
+              listEl.appendChild(groupEl);
+              groupsById.set(block.groupId, groupEl);
+            }
+            const ref = (_b = listEl.children[index]) != null ? _b : null;
+            if (listEl.children[index] !== groupEl) {
+              listEl.insertBefore(groupEl, ref);
+            }
+            this.syncGroupItems(groupEl, block.items, templatesRoot);
+          }
+          while (listEl.children.length > blocks.length) {
+            (_c = listEl.lastElementChild) == null ? void 0 : _c.remove();
+          }
+        }
+        syncEmptyState(listEl, templatesRoot) {
+          this.removeListParts(listEl, ["item", "item-group"]);
+          if (this.listPartElements(listEl, "empty").length > 0) return;
+          const emptyTemplate = templatesRoot.querySelector(
+            '[data-scope="combobox"][data-part="empty"][data-template]'
+          );
+          if (!emptyTemplate) return;
+          const emptyEl = emptyTemplate.cloneNode(true);
+          emptyEl.removeAttribute("data-template");
+          listEl.appendChild(emptyEl);
+        }
         renderItems() {
           const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
           if (!listEl) return;
-          const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
           const templatesRoot = templatesContentRoot(this.el, "combobox");
           if (!templatesRoot) return;
-          ["empty", "item-group", "item"].forEach((part) => {
-            Array.from(
-              listEl.querySelectorAll(
-                `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
-              )
-            ).filter(isOwnedByList).forEach((el) => el.remove());
-          });
           const items = this.activeItems();
           if (items.length === 0) {
-            const emptyTemplate = templatesRoot.querySelector(
-              '[data-scope="combobox"][data-part="empty"][data-template]'
-            );
-            if (emptyTemplate) {
-              const emptyEl = emptyTemplate.cloneNode(true);
-              emptyEl.removeAttribute("data-template");
-              listEl.appendChild(emptyEl);
-            }
+            this.syncEmptyState(listEl, templatesRoot);
             return;
           }
+          this.removeListParts(listEl, ["empty"]);
           if (this.hasGroups) {
-            this.renderGroupedItems(listEl, templatesRoot, items);
+            this.directListPartElements(listEl, "item").forEach((el) => el.remove());
+            this.syncGroupedItems(listEl, templatesRoot, items);
           } else {
-            this.renderFlatItems(listEl, templatesRoot, items);
-          }
-        }
-        renderGroupedItems(listEl, templatesRoot, items) {
-          const blocks = this.buildOrderedBlocks(items);
-          for (const block of blocks) {
-            if (block.type !== "group") continue;
-            const groupTemplate = templatesRoot.querySelector(
-              `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(block.groupId)}"][data-template]`
-            );
-            if (!groupTemplate) continue;
-            const groupEl = groupTemplate.cloneNode(true);
-            groupEl.removeAttribute("data-template");
-            groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
-            const keepValues = new Set(block.items.map((i2) => this.getItemValue(i2)));
-            groupEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
-              var _a4;
-              const v2 = (_a4 = itemEl.dataset.value) != null ? _a4 : "";
-              if (!keepValues.has(v2)) itemEl.remove();
-            });
-            listEl.appendChild(groupEl);
-          }
-        }
-        renderFlatItems(listEl, templatesRoot, items) {
-          for (const item of items) {
-            const value = this.getItemValue(item);
-            const template = templatesRoot.querySelector(
-              `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
-            );
-            if (!template) continue;
-            const itemEl = template.cloneNode(true);
-            itemEl.removeAttribute("data-template");
-            listEl.appendChild(itemEl);
+            this.removeListParts(listEl, ["item-group"]);
+            this.syncFlatItems(listEl, templatesRoot, items);
           }
         }
         applyItemProps() {
@@ -21718,38 +21852,50 @@ var Corex = (() => {
             const dayView = this.getDayView();
             const thead = dayView == null ? void 0 : dayView.querySelector("thead");
             if (!thead || !this.api.weekDays) return;
-            const tr = this.doc.createElement("tr");
+            let tr = thead.querySelector("tr");
+            if (!tr || tr.children.length !== this.api.weekDays.length) {
+              tr = this.doc.createElement("tr");
+              thead.replaceChildren(tr);
+              this.api.weekDays.forEach(() => {
+                const th = this.doc.createElement("th");
+                th.scope = "col";
+                tr.appendChild(th);
+              });
+            }
             this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
-            this.api.weekDays.forEach((day) => {
-              const th = this.doc.createElement("th");
-              th.scope = "col";
+            this.api.weekDays.forEach((day, index) => {
+              const th = tr.children[index];
               th.setAttribute("aria-label", day.long);
-              th.textContent = day.narrow;
-              tr.appendChild(th);
+              if (th.textContent !== day.narrow) {
+                th.textContent = day.narrow;
+              }
             });
-            thead.innerHTML = "";
-            thead.appendChild(tr);
           });
           __publicField(this, "renderDayTableBody", () => {
             const dayView = this.getDayView();
             const tbody = dayView == null ? void 0 : dayView.querySelector("tbody");
             if (!tbody) return;
             this.spreadProps(tbody, this.api.getTableBodyProps({ view: "day" }));
-            if (!this.api.weeks) return;
-            tbody.innerHTML = "";
-            this.api.weeks.forEach((week) => {
-              const tr = this.doc.createElement("tr");
+            if (!this.api.weeks) {
+              tbody.replaceChildren();
+              return;
+            }
+            const weeks = this.api.weeks;
+            this.trimTableRows(tbody, weeks.length);
+            weeks.forEach((week, weekIndex) => {
+              const tr = this.ensureTableRow(tbody, weekIndex);
               this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
-              week.forEach((value) => {
-                const td = this.doc.createElement("td");
+              this.trimTableCells(tr, week.length);
+              week.forEach((value, cellIndex) => {
+                const cellKey = `${value.year}-${value.month}-${value.day}`;
+                const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
                 this.spreadProps(td, this.api.getDayTableCellProps({ value }));
-                const trigger = this.doc.createElement("div");
                 this.spreadProps(trigger, this.api.getDayTableCellTriggerProps({ value }));
-                trigger.textContent = String(value.day);
-                td.appendChild(trigger);
-                tr.appendChild(td);
+                const label = String(value.day);
+                if (trigger.textContent !== label) {
+                  trigger.textContent = label;
+                }
               });
-              tbody.appendChild(tr);
             });
           });
           __publicField(this, "renderMonthTableBody", () => {
@@ -21758,20 +21904,20 @@ var Corex = (() => {
             if (!tbody) return;
             this.spreadProps(tbody, this.api.getTableBodyProps({ view: "month" }));
             const monthsGrid = this.api.getMonthsGrid({ columns: 4, format: "short" });
-            tbody.innerHTML = "";
-            monthsGrid.forEach((months) => {
-              const tr = this.doc.createElement("tr");
+            this.trimTableRows(tbody, monthsGrid.length);
+            monthsGrid.forEach((months, rowIndex) => {
+              const tr = this.ensureTableRow(tbody, rowIndex);
               this.spreadProps(tr, this.api.getTableRowProps());
-              months.forEach((month) => {
-                const td = this.doc.createElement("td");
+              this.trimTableCells(tr, months.length);
+              months.forEach((month, cellIndex) => {
+                const cellKey = `${this.api.visibleRange.start.year}-${month.value}`;
+                const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
                 this.spreadProps(td, this.api.getMonthTableCellProps(__spreadProps(__spreadValues({}, month), { columns: 4 })));
-                const trigger = this.doc.createElement("div");
                 this.spreadProps(trigger, this.api.getMonthTableCellTriggerProps(__spreadProps(__spreadValues({}, month), { columns: 4 })));
-                trigger.textContent = month.label;
-                td.appendChild(trigger);
-                tr.appendChild(td);
+                if (trigger.textContent !== month.label) {
+                  trigger.textContent = month.label;
+                }
               });
-              tbody.appendChild(tr);
             });
           });
           __publicField(this, "renderYearTableBody", () => {
@@ -21780,20 +21926,20 @@ var Corex = (() => {
             if (!tbody) return;
             this.spreadProps(tbody, this.api.getTableBodyProps());
             const yearsGrid = this.api.getYearsGrid({ columns: 4 });
-            tbody.innerHTML = "";
-            yearsGrid.forEach((years) => {
-              const tr = this.doc.createElement("tr");
+            this.trimTableRows(tbody, yearsGrid.length);
+            yearsGrid.forEach((years, rowIndex) => {
+              const tr = this.ensureTableRow(tbody, rowIndex);
               this.spreadProps(tr, this.api.getTableRowProps({ view: "year" }));
-              years.forEach((year) => {
-                const td = this.doc.createElement("td");
+              this.trimTableCells(tr, years.length);
+              years.forEach((year, cellIndex) => {
+                const cellKey = String(year.value);
+                const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
                 this.spreadProps(td, this.api.getYearTableCellProps(__spreadProps(__spreadValues({}, year), { columns: 4 })));
-                const trigger = this.doc.createElement("div");
                 this.spreadProps(trigger, this.api.getYearTableCellTriggerProps(__spreadProps(__spreadValues({}, year), { columns: 4 })));
-                trigger.textContent = year.label;
-                td.appendChild(trigger);
-                tr.appendChild(td);
+                if (trigger.textContent !== year.label) {
+                  trigger.textContent = year.label;
+                }
               });
-              tbody.appendChild(tr);
             });
           });
         }
@@ -21803,6 +21949,46 @@ var Corex = (() => {
         }
         initApi() {
           return this.zagConnect(connect11);
+        }
+        ensureTableRow(tbody, rowIndex) {
+          var _a4;
+          let tr = tbody.children[rowIndex];
+          if (!tr || tr.tagName !== "TR") {
+            tr = this.doc.createElement("tr");
+            const ref = (_a4 = tbody.children[rowIndex]) != null ? _a4 : null;
+            tbody.insertBefore(tr, ref);
+          }
+          return tr;
+        }
+        ensureTableCell(tr, cellIndex, cellKey) {
+          var _a4;
+          let td = tr.children[cellIndex];
+          if (td && (td.tagName !== "TD" || td.dataset.dateCell !== cellKey)) {
+            td.remove();
+            td = void 0;
+          }
+          if (!td) {
+            td = this.doc.createElement("td");
+            td.dataset.dateCell = cellKey;
+            const trigger2 = this.doc.createElement("div");
+            td.appendChild(trigger2);
+            const ref = (_a4 = tr.children[cellIndex]) != null ? _a4 : null;
+            tr.insertBefore(td, ref);
+          }
+          const trigger = td.querySelector("div");
+          return { td, trigger };
+        }
+        trimTableRows(tbody, rowCount) {
+          var _a4;
+          while (tbody.children.length > rowCount) {
+            (_a4 = tbody.lastElementChild) == null ? void 0 : _a4.remove();
+          }
+        }
+        trimTableCells(tr, cellCount) {
+          var _a4;
+          while (tr.children.length > cellCount) {
+            (_a4 = tr.lastElementChild) == null ? void 0 : _a4.remove();
+          }
         }
         render() {
           const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
@@ -27163,7 +27349,7 @@ ${err}`);
       "use strict";
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -28525,7 +28711,7 @@ ${err}`);
       init_chunk_57TWBSTW();
       init_chunk_4QMNVH3P();
       init_chunk_VJGUNSK5();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();
@@ -34592,7 +34778,7 @@ ${err}`);
       init_chunk_VJGUNSK5();
       init_chunk_OAGPTRUC();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_V4PB2O2G();
       init_chunk_H5X7JSOZ();
       init_chunk_77HPO22C();
@@ -43445,7 +43631,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_XI7CXJ3V();
       init_chunk_4PIYPYVK();
-      init_chunk_FOQSALVP();
+      init_chunk_6Q6MB27T();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_EWT2BP2N();

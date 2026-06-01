@@ -1,6 +1,53 @@
 import { describe, expect, it } from "vitest";
-import { Combobox } from "../../components/combobox";
+import { Combobox, type ComboboxItem } from "../../components/combobox";
 import { comboboxTree } from "../helpers/component-smoke";
+
+function comboboxTreeWithTemplates(items: ComboboxItem[]): HTMLElement {
+  const root = comboboxTree();
+  const templates = document.createElement("div");
+  templates.dataset.templates = "combobox";
+  templates.style.display = "none";
+
+  for (const item of items) {
+    const template = document.createElement("div");
+    template.dataset.scope = "combobox";
+    template.dataset.part = "item";
+    template.dataset.value = item.value ?? item.label;
+    template.dataset.template = "true";
+    templates.appendChild(template);
+  }
+
+  root.appendChild(templates);
+  return root;
+}
+
+function comboboxGroupedTreeWithTemplates(items: ComboboxItem[]): HTMLElement {
+  const root = comboboxTreeWithTemplates(items);
+  const templates = root.querySelector<HTMLElement>('[data-templates="combobox"]')!;
+
+  for (const groupId of [...new Set(items.map((item) => item.group).filter(Boolean))]) {
+    const groupTemplate = document.createElement("div");
+    groupTemplate.dataset.scope = "combobox";
+    groupTemplate.dataset.part = "item-group";
+    groupTemplate.dataset.id = groupId!;
+    groupTemplate.dataset.template = "true";
+
+    const ul = document.createElement("ul");
+    for (const item of items.filter((entry) => entry.group === groupId)) {
+      const itemTemplate = document.createElement("div");
+      itemTemplate.dataset.scope = "combobox";
+      itemTemplate.dataset.part = "item";
+      itemTemplate.dataset.value = item.value ?? item.label;
+      itemTemplate.dataset.template = "true";
+      ul.appendChild(itemTemplate);
+    }
+
+    groupTemplate.appendChild(ul);
+    templates.appendChild(groupTemplate);
+  }
+
+  return root;
+}
 
 describe("Combobox", () => {
   const items = [
@@ -59,6 +106,64 @@ describe("Combobox", () => {
     const c = new Combobox(comboboxTree(), { id: "cb" }, grouped, true);
     expect(c.hasGroups).toBe(true);
     expect(c.getCollection().size).toBe(2);
+    c.destroy();
+  });
+
+  it("reuses existing flat list items on repeated render", () => {
+    const root = comboboxTreeWithTemplates(items);
+    const c = new Combobox(root, { id: "cb" }, items, false);
+    c.init();
+    c.render();
+
+    const list = root.querySelector('[data-part="list"]');
+    const firstItem = list?.querySelector('[data-part="item"]:not([data-template])');
+    expect(firstItem).toBeTruthy();
+
+    c.render();
+    expect(list?.querySelector('[data-part="item"]:not([data-template])')).toBe(firstItem);
+
+    c.destroy();
+  });
+
+  it("removes filtered-out flat list items without rebuilding survivors", () => {
+    const root = comboboxTreeWithTemplates(items);
+    const c = new Combobox(root, { id: "cb" }, items, false);
+    c.init();
+    c.render();
+
+    const list = root.querySelector('[data-part="list"]')!;
+    const alpha = list.querySelector('[data-value="a"]');
+    expect(alpha).toBeTruthy();
+
+    c.options = [{ label: "Beta", value: "b" }];
+    c.render();
+
+    expect(list.querySelector('[data-value="a"]')).toBeNull();
+    expect(list.querySelector('[data-value="b"]')).toBeTruthy();
+
+    c.destroy();
+  });
+
+  it("reuses grouped list items on repeated render", () => {
+    const grouped = [
+      { label: "A", value: "a", group: "g1" },
+      { label: "B", value: "b", group: "g1" },
+    ];
+    const root = comboboxGroupedTreeWithTemplates(grouped);
+    const c = new Combobox(root, { id: "cb" }, grouped, true);
+    c.init();
+    c.render();
+
+    const list = root.querySelector('[data-part="list"]');
+    const firstGroup = list?.querySelector('[data-part="item-group"]:not([data-template])');
+    const firstItem = list?.querySelector('[data-part="item"]:not([data-template])');
+    expect(firstGroup).toBeTruthy();
+    expect(firstItem).toBeTruthy();
+
+    c.render();
+    expect(list?.querySelector('[data-part="item-group"]:not([data-template])')).toBe(firstGroup);
+    expect(list?.querySelector('[data-part="item"]:not([data-template])')).toBe(firstItem);
+
     c.destroy();
   });
 });
