@@ -308,11 +308,13 @@ defmodule Corex.DataTable do
 
   attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")
   attr(:rows, :list, required: true, doc: "The list of row data to render")
+
   attr(:row_id, :any,
     default: nil,
     doc:
       "Function `(row -> id)` for row and checkbox ids. Required for list tables when selectable={true}; stream rows default to the stream dom id when omitted"
   )
+
   attr(:row_click, :any, default: nil, doc: "the function for handling phx-click on each row")
 
   attr(:row_item, :any,
@@ -496,7 +498,9 @@ defmodule Corex.DataTable do
     """
   end
 
-  defp resolve_row_id(%{selectable: true, row_id: nil, rows: %Phoenix.LiveView.LiveStream{}} = assigns) do
+  defp resolve_row_id(
+         %{selectable: true, row_id: nil, rows: %Phoenix.LiveView.LiveStream{}} = assigns
+       ) do
     assign(assigns, :row_id, fn {id, _item} -> id end)
   end
 
