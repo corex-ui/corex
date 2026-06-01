@@ -14,10 +14,15 @@ defmodule Corex.DataTable.SortTest do
       socket =
         %Phoenix.LiveView.Socket{}
         |> assign(:users, rows())
-        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+        |> Sort.assign_for_sort(:users,
+          default_sort_by: :id,
+          default_sort_order: :asc,
+          sort_columns: [:id, :name]
+        )
 
       assert socket.assigns.sort_by == :id
       assert socket.assigns.sort_order == :asc
+      assert socket.assigns.sort_columns == [:id, :name]
       assert Enum.map(socket.assigns.users, & &1.id) == [1, 2]
     end
 
@@ -34,11 +39,16 @@ defmodule Corex.DataTable.SortTest do
   end
 
   describe "handle_sort/3" do
+    defp sorted_socket(opts \\ []) do
+      defaults = [default_sort_by: :id, default_sort_order: :asc, sort_columns: [:id, :name]]
+
+      %Phoenix.LiveView.Socket{}
+      |> assign(:users, rows())
+      |> Sort.assign_for_sort(:users, Keyword.merge(defaults, opts))
+    end
+
     test "sorts by new column ascending" do
-      socket =
-        %Phoenix.LiveView.Socket{}
-        |> assign(:users, rows())
-        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+      socket = sorted_socket()
 
       socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
 
@@ -48,14 +58,28 @@ defmodule Corex.DataTable.SortTest do
     end
 
     test "toggles order when sorting same column" do
-      socket =
-        %Phoenix.LiveView.Socket{}
-        |> assign(:users, rows())
-        |> Sort.assign_for_sort(:users, default_sort_by: :name, default_sort_order: :asc)
+      socket = sorted_socket(default_sort_by: :name)
 
       socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
 
       assert socket.assigns.sort_order == :desc
+    end
+
+    test "ignores unknown sort_by atom" do
+      socket = sorted_socket()
+
+      assert socket == Sort.handle_sort(socket, %{"sort_by" => "not_a_column"}, :users)
+    end
+
+    test "ignores sort_by not in sort_columns whitelist" do
+      socket = sorted_socket(sort_columns: [:id])
+
+      before = socket.assigns
+      socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
+
+      assert socket.assigns.sort_by == before.sort_by
+      assert socket.assigns.sort_order == before.sort_order
+      assert socket.assigns.users == before.users
     end
   end
 end

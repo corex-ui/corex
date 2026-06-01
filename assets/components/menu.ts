@@ -4,6 +4,7 @@ import { Component } from "../lib/core";
 
 export class Menu extends Component<Props, Api> {
   children: Menu[] = [];
+  private submenuTriggerUnsubs: Array<() => void> = [];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
@@ -25,12 +26,21 @@ export class Menu extends Component<Props, Api> {
     this.api.setParent(parent.machine.service);
   }
 
+  private clearSubmenuTriggerSubscriptions(): void {
+    for (const unsub of this.submenuTriggerUnsubs) {
+      unsub();
+    }
+    this.submenuTriggerUnsubs = [];
+  }
+
   private isOwnElement(el: HTMLElement): boolean {
     const nearestHook = el.closest('[phx-hook="Menu"]');
     return nearestHook === this.el;
   }
 
   renderSubmenuTriggers() {
+    this.clearSubmenuTriggerSubscriptions();
+
     const contentEl = this.el.querySelector<HTMLElement>(
       '[data-scope="menu"][data-part="content"]'
     );
@@ -55,10 +65,16 @@ export class Menu extends Component<Props, Api> {
       };
 
       applyProps();
-      this.machine.subscribe(applyProps);
-      childMenu.machine.subscribe(applyProps);
+      this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
+      this.submenuTriggerUnsubs.push(childMenu.machine.subscribe(applyProps));
     }
   }
+
+  destroy = () => {
+    this.clearSubmenuTriggerSubscriptions();
+    this.el.removeAttribute("data-loading");
+    this.machine.stop();
+  };
 
   render(): void {
     const triggerEl = this.el.querySelector<HTMLElement>(

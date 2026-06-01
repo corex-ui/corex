@@ -13,6 +13,7 @@ type MenuHookState = {
   handlers?: Array<CallbackRef>;
   onSetOpen?: (event: Event) => void;
   onSubmenuItemClick?: (event: Event) => void;
+  submenuWireTimer?: ReturnType<typeof setTimeout>;
 };
 
 export function findImmediateParentMenuHookEl(nestedEl: HTMLElement): HTMLElement | null {
@@ -143,21 +144,25 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       nestedMenuInstances.push(nestedMenu);
     });
 
-    setTimeout(() => {
+    this.submenuWireTimer = setTimeout(() => {
+      this.submenuWireTimer = undefined;
+      const rootMenu = this.menu;
+      if (!rootMenu) return;
+
       nestedMenuInstances.forEach((nestedMenu) => {
         const nestedEl = nestedMenu.el;
         const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
         if (!parentHookEl) return;
 
-        const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+        const parentMenu = parentHookEl === el ? rootMenu : menuByHookId.get(parentHookEl.id);
         if (!parentMenu) return;
 
         parentMenu.setChild(nestedMenu);
         nestedMenu.setParent(parentMenu);
       });
 
-      if (this.menu && this.menu.children.length > 0) {
-        wireSubmenuTriggersDeep(this.menu);
+      if (rootMenu.children.length > 0) {
+        wireSubmenuTriggersDeep(rootMenu);
       }
     }, 0);
 
@@ -201,6 +206,11 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
   destroyed(this: object & HookInterface<HTMLElement> & MenuHookState) {
     if (this.el.hasAttribute("data-nested")) return;
 
+    if (this.submenuWireTimer !== undefined) {
+      clearTimeout(this.submenuWireTimer);
+      this.submenuWireTimer = undefined;
+    }
+
     if (this.onSetOpen) {
       this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
     }
@@ -214,6 +224,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (this.menu) {
       destroyDescendantMenus(this.menu);
       this.menu.destroy();
+      this.menu = undefined;
     }
   },
 };

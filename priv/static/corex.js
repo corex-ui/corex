@@ -29567,6 +29567,12 @@ ${err}`);
         constructor() {
           super(...arguments);
           __publicField(this, "children", []);
+          __publicField(this, "submenuTriggerUnsubs", []);
+          __publicField(this, "destroy", () => {
+            this.clearSubmenuTriggerSubscriptions();
+            this.el.removeAttribute("data-loading");
+            this.machine.stop();
+          });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -29584,11 +29590,18 @@ ${err}`);
         setParent(parent) {
           this.api.setParent(parent.machine.service);
         }
+        clearSubmenuTriggerSubscriptions() {
+          for (const unsub of this.submenuTriggerUnsubs) {
+            unsub();
+          }
+          this.submenuTriggerUnsubs = [];
+        }
         isOwnElement(el) {
           const nearestHook = el.closest('[phx-hook="Menu"]');
           return nearestHook === this.el;
         }
         renderSubmenuTriggers() {
+          this.clearSubmenuTriggerSubscriptions();
           const contentEl = this.el.querySelector(
             '[data-scope="menu"][data-part="content"]'
           );
@@ -29607,8 +29620,8 @@ ${err}`);
               this.spreadProps(triggerEl, triggerProps);
             };
             applyProps();
-            this.machine.subscribe(applyProps);
-            childMenu.machine.subscribe(applyProps);
+            this.submenuTriggerUnsubs.push(this.machine.subscribe(applyProps));
+            this.submenuTriggerUnsubs.push(childMenu.machine.subscribe(applyProps));
           }
         }
         render() {
@@ -29758,18 +29771,21 @@ ${err}`);
             menuByHookId.set(hookId, nestedMenu);
             nestedMenuInstances.push(nestedMenu);
           });
-          setTimeout(() => {
+          this.submenuWireTimer = setTimeout(() => {
+            this.submenuWireTimer = void 0;
+            const rootMenu = this.menu;
+            if (!rootMenu) return;
             nestedMenuInstances.forEach((nestedMenu) => {
               const nestedEl = nestedMenu.el;
               const parentHookEl = findImmediateParentMenuHookEl(nestedEl);
               if (!parentHookEl) return;
-              const parentMenu = parentHookEl === el ? this.menu : menuByHookId.get(parentHookEl.id);
+              const parentMenu = parentHookEl === el ? rootMenu : menuByHookId.get(parentHookEl.id);
               if (!parentMenu) return;
               parentMenu.setChild(nestedMenu);
               nestedMenu.setParent(parentMenu);
             });
-            if (this.menu && this.menu.children.length > 0) {
-              wireSubmenuTriggersDeep(this.menu);
+            if (rootMenu.children.length > 0) {
+              wireSubmenuTriggersDeep(rootMenu);
             }
           }, 0);
           this.onSetOpen = (event) => {
@@ -29804,6 +29820,10 @@ ${err}`);
         },
         destroyed() {
           if (this.el.hasAttribute("data-nested")) return;
+          if (this.submenuWireTimer !== void 0) {
+            clearTimeout(this.submenuWireTimer);
+            this.submenuWireTimer = void 0;
+          }
           if (this.onSetOpen) {
             this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
           }
@@ -29815,6 +29835,7 @@ ${err}`);
           if (this.menu) {
             destroyDescendantMenus(this.menu);
             this.menu.destroy();
+            this.menu = void 0;
           }
         }
       };
@@ -40333,6 +40354,16 @@ ${err}`);
     container.dataset.toastGroupId = groupId;
     return { group: group2, store: store2 };
   }
+  function disposeToastGroup(groupId) {
+    const group2 = toastGroups.get(groupId);
+    if (!group2) return;
+    const container = group2.el;
+    group2.destroy();
+    toastGroups.delete(groupId);
+    toastStores.delete(groupId);
+    delete container.dataset.toastGroup;
+    delete container.dataset.toastGroupId;
+  }
   function getToastStore(groupId) {
     if (groupId) return toastStores.get(groupId);
     const el = document.querySelector("[data-toast-group]");
@@ -41057,15 +41088,15 @@ ${err}`);
             this.parts.action.hidden = false;
             this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
             const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
-            if (this.parts.action.innerHTML !== label) {
-              this.parts.action.innerHTML = label;
+            if (this.parts.action.textContent !== label) {
+              this.parts.action.textContent = label;
             }
             const extraClasses = actionClassTokens(this.latestProps.action);
             if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
           } else {
             this.parts.action.hidden = true;
-            if (this.parts.action.innerHTML) {
-              this.parts.action.innerHTML = "";
+            if (this.parts.action.textContent) {
+              this.parts.action.textContent = "";
             }
           }
           const duration = this.duration;
@@ -41364,6 +41395,9 @@ ${err}`);
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
             }
+          }
+          if (this.groupId) {
+            disposeToastGroup(this.groupId);
           }
         }
       };
