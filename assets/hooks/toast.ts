@@ -1,7 +1,7 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 
-import { createToastGroup, getToastStore } from "../components/toast";
+import { createToastGroup, disposeToastGroup, getToastStore } from "../components/toast";
 import type { ActionOptions } from "@zag-js/toast";
 import type { Placement } from "@zag-js/toast";
 import type { Options } from "@zag-js/toast";
@@ -353,6 +353,9 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       for (const handler of this.handlers) {
         this.removeHandleEvent(handler);
       }
+    }
+    if (this.groupId) {
+      disposeToastGroup(this.groupId);
     }
   },
 };

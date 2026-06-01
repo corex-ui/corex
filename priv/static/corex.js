@@ -40341,6 +40341,16 @@ ${err}`);
     container.dataset.toastGroupId = groupId;
     return { group: group2, store: store2 };
   }
+  function disposeToastGroup(groupId) {
+    const group2 = toastGroups.get(groupId);
+    if (!group2) return;
+    const container = group2.el;
+    group2.destroy();
+    toastGroups.delete(groupId);
+    toastStores.delete(groupId);
+    delete container.dataset.toastGroup;
+    delete container.dataset.toastGroupId;
+  }
   function getToastStore(groupId) {
     if (groupId) return toastStores.get(groupId);
     const el = document.querySelector("[data-toast-group]");
@@ -41065,15 +41075,15 @@ ${err}`);
             this.parts.action.hidden = false;
             this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
             const label = (_e = (_d = this.latestProps.action) == null ? void 0 : _d.label) != null ? _e : "";
-            if (this.parts.action.innerHTML !== label) {
-              this.parts.action.innerHTML = label;
+            if (this.parts.action.textContent !== label) {
+              this.parts.action.textContent = label;
             }
             const extraClasses = actionClassTokens(this.latestProps.action);
             if (extraClasses.length) this.parts.action.classList.add(...extraClasses);
           } else {
             this.parts.action.hidden = true;
-            if (this.parts.action.innerHTML) {
-              this.parts.action.innerHTML = "";
+            if (this.parts.action.textContent) {
+              this.parts.action.textContent = "";
             }
           }
           const duration = this.duration;
@@ -41372,6 +41382,9 @@ ${err}`);
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
             }
+          }
+          if (this.groupId) {
+            disposeToastGroup(this.groupId);
           }
         }
       };

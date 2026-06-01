@@ -4,8 +4,7 @@ defmodule Corex.Toast.Payload do
   import Corex.Helpers, only: [maybe_put: 3]
 
   alias Corex.Toast.Action, as: ToastAction
-  alias Phoenix.HTML.Safe
-  alias Phoenix.LiveView.{JS, Rendered}
+  alias Phoenix.LiveView.JS
 
   @toast_type_strings Map.new(~W(info success error warning loading)a, &{&1, Atom.to_string(&1)})
 
@@ -106,15 +105,6 @@ defmodule Corex.Toast.Payload do
   defp class_string(_), do: nil
 
   defp action_label_html(label) when is_binary(label), do: label
-
-  defp action_label_html(%Rendered{} = rendered) do
-    rendered |> Safe.to_iodata() |> IO.iodata_to_binary()
-  end
-
-  defp action_label_html({:safe, _} = safe) do
-    safe |> Safe.to_iodata() |> IO.iodata_to_binary()
-  end
-
   defp action_label_html(_), do: nil
 
   defp encode_js_ops(%JS{} = js), do: Phoenix.json_library().encode!(js.ops)
