@@ -36,6 +36,24 @@ defmodule Corex.DataTable.SortTest do
 
       assert socket.assigns.users == original
     end
+
+    test "infers sort_columns from rows when omitted" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, rows())
+        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+      assert socket.assigns.sort_columns == [:id, :name]
+    end
+
+    test "infers default_sort_by only when rows empty" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, [])
+        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+      assert socket.assigns.sort_columns == [:id]
+    end
   end
 
   describe "handle_sort/3" do
@@ -80,6 +98,67 @@ defmodule Corex.DataTable.SortTest do
       assert socket.assigns.sort_by == before.sort_by
       assert socket.assigns.sort_order == before.sort_order
       assert socket.assigns.users == before.users
+    end
+
+    test "infers sort_columns from rows when omitted and sorts" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, rows())
+        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+      socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
+
+      assert socket.assigns.sort_by == :name
+      assert socket.assigns.sort_order == :asc
+      assert Enum.map(socket.assigns.users, & &1.name) == ["a", "b"]
+    end
+
+    test "rejects forged sort_by not in inferred columns" do
+      rows = [%{id: 1}]
+
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, rows)
+        |> Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+      before = socket.assigns
+      socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
+
+      assert socket.assigns.sort_by == before.sort_by
+      assert socket.assigns.sort_order == before.sort_order
+      assert socket.assigns.users == before.users
+    end
+
+    test "ignores sort_by when sort_columns is explicitly nil" do
+      socket =
+        %Phoenix.LiveView.Socket{}
+        |> assign(:users, rows())
+        |> Sort.assign_for_sort(:users,
+          default_sort_by: :id,
+          default_sort_order: :asc,
+          sort_columns: nil
+        )
+
+      before = socket.assigns
+      socket = Sort.handle_sort(socket, %{"sort_by" => "name"}, :users)
+
+      assert socket.assigns.sort_by == before.sort_by
+      assert socket.assigns.sort_order == before.sort_order
+      assert socket.assigns.users == before.users
+    end
+  end
+
+  describe "parse_sort_by/2" do
+    test "rejects when sort_columns is nil" do
+      assert Sort.parse_sort_by("id", nil) == :error
+    end
+
+    test "accepts whitelisted column" do
+      assert Sort.parse_sort_by("name", [:id, :name]) == {:ok, :name}
+    end
+
+    test "rejects column not in whitelist" do
+      assert Sort.parse_sort_by("name", [:id]) == :error
     end
   end
 end

@@ -5,6 +5,8 @@ defmodule E2eWeb.DataTableStyleLive do
 
   alias E2eWeb.DataTablePatternState, as: PState
 
+  @style_sort_columns [:id, :name, :role, :status]
+
   @list_users [
     %{id: 1, name: "Alice", email: "alice@example.com", role: "Admin", status: "Active"},
     %{id: 2, name: "Bob", email: "bob@example.com", role: "User", status: "Inactive"},
@@ -38,13 +40,14 @@ defmodule E2eWeb.DataTableStyleLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    rows = PState.sort_rows(@list_users, :id, :asc)
-
     {:ok,
      socket
-     |> assign(:style_rows, rows)
-     |> assign(:style_sort_by, :id)
-     |> assign(:style_sort_order, :asc)
+     |> assign(:style_rows, @list_users)
+     |> Corex.DataTable.Sort.assign_for_sort(:style_rows,
+       default_sort_by: :id,
+       default_sort_order: :asc,
+       sort_columns: @style_sort_columns
+     )
      |> assign(:style_selected, [])
      |> assign(:color_variants, @color_variants)
      |> assign(:size_variants, @size_variants)
@@ -53,12 +56,7 @@ defmodule E2eWeb.DataTableStyleLive do
 
   @impl true
   def handle_event("style_sort", params, socket) do
-    {:noreply,
-     PState.handle_sort_ns(socket, params,
-       rows: :style_rows,
-       sort_by: :style_sort_by,
-       sort_order: :style_sort_order
-     )}
+    {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :style_rows)}
   end
 
   def handle_event("style_select", %{"id" => checkbox_id} = params, socket) do
@@ -102,7 +100,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-color"
           title="Color"
-          code={E2eWeb.Demos.DataTableDemo.styling_color_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_color_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -111,8 +109,8 @@ defmodule E2eWeb.DataTableStyleLive do
                 id={id}
                 class={"data-table max-w-none #{modifier}"}
                 rows={@style_rows}
-                sort_by={@style_sort_by}
-                sort_order={@style_sort_order}
+                sort_by={@sort_by}
+                sort_order={@sort_order}
                 selected={@style_selected}
               />
             </div>
@@ -122,7 +120,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-size"
           title="Size"
-          code={E2eWeb.Demos.DataTableDemo.styling_size_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_size_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -131,8 +129,8 @@ defmodule E2eWeb.DataTableStyleLive do
                 id={id}
                 class={"data-table max-w-none #{modifier}"}
                 rows={@style_rows}
-                sort_by={@style_sort_by}
-                sort_order={@style_sort_order}
+                sort_by={@sort_by}
+                sort_order={@sort_order}
                 selected={@style_selected}
               />
             </div>
@@ -142,7 +140,7 @@ defmodule E2eWeb.DataTableStyleLive do
         <.demo_section
           id="data-table-styling-max-width"
           title="Max width"
-          code={E2eWeb.Demos.DataTableDemo.styling_max_width_code()}
+          code_tabs={E2eWeb.Demos.DataTableDemo.styling_max_width_code_tabs()}
         >
           <:preview>
             <div class="flex flex-col gap-4 w-full">
@@ -151,8 +149,8 @@ defmodule E2eWeb.DataTableStyleLive do
                 id={id}
                 class={"data-table #{width}"}
                 rows={@style_rows}
-                sort_by={@style_sort_by}
-                sort_order={@style_sort_order}
+                sort_by={@sort_by}
+                sort_order={@sort_order}
                 selected={@style_selected}
               />
             </div>

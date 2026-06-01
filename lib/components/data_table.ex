@@ -10,6 +10,8 @@ defmodule Corex.DataTable do
   @doc type: :component
   use Phoenix.Component
 
+  require Logger
+
   alias Corex.DataTable.Translation
 
   @doc ~S'''
@@ -93,7 +95,7 @@ defmodule Corex.DataTable do
 
   ### Sortable
 
-  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). LiveView minimum:
+  Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. Delegate sorting to [`Corex.DataTable.Sort`](Corex.DataTable.Sort.html). Pass `:sort_columns` when you want an explicit whitelist; otherwise allowed columns are inferred from row map keys. LiveView minimum:
 
   ```elixir
   # mount
@@ -121,7 +123,11 @@ defmodule Corex.DataTable do
 
   ### Selectable
 
-  Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate selection to [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html). LiveView minimum:
+  Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Always pass `row_id` on
+  list rows (e.g. `row_id={&"user-#{&1.id}"}`) so checkbox ids stay stable and match
+  [`Corex.DataTable.Selection`](Corex.DataTable.Selection.html). Stream rows default to the stream
+  dom id when `row_id` is omitted. Omitting `row_id` on a list table falls back to `inspect/1`
+  (legacy, discouraged); dev logs a warning when `:debug` is enabled on `:corex`.
 
   ```elixir
   # mount
@@ -172,6 +178,7 @@ defmodule Corex.DataTable do
    |> assign(:cities, rows)
    |> assign(:page, 1)
    |> assign(:page_size, 10)
+   |> assign(:sort_columns, [:name])
    |> assign(:sort_by, :name)
    |> assign(:sort_order, :asc)
    |> assign(:total, total)}
@@ -200,30 +207,35 @@ defmodule Corex.DataTable do
   ```
 
   ```elixir
-  def handle_event("sort", %{"sort_by" => sort_by}, socket) do
-    sort_by = String.to_existing_atom(sort_by)
-    order =
-      if socket.assigns.sort_by == sort_by do
-        if socket.assigns.sort_order == :asc, do: :desc, else: :asc
-      else
-        :asc
-      end
+  def handle_event("sort", %{"sort_by" => sort_by_param}, socket) do
+    case Corex.DataTable.Sort.parse_sort_by(sort_by_param, socket.assigns.sort_columns) do
+      {:ok, sort_by} ->
+        order =
+          if socket.assigns.sort_by == sort_by do
+            if socket.assigns.sort_order == :asc, do: :desc, else: :asc
+          else
+            :asc
+          end
 
-    {rows, total} =
-      MyApp.list_cities(
-        page: 1,
-        page_size: socket.assigns.page_size,
-        order_by: sort_by,
-        order_dir: order
-      )
+        {rows, total} =
+          MyApp.list_cities(
+            page: 1,
+            page_size: socket.assigns.page_size,
+            order_by: sort_by,
+            order_dir: order
+          )
 
-    {:noreply,
-     socket
-     |> assign(:cities, rows)
-     |> assign(:page, 1)
-     |> assign(:sort_by, sort_by)
-     |> assign(:sort_order, order)
-     |> assign(:total, total)}
+        {:noreply,
+         socket
+         |> assign(:cities, rows)
+         |> assign(:page, 1)
+         |> assign(:sort_by, sort_by)
+         |> assign(:sort_order, order)
+         |> assign(:total, total)}
+
+      :error ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("page", %{"page" => page}, socket) do
@@ -296,7 +308,13 @@ defmodule Corex.DataTable do
 
   attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")
   attr(:rows, :list, required: true, doc: "The list of row data to render")
-  attr(:row_id, :any, default: nil, doc: "the function for generating the row id")
+
+  attr(:row_id, :any,
+    default: nil,
+    doc:
+      "Function `(row -> id)` for row and checkbox ids. Required for list tables when selectable={true}; stream rows default to the stream dom id when omitted"
+  )
+
   attr(:row_click, :any, default: nil, doc: "the function for handling phx-click on each row")
 
   attr(:row_item, :any,
@@ -445,12 +463,12 @@ defmodule Corex.DataTable do
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
             <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
               <Corex.Checkbox.checkbox
-                id={"#{@id}-select-#{if @row_id, do: @row_id.(row), else: inspect(row)}"}
+                id={"#{@id}-select-#{@row_id.(row)}"}
                 class={@checkbox_class}
-                name={to_string(if @row_id, do: @row_id.(row), else: inspect(row))}
-                value={to_string(if @row_id, do: @row_id.(row), else: inspect(row))}
-                phx-value-id={if @row_id, do: @row_id.(row), else: inspect(row)}
-                checked={(if @row_id, do: @row_id.(row), else: inspect(row)) in @selected}
+                name={to_string(@row_id.(row))}
+                value={to_string(@row_id.(row))}
+                phx-value-id={@row_id.(row)}
+                checked={@row_id.(row) in @selected}
                 on_checked_change={@on_select}
                 controlled={true}
                 aria_label={@translation.select_row}
@@ -478,6 +496,23 @@ defmodule Corex.DataTable do
       </table>
     </div>
     """
+  end
+
+  defp resolve_row_id(
+         %{selectable: true, row_id: nil, rows: %Phoenix.LiveView.LiveStream{}} = assigns
+       ) do
+    assign(assigns, :row_id, fn {id, _item} -> id end)
+  end
+
+  defp resolve_row_id(%{selectable: true, row_id: nil} = assigns) do
+    if Application.get_env(:corex, :debug) do
+      Logger.warning(
+        "data_table/1: row_id is recommended when selectable is true on list rows; " <>
+          "using inspect/1 for checkbox ids (legacy fallback)"
+      )
+    end
+
+    assign(assigns, :row_id, &inspect/1)
   end
 
   defp resolve_row_id(%{rows: %Phoenix.LiveView.LiveStream{}} = assigns) do

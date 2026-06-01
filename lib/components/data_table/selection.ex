@@ -53,7 +53,7 @@ defmodule Corex.DataTable.Selection do
   Use in `mount/3` after assigning the rows list. Options:
 
   - `:table_id` – required; must match the `id` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `"users-table"`)
-  - `:row_id` – required; must match `row_id` on the same component (e.g. `&"user-\#{&1.id}"`)
+  - `:row_id` – required; must match `row_id` on the same [`data_table/1`](Corex.DataTable.html#data_table/1) component (e.g. `&"user-\#{&1.id}"`). Do not rely on the component `inspect/1` fallback when using these helpers.
 
   Adds `:selected` (empty list), `:selection_table_id`, and `:selection_row_id`
   for use by [`handle_select/3`](#handle_select/3) and [`handle_select_all/3`](#handle_select_all/3).
