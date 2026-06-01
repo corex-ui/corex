@@ -62,4 +62,30 @@ describe("toast group API", () => {
     expect(container.dataset.toastGroup).toBeUndefined();
     expect(container.dataset.toastGroupId).toBeUndefined();
   });
+
+  it("renders action label as text without HTML injection", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, { id: groupId });
+    const malicious = '<img src=x onerror="window.__toastXss=1">';
+    store.create({
+      id: "t-xss",
+      title: "Title",
+      type: "info",
+      action: { label: malicious, onClick: () => {} },
+    });
+    group.render();
+
+    const action = container.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="action-trigger"]'
+    );
+    expect(action).toBeTruthy();
+    expect(action!.textContent).toBe(malicious);
+    expect(action!.querySelector("img")).toBeNull();
+
+    document.body.removeChild(container);
+  });
 });
