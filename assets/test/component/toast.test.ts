@@ -1,4 +1,5 @@
 import { describe, expect, it, afterEach } from "vitest";
+import type { ActionOptions } from "@zag-js/toast";
 import {
   actionClassTokens,
   createToast,
@@ -104,7 +105,7 @@ describe("toast group API", () => {
         label: '<span data-testid="custom-label">Open</span>',
         labelHtml: true,
         onClick: () => {},
-      },
+      } as ActionOptions & { labelHtml?: boolean },
     });
     group.render();
 
