@@ -1,6 +1,13 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
+  if Mix.env() != :prod do
+    for path <- :code.get_path(),
+        Regex.match?(~r/corex_new-[\w\.\-]+\/ebin$/, List.to_string(path)) do
+      Code.delete_path(path)
+    end
+  end
+
   @version "0.1.0"
   @elixir_requirement "~> 1.17"
 
@@ -59,6 +66,7 @@ defmodule Corex.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:oeditus_credo, "~> 0.6.3", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
+      {:corex_new, path: "installer", only: [:docs, :test], runtime: false},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:bandit, "~> 1.0", only: :dev},
