@@ -74,22 +74,34 @@ defmodule Corex.DataTable.Selection do
   Use in `handle_event("select", params, socket)` (same name as `on_select`) and return
   `{:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}`.
 
-  `params` must contain `"id"` (checkbox DOM id) and `"checked"`. `rows_assign`
-  is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows` (e.g. `:users`).
+  `params` must contain `"id"` (checkbox DOM id) and `"checked"`. Only row ids derived from
+  current `rows` via `selection_row_id` are added to `:selected`; forged ids are ignored when
+  checking a row. `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows` (e.g. `:users`).
   """
   def handle_select(socket, %{"id" => checkbox_id, "checked" => checked}, rows_assign) do
     table_id = socket.assigns.selection_table_id
+    row_id_fn = socket.assigns.selection_row_id
     row_id = String.replace(checkbox_id, "#{table_id}-select-", "")
     rows = socket.assigns[rows_assign] || []
+    valid_ids = valid_row_ids(rows, row_id_fn)
 
     selected =
-      if checked do
-        [row_id | socket.assigns.selected] |> Enum.uniq()
-      else
-        List.delete(socket.assigns.selected, row_id)
+      cond do
+        checked and MapSet.member?(valid_ids, row_id) ->
+          [row_id | socket.assigns.selected] |> Enum.uniq()
+
+        checked ->
+          socket.assigns.selected
+
+        true ->
+          List.delete(socket.assigns.selected, row_id)
       end
 
-    all_selected = length(selected) == length(rows)
+    selected = Enum.filter(selected, &MapSet.member?(valid_ids, &1))
+
+    all_selected =
+      MapSet.subset?(MapSet.new(selected), valid_ids) and
+        length(selected) == MapSet.size(valid_ids)
 
     socket
     |> assign(:selected, selected)
@@ -128,5 +140,11 @@ defmodule Corex.DataTable.Selection do
       end)
 
     socket
+  end
+
+  defp valid_row_ids(rows, row_id_fn) when is_function(row_id_fn, 1) do
+    rows
+    |> Enum.map(row_id_fn)
+    |> MapSet.new()
   end
 end
