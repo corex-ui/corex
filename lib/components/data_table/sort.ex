@@ -9,9 +9,9 @@ defmodule Corex.DataTable.Sort do
   [`data_table/1`](Corex.DataTable.html#data_table/1) docs). In the LiveView, call
   `assign_for_sort/3` in `mount/3`, then `handle_sort/3` from the `on_sort` event handler.
 
-  Set `:sort_columns` in `assign_for_sort/3` so sort events from the browser are whitelisted on
-  the server. When `:sort_columns` is omitted, [`handle_sort/3`](#handle_sort/3) ignores all
-  sort events.
+  Set `:sort_columns` in `assign_for_sort/3` to whitelist sortable columns on the server. When
+  omitted, `:sort_columns` is inferred from atom keys on the first row map. Prefer an explicit
+  list when rows carry extra keys not shown in the table.
 
   ## Example (in-memory rows)
 
@@ -99,8 +99,9 @@ defmodule Corex.DataTable.Sort do
 
   - `:default_sort_by` – atom; column `name` on [`data_table/1`](Corex.DataTable.html#data_table/1) (e.g. `:id`)
   - `:default_sort_order` – `:asc` or `:desc`, default `:asc`
-  - `:sort_columns` – list of atoms the browser may sort by (e.g. `[:id, :name]`). Required for
-    [`handle_sort/3`](#handle_sort/3) to accept sort events; when omitted, sort events are ignored.
+  - `:sort_columns` – list of atoms the browser may sort by (e.g. `[:id, :name]`). When omitted,
+    inferred from atom keys on the first row in `rows_assign`. Prefer an explicit list in
+    production when row maps include keys you do not expose as sortable columns.
 
   The socket must already have an assign at `rows_assign` (e.g. `:users`) with the same list
   passed as `rows` to [`data_table/1`](Corex.DataTable.html#data_table/1). Adds `:sort_by`,
@@ -109,8 +110,13 @@ defmodule Corex.DataTable.Sort do
   def assign_for_sort(socket, rows_assign, opts \\ []) do
     sort_by = Keyword.get(opts, :default_sort_by)
     sort_order = Keyword.get(opts, :default_sort_order, :asc)
-    sort_columns = Keyword.get(opts, :sort_columns)
     rows = socket.assigns[rows_assign] || []
+
+    sort_columns =
+      case Keyword.fetch(opts, :sort_columns) do
+        {:ok, columns} -> columns
+        :error -> infer_sort_columns(rows, sort_by)
+      end
 
     socket
     |> assign(:sort_by, sort_by)
@@ -125,10 +131,9 @@ defmodule Corex.DataTable.Sort do
   Use in `handle_event("sort", params, socket)` (same name as `on_sort`) and return
   `{:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}`.
 
-  `params` must contain `"sort_by"` (string, e.g. `"id"`). When `:sort_columns` is set via
-  [`assign_for_sort/3`](#assign_for_sort/3), only those columns are accepted. When
-  `:sort_columns` is `nil`, the socket is returned unchanged. Unknown or disallowed values never
-  crash the LiveView process.
+  `params` must contain `"sort_by"` (string, e.g. `"id"`). Only columns in `:sort_columns` from
+  [`assign_for_sort/3`](#assign_for_sort/3) are accepted. Unknown or disallowed values never crash
+  the LiveView process.
 
   `rows_assign` is the assign key passed to [`data_table/1`](Corex.DataTable.html#data_table/1) as `rows`.
   """
@@ -155,6 +160,18 @@ defmodule Corex.DataTable.Sort do
   end
 
   def parse_sort_by(_param, _columns), do: :error
+
+  defp infer_sort_columns([], nil), do: []
+
+  defp infer_sort_columns([], sort_by) when is_atom(sort_by), do: [sort_by]
+
+  defp infer_sort_columns([row | _], _sort_by) when is_map(row) do
+    row
+    |> Map.keys()
+    |> Enum.filter(&is_atom/1)
+  end
+
+  defp infer_sort_columns(_, _), do: []
 
   defp apply_sort(socket, sort_by, rows_assign) do
     current_sort_by = socket.assigns.sort_by
