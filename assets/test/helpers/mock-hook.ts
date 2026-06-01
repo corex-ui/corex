@@ -35,16 +35,15 @@ type BaseHookContext<E extends HTMLElement> = {
   removeHandleEvent: ReturnType<typeof vi.fn>;
 };
 
-type MockHookContextOptions<E extends HTMLElement, Extra extends Record<string, unknown>> = {
+type MockHookContextOptions<Extra extends Record<string, unknown>> = {
   connected?: boolean;
   overrides?: Extra;
-  el?: E;
 };
 
 export function mockHookContext<
   E extends HTMLElement,
   Extra extends Record<string, unknown> = Record<string, never>,
->(el: E, opts: MockHookContextOptions<E, Extra> = {}) {
+>(el: E, opts: MockHookContextOptions<Extra> = {}) {
   const connected = opts.connected ?? false;
   const { ctx, patch, navigate } = mockLiveSocket(connected);
   const jsCommands = mockHookJs();
