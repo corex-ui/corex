@@ -4,6 +4,7 @@ defmodule Corex.Toast.Payload do
   import Corex.Helpers, only: [maybe_put: 3]
 
   alias Corex.Toast.Action, as: ToastAction
+  alias Phoenix.HTML.Safe
   alias Phoenix.LiveView.JS
 
   @toast_type_strings Map.new(~W(info success error warning loading)a, &{&1, Atom.to_string(&1)})
@@ -115,14 +116,14 @@ defmodule Corex.Toast.Payload do
   end
 
   defp action_label({:safe, _} = safe) do
-    {:ok, safe |> Phoenix.HTML.Safe.to_iodata() |> IO.iodata_to_binary(), true}
+    {:ok, safe |> Safe.to_iodata() |> IO.iodata_to_binary(), true}
   end
 
   defp action_label(_), do: :error
 
   defp rendered_to_binary(rendered) do
     rendered
-    |> Phoenix.HTML.Safe.to_iodata()
+    |> Safe.to_iodata()
     |> IO.iodata_to_binary()
   end
 
