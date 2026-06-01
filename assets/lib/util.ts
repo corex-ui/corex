@@ -108,6 +108,25 @@ export function templatesContentRoot(
   return host as HTMLElement;
 }
 
+export function cloneTemplateChildren(
+  template: HTMLElement | null | undefined,
+  target: HTMLElement
+): boolean {
+  if (!template || template.childNodes.length === 0) return false;
+
+  const sourceId = template.id;
+  if (sourceId && target.dataset.templateSource === sourceId && target.childNodes.length > 0) {
+    return true;
+  }
+
+  target.replaceChildren(...Array.from(template.childNodes, (node) => node.cloneNode(true)));
+
+  if (sourceId) target.dataset.templateSource = sourceId;
+  else delete target.dataset.templateSource;
+
+  return true;
+}
+
 /**
  * Generate a random ID if none is provided
  * @param element - Optional HTML element to get an existing id

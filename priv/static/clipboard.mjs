@@ -1,6 +1,6 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-VHCQWARJ.mjs";
+} from "./chunks/chunk-GFGOJ2RY.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -21,7 +21,7 @@ import {
   getString,
   getWindow,
   setElementValue
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");

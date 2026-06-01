@@ -54,6 +54,17 @@ function templatesContentRoot(el, dataTemplates) {
   if (host instanceof HTMLTemplateElement) return host.content;
   return host;
 }
+function cloneTemplateChildren(template, target) {
+  if (!template || template.childNodes.length === 0) return false;
+  const sourceId = template.id;
+  if (sourceId && target.dataset.templateSource === sourceId && target.childNodes.length > 0) {
+    return true;
+  }
+  target.replaceChildren(...Array.from(template.childNodes, (node) => node.cloneNode(true)));
+  if (sourceId) target.dataset.templateSource = sourceId;
+  else delete target.dataset.templateSource;
+  return true;
+}
 var generateId = (element, fallbackId = "element") => {
   if (element?.id) return element.id;
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
@@ -2827,6 +2838,7 @@ export {
   getBooleanValue,
   getCheckedState,
   templatesContentRoot,
+  cloneTemplateChildren,
   generateId,
   canPushEvent,
   associateInputWithFormIfOutside,

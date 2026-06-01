@@ -1,16 +1,17 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-VHCQWARJ.mjs";
+} from "./chunks/chunk-GFGOJ2RY.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-57TWBSTW.mjs";
-import "./chunks/chunk-4QMNVH3P.mjs";
+} from "./chunks/chunk-WJDVLJMP.mjs";
+import "./chunks/chunk-B5L2AGOH.mjs";
 import {
   AnimationFrame,
   Component,
   MAX_Z_INDEX,
   VanillaMachine,
   addDomEvent,
+  cloneTemplateChildren,
   compact,
   contains,
   createAnatomy,
@@ -28,7 +29,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1226,15 +1227,9 @@ var ToastItem = class extends Component {
     const closeIconTemplate = toastGroup?.querySelector(
       "[data-close-icon-template]"
     );
-    const loadingIcon = loadingIconTemplate?.innerHTML;
-    const closeIcon = closeIconTemplate?.innerHTML;
-    if (closeIcon) {
-      if (this.parts.close.innerHTML !== closeIcon) {
-        this.parts.close.innerHTML = closeIcon;
-      }
-    } else {
-      if (!this.parts.close.innerHTML) {
-        this.parts.close.innerHTML = "\xD7";
+    if (!cloneTemplateChildren(closeIconTemplate, this.parts.close)) {
+      if (this.parts.close.childNodes.length === 0 && !this.parts.close.textContent) {
+        this.parts.close.textContent = "\xD7";
       }
     }
     if (this.parts.title.textContent !== this.api.title) {
@@ -1282,9 +1277,7 @@ var ToastItem = class extends Component {
     }
     if (this.showLoading) {
       this.parts.loadingSpinner.style.display = "flex";
-      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
-        this.parts.loadingSpinner.innerHTML = loadingIcon;
-      }
+      cloneTemplateChildren(loadingIconTemplate, this.parts.loadingSpinner);
     } else {
       this.parts.loadingSpinner.style.display = "none";
     }

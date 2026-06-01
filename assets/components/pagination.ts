@@ -2,7 +2,7 @@ import { connect, machine, type Api, type Props } from "@zag-js/pagination";
 import type { IntlTranslations } from "@zag-js/pagination";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getString } from "../lib/util";
+import { cloneTemplateChildren, getString } from "../lib/util";
 
 export class Pagination extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +46,6 @@ export class Pagination extends Component<Props, Api> {
     const ellipsisTemplate = this.el.querySelector<HTMLElement>(
       "[data-pagination-ellipsis-template]"
     );
-    const ellipsisHtml = ellipsisTemplate?.innerHTML ?? "&#8230;";
     const triggerType = getString(this.el, "type") ?? "button";
     const pages = this.api.pages;
 
@@ -95,7 +94,9 @@ export class Pagination extends Component<Props, Api> {
         let span = ellipsisEl;
         if (!span) {
           span = document.createElement("span");
-          span.innerHTML = ellipsisHtml;
+          if (!cloneTemplateChildren(ellipsisTemplate, span)) {
+            span.textContent = "\u2026";
+          }
           li.appendChild(span);
         }
 

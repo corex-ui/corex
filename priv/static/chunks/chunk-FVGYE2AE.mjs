@@ -5,7 +5,7 @@ import {
   isObject,
   nextIndex,
   prevIndex
-} from "./chunk-EWT2BP2N.mjs";
+} from "./chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collection@1.40.0/node_modules/@zag-js/collection/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;

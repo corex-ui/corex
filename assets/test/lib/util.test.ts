@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { el } from "../helpers/dom";
 import {
   canPushEvent,
+  cloneTemplateChildren,
   generateId,
   getBoolean,
   getBooleanValue,
@@ -120,6 +121,27 @@ describe("templatesContentRoot", () => {
     const content = templatesContentRoot(root, "items");
     expect(content).not.toBeNull();
     expect(content instanceof DocumentFragment || content instanceof HTMLElement).toBe(true);
+  });
+});
+
+describe("cloneTemplateChildren", () => {
+  it("clones template child nodes into the target", () => {
+    const template = document.createElement("div");
+    template.id = "tpl";
+    const icon = document.createElement("span");
+    icon.textContent = "icon";
+    template.appendChild(icon);
+
+    const target = document.createElement("button");
+    expect(cloneTemplateChildren(template, target)).toBe(true);
+    expect(target.querySelector("span")?.textContent).toBe("icon");
+    expect(template.querySelector("span")).toBeTruthy();
+  });
+
+  it("returns false when the template is empty", () => {
+    const target = document.createElement("button");
+    expect(cloneTemplateChildren(document.createElement("div"), target)).toBe(false);
+    expect(target.childNodes.length).toBe(0);
   });
 });
 

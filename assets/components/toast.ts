@@ -13,7 +13,7 @@ import {
 } from "@zag-js/toast";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getDir } from "../lib/util";
+import { cloneTemplateChildren, getDir } from "../lib/util";
 
 export function actionClassTokens(action: unknown): string[] {
   if (action == null || typeof action !== "object") return [];
@@ -125,18 +125,9 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       "[data-close-icon-template]"
     ) as HTMLElement;
 
-    const loadingIcon = loadingIconTemplate?.innerHTML;
-    const closeIcon = closeIconTemplate?.innerHTML;
-
-    // inject close icon
-    if (closeIcon) {
-      if (this.parts.close.innerHTML !== closeIcon) {
-        this.parts.close.innerHTML = closeIcon;
-      }
-    } else {
-      // fallback
-      if (!this.parts.close.innerHTML) {
-        this.parts.close.innerHTML = "×";
+    if (!cloneTemplateChildren(closeIconTemplate, this.parts.close)) {
+      if (this.parts.close.childNodes.length === 0 && !this.parts.close.textContent) {
+        this.parts.close.textContent = "×";
       }
     }
 
@@ -194,9 +185,7 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
 
     if (this.showLoading) {
       this.parts.loadingSpinner.style.display = "flex";
-      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
-        this.parts.loadingSpinner.innerHTML = loadingIcon;
-      }
+      cloneTemplateChildren(loadingIconTemplate, this.parts.loadingSpinner);
     } else {
       this.parts.loadingSpinner.style.display = "none";
     }

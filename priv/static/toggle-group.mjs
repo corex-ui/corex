@@ -1,6 +1,6 @@
 import {
   readStringListControlledZagUpdate
-} from "./chunks/chunk-H5X7JSOZ.mjs";
+} from "./chunks/chunk-I2HPUDHJ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -36,7 +36,7 @@ import {
   prevById,
   queryAll,
   raf
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toggle-group@1.40.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");

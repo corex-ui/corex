@@ -4,7 +4,7 @@ import {
 import {
   readBooleanControlledZagProps,
   readBooleanControlledZagUpdate
-} from "./chunks/chunk-H5X7JSOZ.mjs";
+} from "./chunks/chunk-I2HPUDHJ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -34,7 +34,7 @@ import {
   raf,
   setAttribute,
   setStyle
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collapsible@1.40.0/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");

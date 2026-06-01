@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunks/chunk-RNYQBUAX.mjs";
+} from "./chunks/chunk-HWSJUKAB.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -14,6 +14,7 @@ import {
   Component,
   VanillaMachine,
   canPushEvent,
+  cloneTemplateChildren,
   createAnatomy,
   createMachine,
   dataAttr,
@@ -22,7 +23,7 @@ import {
   getNumber,
   getString,
   isNumber
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+pagination@1.40.0/node_modules/@zag-js/pagination/dist/pagination.anatomy.mjs
 var anatomy = createAnatomy("pagination").parts(
@@ -423,7 +424,6 @@ var Pagination = class extends Component {
     const ellipsisTemplate = this.el.querySelector(
       "[data-pagination-ellipsis-template]"
     );
-    const ellipsisHtml = ellipsisTemplate?.innerHTML ?? "&#8230;";
     const triggerType = getString(this.el, "type") ?? "button";
     const pages = this.api.pages;
     let items = this.directPageElements(list);
@@ -463,7 +463,9 @@ var Pagination = class extends Component {
         let span = ellipsisEl;
         if (!span) {
           span = document.createElement("span");
-          span.innerHTML = ellipsisHtml;
+          if (!cloneTemplateChildren(ellipsisTemplate, span)) {
+            span.textContent = "\u2026";
+          }
           li.appendChild(span);
         }
         this.spreadProps(span, this.api.getEllipsisProps({ index }));
