@@ -1,8 +1,35 @@
 import { describe, expect, it } from "vitest";
+import * as datePicker from "@zag-js/date-picker";
 import {
   applyInputAriaIfNeeded,
   buildZagDatePickerTranslations,
+  DatePicker,
 } from "../../components/date-picker";
+
+function datePickerDayViewTree(): HTMLElement {
+  const host = document.createElement("div");
+  host.id = "dp-perf";
+  host.innerHTML = `
+    <div data-scope="date-picker" data-part="root"></div>
+    <div data-scope="date-picker" data-part="control">
+      <input data-scope="date-picker" data-part="input" />
+    </div>
+    <div data-scope="date-picker" data-part="positioner">
+      <div data-scope="date-picker" data-part="content">
+        <div data-part="day-view">
+          <div data-part="view-control"></div>
+          <div data-part="prev-trigger"></div>
+          <div data-part="view-trigger"></div>
+          <div data-part="next-trigger"></div>
+          <table><thead></thead><tbody></tbody></table>
+        </div>
+        <div data-part="month-view" hidden><table><tbody></tbody></table></div>
+        <div data-part="year-view" hidden><table><tbody></tbody></table></div>
+      </div>
+    </div>
+  `;
+  return host;
+}
 
 describe("buildZagDatePickerTranslations", () => {
   it("maps open/close calendar labels to trigger", () => {
@@ -67,5 +94,49 @@ describe("applyInputAriaIfNeeded", () => {
     const input = document.createElement("input");
     applyInputAriaIfNeeded(root, [input], "range");
     expect(input.getAttribute("aria-label")).toBeNull();
+  });
+});
+
+describe("DatePicker render", () => {
+  it("reuses day table cells on repeated render", () => {
+    const host = datePickerDayViewTree();
+    const instance = new DatePicker(host, {
+      id: host.id,
+      selectionMode: "single",
+      defaultOpen: true,
+      defaultValue: [datePicker.parse("2024-06-15")],
+    });
+    instance.init();
+    instance.render();
+
+    const tbody = host.querySelector("tbody");
+    const firstCell = tbody?.querySelector("td");
+    expect(firstCell).toBeTruthy();
+
+    instance.render();
+    expect(tbody?.querySelector("td")).toBe(firstCell);
+
+    instance.destroy();
+  });
+
+  it("reuses day table header row on repeated render", () => {
+    const host = datePickerDayViewTree();
+    const instance = new DatePicker(host, {
+      id: host.id,
+      selectionMode: "single",
+      defaultOpen: true,
+      defaultValue: [datePicker.parse("2024-06-15")],
+    });
+    instance.init();
+    instance.render();
+
+    const thead = host.querySelector("thead");
+    const firstRow = thead?.querySelector("tr");
+    expect(firstRow).toBeTruthy();
+
+    instance.render();
+    expect(thead?.querySelector("tr")).toBe(firstRow);
+
+    instance.destroy();
   });
 });

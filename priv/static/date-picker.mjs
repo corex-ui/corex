@@ -4162,42 +4162,90 @@ var DatePicker = class extends Component {
   getDayView = () => this.el.querySelector('[data-part="day-view"]');
   getMonthView = () => this.el.querySelector('[data-part="month-view"]');
   getYearView = () => this.el.querySelector('[data-part="year-view"]');
+  ensureTableRow(tbody, rowIndex) {
+    let tr = tbody.children[rowIndex];
+    if (!tr || tr.tagName !== "TR") {
+      tr = this.doc.createElement("tr");
+      const ref = tbody.children[rowIndex] ?? null;
+      tbody.insertBefore(tr, ref);
+    }
+    return tr;
+  }
+  ensureTableCell(tr, cellIndex, cellKey) {
+    let td = tr.children[cellIndex];
+    if (td && (td.tagName !== "TD" || td.dataset.dateCell !== cellKey)) {
+      td.remove();
+      td = void 0;
+    }
+    if (!td) {
+      td = this.doc.createElement("td");
+      td.dataset.dateCell = cellKey;
+      const trigger2 = this.doc.createElement("div");
+      td.appendChild(trigger2);
+      const ref = tr.children[cellIndex] ?? null;
+      tr.insertBefore(td, ref);
+    }
+    const trigger = td.querySelector("div");
+    return { td, trigger };
+  }
+  trimTableRows(tbody, rowCount) {
+    while (tbody.children.length > rowCount) {
+      tbody.lastElementChild?.remove();
+    }
+  }
+  trimTableCells(tr, cellCount) {
+    while (tr.children.length > cellCount) {
+      tr.lastElementChild?.remove();
+    }
+  }
   renderDayTableHeader = () => {
     const dayView = this.getDayView();
     const thead = dayView?.querySelector("thead");
     if (!thead || !this.api.weekDays) return;
-    const tr = this.doc.createElement("tr");
+    let tr = thead.querySelector("tr");
+    if (!tr || tr.children.length !== this.api.weekDays.length) {
+      tr = this.doc.createElement("tr");
+      thead.replaceChildren(tr);
+      this.api.weekDays.forEach(() => {
+        const th = this.doc.createElement("th");
+        th.scope = "col";
+        tr.appendChild(th);
+      });
+    }
     this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
-    this.api.weekDays.forEach((day) => {
-      const th = this.doc.createElement("th");
-      th.scope = "col";
+    this.api.weekDays.forEach((day, index) => {
+      const th = tr.children[index];
       th.setAttribute("aria-label", day.long);
-      th.textContent = day.narrow;
-      tr.appendChild(th);
+      if (th.textContent !== day.narrow) {
+        th.textContent = day.narrow;
+      }
     });
-    thead.innerHTML = "";
-    thead.appendChild(tr);
   };
   renderDayTableBody = () => {
     const dayView = this.getDayView();
     const tbody = dayView?.querySelector("tbody");
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps({ view: "day" }));
-    if (!this.api.weeks) return;
-    tbody.innerHTML = "";
-    this.api.weeks.forEach((week) => {
-      const tr = this.doc.createElement("tr");
+    if (!this.api.weeks) {
+      tbody.replaceChildren();
+      return;
+    }
+    const weeks = this.api.weeks;
+    this.trimTableRows(tbody, weeks.length);
+    weeks.forEach((week, weekIndex) => {
+      const tr = this.ensureTableRow(tbody, weekIndex);
       this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
-      week.forEach((value) => {
-        const td = this.doc.createElement("td");
+      this.trimTableCells(tr, week.length);
+      week.forEach((value, cellIndex) => {
+        const cellKey = `${value.year}-${value.month}-${value.day}`;
+        const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
         this.spreadProps(td, this.api.getDayTableCellProps({ value }));
-        const trigger = this.doc.createElement("div");
         this.spreadProps(trigger, this.api.getDayTableCellTriggerProps({ value }));
-        trigger.textContent = String(value.day);
-        td.appendChild(trigger);
-        tr.appendChild(td);
+        const label = String(value.day);
+        if (trigger.textContent !== label) {
+          trigger.textContent = label;
+        }
       });
-      tbody.appendChild(tr);
     });
   };
   renderMonthTableBody = () => {
@@ -4206,20 +4254,20 @@ var DatePicker = class extends Component {
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps({ view: "month" }));
     const monthsGrid = this.api.getMonthsGrid({ columns: 4, format: "short" });
-    tbody.innerHTML = "";
-    monthsGrid.forEach((months) => {
-      const tr = this.doc.createElement("tr");
+    this.trimTableRows(tbody, monthsGrid.length);
+    monthsGrid.forEach((months, rowIndex) => {
+      const tr = this.ensureTableRow(tbody, rowIndex);
       this.spreadProps(tr, this.api.getTableRowProps());
-      months.forEach((month) => {
-        const td = this.doc.createElement("td");
+      this.trimTableCells(tr, months.length);
+      months.forEach((month, cellIndex) => {
+        const cellKey = `${this.api.visibleRange.start.year}-${month.value}`;
+        const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
         this.spreadProps(td, this.api.getMonthTableCellProps({ ...month, columns: 4 }));
-        const trigger = this.doc.createElement("div");
         this.spreadProps(trigger, this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 }));
-        trigger.textContent = month.label;
-        td.appendChild(trigger);
-        tr.appendChild(td);
+        if (trigger.textContent !== month.label) {
+          trigger.textContent = month.label;
+        }
       });
-      tbody.appendChild(tr);
     });
   };
   renderYearTableBody = () => {
@@ -4228,20 +4276,20 @@ var DatePicker = class extends Component {
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps());
     const yearsGrid = this.api.getYearsGrid({ columns: 4 });
-    tbody.innerHTML = "";
-    yearsGrid.forEach((years) => {
-      const tr = this.doc.createElement("tr");
+    this.trimTableRows(tbody, yearsGrid.length);
+    yearsGrid.forEach((years, rowIndex) => {
+      const tr = this.ensureTableRow(tbody, rowIndex);
       this.spreadProps(tr, this.api.getTableRowProps({ view: "year" }));
-      years.forEach((year) => {
-        const td = this.doc.createElement("td");
+      this.trimTableCells(tr, years.length);
+      years.forEach((year, cellIndex) => {
+        const cellKey = String(year.value);
+        const { td, trigger } = this.ensureTableCell(tr, cellIndex, cellKey);
         this.spreadProps(td, this.api.getYearTableCellProps({ ...year, columns: 4 }));
-        const trigger = this.doc.createElement("div");
         this.spreadProps(trigger, this.api.getYearTableCellTriggerProps({ ...year, columns: 4 }));
-        trigger.textContent = year.label;
-        td.appendChild(trigger);
-        tr.appendChild(td);
+        if (trigger.textContent !== year.label) {
+          trigger.textContent = year.label;
+        }
       });
-      tbody.appendChild(tr);
     });
   };
   render() {
