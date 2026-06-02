@@ -31,7 +31,7 @@ defmodule Mix.Corex do
     EEx.eval_string(content, binding)
   end
 
-  def inject_eex_before_final_end(content_to_inject, file_path, binding) do
+  def inject_eex_before_final_end(content_to_inject, file_path, _binding) do
     file = File.read!(file_path)
 
     if String.contains?(file, content_to_inject) do
@@ -43,7 +43,6 @@ defmodule Mix.Corex do
         file
         |> String.trim_trailing()
         |> String.trim_trailing("end")
-        |> EEx.eval_string(binding)
         |> Kernel.<>(content_to_inject)
         |> Kernel.<>("end\n")
 

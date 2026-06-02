@@ -58,6 +58,25 @@ defmodule Mix.CorexTest do
     assert :ok = Mix.Corex.inject_eex_before_final_end("  injected()\n", path, [])
   end
 
+  test "inject_eex_before_final_end/3 does not evaluate EEx in the target file" do
+    path = Path.join(@tmp_path, "module_with_eex.ex")
+
+    File.write!(path, """
+    defmodule Sample do
+      existing()
+      <%= raise "evaluated" %>
+    end
+    """)
+
+    assert :ok =
+             Mix.Corex.inject_eex_before_final_end("  injected()\n", path, marker: "CHANGED")
+
+    content = File.read!(path)
+    assert content =~ "injected()"
+    assert content =~ ~S/<%= raise "evaluated" %>/
+    refute content =~ "CHANGED"
+  end
+
   test "assert_within_project_root!/2 allows paths under root" do
     root = Path.expand(@tmp_path)
     inside = Path.join(root, "assets/code.css")
