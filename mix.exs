@@ -98,7 +98,7 @@ defmodule Corex.MixProject do
         "credo --strict",
         "sobelow --exit"
       ],
-      "release.check": ["lint", "test", "assets.build"],
+      "release.check": ["hex.audit", "lint", "test", "assets.build"],
       "pre.publish": ["release.check"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
