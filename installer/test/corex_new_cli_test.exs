@@ -20,6 +20,12 @@ defmodule Corex.New.CliTest do
       end
     end
 
+    test "rejects --dev path with quotes" do
+      assert_raise Mix.Error, ~r/invalid characters/, fn ->
+        Cli.validate_corex_flags!(dev: ~S(/tmp/evil", override: true}))
+      end
+    end
+
     test "ignores non-string dev values" do
       assert :ok == Cli.validate_corex_flags!(dev: 123)
     end

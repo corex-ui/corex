@@ -25,7 +25,7 @@ import {LiveSocket} from "phoenix_live_view"
 <%= if @corex_js_import == "corex" do %>
 import corex from "corex"
 <% else %>
-import corex from "<%= @corex_js_import %>"
+import corex from <%= inspect(@corex_js_import) %>
 <% end %>
 import {hooks as colocatedHooks} from "phoenix-colocated/<%= @otp_app %>"
 import topbar from "../vendor/topbar"

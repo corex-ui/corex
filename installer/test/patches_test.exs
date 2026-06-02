@@ -231,6 +231,17 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
+    test "rejects --dev path with quotes in mix.exs patch" do
+      in_tmp(:patch_mix_exs_dev_quote, fn ->
+        File.write!("mix.exs", @stock_mix_exs)
+        dev_path = ~S(/tmp/evil", override: true}, {:noop, ")
+
+        assert_raise Mix.Error, ~r/invalid characters/, fn ->
+          Patches.patch_mix_exs(File.cwd!(), dev: dev_path)
+        end
+      end)
+    end
+
     test "adds designex to single-line assets.deploy aliases" do
       mix_exs = """
       defmodule MyApp.MixProject do
