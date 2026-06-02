@@ -518,7 +518,7 @@ defmodule Corex.ColorPicker do
       data-label={@label}
       data-presets={Corex.Json.encode!(@presets)}
     >
-      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba || @initial.swatch_style, dir: @dir})} {Connect.root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba || @initial.swatch_style, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba, dir: @dir})} {Connect.root(%Root{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, value_style: @initial.value_rgba, dir: @dir})}>
         <label phx-mounted={Connect.ignore_label(%Label{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, required: @required, dir: @dir})} {Connect.label(%Label{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, required: @required, dir: @dir})}>{@label}</label>
         <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name || @id})} {Connect.hidden_input(%HiddenInput{id: @id, name: @name || @id})} />
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?})} {Connect.control(%Control{id: @id, disabled: @disabled, invalid: @invalid, read_only: @read_only, open: @open?})}>
@@ -702,7 +702,6 @@ defmodule Corex.ColorPicker do
   defp preset_color(preset) when is_binary(preset) do
     case Initial.parse(preset) do
       %{value_rgba: rgba} when is_binary(rgba) -> rgba
-      %{swatch_style: style} when is_binary(style) -> style
       _ -> nil
     end
   end

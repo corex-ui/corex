@@ -21,12 +21,12 @@ defmodule Corex.ColorPicker.Initial do
 
   def parse(str) when is_binary(str) do
     str = String.trim(str)
-    parse_hex(str) || parse_rgba(str) || parse_rgb(str) || empty(maybe_css_color(str))
+    parse_hex(str) || parse_rgba(str) || parse_rgb(str) || empty(nil)
   end
 
-  defp empty(swatch_fallback) do
+  defp empty(_swatch_fallback) do
     %{
-      swatch_style: swatch_fallback,
+      swatch_style: nil,
       value_rgba: nil,
       hex_value: nil,
       alpha_value: nil,
@@ -35,11 +35,6 @@ defmodule Corex.ColorPicker.Initial do
       blue_value: nil
     }
   end
-
-  defp maybe_css_color(<<"#", _::binary>> = s), do: s
-  defp maybe_css_color(<<"rgb", _::binary>> = s), do: s
-  defp maybe_css_color(<<"hsl", _::binary>> = s), do: s
-  defp maybe_css_color(_), do: nil
 
   defp parse_hex(<<"#", rest::binary>>) do
     rest = String.downcase(rest)

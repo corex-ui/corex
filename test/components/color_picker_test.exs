@@ -339,16 +339,23 @@ defmodule Corex.ColorPickerTest do
       assert result.alpha_value == "0.75"
     end
 
-    test "fallback - uses raw hex string as swatch_style when hex is invalid length" do
+    test "rejects invalid hex length without passthrough" do
       result = Initial.parse("#ffff")
-      assert result.swatch_style == "#ffff"
+      assert result.swatch_style == nil
       assert result.hex_value == nil
     end
 
-    test "fallback - uses raw hsl string as swatch_style (not fully parsed)" do
+    test "rejects hsl without strict parse" do
       result = Initial.parse("hsl(120, 100%, 50%)")
-      assert result.swatch_style == "hsl(120, 100%, 50%)"
+      assert result.swatch_style == nil
       assert result.hex_value == nil
+    end
+
+    test "rejects css breakout strings" do
+      result = Initial.parse("#000; background:url(//evil)")
+      assert result.swatch_style == nil
+      assert result.value_rgba == nil
+      refute result.hex_value
     end
 
     test "fallback - returns nil swatch for invalid format" do
