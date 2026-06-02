@@ -184,6 +184,30 @@ defmodule Corex.PaginationTest do
       assert props["data-default-page-size"] == nil
       assert props["data-controlled-page-size"] == ""
     end
+
+    test "omits data-to for disallowed base URL" do
+      props =
+        Connect.props(%Corex.Pagination.Anatomy.Props{
+          id: "p1",
+          count: 100,
+          type: "link",
+          to: "javascript:alert(1)"
+        })
+
+      assert props["data-to"] == nil
+    end
+
+    test "includes data-to for allowed base URL" do
+      props =
+        Connect.props(%Corex.Pagination.Anatomy.Props{
+          id: "p1",
+          count: 100,
+          type: "link",
+          to: "/items"
+        })
+
+      assert props["data-to"] == "/items"
+    end
   end
 
   describe "set_page/2" do

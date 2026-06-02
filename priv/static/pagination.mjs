@@ -2,6 +2,9 @@ import {
   memo
 } from "./chunks/chunk-HWSJUKAB.mjs";
 import {
+  isAllowedRedirectDestination
+} from "./chunks/chunk-HZLPIQBD.mjs";
+import {
   createDomEventRegistry,
   createHookHandleEventRegistry
 } from "./chunks/chunk-77HPO22C.mjs";
@@ -534,7 +537,7 @@ function applyPhoenixLinkAttrsToNavigableParts(rootEl) {
 function buildGetPageUrl(el) {
   const triggerType = getString(el, "type");
   const base = el.dataset.to;
-  if (triggerType !== "link" || !base) return void 0;
+  if (triggerType !== "link" || !base || !isAllowedRedirectDestination(base)) return void 0;
   const pageParam = el.dataset.pageParam ?? "page";
   const pageSizeParam = el.dataset.pageSizeParam ?? "page_size";
   return ({ page, pageSize }) => {

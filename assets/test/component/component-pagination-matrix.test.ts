@@ -74,6 +74,8 @@ describe("buildGetPageUrl matrix", () => {
     [{ type: "link", to: "/x", pageParam: "p", pageSizeParam: "ps" }, "p=3"],
     [{ type: "button", to: "/x" }, null],
     [{ type: "link" }, null],
+    [{ type: "link", to: "javascript:alert(1)" }, null],
+    [{ type: "link", to: "//evil.example" }, null],
   ] as const)("%#", (dataset, fragment) => {
     const getUrl = buildGetPageUrl(el(dataset as Record<string, string>));
     if (fragment == null) expect(getUrl).toBeUndefined();
