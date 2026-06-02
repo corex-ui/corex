@@ -151,7 +151,8 @@ defmodule Corex.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/corex-ui/corex",
-        "Website" => "https://corex.gigalixirapp.com/en"
+        "Website" => "https://corex.gigalixirapp.com/en",
+        "Sponsor" => "https://github.com/sponsors/corex-ui"
       },
       files: files
     ]
