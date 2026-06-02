@@ -4,30 +4,25 @@ defmodule Corex.MCP do
 
   require Logger
 
+  alias Corex.MCP.{Config, Server}
+
+  @doc """
+  Returns the project root for MCP path relativization.
+  """
+  def root, do: Application.get_env(:corex, :mcp_root, File.cwd!())
+
   @impl true
   def init(opts) when is_list(opts) do
     maybe_silence_mcp_server_logs()
-
-    %{
-      allow_remote_access: Keyword.get(opts, :allow_remote_access, false)
-    }
+    assert_not_prod!(opts)
+    :ok = Server.init_tools()
+    Config.build(opts)
   end
 
-  def init(%{} = opts) do
-    maybe_silence_mcp_server_logs()
-    Map.merge(%{allow_remote_access: false}, opts)
-  end
-
-  defp maybe_silence_mcp_server_logs do
-    if Application.get_env(:corex, :debug) do
-      :ok
-    else
-      Logger.put_module_level(Corex.MCP.Server, :none)
-    end
-  end
+  def init(config) when is_map(config), do: Config.build(config)
 
   @impl true
-  def call(%Plug.Conn{path_info: ["corex" | rest]} = conn, config) do
+  def call(%Plug.Conn{path_info: ["corex" | rest]} = conn, %Config{} = config) do
     conn
     |> validate!()
     |> Plug.Conn.put_private(:corex_mcp_config, config)
@@ -35,18 +30,30 @@ defmodule Corex.MCP do
     |> Plug.Conn.halt()
   end
 
-  def call(conn, _opts) do
-    conn
-    |> Plug.Conn.register_before_send(fn conn ->
-      conn
-      |> maybe_rewrite_csp()
-      |> Plug.Conn.delete_resp_header("x-frame-options")
-    end)
+  def call(conn, _config), do: conn
+
+  defp maybe_silence_mcp_server_logs do
+    if Application.get_env(:corex, :debug) do
+      :ok
+    else
+      Logger.put_module_level(Server, :none)
+    end
+  end
+
+  defp assert_not_prod!(opts) do
+    if Mix.env() == :prod and not Keyword.get(opts, :force, false) do
+      raise """
+      plug Corex.MCP must not be enabled in production.
+
+      Corex MCP is dev-only. Remove the plug from your endpoint or pass force: true \
+      if you explicitly accept the security risk.
+      """
+    end
   end
 
   defp validate!(conn) do
     if live_reload_enabled?(conn) or request_body_parsed?(conn) do
-      raise "plug Corex.MCP is runnning too late, after the request body has been parsed. " <>
+      raise "plug Corex.MCP is running too late, after the request body has been parsed. " <>
               "Make sure to place \"plug Corex.MCP\" before the \"if code_reloading? do\" block"
     end
 
@@ -59,47 +66,5 @@ defmodule Corex.MCP do
 
   defp request_body_parsed?(conn) do
     not match?(%Plug.Conn.Unfetched{}, conn.body_params)
-  end
-
-  defp maybe_rewrite_csp(conn) do
-    case Plug.Conn.get_resp_header(conn, "content-security-policy") do
-      [csp | _] ->
-        csp = rewrite_csp(csp)
-        Plug.Conn.put_resp_header(conn, "content-security-policy", csp)
-
-      _ ->
-        conn
-    end
-  end
-
-  defp rewrite_csp(csp) do
-    policy_directives = String.split(csp, ";", trim: true)
-
-    for policy_directive <- policy_directives,
-        policy_directive = String.trim(policy_directive),
-        not String.starts_with?(policy_directive, "frame-ancestors") do
-      rewrite_csp_directive(policy_directive)
-    end
-    |> Enum.join("; ")
-  end
-
-  defp rewrite_csp_directive(policy_directive) do
-    case String.split(policy_directive, " ", parts: 2) do
-      ["script-src", directives] ->
-        script_src_with_unsafe_eval(directives)
-
-      [policy, directives] ->
-        "#{policy} #{directives}"
-
-      [leftover] ->
-        leftover
-    end
-  end
-
-  defp script_src_with_unsafe_eval(directives) do
-    case :binary.match(directives, "'unsafe-eval'") do
-      :nomatch -> "script-src 'unsafe-eval' #{directives}"
-      _ -> "script-src #{directives}"
-    end
   end
 end

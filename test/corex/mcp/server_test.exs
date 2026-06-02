@@ -3,13 +3,14 @@ defmodule Corex.MCP.ServerTest do
 
   @moduletag capture_log: true
 
-  alias Corex.MCP.Server
+  alias Corex.MCP.{Config, Server}
 
   setup do
     unless Application.get_env(:corex, :debug) do
       Logger.put_module_level(Corex.MCP.Server, :none)
     end
 
+    :ok = Server.init_tools()
     :ok
   end
 
@@ -17,10 +18,10 @@ defmodule Corex.MCP.ServerTest do
     Plug.Test.conn(:post, "/")
     |> Map.put(:body_params, body_map)
     |> Map.put(:params, body_map)
-    |> Plug.Conn.put_private(:corex_mcp_config, %{allow_remote_access: false})
+    |> Plug.Conn.put_private(:corex_mcp_config, %Config{allow_remote_access: false})
   end
 
-  test "init_tools stores tools in :corex_mcp_tools" do
+  test "init_tools stores tools for dispatch" do
     assert :ok = Server.init_tools()
     assert {tools, _dispatch} = Server.tools_and_dispatch()
     assert tools != []
@@ -28,6 +29,13 @@ defmodule Corex.MCP.ServerTest do
     assert "list_components" in names
     assert "get_component" in names
     assert "installation_guide" in names
+  end
+
+  test "init_tools is safe to call repeatedly (code reload / concurrent plug init)" do
+    assert :ok = Server.init_tools()
+    assert :ok = Server.init_tools()
+    assert {tools, _} = Server.tools_and_dispatch()
+    assert tools != []
   end
 
   test "handle_http_message initialize returns protocol and tools" do
@@ -283,5 +291,24 @@ defmodule Corex.MCP.ServerTest do
     assert conn.status == 400
     decoded = Corex.Json.decode!(conn.resp_body)
     assert decoded["error"]["code"] == -32_601
+  end
+
+  test "handle_http_message works without re-initializing tools on each request" do
+    ping = %{"jsonrpc" => "2.0", "id" => 20, "method" => "ping"}
+
+    conn1 =
+      ping
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn1.status == 200
+
+    conn2 =
+      ping
+      |> Map.put("id", 21)
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn2.status == 200
   end
 end

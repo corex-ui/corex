@@ -13,6 +13,7 @@ defmodule Corex.MCP.ComponentDocsTest do
     assert enriched.docs_note == nil
     assert is_binary(enriched.source_path)
     assert enriched.source_path =~ "heroicon.ex"
+    refute String.starts_with?(enriched.source_path, "/")
     assert is_integer(enriched.source_line)
   end
 
