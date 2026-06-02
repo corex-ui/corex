@@ -13,13 +13,21 @@ import {
 } from "@zag-js/toast";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getDir } from "../lib/util";
+import { cloneTemplateChildren, getDir } from "../lib/util";
 
 export function actionClassTokens(action: unknown): string[] {
   if (action == null || typeof action !== "object") return [];
   const cn = (action as { className?: unknown }).className;
   if (typeof cn !== "string") return [];
   return cn.trim().split(/\s+/).filter(Boolean);
+}
+
+function actionLabelHtml(action: unknown): boolean {
+  return (
+    action != null &&
+    typeof action === "object" &&
+    (action as { labelHtml?: unknown }).labelHtml === true
+  );
 }
 
 export const toastGroups = new Map<string, ToastGroup>();
@@ -125,18 +133,9 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       "[data-close-icon-template]"
     ) as HTMLElement;
 
-    const loadingIcon = loadingIconTemplate?.innerHTML;
-    const closeIcon = closeIconTemplate?.innerHTML;
-
-    // inject close icon
-    if (closeIcon) {
-      if (this.parts.close.innerHTML !== closeIcon) {
-        this.parts.close.innerHTML = closeIcon;
-      }
-    } else {
-      // fallback
-      if (!this.parts.close.innerHTML) {
-        this.parts.close.innerHTML = "×";
+    if (!cloneTemplateChildren(closeIconTemplate, this.parts.close)) {
+      if (this.parts.close.childNodes.length === 0 && !this.parts.close.textContent) {
+        this.parts.close.textContent = "×";
       }
     }
 
@@ -168,7 +167,12 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
       const label = this.latestProps.action?.label ?? "";
-      if (this.parts.action.textContent !== label) {
+      const labelHtml = actionLabelHtml(this.latestProps.action);
+      if (labelHtml) {
+        if (this.parts.action.innerHTML !== label) {
+          this.parts.action.innerHTML = label;
+        }
+      } else if (this.parts.action.textContent !== label) {
         this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
@@ -177,6 +181,9 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
       this.parts.action.hidden = true;
       if (this.parts.action.textContent) {
         this.parts.action.textContent = "";
+      }
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
       }
     }
 
@@ -194,9 +201,7 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
 
     if (this.showLoading) {
       this.parts.loadingSpinner.style.display = "flex";
-      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
-        this.parts.loadingSpinner.innerHTML = loadingIcon;
-      }
+      cloneTemplateChildren(loadingIconTemplate, this.parts.loadingSpinner);
     } else {
       this.parts.loadingSpinner.style.display = "none";
     }

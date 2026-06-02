@@ -74,7 +74,7 @@ defmodule Corex.Toast do
 
   <!-- tabs-close -->
 
-  `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label`, `js`, optional `class`.
+  `create` opts: `duration`, `loading: true`, `id: "stable-id"`, `priority:` `1`–`8`, `action:` map with `label` (string or `~H` / safe HTML), `js`, optional `class`.
 
   ## Style
 

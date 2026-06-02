@@ -1,16 +1,17 @@
 import {
   setRafTimeout
-} from "./chunks/chunk-VHCQWARJ.mjs";
+} from "./chunks/chunk-GFGOJ2RY.mjs";
 import {
   trackDismissableBranch
-} from "./chunks/chunk-57TWBSTW.mjs";
-import "./chunks/chunk-4QMNVH3P.mjs";
+} from "./chunks/chunk-WJDVLJMP.mjs";
+import "./chunks/chunk-B5L2AGOH.mjs";
 import {
   AnimationFrame,
   Component,
   MAX_Z_INDEX,
   VanillaMachine,
   addDomEvent,
+  cloneTemplateChildren,
   compact,
   contains,
   createAnatomy,
@@ -28,7 +29,7 @@ import {
   setup,
   uuid,
   warn
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+toast@1.40.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
@@ -1155,6 +1156,9 @@ function actionClassTokens(action) {
   if (typeof cn !== "string") return [];
   return cn.trim().split(/\s+/).filter(Boolean);
 }
+function actionLabelHtml(action) {
+  return action != null && typeof action === "object" && action.labelHtml === true;
+}
 var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
@@ -1226,15 +1230,9 @@ var ToastItem = class extends Component {
     const closeIconTemplate = toastGroup?.querySelector(
       "[data-close-icon-template]"
     );
-    const loadingIcon = loadingIconTemplate?.innerHTML;
-    const closeIcon = closeIconTemplate?.innerHTML;
-    if (closeIcon) {
-      if (this.parts.close.innerHTML !== closeIcon) {
-        this.parts.close.innerHTML = closeIcon;
-      }
-    } else {
-      if (!this.parts.close.innerHTML) {
-        this.parts.close.innerHTML = "\xD7";
+    if (!cloneTemplateChildren(closeIconTemplate, this.parts.close)) {
+      if (this.parts.close.childNodes.length === 0 && !this.parts.close.textContent) {
+        this.parts.close.textContent = "\xD7";
       }
     }
     if (this.parts.title.textContent !== this.api.title) {
@@ -1260,7 +1258,12 @@ var ToastItem = class extends Component {
       this.parts.action.hidden = false;
       this.spreadProps(this.parts.action, this.api.getActionTriggerProps());
       const label = this.latestProps.action?.label ?? "";
-      if (this.parts.action.textContent !== label) {
+      const labelHtml = actionLabelHtml(this.latestProps.action);
+      if (labelHtml) {
+        if (this.parts.action.innerHTML !== label) {
+          this.parts.action.innerHTML = label;
+        }
+      } else if (this.parts.action.textContent !== label) {
         this.parts.action.textContent = label;
       }
       const extraClasses = actionClassTokens(this.latestProps.action);
@@ -1269,6 +1272,9 @@ var ToastItem = class extends Component {
       this.parts.action.hidden = true;
       if (this.parts.action.textContent) {
         this.parts.action.textContent = "";
+      }
+      if (this.parts.action.innerHTML) {
+        this.parts.action.innerHTML = "";
       }
     }
     const duration = this.duration;
@@ -1282,9 +1288,7 @@ var ToastItem = class extends Component {
     }
     if (this.showLoading) {
       this.parts.loadingSpinner.style.display = "flex";
-      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
-        this.parts.loadingSpinner.innerHTML = loadingIcon;
-      }
+      cloneTemplateChildren(loadingIconTemplate, this.parts.loadingSpinner);
     } else {
       this.parts.loadingSpinner.style.display = "none";
     }
@@ -1420,6 +1424,9 @@ function parseActionSpec(raw) {
   if (typeof className === "string" && className.trim()) {
     spec.className = className.trim();
   }
+  if (o.labelHtml === true) {
+    spec.labelHtml = true;
+  }
   return spec;
 }
 function buildZagAction(spec, rt) {
@@ -1430,6 +1437,7 @@ function buildZagAction(spec, rt) {
     }
   };
   if (spec.className) action.className = spec.className;
+  if (spec.labelHtml) action.labelHtml = true;
   return action;
 }
 var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};

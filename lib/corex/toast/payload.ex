@@ -4,6 +4,7 @@ defmodule Corex.Toast.Payload do
   import Corex.Helpers, only: [maybe_put: 3]
 
   alias Corex.Toast.Action, as: ToastAction
+  alias Phoenix.HTML.Safe
   alias Phoenix.LiveView.JS
 
   @toast_type_strings Map.new(~W(info success error warning loading)a, &{&1, Atom.to_string(&1)})
@@ -38,10 +39,11 @@ defmodule Corex.Toast.Payload do
   def normalize_action(nil), do: nil
 
   def normalize_action(%ToastAction{} = a) do
-    with html when is_binary(html) <- action_label_html(a.label),
+    with {:ok, html, label_html?} <- action_label(a.label),
          %JS{ops: [_ | _]} = js <- a.js do
       %{"label" => html, "effects" => [%{"kind" => "exec_js", "encoded" => encode_js_ops(js)}]}
       |> maybe_put_class(a.class)
+      |> maybe_put_label_html(label_html?)
     else
       _ -> nil
     end
@@ -93,6 +95,9 @@ defmodule Corex.Toast.Payload do
     end
   end
 
+  defp maybe_put_label_html(map, true), do: Map.put(map, "labelHtml", true)
+  defp maybe_put_label_html(map, _), do: map
+
   defp class_string(nil), do: nil
 
   defp class_string(s) when is_binary(s) do
@@ -104,8 +109,23 @@ defmodule Corex.Toast.Payload do
 
   defp class_string(_), do: nil
 
-  defp action_label_html(label) when is_binary(label), do: label
-  defp action_label_html(_), do: nil
+  defp action_label(label) when is_binary(label), do: {:ok, label, false}
+
+  defp action_label(%Phoenix.LiveView.Rendered{} = rendered) do
+    {:ok, rendered_to_binary(rendered), true}
+  end
+
+  defp action_label({:safe, _} = safe) do
+    {:ok, safe |> Safe.to_iodata() |> IO.iodata_to_binary(), true}
+  end
+
+  defp action_label(_), do: :error
+
+  defp rendered_to_binary(rendered) do
+    rendered
+    |> Safe.to_iodata()
+    |> IO.iodata_to_binary()
+  end
 
   defp encode_js_ops(%JS{} = js), do: Phoenix.json_library().encode!(js.ops)
 

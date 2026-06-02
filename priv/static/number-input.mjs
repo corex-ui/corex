@@ -1,9 +1,9 @@
 import {
   memo
-} from "./chunks/chunk-RNYQBUAX.mjs";
+} from "./chunks/chunk-HWSJUKAB.mjs";
 import {
   syncHiddenInputValue
-} from "./chunks/chunk-4SRF4GX7.mjs";
+} from "./chunks/chunk-YV3G4M5K.mjs";
 import {
   clampValue,
   decrementValue,
@@ -24,7 +24,7 @@ import {
   mergeFormatOptions,
   mountNumberBinding,
   readUpdatedServerNumber
-} from "./chunks/chunk-H5X7JSOZ.mjs";
+} from "./chunks/chunk-I2HPUDHJ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -65,7 +65,7 @@ import {
   setup,
   syncInputFormAssociation,
   trackFormControl
-} from "./chunks/chunk-EWT2BP2N.mjs";
+} from "./chunks/chunk-2GQRP3FN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(

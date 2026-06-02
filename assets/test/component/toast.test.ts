@@ -1,4 +1,5 @@
 import { describe, expect, it, afterEach } from "vitest";
+import type { ActionOptions } from "@zag-js/toast";
 import {
   actionClassTokens,
   createToast,
@@ -85,6 +86,78 @@ describe("toast group API", () => {
     expect(action).toBeTruthy();
     expect(action!.textContent).toBe(malicious);
     expect(action!.querySelector("img")).toBeNull();
+
+    document.body.removeChild(container);
+  });
+
+  it("renders html action labels when labelHtml is true", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, { id: groupId });
+    store.create({
+      id: "t-html-label",
+      title: "Title",
+      type: "info",
+      action: {
+        label: '<span data-testid="custom-label">Open</span>',
+        labelHtml: true,
+        onClick: () => {},
+      } as ActionOptions & { labelHtml?: boolean },
+    });
+    group.render();
+
+    const action = container.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="action-trigger"]'
+    );
+    expect(action?.querySelector('[data-testid="custom-label"]')).toBeTruthy();
+
+    document.body.removeChild(container);
+  });
+
+  it("clones close and loading icons from templates", () => {
+    const container = document.createElement("div");
+    container.id = groupId;
+    container.setAttribute("phx-hook", "Toast");
+
+    const closeTemplate = document.createElement("div");
+    closeTemplate.id = `${groupId}-close-icon`;
+    closeTemplate.setAttribute("data-close-icon-template", "");
+    const closeSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    closeSvg.setAttribute("data-testid", "close-icon");
+    closeTemplate.appendChild(closeSvg);
+
+    const loadingTemplate = document.createElement("div");
+    loadingTemplate.id = `${groupId}-loading-icon`;
+    loadingTemplate.setAttribute("data-loading-icon-template", "");
+    const loadingSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    loadingSvg.setAttribute("data-testid", "loading-icon");
+    loadingTemplate.appendChild(loadingSvg);
+
+    container.append(closeTemplate, loadingTemplate);
+    document.body.appendChild(container);
+
+    const { group, store } = createToastGroup(container, { id: groupId });
+    store.create({
+      id: "t-icons",
+      title: "Title",
+      type: "info",
+      meta: { loading: true },
+    });
+    group.render();
+
+    const close = container.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="close-trigger"]'
+    );
+    const loading = container.querySelector<HTMLElement>(
+      '[data-scope="toast"][data-part="loading-spinner"]'
+    );
+
+    expect(close?.querySelector("svg[data-testid='close-icon']")).toBeTruthy();
+    expect(loading?.querySelector("svg[data-testid='loading-icon']")).toBeTruthy();
+    expect(closeTemplate.querySelector("svg")).toBeTruthy();
 
     document.body.removeChild(container);
   });

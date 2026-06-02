@@ -24,6 +24,16 @@ describe("parseActionSpec", () => {
     ).toEqual({ label: "Go", encoded: "x", className: "button--sm" });
   });
 
+  it("includes labelHtml when present", () => {
+    expect(
+      parseActionSpec({
+        label: "<span>Open</span>",
+        labelHtml: true,
+        effects: [{ kind: "exec_js", encoded: "x" }],
+      })
+    ).toEqual({ label: "<span>Open</span>", encoded: "x", labelHtml: true });
+  });
+
   it("returns null for invalid shape", () => {
     expect(parseActionSpec(null)).toBeNull();
     expect(parseActionSpec({ label: "" })).toBeNull();
