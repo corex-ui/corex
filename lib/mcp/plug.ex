@@ -30,9 +30,7 @@ defmodule Corex.MCP do
     |> Plug.Conn.halt()
   end
 
-  def call(conn, _config) do
-    validate!(conn)
-  end
+  def call(conn, _config), do: conn
 
   defp maybe_silence_mcp_server_logs do
     if Application.get_env(:corex, :debug) do

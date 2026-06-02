@@ -42,16 +42,15 @@ defmodule Corex.MCPTest do
       assert Plug.Conn.get_resp_header(conn, "x-frame-options") == ["DENY"]
     end
 
-    test "raises when plug runs too late on non-corex paths" do
+    test "passes through non-corex requests without validating body params" do
       opts = Corex.MCP.init([])
 
       conn =
         Plug.Test.conn(:get, "/app")
         |> Map.put(:body_params, %{})
+        |> Corex.MCP.call(opts)
 
-      assert_raise RuntimeError, ~r/plug Corex.MCP is running too late/, fn ->
-        Corex.MCP.call(conn, opts)
-      end
+      refute conn.halted
     end
   end
 
