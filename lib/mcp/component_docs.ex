@@ -1,16 +1,12 @@
 defmodule Corex.MCP.ComponentDocs do
   @moduledoc false
 
+  alias Corex.MCP
+
   def enrich(spec, mod) do
     case Code.fetch_docs(mod) do
       {:docs_v1, line, _beam_lang, format, doc_blob, meta, _} ->
-        meta_map =
-          case meta do
-            %{} = m -> m
-            _ -> %{}
-          end
-
-        source_path = resolve_source_path(meta_map, mod)
+        source_path = resolve_source_path(meta, mod)
 
         case moduledoc_markdown(doc_blob, format, mod) do
           {:ok, docs} ->
@@ -42,53 +38,49 @@ defmodule Corex.MCP.ComponentDocs do
 
   defp resolve_source_path(meta, mod) do
     case source_path_from_meta(meta) do
-      p when is_binary(p) and p != "" -> p
+      path when is_binary(path) and path != "" -> path
       _ -> compile_source_path(mod)
     end
   end
 
-  defp source_path_from_meta(meta) when is_map(meta) do
-    meta = Map.new(meta, fn {k, v} -> {to_string(k), v} end)
-    normalize_source_path_string(Map.get(meta, "source_path"))
+  defp source_path_from_meta(%{} = meta) do
+    meta
+    |> Map.new(fn {key, value} -> {to_string(key), value} end)
+    |> Map.get("source_path")
+    |> relative_source_path()
   end
+
+  defp source_path_from_meta(_), do: nil
 
   defp compile_source_path(mod) do
     with list when is_list(list) <- mod.module_info(:compile),
          src when not is_nil(src) <- Keyword.get(list, :source) do
-      normalize_source_path_string(src)
-    else
-      _ -> nil
+      relative_source_path(src)
     end
   end
 
-  defp normalize_source_path_string(p) when is_list(p),
-    do: normalize_source_path_string(List.to_string(p))
+  defp relative_source_path(path) when is_list(path),
+    do: relative_source_path(List.to_string(path))
 
-  defp normalize_source_path_string(p) when is_binary(p) do
-    abs = Path.expand(p)
-    root = Path.expand(Corex.MCP.root())
+  defp relative_source_path(path) when is_binary(path) do
+    abs = Path.expand(path)
+    root = Path.expand(MCP.root())
 
     cond do
-      abs == root ->
-        "."
-
-      String.starts_with?(abs, root <> "/") ->
-        Path.relative_to(abs, root)
-
-      true ->
-        Path.basename(abs)
+      abs == root -> "."
+      String.starts_with?(abs, root <> "/") -> Path.relative_to(abs, root)
+      true -> Path.basename(abs)
     end
   end
 
-  defp normalize_source_path_string(_), do: nil
+  defp relative_source_path(_), do: nil
 
   defp moduledoc_markdown(%{"en" => content}, "text/markdown", mod)
        when is_binary(content) do
     {:ok, "# #{inspect(mod)}\n\n#{content}"}
   end
 
-  defp moduledoc_markdown(%{"en" => content}, format, mod)
-       when is_binary(content) do
+  defp moduledoc_markdown(%{"en" => content}, format, mod) when is_binary(content) do
     {:ok,
      "# #{inspect(mod)}\n\n#{content}" <>
        "\n\n_(documentation format: #{inspect(format)}, not text/markdown)_\n"}

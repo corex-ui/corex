@@ -1,17 +1,17 @@
 defmodule Corex.MCPTest do
   use ExUnit.Case, async: false
 
-  alias Corex.MCP.Server
+  alias Corex.MCP.{Config, Server}
 
   @moduletag capture_log: true
 
   describe "init/1" do
     test "defaults allow_remote_access to false" do
-      assert %{allow_remote_access: false} = Corex.MCP.init([])
+      assert %Config{allow_remote_access: false} = Corex.MCP.init([])
     end
 
     test "honours allow_remote_access" do
-      assert %{allow_remote_access: true} = Corex.MCP.init(allow_remote_access: true)
+      assert %Config{allow_remote_access: true} = Corex.MCP.init(allow_remote_access: true)
     end
 
     test "accepts already-normalized map opts" do
@@ -19,7 +19,7 @@ defmodule Corex.MCPTest do
       assert first == Corex.MCP.init(first)
     end
 
-    test "initializes MCP tools in ETS" do
+    test "initializes MCP tools for dispatch" do
       Corex.MCP.init([])
       assert {tools, _dispatch} = Server.tools_and_dispatch()
       assert tools != []
@@ -49,7 +49,7 @@ defmodule Corex.MCPTest do
         Plug.Test.conn(:get, "/app")
         |> Map.put(:body_params, %{})
 
-      assert_raise RuntimeError, ~r/plug Corex.MCP is runnning too late/, fn ->
+      assert_raise RuntimeError, ~r/plug Corex.MCP is running too late/, fn ->
         Corex.MCP.call(conn, opts)
       end
     end
@@ -78,7 +78,7 @@ defmodule Corex.MCPTest do
         |> Map.put(:remote_ip, {127, 0, 0, 1})
         |> Map.put(:body_params, %{})
 
-      assert_raise RuntimeError, ~r/plug Corex.MCP is runnning too late/, fn ->
+      assert_raise RuntimeError, ~r/plug Corex.MCP is running too late/, fn ->
         Corex.MCP.call(conn, opts)
       end
     end

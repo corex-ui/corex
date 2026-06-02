@@ -7,6 +7,7 @@ defmodule Corex.MCP.Tools.Components do
   alias Corex.MCP.ComponentDocs
 
   @max_id_length 64
+  @unknown_id_message "Unknown component id. Use list_components for valid ids."
 
   def tools do
     [
@@ -44,29 +45,23 @@ defmodule Corex.MCP.Tools.Components do
   end
 
   def list_components(%{} = args) when map_size(args) == 0 do
-    ids = for id <- Corex.component_ids(), do: to_string(id)
-    {:ok, Corex.Json.encode!(%{"components" => ids})}
+    ids = Enum.map(Corex.component_ids(), &to_string/1)
+    {:ok, Corex.Json.encode!(%{components: ids})}
   end
 
   def list_components(_), do: {:error, :invalid_arguments}
 
   def get_component(%{"id" => id} = args)
       when is_binary(id) and byte_size(id) <= @max_id_length and map_size(args) == 1 do
-    case Corex.component_module_for_mcp_id(id) do
-      {:ok, mod} ->
-        atom_id = String.to_existing_atom(id)
-
-        case Corex.component_spec(atom_id) do
-          {:ok, spec} ->
-            payload = ComponentDocs.enrich(spec, mod)
-            {:ok, Corex.Json.encode!(payload)}
-
-          :error ->
-            {:error, "Unknown component id. Use list_components for valid ids."}
-        end
-
-      :error ->
-        {:error, "Unknown component id. Use list_components for valid ids."}
+    with {:ok, mod} <- Corex.component_module_for_mcp_id(id),
+         atom_id = String.to_existing_atom(id),
+         {:ok, spec} <- Corex.component_spec(atom_id) do
+      spec
+      |> ComponentDocs.enrich(mod)
+      |> Corex.Json.encode!()
+      |> then(&{:ok, &1})
+    else
+      :error -> {:error, @unknown_id_message}
     end
   end
 

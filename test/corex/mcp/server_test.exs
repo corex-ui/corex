@@ -3,7 +3,7 @@ defmodule Corex.MCP.ServerTest do
 
   @moduletag capture_log: true
 
-  alias Corex.MCP.Server
+  alias Corex.MCP.{Config, Server}
 
   setup do
     unless Application.get_env(:corex, :debug) do
@@ -18,10 +18,10 @@ defmodule Corex.MCP.ServerTest do
     Plug.Test.conn(:post, "/")
     |> Map.put(:body_params, body_map)
     |> Map.put(:params, body_map)
-    |> Plug.Conn.put_private(:corex_mcp_config, %{allow_remote_access: false})
+    |> Plug.Conn.put_private(:corex_mcp_config, %Config{allow_remote_access: false})
   end
 
-  test "init_tools stores tools in :corex_mcp_tools" do
+  test "init_tools stores tools for dispatch" do
     assert :ok = Server.init_tools()
     assert {tools, _dispatch} = Server.tools_and_dispatch()
     assert tools != []
@@ -29,6 +29,13 @@ defmodule Corex.MCP.ServerTest do
     assert "list_components" in names
     assert "get_component" in names
     assert "installation_guide" in names
+  end
+
+  test "init_tools is safe to call repeatedly (code reload / concurrent plug init)" do
+    assert :ok = Server.init_tools()
+    assert :ok = Server.init_tools()
+    assert {tools, _} = Server.tools_and_dispatch()
+    assert tools != []
   end
 
   test "handle_http_message initialize returns protocol and tools" do
