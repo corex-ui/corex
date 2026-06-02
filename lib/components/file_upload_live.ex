@@ -90,8 +90,7 @@ defmodule Corex.FileUploadLive do
   end
 
   def handle_event("file_upload_live_cancel", params, socket) do
-    %{"ref" => ref, "upload_field" => field} = params
-    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+    {:noreply, Corex.FileUploadLive.cancel_upload_from_params(socket, :attachment, params)}
   end
   ```
 
@@ -109,8 +108,8 @@ defmodule Corex.FileUploadLive do
      )}
   end
 
-  def handle_event("file_upload_live_cancel", %{"ref" => ref, "upload_field" => field}, socket) do
-    {:noreply, cancel_upload(socket, String.to_existing_atom(field), ref)}
+  def handle_event("file_upload_live_cancel", params, socket) do
+    {:noreply, Corex.FileUploadLive.cancel_upload_from_params(socket, :document, params)}
   end
   ```
 
@@ -294,6 +293,34 @@ defmodule Corex.FileUploadLive do
       </div>
     </div>
     """
+  end
+
+  @doc """
+  Cancels an upload entry from a LiveView `handle_event/3` callback.
+
+  Pass the same `field` atom given to `allow_upload/3`. Forged or unknown
+  `upload_field` values are ignored without raising.
+  """
+  @spec cancel_upload_from_params(Phoenix.LiveView.Socket.t(), atom(), map()) ::
+          Phoenix.LiveView.Socket.t()
+  def cancel_upload_from_params(socket, expected_field, %{"ref" => ref, "upload_field" => field})
+      when is_atom(expected_field) and is_binary(ref) and is_binary(field) do
+    if field == Atom.to_string(expected_field) do
+      case safe_existing_atom(field) do
+        {:ok, atom} -> Phoenix.LiveView.cancel_upload(socket, atom, ref)
+        :error -> socket
+      end
+    else
+      socket
+    end
+  end
+
+  def cancel_upload_from_params(socket, _expected_field, _params), do: socket
+
+  defp safe_existing_atom(param) when is_binary(param) do
+    {:ok, String.to_existing_atom(param)}
+  rescue
+    ArgumentError -> :error
   end
 
   defp image_entry?(%UploadEntry{} = entry) do

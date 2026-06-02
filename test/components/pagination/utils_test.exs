@@ -44,5 +44,10 @@ defmodule Corex.Pagination.UtilsTest do
       assert Utils.page_href("/items?sort=asc", "page", "page_size", 2, 10) ==
                "/items?sort=asc&page=2&page_size=10"
     end
+
+    test "returns nil for disallowed base URL" do
+      assert Utils.page_href("javascript:alert(1)", "page", "page_size", 2, 10) == nil
+      assert Utils.page_href("//evil.example", "page", "page_size", 2, 10) == nil
+    end
   end
 end

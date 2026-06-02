@@ -123,11 +123,14 @@ defmodule Corex.Pagination.Utils do
     |> String.replace("%{total_pages}", to_string(total_pages))
   end
 
-  @spec page_href(String.t(), String.t(), String.t(), pos_integer(), pos_integer()) :: String.t()
+  @spec page_href(String.t(), String.t(), String.t(), pos_integer(), pos_integer()) ::
+          String.t() | nil
   def page_href(base, page_param, page_size_param, page, page_size) do
-    sep = if String.contains?(base, "?"), do: "&", else: "?"
-    encoded_page = URI.encode_www_form(page_param)
-    encoded_size = URI.encode_www_form(page_size_param)
-    "#{base}#{sep}#{encoded_page}=#{page}&#{encoded_size}=#{page_size}"
+    if Corex.Url.allowed_href?(base) do
+      sep = if String.contains?(base, "?"), do: "&", else: "?"
+      encoded_page = URI.encode_www_form(page_param)
+      encoded_size = URI.encode_www_form(page_size_param)
+      "#{base}#{sep}#{encoded_page}=#{page}&#{encoded_size}=#{page_size}"
+    end
   end
 end

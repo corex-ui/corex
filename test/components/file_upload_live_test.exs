@@ -199,4 +199,29 @@ defmodule Corex.FileUploadLiveTest do
       assert html =~ "Browse"
     end
   end
+
+  describe "cancel_upload_from_params/3" do
+    test "returns socket unchanged for forged upload_field" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      assert FileUploadLive.cancel_upload_from_params(socket, :attachment, %{
+               "ref" => "entry-ref-1",
+               "upload_field" => "other"
+             }) == socket
+    end
+
+    test "returns socket unchanged for unknown atom" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      assert FileUploadLive.cancel_upload_from_params(socket, :attachment, %{
+               "ref" => "entry-ref-1",
+               "upload_field" => "nonexistent_upload_field_atom_xyz"
+             }) == socket
+    end
+
+    test "returns socket unchanged for malformed params" do
+      socket = %Phoenix.LiveView.Socket{}
+      assert FileUploadLive.cancel_upload_from_params(socket, :attachment, %{}) == socket
+    end
+  end
 end
