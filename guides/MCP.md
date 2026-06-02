@@ -76,6 +76,27 @@ All tools are read-only.
 
 Call `list_components` before `get_component` when you need a valid `id`.
 
+## Security
+
+| Setting | Default | Purpose |
+| ------- | ------- | ------- |
+| Loopback-only access | on | Non-loopback clients receive 403 unless you opt in |
+| `allow_remote_access: true` | off | Allows non-loopback IPs; logs a warning at plug init. Restrict with a firewall or VPN. Never use in production. |
+| `config :corex, mcp_verbose_errors: false` | off | Tool failures return a generic message to MCP clients; full exceptions stay in server logs |
+| `config :corex, debug: true` | off | Enables verbose MCP JSON-RPC debug logging on `Corex.MCP.Server` |
+
+Example for local debugging only:
+
+```elixir
+config :corex, debug: true, mcp_verbose_errors: true
+```
+
+Remote access (discouraged outside trusted networks):
+
+```elixir
+plug Corex.MCP, allow_remote_access: true
+```
+
 ## Related
 
 - [Installation](installation.html) — `mix corex.new` enables MCP in dev by default

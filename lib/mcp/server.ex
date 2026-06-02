@@ -17,8 +17,27 @@ defmodule Corex.MCP.Server do
   @vsn Mix.Project.config()[:version] || "0.0.0"
 
   defp raw_tools do
-    [McpToolComponents.tools(), McpToolInstallation.tools()]
-    |> List.flatten()
+    tools =
+      [McpToolComponents.tools(), McpToolInstallation.tools()]
+      |> List.flatten()
+
+    if Mix.env() == :test do
+      tools ++ [test_raise_tool()]
+    else
+      tools
+    end
+  end
+
+  defp test_raise_tool do
+    %{
+      name: "test_raise",
+      description: "Test-only tool that raises",
+      inputSchema: %{
+        type: "object",
+        properties: %{}
+      },
+      callback: fn _args, _assigns -> raise "secret internal path" end
+    }
   end
 
   @doc "Loads tool specs and callbacks into `:corex_mcp_tools` ETS."
@@ -197,6 +216,20 @@ defmodule Corex.MCP.Server do
     handle_call_tool(request_id, params, assigns)
   catch
     kind, reason ->
+      stacktrace = __STACKTRACE__
+      formatted = Exception.format(kind, reason, stacktrace)
+
+      unless verbose_errors?(assigns) do
+        Logger.error("Corex.MCP tool call failed: #{formatted}")
+      end
+
+      text =
+        if verbose_errors?(assigns) do
+          "Failed to call tool: #{formatted}"
+        else
+          "Failed to call tool"
+        end
+
       {:ok,
        %{
          jsonrpc: "2.0",
@@ -205,7 +238,7 @@ defmodule Corex.MCP.Server do
            content: [
              %{
                type: "text",
-               text: "Failed to call tool: #{Exception.format(kind, reason, __STACKTRACE__)}"
+               text: text
              }
            ],
            isError: true
@@ -213,20 +246,26 @@ defmodule Corex.MCP.Server do
        }}
   end
 
+  defp verbose_errors?(assigns) when is_map(assigns) do
+    Map.get(assigns, :verbose_errors, Application.get_env(:corex, :mcp_verbose_errors, false))
+  end
+
+  defp verbose_errors?(_), do: Application.get_env(:corex, :mcp_verbose_errors, false)
+
   defp handle_message(%{"method" => "notifications/initialized"} = message, _assigns) do
-    Logger.info("Received initialized notification")
-    Logger.debug("Full message: #{inspect(message, pretty: true)}")
+    mcp_debug("Received initialized notification")
+    mcp_debug("Full message: #{inspect(message, pretty: true)}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => "notifications/cancelled"} = message, _assigns) do
-    Logger.info("Request cancelled: #{inspect(message["params"])}")
+    mcp_debug("Request cancelled: #{inspect(message["params"])}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => method, "id" => id} = message, assigns) do
-    Logger.info("Routing MCP message - Method: #{method}, ID: #{id}")
-    Logger.debug("Full message: #{inspect(message, pretty: true)}")
+    mcp_debug("Routing MCP message - Method: #{method}, ID: #{id}")
+    mcp_debug("Full message: #{inspect(message, pretty: true)}")
     route_mcp_method(method, id, message, assigns)
   end
 
@@ -236,7 +275,7 @@ defmodule Corex.MCP.Server do
   end
 
   defp route_mcp_method("initialize", id, message, _assigns) do
-    Logger.info(
+    mcp_debug(
       "Handling initialize request with params: #{inspect(message["params"], pretty: true)}"
     )
 
@@ -249,7 +288,7 @@ defmodule Corex.MCP.Server do
   end
 
   defp route_mcp_method("tools/call", id, message, assigns) do
-    Logger.debug(
+    mcp_debug(
       "Handling tool call request with params: #{inspect(message["params"], pretty: true)}"
     )
 
@@ -338,10 +377,10 @@ defmodule Corex.MCP.Server do
   @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do
     :ok = init_tools()
-    Logger.info("Received #{conn.method} message")
+    mcp_debug("Received #{conn.method} message")
     params = conn.body_params
     conn = fetch_query_params(conn)
-    Logger.debug("Raw params: #{inspect(params, pretty: true)}")
+    mcp_debug("Raw params: #{inspect(params, pretty: true)}")
 
     case validate_jsonrpc_message(params) do
       {:ok, message} ->
@@ -352,17 +391,23 @@ defmodule Corex.MCP.Server do
             conn |> put_status(202) |> send_json(%{status: "ok"})
 
           {:ok, response} ->
-            Logger.debug("Sending HTTP response: #{inspect(response, pretty: true)}")
+            mcp_debug("Sending HTTP response: #{inspect(response, pretty: true)}")
             conn |> put_status(200) |> send_json(response)
 
           {:error, error_response} ->
-            Logger.warning("Error handling message: #{inspect(error_response)}")
+            Logger.warning("Error handling MCP message: #{inspect(error_response)}")
             conn |> put_status(400) |> send_json(error_response)
         end
 
       {:error, :invalid_jsonrpc} ->
         Logger.warning("Invalid JSON-RPC message format")
         send_jsonrpc_error(conn, nil, -32_600, "Could not parse message")
+    end
+  end
+
+  defp mcp_debug(message) do
+    if Application.get_env(:corex, :debug) do
+      Logger.debug(message)
     end
   end
 end

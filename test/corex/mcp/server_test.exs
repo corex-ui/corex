@@ -13,11 +13,11 @@ defmodule Corex.MCP.ServerTest do
     :ok
   end
 
-  defp post_conn(body_map) do
+  defp post_conn(body_map, config \\ %{allow_remote_access: false, verbose_errors: false}) do
     Plug.Test.conn(:post, "/")
     |> Map.put(:body_params, body_map)
     |> Map.put(:params, body_map)
-    |> Plug.Conn.put_private(:corex_mcp_config, %{allow_remote_access: false})
+    |> Plug.Conn.put_private(:corex_mcp_config, config)
   end
 
   test "init_tools stores tools in :corex_mcp_tools" do
@@ -283,5 +283,46 @@ defmodule Corex.MCP.ServerTest do
     assert conn.status == 400
     decoded = Corex.Json.decode!(conn.resp_body)
     assert decoded["error"]["code"] == -32_601
+  end
+
+  test "tools/call redacts raised tool errors by default" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 20,
+      "method" => "tools/call",
+      "params" => %{"name" => "test_raise", "arguments" => %{}}
+    }
+
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.Json.decode!(conn.resp_body)
+    inner = decoded["result"]["content"] |> List.first()
+    assert inner["text"] == "Failed to call tool"
+    refute inner["text"] =~ "secret internal path"
+    assert decoded["result"]["isError"] == true
+  end
+
+  test "tools/call includes raised tool errors when verbose_errors is enabled" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 21,
+      "method" => "tools/call",
+      "params" => %{"name" => "test_raise", "arguments" => %{}}
+    }
+
+    conn =
+      body
+      |> post_conn(%{allow_remote_access: false, verbose_errors: true})
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.Json.decode!(conn.resp_body)
+    inner = decoded["result"]["content"] |> List.first()
+    assert inner["text"] =~ "secret internal path"
+    assert decoded["result"]["isError"] == true
   end
 end
