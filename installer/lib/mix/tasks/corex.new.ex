@@ -183,6 +183,9 @@ defmodule Mix.Tasks.Corex.New do
         true -> Module.concat([Macro.camelize(app) <> "Web"])
       end
 
+    check_module_name_validity!(web_module)
+    check_module_name_availability!(web_module)
+
     install_dir = PhxWrapper.web_project_path(phx_root, opts)
 
     PhxWrapper.ensure_phx_new!()
