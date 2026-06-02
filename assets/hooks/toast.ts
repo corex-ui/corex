@@ -36,7 +36,7 @@ export function parseSingleExecJsEffect(raw: unknown): string | null {
   return encoded;
 }
 
-export function parseActionSpec(raw: unknown): ToastActionSpec | null {
+export function parseServerActionSpec(raw: unknown): ToastActionSpec | null {
   const o = asRecord(raw);
   const label = o.label;
   if (typeof label !== "string" || label.length === 0) return null;
@@ -54,6 +54,12 @@ export function parseActionSpec(raw: unknown): ToastActionSpec | null {
   }
   return spec;
 }
+
+export function parseDomActionSpec(_raw: unknown): ToastActionSpec | null {
+  return null;
+}
+
+export const parseActionSpec = parseServerActionSpec;
 
 function buildZagAction(
   spec: ToastActionSpec,
@@ -217,8 +223,10 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
 
     const rt = buildRuntime(this);
 
-    const buildCreateOptions = (payload: ToastCreatePayload): Options => {
-      const spec = parseActionSpec(payload.action);
+    const buildCreateOptions = (payload: ToastCreatePayload, trusted: boolean): Options => {
+      const spec = trusted
+        ? parseServerActionSpec(payload.action)
+        : parseDomActionSpec(payload.action);
       const base: Options = {
         title: payload.title ?? "",
         description: payload.description,
@@ -235,7 +243,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       return base;
     };
 
-    const buildUpdatePatch = (payload: ToastUpdatePayload): Partial<Options> => {
+    const buildUpdatePatch = (payload: ToastUpdatePayload, trusted: boolean): Partial<Options> => {
       const patch: Partial<Options> = {};
       if (payload.title !== undefined) patch.title = payload.title;
       if (payload.description !== undefined) patch.description = payload.description;
@@ -246,7 +254,9 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       } else if (payload.loading === false || payload.loading === "false") {
         patch.meta = { loading: false };
       }
-      const spec = parseActionSpec(payload.action);
+      const spec = trusted
+        ? parseServerActionSpec(payload.action)
+        : parseDomActionSpec(payload.action);
       if (spec) {
         patch.action = buildZagAction(spec, rt);
       } else if (payload.action === null) {
@@ -284,7 +294,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
         const st = getToastStore(payload.groupId || this.groupId);
         if (!st) return;
         try {
-          st.create(buildCreateOptions(payload));
+          st.create(buildCreateOptions(payload, true));
         } catch (error) {
           console.error("Failed to create toast:", error);
         }
@@ -296,7 +306,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
         const st = getToastStore(payload.groupId || this.groupId);
         if (!st || !payload.id) return;
         try {
-          st.update(payload.id, buildUpdatePatch(payload));
+          st.update(payload.id, buildUpdatePatch(payload, true));
         } catch (error) {
           console.error("Failed to update toast:", error);
         }
@@ -312,7 +322,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail));
+        st.create(buildCreateOptions(detail, false));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
@@ -323,7 +333,7 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st || !detail.id) return;
       try {
-        st.update(detail.id, buildUpdatePatch(detail));
+        st.update(detail.id, buildUpdatePatch(detail, false));
       } catch (error) {
         console.error("Failed to update toast:", error);
       }
