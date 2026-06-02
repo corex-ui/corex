@@ -13011,7 +13011,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-6Q6MB27T.mjs
+  // ../priv/static/chunks/chunk-HZLPIQBD.mjs
   function isAllowedRedirectDestination(destination) {
     const trimmed = destination.trim();
     if (!trimmed) return false;
@@ -13059,8 +13059,8 @@ var Corex = (() => {
     return true;
   }
   var REDIRECT_MODES, SCHEME_PREFIX;
-  var init_chunk_6Q6MB27T = __esm({
-    "../priv/static/chunks/chunk-6Q6MB27T.mjs"() {
+  var init_chunk_HZLPIQBD = __esm({
+    "../priv/static/chunks/chunk-HZLPIQBD.mjs"() {
       "use strict";
       REDIRECT_MODES = ["href", "patch", "navigate"];
       SCHEME_PREFIX = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
@@ -13614,7 +13614,7 @@ var Corex = (() => {
       init_chunk_CNPBJL2G();
       init_chunk_NICWUGGL();
       init_chunk_FVGYE2AE();
-      init_chunk_6Q6MB27T();
+      init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
       init_chunk_I2HPUDHJ();
       init_chunk_77HPO22C();
@@ -27360,7 +27360,7 @@ ${err}`);
       "use strict";
       init_chunk_NICWUGGL();
       init_chunk_FVGYE2AE();
-      init_chunk_6Q6MB27T();
+      init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
       init_chunk_I2HPUDHJ();
       init_chunk_77HPO22C();
@@ -28722,7 +28722,7 @@ ${err}`);
       init_chunk_WJDVLJMP();
       init_chunk_B5L2AGOH();
       init_chunk_CNPBJL2G();
-      init_chunk_6Q6MB27T();
+      init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -31853,7 +31853,7 @@ ${err}`);
     var _a4, _b;
     const triggerType = getString(el, "type");
     const base = el.dataset.to;
-    if (triggerType !== "link" || !base) return void 0;
+    if (triggerType !== "link" || !base || !isAllowedRedirectDestination(base)) return void 0;
     const pageParam = (_a4 = el.dataset.pageParam) != null ? _a4 : "page";
     const pageSizeParam = (_b = el.dataset.pageSizeParam) != null ? _b : "page_size";
     return ({ page, pageSize }) => {
@@ -31931,6 +31931,7 @@ ${err}`);
     "../priv/static/pagination.mjs"() {
       "use strict";
       init_chunk_HWSJUKAB();
+      init_chunk_HZLPIQBD();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();
@@ -34790,7 +34791,7 @@ ${err}`);
       init_chunk_CNPBJL2G();
       init_chunk_NICWUGGL();
       init_chunk_FVGYE2AE();
-      init_chunk_6Q6MB27T();
+      init_chunk_HZLPIQBD();
       init_chunk_VDUSDBJS();
       init_chunk_I2HPUDHJ();
       init_chunk_77HPO22C();
@@ -43656,7 +43657,7 @@ ${err}`);
       init_chunk_JDGMEOQK();
       init_chunk_SBA2GV3P();
       init_chunk_FVGYE2AE();
-      init_chunk_6Q6MB27T();
+      init_chunk_HZLPIQBD();
       init_chunk_77HPO22C();
       init_chunk_2WCNJX5P();
       init_chunk_2GQRP3FN();

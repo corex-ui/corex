@@ -44,6 +44,11 @@ describe("buildGetPageUrl", () => {
   it("returns undefined for button type", () => {
     expect(buildGetPageUrl(el({ type: "button" }))).toBeUndefined();
   });
+
+  it("returns undefined for disallowed base URL", () => {
+    expect(buildGetPageUrl(el({ type: "link", to: "javascript:alert(1)" }))).toBeUndefined();
+    expect(buildGetPageUrl(el({ type: "link", to: "//evil.example" }))).toBeUndefined();
+  });
 });
 
 describe("applyPhoenixLinkAttrs", () => {

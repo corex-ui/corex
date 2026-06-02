@@ -14,7 +14,7 @@ import {
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunks/chunk-6Q6MB27T.mjs";
+} from "./chunks/chunk-HZLPIQBD.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry

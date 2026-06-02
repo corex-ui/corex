@@ -49,6 +49,7 @@ function performRedirect(input, ctx) {
 }
 
 export {
+  isAllowedRedirectDestination,
   readDomItemRedirect,
   performRedirect
 };

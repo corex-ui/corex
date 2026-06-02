@@ -24,7 +24,7 @@ defmodule Corex.Pagination.Connect do
       "data-sibling-count" => to_string(assigns.sibling_count),
       "data-boundary-count" => to_string(assigns.boundary_count),
       "data-type" => assigns.type,
-      "data-to" => assigns.to,
+      "data-to" => link_base_to(assigns),
       "data-page-param" => assigns.page_param,
       "data-page-size-param" => assigns.page_size_param,
       "data-redirect" => assigns.redirect,
@@ -36,6 +36,12 @@ defmodule Corex.Pagination.Connect do
     }
     |> maybe_put_data_dir_from(assigns)
   end
+
+  defp link_base_to(%{to: to}) when is_binary(to) do
+    if Corex.Url.allowed_href?(to), do: to
+  end
+
+  defp link_base_to(_), do: nil
 
   defp translation_json(assigns) do
     case Map.get(assigns, :translation) do

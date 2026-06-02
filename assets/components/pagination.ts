@@ -2,6 +2,7 @@ import { connect, machine, type Api, type Props } from "@zag-js/pagination";
 import type { IntlTranslations } from "@zag-js/pagination";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { isAllowedRedirectDestination } from "../lib/redirect";
 import { cloneTemplateChildren, getString } from "../lib/util";
 
 export class Pagination extends Component<Props, Api> {
@@ -184,7 +185,7 @@ export function applyPhoenixLinkAttrsToNavigableParts(rootEl: HTMLElement): void
 export function buildGetPageUrl(el: HTMLElement): Props["getPageUrl"] | undefined {
   const triggerType = getString(el, "type");
   const base = el.dataset.to;
-  if (triggerType !== "link" || !base) return undefined;
+  if (triggerType !== "link" || !base || !isAllowedRedirectDestination(base)) return undefined;
 
   const pageParam = el.dataset.pageParam ?? "page";
   const pageSizeParam = el.dataset.pageSizeParam ?? "page_size";
