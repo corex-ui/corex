@@ -14,6 +14,19 @@ defmodule Corex.MCPTest do
       assert %Config{allow_remote_access: true} = Corex.MCP.init(allow_remote_access: true)
     end
 
+    test "logs a warning when allow_remote_access is true" do
+      log =
+        ExUnit.CaptureLog.capture_log(fn ->
+          assert %{allow_remote_access: true} = Corex.MCP.init(allow_remote_access: true)
+        end)
+
+      assert log =~ "allow_remote_access is enabled"
+    end
+
+    test "defaults verbose_errors from application env" do
+      assert %{verbose_errors: false} = Corex.MCP.init([])
+    end
+
     test "accepts already-normalized map opts" do
       first = Corex.MCP.init([])
       assert first == Corex.MCP.init(first)

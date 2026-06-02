@@ -39955,6 +39955,8 @@ ${err}`);
   __export(toast_exports, {
     Toast: () => ToastHook,
     parseActionSpec: () => parseActionSpec,
+    parseDomActionSpec: () => parseDomActionSpec,
+    parseServerActionSpec: () => parseServerActionSpec,
     parseSingleExecJsEffect: () => parseSingleExecJsEffect
   });
   function getToastDuration(duration, type) {
@@ -40569,7 +40571,7 @@ ${err}`);
     if (typeof encoded !== "string" || encoded.length === 0) return null;
     return encoded;
   }
-  function parseActionSpec(raw) {
+  function parseServerActionSpec(raw) {
     const o2 = asRecord(raw);
     const label = o2.label;
     if (typeof label !== "string" || label.length === 0) return null;
@@ -40586,6 +40588,9 @@ ${err}`);
       spec.labelHtml = true;
     }
     return spec;
+  }
+  function parseDomActionSpec(_raw) {
+    return null;
   }
   function buildZagAction(spec, rt) {
     const action = {
@@ -40609,7 +40614,7 @@ ${err}`);
       redirectCtx: { liveSocket: self2.liveSocket }
     };
   }
-  var anatomy29, parts29, getRegionId, getRegionEl, getRootId24, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine29, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
+  var anatomy29, parts29, getRegionId, getRegionEl, getRootId24, getRootEl9, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and10, groupMachine, not11, machine29, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, parseActionSpec, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
@@ -41376,6 +41381,7 @@ ${err}`);
           }
         }
       };
+      parseActionSpec = parseServerActionSpec;
       loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
       ToastHook = {
         mounted() {
@@ -41460,9 +41466,9 @@ ${err}`);
             }
           }
           const rt = buildRuntime(this);
-          const buildCreateOptions = (payload) => {
+          const buildCreateOptions = (payload, trusted) => {
             var _a5;
-            const spec = parseActionSpec(payload.action);
+            const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
             const base = __spreadValues({
               title: (_a5 = payload.title) != null ? _a5 : "",
               description: payload.description,
@@ -41477,7 +41483,7 @@ ${err}`);
             if (pr !== void 0) base.priority = pr;
             return base;
           };
-          const buildUpdatePatch = (payload) => {
+          const buildUpdatePatch = (payload, trusted) => {
             const patch = {};
             if (payload.title !== void 0) patch.title = payload.title;
             if (payload.description !== void 0) patch.description = payload.description;
@@ -41488,7 +41494,7 @@ ${err}`);
             } else if (payload.loading === false || payload.loading === "false") {
               patch.meta = { loading: false };
             }
-            const spec = parseActionSpec(payload.action);
+            const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
             if (spec) {
               patch.action = buildZagAction(spec, rt);
             } else if (payload.action === null) {
@@ -41522,7 +41528,7 @@ ${err}`);
               const st = getToastStore(payload.groupId || this.groupId);
               if (!st) return;
               try {
-                st.create(buildCreateOptions(payload));
+                st.create(buildCreateOptions(payload, true));
               } catch (error) {
                 console.error("Failed to create toast:", error);
               }
@@ -41533,7 +41539,7 @@ ${err}`);
               const st = getToastStore(payload.groupId || this.groupId);
               if (!st || !payload.id) return;
               try {
-                st.update(payload.id, buildUpdatePatch(payload));
+                st.update(payload.id, buildUpdatePatch(payload, true));
               } catch (error) {
                 console.error("Failed to update toast:", error);
               }
@@ -41546,7 +41552,7 @@ ${err}`);
             const st = getToastStore(detail.groupId || this.groupId);
             if (!st) return;
             try {
-              st.create(buildCreateOptions(detail));
+              st.create(buildCreateOptions(detail, false));
             } catch (error) {
               console.error("Failed to create toast:", error);
             }
@@ -41556,7 +41562,7 @@ ${err}`);
             const st = getToastStore(detail.groupId || this.groupId);
             if (!st || !detail.id) return;
             try {
-              st.update(detail.id, buildUpdatePatch(detail));
+              st.update(detail.id, buildUpdatePatch(detail, false));
             } catch (error) {
               console.error("Failed to update toast:", error);
             }

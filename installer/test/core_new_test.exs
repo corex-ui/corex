@@ -81,6 +81,18 @@ defmodule Mix.Tasks.Corex.NewTest do
         Mix.Tasks.Corex.New.run(["valid", "--module", "String"])
       end
     end)
+
+    in_tmp("web module invalid", fn ->
+      assert_raise Mix.Error, ~r"Module name must be a valid Elixir alias", fn ->
+        Mix.Tasks.Corex.New.run(["valid", "--web-module", "not.valid", "--no-install"])
+      end
+    end)
+
+    in_tmp("web module taken", fn ->
+      assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
+        Mix.Tasks.Corex.New.run(["valid", "--web-module", "String", "--no-install"])
+      end
+    end)
   end
 
   test "invalid options" do

@@ -330,6 +330,7 @@ defmodule Corex.New.Generate do
         trimmed = String.trim(path)
 
         if trimmed != "" do
+          Corex.New.Cli.validate_dev_path!(trimmed)
           corex_root = Path.expand(trimmed, install_dir)
           mjs = Path.join([corex_root, "priv", "static", "corex.mjs"])
 

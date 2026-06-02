@@ -186,6 +186,35 @@ defmodule Mix.Tasks.Corex.Gen.HtmlTest do
     end
   end
 
+  test "run/1 rejects invalid primary-key" do
+    assert_raise Mix.Error, ~r/Invalid generator identifier/, fn ->
+      run_generator("corex.gen.html", [
+        "Blog",
+        "User",
+        "users",
+        "name:string",
+        "--no-context",
+        "--primary-key",
+        ~S(id"; evil)
+      ])
+    end
+  end
+
+  test "run/1 rejects migration-dir outside project root" do
+    outside = Path.join(System.tmp_dir!(), "corex_gen_html_migrations")
+
+    assert_raise Mix.Error, ~r/within the project root/, fn ->
+      run_generator("corex.gen.html", [
+        "Blog",
+        "User",
+        "users",
+        "name:string",
+        "--migration-dir",
+        outside
+      ])
+    end
+  end
+
   test "run/1 generates controller and templates" do
     with_test_output(fn tmp ->
       n = System.unique_integer([:positive])

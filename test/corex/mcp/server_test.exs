@@ -10,15 +10,22 @@ defmodule Corex.MCP.ServerTest do
       Logger.put_module_level(Corex.MCP.Server, :none)
     end
 
+    Application.put_env(:corex, :mcp_test_raise_tool, true)
+
+    on_exit(fn ->
+      Application.delete_env(:corex, :mcp_test_raise_tool)
+      :ok = Server.init_tools()
+    end)
+
     :ok = Server.init_tools()
     :ok
   end
 
-  defp post_conn(body_map) do
+  defp post_conn(body_map, config \\ %Config{allow_remote_access: false, verbose_errors: false}) do
     Plug.Test.conn(:post, "/")
     |> Map.put(:body_params, body_map)
     |> Map.put(:params, body_map)
-    |> Plug.Conn.put_private(:corex_mcp_config, %Config{allow_remote_access: false})
+    |> Plug.Conn.put_private(:corex_mcp_config, config)
   end
 
   test "init_tools stores tools for dispatch" do
@@ -293,8 +300,49 @@ defmodule Corex.MCP.ServerTest do
     assert decoded["error"]["code"] == -32_601
   end
 
+  test "tools/call redacts raised tool errors by default" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 20,
+      "method" => "tools/call",
+      "params" => %{"name" => "test_raise", "arguments" => %{}}
+    }
+
+    conn =
+      body
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.Json.decode!(conn.resp_body)
+    inner = decoded["result"]["content"] |> List.first()
+    assert inner["text"] == "Failed to call tool"
+    refute inner["text"] =~ "secret internal path"
+    assert decoded["result"]["isError"] == true
+  end
+
+  test "tools/call includes raised tool errors when verbose_errors is enabled" do
+    body = %{
+      "jsonrpc" => "2.0",
+      "id" => 21,
+      "method" => "tools/call",
+      "params" => %{"name" => "test_raise", "arguments" => %{}}
+    }
+
+    conn =
+      body
+      |> post_conn(%Config{allow_remote_access: false, verbose_errors: true})
+      |> Server.handle_http_message()
+
+    assert conn.status == 200
+    decoded = Corex.Json.decode!(conn.resp_body)
+    inner = decoded["result"]["content"] |> List.first()
+    assert inner["text"] =~ "secret internal path"
+    assert decoded["result"]["isError"] == true
+  end
+
   test "handle_http_message works without re-initializing tools on each request" do
-    ping = %{"jsonrpc" => "2.0", "id" => 20, "method" => "ping"}
+    ping = %{"jsonrpc" => "2.0", "id" => 22, "method" => "ping"}
 
     conn1 =
       ping
@@ -305,7 +353,7 @@ defmodule Corex.MCP.ServerTest do
 
     conn2 =
       ping
-      |> Map.put("id", 21)
+      |> Map.put("id", 23)
       |> post_conn()
       |> Server.handle_http_message()
 

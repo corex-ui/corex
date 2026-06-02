@@ -61,7 +61,8 @@ defmodule Mix.Corex.Gen.Context do
     dir =
       cond do
         migration_dir = opts[:migration_dir] ->
-          migration_dir
+          MixCorex.validate_migration_dir!(migration_dir)
+          Path.expand(migration_dir)
 
         opts[:repo] ->
           repo_name = repo |> Module.split() |> List.last() |> Macro.underscore()

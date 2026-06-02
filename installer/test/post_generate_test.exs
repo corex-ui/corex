@@ -33,6 +33,20 @@ defmodule Corex.New.PostGenerateTest do
         assert File.read!(Path.join(project, "marker.txt")) == "cached\n"
       end)
     end
+
+    test "raises when COREX_NEW_CACHE_DIR contains invalid characters" do
+      in_tmp(:invalid_cache, fn ->
+        project = Path.join(File.cwd!(), "project")
+        File.mkdir_p!(project)
+        System.put_env("COREX_NEW_CACHE_DIR", "/tmp/evil\"\ncache")
+
+        on_exit(fn -> System.delete_env("COREX_NEW_CACHE_DIR") end)
+
+        assert_raise Mix.Error, ~r/invalid characters/, fn ->
+          PostGenerate.copy_cached_build(project)
+        end
+      end)
+    end
   end
 
   describe "init_git/1" do

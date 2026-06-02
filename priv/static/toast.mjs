@@ -1411,7 +1411,7 @@ function parseSingleExecJsEffect(raw) {
   if (typeof encoded !== "string" || encoded.length === 0) return null;
   return encoded;
 }
-function parseActionSpec(raw) {
+function parseServerActionSpec(raw) {
   const o = asRecord(raw);
   const label = o.label;
   if (typeof label !== "string" || label.length === 0) return null;
@@ -1429,6 +1429,10 @@ function parseActionSpec(raw) {
   }
   return spec;
 }
+function parseDomActionSpec(_raw) {
+  return null;
+}
+var parseActionSpec = parseServerActionSpec;
 function buildZagAction(spec, rt) {
   const action = {
     label: spec.label,
@@ -1534,8 +1538,8 @@ var ToastHook = {
       }
     }
     const rt = buildRuntime(this);
-    const buildCreateOptions = (payload) => {
-      const spec = parseActionSpec(payload.action);
+    const buildCreateOptions = (payload, trusted) => {
+      const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
       const base = {
         title: payload.title ?? "",
         description: payload.description,
@@ -1551,7 +1555,7 @@ var ToastHook = {
       if (pr !== void 0) base.priority = pr;
       return base;
     };
-    const buildUpdatePatch = (payload) => {
+    const buildUpdatePatch = (payload, trusted) => {
       const patch = {};
       if (payload.title !== void 0) patch.title = payload.title;
       if (payload.description !== void 0) patch.description = payload.description;
@@ -1562,7 +1566,7 @@ var ToastHook = {
       } else if (payload.loading === false || payload.loading === "false") {
         patch.meta = { loading: false };
       }
-      const spec = parseActionSpec(payload.action);
+      const spec = trusted ? parseServerActionSpec(payload.action) : parseDomActionSpec(payload.action);
       if (spec) {
         patch.action = buildZagAction(spec, rt);
       } else if (payload.action === null) {
@@ -1596,7 +1600,7 @@ var ToastHook = {
         const st = getToastStore(payload.groupId || this.groupId);
         if (!st) return;
         try {
-          st.create(buildCreateOptions(payload));
+          st.create(buildCreateOptions(payload, true));
         } catch (error) {
           console.error("Failed to create toast:", error);
         }
@@ -1607,7 +1611,7 @@ var ToastHook = {
         const st = getToastStore(payload.groupId || this.groupId);
         if (!st || !payload.id) return;
         try {
-          st.update(payload.id, buildUpdatePatch(payload));
+          st.update(payload.id, buildUpdatePatch(payload, true));
         } catch (error) {
           console.error("Failed to update toast:", error);
         }
@@ -1620,7 +1624,7 @@ var ToastHook = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st) return;
       try {
-        st.create(buildCreateOptions(detail));
+        st.create(buildCreateOptions(detail, false));
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
@@ -1630,7 +1634,7 @@ var ToastHook = {
       const st = getToastStore(detail.groupId || this.groupId);
       if (!st || !detail.id) return;
       try {
-        st.update(detail.id, buildUpdatePatch(detail));
+        st.update(detail.id, buildUpdatePatch(detail, false));
       } catch (error) {
         console.error("Failed to update toast:", error);
       }
@@ -1669,5 +1673,7 @@ var ToastHook = {
 export {
   ToastHook as Toast,
   parseActionSpec,
+  parseDomActionSpec,
+  parseServerActionSpec,
   parseSingleExecJsEffect
 };

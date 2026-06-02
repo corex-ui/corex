@@ -32,8 +32,12 @@ defmodule Corex.New.Cli do
         :ok
 
       v when is_binary(v) ->
-        if String.trim(v) == "" do
+        trimmed = String.trim(v)
+
+        if trimmed == "" do
           Mix.raise("--dev requires a non-empty path (for example: --dev ../corex)")
+        else
+          validate_dev_path!(trimmed)
         end
 
       _ ->
@@ -110,5 +114,17 @@ defmodule Corex.New.Cli do
          ) do
       Mix.raise("Please select another directory for installation.")
     end
+  end
+
+  def validate_dev_path!(path) when is_binary(path) do
+    if String.match?(path, ~r/["\r\n\x00]/) do
+      Mix.raise("""
+      --dev path contains invalid characters.
+
+      Provide a filesystem path without quotes or newlines.
+      """)
+    end
+
+    :ok
   end
 end

@@ -112,6 +112,17 @@ defmodule Corex.Navigate do
   end
 
   def navigate(assigns) do
+    safe_to =
+      if Corex.Url.allowed_href?(assigns.to) do
+        assigns.to
+      else
+        if is_binary(assigns.to) and String.trim(assigns.to) != "" do
+          IO.warn("Corex.Navigate: disallowed destination #{inspect(assigns.to)}")
+        end
+
+        nil
+      end
+
     method_attrs =
       if assigns.type == "href" && is_binary(assigns.method) do
         %{method: assigns.method}
@@ -128,15 +139,16 @@ defmodule Corex.Navigate do
 
     assigns =
       assigns
+      |> assign(:safe_to, safe_to)
       |> assign(:method_attrs, method_attrs)
       |> assign(:replace_attrs, replace_attrs)
       |> assign(:title, assigns.title || assigns.aria_label)
 
     ~H"""
     <.link
-      href={@type == "href" && @to}
-      navigate={@type == "navigate" && @to}
-      patch={@type == "patch" && @to}
+      href={@type == "href" && @safe_to}
+      navigate={@type == "navigate" && @safe_to}
+      patch={@type == "patch" && @safe_to}
       download={@download}
       aria-label={@aria_label}
       title={@title}

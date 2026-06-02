@@ -98,7 +98,7 @@ defmodule Corex.MixProject do
         "credo --strict",
         "sobelow --exit"
       ],
-      "release.check": ["lint", "test", "assets.build"],
+      "release.check": ["hex.audit", "lint", "test", "assets.build"],
       "pre.publish": ["release.check"],
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
@@ -151,7 +151,8 @@ defmodule Corex.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/corex-ui/corex",
-        "Website" => "https://corex.gigalixirapp.com/en"
+        "Website" => "https://corex.gigalixirapp.com/en",
+        "Sponsor" => "https://github.com/sponsors/corex-ui"
       },
       files: files
     ]

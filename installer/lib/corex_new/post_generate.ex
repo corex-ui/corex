@@ -6,13 +6,38 @@ defmodule Corex.New.PostGenerate do
   def copy_cached_build(project_path) do
     case System.fetch_env("COREX_NEW_CACHE_DIR") do
       {:ok, cache_dir} ->
+        cache_dir = validate_cache_dir!(cache_dir)
+
         if File.exists?(cache_dir) do
           Mix.shell().info("Copying cached build from #{cache_dir}")
-          System.cmd("cp", ["-Rp", Path.join(cache_dir, "."), project_path])
+          copy_tree!(cache_dir, project_path)
         end
 
       :error ->
         :ok
+    end
+  end
+
+  defp validate_cache_dir!(cache_dir) do
+    expanded = Path.expand(cache_dir)
+
+    cond do
+      String.match?(cache_dir, ~r/["\r\n\x00]/) ->
+        Mix.raise("COREX_NEW_CACHE_DIR contains invalid characters")
+
+      not File.dir?(expanded) ->
+        Mix.raise("COREX_NEW_CACHE_DIR is not a directory: #{inspect(cache_dir)}")
+
+      true ->
+        expanded
+    end
+  end
+
+  defp copy_tree!(source_dir, dest_dir) do
+    File.mkdir_p!(dest_dir)
+
+    for entry <- File.ls!(source_dir) do
+      File.cp_r!(Path.join(source_dir, entry), Path.join(dest_dir, entry))
     end
   end
 

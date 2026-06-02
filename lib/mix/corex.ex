@@ -31,7 +31,7 @@ defmodule Mix.Corex do
     EEx.eval_string(content, binding)
   end
 
-  def inject_eex_before_final_end(content_to_inject, file_path, binding) do
+  def inject_eex_before_final_end(content_to_inject, file_path, _binding) do
     file = File.read!(file_path)
 
     if String.contains?(file, content_to_inject) do
@@ -43,12 +43,125 @@ defmodule Mix.Corex do
         file
         |> String.trim_trailing()
         |> String.trim_trailing("end")
-        |> EEx.eval_string(binding)
         |> Kernel.<>(content_to_inject)
         |> Kernel.<>("end\n")
 
       File.write!(file_path, new_content)
     end
+  end
+
+  @doc """
+  Returns the Mix project root (directory containing mix.exs), falling back to cwd.
+  """
+  def project_root do
+    if mix_project_loaded?() do
+      Mix.Project.deps_path()
+      |> Path.expand()
+      |> Path.dirname()
+    else
+      mix_root(File.cwd!())
+    end
+  end
+
+  defp mix_project_loaded? do
+    Code.ensure_loaded?(Mix.Project) and is_atom(Mix.Project.config()[:app])
+  end
+
+  defp mix_root(dir) do
+    expanded = Path.expand(dir)
+
+    if File.regular?(Path.join(expanded, "mix.exs")) do
+      expanded
+    else
+      parent = Path.dirname(expanded)
+
+      if parent == expanded do
+        expanded
+      else
+        mix_root(parent)
+      end
+    end
+  end
+
+  @doc """
+  Raises unless `path` resolves inside `root` (default: `project_root/0`).
+  """
+  def assert_within_project_root!(path, root \\ nil) do
+    root = Path.expand(root || project_root())
+    expanded = Path.expand(path)
+
+    if within_root?(expanded, root) do
+      :ok
+    else
+      Mix.raise("""
+      Path must stay within the project root.
+
+      root: #{root}
+      path: #{path}
+      """)
+    end
+  end
+
+  defp within_root?(path, root) do
+    path = Path.expand(path)
+    root = Path.expand(root)
+
+    case Path.relative_to(path, root) do
+      ^path -> false
+      "." -> true
+      relative -> not String.starts_with?(relative, "..")
+    end
+  end
+
+  @identifier ~r/^[a-z_][a-zA-Z0-9_]*$/
+
+  @doc """
+  Raises unless `name` is a safe lowercase identifier for generator flags.
+  """
+  def validate_identifier!(name) when is_binary(name) do
+    if Regex.match?(@identifier, name) do
+      :ok
+    else
+      Mix.raise("""
+      Invalid generator identifier: #{inspect(name)}
+
+      Expected a lowercase name using snake_case (for example: user_id, posts).
+      """)
+    end
+  end
+
+  def validate_identifier!(name) when is_atom(name) do
+    name |> Atom.to_string() |> validate_identifier!()
+  end
+
+  @doc """
+  Raises unless `dir` is an absolute or expandable migration directory inside the project root.
+  """
+  def validate_migration_dir!(dir) when is_binary(dir) do
+    expanded = Path.expand(dir)
+    assert_within_project_root!(expanded)
+    :ok
+  end
+
+  @doc """
+  Validates generator-controlled schema flags before templating or writing files.
+  """
+  def validate_generator_schema!(%Mix.Phoenix.Schema{} = schema) do
+    validate_identifier!(schema.table)
+
+    if primary_key = schema.opts[:primary_key] do
+      validate_identifier!(primary_key)
+    end
+
+    if scope = schema.scope do
+      validate_identifier!(scope.assign_key)
+    end
+
+    if migration_dir = schema.opts[:migration_dir] do
+      validate_migration_dir!(migration_dir)
+    end
+
+    :ok
   end
 
   @doc """

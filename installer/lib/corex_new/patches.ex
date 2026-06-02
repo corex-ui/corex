@@ -436,7 +436,8 @@ defmodule Corex.New.Patches do
         trimmed = String.trim(path)
 
         if trimmed != "" do
-          ~s([path: "#{trimmed}", override: true])
+          Corex.New.Cli.validate_dev_path!(trimmed)
+          "[path: #{inspect(trimmed)}, override: true]"
         else
           corex_dep_constraint()
         end

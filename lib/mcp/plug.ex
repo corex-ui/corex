@@ -16,10 +16,24 @@ defmodule Corex.MCP do
     maybe_silence_mcp_server_logs()
     assert_not_prod!(opts)
     :ok = Server.init_tools()
-    Config.build(opts)
+    config = Config.build(opts)
+    maybe_warn_remote_access!(config.allow_remote_access)
+    config
   end
 
-  def init(config) when is_map(config), do: Config.build(config)
+  def init(config) when is_map(config) do
+    maybe_silence_mcp_server_logs()
+    config = Config.build(config)
+    maybe_warn_remote_access!(config.allow_remote_access)
+    config
+  end
+
+  @remote_access_enabled_warning """
+  Corex.MCP allow_remote_access is enabled. The MCP endpoint accepts connections from non-loopback addresses. Restrict network access with a firewall or VPN and never enable this in production.
+  """
+
+  defp maybe_warn_remote_access!(true), do: Logger.warning(@remote_access_enabled_warning)
+  defp maybe_warn_remote_access!(_), do: :ok
 
   @impl true
   def call(%Plug.Conn{path_info: ["corex" | rest]} = conn, %Config{} = config) do

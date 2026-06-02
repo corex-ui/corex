@@ -1,1 +1,1 @@
-[exit: false, format: "txt", ignore_files: [], ignore: ["Traversal.FileModule", "RCE.EEx", "Config"], out: nil, private: false, router: nil, skip: false, threshold: :low, verbose: false, version: false]
+[exit: false, format: "txt", ignore_files: ["lib/mix/corex.ex", "lib/mix/corex/gen/context.ex", "lib/corex/doc_parity.ex"], ignore: ["Config"], out: nil, private: false, router: nil, skip: false, threshold: :low, verbose: false, version: false]

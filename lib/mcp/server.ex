@@ -11,6 +11,7 @@ defmodule Corex.MCP.Server do
   require Logger
   import Plug.Conn
 
+  alias Corex.MCP.Config
   alias Corex.MCP.Tools.Components, as: McpToolComponents
   alias Corex.MCP.Tools.Installation, as: McpToolInstallation
 
@@ -27,10 +28,31 @@ defmodule Corex.MCP.Server do
     tools =
       [McpToolComponents.tools(), McpToolInstallation.tools()]
       |> Enum.flat_map(& &1)
+      |> maybe_append_test_tools()
 
     dispatch = Map.new(tools, &{&1.name, &1.callback})
     :persistent_term.put(@tools_key, {tools, dispatch})
     :ok
+  end
+
+  defp maybe_append_test_tools(tools) do
+    if Application.get_env(:corex, :mcp_test_raise_tool, false) do
+      tools ++ [test_raise_tool()]
+    else
+      tools
+    end
+  end
+
+  defp test_raise_tool do
+    %{
+      name: "test_raise",
+      description: "Test-only tool that raises",
+      inputSchema: %{
+        type: "object",
+        properties: %{}
+      },
+      callback: fn _args, _assigns -> raise "secret internal path" end
+    }
   end
 
   @doc "Returns the stored `{tools, dispatch}` tuple."
@@ -167,6 +189,20 @@ defmodule Corex.MCP.Server do
     handle_call_tool(request_id, params, assigns)
   catch
     kind, reason ->
+      stacktrace = __STACKTRACE__
+      formatted = Exception.format(kind, reason, stacktrace)
+
+      unless verbose_errors?(assigns) do
+        Logger.error("Corex.MCP tool call failed: #{formatted}")
+      end
+
+      text =
+        if verbose_errors?(assigns) do
+          "Failed to call tool: #{formatted}"
+        else
+          "Failed to call tool"
+        end
+
       {:ok,
        %{
          jsonrpc: "2.0",
@@ -175,7 +211,7 @@ defmodule Corex.MCP.Server do
            content: [
              %{
                type: "text",
-               text: "Failed to call tool: #{Exception.format(kind, reason, __STACKTRACE__)}"
+               text: text
              }
            ],
            isError: true
@@ -183,20 +219,28 @@ defmodule Corex.MCP.Server do
        }}
   end
 
+  defp verbose_errors?(%Config{verbose_errors: value}), do: value
+
+  defp verbose_errors?(assigns) when is_map(assigns) do
+    Map.get(assigns, :verbose_errors, Application.get_env(:corex, :mcp_verbose_errors, false))
+  end
+
+  defp verbose_errors?(_), do: Application.get_env(:corex, :mcp_verbose_errors, false)
+
   defp handle_message(%{"method" => "notifications/initialized"} = message, _assigns) do
-    Logger.info("Received initialized notification")
-    Logger.debug("Full message: #{inspect(message, pretty: true)}")
+    mcp_debug("Received initialized notification")
+    mcp_debug("Full message: #{inspect(message, pretty: true)}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => "notifications/cancelled"} = message, _assigns) do
-    Logger.info("Request cancelled: #{inspect(message["params"])}")
+    mcp_debug("Request cancelled: #{inspect(message["params"])}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => method, "id" => id} = message, assigns) do
-    Logger.info("Routing MCP message - Method: #{method}, ID: #{id}")
-    Logger.debug("Full message: #{inspect(message, pretty: true)}")
+    mcp_debug("Routing MCP message - Method: #{method}, ID: #{id}")
+    mcp_debug("Full message: #{inspect(message, pretty: true)}")
     route_request(method, id, message, assigns)
   end
 
@@ -279,10 +323,10 @@ defmodule Corex.MCP.Server do
 
   @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do
-    Logger.info("Received #{conn.method} message")
+    mcp_debug("Received #{conn.method} message")
     params = conn.body_params
     conn = fetch_query_params(conn)
-    Logger.debug("Raw params: #{inspect(params, pretty: true)}")
+    mcp_debug("Raw params: #{inspect(params, pretty: true)}")
 
     with {:ok, message} <- validate_jsonrpc_message(params),
          {:ok, response} <- handle_message(message, conn.private.corex_mcp_config) do
@@ -291,7 +335,7 @@ defmodule Corex.MCP.Server do
           conn |> put_status(202) |> send_json(%{status: "ok"})
 
         response ->
-          Logger.debug("Sending HTTP response: #{inspect(response, pretty: true)}")
+          mcp_debug("Sending HTTP response: #{inspect(response, pretty: true)}")
           conn |> put_status(200) |> send_json(response)
       end
     else
@@ -302,6 +346,12 @@ defmodule Corex.MCP.Server do
       {:error, error_response} when is_map(error_response) ->
         Logger.warning("Error handling message: #{inspect(error_response)}")
         conn |> put_status(400) |> send_json(error_response)
+    end
+  end
+
+  defp mcp_debug(message) do
+    if Application.get_env(:corex, :debug) do
+      Logger.debug(message)
     end
   end
 end

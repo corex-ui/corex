@@ -136,5 +136,21 @@ defmodule Corex.NavigateTest do
 
       assert [_] = find_in_html(result, "[data-phx-link]")
     end
+
+    test "omits href for disallowed destination" do
+      result =
+        render_with_captured_stderr(fn ->
+          render_component(&CorexTest.ComponentHelpers.render_navigate/1,
+            to: "javascript:alert(1)",
+            type: "href",
+            external: false,
+            download: nil,
+            aria_label: nil
+          )
+        end)
+
+      refute result =~ "javascript:alert(1)"
+      assert text_in_html(result) =~ "Link text"
+    end
   end
 end

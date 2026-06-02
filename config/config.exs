@@ -1,5 +1,7 @@
 import Config
 
+config :corex, mcp_verbose_errors: false
+
 config :logger, :console,
   colors: [enabled: false],
   format: "\n$time $metadata[$level] $message\n",
