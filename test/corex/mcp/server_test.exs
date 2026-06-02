@@ -10,6 +10,7 @@ defmodule Corex.MCP.ServerTest do
       Logger.put_module_level(Corex.MCP.Server, :none)
     end
 
+    :ok = Server.init_tools()
     :ok
   end
 
@@ -283,5 +284,24 @@ defmodule Corex.MCP.ServerTest do
     assert conn.status == 400
     decoded = Corex.Json.decode!(conn.resp_body)
     assert decoded["error"]["code"] == -32_601
+  end
+
+  test "handle_http_message works without re-initializing tools on each request" do
+    ping = %{"jsonrpc" => "2.0", "id" => 20, "method" => "ping"}
+
+    conn1 =
+      ping
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn1.status == 200
+
+    conn2 =
+      ping
+      |> Map.put("id", 21)
+      |> post_conn()
+      |> Server.handle_http_message()
+
+    assert conn2.status == 200
   end
 end

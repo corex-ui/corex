@@ -141,12 +141,11 @@ defmodule Corex.MCP.Router do
     end
   end
 
-  defp config(plug_config) do
+  defp config(_plug_config) do
     %{
       name: "corex",
       framework_type: "phoenix",
-      corex_version: package_version(:corex),
-      allow_remote_access: plug_config.allow_remote_access
+      corex_version: package_version(:corex)
     }
   end
 end

@@ -6,6 +6,8 @@ defmodule Corex.MCP.Tools.Components do
 
   alias Corex.MCP.ComponentDocs
 
+  @max_id_length 64
+
   def tools do
     [
       %{
@@ -41,12 +43,15 @@ defmodule Corex.MCP.Tools.Components do
     ]
   end
 
-  def list_components(_args) do
+  def list_components(%{} = args) when map_size(args) == 0 do
     ids = for id <- Corex.component_ids(), do: to_string(id)
     {:ok, Corex.Json.encode!(%{"components" => ids})}
   end
 
-  def get_component(%{"id" => id}) when is_binary(id) do
+  def list_components(_), do: {:error, :invalid_arguments}
+
+  def get_component(%{"id" => id} = args)
+      when is_binary(id) and byte_size(id) <= @max_id_length and map_size(args) == 1 do
     case Corex.component_module_for_mcp_id(id) do
       {:ok, mod} ->
         atom_id = String.to_existing_atom(id)

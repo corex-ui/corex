@@ -61,8 +61,25 @@ defmodule Corex.MCP.ComponentDocs do
     end
   end
 
-  defp normalize_source_path_string(p) when is_list(p), do: List.to_string(p)
-  defp normalize_source_path_string(p) when is_binary(p), do: p
+  defp normalize_source_path_string(p) when is_list(p),
+    do: normalize_source_path_string(List.to_string(p))
+
+  defp normalize_source_path_string(p) when is_binary(p) do
+    abs = Path.expand(p)
+    root = Path.expand(Corex.MCP.root())
+
+    cond do
+      abs == root ->
+        "."
+
+      String.starts_with?(abs, root <> "/") ->
+        Path.relative_to(abs, root)
+
+      true ->
+        Path.basename(abs)
+    end
+  end
+
   defp normalize_source_path_string(_), do: nil
 
   defp moduledoc_markdown(%{"en" => content}, "text/markdown", mod)

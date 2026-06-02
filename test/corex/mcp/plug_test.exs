@@ -1,6 +1,8 @@
 defmodule Corex.MCPTest do
   use ExUnit.Case, async: false
 
+  alias Corex.MCP.Server
+
   @moduletag capture_log: true
 
   describe "init/1" do
@@ -16,38 +18,40 @@ defmodule Corex.MCPTest do
       first = Corex.MCP.init([])
       assert first == Corex.MCP.init(first)
     end
+
+    test "initializes MCP tools in ETS" do
+      Corex.MCP.init([])
+      assert {tools, _dispatch} = Server.tools_and_dispatch()
+      assert tools != []
+    end
   end
 
   describe "call/2 non-corex paths" do
-    test "rewrites script-src for unsafe-eval and strips frame-ancestors from CSP" do
+    test "does not rewrite CSP or remove x-frame-options" do
       opts = Corex.MCP.init([])
+      csp = "default-src 'self'; script-src 'self' https://cdn.example; frame-ancestors 'none'"
 
       conn =
         Plug.Test.conn(:get, "/app")
         |> Corex.MCP.call(opts)
-        |> Plug.Conn.put_resp_header(
-          "content-security-policy",
-          "default-src 'self'; script-src 'self' https://cdn.example; frame-ancestors 'none'"
-        )
+        |> Plug.Conn.put_resp_header("content-security-policy", csp)
         |> Plug.Conn.put_resp_header("x-frame-options", "DENY")
         |> Plug.Conn.send_resp(200, "ok")
 
-      [csp] = Plug.Conn.get_resp_header(conn, "content-security-policy")
-      assert csp =~ "script-src"
-      assert csp =~ "'unsafe-eval'"
-      refute csp =~ "frame-ancestors"
-      assert Plug.Conn.get_resp_header(conn, "x-frame-options") == []
+      assert Plug.Conn.get_resp_header(conn, "content-security-policy") == [csp]
+      assert Plug.Conn.get_resp_header(conn, "x-frame-options") == ["DENY"]
     end
 
-    test "leaves CSP unchanged when header absent" do
+    test "raises when plug runs too late on non-corex paths" do
       opts = Corex.MCP.init([])
 
       conn =
-        Plug.Test.conn(:get, "/")
-        |> Corex.MCP.call(opts)
-        |> Plug.Conn.send_resp(204, "")
+        Plug.Test.conn(:get, "/app")
+        |> Map.put(:body_params, %{})
 
-      assert Plug.Conn.get_resp_header(conn, "content-security-policy") == []
+      assert_raise RuntimeError, ~r/plug Corex.MCP is runnning too late/, fn ->
+        Corex.MCP.call(conn, opts)
+      end
     end
   end
 
@@ -114,7 +118,7 @@ defmodule Corex.MCPTest do
       decoded = Corex.Json.decode!(conn.resp_body)
       assert decoded["name"] == "corex"
       assert decoded["framework_type"] == "phoenix"
-      assert decoded["allow_remote_access"] == false
+      refute Map.has_key?(decoded, "allow_remote_access")
       assert is_binary(decoded["corex_version"])
     end
 

@@ -22,6 +22,20 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert decoded["components"] == Enum.map(Corex.component_ids(), &to_string/1)
   end
 
+  test "list_components rejects non-empty arguments" do
+    assert {:error, :invalid_arguments} = Components.list_components(%{"extra" => "x"})
+  end
+
+  test "get_component rejects unknown keys" do
+    assert {:error, :invalid_arguments} =
+             Components.get_component(%{"id" => "accordion", "extra" => "x"})
+  end
+
+  test "get_component rejects id longer than 64 bytes" do
+    long_id = String.duplicate("a", 65)
+    assert {:error, :invalid_arguments} = Components.get_component(%{"id" => long_id})
+  end
+
   test "get_component returns spec, docs, and source metadata for a known id" do
     json =
       case Components.get_component(%{"id" => "accordion"}) do
@@ -39,6 +53,7 @@ defmodule Corex.MCP.Tools.ComponentsTest do
     assert is_nil(decoded["docs_note"])
     assert is_binary(decoded["source_path"])
     assert decoded["source_path"] =~ "accordion.ex"
+    refute String.starts_with?(decoded["source_path"], "/")
     assert is_integer(decoded["source_line"])
   end
 

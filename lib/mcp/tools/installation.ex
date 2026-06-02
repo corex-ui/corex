@@ -25,14 +25,13 @@ defmodule Corex.MCP.Tools.Installation do
     ]
   end
 
-  def installation_guide(args) do
-    scenario =
-      case Map.get(args || %{}, "scenario") do
-        s when s in ["new_project", "existing_project", "all"] -> s
-        nil -> "all"
-        _ -> "all"
-      end
+  def installation_guide(args) when args == %{} or is_nil(args) do
+    payload = full_guide()
+    {:ok, Corex.Json.encode!(payload)}
+  end
 
+  def installation_guide(%{"scenario" => scenario} = args)
+      when scenario in ["new_project", "existing_project", "all"] and map_size(args) == 1 do
     payload =
       case scenario do
         "new_project" -> Map.put(new_project_section(), :scenario, scenario)
@@ -42,6 +41,8 @@ defmodule Corex.MCP.Tools.Installation do
 
     {:ok, Corex.Json.encode!(payload)}
   end
+
+  def installation_guide(_), do: {:error, :invalid_arguments}
 
   defp full_guide do
     %{

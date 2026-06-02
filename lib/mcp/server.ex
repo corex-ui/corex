@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 Dashbit
 # See LICENSE for third-party notices.
+# Upstream: tidewave v0.5.6 (deps/tidewave/lib/tidewave/mcp/server.ex)
 # Modifications: Corex.MCP namespace; ETS :corex_mcp_tools; Corex.MCP.Tools.*; Corex
-#   serverInfo; init_tools (re)loads tool specs from raw_tools/0 on each call so metadata
-#   (e.g. readOnlyHint) and callbacks stay in sync with the current build.
+#   serverInfo; tools initialized once from plug init/1.
 
 defmodule Corex.MCP.Server do
   @moduledoc false
@@ -30,7 +30,6 @@ defmodule Corex.MCP.Server do
       :ets.new(:corex_mcp_tools, [
         :set,
         :named_table,
-        :public,
         read_concurrency: true
       ])
     end
@@ -337,7 +336,6 @@ defmodule Corex.MCP.Server do
 
   @doc "Handles a JSON-RPC MCP request over HTTP."
   def handle_http_message(conn) do
-    :ok = init_tools()
     Logger.info("Received #{conn.method} message")
     params = conn.body_params
     conn = fetch_query_params(conn)
