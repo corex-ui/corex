@@ -56,6 +56,16 @@ defmodule Corex.MCP.Tools.InstallationTest do
     assert Enum.any?(titles, &(&1 =~ "MCP"))
   end
 
+  test "installation_guide rejects invalid scenario" do
+    assert {:error, :invalid_arguments} =
+             Installation.installation_guide(%{"scenario" => "bogus"})
+  end
+
+  test "installation_guide rejects unknown keys" do
+    assert {:error, :invalid_arguments} =
+             Installation.installation_guide(%{"scenario" => "all", "extra" => "x"})
+  end
+
   test "tools/0 includes installation_guide" do
     names = for t <- Installation.tools(), do: t.name
     assert "installation_guide" in names
