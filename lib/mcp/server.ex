@@ -36,7 +36,7 @@ defmodule Corex.MCP.Server do
   end
 
   defp maybe_append_test_tools(tools) do
-    if Mix.env() == :test do
+    if Application.get_env(:corex, :mcp_test_raise_tool, false) do
       tools ++ [test_raise_tool()]
     else
       tools

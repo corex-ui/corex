@@ -10,6 +10,13 @@ defmodule Corex.MCP.ServerTest do
       Logger.put_module_level(Corex.MCP.Server, :none)
     end
 
+    Application.put_env(:corex, :mcp_test_raise_tool, true)
+
+    on_exit(fn ->
+      Application.delete_env(:corex, :mcp_test_raise_tool)
+      :ok = Server.init_tools()
+    end)
+
     :ok = Server.init_tools()
     :ok
   end
