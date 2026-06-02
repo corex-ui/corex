@@ -8,7 +8,12 @@ defmodule Mix.Corex.Gen.ContextTest do
   alias Mix.Corex.Gen.Context, as: GenContext
 
   setup do
-    tmp = Path.join(System.tmp_dir!(), "corex_gen_context_#{System.unique_integer([:positive])}")
+    tmp =
+      Path.join(
+        Mix.Corex.project_root(),
+        "test/tmp/gen_context_#{System.unique_integer([:positive])}"
+      )
+
     File.mkdir_p!(tmp)
 
     on_exit(fn -> File.rm_rf(tmp) end)

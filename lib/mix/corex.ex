@@ -114,6 +114,57 @@ defmodule Mix.Corex do
     end
   end
 
+  @identifier ~r/^[a-z_][a-zA-Z0-9_]*$/
+
+  @doc """
+  Raises unless `name` is a safe lowercase identifier for generator flags.
+  """
+  def validate_identifier!(name) when is_binary(name) do
+    if Regex.match?(@identifier, name) do
+      :ok
+    else
+      Mix.raise("""
+      Invalid generator identifier: #{inspect(name)}
+
+      Expected a lowercase name using snake_case (for example: user_id, posts).
+      """)
+    end
+  end
+
+  def validate_identifier!(name) when is_atom(name) do
+    name |> Atom.to_string() |> validate_identifier!()
+  end
+
+  @doc """
+  Raises unless `dir` is an absolute or expandable migration directory inside the project root.
+  """
+  def validate_migration_dir!(dir) when is_binary(dir) do
+    expanded = Path.expand(dir)
+    assert_within_project_root!(expanded)
+    :ok
+  end
+
+  @doc """
+  Validates generator-controlled schema flags before templating or writing files.
+  """
+  def validate_generator_schema!(%Mix.Phoenix.Schema{} = schema) do
+    validate_identifier!(schema.table)
+
+    if primary_key = schema.opts[:primary_key] do
+      validate_identifier!(primary_key)
+    end
+
+    if scope = schema.scope do
+      validate_identifier!(scope.assign_key)
+    end
+
+    if migration_dir = schema.opts[:migration_dir] do
+      validate_migration_dir!(migration_dir)
+    end
+
+    :ok
+  end
+
   @doc """
   Copies files from source dir to target dir
   according to the given map.

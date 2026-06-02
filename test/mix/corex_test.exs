@@ -1,6 +1,8 @@
 defmodule Mix.CorexTest do
   use ExUnit.Case, async: false
 
+  alias Mix.Phoenix.Schema
+
   @moduletag capture_log: true
 
   @tmp_path Path.join(__DIR__, "../../tmp/mix_corex")
@@ -68,6 +70,50 @@ defmodule Mix.CorexTest do
 
     assert_raise Mix.Error, ~r/within the project root/, fn ->
       Mix.Corex.assert_within_project_root!(outside, root)
+    end
+  end
+
+  test "validate_identifier!/1 accepts snake_case names" do
+    assert :ok = Mix.Corex.validate_identifier!("user_id")
+    assert :ok = Mix.Corex.validate_identifier!(:posts)
+  end
+
+  test "validate_identifier!/1 rejects invalid names" do
+    assert_raise Mix.Error, ~r/Invalid generator identifier/, fn ->
+      Mix.Corex.validate_identifier!("id\"; evil")
+    end
+
+    assert_raise Mix.Error, ~r/Invalid generator identifier/, fn ->
+      Mix.Corex.validate_identifier!("../evil")
+    end
+  end
+
+  test "validate_migration_dir!/1 rejects paths outside the project root" do
+    outside = Path.join(System.tmp_dir!(), "corex_migration_outside")
+
+    assert_raise Mix.Error, ~r/within the project root/, fn ->
+      Mix.Corex.validate_migration_dir!(outside)
+    end
+  end
+
+  test "validate_generator_schema!/1 validates primary_key and migration_dir" do
+    schema =
+      Schema.new("User", "users", ["name:string"],
+        primary_key: "id\"; evil",
+        migration_dir: Path.join(System.tmp_dir!(), "migrations")
+      )
+
+    assert_raise Mix.Error, ~r/Invalid generator identifier/, fn ->
+      Mix.Corex.validate_generator_schema!(schema)
+    end
+
+    schema =
+      Schema.new("User", "users", ["name:string"],
+        migration_dir: Path.join(System.tmp_dir!(), "migrations")
+      )
+
+    assert_raise Mix.Error, ~r/within the project root/, fn ->
+      Mix.Corex.validate_generator_schema!(schema)
     end
   end
 

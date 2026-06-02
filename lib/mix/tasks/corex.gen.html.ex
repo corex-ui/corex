@@ -148,6 +148,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     Mix.Phoenix.ensure_live_view_compat!(__MODULE__)
 
     {context, schema} = Gen.Context.build(args, name_optional: true)
+    Mix.Corex.validate_generator_schema!(schema)
 
     if schema.attrs == [] do
       Mix.raise("""
