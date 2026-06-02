@@ -56,6 +56,21 @@ defmodule Mix.CorexTest do
     assert :ok = Mix.Corex.inject_eex_before_final_end("  injected()\n", path, [])
   end
 
+  test "assert_within_project_root!/2 allows paths under root" do
+    root = Path.expand(@tmp_path)
+    inside = Path.join(root, "assets/code.css")
+    assert :ok = Mix.Corex.assert_within_project_root!(inside, root)
+  end
+
+  test "assert_within_project_root!/2 rejects paths outside root" do
+    root = Path.expand(@tmp_path)
+    outside = Path.expand(Path.join([@tmp_path, "..", "outside.css"]))
+
+    assert_raise Mix.Error, ~r/within the project root/, fn ->
+      Mix.Corex.assert_within_project_root!(outside, root)
+    end
+  end
+
   test "generator_template_dirs/1" do
     dirs = Mix.Corex.generator_template_dirs("html")
     assert length(dirs) == 3

@@ -52,6 +52,69 @@ defmodule Mix.Corex do
   end
 
   @doc """
+  Returns the Mix project root (directory containing mix.exs), falling back to cwd.
+  """
+  def project_root do
+    if mix_project_loaded?() do
+      Mix.Project.deps_path()
+      |> Path.expand()
+      |> Path.dirname()
+    else
+      mix_root(File.cwd!())
+    end
+  end
+
+  defp mix_project_loaded? do
+    Code.ensure_loaded?(Mix.Project) and is_atom(Mix.Project.config()[:app])
+  end
+
+  defp mix_root(dir) do
+    expanded = Path.expand(dir)
+
+    if File.regular?(Path.join(expanded, "mix.exs")) do
+      expanded
+    else
+      parent = Path.dirname(expanded)
+
+      if parent == expanded do
+        expanded
+      else
+        mix_root(parent)
+      end
+    end
+  end
+
+  @doc """
+  Raises unless `path` resolves inside `root` (default: `project_root/0`).
+  """
+  def assert_within_project_root!(path, root \\ nil) do
+    root = Path.expand(root || project_root())
+    expanded = Path.expand(path)
+
+    if within_root?(expanded, root) do
+      :ok
+    else
+      Mix.raise("""
+      Path must stay within the project root.
+
+      root: #{root}
+      path: #{path}
+      """)
+    end
+  end
+
+  defp within_root?(path, root) do
+    path = Path.expand(path)
+    root = Path.expand(root)
+
+    case Path.relative_to(path, root) do
+      ^path -> false
+      "." -> true
+      relative -> not String.starts_with?(relative, "..")
+    end
+  end
+
+  @doc """
   Copies files from source dir to target dir
   according to the given map.
 

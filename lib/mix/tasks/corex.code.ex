@@ -67,6 +67,8 @@ defmodule Mix.Tasks.Corex.Code do
   end
 
   defp validate_path!(full_path, force) do
+    Mix.Corex.assert_within_project_root!(full_path)
+
     if File.exists?(full_path) and not force do
       Mix.raise("""
       #{full_path} already exists.
